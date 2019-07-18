@@ -1,0 +1,28 @@
+{   
+    "Items": [
+      {
+        "type": "UnityEditor.PlayerSettings",
+        "method": "enableMetalAPIValidation",
+        "value": "True",
+        "area": "Performance",
+        "problem": "",
+        "solution": ""
+      },
+      {
+        "type": "UnityEditor.PlayerSettings",
+        "method": "stripEngineCode",
+        "value": "False",
+        "area": "Build Size",
+        "problem": "Engine code stripping is disabled. The generated build will be larger than necessary.",
+        "solution": "Enable stripEngineCode in PlayerSettings"
+      },
+      {
+        "type": "UnityEngine.Physics",
+        "method": "autoSyncTransforms",
+        "value": "True",
+        "area": "CPU Performance",
+        "problem": "",
+        "solution": ""
+      }
+    ]
+}
