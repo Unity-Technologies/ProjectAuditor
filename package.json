@@ -1,0 +1,9 @@
+{
+    "name": "com.unity.project-analyzer",
+    "version": "0.0.1",
+    "displayName": "Project Analyzer",
+    "unity": "2018.4",
+    "description": "Project Analyzer",
+    "dependencies": {
+    }
+}
