@@ -3,14 +3,14 @@
       {
         "type": "Camera",
         "method": "main",
-        "category": "Performance",
+        "area": "CPU Performance",
         "problem": "Camera.main property uses FindGameObjectsWithTag() internally and doesn't cache the result.",
         "solution": "It is advised to cache and use the camera component obtained from Game object instead."
       },
       {
         "type": "Physics",
         "method": "Raycast",
-        "category": "Memory",
+        "area": "Memory",
         "problem": "Physics.Raycast() allocates managed memory.",
         "solution": "Use Physics.RaycastNonAlloc() instead."
       }

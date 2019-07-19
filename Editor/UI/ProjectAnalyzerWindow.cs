@@ -11,7 +11,7 @@ using UnityEditorInternal;
 using UnityEngine;
 
 class ProjectAnalyzerWindow : EditorWindow
-{
+{    
     private ProjectReport m_ProjectReport;
 
     private IssueTable m_IssueTable;
@@ -78,6 +78,12 @@ class ProjectAnalyzerWindow : EditorWindow
         m_IssueTable = null;
         m_ProjectReport.m_ProjectIssues.Clear();
     }
+
+    private void Reload()
+    {
+        m_IssueTable = null;
+        m_ProjectReport = new ProjectReport();
+    }
     
     private void Serialize()
     {
@@ -93,6 +99,8 @@ class ProjectAnalyzerWindow : EditorWindow
             Analyze();
         if (GUILayout.Button("Clear", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(60)))
             Clear();
+        if (GUILayout.Button("Reload", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(60)))
+            Reload();
         if (GUILayout.Button("Serialize", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(60)))
             Serialize();
         
@@ -105,10 +113,16 @@ class ProjectAnalyzerWindow : EditorWindow
         {
             var index = m_IssueTable.GetSelection()[0];
             var issue = m_ProjectReport.m_ProjectIssues[index];
-            string text = $"{issue.url}({issue.line},{issue.column})";
+            
+            // TODO: use an Issue interface, to define how to display different categories
+            string text = string.Empty;
+            if (issue.category == "API Call")
+                text = $"{issue.url}({issue.line},{issue.column})";
             EditorGUILayout.TextArea(text, GUILayout.ExpandHeight(true));
+            
             text = $"Problem: {issue.def.problem}";
             EditorGUILayout.TextArea(text, GUILayout.ExpandHeight(true));
+            
             text = $"Recommendation: {issue.def.solution}";
             EditorGUILayout.TextArea(text, GUILayout.ExpandHeight(true));
         }

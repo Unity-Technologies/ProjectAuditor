@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -32,9 +33,15 @@ namespace Editor
 
         public void AnalyzeApiCalls(List<ProblemDefinition> problemDefinitions)
         {
-            // TODO: How do i make sure Assembly-CSharp.dll exists?
+            string assemblyPath = "Library/ScriptAssemblies/Assembly-CSharp.dll";
+            if (!File.Exists(assemblyPath))
+            {
+                Debug.LogError("Assembly-CSharp.dll not found.");
+                return;
+            }
+
             Debug.Log("Analyzing project...");
-            using (var a = AssemblyDefinition.ReadAssembly("Library/ScriptAssemblies/Assembly-CSharp.dll", new ReaderParameters() { ReadSymbols = true} ))
+            using (var a = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters() { ReadSymbols = true} ))
             {
     //            var callInstructions = a.MainModule.Types.SelectMany(t => t.Methods)
     //                .Where(m => m.HasBody)
@@ -92,39 +99,39 @@ namespace Editor
             }
         }
 
-        public void AnalyzeProjectSettings(List<ProblemDefinition> problemDefinitions)
+        void AnalyzeAssembly(List<ProblemDefinition> problemDefinitions, Assembly assembly)
         {
-            foreach (var def in problemDefinitions)
+            foreach (var p in problemDefinitions)
             {
                 try
                 {
-                    var value = MethodEvaluator.Eval("/Applications/Unity/Hub/Editor/2018.4.4f1/Unity.app/Contents/Managed/UnityEditor.dll",
-                        def.type, "get_" + def.method, new System.Type[0]{}, new object[0]{});
+                    var value = MethodEvaluator.Eval(assembly.Location,
+                        p.type, "get_" + p.method, new System.Type[0]{}, new object[0]{});
 
-                    if (value.ToString() == def.value)
+                    if (value.ToString() == p.value)
                         m_ProjectIssues.Add(new ProjectIssue
                         {
                             category = "ProjectSettings",
-                            def = def,
-                            url = def.type
+                            def = p,
+                            url = "N/A"
                         });
-
                 }
                 catch (Exception e)
                 {
-                    var value = MethodEvaluator.Eval("/Applications/Unity/Hub/Editor/2018.4.4f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll",
-                        def.type, "get_" + def.method, new System.Type[0]{}, new object[0]{});
-
-                    if (value.ToString() == def.value)
-                        m_ProjectIssues.Add(new ProjectIssue
-                        {
-                            category = "ProjectSettings",
-                            def = def,
-                            url = def.type
-                        });
-
-//                    throw;
+                    // TODO
                 }
+            }
+            
+        }
+        
+        public void AnalyzeProjectSettings(List<ProblemDefinition> problemDefinitions)
+        {
+            string [] assemblyNames = new string[]{"UnityEditor.dll", "UnityEngine.dll"}; 
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(x => assemblyNames.Contains(x.ManifestModule.Name));
+
+            foreach (var assembly in assemblies)
+            {
+                AnalyzeAssembly(problemDefinitions, assembly);
             }
         }
 

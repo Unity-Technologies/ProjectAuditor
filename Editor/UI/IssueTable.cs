@@ -7,6 +7,13 @@ using UnityEngine;
 
 class IssueTable : TreeView
 {
+    enum ColumnIndex
+    {
+        Category = 0,
+        Area,
+        Method
+    }
+
     readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
 
     List<ProjectIssue> m_Issues;
@@ -61,15 +68,15 @@ class IssueTable : TreeView
 
     void CellGUI(Rect cellRect, int column, ProjectIssue projectIssue, ref RowGUIArgs args)
     {
-        switch (column)
+        switch ((ColumnIndex)column)
         {
-            case 0 :
-                EditorGUI.LabelField(cellRect, new GUIContent(projectIssue.category, projectIssue.def.area));
+            case ColumnIndex.Category :
+                EditorGUI.LabelField(cellRect, new GUIContent(projectIssue.category, projectIssue.category));
                 break;
-            case 1 :
+            case ColumnIndex.Area :
                 EditorGUI.LabelField(cellRect, new GUIContent(projectIssue.def.area, projectIssue.def.area));
                 break;
-            case 2 :
+            case ColumnIndex.Method :
                 string text = $"{projectIssue.def.type.ToString()}.{projectIssue.def.method}"; 
                 EditorGUI.LabelField(cellRect, new GUIContent(text, projectIssue.def.method));
                 break;
