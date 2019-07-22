@@ -2,14 +2,6 @@
     "Items": [
       {
         "type": "UnityEditor.PlayerSettings",
-        "method": "enableMetalAPIValidation",
-        "value": "True",
-        "area": "Performance",
-        "problem": "",
-        "solution": ""
-      },
-      {
-        "type": "UnityEditor.PlayerSettings",
         "method": "stripEngineCode",
         "value": "False",
         "area": "Build Size",
@@ -21,8 +13,24 @@
         "method": "autoSyncTransforms",
         "value": "True",
         "area": "CPU Performance",
-        "problem": "",
-        "solution": ""
+        "problem": "Repeatedly changing a Transform and then performing a physics query can cause performance loss.",
+        "solution": "Disable UnityEngine.Physics.autoSyncTransforms and use UnityEngine.Physics.SyncTransforms instead."
+      },
+      {
+        "type": "UnityEditor.PlayerSettings+WebGL",
+        "method": "dataCaching",
+        "value": "False",
+        "area": "Load Times",
+        "problem": "Build file needs to be downloaded every time the content is loaded.",
+        "solution": "Enable dataCaching to cache build files in Browser cache"
+      },
+      {
+        "type": "UnityEditor.PlayerSettings+WebGL",
+        "method": "linkerTarget",
+        "value": "Asm",
+        "area": "CPU Performance|Memory",
+        "problem": "WebGLLinkerTarget.Asm is deprecated.",
+        "solution": "Set UnityEditor.PlayerSettings.WebGL.linkerTarget to WebGLLinkerTarget.Wasm to generate code in WebAssembly format."
       }
     ]
 }
