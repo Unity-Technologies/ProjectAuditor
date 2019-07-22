@@ -16,9 +16,9 @@ class IssueTable : TreeView
 
     readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
 
-    List<ProjectIssue> m_Issues;
+    ProjectIssue[] m_Issues;
 
-    public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader, List<ProjectIssue> issues) : base(state, multicolumnHeader)
+    public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader, ProjectIssue[] issues) : base(state, multicolumnHeader)
     {
         m_Issues = issues;
         Reload();

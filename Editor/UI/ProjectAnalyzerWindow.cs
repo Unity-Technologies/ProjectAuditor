@@ -13,8 +13,13 @@ using UnityEngine;
 class ProjectAnalyzerWindow : EditorWindow
 {    
     private ProjectReport m_ProjectReport;
-
     private IssueTable m_IssueTable;
+
+    private bool m_EnableCPU = true;
+    private bool m_EnableGPU = true;
+    private bool m_EnableMemory = true;
+    private bool m_EnableBuildSize = true;
+    private bool m_EnableLoadTimes = true;
 
     public static GUIStyle Toolbar;
     public static readonly GUIContent analyzeButton = new GUIContent("Analyze Project", "Analyze Project.\nAnalyze Project and list all issues found.");
@@ -28,7 +33,7 @@ class ProjectAnalyzerWindow : EditorWindow
     {
         Toolbar = "Toolbar";
 
-        Draw();
+        DrawToolbar();
 
         if (m_IssueTable != null)
         {
@@ -37,6 +42,21 @@ class ProjectAnalyzerWindow : EditorWindow
 
             DrawDetails();            
         }                
+    }
+
+    bool ShouldDisplay(string area)
+    {
+        if (m_EnableCPU && area.Contains("CPU"))
+            return true;
+        if (m_EnableGPU && area.Contains("GPU"))
+            return true;
+        if (m_EnableMemory && area.Contains("Memory"))
+            return true;
+        if (m_EnableBuildSize && area.Contains("Build Size"))
+            return true;
+        if (m_EnableLoadTimes && area.Contains("Load Times"))
+            return true;
+        return false;
     }
     
     private void Analyze()
@@ -68,8 +88,10 @@ class ProjectAnalyzerWindow : EditorWindow
             },
         };
 
+        var filteredList = m_ProjectReport.m_ProjectIssues.Where(x => ShouldDisplay(x.def.area));
+        
         m_IssueTable = new IssueTable(new TreeViewState(),
-            new MultiColumnHeader(new MultiColumnHeaderState(columns)), m_ProjectReport.m_ProjectIssues);
+            new MultiColumnHeader(new MultiColumnHeaderState(columns)), filteredList.ToArray());
     }
 
     private void Reload()
@@ -81,21 +103,6 @@ class ProjectAnalyzerWindow : EditorWindow
     private void Serialize()
     {
         m_ProjectReport.WriteToFile();
-    }
-    
-    private void Draw()
-    {
-        EditorGUILayout.BeginHorizontal(Toolbar);
-        
-        GUIStyle buttonStyle = GUI.skin.button;
-        if (GUILayout.Button("Analyze", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
-            Analyze();
-        if (GUILayout.Button("Reload DB", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
-            Reload();
-        if (GUILayout.Button("Serialize", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
-            Serialize();
-        
-        EditorGUILayout.EndHorizontal();
     }
 
     private void DrawDetails()
@@ -117,6 +124,30 @@ class ProjectAnalyzerWindow : EditorWindow
             text = $"Recommendation: {issue.def.solution}";
             EditorGUILayout.TextArea(text, GUILayout.Height(40));
         }
+    }
+
+    private void DrawToolbar()
+    {
+        EditorGUILayout.BeginHorizontal(Toolbar);
+        
+        GUIStyle buttonStyle = GUI.skin.button;
+        if (GUILayout.Button("Analyze", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+            Analyze();
+        if (GUILayout.Button("Reload DB", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+            Reload();
+        if (GUILayout.Button("Serialize", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+            Serialize();
+        
+        EditorGUILayout.EndHorizontal();
+        
+        EditorGUILayout.BeginHorizontal(Toolbar);
+        GUILayout.Label("Filter By:", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+        m_EnableMemory = EditorGUILayout.ToggleLeft("Memory", m_EnableMemory, GUILayout.Width(80));
+        m_EnableCPU = EditorGUILayout.ToggleLeft("CPU", m_EnableCPU, GUILayout.Width(80));
+        m_EnableGPU = EditorGUILayout.ToggleLeft("GPU", m_EnableGPU, GUILayout.Width(80));
+        m_EnableBuildSize = EditorGUILayout.ToggleLeft("Build Size", m_EnableBuildSize, GUILayout.Width(80));
+        m_EnableLoadTimes = EditorGUILayout.ToggleLeft("Load Times", m_EnableLoadTimes, GUILayout.Width(80));
+        EditorGUILayout.EndHorizontal();
     }
 
     [MenuItem("Window/Analysis/Project Analyzer")]
