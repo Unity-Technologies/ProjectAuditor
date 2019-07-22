@@ -1,4 +1,4 @@
-#Project Analyzer
+# Project Analyzer
 Project Analyzer is an experimental static analysis tool for Unity Projects.
 
 To use Project Analyzer in your project:
