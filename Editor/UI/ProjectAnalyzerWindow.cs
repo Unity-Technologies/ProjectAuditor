@@ -118,13 +118,13 @@ class ProjectAnalyzerWindow : EditorWindow
             string text = string.Empty;
             if (issue.category == "API Call")
                 text = $"{issue.url}({issue.line},{issue.column})";
-            EditorGUILayout.TextArea(text, GUILayout.ExpandHeight(true));
+            EditorGUILayout.TextArea(text, GUILayout.Height(40));
             
             text = $"Problem: {issue.def.problem}";
-            EditorGUILayout.TextArea(text, GUILayout.ExpandHeight(true));
+            EditorGUILayout.TextArea(text, GUILayout.Height(40));
             
             text = $"Recommendation: {issue.def.solution}";
-            EditorGUILayout.TextArea(text, GUILayout.ExpandHeight(true));
+            EditorGUILayout.TextArea(text, GUILayout.Height(40));
         }
     }
 
