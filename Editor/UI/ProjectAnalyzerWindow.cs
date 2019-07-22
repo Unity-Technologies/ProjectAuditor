@@ -82,11 +82,17 @@ class ProjectAnalyzerWindow : EditorWindow
             new MultiColumnHeaderState.Column
             {
                 headerContent = new GUIContent("Description", "Description"),
-                width = 400,
-                minWidth = 400,
+                width = 300,
+                minWidth = 100,
                 autoResize = true
             },
-        };
+            new MultiColumnHeaderState.Column
+            {
+                headerContent = new GUIContent("Location", "Location"),
+                width = 900,
+                minWidth = 400,
+                autoResize = true
+            },        };
 
         var filteredList = m_ProjectReport.m_ProjectIssues.Where(x => ShouldDisplay(x.def.area));
         
@@ -114,9 +120,6 @@ class ProjectAnalyzerWindow : EditorWindow
             
             // TODO: use an Issue interface, to define how to display different categories
             string text = string.Empty;
-            if (issue.category == "API Call")
-                text = $"{issue.url}({issue.line},{issue.column})";
-            EditorGUILayout.TextArea(text, GUILayout.Height(40));
             
             text = $"Problem: {issue.def.problem}";
             EditorGUILayout.TextArea(text, GUILayout.Height(40));
@@ -151,7 +154,7 @@ class ProjectAnalyzerWindow : EditorWindow
     }
 
     [MenuItem("Window/Analysis/Project Analyzer")]
-    public static ProjectAnalyzerWindow ShowDrDREWindow()
+    public static ProjectAnalyzerWindow ShowWindow()
     {
         var wnd = GetWindow(typeof(ProjectAnalyzerWindow)) as ProjectAnalyzerWindow;
         if (wnd != null)

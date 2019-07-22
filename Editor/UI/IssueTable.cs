@@ -11,7 +11,8 @@ class IssueTable : TreeView
     {
         Category = 0,
         Area,
-        Method
+        Method,
+        Location
     }
 
     readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
@@ -66,20 +67,28 @@ class IssueTable : TreeView
         }
     }
 
-    void CellGUI(Rect cellRect, int column, ProjectIssue projectIssue, ref RowGUIArgs args)
+    void CellGUI(Rect cellRect, int column, ProjectIssue issue, ref RowGUIArgs args)
     {
         switch ((ColumnIndex)column)
         {
             case ColumnIndex.Category :
-                EditorGUI.LabelField(cellRect, new GUIContent(projectIssue.category, projectIssue.category));
+                EditorGUI.LabelField(cellRect, new GUIContent(issue.category, issue.category));
                 break;
             case ColumnIndex.Area :
-                EditorGUI.LabelField(cellRect, new GUIContent(projectIssue.def.area, projectIssue.def.area));
+                EditorGUI.LabelField(cellRect, new GUIContent(issue.def.area, issue.def.area));
                 break;
             case ColumnIndex.Method :
-                string text = $"{projectIssue.def.type.ToString()}.{projectIssue.def.method}"; 
-                EditorGUI.LabelField(cellRect, new GUIContent(text, projectIssue.def.method));
+                string text = $"{issue.def.type.ToString()}.{issue.def.method}"; 
+                EditorGUI.LabelField(cellRect, new GUIContent(text, issue.def.method));
                 break;
+            case ColumnIndex.Location :
+                var projectPathLength = Application.dataPath.Length - "Assets".Length;
+                var location = issue.location;
+                if (location.Length > projectPathLength)
+                    location = location.Remove(0, projectPathLength); 
+                EditorGUI.LabelField(cellRect, new GUIContent(location, issue.def.method));
+                break;
+            
         }
     }
 }

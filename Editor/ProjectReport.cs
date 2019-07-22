@@ -123,8 +123,7 @@ namespace Editor
                         m_ProjectIssues.Add(new ProjectIssue
                         {
                             category = "ProjectSettings",
-                            def = p,
-                            url = "N/A"
+                            def = p
                         });
                         
                         // stop iterating assemblies
