@@ -70,13 +70,6 @@ class ProjectAnalyzerWindow : EditorWindow
 
         m_IssueTable = new IssueTable(new TreeViewState(),
             new MultiColumnHeader(new MultiColumnHeaderState(columns)), m_ProjectReport.m_ProjectIssues);
-
-    }
-
-    private void Clear()
-    {
-        m_IssueTable = null;
-        m_ProjectReport.m_ProjectIssues.Clear();
     }
 
     private void Reload()
@@ -95,13 +88,11 @@ class ProjectAnalyzerWindow : EditorWindow
         EditorGUILayout.BeginHorizontal(Toolbar);
         
         GUIStyle buttonStyle = GUI.skin.button;
-        if (GUILayout.Button("Analyze", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(60)))
+        if (GUILayout.Button("Analyze", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
             Analyze();
-        if (GUILayout.Button("Clear", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(60)))
-            Clear();
-        if (GUILayout.Button("Reload", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(60)))
+        if (GUILayout.Button("Reload DB", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
             Reload();
-        if (GUILayout.Button("Serialize", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(60)))
+        if (GUILayout.Button("Serialize", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
             Serialize();
         
         EditorGUILayout.EndHorizontal();
