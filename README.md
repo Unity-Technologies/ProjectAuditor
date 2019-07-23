@@ -1,8 +1,21 @@
 # Project Analyzer
-Project Analyzer is an experimental static analysis tool for Unity Projects.
+Project Analyzer is an experimental static analysis tool for Unity Projects. This tool will analyze scripts and project settings of any Unity project and report a list a possible problems that might affect performance, memory and other areas.
 
 ## Installation
-To use Project Analyzer in your project Assets folder:
+
+### Package Manager
+The easiest way to install Project Analyzer to your project is by adding it as a dependency to the project Packages/manifest.json file:
+
+```
+{
+  "dependencies": {
+    "com.unity.project-analyzer": "https://git@github.com/mtrive/ProjectAnalyzer.git",
+  }
+}
+```
+
+### Clone Repository
+Alternatively, it is possible to clone the repository:
 
 ```
 cd Assets
