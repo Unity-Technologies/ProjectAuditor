@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -46,8 +47,9 @@ namespace Editor
         {
             m_Definitions = new List<ProblemDefinition>();
 
-            TextAsset asset = Resources.Load<TextAsset>(name);
-            var result = JsonHelper.FromJson<ProblemDefinition>(asset.text);
+            var fullPath = Path.GetFullPath($"Packages/com.unity.project-analyzer/Data/{name}.json");
+            var json = File.ReadAllText(fullPath);
+            var result = JsonHelper.FromJson<ProblemDefinition>(json);
 
             m_Definitions.AddRange(result);            
         }
