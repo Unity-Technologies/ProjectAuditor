@@ -10,7 +10,7 @@ using UnityEditor.IMGUI.Controls;
 using UnityEditorInternal;
 using UnityEngine;
 
-class ProjectAnalyzerWindow : EditorWindow
+class ProjectAuditorWindow : EditorWindow
 {    
     private ProjectReport m_ProjectReport;
     private IssueTable m_IssueTable;
@@ -154,9 +154,9 @@ class ProjectAnalyzerWindow : EditorWindow
     }
 
     [MenuItem("Window/Analysis/Project Auditor")]
-    public static ProjectAnalyzerWindow ShowWindow()
+    public static ProjectAuditorWindow ShowWindow()
     {
-        var wnd = GetWindow(typeof(ProjectAnalyzerWindow)) as ProjectAnalyzerWindow;
+        var wnd = GetWindow(typeof(ProjectAuditorWindow)) as ProjectAuditorWindow;
         if (wnd != null)
         {
             wnd.titleContent = EditorGUIUtility.TrTextContent("Project Auditor");
