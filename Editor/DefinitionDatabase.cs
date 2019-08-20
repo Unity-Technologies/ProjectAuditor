@@ -47,7 +47,7 @@ namespace Editor
         {
             m_Definitions = new List<ProblemDefinition>();
 
-            var fullPath = Path.GetFullPath($"Packages/com.unity.project-analyzer/Data/{name}.json");
+            var fullPath = Path.GetFullPath($"Packages/com.unity.project-auditor/Data/{name}.json");
             var json = File.ReadAllText(fullPath);
             var result = JsonHelper.FromJson<ProblemDefinition>(json);
 

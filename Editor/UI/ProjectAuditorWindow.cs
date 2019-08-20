@@ -153,13 +153,13 @@ class ProjectAnalyzerWindow : EditorWindow
         EditorGUILayout.EndHorizontal();
     }
 
-    [MenuItem("Window/Analysis/Project Analyzer")]
+    [MenuItem("Window/Analysis/Project Auditor")]
     public static ProjectAnalyzerWindow ShowWindow()
     {
         var wnd = GetWindow(typeof(ProjectAnalyzerWindow)) as ProjectAnalyzerWindow;
         if (wnd != null)
         {
-            wnd.titleContent = EditorGUIUtility.TrTextContent("Project Analyzer");
+            wnd.titleContent = EditorGUIUtility.TrTextContent("Project Auditor");
         }
         return wnd;
     }

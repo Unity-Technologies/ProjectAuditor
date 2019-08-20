@@ -1,9 +1,9 @@
 {
-    "name": "com.unity.project-analyzer",
+    "name": "com.unity.project-auditor",
     "version": "0.0.1",
-    "displayName": "Project Analyzer",
+    "displayName": "Project Auditor",
     "unity": "2018.4",
-    "description": "Project Analyzer",
+    "description": "Project Auditor",
     "dependencies": {
     }
 }
