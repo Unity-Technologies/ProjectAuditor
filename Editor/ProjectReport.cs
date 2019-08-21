@@ -73,7 +73,7 @@ namespace Editor
                             var calledMethod = ((MethodReference) inst.Operand);
 
                             // HACK: need to figure out a way to know whether a method is actually a property
-                            var p = problemDefinitions.SingleOrDefault(c => c.type == calledMethod.DeclaringType.Name && (c.method == calledMethod.Name || ("get_" + c.method) == calledMethod.Name));
+                            var p = problemDefinitions.SingleOrDefault(c => c.type == calledMethod.DeclaringType.FullName && (c.method == calledMethod.Name || ("get_" + c.method) == calledMethod.Name));
 
                             if (p != null && m.DebugInformation.HasSequencePoints)
                             {

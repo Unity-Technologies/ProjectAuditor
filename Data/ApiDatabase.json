@@ -1,7 +1,7 @@
 {   
     "Items": [
       {
-        "type": "Camera",
+        "type": "UnityEngine.Camera",
         "method": "main",
         "area": "CPU Performance",
         "problem": "Camera.main property uses FindGameObjectsWithTag() internally and doesn't cache the result.",
