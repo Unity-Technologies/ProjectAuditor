@@ -48,7 +48,7 @@ namespace Editor
                     Debug.LogError($"{assemblyPath} not found.");
                     return;
                 }
-    
+
                 using (var a = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters() { ReadSymbols = true} ))
                 {
         //            var callInstructions = a.MainModule.Types.SelectMany(t => t.Methods)
@@ -68,12 +68,13 @@ namespace Editor
                         if (!m.HasBody)
                             continue;
                 
-                        foreach (var inst in m.Body.Instructions.Where(i => i.OpCode == OpCodes.Call))
+                        foreach (var inst in m.Body.Instructions.Where(i => (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt)))
                         {
                             var calledMethod = ((MethodReference) inst.Operand);
-    //                        var p = problemDefinitions.SingleOrDefault(c => c.type.Name == calledMethod.DeclaringType.Name);
-                            var p = problemDefinitions.SingleOrDefault(c => c.type == calledMethod.DeclaringType.Name);
-                            //if (p.type != null && m.HasCustomDebugInformations)
+
+                            // HACK: need to figure out a way to know whether a method is actually a property
+                            var p = problemDefinitions.SingleOrDefault(c => c.type == calledMethod.DeclaringType.Name && (c.method == calledMethod.Name || ("get_" + c.method) == calledMethod.Name));
+
                             if (p != null && m.DebugInformation.HasSequencePoints)
                             {
                                 var msg = string.Empty;
