@@ -9,7 +9,8 @@ class IssueTable : TreeView
 {
     enum ColumnIndex
     {
-        Category = 0,
+        Resolved = 0,
+        Category,
         Area,
         Method,
         Location
@@ -71,6 +72,9 @@ class IssueTable : TreeView
     {
         switch ((ColumnIndex)column)
         {
+            case ColumnIndex.Resolved :
+                issue.resolved = EditorGUI.Toggle(cellRect, issue.resolved);
+                break;
             case ColumnIndex.Category :
                 EditorGUI.LabelField(cellRect, new GUIContent(issue.category, issue.category));
                 break;

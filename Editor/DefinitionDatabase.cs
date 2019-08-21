@@ -14,6 +14,7 @@ namespace Editor
         public string type;
         public string method;
         public string value;
+        public string customevaluator;
         public string area;
         public string problem;
         public string solution;
@@ -27,6 +28,7 @@ namespace Editor
         public string url;
         public int line;
         public int column;
+        public bool resolved;
 
         public string location
         {

@@ -20,7 +20,11 @@ class ProjectAuditorWindow : EditorWindow
     private bool m_EnableMemory = true;
     private bool m_EnableBuildSize = true;
     private bool m_EnableLoadTimes = true;
-
+    private bool m_EnablePackages = true;
+    private bool m_EnableResolvedItems = false;
+    private bool m_EnableAPICalls = true;
+    private bool m_EnableProjectSettings = true;
+    
     public static GUIStyle Toolbar;
     public static readonly GUIContent analyzeButton = new GUIContent("Analyze Project", "Analyze Project.\nAnalyze Project and list all issues found.");
 
@@ -44,8 +48,22 @@ class ProjectAuditorWindow : EditorWindow
         }                
     }
 
-    bool ShouldDisplay(string area)
+    bool ShouldDisplay(ProjectIssue issue)
     {
+        string category = issue.category;
+        if (!m_EnableAPICalls && category.Contains("API Call"))
+            return false;
+        if (!m_EnableProjectSettings && category.Contains("ProjectSettings"))
+            return false;
+
+        string url = issue.url;
+        if (!m_EnablePackages && category.Contains("API Call") && url.Contains("Library/PackageCache/"))
+            return false;
+
+        if (!m_EnableResolvedItems && issue.resolved == true)
+            return false;
+
+        string area = issue.def.area;
         if (m_EnableCPU && area.Contains("CPU"))
             return true;
         if (m_EnableGPU && area.Contains("GPU"))
@@ -56,15 +74,27 @@ class ProjectAuditorWindow : EditorWindow
             return true;
         if (m_EnableLoadTimes && area.Contains("Load Times"))
             return true;
+        
         return false;
     }
-    
+
     private void Analyze()
     {
         m_ProjectReport.Create();
-            
+        RefreshDisplay();
+    }
+
+    private void RefreshDisplay()
+    {
         MultiColumnHeaderState.Column[] columns = new MultiColumnHeaderState.Column[]
         {
+            new MultiColumnHeaderState.Column
+            {
+                headerContent = new GUIContent("Resolved?", "Resolved?"),
+                width = 80,
+                minWidth = 80,
+                autoResize = true
+            },
             new MultiColumnHeaderState.Column
             {
                 headerContent = new GUIContent("Category", "Category"),
@@ -94,7 +124,7 @@ class ProjectAuditorWindow : EditorWindow
                 autoResize = true
             },        };
 
-        var filteredList = m_ProjectReport.m_ProjectIssues.Where(x => ShouldDisplay(x.def.area));
+        var filteredList = m_ProjectReport.m_ProjectIssues.Where(x => ShouldDisplay(x));
         
         m_IssueTable = new IssueTable(new TreeViewState(),
             new MultiColumnHeader(new MultiColumnHeaderState(columns)), filteredList.ToArray());
@@ -115,6 +145,8 @@ class ProjectAuditorWindow : EditorWindow
     {
         if (m_IssueTable.HasSelection())
         {
+            EditorStyles.textField.wordWrap = true;
+            
             var index = m_IssueTable.GetSelection()[0];
             var issue = m_ProjectReport.m_ProjectIssues[index];
             
@@ -122,10 +154,12 @@ class ProjectAuditorWindow : EditorWindow
             string text = string.Empty;
             
             text = $"Problem: {issue.def.problem}";
-            EditorGUILayout.TextArea(text, GUILayout.Height(40));
+            EditorGUILayout.TextArea(text, GUILayout.Height(100)/*, GUILayout.ExpandHeight(true)*/ );
             
             text = $"Recommendation: {issue.def.solution}";
-            EditorGUILayout.TextArea(text, GUILayout.Height(40));
+            EditorGUILayout.TextArea(text, GUILayout.Height(100)/*, GUILayout.ExpandHeight(true)*/);
+            EditorStyles.textField.wordWrap = false;
+            
         }
     }
 
@@ -145,12 +179,28 @@ class ProjectAuditorWindow : EditorWindow
         
         EditorGUILayout.BeginHorizontal(Toolbar);
         GUILayout.Label("Filter By:", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-        m_EnableMemory = EditorGUILayout.ToggleLeft("Memory", m_EnableMemory, GUILayout.Width(80));
-        m_EnableCPU = EditorGUILayout.ToggleLeft("CPU", m_EnableCPU, GUILayout.Width(80));
-        m_EnableGPU = EditorGUILayout.ToggleLeft("GPU", m_EnableGPU, GUILayout.Width(80));
-        m_EnableBuildSize = EditorGUILayout.ToggleLeft("Build Size", m_EnableBuildSize, GUILayout.Width(80));
-        m_EnableLoadTimes = EditorGUILayout.ToggleLeft("Load Times", m_EnableLoadTimes, GUILayout.Width(80));
+
+        EditorGUI.BeginChangeCheck();
+        
+        m_EnableMemory = EditorGUILayout.ToggleLeft("Memory", m_EnableMemory, GUILayout.Width(100));
+        m_EnableCPU = EditorGUILayout.ToggleLeft("CPU", m_EnableCPU, GUILayout.Width(100));
+        m_EnableGPU = EditorGUILayout.ToggleLeft("GPU", m_EnableGPU, GUILayout.Width(100));
+        m_EnableBuildSize = EditorGUILayout.ToggleLeft("Build Size", m_EnableBuildSize, GUILayout.Width(100));
+        m_EnableLoadTimes = EditorGUILayout.ToggleLeft("Load Times", m_EnableLoadTimes, GUILayout.Width(100));
         EditorGUILayout.EndHorizontal();
+        
+        EditorGUILayout.BeginHorizontal(Toolbar);
+        GUILayout.Label("", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+        m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
+        m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
+        m_EnableAPICalls = EditorGUILayout.ToggleLeft("API Calls", m_EnableAPICalls, GUILayout.Width(100));
+        m_EnableProjectSettings = EditorGUILayout.ToggleLeft("Project Settings", m_EnableProjectSettings, GUILayout.Width(100));
+        EditorGUILayout.EndHorizontal();
+
+        if (EditorGUI.EndChangeCheck())
+        {
+            RefreshDisplay();
+        }
     }
 
     [MenuItem("Window/Analysis/Project Auditor")]
