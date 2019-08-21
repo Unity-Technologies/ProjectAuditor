@@ -19,7 +19,7 @@ namespace Editor
         private DefinitionDatabase m_ApiCalls;
         private DefinitionDatabase m_ProjectSettings;
 
-        private AnalyzerHelpers m_helpers;
+        private AnalyzerHelpers m_Helpers;
 
         public List<ProjectIssue> m_ProjectIssues = new List<ProjectIssue>();
 
@@ -28,7 +28,7 @@ namespace Editor
             m_ApiCalls = new DefinitionDatabase("ApiDatabase");
             m_ProjectSettings = new DefinitionDatabase("ProjectSettings");
 
-            m_helpers = new AnalyzerHelpers();
+            m_Helpers = new AnalyzerHelpers();
             
             m_PlayerAssemblies = CompilationPipeline.GetAssemblies(AssembliesType.Player);
         }
@@ -56,18 +56,6 @@ namespace Editor
     
                 using (var a = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters() { ReadSymbols = true} ))
                 {
-        //            var callInstructions = a.MainModule.Types.SelectMany(t => t.Methods)
-        //                .Where(m => m.HasBody)
-        //                .SelectMany(m => m.Body.Instructions)
-        //                .Where(i => i.OpCode == Mono.Cecil.Cil.OpCodes.Call);
-        //
-        //            var myProblems = problemDefinitions
-        //                .Where(problem =>
-        //                    callInstructions.Any(ci => ((MethodReference) ci.Operand).DeclaringType.Name == problem.type.Name))
-        //                .Select(p => new Issue {def = p});
-        //
-        //            issues.AddRange(myProblems);
-    
                     foreach (var m in a.MainModule.Types.SelectMany(t => t.Methods))
                     {
                         if (!m.HasBody)
@@ -76,8 +64,6 @@ namespace Editor
                         foreach (var inst in m.Body.Instructions.Where(i => (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt)))
                         {
                             var calledMethod = ((MethodReference) inst.Operand);
-    //                        var p = problemDefinitions.SingleOrDefault(c => c.type.Name == calledMethod.DeclaringType.Name);    
-                            //var p = problemDefinitions.SingleOrDefault(c => c.type == calledMethod.DeclaringType.Name);
                             
                             // HACK: need to figure out a way to know whether a method is actually a property
                             var p = problemDefinitions.SingleOrDefault(c => c.type == calledMethod.DeclaringType.FullName &&
@@ -156,9 +142,9 @@ namespace Editor
             }
             else
             {
-                Type helperType = m_helpers.GetType();
+                Type helperType = m_Helpers.GetType();
                 MethodInfo theMethod = helperType.GetMethod(p.customevaluator);
-                bool isIssue = (bool)theMethod.Invoke(m_helpers, null);
+                bool isIssue = (bool)theMethod.Invoke(m_Helpers, null);
 
                 if (isIssue)
                 {
