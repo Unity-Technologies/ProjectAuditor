@@ -6,7 +6,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using UnityEngine;
 
-namespace Editor
+namespace Unity.ProjectAuditor.Editor
 {
 
     [Serializable]

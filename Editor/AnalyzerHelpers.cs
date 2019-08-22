@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEditor.Rendering;
 
-namespace Editor
+namespace Unity.ProjectAuditor.Editor
 {
     public class AnalyzerHelpers
     {

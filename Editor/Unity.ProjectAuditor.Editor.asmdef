@@ -1,7 +1,6 @@
 {
-    "name": "ProjectAuditor",
+    "name": "Unity.ProjectAuditor.Editor",
     "references": [],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -12,5 +11,7 @@
         "Mono.Cecil.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

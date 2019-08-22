@@ -10,7 +10,7 @@ using UnityEditor.Compilation;
 using UnityEngine;
 using UnityEditor.Macros;
 
-namespace Editor
+namespace Unity.ProjectAuditor.Editor
 {
     public class ProjectReport
     {
