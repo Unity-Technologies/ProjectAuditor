@@ -57,7 +57,8 @@ class ProjectAuditorWindow : EditorWindow
             return false;
 
         string url = issue.url;
-        if (!m_EnablePackages && category.Contains("API Call") && url.Contains("Library/PackageCache/"))
+        if (!m_EnablePackages && category.Contains("API Call") && 
+            (url.Contains("Library/PackageCache/") || url.Contains("Resources/PackageManager/BuiltInPackages/")))
             return false;
 
         if (!m_EnableResolvedItems && issue.resolved == true)
@@ -147,13 +148,31 @@ class ProjectAuditorWindow : EditorWindow
         {
             EditorStyles.textField.wordWrap = true;
             
-            var index = m_IssueTable.GetSelection()[0];
-            var issue = m_ProjectReport.m_ProjectIssues[index];
+//            var index = m_IssueTable.GetSelection()[0];
+//            var issue = m_ProjectReport.m_ProjectIssues[index];
+
+            var displayIndex = m_IssueTable.GetSelection()[0];
+            int listIndex = 0;
+            int i = 0;
+
+            for (; i < m_ProjectReport.m_ProjectIssues.Count; ++i)
+            {
+                if (ShouldDisplay(m_ProjectReport.m_ProjectIssues[i]))
+                {
+                    if (listIndex == displayIndex)
+                    {
+                        break;
+                    }
+                    ++listIndex;
+                }
+            }
+            
+            var issue = m_ProjectReport.m_ProjectIssues[i];
             
             // TODO: use an Issue interface, to define how to display different categories
             string text = string.Empty;
             
-            text = $"Problem: {issue.def.problem}";
+            text = $"Issue: {issue.def.problem}";
             EditorGUILayout.TextArea(text, GUILayout.Height(100)/*, GUILayout.ExpandHeight(true)*/ );
             
             text = $"Recommendation: {issue.def.solution}";
