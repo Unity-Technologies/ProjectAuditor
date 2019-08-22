@@ -1,6 +1,6 @@
 using UnityEditor.IMGUI.Controls;
 
-namespace Editor
+namespace Unity.ProjectAuditor.Editor
 {
     public class IssueTableItem : TreeViewItem
     {
