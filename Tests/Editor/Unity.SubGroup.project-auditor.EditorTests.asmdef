@@ -1,8 +1,7 @@
 {
     "name": "Unity.[SubGroup].[YourPackageName].EditorTests",
     "references": [
-        "Unity.[SubGroup].[YourPackageName].Editor",
-        "Unity.[SubGroup].[YourPackageName]"
+        "ProjectAuditor"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
@@ -10,5 +9,10 @@
     "includePlatforms": [
         "Editor"
     ],
-    "excludePlatforms": []
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
 }
