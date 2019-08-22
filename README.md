@@ -7,6 +7,9 @@ This project is still experimental and will likely change heavily in the future.
 ### Testing
 At the moment this tool has only been tested with a few projects, therefore it might not work correctly depending on the version of Unity and the content of the project. 
 
+### Disclaimer
+Although this project is developed by Unity employees, it is not officially supported by Unity and it is not on Unity's roadmap. Feedback and requests are more than welcome, please enter them as issues.
+
 ## Installation
 
 ### Package Manager
