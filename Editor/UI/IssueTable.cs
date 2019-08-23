@@ -87,10 +87,20 @@ namespace Unity.ProjectAuditor.Editor
                     EditorGUI.LabelField(cellRect, new GUIContent(text, issue.def.method));
                     break;
                 case ColumnIndex.Location :
-                    var projectPathLength = Application.dataPath.Length - "Assets".Length;
                     var location = issue.location;
-                    if (location.Length > projectPathLength)
-                        location = location.Remove(0, projectPathLength); 
+                    if (location.Contains("BuiltInPackages"))
+                    {
+                        location = location.Remove(0, location.IndexOf("BuiltInPackages") + "BuiltInPackages/".Length);                        
+                    }
+                    else
+                    {
+                        var projectPathLength = Application.dataPath.Length - "Assets".Length;
+                        if (location.Contains("Library/PackageCache/"))
+                            projectPathLength += "Library/PackageCache/".Length;                        
+                        if (location.Length > projectPathLength)
+                            location = location.Remove(0, projectPathLength);                         
+                    }
+
                     EditorGUI.LabelField(cellRect, new GUIContent(location, issue.def.method));
                     break;
             
