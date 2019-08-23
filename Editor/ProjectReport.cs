@@ -21,7 +21,8 @@ namespace Unity.ProjectAuditor.Editor
 
         private AnalyzerHelpers m_Helpers;
 
-        public List<ProjectIssue> m_ProjectIssues = new List<ProjectIssue>();
+        public List<ProjectIssue> m_ApiCallsIssues = new List<ProjectIssue>();
+        public List<ProjectIssue> m_ProjectSettingsIssues = new List<ProjectIssue>();
 
         public ProjectReport()
         {
@@ -35,7 +36,8 @@ namespace Unity.ProjectAuditor.Editor
         
         public void Create()
         {
-            m_ProjectIssues.Clear();
+            m_ApiCallsIssues.Clear();
+            m_ProjectSettingsIssues.Clear();
             AnalyzeApiCalls(m_ApiCalls.m_Definitions);
             AnalyzeProjectSettings(m_ProjectSettings.m_Definitions);
         }                
@@ -92,7 +94,7 @@ namespace Unity.ProjectAuditor.Editor
                 
                                 if (s != null)
                                 {
-                                    m_ProjectIssues.Add(new ProjectIssue
+                                    m_ApiCallsIssues.Add(new ProjectIssue
                                     {
                                         category = "API Call",
                                         def = p,
@@ -124,7 +126,7 @@ namespace Unity.ProjectAuditor.Editor
 
                         if (value.ToString() == p.value)
                         {
-                            m_ProjectIssues.Add(new ProjectIssue
+                            m_ProjectSettingsIssues.Add(new ProjectIssue
                             {
                                 category = "ProjectSettings",
                                 def = p
@@ -148,7 +150,7 @@ namespace Unity.ProjectAuditor.Editor
 
                 if (isIssue)
                 {
-                    m_ProjectIssues.Add(new ProjectIssue
+                    m_ProjectSettingsIssues.Add(new ProjectIssue
                     {
                         category = "ProjectSettings",
                         def = p
@@ -171,8 +173,11 @@ namespace Unity.ProjectAuditor.Editor
 
         public void WriteToFile()
         {
-            string json = JsonHelper.ToJson<ProjectIssue>(m_ProjectIssues.ToArray(), true);
-            File.WriteAllText("Report.json", json);
+            
+            var json = JsonHelper.ToJson<ProjectIssue>(m_ApiCallsIssues.ToArray(), true);
+            File.WriteAllText("Report_ApiCalls.json", json);
+            json = JsonHelper.ToJson<ProjectIssue>(m_ProjectSettingsIssues.ToArray(), true);
+            File.WriteAllText("Report_ProjectSettings.json", json);
         }
     }
 }
