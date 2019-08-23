@@ -13,6 +13,12 @@ namespace Unity.ProjectAuditor.Editor
 {
     class ProjectAuditorWindow : EditorWindow
     {
+        enum IssueCategory
+        {
+            ApiCalls,
+            ProjectSettings
+        }
+        
         private ProjectReport m_ProjectReport;
         private IssueTable m_IssueTable;
 
@@ -23,15 +29,19 @@ namespace Unity.ProjectAuditor.Editor
         private bool m_EnableLoadTimes = true;
         private bool m_EnablePackages = false;
         private bool m_EnableResolvedItems = false;
-        private bool m_EnableAPICalls = true;
-        private bool m_EnableProjectSettings = true;
 
+        private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
+
+        string[] ReportModeStrings = {
+            "API Calls",
+            "Project Settings"
+        };
+        
         public static GUIStyle Toolbar;
         public static readonly GUIContent analyzeButton = new GUIContent("Analyze Project", "Analyze Project.\nAnalyze Project and list all issues found.");
 
         private void OnEnable()
         {
-            m_ProjectReport = new ProjectReport();
         }
 
         private void OnGUI()
@@ -42,6 +52,15 @@ namespace Unity.ProjectAuditor.Editor
 
             if (m_IssueTable != null)
             {
+                var activeMode = m_ActiveMode;
+                m_ActiveMode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, ReportModeStrings);
+
+                if (activeMode != m_ActiveMode)
+                {
+                    // the user switched view
+                    RefreshDisplay();
+                }                    
+                
                 Rect r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
                 m_IssueTable.OnGUI(r);
 
@@ -52,10 +71,6 @@ namespace Unity.ProjectAuditor.Editor
         bool ShouldDisplay(ProjectIssue issue)
         {
             string category = issue.category;
-            if (!m_EnableAPICalls && category.Contains("API Call"))
-                return false;
-            if (!m_EnableProjectSettings && category.Contains("ProjectSettings"))
-                return false;
 
             string url = issue.url;
             if (!m_EnablePackages && category.Contains("API Call") &&
@@ -82,6 +97,7 @@ namespace Unity.ProjectAuditor.Editor
 
         private void Analyze()
         {
+            m_ProjectReport = new ProjectReport();
             m_ProjectReport.Create();
             RefreshDisplay();
         }
@@ -99,13 +115,6 @@ namespace Unity.ProjectAuditor.Editor
                 },
                 new MultiColumnHeaderState.Column
                 {
-                    headerContent = new GUIContent("Category", "Category"),
-                    width = 100,
-                    minWidth = 100,
-                    autoResize = true
-                },
-                new MultiColumnHeaderState.Column
-                {
                     headerContent = new GUIContent("Area", "Area"),
                     width = 100,
                     minWidth = 100,
@@ -118,35 +127,49 @@ namespace Unity.ProjectAuditor.Editor
                     minWidth = 100,
                     autoResize = true
                 },
-                new MultiColumnHeaderState.Column
+                              
+            };
+
+            var columnsList = new List<MultiColumnHeaderState.Column>(columns);
+            
+            if (m_ActiveMode == IssueCategory.ApiCalls)
+                columnsList.Add(new MultiColumnHeaderState.Column
                 {
                     headerContent = new GUIContent("Location", "Location"),
                     width = 900,
                     minWidth = 400,
                     autoResize = true
-                },        };
+                } );
 
-            var filteredList = m_ProjectReport.m_ProjectIssues.Where(x => ShouldDisplay(x));
+            var issues = m_ActiveMode == IssueCategory.ApiCalls
+                ? m_ProjectReport.m_ApiCallsIssues
+                : m_ProjectReport.m_ProjectSettingsIssues;
+            
+            var filteredList = issues.Where(x => ShouldDisplay(x));
 
             m_IssueTable = new IssueTable(new TreeViewState(),
-                new MultiColumnHeader(new MultiColumnHeaderState(columns)), filteredList.ToArray());
+                new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())), filteredList.ToArray());
         }
 
         private void Reload()
         {
             m_IssueTable = null;
-            m_ProjectReport = new ProjectReport();
         }
 
         private void Serialize()
         {
-            m_ProjectReport.WriteToFile();
+            if (m_ProjectReport != null)
+                m_ProjectReport.WriteToFile();
         }
 
         private void DrawDetails()
-        {
+        {            
             if (m_IssueTable.HasSelection())
-            {
+            {               
+                var issues = m_ActiveMode == IssueCategory.ApiCalls
+                    ? m_ProjectReport.m_ApiCallsIssues
+                    : m_ProjectReport.m_ProjectSettingsIssues;
+                
                 EditorStyles.textField.wordWrap = true;
 
                 //            var index = m_IssueTable.GetSelection()[0];
@@ -156,9 +179,9 @@ namespace Unity.ProjectAuditor.Editor
                 int listIndex = 0;
                 int i = 0;
 
-                for (; i < m_ProjectReport.m_ProjectIssues.Count; ++i)
+                for (; i < issues.Count; ++i)
                 {
-                    if (ShouldDisplay(m_ProjectReport.m_ProjectIssues[i]))
+                    if (ShouldDisplay(issues[i]))
                     {
                         if (listIndex == displayIndex)
                         {
@@ -168,7 +191,7 @@ namespace Unity.ProjectAuditor.Editor
                     }
                 }
 
-                var issue = m_ProjectReport.m_ProjectIssues[i];
+                var issue = issues[i];
 
                 // TODO: use an Issue interface, to define how to display different categories
                 string text = string.Empty;
@@ -213,8 +236,6 @@ namespace Unity.ProjectAuditor.Editor
             GUILayout.Label("", GUILayout.ExpandWidth(true), GUILayout.Width(80));
             m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
             m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
-            m_EnableAPICalls = EditorGUILayout.ToggleLeft("API Calls", m_EnableAPICalls, GUILayout.Width(100));
-            m_EnableProjectSettings = EditorGUILayout.ToggleLeft("Project Settings", m_EnableProjectSettings, GUILayout.Width(100));
             EditorGUILayout.EndHorizontal();
 
             if (EditorGUI.EndChangeCheck())

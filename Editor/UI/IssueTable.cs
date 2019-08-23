@@ -11,7 +11,6 @@ namespace Unity.ProjectAuditor.Editor
         enum ColumnIndex
         {
             Resolved = 0,
-            Category,
             Area,
             Method,
             Location
@@ -75,9 +74,6 @@ namespace Unity.ProjectAuditor.Editor
             {
                 case ColumnIndex.Resolved :
                     issue.resolved = EditorGUI.Toggle(cellRect, issue.resolved);
-                    break;
-                case ColumnIndex.Category :
-                    EditorGUI.LabelField(cellRect, new GUIContent(issue.category, issue.category));
                     break;
                 case ColumnIndex.Area :
                     EditorGUI.LabelField(cellRect, new GUIContent(issue.def.area, issue.def.area));
