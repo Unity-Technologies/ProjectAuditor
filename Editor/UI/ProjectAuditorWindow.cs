@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor
         private bool m_EnableMemory = true;
         private bool m_EnableBuildSize = true;
         private bool m_EnableLoadTimes = true;
-        private bool m_EnablePackages = true;
+        private bool m_EnablePackages = false;
         private bool m_EnableResolvedItems = false;
         private bool m_EnableAPICalls = true;
         private bool m_EnableProjectSettings = true;
