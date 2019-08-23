@@ -21,6 +21,8 @@ namespace Unity.ProjectAuditor.Editor
 
         private AnalyzerHelpers m_Helpers;
 
+        private string[] m_WhitelistedPackages;
+
         public List<ProjectIssue> m_ApiCallsIssues = new List<ProjectIssue>();
         public List<ProjectIssue> m_ProjectSettingsIssues = new List<ProjectIssue>();
 
@@ -29,9 +31,18 @@ namespace Unity.ProjectAuditor.Editor
             m_ApiCalls = new DefinitionDatabase("ApiDatabase");
             m_ProjectSettings = new DefinitionDatabase("ProjectSettings");
 
+            SetupPackageWhitelist();
+
             m_Helpers = new AnalyzerHelpers();
             
             m_PlayerAssemblies = CompilationPipeline.GetAssemblies(AssembliesType.Player);
+        }
+
+        void SetupPackageWhitelist()
+        {
+            var fullPath = Path.GetFullPath($"Packages/com.unity.project-auditor/Data/PackageWhitelist.txt");
+            var whitelist = File.ReadAllText(fullPath);
+            m_WhitelistedPackages = whitelist.Replace("\r\n", "\n").Split('\n');
         }
         
         public void Create()
@@ -55,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor
                     Debug.LogError($"{assemblyPath} not found.");
                     return;
                 }
-    
+                
                 using (var a = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters() { ReadSymbols = true} ))
                 {
                     foreach (var m in a.MainModule.Types.SelectMany(t => t.Methods))
@@ -94,16 +105,31 @@ namespace Unity.ProjectAuditor.Editor
                 
                                 if (s != null)
                                 {
-                                    m_ApiCallsIssues.Add(new ProjectIssue
+                                    // Ignore whitelisted packages
+                                    // (SteveM - I'd put this code further up in one of the outer loops but I don't
+                                    // know if it's possible to get the URL further up to compare with the whitelist)
+                                    bool isPackageWhitelisted = false;
+                                    foreach (string package in m_WhitelistedPackages)
                                     {
-                                        category = "API Call",
-                                        def = p,
-                                        url = s.Document.Url,
-                                        line = s.StartLine,
-                                        column = s.StartColumn
-                                    });
+                                        if (s.Document.Url.Contains(package))
+                                        {
+                                            isPackageWhitelisted = true;
+                                            break;
+                                        }                       
+                                    }
+
+                                    if (!isPackageWhitelisted)
+                                    {
+                                        m_ApiCallsIssues.Add(new ProjectIssue
+                                        {
+                                            category = "API Call",
+                                            def = p,
+                                            url = s.Document.Url,
+                                            line = s.StartLine,
+                                            column = s.StartColumn
+                                        });
+                                    }
                                 }
-                
                             }
                         }
                     }
