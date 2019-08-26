@@ -23,9 +23,6 @@ namespace Unity.ProjectAuditor.Editor
 
         private string[] m_WhitelistedPackages;
 
-        public List<ProjectIssue> m_ApiCallsIssues = new List<ProjectIssue>();
-        public List<ProjectIssue> m_ProjectSettingsIssues = new List<ProjectIssue>();
-
         public ProjectAuditor()
         {
             m_ApiCalls = new DefinitionDatabase("ApiDatabase");
@@ -45,15 +42,17 @@ namespace Unity.ProjectAuditor.Editor
             m_WhitelistedPackages = whitelist.Replace("\r\n", "\n").Split('\n');
         }
         
-        public void Create()
+        public ProjectReport Audit()
         {
-            m_ApiCallsIssues.Clear();
-            m_ProjectSettingsIssues.Clear();
-            AnalyzeApiCalls(m_ApiCalls.m_Definitions);
-            AnalyzeProjectSettings(m_ProjectSettings.m_Definitions);
+            var projectReport = new ProjectReport();
+
+            AnalyzeApiCalls(m_ApiCalls.m_Definitions, projectReport);
+            AnalyzeProjectSettings(m_ProjectSettings.m_Definitions, projectReport);
+
+            return projectReport;
         }                
 
-        public void AnalyzeApiCalls(List<ProblemDefinition> problemDefinitions)
+        public void AnalyzeApiCalls(List<ProblemDefinition> problemDefinitions, ProjectReport projectReport)
         {
             Debug.Log("Analyzing Scripts...");
 
@@ -120,7 +119,7 @@ namespace Unity.ProjectAuditor.Editor
 
                                     if (!isPackageWhitelisted)
                                     {
-                                        m_ApiCallsIssues.Add(new ProjectIssue
+                                        projectReport.m_ApiCallsIssues.Add(new ProjectIssue
                                         {
                                             category = "API Call",
                                             def = p,
@@ -139,7 +138,7 @@ namespace Unity.ProjectAuditor.Editor
 
         }
 
-        void SearchAndEval(ProblemDefinition p, System.Reflection.Assembly[] assemblies)
+        void SearchAndEval(ProblemDefinition p, System.Reflection.Assembly[] assemblies, ProjectReport projectReport)
         {
             if (string.IsNullOrEmpty(p.customevaluator))
             {
@@ -152,7 +151,7 @@ namespace Unity.ProjectAuditor.Editor
 
                         if (value.ToString() == p.value)
                         {
-                            m_ProjectSettingsIssues.Add(new ProjectIssue
+                            projectReport.m_ProjectSettingsIssues.Add(new ProjectIssue
                             {
                                 category = "ProjectSettings",
                                 def = p
@@ -176,7 +175,7 @@ namespace Unity.ProjectAuditor.Editor
 
                 if (isIssue)
                 {
-                    m_ProjectSettingsIssues.Add(new ProjectIssue
+                    projectReport.m_ProjectSettingsIssues.Add(new ProjectIssue
                     {
                         category = "ProjectSettings",
                         def = p
@@ -185,7 +184,7 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
                
-        public void AnalyzeProjectSettings(List<ProblemDefinition> problemDefinitions)
+        public void AnalyzeProjectSettings(List<ProblemDefinition> problemDefinitions, ProjectReport projectReport)
         {
             Debug.Log("Analyzing Project Settings...");
 //            string [] assemblyNames = new string[]{"UnityEditor.dll", "UnityEngine.dll", "UnityEditor.WebGL.Extensions.dll"}; 
@@ -193,17 +192,8 @@ namespace Unity.ProjectAuditor.Editor
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var p in problemDefinitions)
             {
-                SearchAndEval(p, assemblies);
+                SearchAndEval(p, assemblies, projectReport);
             }
-        }
-
-        public void WriteToFile()
-        {
-            
-            var json = JsonHelper.ToJson<ProjectIssue>(m_ApiCallsIssues.ToArray(), true);
-            File.WriteAllText("Report_ApiCalls.json", json);
-            json = JsonHelper.ToJson<ProjectIssue>(m_ProjectSettingsIssues.ToArray(), true);
-            File.WriteAllText("Report_ProjectSettings.json", json);
         }
     }
 }

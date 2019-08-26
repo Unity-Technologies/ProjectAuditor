@@ -20,6 +20,7 @@ namespace Unity.ProjectAuditor.Editor
         }
         
         private ProjectAuditor m_ProjectAuditor;
+        private ProjectReport m_ProjectReport;
         private IssueTable m_IssueTable;
 
         private bool m_EnableCPU = true;
@@ -42,6 +43,7 @@ namespace Unity.ProjectAuditor.Editor
 
         private void OnEnable()
         {
+            m_ProjectAuditor = new ProjectAuditor();
         }
 
         private void OnGUI()
@@ -97,8 +99,7 @@ namespace Unity.ProjectAuditor.Editor
 
         private void Analyze()
         {
-            m_ProjectAuditor = new ProjectAuditor();
-            m_ProjectAuditor.Create();
+            m_ProjectReport = m_ProjectAuditor.Audit();
             RefreshDisplay();
         }
 
@@ -142,8 +143,8 @@ namespace Unity.ProjectAuditor.Editor
                 } );
 
             var issues = m_ActiveMode == IssueCategory.ApiCalls
-                ? m_ProjectAuditor.m_ApiCallsIssues
-                : m_ProjectAuditor.m_ProjectSettingsIssues;
+                ? m_ProjectReport.m_ApiCallsIssues
+                : m_ProjectReport.m_ProjectSettingsIssues;
             
             var filteredList = issues.Where(x => ShouldDisplay(x));
 
@@ -158,8 +159,8 @@ namespace Unity.ProjectAuditor.Editor
 
         private void Serialize()
         {
-            if (m_ProjectAuditor != null)
-                m_ProjectAuditor.WriteToFile();
+            if (m_ProjectReport != null)
+                m_ProjectReport.WriteToFile();
         }
 
         private void DrawDetails()
@@ -167,8 +168,8 @@ namespace Unity.ProjectAuditor.Editor
             if (m_IssueTable.HasSelection())
             {               
                 var issues = m_ActiveMode == IssueCategory.ApiCalls
-                    ? m_ProjectAuditor.m_ApiCallsIssues
-                    : m_ProjectAuditor.m_ProjectSettingsIssues;
+                    ? m_ProjectReport.m_ApiCallsIssues
+                    : m_ProjectReport.m_ProjectSettingsIssues;
                 
                 EditorStyles.textField.wordWrap = true;
 
