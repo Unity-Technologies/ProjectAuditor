@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor
             ProjectSettings
         }
         
-        private ProjectReport m_ProjectReport;
+        private ProjectAuditor m_ProjectAuditor;
         private IssueTable m_IssueTable;
 
         private bool m_EnableCPU = true;
@@ -97,8 +97,8 @@ namespace Unity.ProjectAuditor.Editor
 
         private void Analyze()
         {
-            m_ProjectReport = new ProjectReport();
-            m_ProjectReport.Create();
+            m_ProjectAuditor = new ProjectAuditor();
+            m_ProjectAuditor.Create();
             RefreshDisplay();
         }
 
@@ -142,8 +142,8 @@ namespace Unity.ProjectAuditor.Editor
                 } );
 
             var issues = m_ActiveMode == IssueCategory.ApiCalls
-                ? m_ProjectReport.m_ApiCallsIssues
-                : m_ProjectReport.m_ProjectSettingsIssues;
+                ? m_ProjectAuditor.m_ApiCallsIssues
+                : m_ProjectAuditor.m_ProjectSettingsIssues;
             
             var filteredList = issues.Where(x => ShouldDisplay(x));
 
@@ -158,8 +158,8 @@ namespace Unity.ProjectAuditor.Editor
 
         private void Serialize()
         {
-            if (m_ProjectReport != null)
-                m_ProjectReport.WriteToFile();
+            if (m_ProjectAuditor != null)
+                m_ProjectAuditor.WriteToFile();
         }
 
         private void DrawDetails()
@@ -167,13 +167,13 @@ namespace Unity.ProjectAuditor.Editor
             if (m_IssueTable.HasSelection())
             {               
                 var issues = m_ActiveMode == IssueCategory.ApiCalls
-                    ? m_ProjectReport.m_ApiCallsIssues
-                    : m_ProjectReport.m_ProjectSettingsIssues;
+                    ? m_ProjectAuditor.m_ApiCallsIssues
+                    : m_ProjectAuditor.m_ProjectSettingsIssues;
                 
                 EditorStyles.textField.wordWrap = true;
 
                 //            var index = m_IssueTable.GetSelection()[0];
-                //            var issue = m_ProjectReport.m_ProjectIssues[index];
+                //            var issue = m_ProjectAuditor.m_ProjectIssues[index];
 
                 var displayIndex = m_IssueTable.GetSelection()[0];
                 int listIndex = 0;

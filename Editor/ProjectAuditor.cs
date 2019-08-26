@@ -12,7 +12,7 @@ using UnityEditor.Macros;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class ProjectReport
+    public class ProjectAuditor
     {
         private UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
         
@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor
         public List<ProjectIssue> m_ApiCallsIssues = new List<ProjectIssue>();
         public List<ProjectIssue> m_ProjectSettingsIssues = new List<ProjectIssue>();
 
-        public ProjectReport()
+        public ProjectAuditor()
         {
             m_ApiCalls = new DefinitionDatabase("ApiDatabase");
             m_ProjectSettings = new DefinitionDatabase("ProjectSettings");
