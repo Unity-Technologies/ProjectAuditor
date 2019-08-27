@@ -199,8 +199,8 @@ namespace Unity.ProjectAuditor.Editor
         public void AnalyzeProjectSettings(List<ProblemDefinition> problemDefinitions, ProjectReport projectReport)
         {
             Debug.Log("Analyzing Project Settings...");
-//            string [] assemblyNames = new string[]{"UnityEditor.dll", "UnityEngine.dll", "UnityEditor.WebGL.Extensions.dll"}; 
-//            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(x => assemblyNames.Contains(x.ManifestModule.Name));
+
+            // do we actually need to look in all assemblies?
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var p in problemDefinitions)
             {
