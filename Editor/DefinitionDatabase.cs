@@ -20,8 +20,6 @@ namespace Unity.ProjectAuditor.Editor
         public string solution;
     }
 
-    public delegate void IssueFound(ProjectIssue projectIssue);
-    
     public class DefinitionDatabase
     {
         public List<ProblemDefinition> m_Definitions;
