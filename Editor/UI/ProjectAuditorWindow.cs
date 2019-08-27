@@ -37,6 +37,11 @@ namespace Unity.ProjectAuditor.Editor
         public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
         public static readonly GUIContent SerializeButton = new GUIContent("Serialize", "Serialize project report to file.");
 
+        public static readonly GUIContent ResolvedHeader = new GUIContent("Resolved?", "Issues that have already been looked at");
+        public static readonly GUIContent AreaHeader = new GUIContent("Area", "The area the issue might have an impact on");
+        public static readonly GUIContent DescriptionHeader = new GUIContent("Description", "Issue description");
+        public static readonly GUIContent LocationHeader = new GUIContent("Location", "Path to the script file");
+        
         private void OnEnable()
         {
             m_ProjectAuditor = new ProjectAuditor();
@@ -109,21 +114,21 @@ namespace Unity.ProjectAuditor.Editor
             {
                 new MultiColumnHeaderState.Column
                 {
-                    headerContent = new GUIContent("Resolved?", "Issues that have already been looked at"),
+                    headerContent = ResolvedHeader,
                     width = 80,
                     minWidth = 80,
                     autoResize = true
                 },
                 new MultiColumnHeaderState.Column
                 {
-                    headerContent = new GUIContent("Area", "The area the issue might have an impact on"),
+                    headerContent = AreaHeader,
                     width = 100,
                     minWidth = 100,
                     autoResize = true
                 },
                 new MultiColumnHeaderState.Column
                 {
-                    headerContent = new GUIContent("Description", "Issue description"),
+                    headerContent = DescriptionHeader,
                     width = 300,
                     minWidth = 100,
                     autoResize = true
@@ -136,7 +141,7 @@ namespace Unity.ProjectAuditor.Editor
             if (m_ActiveMode == IssueCategory.ApiCalls)
                 columnsList.Add(new MultiColumnHeaderState.Column
                 {
-                    headerContent = new GUIContent("Location", "Path to the script file"),
+                    headerContent = LocationHeader,
                     width = 900,
                     minWidth = 400,
                     autoResize = true
