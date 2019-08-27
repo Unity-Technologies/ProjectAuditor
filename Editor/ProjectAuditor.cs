@@ -23,6 +23,14 @@ namespace Unity.ProjectAuditor.Editor
 
         private string[] m_WhitelistedPackages;
 
+        static public string dataPath
+        {
+            get
+            {
+                return "Packages/com.unity.project-auditor/Data";
+            }
+        }
+        
         public ProjectAuditor()
         {
             m_Helpers = new AnalyzerHelpers();          
@@ -33,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor
 
         void SetupPackageWhitelist()
         {
-            var fullPath = Path.GetFullPath($"Packages/com.unity.project-auditor/Data/PackageWhitelist.txt");
+            var fullPath = Path.GetFullPath($"{dataPath}/PackageWhitelist.txt");
             var whitelist = File.ReadAllText(fullPath);
             m_WhitelistedPackages = whitelist.Replace("\r\n", "\n").Split('\n');
         }
