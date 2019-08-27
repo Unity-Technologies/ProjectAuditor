@@ -39,7 +39,9 @@ namespace Unity.ProjectAuditor.Editor
         };
         
         public static GUIStyle Toolbar;
-        public static readonly GUIContent analyzeButton = new GUIContent("Analyze Project", "Analyze Project.\nAnalyze Project and list all issues found.");
+        public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
+        public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
+        public static readonly GUIContent SerializeButton = new GUIContent("Serialize", "Serialize project report to file.");
 
         private void OnEnable()
         {
@@ -216,12 +218,11 @@ namespace Unity.ProjectAuditor.Editor
         {
             EditorGUILayout.BeginHorizontal(Toolbar);
 
-            GUIStyle buttonStyle = GUI.skin.button;
-            if (GUILayout.Button("Analyze", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+            if (GUILayout.Button(AnalyzeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                 Analyze();
-            if (GUILayout.Button("Reload DB", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+            if (GUILayout.Button(ReloadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                 Reload();
-            if (GUILayout.Button("Serialize", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+            if (GUILayout.Button(SerializeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                 Serialize();
 
             EditorGUILayout.EndHorizontal();
