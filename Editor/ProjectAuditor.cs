@@ -125,7 +125,7 @@ namespace Unity.ProjectAuditor.Editor
                                     {
                                         projectReport.m_ApiCallsIssues.Add(new ProjectIssue
                                         {
-                                            category = "API Call",
+                                            category = IssueCategory.ApiCalls.ToString(),
                                             def = p,
                                             url = s.Document.Url,
                                             line = s.StartLine,
@@ -157,7 +157,7 @@ namespace Unity.ProjectAuditor.Editor
                         {
                             projectReport.m_ProjectSettingsIssues.Add(new ProjectIssue
                             {
-                                category = "ProjectSettings",
+                                category = IssueCategory.ProjectSettings.ToString(),
                                 def = p
                             });
                         
@@ -181,7 +181,7 @@ namespace Unity.ProjectAuditor.Editor
                 {
                     projectReport.m_ProjectSettingsIssues.Add(new ProjectIssue
                     {
-                        category = "ProjectSettings",
+                        category = IssueCategory.ProjectSettings.ToString(),
                         def = p
                     });
                 }
