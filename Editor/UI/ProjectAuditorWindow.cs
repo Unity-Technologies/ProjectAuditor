@@ -106,6 +106,9 @@ namespace Unity.ProjectAuditor.Editor
 
         private void RefreshDisplay()
         {
+            if (m_ProjectReport == null)
+                return;
+
             MultiColumnHeaderState.Column[] columns = new MultiColumnHeaderState.Column[]
             {
                 new MultiColumnHeaderState.Column
