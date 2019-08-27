@@ -216,8 +216,6 @@ namespace Unity.ProjectAuditor.Editor
             GUIStyle buttonStyle = GUI.skin.button;
             if (GUILayout.Button("Analyze", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                 Analyze();
-            if (GUILayout.Button("Refresh", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
-                RefreshDisplay();
             if (GUILayout.Button("Reload DB", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                 Reload();
             if (GUILayout.Button("Serialize", buttonStyle, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
