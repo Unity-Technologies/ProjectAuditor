@@ -154,6 +154,7 @@ namespace Unity.ProjectAuditor.Editor
 
         private void Reload()
         {
+            m_ProjectAuditor.LoadDatabase();
             m_IssueTable = null;
         }
 

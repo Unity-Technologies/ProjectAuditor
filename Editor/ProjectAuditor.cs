@@ -25,14 +25,10 @@ namespace Unity.ProjectAuditor.Editor
 
         public ProjectAuditor()
         {
-            m_ApiCalls = new DefinitionDatabase("ApiDatabase");
-            m_ProjectSettings = new DefinitionDatabase("ProjectSettings");
-
-            SetupPackageWhitelist();
-
-            m_Helpers = new AnalyzerHelpers();
-            
+            m_Helpers = new AnalyzerHelpers();          
             m_PlayerAssemblies = CompilationPipeline.GetAssemblies(AssembliesType.Player);
+            
+            LoadDatabase();
         }
 
         void SetupPackageWhitelist()
@@ -50,7 +46,15 @@ namespace Unity.ProjectAuditor.Editor
             AnalyzeProjectSettings(m_ProjectSettings.m_Definitions, projectReport);
 
             return projectReport;
-        }                
+        }
+
+        public void LoadDatabase()
+        {
+            m_ApiCalls = new DefinitionDatabase("ApiDatabase");
+            m_ProjectSettings = new DefinitionDatabase("ProjectSettings");
+
+            SetupPackageWhitelist();           
+        }
 
         public void AnalyzeApiCalls(List<ProblemDefinition> problemDefinitions, ProjectReport projectReport)
         {
