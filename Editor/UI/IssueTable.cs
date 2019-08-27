@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             Resolved = 0,
             Area,
-            Method,
+            Description,
             Location
         }
 
@@ -76,11 +76,12 @@ namespace Unity.ProjectAuditor.Editor
                     issue.resolved = EditorGUI.Toggle(cellRect, issue.resolved);
                     break;
                 case ColumnIndex.Area :
-                    EditorGUI.LabelField(cellRect, new GUIContent(issue.def.area, issue.def.area));
+                    EditorGUI.LabelField(cellRect, new GUIContent(issue.def.area, $"This issue might have an impact on {issue.def.area}"));
                     break;
-                case ColumnIndex.Method :
-                    string text = $"{issue.def.type.ToString()}.{issue.def.method}"; 
-                    EditorGUI.LabelField(cellRect, new GUIContent(text, issue.def.method));
+                case ColumnIndex.Description :
+                    string text = $"{issue.def.type.ToString()}.{issue.def.method}";
+                    string tooltip = issue.def.problem + " \n\n" + issue.def.solution;
+                    EditorGUI.LabelField(cellRect, new GUIContent(text, tooltip));
                     break;
                 case ColumnIndex.Location :
                     var location = issue.location;
