@@ -97,7 +97,8 @@ namespace Unity.ProjectAuditor.Editor
                             location = location.Remove(0, projectPathLength);                         
                     }
 
-                    EditorGUI.LabelField(cellRect, new GUIContent(location, issue.def.method));
+                    // display fullpath as tooltip
+                    EditorGUI.LabelField(cellRect, new GUIContent(location, issue.location));
                     break;
             
             }
