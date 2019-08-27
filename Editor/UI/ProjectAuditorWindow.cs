@@ -12,13 +12,7 @@ using UnityEngine;
 namespace Unity.ProjectAuditor.Editor
 {
     class ProjectAuditorWindow : EditorWindow
-    {
-        enum IssueCategory
-        {
-            ApiCalls,
-            ProjectSettings
-        }
-        
+    {       
         private ProjectAuditor m_ProjectAuditor;
         private ProjectReport m_ProjectReport;
         private IssueTable m_IssueTable;
