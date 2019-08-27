@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor
 //        private bool m_EnableResolvedItems = false;
 
         private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
-
+      
         string[] ReportModeStrings = {
             "API Calls",
             "Project Settings"
@@ -142,9 +142,7 @@ namespace Unity.ProjectAuditor.Editor
                     autoResize = true
                 } );
 
-            var issues = m_ActiveMode == IssueCategory.ApiCalls
-                ? m_ProjectReport.m_ApiCallsIssues
-                : m_ProjectReport.m_ProjectSettingsIssues;
+            var issues = m_ProjectReport.GetIssues(m_ActiveMode);
             
             var filteredList = issues.Where(x => ShouldDisplay(x));
 
@@ -168,9 +166,7 @@ namespace Unity.ProjectAuditor.Editor
         {            
             if (m_IssueTable.HasSelection())
             {               
-                var issues = m_ActiveMode == IssueCategory.ApiCalls
-                    ? m_ProjectReport.m_ApiCallsIssues
-                    : m_ProjectReport.m_ProjectSettingsIssues;
+                var issues = m_ProjectReport.GetIssues(m_ActiveMode);
                 
                 EditorStyles.textField.wordWrap = true;
 

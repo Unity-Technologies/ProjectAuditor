@@ -2,7 +2,7 @@ using System;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    enum IssueCategory
+    public enum IssueCategory
     {
         ApiCalls,
         ProjectSettings

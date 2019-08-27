@@ -131,14 +131,14 @@ namespace Unity.ProjectAuditor.Editor
 
                                     if (!isPackageWhitelisted)
                                     {
-                                        projectReport.m_ApiCallsIssues.Add(new ProjectIssue
+                                        projectReport.AddIssue(new ProjectIssue
                                         {
                                             category = IssueCategory.ApiCalls.ToString(),
                                             def = p,
                                             url = s.Document.Url,
                                             line = s.StartLine,
                                             column = s.StartColumn
-                                        });
+                                        }, IssueCategory.ApiCalls);
                                     }
                                 }
                             }
@@ -163,11 +163,11 @@ namespace Unity.ProjectAuditor.Editor
 
                         if (value.ToString() == p.value)
                         {
-                            projectReport.m_ProjectSettingsIssues.Add(new ProjectIssue
+                            projectReport.AddIssue(new ProjectIssue
                             {
                                 category = IssueCategory.ProjectSettings.ToString(),
                                 def = p
-                            });
+                            }, IssueCategory.ProjectSettings);
                         
                             // stop iterating assemblies
                             break;
@@ -187,11 +187,11 @@ namespace Unity.ProjectAuditor.Editor
 
                 if (isIssue)
                 {
-                    projectReport.m_ProjectSettingsIssues.Add(new ProjectIssue
+                    projectReport.AddIssue(new ProjectIssue
                     {
                         category = IssueCategory.ProjectSettings.ToString(),
                         def = p
-                    });
+                    }, IssueCategory.ProjectSettings);
                 }
             }
         }

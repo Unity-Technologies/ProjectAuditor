@@ -8,9 +8,25 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class ProjectReport
     {
-        public List<ProjectIssue> m_ApiCallsIssues = new List<ProjectIssue>();
-        public List<ProjectIssue> m_ProjectSettingsIssues = new List<ProjectIssue>();
+        private List<ProjectIssue> m_ApiCallsIssues = new List<ProjectIssue>();
+        private List<ProjectIssue> m_ProjectSettingsIssues = new List<ProjectIssue>();
 
+        public List<ProjectIssue> GetIssues(IssueCategory category)
+        {
+            return category == IssueCategory.ApiCalls
+                ? m_ApiCallsIssues
+                : m_ProjectSettingsIssues;
+        }
+
+        public void AddIssue(ProjectIssue projectIssue, IssueCategory category)
+        {
+            var issues = category == IssueCategory.ApiCalls
+                ? m_ApiCallsIssues
+                : m_ProjectSettingsIssues;
+            
+            issues.Add(projectIssue);
+        }
+        
         public void WriteToFile()
         {
             
