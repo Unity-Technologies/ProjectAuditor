@@ -113,21 +113,21 @@ namespace Unity.ProjectAuditor.Editor
             {
                 new MultiColumnHeaderState.Column
                 {
-                    headerContent = new GUIContent("Resolved?", "Resolved?"),
+                    headerContent = new GUIContent("Resolved?", "Issues that have already been looked at"),
                     width = 80,
                     minWidth = 80,
                     autoResize = true
                 },
                 new MultiColumnHeaderState.Column
                 {
-                    headerContent = new GUIContent("Area", "Area"),
+                    headerContent = new GUIContent("Area", "The area the issue might have an impact on"),
                     width = 100,
                     minWidth = 100,
                     autoResize = true
                 },
                 new MultiColumnHeaderState.Column
                 {
-                    headerContent = new GUIContent("Description", "Description"),
+                    headerContent = new GUIContent("Description", "Issue description"),
                     width = 300,
                     minWidth = 100,
                     autoResize = true
@@ -140,7 +140,7 @@ namespace Unity.ProjectAuditor.Editor
             if (m_ActiveMode == IssueCategory.ApiCalls)
                 columnsList.Add(new MultiColumnHeaderState.Column
                 {
-                    headerContent = new GUIContent("Location", "Location"),
+                    headerContent = new GUIContent("Location", "Path to the script file"),
                     width = 900,
                     minWidth = 400,
                     autoResize = true
