@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor
         private bool m_EnableBuildSize = true;
         private bool m_EnableLoadTimes = true;
         private bool m_EnablePackages = false;
-        private bool m_EnableResolvedItems = false;
+//        private bool m_EnableResolvedItems = false;
 
         private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
 
@@ -79,8 +79,9 @@ namespace Unity.ProjectAuditor.Editor
                 (url.Contains("Library/PackageCache/") || url.Contains("Resources/PackageManager/BuiltInPackages/")))
                 return false;
 
-            if (!m_EnableResolvedItems && issue.resolved == true)
-                return false;
+// temporarily disabled Resolve Items button since there might be issues that have just been checked but are still shown in the list
+//            if (!m_EnableResolvedItems && issue.resolved == true)
+//                return false;
 
             string area = issue.def.area;
             if (m_EnableCPU && area.Contains("CPU"))
@@ -239,7 +240,7 @@ namespace Unity.ProjectAuditor.Editor
             EditorGUILayout.BeginHorizontal(Toolbar);
             GUILayout.Label("", GUILayout.ExpandWidth(true), GUILayout.Width(80));
             m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
-            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
+//            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
             EditorGUILayout.EndHorizontal();
 
             if (EditorGUI.EndChangeCheck())
