@@ -32,16 +32,19 @@ namespace Unity.ProjectAuditor.Editor
             "Project Settings"
         };
         
-        public static GUIStyle Toolbar;
-        public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
-        public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
-        public static readonly GUIContent SerializeButton = new GUIContent("Serialize", "Serialize project report to file.");
+        internal static class Styles
+        {
+            public static GUIStyle Toolbar;
+            public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
+            public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
+            public static readonly GUIContent SerializeButton = new GUIContent("Serialize", "Serialize project report to file.");
 
-        public static readonly GUIContent ResolvedHeader = new GUIContent("Resolved?", "Issues that have already been looked at");
-        public static readonly GUIContent AreaHeader = new GUIContent("Area", "The area the issue might have an impact on");
-        public static readonly GUIContent DescriptionHeader = new GUIContent("Description", "Issue description");
-        public static readonly GUIContent LocationHeader = new GUIContent("Location", "Path to the script file");
-        
+            public static readonly GUIContent ResolvedHeader = new GUIContent("Resolved?", "Issues that have already been looked at");
+            public static readonly GUIContent AreaHeader = new GUIContent("Area", "The area the issue might have an impact on");
+            public static readonly GUIContent DescriptionHeader = new GUIContent("Description", "Issue description");
+            public static readonly GUIContent LocationHeader = new GUIContent("Location", "Path to the script file");
+        }
+
         private void OnEnable()
         {
             m_ProjectAuditor = new ProjectAuditor();
@@ -49,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor
 
         private void OnGUI()
         {
-            Toolbar = "Toolbar";
+            Styles.Toolbar = "Toolbar";
 
             DrawToolbar();
 
@@ -114,21 +117,21 @@ namespace Unity.ProjectAuditor.Editor
             {
                 new MultiColumnHeaderState.Column
                 {
-                    headerContent = ResolvedHeader,
+                    headerContent = Styles.ResolvedHeader,
                     width = 80,
                     minWidth = 80,
                     autoResize = true
                 },
                 new MultiColumnHeaderState.Column
                 {
-                    headerContent = AreaHeader,
+                    headerContent = Styles.AreaHeader,
                     width = 100,
                     minWidth = 100,
                     autoResize = true
                 },
                 new MultiColumnHeaderState.Column
                 {
-                    headerContent = DescriptionHeader,
+                    headerContent = Styles.DescriptionHeader,
                     width = 300,
                     minWidth = 100,
                     autoResize = true
@@ -141,7 +144,7 @@ namespace Unity.ProjectAuditor.Editor
             if (m_ActiveMode == IssueCategory.ApiCalls)
                 columnsList.Add(new MultiColumnHeaderState.Column
                 {
-                    headerContent = LocationHeader,
+                    headerContent = Styles.LocationHeader,
                     width = 900,
                     minWidth = 400,
                     autoResize = true
@@ -211,18 +214,18 @@ namespace Unity.ProjectAuditor.Editor
 
         private void DrawToolbar()
         {
-            EditorGUILayout.BeginHorizontal(Toolbar);
+            EditorGUILayout.BeginHorizontal(Styles.Toolbar);
 
-            if (GUILayout.Button(AnalyzeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+            if (GUILayout.Button(Styles.AnalyzeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                 Analyze();
-            if (GUILayout.Button(ReloadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+            if (GUILayout.Button(Styles.ReloadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                 Reload();
-            if (GUILayout.Button(SerializeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+            if (GUILayout.Button(Styles.SerializeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                 Serialize();
 
             EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.BeginHorizontal(Toolbar);
+            EditorGUILayout.BeginHorizontal(Styles.Toolbar);
             GUILayout.Label("Filter By:", GUILayout.ExpandWidth(true), GUILayout.Width(80));
 
             EditorGUI.BeginChangeCheck();
@@ -234,7 +237,7 @@ namespace Unity.ProjectAuditor.Editor
             m_EnableLoadTimes = EditorGUILayout.ToggleLeft("Load Times", m_EnableLoadTimes, GUILayout.Width(100));
             EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.BeginHorizontal(Toolbar);
+            EditorGUILayout.BeginHorizontal(Styles.Toolbar);
             GUILayout.Label("", GUILayout.ExpandWidth(true), GUILayout.Width(80));
             m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
 //            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
