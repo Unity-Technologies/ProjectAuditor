@@ -31,7 +31,24 @@ namespace Unity.ProjectAuditor.Editor
             "API Calls",
             "Project Settings"
         };
+
+        enum Area{
+            CPU,
+            GPU,
+            Memory,
+            BuildSize,
+            LoadTimes
+        }
         
+        string[] AreaEnumStrings = {
+            "CPU",
+            "GPU",
+            "Memory",
+            "Build Size",
+            "Load Times"
+        };
+
+
         internal static class Styles
         {
             public static GUIStyle Toolbar;
@@ -103,15 +120,15 @@ To reload the issue database definition, click on Reload DB.";
 //                return false;
 
             string area = issue.def.area;
-            if (m_EnableCPU && area.Contains("CPU"))
+            if (m_EnableCPU && area.Contains(AreaEnumStrings[(int)Area.CPU]))
                 return true;
-            if (m_EnableGPU && area.Contains("GPU"))
+            if (m_EnableGPU && area.Contains(AreaEnumStrings[(int)Area.GPU]))
                 return true;
-            if (m_EnableMemory && area.Contains("Memory"))
+            if (m_EnableMemory && area.Contains(AreaEnumStrings[(int)Area.Memory]))
                 return true;
-            if (m_EnableBuildSize && area.Contains("Build Size"))
+            if (m_EnableBuildSize && area.Contains(AreaEnumStrings[(int)Area.BuildSize]))
                 return true;
-            if (m_EnableLoadTimes && area.Contains("Load Times"))
+            if (m_EnableLoadTimes && area.Contains(AreaEnumStrings[(int)Area.LoadTimes]))
                 return true;
 
             return false;
@@ -260,11 +277,11 @@ To reload the issue database definition, click on Reload DB.";
 
                 EditorGUI.BeginChangeCheck();
 
-                m_EnableMemory = EditorGUILayout.ToggleLeft("Memory", m_EnableMemory, GUILayout.Width(100));
-                m_EnableCPU = EditorGUILayout.ToggleLeft("CPU", m_EnableCPU, GUILayout.Width(100));
-                m_EnableGPU = EditorGUILayout.ToggleLeft("GPU", m_EnableGPU, GUILayout.Width(100));
-                m_EnableBuildSize = EditorGUILayout.ToggleLeft("Build Size", m_EnableBuildSize, GUILayout.Width(100));
-                m_EnableLoadTimes = EditorGUILayout.ToggleLeft("Load Times", m_EnableLoadTimes, GUILayout.Width(100));
+                m_EnableMemory = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.Memory], m_EnableMemory, GUILayout.Width(100));
+                m_EnableCPU = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.CPU], m_EnableCPU, GUILayout.Width(100));
+                m_EnableGPU = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.GPU], m_EnableGPU, GUILayout.Width(100));
+                m_EnableBuildSize = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.BuildSize], m_EnableBuildSize, GUILayout.Width(100));
+                m_EnableLoadTimes = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.LoadTimes], m_EnableLoadTimes, GUILayout.Width(100));
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.BeginHorizontal(Styles.Toolbar);
