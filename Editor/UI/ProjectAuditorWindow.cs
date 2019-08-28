@@ -43,6 +43,21 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent AreaHeader = new GUIContent("Area", "The area the issue might have an impact on");
             public static readonly GUIContent DescriptionHeader = new GUIContent("Description", "Issue description");
             public static readonly GUIContent LocationHeader = new GUIContent("Location", "Path to the script file");
+
+            public static readonly string HelpText =
+@"Project Auditor is an experimental static analysis tool for Unity Projects.
+This tool will analyze scripts and project settings of any Unity project
+and report a list a possible problems that might affect performance, memory and other areas.
+
+To Analyze the project:
+* Click on Analyze.
+
+Once the project is analyzed, the tool displays list of issues.
+At the moment there are two types of issues: API calls or Project Settings. The tool allows the user to switch between the two.
+In addition, it is possible to filter issues by area (CPU/Memory/etc...).
+
+To generate a report, click on the Serialize button.
+To reload the issue database definition, click on Reload DB.";
         }
 
         private void OnEnable()
@@ -220,32 +235,48 @@ namespace Unity.ProjectAuditor.Editor
                 Analyze();
             if (GUILayout.Button(Styles.ReloadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                 Reload();
-            if (GUILayout.Button(Styles.SerializeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
-                Serialize();
 
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.BeginHorizontal(Styles.Toolbar);
-            GUILayout.Label("Filter By:", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-
-            EditorGUI.BeginChangeCheck();
-
-            m_EnableMemory = EditorGUILayout.ToggleLeft("Memory", m_EnableMemory, GUILayout.Width(100));
-            m_EnableCPU = EditorGUILayout.ToggleLeft("CPU", m_EnableCPU, GUILayout.Width(100));
-            m_EnableGPU = EditorGUILayout.ToggleLeft("GPU", m_EnableGPU, GUILayout.Width(100));
-            m_EnableBuildSize = EditorGUILayout.ToggleLeft("Build Size", m_EnableBuildSize, GUILayout.Width(100));
-            m_EnableLoadTimes = EditorGUILayout.ToggleLeft("Load Times", m_EnableLoadTimes, GUILayout.Width(100));
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.BeginHorizontal(Styles.Toolbar);
-            GUILayout.Label("", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-            m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
-//            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
-            EditorGUILayout.EndHorizontal();
-
-            if (EditorGUI.EndChangeCheck())
+            if (m_ProjectReport == null)
             {
-                RefreshDisplay();
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginVertical(GUI.skin.box);
+         
+                GUIStyle helpStyle = new GUIStyle(EditorStyles.textField);
+                helpStyle.wordWrap = true;
+
+                EditorGUILayout.LabelField(Styles.HelpText, helpStyle);
+                EditorGUILayout.EndHorizontal();                
+            }
+            else
+            {
+                if (GUILayout.Button(Styles.SerializeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                    Serialize();
+
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal(Styles.Toolbar);
+                GUILayout.Label("Filter By:", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+
+                EditorGUI.BeginChangeCheck();
+
+                m_EnableMemory = EditorGUILayout.ToggleLeft("Memory", m_EnableMemory, GUILayout.Width(100));
+                m_EnableCPU = EditorGUILayout.ToggleLeft("CPU", m_EnableCPU, GUILayout.Width(100));
+                m_EnableGPU = EditorGUILayout.ToggleLeft("GPU", m_EnableGPU, GUILayout.Width(100));
+                m_EnableBuildSize = EditorGUILayout.ToggleLeft("Build Size", m_EnableBuildSize, GUILayout.Width(100));
+                m_EnableLoadTimes = EditorGUILayout.ToggleLeft("Load Times", m_EnableLoadTimes, GUILayout.Width(100));
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal(Styles.Toolbar);
+                GUILayout.Label("", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+                m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
+    //            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
+                EditorGUILayout.EndHorizontal();
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    RefreshDisplay();
+                }
             }
         }
 
