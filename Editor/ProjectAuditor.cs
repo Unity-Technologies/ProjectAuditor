@@ -53,6 +53,8 @@ namespace Unity.ProjectAuditor.Editor
             AnalyzeApiCalls(m_ApiCalls.m_Definitions, projectReport);
             AnalyzeProjectSettings(m_ProjectSettings.m_Definitions, projectReport);
 
+            EditorUtility.ClearProgressBar();
+            
             return projectReport;
         }
 
@@ -66,11 +68,14 @@ namespace Unity.ProjectAuditor.Editor
 
         public void AnalyzeApiCalls(List<ProblemDefinition> problemDefinitions, ProjectReport projectReport)
         {
-            Debug.Log("Analyzing Scripts...");
-
+            var progressBar =
+                new ProgressBarDisplay("Analyzing Scripts", "Analyzing project scripts", m_PlayerAssemblies.Length);
+            
             // Analyse all Player assemblies, including Package assemblies.
             foreach (var playerAssembly in m_PlayerAssemblies)
             {
+                progressBar.AdvanceProgressBar();
+                
                 string assemblyPath = playerAssembly.outputPath;
                 if (!File.Exists(assemblyPath))
                 {
@@ -147,7 +152,7 @@ namespace Unity.ProjectAuditor.Editor
                 }                
             }
             
-
+            progressBar.ClearProgressBar();
         }
 
         void SearchAndEval(ProblemDefinition p, System.Reflection.Assembly[] assemblies, ProjectReport projectReport)
@@ -198,14 +203,17 @@ namespace Unity.ProjectAuditor.Editor
                
         public void AnalyzeProjectSettings(List<ProblemDefinition> problemDefinitions, ProjectReport projectReport)
         {
-            Debug.Log("Analyzing Project Settings...");
+            var progressBar =
+                new ProgressBarDisplay("Analyzing Scripts", "Analyzing project settings", problemDefinitions.Count);
 
             // do we actually need to look in all assemblies?
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var p in problemDefinitions)
             {
+                progressBar.AdvanceProgressBar();
                 SearchAndEval(p, assemblies, projectReport);
             }
+            progressBar.ClearProgressBar();
         }
     }
 }
