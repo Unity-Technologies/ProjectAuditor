@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor
 #if UNITY_2018_1_OR_NEWER
             m_PlayerAssemblies = CompilationPipeline.GetAssemblies(AssembliesType.Player);
 #else
-            m_PlayerAssemblies = CompilationPipeline.GetAssemblies();
+            m_PlayerAssemblies = CompilationPipeline.GetAssemblies().Where(a => a.flags != AssemblyFlags.EditorAssembly).ToArray();
 #endif
 
             LoadDatabase();
