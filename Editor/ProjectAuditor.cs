@@ -34,7 +34,11 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectAuditor()
         {
             m_Helpers = new AnalyzerHelpers();
+#if UNITY_2018_1_OR_NEWER
             m_PlayerAssemblies = CompilationPipeline.GetAssemblies(AssembliesType.Player);
+#else
+            m_PlayerAssemblies = CompilationPipeline.GetAssemblies();
+#endif
 
             LoadDatabase();
         }

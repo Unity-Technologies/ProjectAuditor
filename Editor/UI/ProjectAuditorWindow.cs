@@ -52,6 +52,7 @@ namespace Unity.ProjectAuditor.Editor
         internal static class Styles
         {
             public static GUIStyle Toolbar;
+            public static readonly GUIContent WindowTitle = new GUIContent("Project Auditor");
             public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
             public static readonly GUIContent SerializeButton = new GUIContent("Serialize", "Serialize project report to file.");
@@ -296,13 +297,19 @@ To reload the issue database definition, click on Reload DB.";
             }
         }
 
+        
+        
+#if UNITY_2018_1_OR_NEWER
         [MenuItem("Window/Analysis/Project Auditor")]
+#else
+        [MenuItem("Window/Project Auditor")]
+#endif
         public static ProjectAuditorWindow ShowWindow()
         {
             var wnd = GetWindow(typeof(ProjectAuditorWindow)) as ProjectAuditorWindow;
             if (wnd != null)
             {
-                wnd.titleContent = EditorGUIUtility.TrTextContent("Project Auditor");
+                wnd.titleContent = Styles.WindowTitle;
             }
             return wnd;
         }
