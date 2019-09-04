@@ -23,25 +23,44 @@ namespace Unity.ProjectAuditor.Editor
 
         private string[] m_WhitelistedPackages;
 
-        static public string dataPath
+        private static string m_DataPath;
+        
+        public static string dataPath
         {
             get
             {
-                return "Packages/com.unity.project-auditor/Data";
+                if (string.IsNullOrEmpty(m_DataPath))
+                {
+                    var path = "Packages/com.unity.project-auditor/Data";
+                    if (!File.Exists(Path.GetFullPath(path)))
+                    {
+                        // if it's not a package, let's search through all assets
+                        string apiDatabasePath = AssetDatabase.GetAllAssetPaths().Where(p => p.EndsWith("Data/ApiDatabase.json")).FirstOrDefault();
+                
+                        if (string.IsNullOrEmpty(apiDatabasePath))
+                            throw new Exception("Could not find ApiDatabase.json");
+                        m_DataPath = apiDatabasePath.Substring(0, apiDatabasePath.IndexOf("/ApiDatabase.json"));                               
+                    }
+                }
+                return m_DataPath;
             }
         }
         
         public ProjectAuditor()
         {
-            m_Helpers = new AnalyzerHelpers();          
+            m_Helpers = new AnalyzerHelpers();
+#if UNITY_2018_1_OR_NEWER
             m_PlayerAssemblies = CompilationPipeline.GetAssemblies(AssembliesType.Player);
-            
+#else
+            m_PlayerAssemblies = CompilationPipeline.GetAssemblies().Where(a => a.flags != AssemblyFlags.EditorAssembly).ToArray();
+#endif
+
             LoadDatabase();
         }
 
         void SetupPackageWhitelist()
         {
-            var fullPath = Path.GetFullPath($"{dataPath}/PackageWhitelist.txt");
+            var fullPath = Path.GetFullPath(Path.Combine(dataPath, "PackageWhitelist.txt"));
             var whitelist = File.ReadAllText(fullPath);
             m_WhitelistedPackages = whitelist.Replace("\r\n", "\n").Split('\n');
         }
@@ -79,7 +98,7 @@ namespace Unity.ProjectAuditor.Editor
                 string assemblyPath = playerAssembly.outputPath;
                 if (!File.Exists(assemblyPath))
                 {
-                    Debug.LogError($"{assemblyPath} not found.");
+                    Debug.LogError(assemblyPath + " not found.");
                     return;
                 }
                 
