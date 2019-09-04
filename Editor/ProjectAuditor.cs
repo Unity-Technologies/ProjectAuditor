@@ -23,11 +23,26 @@ namespace Unity.ProjectAuditor.Editor
 
         private string[] m_WhitelistedPackages;
 
-        static public string dataPath
+        private static string m_DataPath;
+        
+        public static string dataPath
         {
             get
             {
-                return "Packages/com.unity.project-auditor/Data";
+                if (string.IsNullOrEmpty(m_DataPath))
+                {
+                    var path = "Packages/com.unity.project-auditor/Data";
+                    if (!File.Exists(Path.GetFullPath(path)))
+                    {
+                        // if it's not a package, let's search through all assets
+                        string apiDatabasePath = AssetDatabase.GetAllAssetPaths().Where(p => p.EndsWith("Data/ApiDatabase.json")).FirstOrDefault();
+                
+                        if (string.IsNullOrEmpty(apiDatabasePath))
+                            throw new Exception("Could not find ApiDatabase.json");
+                        m_DataPath = apiDatabasePath.Substring(0, apiDatabasePath.IndexOf("/ApiDatabase.json"));                               
+                    }
+                }
+                return m_DataPath;
             }
         }
         
