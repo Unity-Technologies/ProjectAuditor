@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {                
-                return string.IsNullOrEmpty(url) ? String.Empty : $"{url}({line},{column})";
+                return string.IsNullOrEmpty(url) ? String.Empty : string.Format("{0}({1},{2})", url, line, column);
             }
         }
     }

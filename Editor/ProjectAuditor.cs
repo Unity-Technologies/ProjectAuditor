@@ -33,15 +33,15 @@ namespace Unity.ProjectAuditor.Editor
         
         public ProjectAuditor()
         {
-            m_Helpers = new AnalyzerHelpers();          
+            m_Helpers = new AnalyzerHelpers();
             m_PlayerAssemblies = CompilationPipeline.GetAssemblies(AssembliesType.Player);
-            
+
             LoadDatabase();
         }
 
         void SetupPackageWhitelist()
         {
-            var fullPath = Path.GetFullPath($"{dataPath}/PackageWhitelist.txt");
+            var fullPath = Path.GetFullPath(Path.Combine(dataPath, "PackageWhitelist.txt"));
             var whitelist = File.ReadAllText(fullPath);
             m_WhitelistedPackages = whitelist.Replace("\r\n", "\n").Split('\n');
         }
@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor
                 string assemblyPath = playerAssembly.outputPath;
                 if (!File.Exists(assemblyPath))
                 {
-                    Debug.LogError($"{assemblyPath} not found.");
+                    Debug.LogError(assemblyPath + " not found.");
                     return;
                 }
                 

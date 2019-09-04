@@ -234,13 +234,12 @@ To reload the issue database definition, click on Reload DB.";
                 // TODO: use an Issue interface, to define how to display different categories
                 string text = string.Empty;
 
-                text = $"Issue: {issue.def.problem}";
+                text = "Issue: " + issue.def.problem;
                 EditorGUILayout.TextArea(text, GUILayout.Height(100)/*, GUILayout.ExpandHeight(true)*/ );
 
-                text = $"Recommendation: {issue.def.solution}";
+                text = "Recommendation: " + issue.def.solution;
                 EditorGUILayout.TextArea(text, GUILayout.Height(100)/*, GUILayout.ExpandHeight(true)*/);
                 EditorStyles.textField.wordWrap = false;
-
             }
         }
 

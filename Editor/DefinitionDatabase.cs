@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             m_Definitions = new List<ProblemDefinition>();
 
-            var fullPath = Path.GetFullPath($"{ProjectAuditor.dataPath}/{name}.json");
+            var fullPath = Path.GetFullPath(Path.Combine(ProjectAuditor.dataPath, name + ".json"));
             var json = File.ReadAllText(fullPath);
             var result = JsonHelper.FromJson<ProblemDefinition>(json);
 
