@@ -178,6 +178,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             if (string.IsNullOrEmpty(p.customevaluator))
             {
+                // try all assemblies. Need to find a way to only evaluate on the right assembly
                 foreach (var assembly in assemblies)
                 {
                     try
@@ -197,9 +198,9 @@ namespace Unity.ProjectAuditor.Editor
                             break;
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        Debug.LogError("Project Auditor Exception: " + e.Message);
+                        // this is safe to ignore
                     }
                 }
             }
