@@ -51,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor
 
         internal static class Styles
         {
-            public static GUIStyle Toolbar;
+            public static readonly GUIStyle Toolbar = "Toolbar";
             public static readonly GUIContent WindowTitle = new GUIContent("Project Auditor");
             public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
@@ -85,8 +85,6 @@ To reload the issue database definition, click on Reload DB.";
 
         private void OnGUI()
         {
-            Styles.Toolbar = "Toolbar";
-
             DrawToolbar();
 
             if (m_IssueTable != null)
