@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -84,24 +85,30 @@ namespace Unity.ProjectAuditor.Editor
                     EditorGUI.LabelField(cellRect, new GUIContent(text, tooltip));
                     break;
                 case ColumnIndex.Location :
-                    var location = issue.location;
-                    if (location.Contains("BuiltInPackages"))
-                    {
-                        location = location.Remove(0, location.IndexOf("BuiltInPackages") + "BuiltInPackages/".Length);                        
-                    }
-                    else
-                    {
-                        var projectPathLength = Application.dataPath.Length - "Assets".Length;
-                        if (location.Contains("Library/PackageCache/"))
-                            projectPathLength += "Library/PackageCache/".Length;                        
-                        if (location.Length > projectPathLength)
-                            location = location.Remove(0, projectPathLength);                         
-                    }
+                    var location = string.Format("{0}({1},{2})", issue.relativePath, issue.line,  issue.column);
 
+                    if (location.StartsWith("Library/PackageCache/"))
+                    {
+                        location = location.Remove(0, "Library/PackageCache/".Length);
+                    }
+                    
                     // display fullpath as tooltip
                     EditorGUI.LabelField(cellRect, new GUIContent(location, issue.location));
+
                     break;
             
+            }
+        }
+
+        protected override void DoubleClickedItem(int id)
+        {
+            var issue = m_Issues[id];
+            if (issue.category.Equals(IssueCategory.ApiCalls.ToString()))
+            {
+                var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(issue.relativePath);
+            
+                // Note that this this does not work with Package assets
+                AssetDatabase.OpenAsset(obj, issue.line);                
             }
         }
     }
