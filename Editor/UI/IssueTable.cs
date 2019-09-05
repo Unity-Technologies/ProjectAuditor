@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor
                 var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(issue.relativePath);
             
                 // Note that this this does not work with Package assets
-                AssetDatabase.OpenAsset(obj);                
+                AssetDatabase.OpenAsset(obj, issue.line);                
             }
         }
     }
