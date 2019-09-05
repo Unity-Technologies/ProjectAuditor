@@ -152,7 +152,6 @@ namespace Unity.ProjectAuditor.Editor
         {
             for (int btIdx = 0; btIdx < _buildTargets.Length; ++btIdx)
             {
-                ShaderQuality ssq = EditorGraphicsSettings.GetTierSettings(_buildTargets[btIdx], _graphicsTiers[0]).standardShaderQuality;
                 for (int tierIdx = 0; tierIdx < _graphicsTiers.Length; ++tierIdx)
                 {
                     TierSettings tierSettings =
@@ -170,7 +169,6 @@ namespace Unity.ProjectAuditor.Editor
         {
             for (int btIdx = 0; btIdx < _buildTargets.Length; ++btIdx)
             {
-                ShaderQuality ssq = EditorGraphicsSettings.GetTierSettings(_buildTargets[btIdx], _graphicsTiers[0]).standardShaderQuality;
                 for (int tierIdx = 0; tierIdx < _graphicsTiers.Length; ++tierIdx)
                 {
                     TierSettings tierSettings =

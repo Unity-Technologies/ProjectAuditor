@@ -199,7 +199,7 @@ namespace Unity.ProjectAuditor.Editor
                     }
                     catch (Exception e)
                     {
-                        // TODO
+                        Debug.LogError("Project Auditor Exception: " + e.Message);
                     }
                 }
             }
