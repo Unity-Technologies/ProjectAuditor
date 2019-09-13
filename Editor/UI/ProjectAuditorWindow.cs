@@ -268,8 +268,7 @@ To reload the issue database definition, click on Reload DB.";
                 if (issue != null)
                 {
                     EditorStyles.textField.wordWrap = true;
-                    EditorGUILayout.TextArea(issue.def.problem, //GUILayout.MaxWidth(m_WidthRHS),
-                        GUILayout.MaxHeight(m_FoldoutMaxHeight));
+                    EditorGUILayout.TextArea(issue.def.problem, GUILayout.MaxHeight(m_FoldoutMaxHeight));
                 }
                 else
                 {
@@ -290,8 +289,7 @@ To reload the issue database definition, click on Reload DB.";
                 if (issue != null)
                 {
                     EditorStyles.textField.wordWrap = true;
-                    EditorGUILayout.TextArea(issue.def.solution, //GUILayout.MaxWidth(m_WidthRHS),
-                        GUILayout.MaxHeight(m_FoldoutMaxHeight) /*, GUILayout.ExpandHeight(true)*/);
+                    EditorGUILayout.TextArea(issue.def.solution, GUILayout.MaxHeight(m_FoldoutMaxHeight));
                 }
                 else
                 {
