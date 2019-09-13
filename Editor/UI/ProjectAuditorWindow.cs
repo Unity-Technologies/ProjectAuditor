@@ -19,6 +19,8 @@ namespace Unity.ProjectAuditor.Editor
         private bool m_EnableLoadTimes = true;
         private bool m_EnablePackages = false;
 //        private bool m_EnableResolvedItems = false;
+        private bool m_ShowDetails = false;
+        private bool m_ShowRecommendation = false;
 
         private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
       
@@ -35,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor
             LoadTimes
         }
         
-        string[] AreaEnumStrings = {
+        static readonly string[] AreaEnumStrings = {
             "CPU",
             "GPU",
             "Memory",
@@ -43,6 +45,8 @@ namespace Unity.ProjectAuditor.Editor
             "Load Times"
         };
 
+        private const int m_FoldoutWidth = 276;
+        private const int m_FoldoutMaxHeight = 220;
 
         internal static class Styles
         {
@@ -57,6 +61,9 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent DescriptionHeader = new GUIContent("Description", "Issue description");
             public static readonly GUIContent LocationHeader = new GUIContent("Location", "Path to the script file");
 
+            public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
+            public static readonly GUIContent RecommendationFoldout = new GUIContent("Recommendation", "Recommendation on how to solve the issue");
+            
             public static readonly string HelpText =
 @"Project Auditor is an experimental static analysis tool for Unity Projects.
 This tool will analyze scripts and project settings of any Unity project
@@ -92,14 +99,29 @@ To reload the issue database definition, click on Reload DB.";
                     // the user switched view
                     RefreshDisplay();
                 }                    
+
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.BeginVertical();
+
                 
                 Rect r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
                 m_IssueTable.OnGUI(r);
 
-                DrawDetails();
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.BeginVertical(GUILayout.Width(m_FoldoutWidth));
+                DrawFoldouts();
+                EditorGUILayout.EndVertical();
+            
+                EditorGUILayout.EndHorizontal();
             }
         }
 
+        bool IsAnalysisValid()
+        {
+            return m_ProjectReport != null;
+        }
+        
         bool ShouldDisplay(ProjectIssue issue)
         {
             string category = issue.category;
@@ -195,18 +217,13 @@ To reload the issue database definition, click on Reload DB.";
             if (m_ProjectReport != null)
                 m_ProjectReport.WriteToFile();
         }
-
-        private void DrawDetails()
-        {            
-            if (m_IssueTable.HasSelection())
+        
+        private void DrawFoldouts()
+        {
+            ProjectIssue selectedIssue = null;
+            if (m_IssueTable != null && m_IssueTable.HasSelection())
             {               
                 var issues = m_ProjectReport.GetIssues(m_ActiveMode);
-                
-                EditorStyles.textField.wordWrap = true;
-
-                //            var index = m_IssueTable.GetSelection()[0];
-                //            var issue = m_ProjectAuditor.m_ProjectIssues[index];
-
                 var displayIndex = m_IssueTable.GetSelection()[0];
                 int listIndex = 0;
                 int i = 0;
@@ -223,20 +240,63 @@ To reload the issue database definition, click on Reload DB.";
                     }
                 }
 
-                var issue = issues[i];
-
-                // TODO: use an Issue interface, to define how to display different categories
-                string text = string.Empty;
-
-                text = "Issue: " + issue.def.problem;
-                EditorGUILayout.TextArea(text, GUILayout.Height(100)/*, GUILayout.ExpandHeight(true)*/ );
-
-                text = "Recommendation: " + issue.def.solution;
-                EditorGUILayout.TextArea(text, GUILayout.Height(100)/*, GUILayout.ExpandHeight(true)*/);
-                EditorStyles.textField.wordWrap = false;
+                selectedIssue = issues[i];
             }
+            DrawDetailsFoldout(selectedIssue);
+            DrawRecommendationFoldout(selectedIssue);
         }
 
+        private bool BoldFoldout(bool toggle, GUIContent content)
+        {
+            GUIStyle foldoutStyle = new GUIStyle(EditorStyles.foldout);
+            foldoutStyle.fontStyle = FontStyle.Bold;
+            return EditorGUILayout.Foldout(toggle, content, foldoutStyle);
+        }
+
+        private void DrawDetailsFoldout(ProjectIssue issue)
+        {
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
+
+            bool lastShowThreadSummary = m_ShowDetails;
+            m_ShowDetails = BoldFoldout(m_ShowDetails, Styles.DetailsFoldout);
+            if (m_ShowDetails)
+            {
+                if (issue != null)
+                {
+                    EditorStyles.textField.wordWrap = true;
+                    EditorGUILayout.TextArea(issue.def.problem, //GUILayout.MaxWidth(m_WidthRHS),
+                        GUILayout.MaxHeight(m_FoldoutMaxHeight));
+                }
+                else
+                {
+                    EditorGUILayout.LabelField("No issue selected");
+                }
+            }
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawRecommendationFoldout(ProjectIssue issue)
+        {
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
+
+            bool lastShowThreadSummary = m_ShowRecommendation;
+            m_ShowRecommendation = BoldFoldout(m_ShowRecommendation, Styles.RecommendationFoldout);
+            if (m_ShowRecommendation)
+            {
+                if (issue != null)
+                {
+                    EditorStyles.textField.wordWrap = true;
+                    EditorGUILayout.TextArea(issue.def.solution, //GUILayout.MaxWidth(m_WidthRHS),
+                        GUILayout.MaxHeight(m_FoldoutMaxHeight) /*, GUILayout.ExpandHeight(true)*/);
+                }
+                else
+                {
+                    EditorGUILayout.LabelField("No issue selected");
+                }
+            }
+            EditorGUILayout.EndVertical();
+        }
+        
         private void DrawToolbar()
         {
             EditorGUILayout.BeginHorizontal(Styles.Toolbar);
