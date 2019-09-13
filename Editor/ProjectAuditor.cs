@@ -159,7 +159,7 @@ namespace Unity.ProjectAuditor.Editor
                                         {
                                             category = IssueCategory.ApiCalls.ToString(),
                                             def = p,
-                                            callingMethod = m.FullName, 
+                                            callingMethod = new CallingMethodInfo(m.FullName), 
                                             url = s.Document.Url,
                                             line = s.StartLine,
                                             column = s.StartColumn

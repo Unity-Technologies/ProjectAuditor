@@ -8,12 +8,12 @@ namespace Unity.ProjectAuditor.Editor
         ApiCalls,
         ProjectSettings
     }
-    
+
     [Serializable]
     public class ProjectIssue
     {
         public ProblemDefinition def;
-        public string callingMethod;
+        public CallingMethodInfo callingMethod;
         public string category;
         public string url;
         public int line;

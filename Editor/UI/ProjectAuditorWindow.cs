@@ -309,8 +309,9 @@ To reload the issue database definition, click on Reload DB.";
             {
                 if (issue != null)
                 {
+                    var callingMethod = issue.callingMethod.name;
                     // display method name without return type
-                    EditorGUILayout.LabelField(issue.callingMethod.Substring(issue.callingMethod.IndexOf(" ")));
+                    EditorGUILayout.LabelField(callingMethod.Substring(callingMethod.IndexOf(" ")));
                 }
                 else
                 {
