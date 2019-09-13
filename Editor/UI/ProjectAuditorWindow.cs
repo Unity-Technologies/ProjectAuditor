@@ -21,6 +21,7 @@ namespace Unity.ProjectAuditor.Editor
 //        private bool m_EnableResolvedItems = false;
         private bool m_ShowDetails = false;
         private bool m_ShowRecommendation = false;
+        private bool m_ShowCallTree = false;
 
         private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
       
@@ -45,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor
             "Load Times"
         };
 
-        private const int m_FoldoutWidth = 276;
+        private const int m_FoldoutWidth = 300;
         private const int m_FoldoutMaxHeight = 220;
 
         internal static class Styles
@@ -63,6 +64,7 @@ namespace Unity.ProjectAuditor.Editor
 
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout = new GUIContent("Recommendation", "Recommendation on how to solve the issue");
+            public static readonly GUIContent CallTreeFoldout = new GUIContent("Calling Method", "Calling Method");
             
             public static readonly string HelpText =
 @"Project Auditor is an experimental static analysis tool for Unity Projects.
@@ -244,6 +246,8 @@ To reload the issue database definition, click on Reload DB.";
             }
             DrawDetailsFoldout(selectedIssue);
             DrawRecommendationFoldout(selectedIssue);
+            if (m_ActiveMode == IssueCategory.ApiCalls)
+                DrawCallTree(selectedIssue);
         }
 
         private bool BoldFoldout(bool toggle, GUIContent content)
@@ -288,6 +292,27 @@ To reload the issue database definition, click on Reload DB.";
                     EditorStyles.textField.wordWrap = true;
                     EditorGUILayout.TextArea(issue.def.solution, //GUILayout.MaxWidth(m_WidthRHS),
                         GUILayout.MaxHeight(m_FoldoutMaxHeight) /*, GUILayout.ExpandHeight(true)*/);
+                }
+                else
+                {
+                    EditorGUILayout.LabelField("No issue selected");
+                }
+            }
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawCallTree(ProjectIssue issue)
+        {
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
+
+            bool lastShowThreadSummary = m_ShowCallTree;
+            m_ShowCallTree = BoldFoldout(m_ShowCallTree, Styles.CallTreeFoldout);
+            if (m_ShowCallTree)
+            {
+                if (issue != null)
+                {
+                    // display method name without return type
+                    EditorGUILayout.LabelField(issue.callingMethod.Substring(issue.callingMethod.IndexOf(" ")));
                 }
                 else
                 {
