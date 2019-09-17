@@ -12,6 +12,10 @@ namespace Unity.ProjectAuditor.Editor
         private ProjectReport m_ProjectReport;
         private IssueTable m_IssueTable;
 
+        private ProjectIssue m_SelectedIssue = null;
+        
+        private CallHierarchyView m_CallHierarchyView;
+        
         private bool m_EnableCPU = true;
         private bool m_EnableGPU = true;
         private bool m_EnableMemory = true;
@@ -64,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor
 
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout = new GUIContent("Recommendation", "Recommendation on how to solve the issue");
-            public static readonly GUIContent CallTreeFoldout = new GUIContent("Calling Method", "Calling Method");
+            public static readonly GUIContent CallTreeFoldout = new GUIContent("Call Hierarchy", "Call Hierarchy");
             
             public static readonly string HelpText =
 @"Project Auditor is an experimental static analysis tool for Unity Projects.
@@ -85,6 +89,7 @@ To reload the issue database definition, click on Reload DB.";
         private void OnEnable()
         {
             m_ProjectAuditor = new ProjectAuditor();
+            m_CallHierarchyView = new CallHierarchyView(new TreeViewState());
         }
 
         private void OnGUI()
@@ -242,8 +247,17 @@ To reload the issue database definition, click on Reload DB.";
                     }
                 }
 
-                selectedIssue = issues[i];
+                selectedIssue = issues[i];                
             }
+
+            if (selectedIssue != m_SelectedIssue)
+            {
+                m_SelectedIssue = selectedIssue;
+
+                m_CallHierarchyView.SetCallTree(selectedIssue != null ? selectedIssue.method : null);
+                m_CallHierarchyView.Reload();
+            }
+            
             DrawDetailsFoldout(selectedIssue);
             DrawRecommendationFoldout(selectedIssue);
             if (m_ActiveMode == IssueCategory.ApiCalls)
@@ -298,7 +312,7 @@ To reload the issue database definition, click on Reload DB.";
             }
             EditorGUILayout.EndVertical();
         }
-
+        
         private void DrawCallTree(ProjectIssue issue)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
@@ -309,9 +323,9 @@ To reload the issue database definition, click on Reload DB.";
             {
                 if (issue != null)
                 {
-                    var callingMethod = issue.callingMethod.name;
-                    // display method name without return type
-                    EditorGUILayout.LabelField(callingMethod.Substring(callingMethod.IndexOf(" ")));
+                    Rect r = EditorGUILayout.GetControlRect(GUILayout.Height(400));
+
+                    m_CallHierarchyView.OnGUI(r);
                 }
                 else
                 {

@@ -155,11 +155,15 @@ namespace Unity.ProjectAuditor.Editor
 
                                     if (!isPackageWhitelisted)
                                     {
+                                        var leaf = new MethodInstance(m.FullName);
+                                        
+                                        leaf.parents.Add(new MethodInstance("<return-type> Parent method not available"));
+                                        
                                         projectReport.AddIssue(new ProjectIssue
                                         {
                                             category = IssueCategory.ApiCalls.ToString(),
                                             def = p,
-                                            callingMethod = new CallingMethodInfo(m.FullName), 
+                                            method = leaf, 
                                             url = s.Document.Url,
                                             line = s.StartLine,
                                             column = s.StartColumn
