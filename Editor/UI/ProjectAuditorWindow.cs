@@ -6,8 +6,10 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    class ProjectAuditorWindow : EditorWindow
-    {       
+    class ProjectAuditorWindow : EditorWindow, IHasCustomMenu
+    {
+        private bool m_DeveloperMode = false;
+        
         private ProjectAuditor m_ProjectAuditor;
         private ProjectReport m_ProjectReport;
         private IssueTable m_IssueTable;
@@ -51,6 +53,9 @@ namespace Unity.ProjectAuditor.Editor
 
         internal static class Styles
         {
+            public static readonly GUIContent DeveloperMode = new GUIContent("Developer Mode");
+            public static readonly GUIContent UserMode = new GUIContent("User Mode");
+            
             public static readonly GUIStyle Toolbar = "Toolbar";
             public static readonly GUIContent WindowTitle = new GUIContent("Project Auditor");
             public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
@@ -117,6 +122,17 @@ To reload the issue database definition, click on Reload DB.";
             
                 EditorGUILayout.EndHorizontal();
             }
+        }
+
+        private void OnToggleDeveloperMode()
+        {
+            m_DeveloperMode = !m_DeveloperMode;
+        }
+        
+        public virtual void AddItemsToMenu(GenericMenu menu)
+        {
+            menu.AddItem(Styles.DeveloperMode, m_DeveloperMode, OnToggleDeveloperMode);
+            menu.AddItem(Styles.UserMode, !m_DeveloperMode, OnToggleDeveloperMode);
         }
 
         bool IsAnalysisValid()
@@ -326,8 +342,10 @@ To reload the issue database definition, click on Reload DB.";
 
             if (GUILayout.Button(Styles.AnalyzeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                 Analyze();
-            if (GUILayout.Button(Styles.ReloadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
-                Reload();
+            
+            if (m_DeveloperMode)
+                if (GUILayout.Button(Styles.ReloadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                    Reload();
 
             if (m_ProjectReport == null)
             {
