@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent WindowTitle = new GUIContent("Project Auditor");
             public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
-            public static readonly GUIContent SerializeButton = new GUIContent("Serialize", "Serialize project report to file.");
+            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to json file.");
 
             public static readonly GUIContent ResolvedHeader = new GUIContent("Resolved?", "Issues that have already been looked at");
             public static readonly GUIContent AreaHeader = new GUIContent("Area", "The area the issue might have an impact on");
@@ -86,8 +86,8 @@ Once the project is analyzed, the tool displays list of issues.
 At the moment there are two types of issues: API calls or Project Settings. The tool allows the user to switch between the two.
 In addition, it is possible to filter issues by area (CPU/Memory/etc...).
 
-To generate a report, click on the Serialize button.
-To reload the issue database definition, click on Reload DB.";
+To generate a report, click on the Export button.
+To reload the issue database definition, click on Reload DB. (Developer Mode only)";
         }
 
         private void OnEnable()
@@ -402,7 +402,7 @@ To reload the issue database definition, click on Reload DB.";
             }
             else
             {
-                if (GUILayout.Button(Styles.SerializeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                if (GUILayout.Button(Styles.ExportButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                     Serialize();
 
                 EditorGUILayout.EndHorizontal();
