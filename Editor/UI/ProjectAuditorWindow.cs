@@ -98,33 +98,8 @@ To reload the issue database definition, click on Reload DB.";
         private void OnGUI()
         {
             DrawToolbar();
-
-            if (m_IssueTable != null)
-            {
-                var activeMode = m_ActiveMode;
-                m_ActiveMode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, ReportModeStrings);
-
-                if (activeMode != m_ActiveMode)
-                {
-                    // the user switched view
-                    RefreshDisplay();
-                }                    
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.BeginVertical();
-
-                
-                Rect r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
-                m_IssueTable.OnGUI(r);
-
-                EditorGUILayout.EndVertical();
-
-                EditorGUILayout.BeginVertical(GUILayout.Width(m_FoldoutWidth));
-                DrawFoldouts();
-                EditorGUILayout.EndVertical();
-            
-                EditorGUILayout.EndHorizontal();
-            }
+            DrawFilters();
+            DrawIssues(); // and right-end panels
         }
 
         private void OnToggleDeveloperMode()
@@ -179,7 +154,7 @@ To reload the issue database definition, click on Reload DB.";
 
         private void RefreshDisplay()
         {
-            if (m_ProjectReport == null)
+            if (!IsAnalysisValid())
                 return;
 
             MultiColumnHeaderState.Column[] columns = new MultiColumnHeaderState.Column[]
@@ -235,8 +210,38 @@ To reload the issue database definition, click on Reload DB.";
 
         private void Serialize()
         {
-            if (m_ProjectReport != null)
+            if (!IsAnalysisValid())
                 m_ProjectReport.WriteToFile();
+        }
+
+        private void DrawIssues()
+        {
+            if (m_IssueTable != null)
+            {
+                var activeMode = m_ActiveMode;
+                m_ActiveMode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, ReportModeStrings);
+
+                if (activeMode != m_ActiveMode)
+                {
+                    // the user switched view
+                    RefreshDisplay();
+                }                    
+
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.BeginVertical();
+
+                
+                Rect r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
+                m_IssueTable.OnGUI(r);
+
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.BeginVertical(GUILayout.Width(m_FoldoutWidth));
+                DrawFoldouts();
+                EditorGUILayout.EndVertical();
+            
+                EditorGUILayout.EndHorizontal();
+            }     
         }
         
         private void DrawFoldouts()
@@ -338,6 +343,9 @@ To reload the issue database definition, click on Reload DB.";
 
         void DrawFilters()
         {
+            if (!IsAnalysisValid())
+                return;
+            
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
 
             m_ShowFilters = BoldFoldout(m_ShowFilters, Styles.FiltersFoldout);
@@ -380,7 +388,7 @@ To reload the issue database definition, click on Reload DB.";
                 if (GUILayout.Button(Styles.ReloadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                     Reload();
 
-            if (m_ProjectReport == null)
+            if (!IsAnalysisValid())
             {
                 EditorGUILayout.EndHorizontal();
 
@@ -398,8 +406,6 @@ To reload the issue database definition, click on Reload DB.";
                     Serialize();
 
                 EditorGUILayout.EndHorizontal();
-
-                DrawFilters();
             }
         }
         
