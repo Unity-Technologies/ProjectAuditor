@@ -280,7 +280,6 @@ To reload the issue database definition, click on Reload DB.";
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
 
-            bool lastShowThreadSummary = m_ShowDetails;
             m_ShowDetails = BoldFoldout(m_ShowDetails, Styles.DetailsFoldout);
             if (m_ShowDetails)
             {
@@ -301,7 +300,6 @@ To reload the issue database definition, click on Reload DB.";
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
 
-            bool lastShowThreadSummary = m_ShowRecommendation;
             m_ShowRecommendation = BoldFoldout(m_ShowRecommendation, Styles.RecommendationFoldout);
             if (m_ShowRecommendation)
             {
@@ -322,7 +320,6 @@ To reload the issue database definition, click on Reload DB.";
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
 
-            bool lastShowThreadSummary = m_ShowCallTree;
             m_ShowCallTree = BoldFoldout(m_ShowCallTree, Styles.CallTreeFoldout);
             if (m_ShowCallTree)
             {
