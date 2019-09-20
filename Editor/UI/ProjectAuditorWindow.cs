@@ -21,6 +21,8 @@ namespace Unity.ProjectAuditor.Editor
         private bool m_EnableLoadTimes = true;
         private bool m_EnablePackages = false;
 //        private bool m_EnableResolvedItems = false;
+
+        private bool m_ShowFilters = true;
         private bool m_ShowDetails = false;
         private bool m_ShowRecommendation = false;
         private bool m_ShowCallTree = false;
@@ -67,6 +69,7 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent DescriptionHeader = new GUIContent("Description", "Issue description");
             public static readonly GUIContent LocationHeader = new GUIContent("Location", "Path to the script file");
 
+            public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filters");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout = new GUIContent("Recommendation", "Recommendation on how to solve the issue");
             public static readonly GUIContent CallTreeFoldout = new GUIContent("Calling Method", "Calling Method");
@@ -335,6 +338,39 @@ To reload the issue database definition, click on Reload DB.";
             }
             EditorGUILayout.EndVertical();
         }
+
+        void DrawFilters()
+        {
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
+
+            m_ShowFilters = BoldFoldout(m_ShowFilters, Styles.FiltersFoldout);
+            if (m_ShowFilters)
+            {
+                EditorGUILayout.BeginHorizontal(Styles.Toolbar);
+                GUILayout.Label("Filter By:", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+
+                EditorGUI.BeginChangeCheck();
+
+                m_EnableMemory = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.Memory], m_EnableMemory, GUILayout.Width(100));
+                m_EnableCPU = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.CPU], m_EnableCPU, GUILayout.Width(100));
+                m_EnableGPU = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.GPU], m_EnableGPU, GUILayout.Width(100));
+                m_EnableBuildSize = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.BuildSize], m_EnableBuildSize, GUILayout.Width(100));
+                m_EnableLoadTimes = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.LoadTimes], m_EnableLoadTimes, GUILayout.Width(100));
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal(Styles.Toolbar);
+                GUILayout.Label("", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+                m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
+                //            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
+                EditorGUILayout.EndHorizontal();
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    RefreshDisplay();
+                }
+            }
+            EditorGUILayout.EndVertical();            
+        }
         
         private void DrawToolbar()
         {
@@ -366,32 +402,9 @@ To reload the issue database definition, click on Reload DB.";
 
                 EditorGUILayout.EndHorizontal();
 
-                EditorGUILayout.BeginHorizontal(Styles.Toolbar);
-                GUILayout.Label("Filter By:", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-
-                EditorGUI.BeginChangeCheck();
-
-                m_EnableMemory = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.Memory], m_EnableMemory, GUILayout.Width(100));
-                m_EnableCPU = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.CPU], m_EnableCPU, GUILayout.Width(100));
-                m_EnableGPU = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.GPU], m_EnableGPU, GUILayout.Width(100));
-                m_EnableBuildSize = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.BuildSize], m_EnableBuildSize, GUILayout.Width(100));
-                m_EnableLoadTimes = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.LoadTimes], m_EnableLoadTimes, GUILayout.Width(100));
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.BeginHorizontal(Styles.Toolbar);
-                GUILayout.Label("", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
-    //            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
-                EditorGUILayout.EndHorizontal();
-
-                if (EditorGUI.EndChangeCheck())
-                {
-                    RefreshDisplay();
-                }
+                DrawFilters();
             }
         }
-
-        
         
 #if UNITY_2018_1_OR_NEWER
         [MenuItem("Window/Analysis/Project Auditor")]
