@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor
         private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
       
         string[] ReportModeStrings = {
-            "API Calls",
+            "Scripts",
             "Project Settings"
         };
 
