@@ -42,6 +42,22 @@
       },
       {
         "type": "UnityEditor.PlayerSettings",
+        "method": "GetGraphicsAPIs",
+        "customevaluator": "PlayerSettingsGraphicsAPIs_iOS_OpenGLESAndMetal",
+        "area": "Build Size",
+        "problem": "In the iOS Player Settings, both Metal and OpenGLES graphics APIs are enabled.",
+        "solution": "To reduce build size, remove OpenGLES graphics API if the minimum spec target device supports Metal."
+      },
+      {
+        "type": "UnityEditor.PlayerSettings",
+        "method": "GetGraphicsAPIs",
+        "customevaluator": "PlayerSettingsGraphicsAPIs_iOS_OpenGLES",
+        "area": "CPU",
+        "problem": "In the iOS Player Settings, Metal is not enabled.",
+        "solution": "Enable Metal graphics API for better CPU Performance."
+      },
+      {
+        "type": "UnityEditor.PlayerSettings",
         "method": "bakeCollisionMeshes",
         "value": "False",
         "area": "Build Size|Load Times",
