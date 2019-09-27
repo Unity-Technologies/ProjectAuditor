@@ -19,6 +19,7 @@ namespace Unity.ProjectAuditor.Editor
         
         public bool PlayerSettingsArchitecture_iOS()
         {
+            // PlayerSettings.GetArchitecture returns an integer value associated with the architecture of a BuildTargetPlatformGroup. 0 - None, 1 - ARM64, 2 - Universal.
             return PlayerSettings.GetArchitecture(BuildTargetGroup.iOS) == 2;
         }
 
