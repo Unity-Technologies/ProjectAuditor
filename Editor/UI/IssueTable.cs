@@ -8,12 +8,13 @@ namespace Unity.ProjectAuditor.Editor
 {
     class IssueTable : TreeView
     {
-        enum ColumnIndex
+        public enum Column
         {
             Resolved = 0,
             Area,
             Description,
-            Location
+            Location,
+            Count
         }
 
         readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
@@ -70,20 +71,20 @@ namespace Unity.ProjectAuditor.Editor
 
         void CellGUI(Rect cellRect, int column, ProjectIssue issue, ref RowGUIArgs args)
         {
-            switch ((ColumnIndex)column)
+            switch ((Column)column)
             {
-                case ColumnIndex.Resolved :
+                case Column.Resolved :
                     issue.resolved = EditorGUI.Toggle(cellRect, issue.resolved);
                     break;
-                case ColumnIndex.Area :
+                case Column.Area :
                     EditorGUI.LabelField(cellRect, new GUIContent(issue.def.area, "This issue might have an impact on " + issue.def.area));
                     break;
-                case ColumnIndex.Description :
+                case Column.Description :
                     string text = issue.def.type + "." + issue.def.method;
                     string tooltip = issue.def.problem + " \n\n" + issue.def.solution;
                     EditorGUI.LabelField(cellRect, new GUIContent(text, tooltip));
                     break;
-                case ColumnIndex.Location :
+                case Column.Location :
                     var location = string.Format("{0}({1},{2})", issue.relativePath, issue.line,  issue.column);
 
                     if (location.StartsWith("Library/PackageCache/"))
