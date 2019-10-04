@@ -8,12 +8,14 @@ namespace Unity.ProjectAuditor.Editor
 {
     class IssueTable : TreeView
     {
-        enum ColumnIndex
+        public enum Column
         {
             Resolved = 0,
             Area,
             Description,
-            Location
+            Location,
+
+            Count
         }
 
         readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
@@ -32,58 +34,90 @@ namespace Unity.ProjectAuditor.Editor
             int depthForHiddenRoot = -1;
             var root = new IssueTableItem(idForhiddenRoot, depthForHiddenRoot, "root", new ProjectIssue());
 
-            int index = 0;
+            
+            // flat view
+//            int index = 0;
+//            foreach (var issue in m_Issues)
+//            {
+//                var item = new IssueTableItem(index++, 0, "", issue);
+//                root.AddChild(item);            
+//            }
+
+            // grouped by assembly
+            HashSet<string> assemblies = new HashSet<string>();
             foreach (var issue in m_Issues)
             {
-                var item = new IssueTableItem(index++, 0, "", issue);
-                root.AddChild(item);            
+                if (!string.IsNullOrEmpty(issue.assembly) && !assemblies.Contains(issue.assembly))
+                {
+                    assemblies.Add(issue.assembly);
+                }
+            }
+
+            int index = 0;
+            foreach (var assembly in assemblies)
+            {                
+                var issuesInAssembly = m_Issues.Where(i => assembly.Equals(i.assembly));
+
+                var assemblyGroup = new ProjectIssue
+                {
+                    assembly = assembly
+                };
+                var assemblyItem = new IssueTableItem(index++, 0, "ASM", assemblyGroup);
+                root.AddChild(assemblyItem); 
+                foreach (var issue in issuesInAssembly)
+                {
+                    var item = new IssueTableItem(index++, 1, "TEST", issue);
+                   assemblyItem.AddChild(item);
+                }       
             }
 
             return root;
         }
 
-        protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
-        {
-            m_Rows.Clear();
-
-            if (rootItem != null && rootItem.children != null)
-            {
-                foreach (IssueTableItem node in rootItem.children)
-                {
-                    m_Rows.Add(node);
-                }
-            }
-
-            // SortIfNeeded(m_Rows);
-
-            return m_Rows;
-        }
-    
         protected override void RowGUI(RowGUIArgs args)
         {
-            var item = (IssueTableItem)args.item;
+            var item = args.item;
+
             for (int i = 0; i < args.GetNumVisibleColumns(); ++i)
             {
-                CellGUI(args.GetCellRect(i), i, item.m_projectIssue, ref args);
+                CellGUI(args.GetCellRect(i), args.item, args.GetColumn(i), ref args);
+                // CellGUI(args.GetCellRect(i), i, item.m_projectIssue, ref args);
             }
         }
 
-        void CellGUI(Rect cellRect, int column, ProjectIssue issue, ref RowGUIArgs args)
+        void CellGUI(Rect cellRect, TreeViewItem item, int column, ref RowGUIArgs args)
         {
-            switch ((ColumnIndex)column)
+            var indent = GetContentIndent(item) + extraSpaceBeforeIconAndLabel;
+            cellRect.xMin += indent;
+            CenterRectUsingSingleLineHeight(ref cellRect);
+
+            var issue = (item as IssueTableItem).m_projectIssue;
+            if (issue.def == null)
             {
-                case ColumnIndex.Resolved :
+                switch ((Column) column)
+                {
+                    case Column.Resolved:
+                        EditorGUI.LabelField(cellRect, new GUIContent(issue.assembly, issue.assembly));
+                        break;
+                }
+
+                return;
+            }
+
+            switch ((Column)column)
+            {
+                case Column.Resolved :
                     issue.resolved = EditorGUI.Toggle(cellRect, issue.resolved);
                     break;
-                case ColumnIndex.Area :
+                case Column.Area :
                     EditorGUI.LabelField(cellRect, new GUIContent(issue.def.area, "This issue might have an impact on " + issue.def.area));
                     break;
-                case ColumnIndex.Description :
+                case Column.Description :
                     string text = issue.def.type + "." + issue.def.method;
                     string tooltip = issue.def.problem + " \n\n" + issue.def.solution;
                     EditorGUI.LabelField(cellRect, new GUIContent(text, tooltip));
                     break;
-                case ColumnIndex.Location :
+                case Column.Location :
                     var location = string.Format("{0}({1},{2})", issue.relativePath, issue.line,  issue.column);
 
                     if (location.StartsWith("Library/PackageCache/"))
