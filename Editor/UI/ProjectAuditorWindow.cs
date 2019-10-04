@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor
         private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
       
         string[] ReportModeStrings = {
-            "API Calls",
+            "Scripts",
             "Project Settings"
         };
 
@@ -64,10 +64,13 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to json file.");
 
-            public static readonly GUIContent ResolvedHeader = new GUIContent("Resolved?", "Issues that have already been looked at");
-            public static readonly GUIContent AreaHeader = new GUIContent("Area", "The area the issue might have an impact on");
-            public static readonly GUIContent DescriptionHeader = new GUIContent("Description", "Issue description");
-            public static readonly GUIContent LocationHeader = new GUIContent("Location", "Path to the script file");
+            public static readonly GUIContent[] ColumnHeaders = new[]
+            {
+                new GUIContent("Resolved?", "Issues that have already been looked at"),
+                new GUIContent("Area", "The area the issue might have an impact on"),
+                new GUIContent("Description", "Issue description"),
+                new GUIContent("Location", "Path to the script file")            
+            };
 
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filters");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
@@ -157,42 +160,44 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             if (!IsAnalysisValid())
                 return;
 
-            MultiColumnHeaderState.Column[] columns = new MultiColumnHeaderState.Column[]
+            var columnsList = new List<MultiColumnHeaderState.Column>();
+            var numColumns = (int) IssueTable.Column.Count;
+            for (int i = 0; i < numColumns; i++)
             {
-                new MultiColumnHeaderState.Column
+                bool add = true;
+                int width = 80;
+                int minWidth = 80;
+                switch ((IssueTable.Column) i)
                 {
-                    headerContent = Styles.ResolvedHeader,
-                    width = 80,
-                    minWidth = 80,
-                    autoResize = true
-                },
-                new MultiColumnHeaderState.Column
-                {
-                    headerContent = Styles.AreaHeader,
-                    width = 100,
-                    minWidth = 100,
-                    autoResize = true
-                },
-                new MultiColumnHeaderState.Column
-                {
-                    headerContent = Styles.DescriptionHeader,
-                    width = 300,
-                    minWidth = 100,
-                    autoResize = true
-                },
-                              
-            };
-
-            var columnsList = new List<MultiColumnHeaderState.Column>(columns);
-            
-            if (m_ActiveMode == IssueCategory.ApiCalls)
-                columnsList.Add(new MultiColumnHeaderState.Column
-                {
-                    headerContent = Styles.LocationHeader,
-                    width = 900,
-                    minWidth = 400,
-                    autoResize = true
-                } );
+                    case IssueTable.Column.Description :
+                        width = 300;
+                        minWidth = 100;
+                        break;
+                    case IssueTable.Column.Resolved :
+                        width = 80;
+                        minWidth = 80;
+                        break;
+                    case IssueTable.Column.Area :
+                        width = 100;
+                        minWidth = 100;
+                        break;
+                    case IssueTable.Column.Location :
+                        if (m_ActiveMode == IssueCategory.ProjectSettings)
+                            add = false;
+                        width = 900;
+                        minWidth = 400;
+                        break;
+                }
+                
+                if (add)
+                    columnsList.Add(new MultiColumnHeaderState.Column
+                    {
+                        headerContent = Styles.ColumnHeaders[i],
+                        width = width,
+                        minWidth = minWidth,
+                        autoResize = true
+                    } );
+            }
 
             var issues = m_ProjectReport.GetIssues(m_ActiveMode);
             

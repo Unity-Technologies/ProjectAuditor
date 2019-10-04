@@ -81,7 +81,6 @@ namespace Unity.ProjectAuditor.Editor
             for (int i = 0; i < args.GetNumVisibleColumns(); ++i)
             {
                 CellGUI(args.GetCellRect(i), args.item, args.GetColumn(i), ref args);
-                // CellGUI(args.GetCellRect(i), i, item.m_projectIssue, ref args);
             }
         }
 
