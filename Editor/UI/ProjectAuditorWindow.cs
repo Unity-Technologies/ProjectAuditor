@@ -241,9 +241,10 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 EditorGUILayout.EndVertical();
 
                 EditorGUILayout.BeginVertical(GUILayout.Width(m_FoldoutWidth));
-                DrawFoldouts();
-                EditorGUILayout.EndVertical();
 
+                DrawFoldouts();
+
+                EditorGUILayout.EndVertical();
                 EditorGUILayout.EndHorizontal();
             }     
         }
@@ -253,7 +254,9 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             ProjectIssue selectedIssue = null;
             if (m_IssueTable != null && m_IssueTable.HasSelection())
             {
-                selectedIssue = m_IssueTable.GetSelectedItem().m_projectIssue;
+                var selectedItem = m_IssueTable.GetSelectedItem();
+                if (selectedItem != null)
+                    selectedIssue = selectedItem.m_projectIssue;
             }
 
             DrawDetailsFoldout(selectedIssue);
