@@ -171,8 +171,14 @@ namespace Unity.ProjectAuditor.Editor
         public IssueTableItem GetSelectedItem()
         {
             var ids = GetSelection();
-            var rows = FindRows(ids);
-            return rows[0] as IssueTableItem;
+            if (ids.Count() > 0)
+            {
+                var rows = FindRows(ids);
+                if (rows.Count() > 0)
+                    return rows[0] as IssueTableItem;                
+            }
+
+            return null;
         }
     }
 }
