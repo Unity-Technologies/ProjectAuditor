@@ -66,9 +66,9 @@ namespace Unity.ProjectAuditor.Editor
 
             public static readonly GUIContent[] ColumnHeaders = new[]
             {
-                new GUIContent("Resolved?", "Issues that have already been looked at"),
-                new GUIContent("Area", "The area the issue might have an impact on"),
                 new GUIContent("Description", "Issue description"),
+                // new GUIContent("Resolved?", "Issues that have already been looked at"),
+                new GUIContent("Area", "The area the issue might have an impact on"),
                 new GUIContent("Location", "Path to the script file")            
             };
 
@@ -173,10 +173,10 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         width = 300;
                         minWidth = 100;
                         break;
-                    case IssueTable.Column.Resolved :
-                        width = 80;
-                        minWidth = 80;
-                        break;
+                    // case IssueTable.Column.Resolved :
+                    //     width = 80;
+                    //     minWidth = 80;
+                    //     break;
                     case IssueTable.Column.Area :
                         width = 100;
                         minWidth = 100;
@@ -204,7 +204,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             var filteredList = issues.Where(x => ShouldDisplay(x));
 
             m_IssueTable = new IssueTable(new TreeViewState(),
-                new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())), filteredList.ToArray());
+                new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())), filteredList.ToArray(), m_ActiveMode == IssueCategory.ApiCalls);
         }
 
         private void Reload()
@@ -221,7 +221,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
         private void DrawIssues()
         {
-            if (m_IssueTable != null)
+            if (IsAnalysisValid())
             {
                 var activeMode = m_ActiveMode;
                 m_ActiveMode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, ReportModeStrings);
@@ -230,12 +230,11 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 {
                     // the user switched view
                     RefreshDisplay();
-                }                    
+                }
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.BeginVertical();
 
-                
                 Rect r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
                 m_IssueTable.OnGUI(r);
 
@@ -244,7 +243,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 EditorGUILayout.BeginVertical(GUILayout.Width(m_FoldoutWidth));
                 DrawFoldouts();
                 EditorGUILayout.EndVertical();
-            
+
                 EditorGUILayout.EndHorizontal();
             }     
         }
@@ -253,30 +252,14 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         {
             ProjectIssue selectedIssue = null;
             if (m_IssueTable != null && m_IssueTable.HasSelection())
-            {               
-                var issues = m_ProjectReport.GetIssues(m_ActiveMode);
-                var displayIndex = m_IssueTable.GetSelection()[0];
-                int listIndex = 0;
-                int i = 0;
-
-                for (; i < issues.Count; ++i)
-                {
-                    if (ShouldDisplay(issues[i]))
-                    {
-                        if (listIndex == displayIndex)
-                        {
-                            break;
-                        }
-                        ++listIndex;
-                    }
-                }
-
-                selectedIssue = issues[i];
+            {
+                selectedIssue = m_IssueTable.GetSelectedItem().m_projectIssue;
             }
+
             DrawDetailsFoldout(selectedIssue);
             DrawRecommendationFoldout(selectedIssue);
             if (m_ActiveMode == IssueCategory.ApiCalls)
-                DrawCallTree(selectedIssue);
+                DrawCallTree(selectedIssue);                
         }
 
         private bool BoldFoldout(bool toggle, GUIContent content)

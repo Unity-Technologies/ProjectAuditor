@@ -14,6 +14,14 @@ namespace Unity.ProjectAuditor.Editor
         public string area;
         public string problem;
         public string solution;
+
+        public string description
+        {
+            get
+            {
+                return type + "." + method;
+            }
+        }
     }
 
     public class DefinitionDatabase

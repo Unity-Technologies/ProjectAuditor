@@ -10,9 +10,9 @@ namespace Unity.ProjectAuditor.Editor
     {
         public enum Column
         {
-            Resolved = 0,
+            Description = 0,
+            // Resolved,
             Area,
-            Description,
             Location,
 
             Count
@@ -22,55 +22,79 @@ namespace Unity.ProjectAuditor.Editor
 
         ProjectIssue[] m_Issues;
 
-        public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader, ProjectIssue[] issues) : base(state, multicolumnHeader)
+        bool m_GroupByDescription;
+
+        public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader, ProjectIssue[] issues, bool groupByDescription) : base(state, multicolumnHeader)
         {
             m_Issues = issues;
+            m_GroupByDescription = groupByDescription;
             Reload();
         }
 
         protected override TreeViewItem BuildRoot()
         {
+            int index = 0;
             int idForhiddenRoot = -1;
             int depthForHiddenRoot = -1;
-            var root = new IssueTableItem(idForhiddenRoot, depthForHiddenRoot, "root", new ProjectIssue());
-
+            var root = new IssueTableItem(idForhiddenRoot, depthForHiddenRoot, "root");
             
-            // flat view
-//            int index = 0;
-//            foreach (var issue in m_Issues)
-//            {
-//                var item = new IssueTableItem(index++, 0, "", issue);
-//                root.AddChild(item);            
-//            }
-
             // grouped by assembly
-            HashSet<string> assemblies = new HashSet<string>();
-            foreach (var issue in m_Issues)
+            // HashSet<string> group = new HashSet<string>();
+            // foreach (var issue in m_Issues)
+            // {
+            //     if (!string.IsNullOrEmpty(issue.assembly) && !assemblies.Contains(issue.assembly))
+            //     {
+            //         assemblies.Add(issue.assembly);
+            //     }
+            // }
+
+            if (m_GroupByDescription)
             {
-                if (!string.IsNullOrEmpty(issue.assembly) && !assemblies.Contains(issue.assembly))
+                // grouped by problem definition
+                HashSet<string> allGroupsSet = new HashSet<string>();
+                foreach (var issue in m_Issues)
                 {
-                    assemblies.Add(issue.assembly);
+                    if (!allGroupsSet.Contains(issue.def.description))
+                    {
+                        allGroupsSet.Add(issue.def.description);
+                    }
                 }
+
+                var allGroups = allGroupsSet.ToList();
+                allGroups.Sort();
+
+                foreach (var groupName in allGroups)
+                {
+                    // var issuesIngroup = m_Issues.Where(i => group.Equals(i.assembly));
+                    var issues = m_Issues.Where(i => groupName.Equals(i.def.description));
+                
+                    // maybe dont create fake issue
+                    // var assemblyGroup = new ProjectIssue
+                    // {
+                    //     assembly = assembly
+                    // };
+                    var groupItem = new IssueTableItem(index++, 0, groupName);
+                    root.AddChild(groupItem); 
+                    foreach (var issue in issues)
+                    {
+                        var item = new IssueTableItem(index++, 1, "Not Used", issue);
+                        groupItem.AddChild(item);
+                    }       
+                }                
+            }
+            else
+            {
+                // flat view
+               foreach (var issue in m_Issues)
+               {
+                   var item = new IssueTableItem(index++, 0, "", issue);
+                   root.AddChild(item);            
+               }
             }
 
-            int index = 0;
-            foreach (var assembly in assemblies)
-            {                
-                var issuesInAssembly = m_Issues.Where(i => assembly.Equals(i.assembly));
-
-                var assemblyGroup = new ProjectIssue
-                {
-                    assembly = assembly
-                };
-                var assemblyItem = new IssueTableItem(index++, 0, "ASM", assemblyGroup);
-                root.AddChild(assemblyItem); 
-                foreach (var issue in issuesInAssembly)
-                {
-                    var item = new IssueTableItem(index++, 1, "TEST", issue);
-                   assemblyItem.AddChild(item);
-                }       
-            }
-
+            if (!root.hasChildren)
+                root.AddChild(new IssueTableItem(index++, 0, "No elements found"));
+            
             return root;
         }
 
@@ -91,12 +115,12 @@ namespace Unity.ProjectAuditor.Editor
             CenterRectUsingSingleLineHeight(ref cellRect);
 
             var issue = (item as IssueTableItem).m_projectIssue;
-            if (issue.def == null)
+            if (issue == null)
             {
-                switch ((Column) column)
+                switch (column)
                 {
-                    case Column.Resolved:
-                        EditorGUI.LabelField(cellRect, new GUIContent(issue.assembly, issue.assembly));
+                    case 0:
+                        EditorGUI.LabelField(cellRect, new GUIContent(item.displayName, item.displayName));
                         break;
                 }
 
@@ -105,23 +129,23 @@ namespace Unity.ProjectAuditor.Editor
 
             switch ((Column)column)
             {
-                case Column.Resolved :
-                    issue.resolved = EditorGUI.Toggle(cellRect, issue.resolved);
-                    break;
+                // case Column.Resolved :
+                //     issue.resolved = EditorGUI.Toggle(cellRect, issue.resolved);
+                //     break;
                 case Column.Area :
                     EditorGUI.LabelField(cellRect, new GUIContent(issue.def.area, "This issue might have an impact on " + issue.def.area));
                     break;
                 case Column.Description :
-                    string text = issue.def.type + "." + issue.def.method;
                     string tooltip = issue.def.problem + " \n\n" + issue.def.solution;
-                    EditorGUI.LabelField(cellRect, new GUIContent(text, tooltip));
+                    EditorGUI.LabelField(cellRect, new GUIContent(issue.def.description, tooltip));
                     break;
                 case Column.Location :
                     var location = string.Format("{0}({1},{2})", issue.relativePath, issue.line,  issue.column);
 
-                    if (location.StartsWith("Library/PackageCache/"))
+                    var libraryIndex = location.IndexOf("Library/PackageCache/");
+                    if (libraryIndex >= 0)
                     {
-                        location = location.Remove(0, "Library/PackageCache/".Length);
+                        location = location.Remove(0, libraryIndex + "Library/PackageCache/".Length);
                     }
                     
                     // display fullpath as tooltip
@@ -142,6 +166,13 @@ namespace Unity.ProjectAuditor.Editor
                 // Note that this this does not work with Package assets
                 AssetDatabase.OpenAsset(obj, issue.line);                
             }
+        }
+
+        public IssueTableItem GetSelectedItem()
+        {
+            var ids = GetSelection();
+            var rows = FindRows(ids);
+            return rows[0] as IssueTableItem;
         }
     }
 }
