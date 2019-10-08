@@ -354,12 +354,14 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 m_EnableLoadTimes = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.LoadTimes], m_EnableLoadTimes, GUILayout.Width(100));
                 EditorGUILayout.EndHorizontal();
 
+#if UNITY_2018_1_OR_NEWER
                 EditorGUILayout.BeginHorizontal(Styles.Toolbar);
                 GUILayout.Label("", GUILayout.ExpandWidth(true), GUILayout.Width(80));
                 m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
+
                 //            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
                 EditorGUILayout.EndHorizontal();
-
+#endif
                 if (EditorGUI.EndChangeCheck())
                 {
                     RefreshDisplay();
