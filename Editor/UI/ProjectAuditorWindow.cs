@@ -62,13 +62,13 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent WindowTitle = new GUIContent("Project Auditor");
             public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
-            public static readonly GUIContent SerializeButton = new GUIContent("Serialize", "Serialize project report to file.");
+            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to json file.");
 
             public static readonly GUIContent[] ColumnHeaders = new[]
             {
-                new GUIContent("Resolved?", "Issues that have already been looked at"),
-                new GUIContent("Area", "The area the issue might have an impact on"),
                 new GUIContent("Description", "Issue description"),
+                // new GUIContent("Resolved?", "Issues that have already been looked at"),
+                new GUIContent("Area", "The area the issue might have an impact on"),
                 new GUIContent("Location", "Path to the script file")            
             };
 
@@ -89,8 +89,8 @@ Once the project is analyzed, the tool displays list of issues.
 At the moment there are two types of issues: API calls or Project Settings. The tool allows the user to switch between the two.
 In addition, it is possible to filter issues by area (CPU/Memory/etc...).
 
-To generate a report, click on the Serialize button.
-To reload the issue database definition, click on Reload DB.";
+To generate a report, click on the Export button.
+To reload the issue database definition, click on Reload DB. (Developer Mode only)";
         }
 
         private void OnEnable()
@@ -173,10 +173,10 @@ To reload the issue database definition, click on Reload DB.";
                         width = 300;
                         minWidth = 100;
                         break;
-                    case IssueTable.Column.Resolved :
-                        width = 80;
-                        minWidth = 80;
-                        break;
+                    // case IssueTable.Column.Resolved :
+                    //     width = 80;
+                    //     minWidth = 80;
+                    //     break;
                     case IssueTable.Column.Area :
                         width = 100;
                         minWidth = 100;
@@ -204,7 +204,7 @@ To reload the issue database definition, click on Reload DB.";
             var filteredList = issues.Where(x => ShouldDisplay(x));
 
             m_IssueTable = new IssueTable(new TreeViewState(),
-                new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())), filteredList.ToArray());
+                new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())), filteredList.ToArray(), m_ActiveMode == IssueCategory.ApiCalls);
         }
 
         private void Reload()
@@ -221,7 +221,7 @@ To reload the issue database definition, click on Reload DB.";
 
         private void DrawIssues()
         {
-            if (m_IssueTable != null)
+            if (IsAnalysisValid())
             {
                 var activeMode = m_ActiveMode;
                 m_ActiveMode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, ReportModeStrings);
@@ -230,21 +230,21 @@ To reload the issue database definition, click on Reload DB.";
                 {
                     // the user switched view
                     RefreshDisplay();
-                }                    
+                }
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.BeginVertical();
 
-                
                 Rect r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
                 m_IssueTable.OnGUI(r);
 
                 EditorGUILayout.EndVertical();
 
                 EditorGUILayout.BeginVertical(GUILayout.Width(m_FoldoutWidth));
+
                 DrawFoldouts();
+
                 EditorGUILayout.EndVertical();
-            
                 EditorGUILayout.EndHorizontal();
             }     
         }
@@ -253,30 +253,16 @@ To reload the issue database definition, click on Reload DB.";
         {
             ProjectIssue selectedIssue = null;
             if (m_IssueTable != null && m_IssueTable.HasSelection())
-            {               
-                var issues = m_ProjectReport.GetIssues(m_ActiveMode);
-                var displayIndex = m_IssueTable.GetSelection()[0];
-                int listIndex = 0;
-                int i = 0;
-
-                for (; i < issues.Count; ++i)
-                {
-                    if (ShouldDisplay(issues[i]))
-                    {
-                        if (listIndex == displayIndex)
-                        {
-                            break;
-                        }
-                        ++listIndex;
-                    }
-                }
-
-                selectedIssue = issues[i];
+            {
+                var selectedItem = m_IssueTable.GetSelectedItem();
+                if (selectedItem != null)
+                    selectedIssue = selectedItem.m_projectIssue;
             }
+
             DrawDetailsFoldout(selectedIssue);
             DrawRecommendationFoldout(selectedIssue);
             if (m_ActiveMode == IssueCategory.ApiCalls)
-                DrawCallTree(selectedIssue);
+                DrawCallTree(selectedIssue);                
         }
 
         private bool BoldFoldout(bool toggle, GUIContent content)
@@ -407,7 +393,7 @@ To reload the issue database definition, click on Reload DB.";
             }
             else
             {
-                if (GUILayout.Button(Styles.SerializeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                if (GUILayout.Button(Styles.ExportButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                     Serialize();
 
                 EditorGUILayout.EndHorizontal();

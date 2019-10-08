@@ -126,14 +126,14 @@ namespace Unity.ProjectAuditor.Editor
                             //if (p.type != null && m.HasCustomDebugInformations)
                             if (p != null && m.DebugInformation.HasSequencePoints)
                             {
-                                var msg = string.Empty;
+                                //var msg = string.Empty;
                                 SequencePoint s = null;
                                 for (var i = inst; i != null; i = i.Previous)
                                 {
                                     s = m.DebugInformation.GetSequencePoint(i);
                                     if (s != null)
                                     {
-                                        msg = i == inst ? " exactly" : "nearby";
+                                        // msg = i == inst ? " exactly" : "nearby";
                                         break;
                                     }
                                 }
@@ -159,7 +159,7 @@ namespace Unity.ProjectAuditor.Editor
                                         {
                                             category = IssueCategory.ApiCalls.ToString(),
                                             def = p,
-                                            callingMethod = m.FullName, 
+                                            callingMethod = m.FullName,
                                             url = s.Document.Url,
                                             line = s.StartLine,
                                             column = s.StartColumn
