@@ -18,8 +18,6 @@ namespace Unity.ProjectAuditor.Editor
             Count
         }
 
-        readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
-
         ProjectIssue[] m_Issues;
 
         bool m_GroupByDescription;
@@ -100,8 +98,6 @@ namespace Unity.ProjectAuditor.Editor
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            var item = args.item;
-
             for (int i = 0; i < args.GetNumVisibleColumns(); ++i)
             {
                 CellGUI(args.GetCellRect(i), args.item, args.GetColumn(i), ref args);
