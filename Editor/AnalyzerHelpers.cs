@@ -45,8 +45,8 @@ namespace Unity.ProjectAuditor.Editor
 
         public bool PlayerSettingsArchitecture_Android()
         {
-            return (PlayerSettings.Android.targetArchitectures | AndroidArchitecture.ARMv7) != 0 &&
-                   (PlayerSettings.Android.targetArchitectures | AndroidArchitecture.ARM64) != 0;
+            return (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARMv7) != 0 &&
+                   (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) != 0;
         }
 
         public bool PhysicsLayerCollisionMatrix()
