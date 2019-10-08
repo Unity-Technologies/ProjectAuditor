@@ -110,9 +110,13 @@ namespace Unity.ProjectAuditor.Editor
 
         void CellGUI(Rect cellRect, TreeViewItem item, int column, ref RowGUIArgs args)
         {
-            var indent = GetContentIndent(item) + extraSpaceBeforeIconAndLabel;
-            cellRect.xMin += indent;
-            CenterRectUsingSingleLineHeight(ref cellRect);
+            // only indent first column
+            if (0 == column)
+            {
+                var indent = GetContentIndent(item) + extraSpaceBeforeIconAndLabel;
+                cellRect.xMin += indent;
+                CenterRectUsingSingleLineHeight(ref cellRect);                
+            }
 
             var issue = (item as IssueTableItem).m_projectIssue;
             if (issue == null)
