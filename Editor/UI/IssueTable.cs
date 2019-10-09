@@ -158,7 +158,9 @@ namespace Unity.ProjectAuditor.Editor
 
         protected override void DoubleClickedItem(int id)
         {
-            var issue = m_Issues[id];
+            var rows = FindRows( new[] {id});
+            var item = rows.FirstOrDefault();
+            var issue = (item as IssueTableItem).m_projectIssue;
             if (issue.category.Equals(IssueCategory.ApiCalls.ToString()))
             {
                 var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(issue.relativePath);
