@@ -137,7 +137,7 @@ namespace Unity.ProjectAuditor.Editor
                     break;
                 case Column.Description :
                     string tooltip = issue.def.problem + " \n\n" + issue.def.solution;
-                    EditorGUI.LabelField(cellRect, new GUIContent(issue.def.description, tooltip));
+                    EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
                     break;
                 case Column.Location :
                     var location = string.Format("{0}({1},{2})", issue.relativePath, issue.line,  issue.column);

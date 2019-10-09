@@ -155,8 +155,14 @@ namespace Unity.ProjectAuditor.Editor
 
                                     if (!isPackageWhitelisted)
                                     {
+                                        var description = p.description;
+                                        if (description.Contains(".*"))
+                                        {
+                                            description = calledMethod.DeclaringType.FullName + "::" + calledMethod.Name;
+                                        }
                                         projectReport.AddIssue(new ProjectIssue
                                         {
+                                            description = description,
                                             category = IssueCategory.ApiCalls.ToString(),
                                             def = p,
                                             callingMethod = m.FullName,
@@ -191,6 +197,7 @@ namespace Unity.ProjectAuditor.Editor
                         {
                             projectReport.AddIssue(new ProjectIssue
                             {
+                                description = p.description,
                                 category = IssueCategory.ProjectSettings.ToString(),
                                 def = p
                             }, IssueCategory.ProjectSettings);
@@ -215,6 +222,7 @@ namespace Unity.ProjectAuditor.Editor
                 {
                     projectReport.AddIssue(new ProjectIssue
                     {
+                        description = p.description,
                         category = IssueCategory.ProjectSettings.ToString(),
                         def = p
                     }, IssueCategory.ProjectSettings);
