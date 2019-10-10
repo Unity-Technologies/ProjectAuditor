@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor
 
             public static readonly GUIContent[] ColumnHeaders = new[]
             {
-                new GUIContent("Description", "Issue description"),
+                new GUIContent("Issue", "Issue description"),
                 // new GUIContent("Resolved?", "Issues that have already been looked at"),
                 new GUIContent("Area", "The area the issue might have an impact on"),
                 new GUIContent("Location", "Path to the script file")            
@@ -93,6 +93,8 @@ To generate a report, click on the Export button.
 To reload the issue database definition, click on Reload DB. (Developer Mode only)";
         }
 
+        public static readonly string NoIssueSelectedText = "No issue selected";
+        
         private void OnEnable()
         {
             m_ProjectAuditor = new ProjectAuditor();
@@ -286,7 +288,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 }
                 else
                 {
-                    EditorGUILayout.LabelField("No issue selected");
+                    EditorGUILayout.LabelField(NoIssueSelectedText);
                 }
             }
             EditorGUILayout.EndVertical();
@@ -306,7 +308,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 }
                 else
                 {
-                    EditorGUILayout.LabelField("No issue selected");
+                    EditorGUILayout.LabelField(NoIssueSelectedText);
                 }
             }
             EditorGUILayout.EndVertical();
@@ -326,7 +328,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 }
                 else
                 {
-                    EditorGUILayout.LabelField("No issue selected");
+                    EditorGUILayout.LabelField(NoIssueSelectedText);
                 }
             }
             EditorGUILayout.EndVertical();
@@ -342,8 +344,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             m_ShowFilters = BoldFoldout(m_ShowFilters, Styles.FiltersFoldout);
             if (m_ShowFilters)
             {
-                EditorGUILayout.BeginHorizontal(Styles.Toolbar);
-                GUILayout.Label("Filter By:", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Filter By :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
 
                 EditorGUI.BeginChangeCheck();
 
@@ -355,8 +357,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 EditorGUILayout.EndHorizontal();
 
 #if UNITY_2018_1_OR_NEWER
-                EditorGUILayout.BeginHorizontal(Styles.Toolbar);
-                GUILayout.Label("", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Include :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
                 m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
 
                 //            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
