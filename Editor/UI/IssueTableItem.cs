@@ -4,10 +4,13 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class IssueTableItem : TreeViewItem
     {
-        public ProjectIssue m_projectIssue;
-        public IssueTableItem(int id, int depth, string displayName, ProjectIssue projectIssue = null) : base(id, depth, displayName)
+        public ProjectIssue m_ProjectIssue;
+        public ProblemDefinition m_ProblemDefinition;
+
+        public IssueTableItem(int id, int depth, string displayName, ProblemDefinition problemDefinition, ProjectIssue projectIssue = null) : base(id, depth, displayName)
         {
-            m_projectIssue = projectIssue;
+            m_ProblemDefinition = problemDefinition;
+            m_ProjectIssue = projectIssue;
         }
     }
 }
