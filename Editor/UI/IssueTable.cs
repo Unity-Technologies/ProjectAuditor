@@ -148,8 +148,27 @@ namespace Unity.ProjectAuditor.Editor
                         EditorGUI.LabelField(cellRect, new GUIContent(problemDefinition.area, areaLongDescription));
                     break;
                 case Column.Description :
-                    string tooltip = problemDefinition.problem + " \n\n" + problemDefinition.solution;
-                    EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
+                    if (m_GroupByDescription)
+                    {
+                        var callingMethod = issue.callingMethod;
+                        var nameWithoutReturnTypeAndParameters = callingMethod.Substring(callingMethod.IndexOf(" "));
+                        if (nameWithoutReturnTypeAndParameters.IndexOf("(") >= 0)
+                            nameWithoutReturnTypeAndParameters = nameWithoutReturnTypeAndParameters.Substring(0, nameWithoutReturnTypeAndParameters.IndexOf("("));
+                        
+                        var name = nameWithoutReturnTypeAndParameters;
+                        if (nameWithoutReturnTypeAndParameters.LastIndexOf("::") >= 0)
+                        {
+                            var onlyNamespace = nameWithoutReturnTypeAndParameters.Substring(0, nameWithoutReturnTypeAndParameters.LastIndexOf("::"));
+                            if (onlyNamespace.LastIndexOf(".") >= 0)
+                                name = nameWithoutReturnTypeAndParameters.Substring(onlyNamespace.LastIndexOf(".") + 1);
+                        }
+                        EditorGUI.LabelField(cellRect, new GUIContent(name, callingMethod));
+                    }
+                    else
+                    {
+                        string tooltip = problemDefinition.problem + " \n\n" + problemDefinition.solution;
+                        EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
+                    }
                     break;
                 case Column.Location :
                     var location = string.Format("{0}({1},{2})", issue.relativePath, issue.line,  issue.column);

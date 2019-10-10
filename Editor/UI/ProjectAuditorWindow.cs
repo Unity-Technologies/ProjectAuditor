@@ -64,8 +64,7 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to json file.");
 
-            public static readonly GUIContent[] ColumnHeaders = new[]
-            {
+            public static readonly GUIContent[] ColumnHeaders = {
                 new GUIContent("Issue", "Issue description"),
                 // new GUIContent("Resolved?", "Issues that have already been looked at"),
                 new GUIContent("Area", "The area the issue might have an impact on"),
@@ -75,7 +74,7 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filters");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout = new GUIContent("Recommendation", "Recommendation on how to solve the issue");
-            public static readonly GUIContent CallTreeFoldout = new GUIContent("Calling Method", "Calling Method");
+            public static readonly GUIContent CallTreeFoldout = new GUIContent("Call Tree", "Call Tree");
             
             public static readonly string HelpText =
 @"Project Auditor is an experimental static analysis tool for Unity Projects.
@@ -180,8 +179,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                     //     minWidth = 80;
                     //     break;
                     case IssueTable.Column.Area :
-                        width = 100;
-                        minWidth = 100;
+                        width = 50;
+                        minWidth = 50;
                         break;
                     case IssueTable.Column.Location :
                         if (m_ActiveMode == IssueCategory.ProjectSettings)
@@ -190,7 +189,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         minWidth = 400;
                         break;
                 }
-                
+                                
                 if (add)
                     columnsList.Add(new MultiColumnHeaderState.Column
                     {
@@ -263,8 +262,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
             DrawDetailsFoldout(selectedIssue);
             DrawRecommendationFoldout(selectedIssue);
-            if (m_ActiveMode == IssueCategory.ApiCalls)
-                DrawCallTree(selectedIssue);                
+//            if (m_ActiveMode == IssueCategory.ApiCalls)
+//                DrawCallTree(selectedIssue);                
         }
 
         private bool BoldFoldout(bool toggle, GUIContent content)
@@ -284,7 +283,9 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 if (issue != null)
                 {
                     EditorStyles.textField.wordWrap = true;
-                    EditorGUILayout.TextArea(issue.def.problem, GUILayout.MaxHeight(m_FoldoutMaxHeight));
+//                    var text = issue.description + " is called from " + issue.callingMethod + "\n\n" + issue.def.problem;
+                    var text = issue.def.problem;
+                    EditorGUILayout.TextArea(text, GUILayout.MaxHeight(m_FoldoutMaxHeight));
                 }
                 else
                 {
