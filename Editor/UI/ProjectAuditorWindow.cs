@@ -14,7 +14,10 @@ namespace Unity.ProjectAuditor.Editor
         private ProjectReport m_ProjectReport;
         private IssueTable[] m_IssueTables = {null, null};
 
-        private IssueTable m_ActiveIssueTable => m_IssueTables[(int)m_ActiveMode];
+        private IssueTable m_ActiveIssueTable
+        {
+            get { return m_IssueTables[(int) m_ActiveMode]; }
+        }
 
         private bool m_EnableCPU = true;
         private bool m_EnableGPU = true;
