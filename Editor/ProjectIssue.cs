@@ -6,7 +6,9 @@ namespace Unity.ProjectAuditor.Editor
     public enum IssueCategory
     {
         ApiCalls,
-        ProjectSettings
+        ProjectSettings,
+        
+        Count
     }
     
     [Serializable]
