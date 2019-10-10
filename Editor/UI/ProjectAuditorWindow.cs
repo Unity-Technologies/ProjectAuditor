@@ -258,7 +258,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             {
                 var selectedItem = m_IssueTable.GetSelectedItem();
                 if (selectedItem != null)
-                    selectedIssue = selectedItem.m_projectIssue;
+                    selectedIssue = selectedItem.m_ProjectIssue;
             }
 
             DrawDetailsFoldout(selectedIssue);

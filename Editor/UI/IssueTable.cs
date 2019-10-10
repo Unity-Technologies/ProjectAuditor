@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor
             int index = 0;
             int idForhiddenRoot = -1;
             int depthForHiddenRoot = -1;
-            var root = new IssueTableItem(idForhiddenRoot, depthForHiddenRoot, "root");
+            var root = new TreeViewItem(idForhiddenRoot, depthForHiddenRoot, "root");
             
             // grouped by assembly
             // HashSet<string> group = new HashSet<string>();
@@ -65,17 +65,18 @@ namespace Unity.ProjectAuditor.Editor
                 {
                     // var issuesIngroup = m_Issues.Where(i => group.Equals(i.assembly));
                     var issues = m_Issues.Where(i => groupName.Equals(i.def.description));
-                
+                    
                     // maybe dont create fake issue
                     // var assemblyGroup = new ProjectIssue
                     // {
                     //     assembly = assembly
                     // };
-                    var groupItem = new IssueTableItem(index++, 0, groupName);
-                    root.AddChild(groupItem); 
+                    var groupItem = new IssueTableItem(index++, 0, groupName, issues.FirstOrDefault().def);
+                    root.AddChild(groupItem);
+                    
                     foreach (var issue in issues)
                     {
-                        var item = new IssueTableItem(index++, 1, "Not Used", issue);
+                        var item = new IssueTableItem(index++, 1, "Not Used", issue.def, issue);
                         groupItem.AddChild(item);
                     }       
                 }                
@@ -85,13 +86,13 @@ namespace Unity.ProjectAuditor.Editor
                 // flat view
                foreach (var issue in m_Issues)
                {
-                   var item = new IssueTableItem(index++, 0, "", issue);
+                   var item = new IssueTableItem(index++, 0, "", issue.def, issue);
                    root.AddChild(item);            
                }
             }
 
             if (!root.hasChildren)
-                root.AddChild(new IssueTableItem(index++, 0, "No elements found"));
+                root.AddChild(new TreeViewItem(index++, 0, "No elements found"));
             
             return root;
         }
@@ -104,23 +105,33 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        void CellGUI(Rect cellRect, TreeViewItem item, int column, ref RowGUIArgs args)
+        void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int column, ref RowGUIArgs args)
         {
             // only indent first column
             if (0 == column)
             {
-                var indent = GetContentIndent(item) + extraSpaceBeforeIconAndLabel;
+                var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
                 CenterRectUsingSingleLineHeight(ref cellRect);                
             }
 
-            var issue = (item as IssueTableItem).m_projectIssue;
+            var item = (treeViewItem as IssueTableItem);
+            if (item == null)
+                return;
+
+            var issue = item.m_ProjectIssue;
+            var problemDefinition = item.m_ProblemDefinition;
+            var areaLongDescription = "This issue might have an impact on " + problemDefinition.area;                      
+            
             if (issue == null)
             {
-                switch (column)
+                switch ((Column)column)
                 {
-                    case 0:
+                    case Column.Description:
                         EditorGUI.LabelField(cellRect, new GUIContent(item.displayName, item.displayName));
+                        break;
+                    case Column.Area:
+                        EditorGUI.LabelField(cellRect, new GUIContent(problemDefinition.area, areaLongDescription));
                         break;
                 }
 
@@ -133,10 +144,11 @@ namespace Unity.ProjectAuditor.Editor
                 //     issue.resolved = EditorGUI.Toggle(cellRect, issue.resolved);
                 //     break;
                 case Column.Area :
-                    EditorGUI.LabelField(cellRect, new GUIContent(issue.def.area, "This issue might have an impact on " + issue.def.area));
+                    if (!m_GroupByDescription)
+                        EditorGUI.LabelField(cellRect, new GUIContent(problemDefinition.area, areaLongDescription));
                     break;
                 case Column.Description :
-                    string tooltip = issue.def.problem + " \n\n" + issue.def.solution;
+                    string tooltip = problemDefinition.problem + " \n\n" + problemDefinition.solution;
                     EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
                     break;
                 case Column.Location :
@@ -160,7 +172,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             var rows = FindRows( new[] {id});
             var item = rows.FirstOrDefault();
-            var issue = (item as IssueTableItem).m_projectIssue;
+            var issue = (item as IssueTableItem).m_ProjectIssue;
             if (issue.category.Equals(IssueCategory.ApiCalls.ToString()))
             {
                 var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(issue.relativePath);
