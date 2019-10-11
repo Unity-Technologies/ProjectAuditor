@@ -4,6 +4,13 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.0.4] - 2019-10-11
+
+* Added Calling Method information
+* Added Grouped view to Script issues
+* Removed "Resolved" checkboxes
+* Lots of bug fixes
+
 ## [0.0.3] - 2019-09-04
 
 * Fixed Unity 2017.x backwards compatibility
