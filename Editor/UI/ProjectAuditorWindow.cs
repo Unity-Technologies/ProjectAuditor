@@ -22,8 +22,8 @@ namespace Unity.ProjectAuditor.Editor
 //        private bool m_EnableResolvedItems = false;
 
         private bool m_ShowFilters = true;
-        private bool m_ShowDetails = false;
-        private bool m_ShowRecommendation = false;
+        private bool m_ShowDetails = true;
+        private bool m_ShowRecommendation = true;
         private bool m_ShowCallTree = false;
 
         private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
