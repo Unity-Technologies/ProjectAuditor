@@ -2,17 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
 using UnityEditor;
-using UnityEditor.Compilation;
-using UnityEngine;
-using UnityEditor.Macros;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class ProjectAuditor
+    public class ProjectAuditor : IAuditor
     {
         private List<IAuditor> m_Auditors = new List<IAuditor>();
 
@@ -45,30 +39,32 @@ namespace Unity.ProjectAuditor.Editor
         {
             m_Auditors.Add(new ScriptAuditor());
             m_Auditors.Add(new SettingsAuditor());
+            // Add more Auditors here...
 
             LoadDatabase();
         }
 
-        public ProjectReport Audit()
+        public void Audit(ProjectReport projectReport)
         {
-            var projectReport = new ProjectReport();
-
             foreach (var auditor in m_Auditors)
             {
                 auditor.Audit(projectReport);
             }
 
             EditorUtility.ClearProgressBar();
-
-            return projectReport;
         }
 
-        public void LoadDatabase()
+        public void LoadDatabase(string path)
         {
             foreach (var auditor in m_Auditors)
             {
-                auditor.LoadDatabase(dataPath);
+                auditor.LoadDatabase(path);
             }
+        }
+        
+        public void LoadDatabase()
+        {
+            LoadDatabase(dataPath);
         }
     }
 }

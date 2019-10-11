@@ -53,7 +53,7 @@ namespace Unity.ProjectAuditor.Editor
             "Load Times",
 
         };
-
+        
         private const int m_FoldoutWidth = 300;
         private const int m_FoldoutMaxHeight = 220;
 
@@ -155,7 +155,10 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
         private void Analyze()
         {
-            m_ProjectReport = m_ProjectAuditor.Audit();
+            m_ProjectReport = new ProjectReport();
+
+            m_ProjectAuditor.Audit(m_ProjectReport);
+
             RefreshDisplay();
         }
 
