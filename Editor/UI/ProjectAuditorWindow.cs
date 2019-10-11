@@ -17,11 +17,7 @@ namespace Unity.ProjectAuditor.Editor
         
         private IssueTable m_ActiveIssueTable => m_IssueTables[(int)m_ActiveMode];
 
-        private bool m_EnableCPU = true;
-        private bool m_EnableGPU = true;
-        private bool m_EnableMemory = true;
-        private bool m_EnableBuildSize = true;
-        private bool m_EnableLoadTimes = true;
+        private List<bool> m_EnableAreas = new List<bool>();
         private bool m_EnablePackages = false;
 //        private bool m_EnableResolvedItems = false;
 
@@ -50,7 +46,8 @@ namespace Unity.ProjectAuditor.Editor
             "GPU",
             "Memory",
             "Build Size",
-            "Load Times"
+            "Load Times",
+
         };
 
         private const int m_FoldoutWidth = 300;
@@ -100,6 +97,10 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         private void OnEnable()
         {
             m_ProjectAuditor = new ProjectAuditor();
+            
+            var enumAreas = Enum.GetValues(typeof(Area));
+            foreach(var area in enumAreas)
+                m_EnableAreas.Add(true);
         }
 
         private void OnGUI()
@@ -139,16 +140,11 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 //                return false;
 
             string area = issue.def.area;
-            if (m_EnableCPU && area.Contains(AreaEnumStrings[(int)Area.CPU]))
-                return true;
-            if (m_EnableGPU && area.Contains(AreaEnumStrings[(int)Area.GPU]))
-                return true;
-            if (m_EnableMemory && area.Contains(AreaEnumStrings[(int)Area.Memory]))
-                return true;
-            if (m_EnableBuildSize && area.Contains(AreaEnumStrings[(int)Area.BuildSize]))
-                return true;
-            if (m_EnableLoadTimes && area.Contains(AreaEnumStrings[(int)Area.LoadTimes]))
-                return true;
+            for (int index=0;index < Enum.GetValues(typeof(Area)).Length; index++)
+            {
+                if (m_EnableAreas[index] && area.Contains(AreaEnumStrings[index]))
+                    return true;                
+            }
 
             return false;
         }
@@ -355,11 +351,11 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
                 EditorGUI.BeginChangeCheck();
 
-                m_EnableMemory = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.Memory], m_EnableMemory, GUILayout.Width(100));
-                m_EnableCPU = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.CPU], m_EnableCPU, GUILayout.Width(100));
-                m_EnableGPU = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.GPU], m_EnableGPU, GUILayout.Width(100));
-                m_EnableBuildSize = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.BuildSize], m_EnableBuildSize, GUILayout.Width(100));
-                m_EnableLoadTimes = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.LoadTimes], m_EnableLoadTimes, GUILayout.Width(100));
+                for (int index=0;index < Enum.GetValues(typeof(Area)).Length; index++)
+                {
+                    m_EnableAreas[index] = EditorGUILayout.ToggleLeft(AreaEnumStrings[index], m_EnableAreas[index], GUILayout.Width(100));
+                }
+
                 EditorGUILayout.EndHorizontal();
 
 #if UNITY_2018_1_OR_NEWER
