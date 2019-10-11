@@ -27,6 +27,11 @@ namespace Unity.ProjectAuditor.Editor
 #endif
         }
 
+        public string GetUIName()
+        {
+            return "Scripts";
+        }
+        
         public void Audit( ProjectReport projectReport)
         {
             List<ProblemDefinition> problemDefinitions = m_Database.m_Definitions;

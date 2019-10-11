@@ -238,8 +238,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         {
             if (IsAnalysisValid())
             {
-                var activeMode = m_ActiveMode;
-                m_ActiveMode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, ReportModeStrings);
+                m_ActiveMode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, m_ProjectAuditor.auditorNames);
                 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.BeginVertical();

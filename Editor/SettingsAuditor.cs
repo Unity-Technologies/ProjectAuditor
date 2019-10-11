@@ -13,6 +13,11 @@ namespace Unity.ProjectAuditor.Editor
         {
             m_Helpers = new AnalyzerHelpers();
         }
+
+        public string GetUIName()
+        {
+            return "Settings";
+        }
         
         public void LoadDatabase(string path)
         {
