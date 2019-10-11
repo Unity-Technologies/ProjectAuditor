@@ -7,8 +7,6 @@ namespace Unity.ProjectAuditor.Editor
     {
         ApiCalls,
         ProjectSettings,
-        
-        Count
     }
     
     [Serializable]
