@@ -22,18 +22,16 @@ The easiest way to install Project Auditor in your Unity project is by adding it
 }
 ```
 
-### Assets Folder 
-
 ### Clone Repository
 Alternatively, it is possible to clone the repository:
 
-#### (2017 or older)
+#### 2017 or older
 ```
 cd Packages
 git clone https://github.com/mtrive/ProjectAuditor.git
 ```
 
-#### (2017 or older)
+#### 2017 or older
 ```
 cd Assets
 git clone https://github.com/mtrive/ProjectAuditor.git
