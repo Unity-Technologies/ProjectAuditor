@@ -11,7 +11,7 @@ All versions of Unity should be compatible, however, to use it with Unity 2019 o
 Although this project is developed by Unity employees, it is not officially supported by Unity and it is not on Unity's roadmap. Feedback and requests are more than welcome, please enter them as issues.
 
 ## Installation
-### Package Manager (2018 or newer)
+### Package Manager (2018 Only)
 The easiest way to install Project Auditor in your Unity project is by adding it as a dependency to the project Packages/manifest.json file:
 
 ```
