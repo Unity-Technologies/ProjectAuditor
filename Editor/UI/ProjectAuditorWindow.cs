@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -12,7 +13,8 @@ namespace Unity.ProjectAuditor.Editor
         
         private ProjectAuditor m_ProjectAuditor;
         private ProjectReport m_ProjectReport;
-        private IssueTable[] m_IssueTables = {null, null};
+
+        private List<IssueTable> m_IssueTables = new List<IssueTable>();
 
         private IssueTable m_ActiveIssueTable
         {
@@ -215,15 +217,16 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             if (!IsAnalysisValid())
                 return;
 
-            m_IssueTables[(int)IssueCategory.ProjectSettings] = CreateIssueTable(IssueCategory.ProjectSettings);
-            m_IssueTables[(int)IssueCategory.ApiCalls] = CreateIssueTable(IssueCategory.ApiCalls);
+            m_IssueTables.Clear();
+            
+            foreach (IssueCategory category in Enum.GetValues(typeof(IssueCategory)))
+                m_IssueTables.Add(CreateIssueTable(category));                
         }
 
         private void Reload()
         {
             m_ProjectAuditor.LoadDatabase();
-            m_IssueTables[(int)IssueCategory.ProjectSettings] = null;
-            m_IssueTables[(int)IssueCategory.ApiCalls] = null;
+            m_IssueTables.Clear();
         }
 
         private void Serialize()
