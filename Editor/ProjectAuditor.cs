@@ -10,6 +10,26 @@ namespace Unity.ProjectAuditor.Editor
     {
         private List<IAuditor> m_Auditors = new List<IAuditor>();
 
+        private string[] m_AuditorNames;
+        
+        public string[] auditorNames
+        {
+            get
+            {
+                if (m_AuditorNames != null)
+                    return m_AuditorNames;
+
+                List<string> names = new List<string>();
+                foreach (var auditor in m_Auditors)
+                {
+                    names.Add(auditor.GetUIName());                    
+                }
+
+                m_AuditorNames = names.ToArray();
+                return m_AuditorNames;
+            }
+        }
+
         private static string m_DataPath;
 
         public static string dataPath
@@ -34,7 +54,12 @@ namespace Unity.ProjectAuditor.Editor
                 return m_DataPath;
             }
         }
-        
+
+        public string GetUIName()
+        {
+            return "Project Auditor";
+        }
+      
         public ProjectAuditor()
         {
             m_Auditors.Add(new ScriptAuditor());
