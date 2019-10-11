@@ -5,32 +5,28 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class ProjectReport
     {
-        private List<ProjectIssue> m_ApiCallsIssues = new List<ProjectIssue>();
-        private List<ProjectIssue> m_ProjectSettingsIssues = new List<ProjectIssue>();
+        private Dictionary<IssueCategory, List<ProjectIssue>> m_IssueDict = new Dictionary<IssueCategory, List<ProjectIssue>>();
 
         public List<ProjectIssue> GetIssues(IssueCategory category)
         {
-            return category == IssueCategory.ApiCalls
-                ? m_ApiCallsIssues
-                : m_ProjectSettingsIssues;
+            return m_IssueDict[category];  
         }
 
         public void AddIssue(ProjectIssue projectIssue, IssueCategory category)
         {
-            var issues = category == IssueCategory.ApiCalls
-                ? m_ApiCallsIssues
-                : m_ProjectSettingsIssues;
+            if (!m_IssueDict.ContainsKey(category))
+                m_IssueDict.Add(category, new List<ProjectIssue>());
             
-            issues.Add(projectIssue);
+            m_IssueDict[category].Add(projectIssue);
         }
         
         public void WriteToFile()
         {
-            
-            var json = JsonHelper.ToJson<ProjectIssue>(m_ApiCallsIssues.ToArray(), true);
-            File.WriteAllText("Report_ApiCalls.json", json);
-            json = JsonHelper.ToJson<ProjectIssue>(m_ProjectSettingsIssues.ToArray(), true);
-            File.WriteAllText("Report_ProjectSettings.json", json);
+            foreach (var issues in m_IssueDict)
+            {
+                var json = JsonHelper.ToJson<ProjectIssue>(issues.Value.ToArray(), true);
+                File.WriteAllText("Report_" + issues.Key.ToString() + ".json", json);
+            }
         }
     }
 }
