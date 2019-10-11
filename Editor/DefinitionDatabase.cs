@@ -4,7 +4,6 @@ using System.IO;
 
 namespace Unity.ProjectAuditor.Editor
 {
-
     [Serializable]
     public class ProblemDefinition {
         public string type;
@@ -28,11 +27,11 @@ namespace Unity.ProjectAuditor.Editor
     {
         public List<ProblemDefinition> m_Definitions;
 
-        public DefinitionDatabase(string name)
+        public DefinitionDatabase(string path, string name)
         {
             m_Definitions = new List<ProblemDefinition>();
 
-            var fullPath = Path.GetFullPath(Path.Combine(ProjectAuditor.dataPath, name + ".json"));
+            var fullPath = Path.GetFullPath(Path.Combine(path, name + ".json"));
             var json = File.ReadAllText(fullPath);
             var result = JsonHelper.FromJson<ProblemDefinition>(json);
 
