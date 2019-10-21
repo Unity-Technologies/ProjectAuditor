@@ -31,11 +31,6 @@ namespace Unity.ProjectAuditor.Editor
 
         private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
       
-        string[] ReportModeStrings = {
-            "Scripts",
-            "Project Settings"
-        };
-
         enum Area{
             CPU,
             GPU,
