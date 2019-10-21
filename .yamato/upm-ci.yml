@@ -1,6 +1,6 @@
 test_editors:
-  - version: 2019.1
-  - version: trunk
+  - version: 2017.4
+  - version: 2018.4
 test_platforms:
   - name: win
     type: Unity::VM
