@@ -14,9 +14,12 @@ namespace Unity.ProjectAuditor.Editor
         private ProjectAuditor m_ProjectAuditor;
         private ProjectReport m_ProjectReport;
         private List<IssueTable> m_IssueTables = new List<IssueTable>();
-        
-        private IssueTable m_ActiveIssueTable => m_IssueTables[(int)m_ActiveMode];
 
+        private IssueTable m_ActiveIssueTable
+        {
+            get { return m_IssueTables[(int) m_ActiveMode]; }
+        }
+        
         private List<bool> m_EnableAreas = new List<bool>();
         private bool m_EnablePackages = false;
 //        private bool m_EnableResolvedItems = false;
