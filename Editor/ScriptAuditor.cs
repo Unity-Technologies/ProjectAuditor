@@ -31,6 +31,11 @@ namespace Unity.ProjectAuditor.Editor
         {
             return "Scripts";
         }
+
+//        public string OnDrawStats()
+//        {
+//            
+//        }
         
         public void Audit( ProjectReport projectReport)
         {
