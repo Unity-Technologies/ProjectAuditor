@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             return "Scripts";
         }
-        
+
         public void Audit( ProjectReport projectReport)
         {
             List<ProblemDefinition> problemDefinitions = m_Database.m_Definitions;

@@ -64,14 +64,16 @@ namespace Unity.ProjectAuditor.Editor
                 foreach (var groupName in allGroups)
                 {
                     // var issuesIngroup = m_Issues.Where(i => group.Equals(i.assembly));
-                    var issues = m_Issues.Where(i => groupName.Equals(i.def.description));
+                    var issues = m_Issues.Where(i => groupName.Equals(i.def.description)).ToArray();
                     
                     // maybe dont create fake issue
                     // var assemblyGroup = new ProjectIssue
                     // {
                     //     assembly = assembly
                     // };
-                    var groupItem = new IssueTableItem(index++, 0, groupName, issues.FirstOrDefault().def);
+
+                    var displayName = string.Format("{0} ({1})", groupName, issues.Length);  
+                    var groupItem = new IssueTableItem(index++, 0, displayName, issues.FirstOrDefault().def);
                     root.AddChild(groupItem);
                     
                     foreach (var issue in issues)
@@ -123,7 +125,7 @@ namespace Unity.ProjectAuditor.Editor
             var problemDefinition = item.m_ProblemDefinition;
             var areaLongDescription = "This issue might have an impact on " + problemDefinition.area;                      
             
-            if (issue == null)
+            if (item.hasChildren)
             {
                 switch ((Column)column)
                 {
@@ -191,13 +193,16 @@ namespace Unity.ProjectAuditor.Editor
         {
             var rows = FindRows( new[] {id});
             var item = rows.FirstOrDefault();
-            var issue = (item as IssueTableItem).m_ProjectIssue;
-            if (issue.category.Equals(IssueCategory.ApiCalls.ToString()))
+            if (!item.hasChildren)
             {
-                var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(issue.relativePath);
+                var issue = (item as IssueTableItem).m_ProjectIssue;
+                if (issue.category.Equals(IssueCategory.ApiCalls.ToString()))
+                {
+                    var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(issue.relativePath);
             
-                // Note that this this does not work with Package assets
-                AssetDatabase.OpenAsset(obj, issue.line);                
+                    // Note that this this does not work with Package assets
+                    AssetDatabase.OpenAsset(obj, issue.line);                
+                }              
             }
         }
 
