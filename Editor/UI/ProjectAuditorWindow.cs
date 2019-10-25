@@ -261,16 +261,16 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         
         private void DrawFoldouts()
         {
-            ProjectIssue selectedIssue = null;
+            ProblemDefinition problemDefinition = null;
             if (m_ActiveIssueTable != null && m_ActiveIssueTable.HasSelection())
             {
                 var selectedItem = m_ActiveIssueTable.GetSelectedItem();
                 if (selectedItem != null)
-                    selectedIssue = selectedItem.m_ProjectIssue;
+                    problemDefinition = selectedItem.m_ProblemDefinition;
             }
 
-            DrawDetailsFoldout(selectedIssue);
-            DrawRecommendationFoldout(selectedIssue);
+            DrawDetailsFoldout(problemDefinition);
+            DrawRecommendationFoldout(problemDefinition);
 //            if (m_ActiveMode == IssueCategory.ApiCalls)
 //                DrawCallTree(selectedIssue);             
         }
@@ -282,18 +282,18 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             return EditorGUILayout.Foldout(toggle, content, foldoutStyle);
         }
 
-        private void DrawDetailsFoldout(ProjectIssue issue)
+        private void DrawDetailsFoldout(ProblemDefinition problemDefinition)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
 
             m_ShowDetails = BoldFoldout(m_ShowDetails, Styles.DetailsFoldout);
             if (m_ShowDetails)
             {
-                if (issue != null)
+                if (problemDefinition != null)
                 {
                     EditorStyles.textField.wordWrap = true;
 //                    var text = issue.description + " is called from " + issue.callingMethod + "\n\n" + issue.def.problem;
-                    var text = issue.def.problem;
+                    var text = problemDefinition.problem;
                     EditorGUILayout.TextArea(text, GUILayout.MaxHeight(m_FoldoutMaxHeight));
                 }
                 else
@@ -304,17 +304,17 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             EditorGUILayout.EndVertical();
         }
 
-        private void DrawRecommendationFoldout(ProjectIssue issue)
+        private void DrawRecommendationFoldout(ProblemDefinition problemDefinition)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
 
             m_ShowRecommendation = BoldFoldout(m_ShowRecommendation, Styles.RecommendationFoldout);
             if (m_ShowRecommendation)
             {
-                if (issue != null)
+                if (problemDefinition != null)
                 {
                     EditorStyles.textField.wordWrap = true;
-                    EditorGUILayout.TextArea(issue.def.solution, GUILayout.MaxHeight(m_FoldoutMaxHeight));
+                    EditorGUILayout.TextArea(problemDefinition.solution, GUILayout.MaxHeight(m_FoldoutMaxHeight));
                 }
                 else
                 {
