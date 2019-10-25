@@ -64,14 +64,16 @@ namespace Unity.ProjectAuditor.Editor
                 foreach (var groupName in allGroups)
                 {
                     // var issuesIngroup = m_Issues.Where(i => group.Equals(i.assembly));
-                    var issues = m_Issues.Where(i => groupName.Equals(i.def.description));
+                    var issues = m_Issues.Where(i => groupName.Equals(i.def.description)).ToArray();
                     
                     // maybe dont create fake issue
                     // var assemblyGroup = new ProjectIssue
                     // {
                     //     assembly = assembly
                     // };
-                    var groupItem = new IssueTableItem(index++, 0, groupName, issues.FirstOrDefault().def);
+
+                    var displayName = string.Format("{0} ({1})", groupName, issues.Length);  
+                    var groupItem = new IssueTableItem(index++, 0, displayName, issues.FirstOrDefault().def);
                     root.AddChild(groupItem);
                     
                     foreach (var issue in issues)
