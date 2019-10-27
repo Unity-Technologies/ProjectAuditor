@@ -11,16 +11,23 @@ All versions of Unity should be compatible, however, check the Installation inst
 Although this project is developed by Unity employees, it is not officially supported by Unity and it is not on Unity's roadmap. Feedback and requests are more than welcome, please enter them as issues.
 
 ## Installation
-Project Auditor can be installed by cloning this repository to your Unity project as follows:
-### Unity 2019
+Project Auditor can be installed as a package in Unity 2018+, or added to the `Assets` folder in previous versions of Unity.
+### Unity 2018 or newer
+Add `com.unity.project-auditor` as a dependency to the project `Packages/manifest.json` file:
+
 ```
-cd Packages
-git clone https://github.com/mtrive/ProjectAuditor
+{
+  "dependencies": {
+    "com.unity.project-auditor": "https://git@github.com/mtrive/ProjectAuditor.git",
+  }
+}
 ```
-### Unity 2018 or older
+### Unity 2017 or older
+Clone this repository to your Unity project as follows:
+
 ```
 cd Assets
-git clone https://github.com/mtrive/ProjectAuditor.git --single-branch --branch 2017
+git clone https://github.com/mtrive/ProjectAuditor.git
 ```
 
 ## How to Use
