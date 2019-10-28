@@ -57,9 +57,9 @@ namespace Unity.ProjectAuditor.Editor
                             projectReport.AddIssue(new ProjectIssue
                             {
                                 description = p.description,
-                                category = IssueCategory.ProjectSettings.ToString(),
+                                category = IssueCategory.ProjectSettings,
                                 def = p
-                            }, IssueCategory.ProjectSettings);
+                            });
                         
                             // stop iterating assemblies
                             break;
@@ -82,9 +82,9 @@ namespace Unity.ProjectAuditor.Editor
                     projectReport.AddIssue(new ProjectIssue
                     {
                         description = p.description,
-                        category = IssueCategory.ProjectSettings.ToString(),
+                        category = IssueCategory.ProjectSettings,
                         def = p
-                    }, IssueCategory.ProjectSettings);
+                    });
                 }
             }
         }

@@ -30,11 +30,6 @@ namespace Unity.ProjectAuditor.Editor
         private bool m_ShowCallTree = false;
 
         private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
-      
-        string[] ReportModeStrings = {
-            "Scripts",
-            "Project Settings"
-        };
 
         enum Area{
             CPU,
@@ -131,10 +126,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         
         bool ShouldDisplay(ProjectIssue issue)
         {
-            string category = issue.category;
-
             string url = issue.url;
-            if (!m_EnablePackages && category.Equals(Editor.IssueCategory.ApiCalls.ToString()) &&
+            if (!m_EnablePackages && issue.category == IssueCategory.ApiCalls &&
                 (url.Contains("Library/PackageCache/") || url.Contains("Resources/PackageManager/BuiltInPackages/")))
                 return false;
 
@@ -239,8 +232,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             {
                 m_ActiveMode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, m_ProjectAuditor.auditorNames);
 
-                var numIssues = m_ProjectReport.GetIssues(m_ActiveMode).Count;
-                EditorGUILayout.LabelField("Issues : " + numIssues, GUILayout.ExpandWidth(true), GUILayout.Width(80));
+                EditorGUILayout.LabelField("Issues : " + m_ActiveIssueTable.NumIssues(), GUILayout.ExpandWidth(true), GUILayout.Width(80));
                 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.BeginVertical();
@@ -366,14 +358,18 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
                 EditorGUILayout.EndHorizontal();
 
+                if (m_DeveloperMode)
+                {
 #if UNITY_2018_1_OR_NEWER
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Include :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
-
-                //            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
-                EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("Include :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+                    m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
+    
+                    //            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
+                    EditorGUILayout.EndHorizontal();
 #endif
+                }
+
                 if (EditorGUI.EndChangeCheck())
                 {
                     RefreshDisplay();
