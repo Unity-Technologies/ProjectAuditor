@@ -21,9 +21,9 @@ namespace Unity.ProjectAuditor.Editor
             return m_IssueDict[category];  
         }
 
-        public void AddIssue(ProjectIssue projectIssue, IssueCategory category)
+        public void AddIssue(ProjectIssue projectIssue)
         {
-            m_IssueDict[category].Add(projectIssue);
+            m_IssueDict[projectIssue.category].Add(projectIssue);
         }
         
         public void WriteToFile()

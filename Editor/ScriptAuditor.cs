@@ -118,7 +118,7 @@ namespace Unity.ProjectAuditor.Editor
                                             url = s.Document.Url,
                                             line = s.StartLine,
                                             column = s.StartColumn
-                                        }, IssueCategory.ApiCalls);
+                                        });
                                     }
                                 }
                             }
