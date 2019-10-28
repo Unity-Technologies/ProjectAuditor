@@ -365,14 +365,18 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
                 EditorGUILayout.EndHorizontal();
 
+                if (m_DeveloperMode)
+                {
 #if UNITY_2018_1_OR_NEWER
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Include :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
-
-                //            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
-                EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("Include :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+                    m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
+    
+                    //            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
+                    EditorGUILayout.EndHorizontal();
 #endif
+                }
+
                 if (EditorGUI.EndChangeCheck())
                 {
                     RefreshDisplay();
