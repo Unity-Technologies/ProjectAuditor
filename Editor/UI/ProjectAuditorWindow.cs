@@ -30,11 +30,6 @@ namespace Unity.ProjectAuditor.Editor
         private bool m_ShowCallTree = false;
 
         private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
-      
-        string[] ReportModeStrings = {
-            "Scripts",
-            "Project Settings"
-        };
 
         enum Area{
             CPU,
