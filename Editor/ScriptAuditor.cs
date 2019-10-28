@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor
         
         private UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
 
-        private string[] m_WhitelistedPackages;      
+        private string[] m_WhitelistedPackages;
         
         public ScriptAuditor()
         {
@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor
             // Analyse all Player assemblies, including Package assemblies.
             foreach (var playerAssembly in m_PlayerAssemblies)
             {
-                progressBar.AdvanceProgressBar();
+                progressBar.AdvanceProgressBar(); 
                 
                 string assemblyPath = playerAssembly.outputPath;
                 if (!File.Exists(assemblyPath))

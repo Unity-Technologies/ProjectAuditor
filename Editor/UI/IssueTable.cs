@@ -218,5 +218,10 @@ namespace Unity.ProjectAuditor.Editor
 
             return null;
         }
+
+        public int NumIssues()
+        {
+            return m_Issues.Length;
+        }
     }
 }

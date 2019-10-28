@@ -239,8 +239,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             {
                 m_ActiveMode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, m_ProjectAuditor.auditorNames);
 
-                var numIssues = m_ProjectReport.GetIssues(m_ActiveMode).Count;
-                EditorGUILayout.LabelField("Issues : " + numIssues, GUILayout.ExpandWidth(true), GUILayout.Width(80));
+                EditorGUILayout.LabelField("Issues : " + m_ActiveIssueTable.NumIssues(), GUILayout.ExpandWidth(true), GUILayout.Width(80));
                 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.BeginVertical();
