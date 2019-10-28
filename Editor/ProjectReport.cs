@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -7,6 +8,14 @@ namespace Unity.ProjectAuditor.Editor
     {
         private Dictionary<IssueCategory, List<ProjectIssue>> m_IssueDict = new Dictionary<IssueCategory, List<ProjectIssue>>();
 
+        public ProjectReport()
+        {
+            foreach (IssueCategory category in Enum.GetValues(typeof(IssueCategory)))
+            {
+                m_IssueDict.Add(category, new List<ProjectIssue>());
+            }
+        }
+
         public List<ProjectIssue> GetIssues(IssueCategory category)
         {
             return m_IssueDict[category];  
@@ -14,9 +23,6 @@ namespace Unity.ProjectAuditor.Editor
 
         public void AddIssue(ProjectIssue projectIssue, IssueCategory category)
         {
-            if (!m_IssueDict.ContainsKey(category))
-                m_IssueDict.Add(category, new List<ProjectIssue>());
-            
             m_IssueDict[category].Add(projectIssue);
         }
         
