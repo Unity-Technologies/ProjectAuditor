@@ -196,7 +196,7 @@ namespace Unity.ProjectAuditor.Editor
             if (!item.hasChildren)
             {
                 var issue = (item as IssueTableItem).m_ProjectIssue;
-                if (issue.category.Equals(IssueCategory.ApiCalls.ToString()))
+                if (issue.category == IssueCategory.ApiCalls)
                 {
                     var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(issue.relativePath);
             

@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor
         public ProblemDefinition def;
         public string description;
         public string callingMethod;
-        public string category;
+        public IssueCategory category;
         public string url;
         public int line;
         public int column;

@@ -112,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor
                                         projectReport.AddIssue(new ProjectIssue
                                         {
                                             description = description,
-                                            category = IssueCategory.ApiCalls.ToString(),
+                                            category = IssueCategory.ApiCalls,
                                             def = p,
                                             callingMethod = m.FullName,
                                             url = s.Document.Url,

@@ -131,10 +131,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         
         bool ShouldDisplay(ProjectIssue issue)
         {
-            string category = issue.category;
-
             string url = issue.url;
-            if (!m_EnablePackages && category.Equals(Editor.IssueCategory.ApiCalls.ToString()) &&
+            if (!m_EnablePackages && issue.category == IssueCategory.ApiCalls &&
                 (url.Contains("Library/PackageCache/") || url.Contains("Resources/PackageManager/BuiltInPackages/")))
                 return false;
 
