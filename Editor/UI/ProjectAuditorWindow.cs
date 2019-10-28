@@ -403,8 +403,10 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             }
             else
             {
-                if (GUILayout.Button(Styles.ExportButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
-                    Export();
+                // Export button needs to be properly tested before exposing it
+                if (m_DeveloperMode)
+                    if (GUILayout.Button(Styles.ExportButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                        Export();
 
                 EditorGUILayout.EndHorizontal();
             }
