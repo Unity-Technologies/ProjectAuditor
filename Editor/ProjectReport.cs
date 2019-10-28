@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor
             foreach (var issues in m_IssueDict)
             {
                 var json = JsonHelper.ToJson<ProjectIssue>(issues.Value.ToArray(), true);
-                File.WriteAllText("Report_" + issues.Key.ToString() + ".json", json);
+                File.WriteAllText("Report_" + issues.Key + ".json", json);
             }
         }
     }
