@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor
                             {
                                 description = p.description,
                                 category = IssueCategory.ProjectSettings,
-                                def = p
+                                descriptor = p
                             });
                         
                             // stop iterating assemblies
@@ -83,7 +83,7 @@ namespace Unity.ProjectAuditor.Editor
                     {
                         description = p.description,
                         category = IssueCategory.ProjectSettings,
-                        def = p
+                        descriptor = p
                     });
                 }
             }

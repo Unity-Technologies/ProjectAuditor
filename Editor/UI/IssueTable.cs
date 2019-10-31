@@ -52,9 +52,9 @@ namespace Unity.ProjectAuditor.Editor
                 HashSet<string> allGroupsSet = new HashSet<string>();
                 foreach (var issue in m_Issues)
                 {
-                    if (!allGroupsSet.Contains(issue.def.description))
+                    if (!allGroupsSet.Contains(issue.descriptor.description))
                     {
-                        allGroupsSet.Add(issue.def.description);
+                        allGroupsSet.Add(issue.descriptor.description);
                     }
                 }
 
@@ -64,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor
                 foreach (var groupName in allGroups)
                 {
                     // var issuesIngroup = m_Issues.Where(i => group.Equals(i.assembly));
-                    var issues = m_Issues.Where(i => groupName.Equals(i.def.description)).ToArray();
+                    var issues = m_Issues.Where(i => groupName.Equals(i.descriptor.description)).ToArray();
                     
                     // maybe dont create fake issue
                     // var assemblyGroup = new ProjectIssue
@@ -73,12 +73,12 @@ namespace Unity.ProjectAuditor.Editor
                     // };
 
                     var displayName = string.Format("{0} ({1})", groupName, issues.Length);  
-                    var groupItem = new IssueTableItem(index++, 0, displayName, issues.FirstOrDefault().def);
+                    var groupItem = new IssueTableItem(index++, 0, displayName, issues.FirstOrDefault().descriptor);
                     root.AddChild(groupItem);
                     
                     foreach (var issue in issues)
                     {
-                        var item = new IssueTableItem(index++, 1, "Not Used", issue.def, issue);
+                        var item = new IssueTableItem(index++, 1, "Not Used", issue.descriptor, issue);
                         groupItem.AddChild(item);
                     }       
                 }                
@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor
                 // flat view
                foreach (var issue in m_Issues)
                {
-                   var item = new IssueTableItem(index++, 0, "", issue.def, issue);
+                   var item = new IssueTableItem(index++, 0, "", issue.descriptor, issue);
                    root.AddChild(item);            
                }
             }

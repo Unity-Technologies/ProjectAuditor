@@ -135,7 +135,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 //            if (!m_EnableResolvedItems && issue.resolved == true)
 //                return false;
 
-            string area = issue.def.area;
+            string area = issue.descriptor.area;
             for (int index=0;index < Enum.GetValues(typeof(Area)).Length; index++)
             {
                 if (m_EnableAreas[index] && area.Contains(AreaEnumStrings[index]))

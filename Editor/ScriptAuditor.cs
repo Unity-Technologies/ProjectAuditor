@@ -111,7 +111,7 @@ namespace Unity.ProjectAuditor.Editor
                                         {
                                             description = description,
                                             category = IssueCategory.ApiCalls,
-                                            def = p,
+                                            descriptor = p,
                                             callingMethod = m.FullName,
                                             url = s.Document.Url,
                                             line = s.StartLine,
