@@ -30,14 +30,6 @@ namespace Unity.ProjectAuditor.Editor
         private bool m_ShowCallTree = false;
 
         private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
-
-        enum Area{
-            CPU,
-            GPU,
-            Memory,
-            BuildSize,
-            LoadTimes
-        }
         
         static readonly string[] AreaEnumStrings = {
             "CPU",
