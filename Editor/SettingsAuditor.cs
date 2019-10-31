@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor.Macros;
 
@@ -6,7 +7,7 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class SettingsAuditor : IAuditor
     {
-        private DefinitionDatabase m_Database;
+        private List<ProblemDescriptor> m_ProblemDescriptors;
         private AnalyzerHelpers m_Helpers;
 
         public SettingsAuditor()
@@ -21,18 +22,17 @@ namespace Unity.ProjectAuditor.Editor
         
         public void LoadDatabase(string path)
         {
-            m_Database = new DefinitionDatabase( path, "ProjectSettings");
+             m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors( path, "ProjectSettings");
         }
 
         public void Audit(ProjectReport projectReport)
         {
-            var problemDefinitions = m_Database.m_Definitions;
             var progressBar =
-                new ProgressBarDisplay("Analyzing Scripts", "Analyzing project settings", problemDefinitions.Count);
+                new ProgressBarDisplay("Analyzing Scripts", "Analyzing project settings", m_ProblemDescriptors.Count);
 
             // do we actually need to look in all assemblies?
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (var p in problemDefinitions)
+            foreach (var p in m_ProblemDescriptors)
             {
                 progressBar.AdvanceProgressBar();
                 SearchAndEval(p, assemblies, projectReport);
@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor
             progressBar.ClearProgressBar();
         }
      
-        void SearchAndEval(ProblemDefinition p, System.Reflection.Assembly[] assemblies, ProjectReport projectReport)
+        void SearchAndEval(ProblemDescriptor p, System.Reflection.Assembly[] assemblies, ProjectReport projectReport)
         {
             if (string.IsNullOrEmpty(p.customevaluator))
             {

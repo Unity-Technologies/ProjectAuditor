@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public class ProjectIssue
     {
-        public ProblemDefinition def;
+        public ProblemDescriptor def;
         public string description;
         public string callingMethod;
         public IssueCategory category;

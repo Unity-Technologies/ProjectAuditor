@@ -122,8 +122,8 @@ namespace Unity.ProjectAuditor.Editor
                 return;
 
             var issue = item.m_ProjectIssue;
-            var problemDefinition = item.m_ProblemDefinition;
-            var areaLongDescription = "This issue might have an impact on " + problemDefinition.area;                      
+            var problemDescriptor = item.problemDescriptor;
+            var areaLongDescription = "This issue might have an impact on " + problemDescriptor.area;                      
             
             if (item.hasChildren)
             {
@@ -133,7 +133,7 @@ namespace Unity.ProjectAuditor.Editor
                         EditorGUI.LabelField(cellRect, new GUIContent(item.displayName, item.displayName));
                         break;
                     case Column.Area:
-                        EditorGUI.LabelField(cellRect, new GUIContent(problemDefinition.area, areaLongDescription));
+                        EditorGUI.LabelField(cellRect, new GUIContent(problemDescriptor.area, areaLongDescription));
                         break;
                 }
 
@@ -147,7 +147,7 @@ namespace Unity.ProjectAuditor.Editor
                 //     break;
                 case Column.Area :
                     if (!m_GroupByDescription)
-                        EditorGUI.LabelField(cellRect, new GUIContent(problemDefinition.area, areaLongDescription));
+                        EditorGUI.LabelField(cellRect, new GUIContent(problemDescriptor.area, areaLongDescription));
                     break;
                 case Column.Description :
                     if (m_GroupByDescription)
@@ -168,7 +168,7 @@ namespace Unity.ProjectAuditor.Editor
                     }
                     else
                     {
-                        string tooltip = problemDefinition.problem + " \n\n" + problemDefinition.solution;
+                        string tooltip = problemDescriptor.problem + " \n\n" + problemDescriptor.solution;
                         EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
                     }
                     break;

@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class ScriptAuditor : IAuditor
     {
-        private DefinitionDatabase m_Database; 
+        private List<ProblemDescriptor> m_ProblemDescriptors;
         
         private UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
 
@@ -34,8 +34,6 @@ namespace Unity.ProjectAuditor.Editor
 
         public void Audit( ProjectReport projectReport)
         {
-            List<ProblemDefinition> problemDefinitions = m_Database.m_Definitions;
-
             var progressBar =
                 new ProgressBarDisplay("Analyzing Scripts", "Analyzing project scripts", m_PlayerAssemblies.Length);
             
@@ -63,13 +61,13 @@ namespace Unity.ProjectAuditor.Editor
                             var calledMethod = ((MethodReference) inst.Operand);
                             
                             // HACK: need to figure out a way to know whether a method is actually a property
-                            var p = problemDefinitions.SingleOrDefault(c => c.type == calledMethod.DeclaringType.FullName &&
+                            var p = m_ProblemDescriptors.SingleOrDefault(c => c.type == calledMethod.DeclaringType.FullName &&
                                                                             (c.method == calledMethod.Name || ("get_" + c.method) == calledMethod.Name));
 
                             if (p == null)
                             {
                                 // Are we trying to warn about a whole namespace?
-                                p = problemDefinitions.SingleOrDefault(c =>
+                                p = m_ProblemDescriptors.SingleOrDefault(c =>
                                     c.type == calledMethod.DeclaringType.Namespace && c.method == "*");
                             }
                             //if (p.type != null && m.HasCustomDebugInformations)
@@ -132,7 +130,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public void LoadDatabase(string path)
         {
-            m_Database = new DefinitionDatabase(path, "ApiDatabase");
+            m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors(path, "ApiDatabase");
                         
             SetupPackageWhitelist(path);
         }        
