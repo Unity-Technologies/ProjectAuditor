@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -16,6 +17,15 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
+        public int NumIssues
+        {
+            get
+            {
+                return m_IssueDict.Select(i => i.Value.Count).Sum();
+                
+            }
+        }
+        
         public List<ProjectIssue> GetIssues(IssueCategory category)
         {
             return m_IssueDict[category];  

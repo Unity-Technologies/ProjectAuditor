@@ -3,6 +3,14 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    enum Area{
+        CPU,
+        GPU,
+        Memory,
+        BuildSize,
+        LoadTimes
+    }
+
     public enum IssueCategory
     {
         ApiCalls,
@@ -12,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public class ProjectIssue
     {
-        public ProblemDefinition def;
+        public ProblemDescriptor descriptor;
         public string description;
         public string callingMethod;
         public IssueCategory category;

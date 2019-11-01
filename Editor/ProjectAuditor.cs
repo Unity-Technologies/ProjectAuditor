@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class ProjectAuditor : IAuditor
+    public class ProjectAuditor : IAuditor, IPreprocessBuildWithReport
     {
         private List<IAuditor> m_Auditors = new List<IAuditor>();
 
+        private bool m_EnableOnBuild = false;
         private string[] m_AuditorNames;
         
         public string[] auditorNames
@@ -90,6 +94,20 @@ namespace Unity.ProjectAuditor.Editor
         public void LoadDatabase()
         {
             LoadDatabase(dataPath);
+        }
+
+        public int callbackOrder { get; }
+        public void OnPreprocessBuild(BuildReport report)
+        {
+            if (m_EnableOnBuild)
+            {
+                var projectReport = new ProjectReport();
+                Audit(projectReport);
+
+                var numIssues = projectReport.NumIssues;
+                if (numIssues > 0)
+                    Debug.LogError("Project Auditor found " + numIssues + " issues"); 
+            }            
         }
     }
 }

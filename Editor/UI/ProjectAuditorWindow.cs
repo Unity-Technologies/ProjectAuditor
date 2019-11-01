@@ -30,14 +30,6 @@ namespace Unity.ProjectAuditor.Editor
         private bool m_ShowCallTree = false;
 
         private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
-
-        enum Area{
-            CPU,
-            GPU,
-            Memory,
-            BuildSize,
-            LoadTimes
-        }
         
         static readonly string[] AreaEnumStrings = {
             "CPU",
@@ -135,7 +127,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 //            if (!m_EnableResolvedItems && issue.resolved == true)
 //                return false;
 
-            string area = issue.def.area;
+            string area = issue.descriptor.area;
             for (int index=0;index < Enum.GetValues(typeof(Area)).Length; index++)
             {
                 if (m_EnableAreas[index] && area.Contains(AreaEnumStrings[index]))
@@ -253,16 +245,16 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         
         private void DrawFoldouts()
         {
-            ProblemDefinition problemDefinition = null;
+            ProblemDescriptor problemDescriptor = null;
             if (m_ActiveIssueTable != null && m_ActiveIssueTable.HasSelection())
             {
                 var selectedItem = m_ActiveIssueTable.GetSelectedItem();
                 if (selectedItem != null)
-                    problemDefinition = selectedItem.m_ProblemDefinition;
+                    problemDescriptor = selectedItem.problemDescriptor;
             }
 
-            DrawDetailsFoldout(problemDefinition);
-            DrawRecommendationFoldout(problemDefinition);
+            DrawDetailsFoldout(problemDescriptor);
+            DrawRecommendationFoldout(problemDescriptor);
 //            if (m_ActiveMode == IssueCategory.ApiCalls)
 //                DrawCallTree(selectedIssue);             
         }
@@ -274,18 +266,18 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             return EditorGUILayout.Foldout(toggle, content, foldoutStyle);
         }
 
-        private void DrawDetailsFoldout(ProblemDefinition problemDefinition)
+        private void DrawDetailsFoldout(ProblemDescriptor problemDescriptor)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
 
             m_ShowDetails = BoldFoldout(m_ShowDetails, Styles.DetailsFoldout);
             if (m_ShowDetails)
             {
-                if (problemDefinition != null)
+                if (problemDescriptor != null)
                 {
                     EditorStyles.textField.wordWrap = true;
 //                    var text = issue.description + " is called from " + issue.callingMethod + "\n\n" + issue.def.problem;
-                    var text = problemDefinition.problem;
+                    var text = problemDescriptor.problem;
                     EditorGUILayout.TextArea(text, GUILayout.MaxHeight(m_FoldoutMaxHeight));
                 }
                 else
@@ -296,17 +288,17 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             EditorGUILayout.EndVertical();
         }
 
-        private void DrawRecommendationFoldout(ProblemDefinition problemDefinition)
+        private void DrawRecommendationFoldout(ProblemDescriptor problemDescriptor)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
 
             m_ShowRecommendation = BoldFoldout(m_ShowRecommendation, Styles.RecommendationFoldout);
             if (m_ShowRecommendation)
             {
-                if (problemDefinition != null)
+                if (problemDescriptor != null)
                 {
                     EditorStyles.textField.wordWrap = true;
-                    EditorGUILayout.TextArea(problemDefinition.solution, GUILayout.MaxHeight(m_FoldoutMaxHeight));
+                    EditorGUILayout.TextArea(problemDescriptor.solution, GUILayout.MaxHeight(m_FoldoutMaxHeight));
                 }
                 else
                 {

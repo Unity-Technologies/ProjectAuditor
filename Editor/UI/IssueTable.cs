@@ -52,9 +52,9 @@ namespace Unity.ProjectAuditor.Editor
                 HashSet<string> allGroupsSet = new HashSet<string>();
                 foreach (var issue in m_Issues)
                 {
-                    if (!allGroupsSet.Contains(issue.def.description))
+                    if (!allGroupsSet.Contains(issue.descriptor.description))
                     {
-                        allGroupsSet.Add(issue.def.description);
+                        allGroupsSet.Add(issue.descriptor.description);
                     }
                 }
 
@@ -64,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor
                 foreach (var groupName in allGroups)
                 {
                     // var issuesIngroup = m_Issues.Where(i => group.Equals(i.assembly));
-                    var issues = m_Issues.Where(i => groupName.Equals(i.def.description)).ToArray();
+                    var issues = m_Issues.Where(i => groupName.Equals(i.descriptor.description)).ToArray();
                     
                     // maybe dont create fake issue
                     // var assemblyGroup = new ProjectIssue
@@ -73,12 +73,12 @@ namespace Unity.ProjectAuditor.Editor
                     // };
 
                     var displayName = string.Format("{0} ({1})", groupName, issues.Length);  
-                    var groupItem = new IssueTableItem(index++, 0, displayName, issues.FirstOrDefault().def);
+                    var groupItem = new IssueTableItem(index++, 0, displayName, issues.FirstOrDefault().descriptor);
                     root.AddChild(groupItem);
                     
                     foreach (var issue in issues)
                     {
-                        var item = new IssueTableItem(index++, 1, "Not Used", issue.def, issue);
+                        var item = new IssueTableItem(index++, 1, "Not Used", issue.descriptor, issue);
                         groupItem.AddChild(item);
                     }       
                 }                
@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor
                 // flat view
                foreach (var issue in m_Issues)
                {
-                   var item = new IssueTableItem(index++, 0, "", issue.def, issue);
+                   var item = new IssueTableItem(index++, 0, "", issue.descriptor, issue);
                    root.AddChild(item);            
                }
             }
@@ -122,8 +122,8 @@ namespace Unity.ProjectAuditor.Editor
                 return;
 
             var issue = item.m_ProjectIssue;
-            var problemDefinition = item.m_ProblemDefinition;
-            var areaLongDescription = "This issue might have an impact on " + problemDefinition.area;                      
+            var problemDescriptor = item.problemDescriptor;
+            var areaLongDescription = "This issue might have an impact on " + problemDescriptor.area;                      
             
             if (item.hasChildren)
             {
@@ -133,7 +133,7 @@ namespace Unity.ProjectAuditor.Editor
                         EditorGUI.LabelField(cellRect, new GUIContent(item.displayName, item.displayName));
                         break;
                     case Column.Area:
-                        EditorGUI.LabelField(cellRect, new GUIContent(problemDefinition.area, areaLongDescription));
+                        EditorGUI.LabelField(cellRect, new GUIContent(problemDescriptor.area, areaLongDescription));
                         break;
                 }
 
@@ -147,7 +147,7 @@ namespace Unity.ProjectAuditor.Editor
                 //     break;
                 case Column.Area :
                     if (!m_GroupByDescription)
-                        EditorGUI.LabelField(cellRect, new GUIContent(problemDefinition.area, areaLongDescription));
+                        EditorGUI.LabelField(cellRect, new GUIContent(problemDescriptor.area, areaLongDescription));
                     break;
                 case Column.Description :
                     if (m_GroupByDescription)
@@ -168,7 +168,7 @@ namespace Unity.ProjectAuditor.Editor
                     }
                     else
                     {
-                        string tooltip = problemDefinition.problem + " \n\n" + problemDefinition.solution;
+                        string tooltip = problemDescriptor.problem + " \n\n" + problemDescriptor.solution;
                         EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
                     }
                     break;
