@@ -21,7 +21,6 @@ namespace Unity.ProjectAuditor.Editor
         }
         
         private List<bool> m_EnableAreas = new List<bool>();
-        private bool m_EnablePackages = false;
 //        private bool m_EnableResolvedItems = false;
 
         private bool m_ShowFilters = true;
@@ -119,7 +118,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         bool ShouldDisplay(ProjectIssue issue)
         {
             string url = issue.url;
-            if (!m_EnablePackages && issue.category == IssueCategory.ApiCalls &&
+            if (!m_ProjectAuditor.config.enablePackages && issue.category == IssueCategory.ApiCalls &&
                 (url.Contains("Library/PackageCache/") || url.Contains("Resources/PackageManager/BuiltInPackages/")))
                 return false;
 
@@ -355,11 +354,16 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 #if UNITY_2018_1_OR_NEWER
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.LabelField("Include :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                    m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
+                    m_ProjectAuditor.config.enablePackages = EditorGUILayout.ToggleLeft("Packages", m_ProjectAuditor.config.enablePackages, GUILayout.Width(100));
     
                     //            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
                     EditorGUILayout.EndHorizontal();
 #endif
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("Build :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+                    m_ProjectAuditor.config.enableAnalyzeOnBuild = EditorGUILayout.ToggleLeft("Auto Analyze", m_ProjectAuditor.config.enableAnalyzeOnBuild, GUILayout.Width(100));
+                    m_ProjectAuditor.config.enableFailBuildOnIssues = EditorGUILayout.ToggleLeft("Fail on Issues", m_ProjectAuditor.config.enableFailBuildOnIssues, GUILayout.Width(100));
+                    EditorGUILayout.EndHorizontal();
                 }
 
                 if (EditorGUI.EndChangeCheck())

@@ -12,8 +12,16 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectAuditor : IAuditor, IPreprocessBuildWithReport
     {
         private List<IAuditor> m_Auditors = new List<IAuditor>();
+        private ProjectAuditorConfig m_ProjectAuditorConfig;
 
-        private bool m_EnableOnBuild = false;
+        public ProjectAuditorConfig config
+        {
+            get
+            {
+                return m_ProjectAuditorConfig;
+            }
+        }
+        
         private string[] m_AuditorNames;
         
         public string[] auditorNames
@@ -66,6 +74,20 @@ namespace Unity.ProjectAuditor.Editor
       
         public ProjectAuditor()
         {
+            var path = "Assets/Editor"; 
+            var assetFilename = "ProjectAuditorConfig.asset";
+            var assetPath = Path.Combine(path, assetFilename);
+            m_ProjectAuditorConfig = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
+            if (m_ProjectAuditorConfig == null)
+            {
+                if (!File.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                m_ProjectAuditorConfig = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+                AssetDatabase.CreateAsset(m_ProjectAuditorConfig, assetPath);
+            }
+            
             m_Auditors.Add(new ScriptAuditor());
             m_Auditors.Add(new SettingsAuditor());
             // Add more Auditors here...
@@ -99,14 +121,20 @@ namespace Unity.ProjectAuditor.Editor
         public int callbackOrder { get; }
         public void OnPreprocessBuild(BuildReport report)
         {
-            if (m_EnableOnBuild)
+            if (m_ProjectAuditorConfig.enableAnalyzeOnBuild)
             {
                 var projectReport = new ProjectReport();
                 Audit(projectReport);
 
                 var numIssues = projectReport.NumIssues;
                 if (numIssues > 0)
-                    Debug.LogError("Project Auditor found " + numIssues + " issues"); 
+                {
+                    if (m_ProjectAuditorConfig.enableFailBuildOnIssues)
+                        Debug.LogError("Project Auditor found " + numIssues + " issues");
+                    else
+                        Debug.Log("Project Auditor found " + numIssues + " issues");
+                }
+                    
             }            
         }
     }
