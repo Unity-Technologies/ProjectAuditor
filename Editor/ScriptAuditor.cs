@@ -113,7 +113,7 @@ namespace Unity.ProjectAuditor.Editor
                                             category = IssueCategory.ApiCalls,
                                             descriptor = p,
                                             callingMethod = m.FullName,
-                                            url = s.Document.Url,
+                                            url = s.Document.Url.Replace("\\", "/"),
                                             line = s.StartLine,
                                             column = s.StartColumn
                                         });
