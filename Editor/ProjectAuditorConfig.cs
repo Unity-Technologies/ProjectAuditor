@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
@@ -7,5 +8,6 @@ namespace Unity.ProjectAuditor.Editor
         public bool enablePackages = false;
         public bool enableAnalyzeOnBuild = false;
         public bool enableFailBuildOnIssues = false;
+        public List<int> exceptions;
     }
 }

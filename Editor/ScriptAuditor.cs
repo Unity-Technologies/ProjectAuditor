@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor
             return "Scripts";
         }
 
-        public void Audit( ProjectReport projectReport)
+        public void Audit( ProjectReport projectReport, ProjectAuditorConfig config)
         {
             var progressBar =
                 new ProgressBarDisplay("Analyzing Scripts", "Analyzing project scripts", m_PlayerAssemblies.Length);
@@ -107,16 +107,20 @@ namespace Unity.ProjectAuditor.Editor
                                         {
                                             description = calledMethod.DeclaringType.FullName + "::" + calledMethod.Name;
                                         }
-                                        projectReport.AddIssue(new ProjectIssue
+
+                                        if (!config.exceptions.Contains(p.id))
                                         {
-                                            description = description,
-                                            category = IssueCategory.ApiCalls,
-                                            descriptor = p,
-                                            callingMethod = m.FullName,
-                                            url = s.Document.Url.Replace("\\", "/"),
-                                            line = s.StartLine,
-                                            column = s.StartColumn
-                                        });
+                                            projectReport.AddIssue(new ProjectIssue
+                                            {
+                                                description = description,
+                                                category = IssueCategory.ApiCalls,
+                                                descriptor = p,
+                                                callingMethod = m.FullName,
+                                                url = s.Document.Url.Replace("\\", "/"),
+                                                line = s.StartLine,
+                                                column = s.StartColumn
+                                            });
+                                        }
                                     }
                                 }
                             }

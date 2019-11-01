@@ -95,11 +95,11 @@ namespace Unity.ProjectAuditor.Editor
             LoadDatabase();
         }
 
-        public void Audit(ProjectReport projectReport)
+        public void Audit(ProjectReport projectReport, ProjectAuditorConfig config = null)
         {
             foreach (var auditor in m_Auditors)
             {
-                auditor.Audit(projectReport);
+                auditor.Audit(projectReport, m_ProjectAuditorConfig);
             }
 
             EditorUtility.ClearProgressBar();
@@ -133,8 +133,7 @@ namespace Unity.ProjectAuditor.Editor
                         Debug.LogError("Project Auditor found " + numIssues + " issues");
                     else
                         Debug.Log("Project Auditor found " + numIssues + " issues");
-                }
-                    
+                } 
             }            
         }
     }
