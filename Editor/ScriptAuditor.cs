@@ -56,6 +56,7 @@ namespace Unity.ProjectAuditor.Editor
                         if (!m.HasBody)
                             continue;
                 
+                        List<ProjectIssue> methodBobyIssues = new List<ProjectIssue>();
                         foreach (var inst in m.Body.Instructions.Where(i => (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt)))
                         {
                             var calledMethod = ((MethodReference) inst.Operand);
@@ -107,16 +108,26 @@ namespace Unity.ProjectAuditor.Editor
                                         {
                                             description = calledMethod.DeclaringType.FullName + "::" + calledMethod.Name;
                                         }
-                                        projectReport.AddIssue(new ProjectIssue
+                                        
+                                        // do not add the same type of issue again (for example multiple Linq instructions) 
+                                        var foundIssues = methodBobyIssues.Where(i =>
+                                            i.descriptor == p && i.line == s.StartLine &&
+                                            i.column == s.StartColumn);
+                                        if (foundIssues.FirstOrDefault() == null)
                                         {
-                                            description = description,
-                                            category = IssueCategory.ApiCalls,
-                                            descriptor = p,
-                                            callingMethod = m.FullName,
-                                            url = s.Document.Url.Replace("\\", "/"),
-                                            line = s.StartLine,
-                                            column = s.StartColumn
-                                        });
+                                            var projectIssue = new ProjectIssue
+                                            {
+                                                description = description,
+                                                category = IssueCategory.ApiCalls,
+                                                descriptor = p,
+                                                callingMethod = m.FullName,
+                                                url = s.Document.Url.Replace("\\", "/"),
+                                                line = s.StartLine,
+                                                column = s.StartColumn
+                                            };
+                                            projectReport.AddIssue(projectIssue);
+                                            methodBobyIssues.Add(projectIssue);
+                                        }
                                     }
                                 }
                             }
