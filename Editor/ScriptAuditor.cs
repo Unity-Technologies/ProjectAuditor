@@ -94,6 +94,8 @@ namespace Unity.ProjectAuditor.Editor
                     if (!m.HasBody)
                         continue;
 
+                    List<ProjectIssue> methodBobyIssues = new List<ProjectIssue>();
+
                     foreach (var inst in m.Body.Instructions.Where(i =>
                         (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt)))
                     {
