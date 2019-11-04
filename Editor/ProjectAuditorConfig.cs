@@ -8,6 +8,6 @@ namespace Unity.ProjectAuditor.Editor
         public bool enablePackages = false;
         public bool enableAnalyzeOnBuild = false;
         public bool enableFailBuildOnIssues = false;
-        public List<int> exceptions;
+        public List<int> exceptions = new List<int>();
     }
 }
