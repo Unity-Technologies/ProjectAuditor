@@ -110,7 +110,7 @@ namespace Unity.ProjectAuditor.Editor
         void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int column, ref RowGUIArgs args)
         {
             // only indent first column
-            if (0 == column)
+            if ((int)IssueTable.Column.Description == column)
             {
                 var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
@@ -137,9 +137,15 @@ namespace Unity.ProjectAuditor.Editor
                         break;
                 }
 
+//                if (issue.markedAsRead)
+//                    GUI.enabled = true;
+                
                 return;
             }
 
+            if (issue.markedAsRead)
+                GUI.enabled = false;
+            
             switch ((Column)column)
             {
                 // case Column.Resolved :
@@ -187,6 +193,8 @@ namespace Unity.ProjectAuditor.Editor
                     break;
             
             }
+            if (issue.markedAsRead)
+                GUI.enabled = true;
         }
 
         protected override void DoubleClickedItem(int id)
@@ -206,17 +214,15 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        public IssueTableItem GetSelectedItem()
+        public IssueTableItem[] GetSelectedItems()
         {
             var ids = GetSelection();
             if (ids.Count() > 0)
             {
-                var rows = FindRows(ids);
-                if (rows.Count() > 0)
-                    return rows[0] as IssueTableItem;                
+                return FindRows(ids).OfType<IssueTableItem>().ToArray();
             }
 
-            return null;
+            return new IssueTableItem[0];
         }
 
         public int NumIssues()

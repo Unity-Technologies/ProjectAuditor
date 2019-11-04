@@ -52,6 +52,10 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to json file.");
+            public static readonly GUIContent MarkAsReadButton = new GUIContent("Mark As Read", "Mark this issue as read.");
+            public static readonly GUIContent MarkAsUnreadButton = new GUIContent("Mark As Unread", "Mark this issue as unread.");
+            public static readonly GUIContent IgnoreIssue = new GUIContent("Ignore Issue", "Always ignore this specific issue.");
+            public static readonly GUIContent IgnoreIssueType = new GUIContent("Ignore Type", "Always ignore this type of issue.");
 
             public static readonly GUIContent[] ColumnHeaders = {
                 new GUIContent("Issue", "Issue description"),
@@ -245,17 +249,58 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         private void DrawFoldouts()
         {
             ProblemDescriptor problemDescriptor = null;
-            if (m_ActiveIssueTable != null && m_ActiveIssueTable.HasSelection())
+            var selectedItems = m_ActiveIssueTable.GetSelectedItems();
+            var selectedDescriptors = selectedItems.Select(i => i.problemDescriptor);
+            var selectedIssues = selectedItems.Select(i => i.m_ProjectIssue);
+            // find out if all descriptors are the same
+            var firstDescriptor = selectedDescriptors.FirstOrDefault();
+            if (selectedDescriptors.Count() == selectedDescriptors.Where(d => d.id == firstDescriptor.id).Count())
             {
-                var selectedItem = m_ActiveIssueTable.GetSelectedItem();
-                if (selectedItem != null)
-                    problemDescriptor = selectedItem.problemDescriptor;
+                problemDescriptor = firstDescriptor;    
+            }
+
+            bool enableMarkReadButton = true;
+            var firstIssue = selectedIssues.FirstOrDefault();
+            if (firstIssue == null || selectedIssues.Count() != selectedIssues.Where(i => i.markedAsRead == firstIssue.markedAsRead).Count())
+            {
+                enableMarkReadButton = false;
             }
 
             DrawDetailsFoldout(problemDescriptor);
             DrawRecommendationFoldout(problemDescriptor);
 //            if (m_ActiveMode == IssueCategory.ApiCalls)
-//                DrawCallTree(selectedIssue);             
+//                DrawCallTree(selectedIssue);
+
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
+            EditorGUILayout.BeginHorizontal();
+
+            if (!enableMarkReadButton)
+                GUI.enabled = false;
+            if (GUILayout.Button((firstIssue != null && firstIssue.markedAsRead) ? Styles.MarkAsUnreadButton : Styles.MarkAsReadButton, GUILayout.Height(40), GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+            {
+                foreach (var issue in selectedIssues)
+                {
+                    issue.markedAsRead = !issue.markedAsRead;
+                }
+            }
+            if (!enableMarkReadButton)
+                GUI.enabled = true;
+
+//            GUI.enabled = false;
+//            if (GUILayout.Button(Styles.IgnoreIssue, GUILayout.Height(40), GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+//            {               
+//            }
+//            GUI.enabled = true;
+            if (GUILayout.Button(Styles.IgnoreIssueType, GUILayout.Height(40), GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+            {
+                foreach (var descriptor in selectedDescriptors)
+                {
+                    m_ProjectAuditor.config.exceptions.Add(descriptor.id);                    
+                }
+            }
+
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndVertical();
         }
 
         private bool BoldFoldout(bool toggle, GUIContent content)
