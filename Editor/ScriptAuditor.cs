@@ -4,9 +4,12 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using UnityEditor;
-using UnityEditor.Build.Player;
 using UnityEditor.Compilation;
 using UnityEngine;
+
+#if UNITY_2018_1_OR_NEWER
+using UnityEditor.Build.Player;
+#endif
 
 namespace Unity.ProjectAuditor.Editor
 {
