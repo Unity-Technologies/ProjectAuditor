@@ -198,9 +198,15 @@ namespace Unity.ProjectAuditor.Editor
                 var issue = (item as IssueTableItem).m_ProjectIssue;
                 if (issue.category == IssueCategory.ApiCalls)
                 {
-                    var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(issue.relativePath);
-            
-                    // Note that this this does not work with Package assets
+                    var path = issue.relativePath;
+                    if (path.StartsWith("Packages/"))
+                    {
+                        // strip version from package path
+                        var version = path.Substring(path.IndexOf("@"));
+                        version = version.Substring(0, version.IndexOf("/"));
+                        path = path.Replace(version, "");
+                    }
+                    var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
                     AssetDatabase.OpenAsset(obj, issue.line);                
                 }              
             }
