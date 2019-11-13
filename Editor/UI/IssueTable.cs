@@ -199,7 +199,7 @@ namespace Unity.ProjectAuditor.Editor
                 if (issue.category == IssueCategory.ApiCalls)
                 {
                     var path = issue.relativePath;
-                    if (path.StartsWith("Packages/"))
+                    if (path.StartsWith("Packages/") && path.Contains("@"))
                     {
                         // strip version from package path
                         var version = path.Substring(path.IndexOf("@"));
