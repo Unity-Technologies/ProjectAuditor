@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor
                         return;
                     }
                     
-                    AnalyzeAssembly(assemblyPath, projectReport);                    
+                    AnalyzeAssembly(assemblyPath, projectReport, config);                    
                 }
             }
             
@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor
             return assemblies;
         }
 
-        private void AnalyzeAssembly(string assemblyPath, ProjectReport projectReport)
+        private void AnalyzeAssembly(string assemblyPath, ProjectReport projectReport, ProjectAuditorConfig config)
         {
             using (var a = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters() {ReadSymbols = true}))
             {
