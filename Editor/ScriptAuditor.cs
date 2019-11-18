@@ -164,7 +164,7 @@ namespace Unity.ProjectAuditor.Editor
                             // do not add the same type of issue again (for example multiple Linq instructions) 
                             var foundIssues = methodBobyIssues.Where(i =>
                                 i.column == s.StartColumn);
-                            if (foundIssues.FirstOrDefault() == null && !config.exceptions.Contains(p.id))
+                            if (foundIssues.FirstOrDefault() == null && !config.IsRuleAction(p, Rule.Action.None))
                             {
                                 var projectIssue = new ProjectIssue
                                 {

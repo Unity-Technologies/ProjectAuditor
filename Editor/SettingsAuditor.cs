@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEditor.Macros;
 
@@ -40,15 +41,15 @@ namespace Unity.ProjectAuditor.Editor
             progressBar.ClearProgressBar();
         }
 
-        private void AddIssue(ProblemDescriptor p, ProjectReport projectReport, ProjectAuditorConfig config)
+        private void AddIssue(ProblemDescriptor descriptor, ProjectReport projectReport, ProjectAuditorConfig config)
         {
-            if (!config.exceptions.Contains(p.id))
+            if (!config.IsRuleAction(descriptor, Rule.Action.None))
             {
                 projectReport.AddIssue(new ProjectIssue
                 {
-                    description = p.description,
+                    description = descriptor.description,
                     category = IssueCategory.ProjectSettings,
-                    descriptor = p
+                    descriptor = descriptor
                 });
             }
         }
