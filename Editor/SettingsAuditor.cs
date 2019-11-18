@@ -33,10 +33,10 @@ namespace Unity.ProjectAuditor.Editor
             var progressBar =
                 new ProgressBarDisplay("Analyzing Scripts", "Analyzing project settings", m_ProblemDescriptors.Count);
 
-            foreach (var p in m_ProblemDescriptors)
+            foreach (var descriptor in m_ProblemDescriptors)
             {
                 progressBar.AdvanceProgressBar();
-                SearchAndEval(p, projectReport, config);
+                SearchAndEval(descriptor, projectReport, config);
             }
             progressBar.ClearProgressBar();
         }
@@ -54,9 +54,9 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
         
-        void SearchAndEval(ProblemDescriptor p, ProjectReport projectReport, ProjectAuditorConfig config)
+        void SearchAndEval(ProblemDescriptor descriptor, ProjectReport projectReport, ProjectAuditorConfig config)
         {
-            if (string.IsNullOrEmpty(p.customevaluator))
+            if (string.IsNullOrEmpty(descriptor.customevaluator))
             {
                 // do we actually need to look in all assemblies? Maybe we can find a way to only evaluate on the right assembly
                 foreach (var assembly in m_Assemblies)
@@ -64,11 +64,11 @@ namespace Unity.ProjectAuditor.Editor
                     try
                     {
                         var value = MethodEvaluator.Eval(assembly.Location,
-                            p.type, "get_" + p.method, new System.Type[0]{}, new object[0]{});
+                            descriptor.type, "get_" + descriptor.method, new System.Type[0]{}, new object[0]{});
 
-                        if (value.ToString() == p.value)
+                        if (value.ToString() == descriptor.value)
                         {
-                            AddIssue(p, projectReport, config);
+                            AddIssue(descriptor, projectReport, config);
                         
                             // stop iterating assemblies
                             break;
@@ -83,12 +83,12 @@ namespace Unity.ProjectAuditor.Editor
             else
             {
                 Type helperType = m_Helpers.GetType();
-                MethodInfo theMethod = helperType.GetMethod(p.customevaluator);
+                MethodInfo theMethod = helperType.GetMethod(descriptor.customevaluator);
                 bool isIssue = (bool)theMethod.Invoke(m_Helpers, null);
 
                 if (isIssue)
                 {
-                    AddIssue(p, projectReport, config);
+                    AddIssue(descriptor, projectReport, config);
                 }
             }
         }

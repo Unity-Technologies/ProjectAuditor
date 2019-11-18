@@ -112,19 +112,19 @@ namespace Unity.ProjectAuditor.Editor
                 var calledMethod = ((MethodReference) inst.Operand);
 
                 // HACK: need to figure out a way to know whether a method is actually a property
-                var p = m_ProblemDescriptors.SingleOrDefault(c => c.type == calledMethod.DeclaringType.FullName &&
+                var descriptor = m_ProblemDescriptors.SingleOrDefault(c => c.type == calledMethod.DeclaringType.FullName &&
                                                                   (c.method == calledMethod.Name ||
                                                                    ("get_" + c.method) == calledMethod.Name));
 
-                if (p == null)
+                if (descriptor == null)
                 {
                     // Are we trying to warn about a whole namespace?
-                    p = m_ProblemDescriptors.SingleOrDefault(c =>
+                    descriptor = m_ProblemDescriptors.SingleOrDefault(c =>
                         c.type == calledMethod.DeclaringType.Namespace && c.method == "*");
                 }
 
                 //if (p.type != null && m.HasCustomDebugInformations)
-                if (p != null && m.DebugInformation.HasSequencePoints)
+                if (descriptor != null && m.DebugInformation.HasSequencePoints)
                 {
                     //var msg = string.Empty;
                     SequencePoint s = null;
@@ -155,7 +155,7 @@ namespace Unity.ProjectAuditor.Editor
 
                         if (!isPackageWhitelisted)
                         {
-                            var description = p.description;
+                            var description = descriptor.description;
                             if (description.Contains(".*"))
                             {
                                 description = calledMethod.DeclaringType.FullName + "::" + calledMethod.Name;
@@ -164,13 +164,13 @@ namespace Unity.ProjectAuditor.Editor
                             // do not add the same type of issue again (for example multiple Linq instructions) 
                             var foundIssues = methodBobyIssues.Where(i =>
                                 i.column == s.StartColumn);
-                            if (foundIssues.FirstOrDefault() == null && !config.IsRuleAction(p, Rule.Action.None))
+                            if (foundIssues.FirstOrDefault() == null && !config.IsRuleAction(descriptor, Rule.Action.None))
                             {
                                 var projectIssue = new ProjectIssue
                                 {
                                     description = description,
                                     category = IssueCategory.ApiCalls,
-                                    descriptor = p,
+                                    descriptor = descriptor,
                                     callingMethod = m.FullName,
                                     url = s.Document.Url.Replace("\\", "/"),
                                     line = s.StartLine,
