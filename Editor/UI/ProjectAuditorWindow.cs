@@ -278,7 +278,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                     EditorStyles.textField.wordWrap = true;
 //                    var text = issue.description + " is called from " + issue.callingMethod + "\n\n" + issue.def.problem;
                     var text = problemDescriptor.problem;
-                    EditorGUILayout.TextArea(text, GUILayout.MaxHeight(m_FoldoutMaxHeight));
+					GUILayout.TextArea(text, GUILayout.MaxHeight(m_FoldoutMaxHeight));
                 }
                 else
                 {
