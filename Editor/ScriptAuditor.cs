@@ -97,86 +97,88 @@ namespace Unity.ProjectAuditor.Editor
                     if (!m.HasBody)
                         continue;
 
-                    List<ProjectIssue> methodBobyIssues = new List<ProjectIssue>();
+                    AnalyzeMethodBody(projectReport, config, m);
+                }
+            }
+        }
 
-                    foreach (var inst in m.Body.Instructions.Where(i =>
-                        (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt)))
+        private void AnalyzeMethodBody(ProjectReport projectReport, ProjectAuditorConfig config, MethodDefinition m)
+        {
+            List<ProjectIssue> methodBobyIssues = new List<ProjectIssue>();
+
+            foreach (var inst in m.Body.Instructions.Where(i =>
+                (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt)))
+            {
+                var calledMethod = ((MethodReference) inst.Operand);
+
+                // HACK: need to figure out a way to know whether a method is actually a property
+                var p = m_ProblemDescriptors.SingleOrDefault(c => c.type == calledMethod.DeclaringType.FullName &&
+                                                                  (c.method == calledMethod.Name ||
+                                                                   ("get_" + c.method) == calledMethod.Name));
+
+                if (p == null)
+                {
+                    // Are we trying to warn about a whole namespace?
+                    p = m_ProblemDescriptors.SingleOrDefault(c =>
+                        c.type == calledMethod.DeclaringType.Namespace && c.method == "*");
+                }
+
+                //if (p.type != null && m.HasCustomDebugInformations)
+                if (p != null && m.DebugInformation.HasSequencePoints)
+                {
+                    //var msg = string.Empty;
+                    SequencePoint s = null;
+                    for (var i = inst; i != null; i = i.Previous)
                     {
-                        var calledMethod = ((MethodReference) inst.Operand);
-
-                        // HACK: need to figure out a way to know whether a method is actually a property
-                        var p = m_ProblemDescriptors.SingleOrDefault(c => c.type == calledMethod.DeclaringType.FullName &&
-                                                                          (c.method == calledMethod.Name ||
-                                                                           ("get_" + c.method) == calledMethod.Name));
-
-                        if (p == null)
+                        s = m.DebugInformation.GetSequencePoint(i);
+                        if (s != null)
                         {
-                            // Are we trying to warn about a whole namespace?
-                            p = m_ProblemDescriptors.SingleOrDefault(c =>
-                                c.type == calledMethod.DeclaringType.Namespace && c.method == "*");
+                            // msg = i == inst ? " exactly" : "nearby";
+                            break;
+                        }
+                    }
+
+                    if (s != null)
+                    {
+                        // Ignore whitelisted packages
+                        // (SteveM - I'd put this code further up in one of the outer loops but I don't
+                        // know if it's possible to get the URL further up to compare with the whitelist)
+                        bool isPackageWhitelisted = false;
+                        foreach (string package in m_WhitelistedPackages)
+                        {
+                            if (s.Document.Url.Contains(package))
+                            {
+                                isPackageWhitelisted = true;
+                                break;
+                            }
                         }
 
-                        //if (p.type != null && m.HasCustomDebugInformations)
-                        if (p != null && m.DebugInformation.HasSequencePoints)
+                        if (!isPackageWhitelisted)
                         {
-                            //var msg = string.Empty;
-                            SequencePoint s = null;
-                            for (var i = inst; i != null; i = i.Previous)
+                            var description = p.description;
+                            if (description.Contains(".*"))
                             {
-                                s = m.DebugInformation.GetSequencePoint(i);
-                                if (s != null)
-                                {
-                                    // msg = i == inst ? " exactly" : "nearby";
-                                    break;
-                                }
+                                description = calledMethod.DeclaringType.FullName + "::" + calledMethod.Name;
                             }
 
-                            if (s != null)
+                            // do not add the same type of issue again (for example multiple Linq instructions) 
+                            var foundIssues = methodBobyIssues.Where(i =>
+                                i.column == s.StartColumn);
+                            if (foundIssues.FirstOrDefault() == null && !config.exceptions.Contains(p.id))
                             {
-                                // Ignore whitelisted packages
-                                // (SteveM - I'd put this code further up in one of the outer loops but I don't
-                                // know if it's possible to get the URL further up to compare with the whitelist)
-                                bool isPackageWhitelisted = false;
-                                foreach (string package in m_WhitelistedPackages)
+                                var projectIssue = new ProjectIssue
                                 {
-                                    if (s.Document.Url.Contains(package))
-                                    {
-                                        isPackageWhitelisted = true;
-                                        break;
-                                    }
-                                }
+                                    description = description,
+                                    category = IssueCategory.ApiCalls,
+                                    descriptor = p,
+                                    callingMethod = m.FullName,
+                                    url = s.Document.Url.Replace("\\", "/"),
+                                    line = s.StartLine,
+                                    column = s.StartColumn
+                                };
 
-                                if (!isPackageWhitelisted)
-                                {
-                                    var description = p.description;
-                                    if (description.Contains(".*"))
-                                    {
-                                        description = calledMethod.DeclaringType.FullName + "::" + calledMethod.Name;
-                                    }
-
-									// do not add the same type of issue again (for example multiple Linq instructions) 
-                                    var foundIssues = methodBobyIssues.Where(i =>
-                                        i.column == s.StartColumn);
-                                    if (foundIssues.FirstOrDefault() == null)
-                                    {
-										if (!config.exceptions.Contains(p.id))
-										{
-                                        	var projectIssue = new ProjectIssue
-                                            {
-                                                description = description,
-                                                category = IssueCategory.ApiCalls,
-                                                descriptor = p,
-                                                callingMethod = m.FullName,
-                                                url = s.Document.Url.Replace("\\", "/"),
-                                                line = s.StartLine,
-                                                column = s.StartColumn
-                                        	};
-
-											projectReport.AddIssue(projectIssue);
-                                        	methodBobyIssues.Add(projectIssue);
-										}
-                                    }
-                                }
+                                projectReport.AddIssue(projectIssue);
+                                methodBobyIssues.Add(projectIssue);
                             }
                         }
                     }
