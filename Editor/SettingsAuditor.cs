@@ -7,11 +7,13 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class SettingsAuditor : IAuditor
     {
+        private System.Reflection.Assembly[] m_Assemblies;
         private List<ProblemDescriptor> m_ProblemDescriptors;
         private AnalyzerHelpers m_Helpers;
 
         public SettingsAuditor()
         {
+            m_Assemblies = AppDomain.CurrentDomain.GetAssemblies();
             m_Helpers = new AnalyzerHelpers();
         }
 
@@ -25,27 +27,38 @@ namespace Unity.ProjectAuditor.Editor
              m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors( path, "ProjectSettings");
         }
 
-        public void Audit(ProjectReport projectReport)
+        public void Audit(ProjectReport projectReport, ProjectAuditorConfig config)
         {
             var progressBar =
                 new ProgressBarDisplay("Analyzing Scripts", "Analyzing project settings", m_ProblemDescriptors.Count);
 
-            // do we actually need to look in all assemblies?
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var p in m_ProblemDescriptors)
             {
                 progressBar.AdvanceProgressBar();
-                SearchAndEval(p, assemblies, projectReport);
+                SearchAndEval(p, projectReport, config);
             }
             progressBar.ClearProgressBar();
         }
-     
-        void SearchAndEval(ProblemDescriptor p, System.Reflection.Assembly[] assemblies, ProjectReport projectReport)
+
+        private void AddIssue(ProblemDescriptor p, ProjectReport projectReport, ProjectAuditorConfig config)
+        {
+            if (!config.exceptions.Contains(p.id))
+            {
+                projectReport.AddIssue(new ProjectIssue
+                {
+                    description = p.description,
+                    category = IssueCategory.ProjectSettings,
+                    descriptor = p
+                });
+            }
+        }
+        
+        void SearchAndEval(ProblemDescriptor p, ProjectReport projectReport, ProjectAuditorConfig config)
         {
             if (string.IsNullOrEmpty(p.customevaluator))
             {
-                // try all assemblies. Need to find a way to only evaluate on the right assembly
-                foreach (var assembly in assemblies)
+                // do we actually need to look in all assemblies? Maybe we can find a way to only evaluate on the right assembly
+                foreach (var assembly in m_Assemblies)
                 {
                     try
                     {
@@ -54,12 +67,7 @@ namespace Unity.ProjectAuditor.Editor
 
                         if (value.ToString() == p.value)
                         {
-                            projectReport.AddIssue(new ProjectIssue
-                            {
-                                description = p.description,
-                                category = IssueCategory.ProjectSettings,
-                                descriptor = p
-                            });
+                            AddIssue(p, projectReport, config);
                         
                             // stop iterating assemblies
                             break;
@@ -79,12 +87,7 @@ namespace Unity.ProjectAuditor.Editor
 
                 if (isIssue)
                 {
-                    projectReport.AddIssue(new ProjectIssue
-                    {
-                        description = p.description,
-                        category = IssueCategory.ProjectSettings,
-                        descriptor = p
-                    });
+                    AddIssue(p, projectReport, config);
                 }
             }
         }

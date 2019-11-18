@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor
             return "Scripts";
         }
 
-        public void Audit( ProjectReport projectReport)
+        public void Audit( ProjectReport projectReport, ProjectAuditorConfig config)
         {
             var progressBar =
                 new ProgressBarDisplay("Analyzing Scripts", "Analyzing project scripts", m_PlayerAssemblies.Length);
@@ -156,22 +156,25 @@ namespace Unity.ProjectAuditor.Editor
 
 									// do not add the same type of issue again (for example multiple Linq instructions) 
                                     var foundIssues = methodBobyIssues.Where(i =>
-                                        i.descriptor == p && i.line == s.StartLine &&
                                         i.column == s.StartColumn);
                                     if (foundIssues.FirstOrDefault() == null)
                                     {
-                                        var projectIssue = new ProjectIssue
-                                        {
-                                            description = description,
-                                            category = IssueCategory.ApiCalls,
-                                            descriptor = p,
-                                            callingMethod = m.FullName,
-                                            url = s.Document.Url.Replace("\\", "/"),
-                                            line = s.StartLine,
-                                            column = s.StartColumn
-                                        };
-                                        projectReport.AddIssue(projectIssue);
-                                        methodBobyIssues.Add(projectIssue);
+										if (!config.exceptions.Contains(p.id))
+										{
+                                        	var projectIssue = new ProjectIssue
+                                            {
+                                                description = description,
+                                                category = IssueCategory.ApiCalls,
+                                                descriptor = p,
+                                                callingMethod = m.FullName,
+                                                url = s.Document.Url.Replace("\\", "/"),
+                                                line = s.StartLine,
+                                                column = s.StartColumn
+                                        	};
+
+											projectReport.AddIssue(projectIssue);
+                                        	methodBobyIssues.Add(projectIssue);
+										}
                                     }
                                 }
                             }

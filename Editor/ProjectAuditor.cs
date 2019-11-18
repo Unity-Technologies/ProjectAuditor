@@ -18,9 +18,16 @@ namespace Unity.ProjectAuditor.Editor
 #endif
     {
         private List<IAuditor> m_Auditors = new List<IAuditor>();
-#if UNITY_2018_1_OR_NEWER
-        private bool m_EnableOnBuild = false;
-#endif
+        private ProjectAuditorConfig m_ProjectAuditorConfig;
+
+        public ProjectAuditorConfig config
+        {
+            get
+            {
+                return m_ProjectAuditorConfig;
+            }
+        }
+        
         private string[] m_AuditorNames;
         
         public string[] auditorNames
@@ -73,6 +80,20 @@ namespace Unity.ProjectAuditor.Editor
       
         public ProjectAuditor()
         {
+            var path = "Assets/Editor"; 
+            var assetFilename = "ProjectAuditorConfig.asset";
+            var assetPath = Path.Combine(path, assetFilename);
+            m_ProjectAuditorConfig = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
+            if (m_ProjectAuditorConfig == null)
+            {
+                if (!File.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                m_ProjectAuditorConfig = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+                AssetDatabase.CreateAsset(m_ProjectAuditorConfig, assetPath);
+            }
+            
             m_Auditors.Add(new ScriptAuditor());
             m_Auditors.Add(new SettingsAuditor());
             // Add more Auditors here...
@@ -80,11 +101,11 @@ namespace Unity.ProjectAuditor.Editor
             LoadDatabase();
         }
 
-        public void Audit(ProjectReport projectReport)
+        public void Audit(ProjectReport projectReport, ProjectAuditorConfig config = null)
         {
             foreach (var auditor in m_Auditors)
             {
-                auditor.Audit(projectReport);
+                auditor.Audit(projectReport, m_ProjectAuditorConfig);
             }
 
             EditorUtility.ClearProgressBar();
@@ -107,14 +128,19 @@ namespace Unity.ProjectAuditor.Editor
         public int callbackOrder { get; }
         public void OnPreprocessBuild(BuildReport report)
         {
-            if (m_EnableOnBuild)
+            if (m_ProjectAuditorConfig.enableAnalyzeOnBuild)
             {
                 var projectReport = new ProjectReport();
                 Audit(projectReport);
 
                 var numIssues = projectReport.NumIssues;
                 if (numIssues > 0)
-                    Debug.LogError("Project Auditor found " + numIssues + " issues"); 
+                {
+                    if (m_ProjectAuditorConfig.enableFailBuildOnIssues)
+                        Debug.LogError("Project Auditor found " + numIssues + " issues");
+                    else
+                        Debug.Log("Project Auditor found " + numIssues + " issues");
+                } 
             }            
         }
 #endif
