@@ -298,7 +298,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 if (problemDescriptor != null)
                 {
                     EditorStyles.textField.wordWrap = true;
-                    EditorGUILayout.TextArea(problemDescriptor.solution, GUILayout.MaxHeight(m_FoldoutMaxHeight));
+                    GUILayout.TextArea(problemDescriptor.solution, GUILayout.MaxHeight(m_FoldoutMaxHeight));
                 }
                 else
                 {
