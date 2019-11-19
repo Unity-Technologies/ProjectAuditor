@@ -29,11 +29,13 @@ namespace Unity.ProjectAuditor.Editor
         public int column;
 //        public bool resolved;
 
-        public string location
+        public string filename
         {
             get
-            {                
-                return string.IsNullOrEmpty(url) ? String.Empty : string.Format("{0}({1},{2})", url, line, column);
+            {
+                if (string.IsNullOrEmpty(url))
+                    return String.Empty;
+                return url.Substring(url.LastIndexOf("/")+1);
             }
         }
 
@@ -41,6 +43,9 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
+                if (string.IsNullOrEmpty(url))
+                    return String.Empty;
+
                 string path = url;
                 if (path.Contains("BuiltInPackages"))
                 {

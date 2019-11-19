@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor
             Description = 0,
             // Resolved,
             Area,
-            Location,
+            Filename,
 
             Count
         }
@@ -173,17 +173,13 @@ namespace Unity.ProjectAuditor.Editor
                     }
                     break;
                 case Column.Location :
-                    var location = string.Format("{0}({1},{2})", issue.relativePath, issue.line,  issue.column);
-
-                    var libraryIndex = location.IndexOf("Library/PackageCache/");
-                    if (libraryIndex >= 0)
+                    if (issue.filename != string.Empty)
                     {
-                        location = location.Remove(0, libraryIndex + "Library/PackageCache/".Length);
-                    }
-                    
-                    // display fullpath as tooltip
-                    EditorGUI.LabelField(cellRect, new GUIContent(location, issue.location));
+                        var filename = string.Format("{0}:{1}", issue.filename, issue.line);
 
+                        // display fullpath as tooltip
+                        EditorGUI.LabelField(cellRect, new GUIContent(filename, issue.relativePath));                           
+                    }
                     break;
             
             }
@@ -196,16 +192,17 @@ namespace Unity.ProjectAuditor.Editor
             if (!item.hasChildren)
             {
                 var issue = (item as IssueTableItem).m_ProjectIssue;
-                if (issue.category == IssueCategory.ApiCalls)
+                var path = issue.relativePath;
+                if (!string.IsNullOrEmpty(path))
                 {
-                    var path = issue.relativePath;
-                    if (path.StartsWith("Packages/") && path.Contains("@"))
+                    if ((path.StartsWith("Library/PackageCache") || path.StartsWith("Packages/") && path.Contains("@")))
                     {
                         // strip version from package path
                         var version = path.Substring(path.IndexOf("@"));
                         version = version.Substring(0, version.IndexOf("/"));
-                        path = path.Replace(version, "");
+                        path = path.Replace(version, "").Replace("Library/PackageCache", "Packages");
                     }
+
                     var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
                     AssetDatabase.OpenAsset(obj, issue.line);                
                 }              
