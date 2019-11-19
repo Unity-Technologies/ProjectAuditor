@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent[] ColumnHeaders = {
                 new GUIContent("Issue", "Issue description"),
                 new GUIContent("Area", "The area the issue might have an impact on"),
-                new GUIContent("Location", "Path to the script file"),
+                new GUIContent("Filename", "Path to the script file"),
                 new GUIContent("Mute", "Mute issue"),
             };
 
@@ -146,7 +146,6 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             var numColumns = (int) IssueTable.Column.Count;
             for (int i = 0; i < numColumns; i++)
             {
-                bool add = true;
                 int width = 80;
                 int minWidth = 80;
                 switch ((IssueTable.Column) i)
@@ -163,22 +162,27 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         width = 50;
                         minWidth = 50;
                         break;
-                    case IssueTable.Column.Location :
+                    case IssueTable.Column.Filename :
                         if (issueCategory == IssueCategory.ProjectSettings)
-                            add = false;
-                        width = 100;
-                        minWidth = 100;
+                        {
+                            width = 0;
+                            minWidth = 0;
+                        }
+                        else
+                        {
+                            width = 100;
+                            minWidth = 100;                            
+                        }
                         break;
                 }
                                 
-                if (add)
-                    columnsList.Add(new MultiColumnHeaderState.Column
-                    {
-                        headerContent = Styles.ColumnHeaders[i],
-                        width = width,
-                        minWidth = minWidth,
-                        autoResize = true
-                    } );
+                columnsList.Add(new MultiColumnHeaderState.Column
+                {
+                    headerContent = Styles.ColumnHeaders[i],
+                    width = width,
+                    minWidth = minWidth,
+                    autoResize = true
+                } );
             }
 
             var issues = m_ProjectReport.GetIssues(issueCategory);
