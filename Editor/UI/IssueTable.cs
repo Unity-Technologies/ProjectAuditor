@@ -260,9 +260,9 @@ namespace Unity.ProjectAuditor.Editor
             return new IssueTableItem[0];
         }
 
-        public int NumIssues()
+        public int NumIssues(IssueCategory category)
         {
-            return m_Issues.Length;
+            return m_Issues.Where(i => i.category == category).Count();
         }
     }
 }

@@ -221,16 +221,19 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         {
             if (IsAnalysisValid())
             {
+                var selectedItems = m_ActiveIssueTable.GetSelectedItems();
+                var selectedIssues = selectedItems.Select(i => i.m_ProjectIssue).ToArray();
+                string info = selectedIssues.Length  + " / " + m_ActiveIssueTable.NumIssues(m_ActiveMode) + " issues";
+
                 m_ActiveMode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, m_ProjectAuditor.auditorNames);
 
-                EditorGUILayout.LabelField("Issues : " + m_ActiveIssueTable.NumIssues(), GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.BeginVertical();
 
                 Rect r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
                 m_ActiveIssueTable.OnGUI(r);
 
+                EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
                 EditorGUILayout.EndVertical();
 
                 EditorGUILayout.BeginVertical(GUILayout.Width(m_FoldoutWidth));
