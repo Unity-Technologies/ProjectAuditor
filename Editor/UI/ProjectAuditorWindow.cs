@@ -257,12 +257,6 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             DrawRecommendationFoldout(problemDescriptor);
 //            if (m_ActiveMode == IssueCategory.ApiCalls)
 //                DrawCallTree(selectedIssue);
-
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
-            EditorGUILayout.BeginHorizontal();
-            
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.EndVertical();
         }
 
         private bool BoldFoldout(bool toggle, GUIContent content)
