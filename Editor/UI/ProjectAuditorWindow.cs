@@ -262,21 +262,6 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
             EditorGUILayout.BeginHorizontal();
-
-//            bool enableMuteButton = true;
-//            var firstIssue = selectedIssues.FirstOrDefault();
-//            if (firstIssue == null || selectedIssues.Count() != selectedIssues.Where(i => i.action == firstIssue.action).Count())
-//            {
-//                enableMuteButton = false;
-//            }
-//
-//            if (!enableMuteButton)
-//                GUI.enabled = false;
-//            
-//
-//
-//            if (!enableMuteButton)
-//                GUI.enabled = true;
             
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
