@@ -155,8 +155,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         minWidth = 100;
                         break;
                     case IssueTable.Column.Mute :
-                        width = 10;
-                        minWidth = 10;
+                        width = 36;
+                        minWidth = 36;
                         break;
                     case IssueTable.Column.Area :
                         width = 50;
