@@ -52,13 +52,10 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to json file.");
-//            public static readonly GUIContent MarkAsReadButton = new GUIContent("Mark As Read", "Mark this issue as read.");
-//            public static readonly GUIContent MarkAsUnreadButton = new GUIContent("Mark As Unread", "Mark this issue as unread.");
             public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore this type of issue.");
 
             public static readonly GUIContent[] ColumnHeaders = {
                 new GUIContent("Issue", "Issue description"),
-                // new GUIContent("Resolved?", "Issues that have already been looked at"),
                 new GUIContent("Area", "The area the issue might have an impact on"),
                 new GUIContent("Location", "Path to the script file")            
             };
@@ -163,10 +160,6 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         width = 300;
                         minWidth = 100;
                         break;
-                    // case IssueTable.Column.Resolved :
-                    //     width = 80;
-                    //     minWidth = 80;
-                    //     break;
                     case IssueTable.Column.Area :
                         width = 50;
                         minWidth = 50;
@@ -272,18 +265,6 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
             EditorGUILayout.BeginHorizontal();
-
-//            if (!enableMarkReadButton)
-//                GUI.enabled = false;
-//            if (GUILayout.Button((firstIssue != null && firstIssue.markedAsRead) ? Styles.MarkAsUnreadButton : Styles.MarkAsReadButton, GUILayout.Height(40), GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-//            {
-//                foreach (var issue in selectedIssues)
-//                {
-//                    issue.markedAsRead = !issue.markedAsRead;
-//                }
-//            }
-//            if (!enableMarkReadButton)
-//                GUI.enabled = true;
 
             if (GUILayout.Button(Styles.MuteButton, GUILayout.Height(40), GUILayout.ExpandWidth(true), GUILayout.Width(100)))
             {
@@ -406,8 +387,6 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.LabelField("Include :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
                     m_ProjectAuditor.config.enablePackages = EditorGUILayout.ToggleLeft("Packages", m_ProjectAuditor.config.enablePackages, GUILayout.Width(100));
-    
-                    //            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
                     EditorGUILayout.EndHorizontal();
 #endif
                     EditorGUILayout.BeginHorizontal();

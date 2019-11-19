@@ -11,7 +11,6 @@ namespace Unity.ProjectAuditor.Editor
         public enum Column
         {
             Description = 0,
-            // Resolved,
             Area,
             Location,
 
@@ -148,9 +147,6 @@ namespace Unity.ProjectAuditor.Editor
             
             switch ((Column)column)
             {
-                // case Column.Resolved :
-                //     issue.resolved = EditorGUI.Toggle(cellRect, issue.resolved);
-                //     break;
                 case Column.Area :
                     if (!m_GroupByDescription)
                         EditorGUI.LabelField(cellRect, new GUIContent(problemDescriptor.area, areaLongDescription));
