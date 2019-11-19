@@ -13,6 +13,7 @@ namespace Unity.ProjectAuditor.Editor
         public string area;
         public string problem;
         public string solution;
+        public Rule.Action action;
 
         public string description
         {

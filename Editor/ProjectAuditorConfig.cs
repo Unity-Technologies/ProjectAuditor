@@ -13,10 +13,15 @@ namespace Unity.ProjectAuditor.Editor
 
         public bool IsRuleAction(ProblemDescriptor descriptor, Rule.Action action)
         {
-            var rule = rules.Where(r => r.id == descriptor.id).FirstOrDefault();
-            if (rule == null)
-                return false;
-            if (rule.action == action)
+            var ruleAction = descriptor.action;
+            var projectRule = rules.Where(r => r.id == descriptor.id).FirstOrDefault();
+            if (projectRule != null)
+            {
+                if (projectRule.action != Rule.Action.Default)
+                    ruleAction = projectRule.action;
+            }
+            
+            if (action == ruleAction)
                 return true;
             return false;
         }

@@ -289,11 +289,19 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             {
                 foreach (var descriptor in selectedDescriptors)
                 {
-                    m_ProjectAuditor.config.rules.Add(new Rule
+                    var rule = m_ProjectAuditor.config.rules.Find(r => r.id == descriptor.id);
+                    if (rule == null)
                     {
-                        id = descriptor.id,
-                        action = Rule.Action.None
-                    });                    
+                        m_ProjectAuditor.config.rules.Add(new Rule
+                        {
+                            id = descriptor.id,
+                            action = Rule.Action.None
+                        });                                            
+                    }
+                    else
+                    {
+                        rule.action = Rule.Action.None;
+                    }
                 }
             }
 
