@@ -166,23 +166,19 @@ namespace Unity.ProjectAuditor.Editor
                                 i.column == s.StartColumn);
                             if (foundIssues.FirstOrDefault() == null)
                             {
-                                var action = config.GetAction(descriptor);
-                                if (action != Rule.Action.None)
+                                var projectIssue = new ProjectIssue
                                 {
-                                    var projectIssue = new ProjectIssue
-                                    {
-                                        description = description,
-                                        category = IssueCategory.ApiCalls,
-                                        descriptor = descriptor,
-                                        callingMethod = m.FullName,
-                                        url = s.Document.Url.Replace("\\", "/"),
-                                        line = s.StartLine,
-                                        column = s.StartColumn
-                                    };
+                                    description = description,
+                                    category = IssueCategory.ApiCalls,
+                                    descriptor = descriptor,
+                                    callingMethod = m.FullName,
+                                    url = s.Document.Url.Replace("\\", "/"),
+                                    line = s.StartLine,
+                                    column = s.StartColumn
+                                };
 
-                                    projectReport.AddIssue(projectIssue);
-                                    methodBobyIssues.Add(projectIssue);   
-                                }
+                                projectReport.AddIssue(projectIssue);
+                                methodBobyIssues.Add(projectIssue);   
                             }
                         }
                     }

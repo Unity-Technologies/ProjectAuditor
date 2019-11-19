@@ -43,16 +43,12 @@ namespace Unity.ProjectAuditor.Editor
 
         private void AddIssue(ProblemDescriptor descriptor, ProjectReport projectReport, ProjectAuditorConfig config)
         {
-            var action = config.GetAction(descriptor);
-            if (action != Rule.Action.None)
+            projectReport.AddIssue(new ProjectIssue
             {
-                projectReport.AddIssue(new ProjectIssue
-                {
-                    description = descriptor.description,
-                    category = IssueCategory.ProjectSettings,
-                    descriptor = descriptor
-                });
-            }
+                description = descriptor.description,
+                category = IssueCategory.ProjectSettings,
+                descriptor = descriptor
+            });
         }
         
         void SearchAndEval(ProblemDescriptor descriptor, ProjectReport projectReport, ProjectAuditorConfig config)

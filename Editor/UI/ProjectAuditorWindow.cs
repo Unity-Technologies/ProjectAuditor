@@ -52,11 +52,15 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to json file.");
 
+            public static readonly GUIContent MarkAsReadButton = new GUIContent("Mark Read", "Mark selected issues as read");
+            public static readonly GUIContent MarkAsUnreadButton = new GUIContent("Mark Unread", "Mark selected issues as unread");
+                
+                
             public static readonly GUIContent[] ColumnHeaders = {
                 new GUIContent("Issue", "Issue description"),
                 new GUIContent("Area", "The area the issue might have an impact on"),
                 new GUIContent("Filename", "Path to the script file"),
-                new GUIContent("Mute", "Mute issue"),
+                //new GUIContent("Mute", "Mute issue"),
             };
 
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filters");
@@ -121,6 +125,13 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 (url.Contains("Library/PackageCache/") || url.Contains("Resources/PackageManager/BuiltInPackages/")))
                 return false;
 
+            if (!m_ProjectAuditor.config.displayReadIssues)
+            {
+                var rule = m_ProjectAuditor.config.GetRule(issue.descriptor, issue.callingMethodName);
+                if (rule != null && rule.action == Rule.Action.None)
+                    return false;
+            }
+
             string area = issue.descriptor.area;
             for (int index=0;index < Enum.GetValues(typeof(Area)).Length; index++)
             {
@@ -154,10 +165,10 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         width = 300;
                         minWidth = 100;
                         break;
-                    case IssueTable.Column.Mute :
-                        width = 36;
-                        minWidth = 36;
-                        break;
+//                    case IssueTable.Column.Mute :
+//                        width = 36;
+//                        minWidth = 36;
+//                        break;
                     case IssueTable.Column.Area :
                         width = 50;
                         minWidth = 50;
@@ -367,6 +378,31 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                     m_ProjectAuditor.config.enableAnalyzeOnBuild = EditorGUILayout.ToggleLeft("Auto Analyze", m_ProjectAuditor.config.enableAnalyzeOnBuild, GUILayout.Width(100));
                     m_ProjectAuditor.config.enableFailBuildOnIssues = EditorGUILayout.ToggleLeft("Fail on Issues", m_ProjectAuditor.config.enableFailBuildOnIssues, GUILayout.Width(100));
                     EditorGUILayout.EndHorizontal();
+                    
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+                    m_ProjectAuditor.config.displayReadIssues = EditorGUILayout.ToggleLeft("Show Read Issues", m_ProjectAuditor.config.displayReadIssues, GUILayout.Width(120));
+                    if (GUILayout.Button(Styles.MarkAsReadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                    {
+                        var selectedItems = m_ActiveIssueTable.GetSelectedItems();
+                        foreach (IssueTableItem item in selectedItems)
+                        {
+                            SetRuleForItem(item, Rule.Action.None);
+                        }
+                        m_ActiveIssueTable.SetSelection(new List<int>());
+                    }
+                    if (GUILayout.Button(Styles.MarkAsUnreadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                    {
+                        var selectedItems = m_ActiveIssueTable.GetSelectedItems();
+                        foreach (IssueTableItem item in selectedItems)
+                        {
+                            // SteveM TODO - Rather than set the item back to default, perhaps just remove it from the rules entirely?
+                            // That'd keep the file size down
+                            SetRuleForItem(item, Rule.Action.Default);
+                        }
+                        //m_ActiveIssueTable.SetSelection(new List<int>());
+                    }
+                    EditorGUILayout.EndHorizontal();
                 }
 
                 if (EditorGUI.EndChangeCheck())
@@ -375,6 +411,37 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 }
             }
             EditorGUILayout.EndVertical();            
+        }
+        private void SetRuleForItem(IssueTableItem item, Rule.Action ruleAction)
+        {
+            var descriptor = item.problemDescriptor;
+
+            string callingMethod = "";
+            Rule rule;
+            if (item.hasChildren)
+            {
+                rule = m_ProjectAuditor.config.GetRule(descriptor);
+            }
+            else
+            {
+                callingMethod = item.m_ProjectIssue.callingMethodName;
+                //rule = m_ProjectAuditor.config.GetRule(descriptor, callingMethod);
+                rule = m_ProjectAuditor.config.rules.Where(r => r.id == descriptor.id && r.filter.Equals(callingMethod)).FirstOrDefault();
+            }
+
+            if (rule == null)
+            {
+                m_ProjectAuditor.config.AddRule(new Rule
+                {
+                    id = descriptor.id,
+                    filter = callingMethod,
+                    action = ruleAction
+                });                                           
+            }
+            else
+            {
+                rule.action = ruleAction;
+            }
         }
         
         private void DrawToolbar()
