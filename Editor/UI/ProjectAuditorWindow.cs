@@ -52,12 +52,12 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to json file.");
-            public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore this type of issue.");
 
             public static readonly GUIContent[] ColumnHeaders = {
                 new GUIContent("Issue", "Issue description"),
                 new GUIContent("Area", "The area the issue might have an impact on"),
-                new GUIContent("Location", "Path to the script file")            
+                new GUIContent("Location", "Path to the script file"),
+                new GUIContent("Mute", "Mute issue"),
             };
 
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filters");
@@ -160,6 +160,10 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         width = 300;
                         minWidth = 100;
                         break;
+                    case IssueTable.Column.Mute :
+                        width = 10;
+                        minWidth = 10;
+                        break;
                     case IssueTable.Column.Area :
                         width = 50;
                         minWidth = 50;
@@ -167,8 +171,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                     case IssueTable.Column.Location :
                         if (issueCategory == IssueCategory.ProjectSettings)
                             add = false;
-                        width = 900;
-                        minWidth = 400;
+                        width = 100;
+                        minWidth = 100;
                         break;
                 }
                                 
@@ -187,7 +191,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             var filteredList = issues.Where(x => ShouldDisplay(x));
             
             return new IssueTable(new TreeViewState(),
-                new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())), filteredList.ToArray(), issueCategory == IssueCategory.ApiCalls);
+                new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())), filteredList.ToArray(), issueCategory == IssueCategory.ApiCalls, m_ProjectAuditor);
         }
 
         private void RefreshDisplay()
@@ -259,49 +263,20 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
             EditorGUILayout.BeginHorizontal();
 
-            bool enableMuteButton = true;
-            var firstIssue = selectedIssues.FirstOrDefault();
-            if (firstIssue == null || selectedIssues.Count() != selectedIssues.Where(i => i.action == firstIssue.action).Count())
-            {
-                enableMuteButton = false;
-            }
-
-            if (!enableMuteButton)
-                GUI.enabled = false;
-            
-            if (GUILayout.Button(Styles.MuteButton, GUILayout.Height(40), GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-            {
-                foreach (var descriptor in selectedDescriptors)
-                {
-                    var rule = m_ProjectAuditor.config.rules.Find(r => r.id == descriptor.id);
-                    if (rule == null)
-                    {
-                        m_ProjectAuditor.config.rules.Add(new Rule
-                        {
-                            id = descriptor.id,
-                            action = Rule.Action.None
-                        });                                            
-                    }
-                    else
-                    {
-                        rule.action = Rule.Action.None;
-                    }
-                    
-                    // update existing issues
-                    foreach (IssueCategory category in Enum.GetValues(typeof(IssueCategory)))
-                    {
-                        var issues = m_ProjectReport.GetIssues(category).Where(i => i.descriptor.id == descriptor.id);
-                        foreach (var issue in issues)
-                        {
-                            issue.action = Rule.Action.None;
-                        }
-                    }
-
-                }
-            }
-
-            if (!enableMuteButton)
-                GUI.enabled = true;
+//            bool enableMuteButton = true;
+//            var firstIssue = selectedIssues.FirstOrDefault();
+//            if (firstIssue == null || selectedIssues.Count() != selectedIssues.Where(i => i.action == firstIssue.action).Count())
+//            {
+//                enableMuteButton = false;
+//            }
+//
+//            if (!enableMuteButton)
+//                GUI.enabled = false;
+//            
+//
+//
+//            if (!enableMuteButton)
+//                GUI.enabled = true;
             
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();

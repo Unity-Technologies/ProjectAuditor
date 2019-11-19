@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -13,16 +14,24 @@ namespace Unity.ProjectAuditor.Editor
             Description = 0,
             Area,
             Location,
-
+            Mute,
+            
             Count
         }
 
+        internal static class Styles
+        {
+            public static readonly GUIContent MuteButton = new GUIContent("X", "Always ignore this type of issue.");
+        }
+
+        private ProjectAuditor m_ProjectAuditor;
         ProjectIssue[] m_Issues;
 
         bool m_GroupByDescription;
 
-        public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader, ProjectIssue[] issues, bool groupByDescription) : base(state, multicolumnHeader)
+        public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader, ProjectIssue[] issues, bool groupByDescription, ProjectAuditor projectAuditor) : base(state, multicolumnHeader)
         {
+            m_ProjectAuditor = projectAuditor;
             m_Issues = issues;
             m_GroupByDescription = groupByDescription;
             Reload();
@@ -121,24 +130,48 @@ namespace Unity.ProjectAuditor.Editor
                 return;
 
             var issue = item.m_ProjectIssue;
-            var problemDescriptor = item.problemDescriptor;
-            var areaLongDescription = "This issue might have an impact on " + problemDescriptor.area;                      
+            var descriptor = item.problemDescriptor;
+            var areaLongDescription = "This issue might have an impact on " + descriptor.area;                      
             
             if (item.hasChildren)
             {
                 switch ((Column)column)
                 {
+                    case Column.Mute:                        
+                        if (GUI.Button(cellRect, Styles.MuteButton))
+                        {                            
+                            var rule = m_ProjectAuditor.config.rules.Find(r => r.id == descriptor.id);
+                            if (rule == null)
+                            {
+                                m_ProjectAuditor.config.rules.Add(new Rule
+                                {
+                                    id = descriptor.id,
+                                    action = Rule.Action.None
+                                });                                            
+                            }
+                            else
+                            {
+                                rule.action = Rule.Action.None;
+                            }
+                
+                            // update existing issues
+                            foreach (IssueCategory category in Enum.GetValues(typeof(IssueCategory)))
+                            {
+                                var issues = m_Issues.Where(i => i.descriptor.id == descriptor.id);
+                                foreach (var matchedIssue in issues)
+                                {
+                                    matchedIssue.action = Rule.Action.None;
+                                }
+                            }
+                        }
+                        break;
                     case Column.Description:
                         EditorGUI.LabelField(cellRect, new GUIContent(item.displayName, item.displayName));
                         break;
                     case Column.Area:
-                        EditorGUI.LabelField(cellRect, new GUIContent(problemDescriptor.area, areaLongDescription));
+                        EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
                         break;
-                }
-
-//                if (issue.markedAsRead)
-//                    GUI.enabled = true;
-                
+                }                
                 return;
             }
 
@@ -149,7 +182,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 case Column.Area :
                     if (!m_GroupByDescription)
-                        EditorGUI.LabelField(cellRect, new GUIContent(problemDescriptor.area, areaLongDescription));
+                        EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
                     break;
                 case Column.Description :
                     if (m_GroupByDescription)
@@ -170,7 +203,7 @@ namespace Unity.ProjectAuditor.Editor
                     }
                     else
                     {
-                        string tooltip = problemDescriptor.problem + " \n\n" + problemDescriptor.solution;
+                        string tooltip = descriptor.problem + " \n\n" + descriptor.solution;
                         EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
                     }
                     break;
