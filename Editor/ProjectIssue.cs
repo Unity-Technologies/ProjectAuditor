@@ -27,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor
         public string url;
         public int line;
         public int column;
-        public bool markedAsRead;
+        public Rule.Action action;
 
         public string location
         {

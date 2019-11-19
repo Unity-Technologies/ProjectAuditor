@@ -142,7 +142,7 @@ namespace Unity.ProjectAuditor.Editor
                 return;
             }
 
-            if (issue.markedAsRead)
+            if (issue.action == Rule.Action.None)
                 GUI.enabled = false;
             
             switch ((Column)column)
@@ -189,7 +189,7 @@ namespace Unity.ProjectAuditor.Editor
                     break;
             
             }
-            if (issue.markedAsRead)
+            if (issue.action == Rule.Action.None)
                 GUI.enabled = true;
         }
 

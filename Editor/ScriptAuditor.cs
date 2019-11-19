@@ -164,21 +164,26 @@ namespace Unity.ProjectAuditor.Editor
                             // do not add the same type of issue again (for example multiple Linq instructions) 
                             var foundIssues = methodBobyIssues.Where(i =>
                                 i.column == s.StartColumn);
-                            if (foundIssues.FirstOrDefault() == null && !config.IsRuleAction(descriptor, Rule.Action.None))
+                            if (foundIssues.FirstOrDefault() == null)
                             {
-                                var projectIssue = new ProjectIssue
+                                var action = config.GetAction(descriptor);
+                                if (action != Rule.Action.None)
                                 {
-                                    description = description,
-                                    category = IssueCategory.ApiCalls,
-                                    descriptor = descriptor,
-                                    callingMethod = m.FullName,
-                                    url = s.Document.Url.Replace("\\", "/"),
-                                    line = s.StartLine,
-                                    column = s.StartColumn
-                                };
+                                    var projectIssue = new ProjectIssue
+                                    {
+                                        action = action,
+                                        description = description,
+                                        category = IssueCategory.ApiCalls,
+                                        descriptor = descriptor,
+                                        callingMethod = m.FullName,
+                                        url = s.Document.Url.Replace("\\", "/"),
+                                        line = s.StartLine,
+                                        column = s.StartColumn
+                                    };
 
-                                projectReport.AddIssue(projectIssue);
-                                methodBobyIssues.Add(projectIssue);
+                                    projectReport.AddIssue(projectIssue);
+                                    methodBobyIssues.Add(projectIssue);   
+                                }
                             }
                         }
                     }

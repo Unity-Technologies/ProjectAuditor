@@ -251,13 +251,6 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 problemDescriptor = firstDescriptor;    
             }
 
-            bool enableMarkReadButton = true;
-            var firstIssue = selectedIssues.FirstOrDefault();
-            if (firstIssue == null || selectedIssues.Count() != selectedIssues.Where(i => i.markedAsRead == firstIssue.markedAsRead).Count())
-            {
-                enableMarkReadButton = false;
-            }
-
             DrawDetailsFoldout(problemDescriptor);
             DrawRecommendationFoldout(problemDescriptor);
 //            if (m_ActiveMode == IssueCategory.ApiCalls)
@@ -266,6 +259,16 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
             EditorGUILayout.BeginHorizontal();
 
+            bool enableMuteButton = true;
+            var firstIssue = selectedIssues.FirstOrDefault();
+            if (firstIssue == null || selectedIssues.Count() != selectedIssues.Where(i => i.action == firstIssue.action).Count())
+            {
+                enableMuteButton = false;
+            }
+
+            if (!enableMuteButton)
+                GUI.enabled = false;
+            
             if (GUILayout.Button(Styles.MuteButton, GUILayout.Height(40), GUILayout.ExpandWidth(true), GUILayout.Width(100)))
             {
                 foreach (var descriptor in selectedDescriptors)
@@ -283,9 +286,23 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                     {
                         rule.action = Rule.Action.None;
                     }
+                    
+                    // update existing issues
+                    foreach (IssueCategory category in Enum.GetValues(typeof(IssueCategory)))
+                    {
+                        var issues = m_ProjectReport.GetIssues(category).Where(i => i.descriptor.id == descriptor.id);
+                        foreach (var issue in issues)
+                        {
+                            issue.action = Rule.Action.None;
+                        }
+                    }
+
                 }
             }
 
+            if (!enableMuteButton)
+                GUI.enabled = true;
+            
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
         }

@@ -26,5 +26,15 @@ namespace Unity.ProjectAuditor.Editor
             return false;
         }
 
+        public Rule.Action GetAction(ProblemDescriptor descriptor)
+        {
+            var projectRule = rules.Where(r => r.id == descriptor.id).FirstOrDefault();
+            if (projectRule != null)
+            {
+                return projectRule.action;
+            }
+
+            return descriptor.action;
+        }
     }
 }
