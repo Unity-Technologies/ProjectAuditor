@@ -172,7 +172,7 @@ namespace Unity.ProjectAuditor.Editor
                         EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
                     }
                     break;
-                case Column.Location :
+                case Column.Filename :
                     if (issue.filename != string.Empty)
                     {
                         var filename = string.Format("{0}:{1}", issue.filename, issue.line);
