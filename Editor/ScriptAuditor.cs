@@ -171,7 +171,6 @@ namespace Unity.ProjectAuditor.Editor
                                 {
                                     var projectIssue = new ProjectIssue
                                     {
-                                        action = action,
                                         description = description,
                                         category = IssueCategory.ApiCalls,
                                         descriptor = descriptor,

@@ -11,9 +11,24 @@ namespace Unity.ProjectAuditor.Editor
         public bool enableFailBuildOnIssues = false;
         public List<Rule> rules = new List<Rule>();
 
-        public Rule.Action GetAction(ProblemDescriptor descriptor)
+        public void AddRule(Rule rule)
         {
-            var projectRule = rules.Where(r => r.id == descriptor.id).FirstOrDefault();
+            if (string.IsNullOrEmpty(rule.filter))
+                rule.filter = string.Empty;
+            rules.Add(rule);
+        }
+
+        public Rule GetRule(ProblemDescriptor descriptor, string filter = "")
+        {
+            var rule = rules.Where(r => r.id == descriptor.id && r.filter.Equals(filter)).FirstOrDefault();
+            if (rule != null)
+                return rule;
+            return rules.Where(r => r.id == descriptor.id && string.IsNullOrEmpty(r.filter)).FirstOrDefault();
+        }
+        
+        public Rule.Action GetAction(ProblemDescriptor descriptor, string filter = "")
+        {
+            var projectRule = GetRule(descriptor, filter);
             if (projectRule != null)
             {
                 return projectRule.action;

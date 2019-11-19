@@ -16,6 +16,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         public int id;
+        public string filter;
         public Action action;
     }
 }

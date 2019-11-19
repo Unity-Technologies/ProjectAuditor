@@ -13,8 +13,8 @@ namespace Unity.ProjectAuditor.Editor
         {
             Description = 0,
             Area,
-            Location,
             Mute,
+            Location,
             
             Count
         }
@@ -140,28 +140,18 @@ namespace Unity.ProjectAuditor.Editor
                     case Column.Mute:                        
                         if (GUI.Button(cellRect, Styles.MuteButton))
                         {                            
-                            var rule = m_ProjectAuditor.config.rules.Find(r => r.id == descriptor.id);
+                            var rule = m_ProjectAuditor.config.GetRule(descriptor);
                             if (rule == null)
                             {
-                                m_ProjectAuditor.config.rules.Add(new Rule
+                                m_ProjectAuditor.config.AddRule(new Rule
                                 {
                                     id = descriptor.id,
                                     action = Rule.Action.None
-                                });                                            
+                                });                                           
                             }
                             else
                             {
                                 rule.action = Rule.Action.None;
-                            }
-                
-                            // update existing issues
-                            foreach (IssueCategory category in Enum.GetValues(typeof(IssueCategory)))
-                            {
-                                var issues = m_Issues.Where(i => i.descriptor.id == descriptor.id);
-                                foreach (var matchedIssue in issues)
-                                {
-                                    matchedIssue.action = Rule.Action.None;
-                                }
                             }
                         }
                         break;
@@ -171,59 +161,67 @@ namespace Unity.ProjectAuditor.Editor
                     case Column.Area:
                         EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
                         break;
-                }                
-                return;
+                }
             }
-
-            if (issue.action == Rule.Action.None)
-                GUI.enabled = false;
-            
-            switch ((Column)column)
+            else
             {
-                case Column.Area :
-                    if (!m_GroupByDescription)
-                        EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
-                    break;
-                case Column.Description :
-                    if (m_GroupByDescription)
-                    {
-                        var callingMethod = issue.callingMethod;
-                        var nameWithoutReturnTypeAndParameters = callingMethod.Substring(callingMethod.IndexOf(" "));
-                        if (nameWithoutReturnTypeAndParameters.IndexOf("(") >= 0)
-                            nameWithoutReturnTypeAndParameters = nameWithoutReturnTypeAndParameters.Substring(0, nameWithoutReturnTypeAndParameters.IndexOf("("));
-                        
-                        var name = nameWithoutReturnTypeAndParameters;
-                        if (nameWithoutReturnTypeAndParameters.LastIndexOf("::") >= 0)
+                var rule = m_ProjectAuditor.config.GetRule(descriptor, issue.callingMethodName);
+                if (rule != null && rule.action == Rule.Action.None)
+                    GUI.enabled = false;
+                
+                switch ((Column)column)
+                {
+                    case Column.Mute:                        
+                        if (GUI.Button(cellRect, Styles.MuteButton))
                         {
-                            var onlyNamespace = nameWithoutReturnTypeAndParameters.Substring(0, nameWithoutReturnTypeAndParameters.LastIndexOf("::"));
-                            if (onlyNamespace.LastIndexOf(".") >= 0)
-                                name = nameWithoutReturnTypeAndParameters.Substring(onlyNamespace.LastIndexOf(".") + 1);
+                            if (rule == null)
+                            {
+                                m_ProjectAuditor.config.AddRule(new Rule
+                                {
+                                    id = descriptor.id,
+                                    filter = issue.callingMethodName,
+                                    action = Rule.Action.None
+                                });
+                            }
+                            else
+                            {
+                                rule.action = Rule.Action.None;
+                            }
                         }
-                        EditorGUI.LabelField(cellRect, new GUIContent(name, callingMethod));
-                    }
-                    else
-                    {
-                        string tooltip = descriptor.problem + " \n\n" + descriptor.solution;
-                        EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
-                    }
-                    break;
-                case Column.Location :
-                    var location = string.Format("{0}({1},{2})", issue.relativePath, issue.line,  issue.column);
-
-                    var libraryIndex = location.IndexOf("Library/PackageCache/");
-                    if (libraryIndex >= 0)
-                    {
-                        location = location.Remove(0, libraryIndex + "Library/PackageCache/".Length);
-                    }
-                    
-                    // display fullpath as tooltip
-                    EditorGUI.LabelField(cellRect, new GUIContent(location, issue.location));
-
-                    break;
-            
+                        break;
+                    case Column.Area :
+                        if (!m_GroupByDescription)
+                            EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
+                        break;
+                    case Column.Description :
+                        if (m_GroupByDescription)
+                        {
+                            EditorGUI.LabelField(cellRect, new GUIContent(issue.callingMethodName, issue.callingMethod));
+                        }
+                        else
+                        {
+                            string tooltip = descriptor.problem + " \n\n" + descriptor.solution;
+                            EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
+                        }
+                        break;
+                    case Column.Location :
+                        var location = string.Format("{0}({1},{2})", issue.relativePath, issue.line,  issue.column);
+    
+                        var libraryIndex = location.IndexOf("Library/PackageCache/");
+                        if (libraryIndex >= 0)
+                        {
+                            location = location.Remove(0, libraryIndex + "Library/PackageCache/".Length);
+                        }
+                        
+                        // display fullpath as tooltip
+                        EditorGUI.LabelField(cellRect, new GUIContent(location, issue.location));
+    
+                        break;
+                
+                }
+                if (rule != null && rule.action == Rule.Action.None)
+                    GUI.enabled = true;                
             }
-            if (issue.action == Rule.Action.None)
-                GUI.enabled = true;
         }
 
         protected override void DoubleClickedItem(int id)

@@ -21,7 +21,6 @@ namespace Unity.ProjectAuditor.Editor
         }
         
         private List<bool> m_EnableAreas = new List<bool>();
-//        private bool m_EnableResolvedItems = false;
 
         private bool m_ShowFilters = true;
         private bool m_ShowDetails = true;
@@ -121,10 +120,6 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             if (!m_ProjectAuditor.config.enablePackages && issue.category == IssueCategory.ApiCalls &&
                 (url.Contains("Library/PackageCache/") || url.Contains("Resources/PackageManager/BuiltInPackages/")))
                 return false;
-
-// temporarily disabled Resolve Items button since there might be issues that have just been checked but are still shown in the list
-//            if (!m_EnableResolvedItems && issue.resolved == true)
-//                return false;
 
             string area = issue.descriptor.area;
             for (int index=0;index < Enum.GetValues(typeof(Area)).Length; index++)
@@ -229,7 +224,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.BeginVertical();
-
+                
                 Rect r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
                 m_ActiveIssueTable.OnGUI(r);
 

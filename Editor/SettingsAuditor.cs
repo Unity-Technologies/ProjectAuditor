@@ -48,7 +48,6 @@ namespace Unity.ProjectAuditor.Editor
             {
                 projectReport.AddIssue(new ProjectIssue
                 {
-                    action = action,
                     description = descriptor.description,
                     category = IssueCategory.ProjectSettings,
                     descriptor = descriptor
