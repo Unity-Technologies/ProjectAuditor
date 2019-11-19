@@ -153,19 +153,7 @@ namespace Unity.ProjectAuditor.Editor
                 case Column.Description :
                     if (m_GroupByDescription)
                     {
-                        var callingMethod = issue.callingMethod;
-                        var nameWithoutReturnTypeAndParameters = callingMethod.Substring(callingMethod.IndexOf(" "));
-                        if (nameWithoutReturnTypeAndParameters.IndexOf("(") >= 0)
-                            nameWithoutReturnTypeAndParameters = nameWithoutReturnTypeAndParameters.Substring(0, nameWithoutReturnTypeAndParameters.IndexOf("("));
-                        
-                        var name = nameWithoutReturnTypeAndParameters;
-                        if (nameWithoutReturnTypeAndParameters.LastIndexOf("::") >= 0)
-                        {
-                            var onlyNamespace = nameWithoutReturnTypeAndParameters.Substring(0, nameWithoutReturnTypeAndParameters.LastIndexOf("::"));
-                            if (onlyNamespace.LastIndexOf(".") >= 0)
-                                name = nameWithoutReturnTypeAndParameters.Substring(onlyNamespace.LastIndexOf(".") + 1);
-                        }
-                        EditorGUI.LabelField(cellRect, new GUIContent(name, callingMethod));
+                        EditorGUI.LabelField(cellRect, new GUIContent(issue.callingMethodName, issue.callingMethod));
                     }
                     else
                     {
