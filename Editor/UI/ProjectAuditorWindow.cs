@@ -58,7 +58,8 @@ namespace Unity.ProjectAuditor.Editor
                 new GUIContent("Issue", "Issue description"),
                 // new GUIContent("Resolved?", "Issues that have already been looked at"),
                 new GUIContent("Area", "The area the issue might have an impact on"),
-                new GUIContent("Filename", "Filename and line number")            
+                new GUIContent("Filename", "Filename and line number"),
+                new GUIContent("Assembly", "Managed Assembly name")
             };
 
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filters");
@@ -169,6 +170,18 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         minWidth = 50;
                         break;
                     case IssueTable.Column.Filename :
+                        if (issueCategory == IssueCategory.ProjectSettings)
+                        {
+                            width = 0;
+                            minWidth = 0;
+                        }
+                        else
+                        {
+                            width = 300;
+                            minWidth = 100;                            
+                        }
+                        break;
+                    case IssueTable.Column.Assembly :
                         if (issueCategory == IssueCategory.ProjectSettings)
                         {
                             width = 0;

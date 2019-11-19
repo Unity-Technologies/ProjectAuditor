@@ -14,6 +14,7 @@ namespace Unity.ProjectAuditor.Editor
             // Resolved,
             Area,
             Filename,
+            Assembly,
 
             Count
         }
@@ -181,7 +182,12 @@ namespace Unity.ProjectAuditor.Editor
                         EditorGUI.LabelField(cellRect, new GUIContent(filename, issue.relativePath));                           
                     }
                     break;
-            
+                case Column.Assembly :
+                    if (issue.assembly != string.Empty)
+                    {
+                        EditorGUI.LabelField(cellRect, new GUIContent(issue.assembly, issue.assembly));                           
+                    }
+                    break;        
             }
         }
 

@@ -168,7 +168,8 @@ namespace Unity.ProjectAuditor.Editor
                                             callingMethod = m.FullName,
                                             url = s.Document.Url.Replace("\\", "/"),
                                             line = s.StartLine,
-                                            column = s.StartColumn
+                                            column = s.StartColumn,
+                                            assembly = a.Name.Name
                                         };
                                         projectReport.AddIssue(projectIssue);
                                         methodBobyIssues.Add(projectIssue);
