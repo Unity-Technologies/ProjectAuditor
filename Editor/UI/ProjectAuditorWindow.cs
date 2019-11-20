@@ -22,6 +22,7 @@ namespace Unity.ProjectAuditor.Editor
         
         private string[] m_AssemblyNames;
         private const int AllAssembliesIndex = 0;
+        private const string m_DefaultAssemblyName = "Assembly-CSharp";
         private int m_ActiveAssembly = AllAssembliesIndex;
 
         private Area m_ActiveArea = Area.All;
@@ -64,7 +65,6 @@ namespace Unity.ProjectAuditor.Editor
                 new GUIContent("Assembly", "Managed Assembly name")
             };
 
-            public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filters");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout = new GUIContent("Recommendation", "Recommendation on how to solve the issue");
             public static readonly GUIContent CallTreeFoldout = new GUIContent("Call Tree", "Call Tree");
@@ -93,7 +93,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
             var assemblyNames = new List<string>(new []{"All Assemblies"});
             assemblyNames.AddRange(m_ProjectAuditor.GetAuditor<ScriptAuditor>().assemblyNames);
-            m_ActiveAssembly = assemblyNames.IndexOf("Assembly-CSharp");
+            m_ActiveAssembly = assemblyNames.IndexOf(m_DefaultAssemblyName);
             m_AssemblyNames = assemblyNames.ToArray();
         }
 
