@@ -389,6 +389,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 				bool shouldRefresh = false;
                 if (m_DeveloperMode)
                 {
+                    EditorGUI.BeginChangeCheck();
+                    
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.LabelField("Build :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
                     m_ProjectAuditor.config.enableAnalyzeOnBuild = EditorGUILayout.ToggleLeft("Auto Analyze", m_ProjectAuditor.config.enableAnalyzeOnBuild, GUILayout.Width(100));

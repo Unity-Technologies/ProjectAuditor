@@ -117,12 +117,12 @@ namespace Unity.ProjectAuditor.Editor
                     if (!m.HasBody)
                         continue;
 
-                    AnalyzeMethodBody(projectReport, config, m);
+                    AnalyzeMethodBody(projectReport, config, a, m);
                 }
             }
         }
 
-        private void AnalyzeMethodBody(ProjectReport projectReport, ProjectAuditorConfig config, MethodDefinition m)
+        private void AnalyzeMethodBody(ProjectReport projectReport, ProjectAuditorConfig config, AssemblyDefinition a, MethodDefinition m)
         {
             List<ProjectIssue> methodBobyIssues = new List<ProjectIssue>();
 
