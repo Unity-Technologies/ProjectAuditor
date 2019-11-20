@@ -20,6 +20,26 @@ namespace Unity.ProjectAuditor.Editor
         private UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
 
         private string[] m_WhitelistedPackages;
+        private string[] m_AssemblyNames;
+        
+        public string[] assemblyNames
+        {
+            get
+            {
+                if (m_AssemblyNames != null)
+                    return m_AssemblyNames;
+
+                List<string> names = new List<string>();
+                foreach (var assembly in m_PlayerAssemblies)
+                {
+                    names.Add(assembly.name);                    
+                }
+
+                m_AssemblyNames = names.ToArray();
+                return m_AssemblyNames;
+            }
+        }
+
         
         public ScriptAuditor()
         {
@@ -46,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor
                 // Analyse all Player assemblies, including Package assemblies.
                 foreach (var assemblyPath in assemblies)
                 {
-                    progressBar.AdvanceProgressBar();
+                    progressBar.AdvanceProgressBar(string.Format("Analyzing {0} scripts", Path.GetFileName(assemblyPath)));
 
                     if (!File.Exists(assemblyPath))
                     {
@@ -174,7 +194,8 @@ namespace Unity.ProjectAuditor.Editor
                                     callingMethod = m.FullName,
                                     url = s.Document.Url.Replace("\\", "/"),
                                     line = s.StartLine,
-                                    column = s.StartColumn
+                                    column = s.StartColumn,
+                                    assembly = a.Name.Name
                                 };
 
                                 projectReport.AddIssue(projectIssue);

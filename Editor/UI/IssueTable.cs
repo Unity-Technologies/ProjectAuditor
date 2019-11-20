@@ -15,7 +15,8 @@ namespace Unity.ProjectAuditor.Editor
             Description = 0,
             Area,
             Filename,
-            
+            Assembly,
+
             Count
         }
 
@@ -153,36 +154,38 @@ namespace Unity.ProjectAuditor.Editor
             }
             else
             {
-                switch ((Column)column)
-                {
-                    case Column.Area :
-                        if (!m_GroupByDescription)
-                            EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
-                        break;
-                    case Column.Description :
-                        if (m_GroupByDescription)
-                        {
-                            EditorGUI.LabelField(cellRect, new GUIContent(issue.callingMethodName, issue.callingMethod));
-                        }
-                        else
-                        {
-                            string tooltip = descriptor.problem + " \n\n" + descriptor.solution;
-                            EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
-                        }
-                        break;
-                    case Column.Filename :
-                        if (issue.filename != string.Empty)
-                        {
-                            var filename = string.Format("{0}:{1}", issue.filename, issue.line);
+				switch ((Column)column)
+	                case Column.Area :
+	                    if (!m_GroupByDescription)
+	                        EditorGUI.LabelField(cellRect, new GUIContent(problemDescriptor.area, areaLongDescription));
+	                    break;
+	                case Column.Description :
+	                    if (m_GroupByDescription)
+                    	{
+                        	EditorGUI.LabelField(cellRect, new GUIContent(issue.callingMethodName, issue.callingMethod));
+                    	}
+                    	else
+                    	{
+                        	string tooltip = problemDescriptor.problem + " \n\n" + problemDescriptor.solution;
+                        	EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
+                    	}
+                    	break;
+                	case Column.Filename :
+                    	if (issue.filename != string.Empty)
+                    	{
+                        	var filename = string.Format("{0}:{1}", issue.filename, issue.line);
 
-                            // display fullpath as tooltip
-                            EditorGUI.LabelField(cellRect, new GUIContent(filename, issue.relativePath));                           
-                        }
-                        break;
-                
-                }
+                        	// display fullpath as tooltip
+                        	EditorGUI.LabelField(cellRect, new GUIContent(filename, issue.relativePath));                           
+                    	}
+                    	break;
+                	case Column.Assembly :
+                    	if (issue.assembly != string.Empty)
+                    	{
+                        	EditorGUI.LabelField(cellRect, new GUIContent(issue.assembly, issue.assembly));                           
+                    	}
+                    	break;        
             }
-
             if (rule != null && rule.action == Rule.Action.None)
             {
                 GUI.enabled = true;    

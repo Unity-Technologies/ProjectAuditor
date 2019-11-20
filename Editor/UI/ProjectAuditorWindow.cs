@@ -20,14 +20,18 @@ namespace Unity.ProjectAuditor.Editor
             get { return m_IssueTables[(int) m_ActiveMode]; }
         }
         
-        private List<bool> m_EnableAreas = new List<bool>();
+        private string[] m_AssemblyNames;
+        private const int AllAssembliesIndex = 0;
+        private const string m_DefaultAssemblyName = "Assembly-CSharp";
+        private int m_ActiveAssembly = AllAssembliesIndex;
 
-        private bool m_ShowFilters = true;
+        private Area m_ActiveArea = Area.All;
+
+        private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
+
         private bool m_ShowDetails = true;
         private bool m_ShowRecommendation = true;
         private bool m_ShowCallTree = false;
-
-        private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
         
         static readonly string[] AreaEnumStrings = {
             "CPU",
@@ -35,9 +39,10 @@ namespace Unity.ProjectAuditor.Editor
             "Memory",
             "Build Size",
             "Load Times",
-
+            "All Areas"
         };
-        
+
+        private const int m_ToolbarWidth = 600;
         private const int m_FoldoutWidth = 300;
         private const int m_FoldoutMaxHeight = 220;
 
@@ -59,10 +64,10 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent[] ColumnHeaders = {
                 new GUIContent("Issue", "Issue description"),
                 new GUIContent("Area", "The area the issue might have an impact on"),
-                new GUIContent("Filename", "Path to the script file"),
+                new GUIContent("Filename", "Filename and line number"),
+                new GUIContent("Assembly", "Managed Assembly name")
             };
 
-            public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filters");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout = new GUIContent("Recommendation", "Recommendation on how to solve the issue");
             public static readonly GUIContent CallTreeFoldout = new GUIContent("Call Tree", "Call Tree");
@@ -88,10 +93,11 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         private void OnEnable()
         {
             m_ProjectAuditor = new ProjectAuditor();
-            
-            var enumAreas = Enum.GetValues(typeof(Area));
-            foreach(var area in enumAreas)
-                m_EnableAreas.Add(true);
+
+            var assemblyNames = new List<string>(new []{"All Assemblies"});
+            assemblyNames.AddRange(m_ProjectAuditor.GetAuditor<ScriptAuditor>().assemblyNames);
+            m_ActiveAssembly = assemblyNames.IndexOf(m_DefaultAssemblyName);
+            m_AssemblyNames = assemblyNames.ToArray();
         }
 
         private void OnGUI()
@@ -119,26 +125,23 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         
         bool ShouldDisplay(ProjectIssue issue)
         {
-            string url = issue.url;
-            if (!m_ProjectAuditor.config.enablePackages && issue.category == IssueCategory.ApiCalls &&
-                (url.Contains("Library/PackageCache/") || url.Contains("Resources/PackageManager/BuiltInPackages/")))
+            if (m_ActiveAssembly != AllAssembliesIndex && !m_AssemblyNames[m_ActiveAssembly].Equals(issue.assembly))
+            {
                 return false;
+            }
+            
+            if (m_ActiveArea != Area.All && !AreaEnumStrings[(int)m_ActiveArea].Equals(issue.descriptor.area))
+            {
+                return false;
+            }
 
-            if (!m_ProjectAuditor.config.displayReadIssues)
+			if (!m_ProjectAuditor.config.displayReadIssues)
             {
                 var rule = m_ProjectAuditor.config.GetRule(issue.descriptor, issue.callingMethodName);
                 if (rule != null && rule.action == Rule.Action.None)
                     return false;
             }
-
-            string area = issue.descriptor.area;
-            for (int index=0;index < Enum.GetValues(typeof(Area)).Length; index++)
-            {
-                if (m_EnableAreas[index] && area.Contains(AreaEnumStrings[index]))
-                    return true;                
-            }
-
-            return false;
+            return true;
         }
 
         private void Analyze()
@@ -176,7 +179,19 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         }
                         else
                         {
-                            width = 100;
+                            width = 300;
+                            minWidth = 100;                            
+                        }
+                        break;
+                    case IssueTable.Column.Assembly :
+                        if (issueCategory == IssueCategory.ProjectSettings)
+                        {
+                            width = 0;
+                            minWidth = 0;
+                        }
+                        else
+                        {
+                            width = 300;
                             minWidth = 100;                            
                         }
                         break;
@@ -248,8 +263,6 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 var selectedItems = m_ActiveIssueTable.GetSelectedItems();
                 var selectedIssues = selectedItems.Select(i => i.m_ProjectIssue).ToArray();
                 string info = selectedIssues.Length  + " / " + m_ActiveIssueTable.NumIssues(m_ActiveMode) + " issues";
-
-                m_ActiveMode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, m_ProjectAuditor.auditorNames);
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.BeginVertical();
@@ -362,31 +375,20 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             if (!IsAnalysisValid())
                 return;
             
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_ToolbarWidth));
 
-            m_ShowFilters = BoldFoldout(m_ShowFilters, Styles.FiltersFoldout);
-            if (m_ShowFilters)
             {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Filter By :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-
-                EditorGUI.BeginChangeCheck();
-
-                for (int index=0;index < Enum.GetValues(typeof(Area)).Length; index++)
-                {
-                    m_EnableAreas[index] = EditorGUILayout.ToggleLeft(AreaEnumStrings[index], m_EnableAreas[index], GUILayout.Width(100));
-                }
+                
+                var assembly = EditorGUILayout.Popup(m_ActiveAssembly, m_AssemblyNames, GUILayout.MaxWidth(150));
+                var area = (Area)EditorGUILayout.Popup((int)m_ActiveArea, AreaEnumStrings, GUILayout.MaxWidth(150));
+                var mode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, m_ProjectAuditor.auditorNames, GUILayout.MaxWidth(150), GUILayout.ExpandWidth(true));
 
                 EditorGUILayout.EndHorizontal();
 
+				bool shouldRefresh = false;
                 if (m_DeveloperMode)
                 {
-#if UNITY_2018_1_OR_NEWER
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Include :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                    m_ProjectAuditor.config.enablePackages = EditorGUILayout.ToggleLeft("Packages", m_ProjectAuditor.config.enablePackages, GUILayout.Width(100));
-                    EditorGUILayout.EndHorizontal();
-#endif
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.LabelField("Build :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
                     m_ProjectAuditor.config.enableAnalyzeOnBuild = EditorGUILayout.ToggleLeft("Auto Analyze", m_ProjectAuditor.config.enableAnalyzeOnBuild, GUILayout.Width(100));
@@ -418,10 +420,18 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         }
                     }
                     EditorGUILayout.EndHorizontal();
+
+	                if (EditorGUI.EndChangeCheck())
+	                {
+    	                shouldRefresh = true;
+        	        }
                 }
 
-                if (EditorGUI.EndChangeCheck())
+                if (shouldRefresh || m_ActiveArea != area  || m_ActiveMode != mode || !assembly.Equals(m_ActiveAssembly))
                 {
+                    m_ActiveAssembly = assembly;
+                    m_ActiveArea = area;
+                    m_ActiveMode = mode;
                     RefreshDisplay();
                 }
             }

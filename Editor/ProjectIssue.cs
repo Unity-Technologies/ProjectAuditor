@@ -1,14 +1,17 @@
 using System;
+using System.IO;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    enum Area{
+    public enum Area{
         CPU,
         GPU,
         Memory,
         BuildSize,
-        LoadTimes
+        LoadTimes,
+        
+        All,        
     }
 
     public enum IssueCategory
@@ -28,6 +31,7 @@ namespace Unity.ProjectAuditor.Editor
         public string url;
         public int line;
         public int column;
+        public string assembly;
 
         public string filename
         {
@@ -35,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (string.IsNullOrEmpty(url))
                     return String.Empty;
-                return url.Substring(url.LastIndexOf("/")+1);
+                return Path.GetFileName(url);
             }
         }
 
@@ -61,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor
                 return path;
             }
         }
-
+        
         public string callingMethodName
         {
             get

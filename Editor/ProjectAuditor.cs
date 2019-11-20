@@ -111,6 +111,18 @@ namespace Unity.ProjectAuditor.Editor
             EditorUtility.ClearProgressBar();
         }
 
+        public T GetAuditor<T>() where T: class
+        {
+            foreach (var iauditor in m_Auditors)
+            {
+                T auditor = iauditor as T;
+                if (auditor != null)
+                    return auditor;
+            }
+
+            return null;
+        }
+
         public void LoadDatabase(string path)
         {
             foreach (var auditor in m_Auditors)
