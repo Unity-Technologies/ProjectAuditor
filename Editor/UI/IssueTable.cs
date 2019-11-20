@@ -15,7 +15,6 @@ namespace Unity.ProjectAuditor.Editor
             Description = 0,
             Area,
             Filename,
-            //Mute,
             
             Count
         }
@@ -144,24 +143,6 @@ namespace Unity.ProjectAuditor.Editor
             {
                 switch ((Column)column)
                 {
-//                    case Column.Mute:                        
-//                        if (GUI.Button(cellRect, Styles.MuteButton))
-//                        {                            
-//                            var rule = m_ProjectAuditor.config.GetRule(descriptor);
-//                            if (rule == null)
-//                            {
-//                                m_ProjectAuditor.config.AddRule(new Rule
-//                                {
-//                                    id = descriptor.id,
-//                                    action = Rule.Action.None
-//                                });                                           
-//                            }
-//                            else
-//                            {
-//                                rule.action = Rule.Action.None;
-//                            }
-//                        }
-//                        break;
                     case Column.Description:
                         EditorGUI.LabelField(cellRect, new GUIContent(item.displayName, item.displayName));
                         break;
@@ -174,24 +155,6 @@ namespace Unity.ProjectAuditor.Editor
             {
                 switch ((Column)column)
                 {
-//                    case Column.Mute:                        
-//                        if (GUI.Button(cellRect, Styles.MuteButton))
-//                        {
-//                            if (rule == null)
-//                            {
-//                                m_ProjectAuditor.config.AddRule(new Rule
-//                                {
-//                                    id = descriptor.id,
-//                                    filter = issue.callingMethodName,
-//                                    action = Rule.Action.None
-//                                });
-//                            }
-//                            else
-//                            {
-//                                rule.action = Rule.Action.None;
-//                            }
-//                        }
-//                        break;
                     case Column.Area :
                         if (!m_GroupByDescription)
                             EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));

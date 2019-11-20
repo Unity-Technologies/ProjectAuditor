@@ -60,7 +60,6 @@ namespace Unity.ProjectAuditor.Editor
                 new GUIContent("Issue", "Issue description"),
                 new GUIContent("Area", "The area the issue might have an impact on"),
                 new GUIContent("Filename", "Path to the script file"),
-                //new GUIContent("Mute", "Mute issue"),
             };
 
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filters");
@@ -165,10 +164,6 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         width = 300;
                         minWidth = 100;
                         break;
-//                    case IssueTable.Column.Mute :
-//                        width = 36;
-//                        minWidth = 36;
-//                        break;
                     case IssueTable.Column.Area :
                         width = 50;
                         minWidth = 50;
