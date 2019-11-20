@@ -52,8 +52,8 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to json file.");
 
-            public static readonly GUIContent MarkAsReadButton = new GUIContent("Mark Read", "Mark selected issues as read");
-            public static readonly GUIContent MarkAsUnreadButton = new GUIContent("Mark Unread", "Mark selected issues as unread");
+            public static readonly GUIContent MarkAsReadButton = new GUIContent("Mute Selected", "Mark selected issues as read");
+            public static readonly GUIContent MarkAsUnreadButton = new GUIContent("Unmute Selected", "Mark selected issues as unread");
                 
                 
             public static readonly GUIContent[] ColumnHeaders = {
@@ -151,7 +151,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             RefreshDisplay();
         }
 
-        IssueTable CreateIssueTable(IssueCategory issueCategory)
+        IssueTable CreateIssueTable(IssueCategory issueCategory, TreeViewState state)
         {
             var columnsList = new List<MultiColumnHeaderState.Column>();
             var numColumns = (int) IssueTable.Column.Count;
@@ -200,7 +200,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             
             var filteredList = issues.Where(x => ShouldDisplay(x));
             
-            return new IssueTable(new TreeViewState(),
+            return new IssueTable(state,
                 new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())), filteredList.ToArray(), issueCategory == IssueCategory.ApiCalls, m_ProjectAuditor);
         }
 
@@ -209,10 +209,29 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             if (!IsAnalysisValid())
                 return;
 
+            // Store the state if we're recreating pre-existing IssueTables
+            // (or create new ones if this is the first time)
+            TreeViewState[] treeViewStates = new TreeViewState[(int)IssueCategory.NumCategories];
+
+            for (int i = 0; i < (int)IssueCategory.NumCategories; ++i)
+            {
+                if (m_IssueTables != null && m_IssueTables.Count > i)
+                {
+                    treeViewStates[i] = m_IssueTables[i].state;
+                }
+                else
+                {
+                    treeViewStates[i] = new TreeViewState();
+                }
+            }
+
             m_IssueTables.Clear();
-            
-            foreach (IssueCategory category in Enum.GetValues(typeof(IssueCategory)))
-                m_IssueTables.Add(CreateIssueTable(category));                
+
+            for(int i = 0; i < (int)IssueCategory.NumCategories; ++i)
+            {
+                IssueTable issueTable = CreateIssueTable((IssueCategory)i, treeViewStates[i]);
+                m_IssueTables.Add(issueTable);
+            }
         }
 
         private void Reload()
@@ -381,26 +400,27 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                     
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                    m_ProjectAuditor.config.displayReadIssues = EditorGUILayout.ToggleLeft("Show Read Issues", m_ProjectAuditor.config.displayReadIssues, GUILayout.Width(120));
-                    if (GUILayout.Button(Styles.MarkAsReadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                    m_ProjectAuditor.config.displayReadIssues = EditorGUILayout.ToggleLeft("Show Muted Issues", m_ProjectAuditor.config.displayReadIssues, GUILayout.Width(120));
+                    if (GUILayout.Button(Styles.MarkAsReadButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                     {
                         var selectedItems = m_ActiveIssueTable.GetSelectedItems();
                         foreach (IssueTableItem item in selectedItems)
                         {
                             SetRuleForItem(item, Rule.Action.None);
                         }
-                        m_ActiveIssueTable.SetSelection(new List<int>());
+
+                        if (!m_ProjectAuditor.config.displayReadIssues)
+                        {
+                            m_ActiveIssueTable.SetSelection(new List<int>());
+                        }
                     }
-                    if (GUILayout.Button(Styles.MarkAsUnreadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                    if (GUILayout.Button(Styles.MarkAsUnreadButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                     {
                         var selectedItems = m_ActiveIssueTable.GetSelectedItems();
                         foreach (IssueTableItem item in selectedItems)
                         {
-                            // SteveM TODO - Rather than set the item back to default, perhaps just remove it from the rules entirely?
-                            // That'd keep the file size down
-                            SetRuleForItem(item, Rule.Action.Default);
+                            ClearRulesForItem(item);
                         }
-                        //m_ActiveIssueTable.SetSelection(new List<int>());
                     }
                     EditorGUILayout.EndHorizontal();
                 }
@@ -441,6 +461,28 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             else
             {
                 rule.action = ruleAction;
+            }
+        }
+
+        private void ClearRulesForItem(IssueTableItem item)
+        {
+            var descriptor = item.problemDescriptor;
+
+            string callingMethod = "";
+            Rule[] rules;
+            if (item.hasChildren)
+            {
+                rules = m_ProjectAuditor.config.rules.Where(r => r.id == descriptor.id).ToArray();
+            }
+            else
+            {
+                callingMethod = item.m_ProjectIssue.callingMethodName;
+                rules = m_ProjectAuditor.config.rules.Where(r => r.id == descriptor.id && r.filter.Equals(callingMethod)).ToArray();
+            }
+
+            foreach (var rule in rules)
+            {
+                m_ProjectAuditor.config.rules.Remove(rule);
             }
         }
         
