@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -11,7 +13,6 @@ namespace Unity.ProjectAuditor.Editor
         public enum Column
         {
             Description = 0,
-            // Resolved,
             Area,
             Filename,
             Assembly,
@@ -19,12 +20,14 @@ namespace Unity.ProjectAuditor.Editor
             Count
         }
 
+        private ProjectAuditor m_ProjectAuditor;
         ProjectIssue[] m_Issues;
 
         bool m_GroupByDescription;
 
-        public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader, ProjectIssue[] issues, bool groupByDescription) : base(state, multicolumnHeader)
+        public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader, ProjectIssue[] issues, bool groupByDescription, ProjectAuditor projectAuditor) : base(state, multicolumnHeader)
         {
+            m_ProjectAuditor = projectAuditor;
             m_Issues = issues;
             m_GroupByDescription = groupByDescription;
             Reload();
@@ -111,7 +114,7 @@ namespace Unity.ProjectAuditor.Editor
         void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int column, ref RowGUIArgs args)
         {
             // only indent first column
-            if (0 == column)
+            if ((int)IssueTable.Column.Description == column)
             {
                 var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
@@ -123,8 +126,14 @@ namespace Unity.ProjectAuditor.Editor
                 return;
 
             var issue = item.m_ProjectIssue;
-            var problemDescriptor = item.problemDescriptor;
-            var areaLongDescription = "This issue might have an impact on " + problemDescriptor.area;                      
+            var descriptor = item.problemDescriptor;
+            var areaLongDescription = "This issue might have an impact on " + descriptor.area;            
+            
+            var rule = m_ProjectAuditor.config.GetRule(descriptor, issue?.callingMethodName);
+            if (rule != null && rule.action == Rule.Action.None)
+            {
+                GUI.enabled = false;
+            }
             
             if (item.hasChildren)
             {
@@ -134,48 +143,53 @@ namespace Unity.ProjectAuditor.Editor
                         EditorGUI.LabelField(cellRect, new GUIContent(item.displayName, item.displayName));
                         break;
                     case Column.Area:
-                        EditorGUI.LabelField(cellRect, new GUIContent(problemDescriptor.area, areaLongDescription));
+                        EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
                         break;
                 }
-
-                return;
             }
-
-            switch ((Column)column)
+            else
             {
-                // case Column.Resolved :
-                //     issue.resolved = EditorGUI.Toggle(cellRect, issue.resolved);
-                //     break;
-                case Column.Area :
-                    if (!m_GroupByDescription)
-                        EditorGUI.LabelField(cellRect, new GUIContent(problemDescriptor.area, areaLongDescription));
-                    break;
-                case Column.Description :
-                    if (m_GroupByDescription)
-                    {
-                        EditorGUI.LabelField(cellRect, new GUIContent(issue.callingMethodName, issue.callingMethod));
-                    }
-                    else
-                    {
-                        string tooltip = problemDescriptor.problem + " \n\n" + problemDescriptor.solution;
-                        EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
-                    }
-                    break;
-                case Column.Filename :
-                    if (issue.filename != string.Empty)
-                    {
-                        var filename = string.Format("{0}:{1}", issue.filename, issue.line);
+                switch ((Column) column)
+                {
+                    case Column.Area:
+                        if (!m_GroupByDescription)
+                            EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
+                        break;
+                    case Column.Description:
+                        if (m_GroupByDescription)
+                        {
+                            EditorGUI.LabelField(cellRect,
+                                new GUIContent(issue.callingMethodName, issue.callingMethod));
+                        }
+                        else
+                        {
+                            string tooltip = descriptor.problem + " \n\n" + descriptor.solution;
+                            EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
+                        }
 
-                        // display fullpath as tooltip
-                        EditorGUI.LabelField(cellRect, new GUIContent(filename, issue.relativePath));                           
-                    }
-                    break;
-                case Column.Assembly :
-                    if (issue.assembly != string.Empty)
-                    {
-                        EditorGUI.LabelField(cellRect, new GUIContent(issue.assembly, issue.assembly));                           
-                    }
-                    break;        
+                        break;
+                    case Column.Filename:
+                        if (issue.filename != string.Empty)
+                        {
+                            var filename = string.Format("{0}:{1}", issue.filename, issue.line);
+
+                            // display fullpath as tooltip
+                            EditorGUI.LabelField(cellRect, new GUIContent(filename, issue.relativePath));
+                        }
+
+                        break;
+                    case Column.Assembly:
+                        if (issue.assembly != string.Empty)
+                        {
+                            EditorGUI.LabelField(cellRect, new GUIContent(issue.assembly, issue.assembly));
+                        }
+
+                        break;
+                }
+            }
+            if (rule != null && rule.action == Rule.Action.None)
+            {
+                GUI.enabled = true;    
             }
         }
 
@@ -203,22 +217,20 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        public IssueTableItem GetSelectedItem()
+        public IssueTableItem[] GetSelectedItems()
         {
             var ids = GetSelection();
             if (ids.Count() > 0)
             {
-                var rows = FindRows(ids);
-                if (rows.Count() > 0)
-                    return rows[0] as IssueTableItem;                
+                return FindRows(ids).OfType<IssueTableItem>().ToArray();
             }
 
-            return null;
+            return new IssueTableItem[0];
         }
 
-        public int NumIssues()
+        public int NumIssues(IssueCategory category)
         {
-            return m_Issues.Length;
+            return m_Issues.Where(i => i.category == category).Count();
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEditor.Macros;
 
@@ -7,11 +8,13 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class SettingsAuditor : IAuditor
     {
+        private System.Reflection.Assembly[] m_Assemblies;
         private List<ProblemDescriptor> m_ProblemDescriptors;
         private AnalyzerHelpers m_Helpers;
 
         public SettingsAuditor()
         {
+            m_Assemblies = AppDomain.CurrentDomain.GetAssemblies();
             m_Helpers = new AnalyzerHelpers();
         }
 
@@ -25,41 +28,44 @@ namespace Unity.ProjectAuditor.Editor
              m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors( path, "ProjectSettings");
         }
 
-        public void Audit(ProjectReport projectReport)
+        public void Audit(ProjectReport projectReport, ProjectAuditorConfig config)
         {
             var progressBar =
                 new ProgressBarDisplay("Analyzing Scripts", "Analyzing project settings", m_ProblemDescriptors.Count);
 
-            // do we actually need to look in all assemblies?
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (var p in m_ProblemDescriptors)
+            foreach (var descriptor in m_ProblemDescriptors)
             {
                 progressBar.AdvanceProgressBar();
-                SearchAndEval(p, assemblies, projectReport);
+                SearchAndEval(descriptor, projectReport, config);
             }
             progressBar.ClearProgressBar();
         }
-     
-        void SearchAndEval(ProblemDescriptor p, System.Reflection.Assembly[] assemblies, ProjectReport projectReport)
+
+        private void AddIssue(ProblemDescriptor descriptor, ProjectReport projectReport, ProjectAuditorConfig config)
         {
-            if (string.IsNullOrEmpty(p.customevaluator))
+            projectReport.AddIssue(new ProjectIssue
             {
-                // try all assemblies. Need to find a way to only evaluate on the right assembly
-                foreach (var assembly in assemblies)
+                description = descriptor.description,
+                category = IssueCategory.ProjectSettings,
+                descriptor = descriptor
+            });
+        }
+        
+        void SearchAndEval(ProblemDescriptor descriptor, ProjectReport projectReport, ProjectAuditorConfig config)
+        {
+            if (string.IsNullOrEmpty(descriptor.customevaluator))
+            {
+                // do we actually need to look in all assemblies? Maybe we can find a way to only evaluate on the right assembly
+                foreach (var assembly in m_Assemblies)
                 {
                     try
                     {
                         var value = MethodEvaluator.Eval(assembly.Location,
-                            p.type, "get_" + p.method, new System.Type[0]{}, new object[0]{});
+                            descriptor.type, "get_" + descriptor.method, new System.Type[0]{}, new object[0]{});
 
-                        if (value.ToString() == p.value)
+                        if (value.ToString() == descriptor.value)
                         {
-                            projectReport.AddIssue(new ProjectIssue
-                            {
-                                description = p.description,
-                                category = IssueCategory.ProjectSettings,
-                                descriptor = p
-                            });
+                            AddIssue(descriptor, projectReport, config);
                         
                             // stop iterating assemblies
                             break;
@@ -74,17 +80,12 @@ namespace Unity.ProjectAuditor.Editor
             else
             {
                 Type helperType = m_Helpers.GetType();
-                MethodInfo theMethod = helperType.GetMethod(p.customevaluator);
+                MethodInfo theMethod = helperType.GetMethod(descriptor.customevaluator);
                 bool isIssue = (bool)theMethod.Invoke(m_Helpers, null);
 
                 if (isIssue)
                 {
-                    projectReport.AddIssue(new ProjectIssue
-                    {
-                        description = p.description,
-                        category = IssueCategory.ProjectSettings,
-                        descriptor = p
-                    });
+                    AddIssue(descriptor, projectReport, config);
                 }
             }
         }
