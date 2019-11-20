@@ -15,6 +15,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         ApiCalls,
         ProjectSettings,
+        NumCategories
     }
     
     [Serializable]

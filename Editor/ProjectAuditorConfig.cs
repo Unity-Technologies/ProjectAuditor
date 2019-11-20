@@ -9,6 +9,7 @@ namespace Unity.ProjectAuditor.Editor
         public bool enablePackages = false;
         public bool enableAnalyzeOnBuild = false;
         public bool enableFailBuildOnIssues = false;
+        public bool displayReadIssues = false;
         public List<Rule> rules = new List<Rule>();
 
         public void AddRule(Rule rule)

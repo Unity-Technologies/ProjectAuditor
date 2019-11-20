@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor
             Description = 0,
             Area,
             Filename,
-            Mute,
+            //Mute,
             
             Count
         }
@@ -131,30 +132,36 @@ namespace Unity.ProjectAuditor.Editor
 
             var issue = item.m_ProjectIssue;
             var descriptor = item.problemDescriptor;
-            var areaLongDescription = "This issue might have an impact on " + descriptor.area;                      
+            var areaLongDescription = "This issue might have an impact on " + descriptor.area;            
+            
+            var rule = m_ProjectAuditor.config.GetRule(descriptor, issue?.callingMethodName);
+            if (rule != null && rule.action == Rule.Action.None)
+            {
+                GUI.enabled = false;
+            }
             
             if (item.hasChildren)
             {
                 switch ((Column)column)
                 {
-                    case Column.Mute:                        
-                        if (GUI.Button(cellRect, Styles.MuteButton))
-                        {                            
-                            var rule = m_ProjectAuditor.config.GetRule(descriptor);
-                            if (rule == null)
-                            {
-                                m_ProjectAuditor.config.AddRule(new Rule
-                                {
-                                    id = descriptor.id,
-                                    action = Rule.Action.None
-                                });                                           
-                            }
-                            else
-                            {
-                                rule.action = Rule.Action.None;
-                            }
-                        }
-                        break;
+//                    case Column.Mute:                        
+//                        if (GUI.Button(cellRect, Styles.MuteButton))
+//                        {                            
+//                            var rule = m_ProjectAuditor.config.GetRule(descriptor);
+//                            if (rule == null)
+//                            {
+//                                m_ProjectAuditor.config.AddRule(new Rule
+//                                {
+//                                    id = descriptor.id,
+//                                    action = Rule.Action.None
+//                                });                                           
+//                            }
+//                            else
+//                            {
+//                                rule.action = Rule.Action.None;
+//                            }
+//                        }
+//                        break;
                     case Column.Description:
                         EditorGUI.LabelField(cellRect, new GUIContent(item.displayName, item.displayName));
                         break;
@@ -165,30 +172,26 @@ namespace Unity.ProjectAuditor.Editor
             }
             else
             {
-                var rule = m_ProjectAuditor.config.GetRule(descriptor, issue.callingMethodName);
-                if (rule != null && rule.action == Rule.Action.None)
-                    GUI.enabled = false;
-                
                 switch ((Column)column)
                 {
-                    case Column.Mute:                        
-                        if (GUI.Button(cellRect, Styles.MuteButton))
-                        {
-                            if (rule == null)
-                            {
-                                m_ProjectAuditor.config.AddRule(new Rule
-                                {
-                                    id = descriptor.id,
-                                    filter = issue.callingMethodName,
-                                    action = Rule.Action.None
-                                });
-                            }
-                            else
-                            {
-                                rule.action = Rule.Action.None;
-                            }
-                        }
-                        break;
+//                    case Column.Mute:                        
+//                        if (GUI.Button(cellRect, Styles.MuteButton))
+//                        {
+//                            if (rule == null)
+//                            {
+//                                m_ProjectAuditor.config.AddRule(new Rule
+//                                {
+//                                    id = descriptor.id,
+//                                    filter = issue.callingMethodName,
+//                                    action = Rule.Action.None
+//                                });
+//                            }
+//                            else
+//                            {
+//                                rule.action = Rule.Action.None;
+//                            }
+//                        }
+//                        break;
                     case Column.Area :
                         if (!m_GroupByDescription)
                             EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
@@ -215,8 +218,11 @@ namespace Unity.ProjectAuditor.Editor
                         break;
                 
                 }
-                if (rule != null && rule.action == Rule.Action.None)
-                    GUI.enabled = true;                
+            }
+
+            if (rule != null && rule.action == Rule.Action.None)
+            {
+                GUI.enabled = true;    
             }
         }
 

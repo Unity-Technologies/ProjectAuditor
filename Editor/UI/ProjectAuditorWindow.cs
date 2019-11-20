@@ -52,11 +52,15 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to json file.");
 
+            public static readonly GUIContent MarkAsReadButton = new GUIContent("Mute Selected", "Mark selected issues as read");
+            public static readonly GUIContent MarkAsUnreadButton = new GUIContent("Unmute Selected", "Mark selected issues as unread");
+                
+                
             public static readonly GUIContent[] ColumnHeaders = {
                 new GUIContent("Issue", "Issue description"),
                 new GUIContent("Area", "The area the issue might have an impact on"),
                 new GUIContent("Filename", "Path to the script file"),
-                new GUIContent("Mute", "Mute issue"),
+                //new GUIContent("Mute", "Mute issue"),
             };
 
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filters");
@@ -121,6 +125,13 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 (url.Contains("Library/PackageCache/") || url.Contains("Resources/PackageManager/BuiltInPackages/")))
                 return false;
 
+            if (!m_ProjectAuditor.config.displayReadIssues)
+            {
+                var rule = m_ProjectAuditor.config.GetRule(issue.descriptor, issue.callingMethodName);
+                if (rule != null && rule.action == Rule.Action.None)
+                    return false;
+            }
+
             string area = issue.descriptor.area;
             for (int index=0;index < Enum.GetValues(typeof(Area)).Length; index++)
             {
@@ -140,7 +151,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             RefreshDisplay();
         }
 
-        IssueTable CreateIssueTable(IssueCategory issueCategory)
+        IssueTable CreateIssueTable(IssueCategory issueCategory, TreeViewState state)
         {
             var columnsList = new List<MultiColumnHeaderState.Column>();
             var numColumns = (int) IssueTable.Column.Count;
@@ -154,10 +165,10 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         width = 300;
                         minWidth = 100;
                         break;
-                    case IssueTable.Column.Mute :
-                        width = 36;
-                        minWidth = 36;
-                        break;
+//                    case IssueTable.Column.Mute :
+//                        width = 36;
+//                        minWidth = 36;
+//                        break;
                     case IssueTable.Column.Area :
                         width = 50;
                         minWidth = 50;
@@ -189,7 +200,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             
             var filteredList = issues.Where(x => ShouldDisplay(x));
             
-            return new IssueTable(new TreeViewState(),
+            return new IssueTable(state,
                 new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())), filteredList.ToArray(), issueCategory == IssueCategory.ApiCalls, m_ProjectAuditor);
         }
 
@@ -198,10 +209,29 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             if (!IsAnalysisValid())
                 return;
 
+            // Store the state if we're recreating pre-existing IssueTables
+            // (or create new ones if this is the first time)
+            TreeViewState[] treeViewStates = new TreeViewState[(int)IssueCategory.NumCategories];
+
+            for (int i = 0; i < (int)IssueCategory.NumCategories; ++i)
+            {
+                if (m_IssueTables != null && m_IssueTables.Count > i)
+                {
+                    treeViewStates[i] = m_IssueTables[i].state;
+                }
+                else
+                {
+                    treeViewStates[i] = new TreeViewState();
+                }
+            }
+
             m_IssueTables.Clear();
-            
-            foreach (IssueCategory category in Enum.GetValues(typeof(IssueCategory)))
-                m_IssueTables.Add(CreateIssueTable(category));                
+
+            for(int i = 0; i < (int)IssueCategory.NumCategories; ++i)
+            {
+                IssueTable issueTable = CreateIssueTable((IssueCategory)i, treeViewStates[i]);
+                m_IssueTables.Add(issueTable);
+            }
         }
 
         private void Reload()
@@ -367,6 +397,32 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                     m_ProjectAuditor.config.enableAnalyzeOnBuild = EditorGUILayout.ToggleLeft("Auto Analyze", m_ProjectAuditor.config.enableAnalyzeOnBuild, GUILayout.Width(100));
                     m_ProjectAuditor.config.enableFailBuildOnIssues = EditorGUILayout.ToggleLeft("Fail on Issues", m_ProjectAuditor.config.enableFailBuildOnIssues, GUILayout.Width(100));
                     EditorGUILayout.EndHorizontal();
+                    
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+                    m_ProjectAuditor.config.displayReadIssues = EditorGUILayout.ToggleLeft("Show Muted Issues", m_ProjectAuditor.config.displayReadIssues, GUILayout.Width(120));
+                    if (GUILayout.Button(Styles.MarkAsReadButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    {
+                        var selectedItems = m_ActiveIssueTable.GetSelectedItems();
+                        foreach (IssueTableItem item in selectedItems)
+                        {
+                            SetRuleForItem(item, Rule.Action.None);
+                        }
+
+                        if (!m_ProjectAuditor.config.displayReadIssues)
+                        {
+                            m_ActiveIssueTable.SetSelection(new List<int>());
+                        }
+                    }
+                    if (GUILayout.Button(Styles.MarkAsUnreadButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    {
+                        var selectedItems = m_ActiveIssueTable.GetSelectedItems();
+                        foreach (IssueTableItem item in selectedItems)
+                        {
+                            ClearRulesForItem(item);
+                        }
+                    }
+                    EditorGUILayout.EndHorizontal();
                 }
 
                 if (EditorGUI.EndChangeCheck())
@@ -375,6 +431,59 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 }
             }
             EditorGUILayout.EndVertical();            
+        }
+        private void SetRuleForItem(IssueTableItem item, Rule.Action ruleAction)
+        {
+            var descriptor = item.problemDescriptor;
+
+            string callingMethod = "";
+            Rule rule;
+            if (item.hasChildren)
+            {
+                rule = m_ProjectAuditor.config.GetRule(descriptor);
+            }
+            else
+            {
+                callingMethod = item.m_ProjectIssue.callingMethodName;
+                //rule = m_ProjectAuditor.config.GetRule(descriptor, callingMethod);
+                rule = m_ProjectAuditor.config.rules.Where(r => r.id == descriptor.id && r.filter.Equals(callingMethod)).FirstOrDefault();
+            }
+
+            if (rule == null)
+            {
+                m_ProjectAuditor.config.AddRule(new Rule
+                {
+                    id = descriptor.id,
+                    filter = callingMethod,
+                    action = ruleAction
+                });                                           
+            }
+            else
+            {
+                rule.action = ruleAction;
+            }
+        }
+
+        private void ClearRulesForItem(IssueTableItem item)
+        {
+            var descriptor = item.problemDescriptor;
+
+            string callingMethod = "";
+            Rule[] rules;
+            if (item.hasChildren)
+            {
+                rules = m_ProjectAuditor.config.rules.Where(r => r.id == descriptor.id).ToArray();
+            }
+            else
+            {
+                callingMethod = item.m_ProjectIssue.callingMethodName;
+                rules = m_ProjectAuditor.config.rules.Where(r => r.id == descriptor.id && r.filter.Equals(callingMethod)).ToArray();
+            }
+
+            foreach (var rule in rules)
+            {
+                m_ProjectAuditor.config.rules.Remove(rule);
+            }
         }
         
         private void DrawToolbar()
