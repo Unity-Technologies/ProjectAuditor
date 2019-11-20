@@ -1,30 +1,45 @@
 using System;
+using System.IO;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    public enum Area{
+        CPU,
+        GPU,
+        Memory,
+        BuildSize,
+        LoadTimes,
+        
+        All,        
+    }
+
     public enum IssueCategory
     {
         ApiCalls,
-        ProjectSettings
+        ProjectSettings,
     }
 
     [Serializable]
     public class ProjectIssue
     {
-        public ProblemDefinition def;
-        public MethodInstance method;
-        public string category;
+        public ProblemDescriptor descriptor;
+        public string description;
+        public string callingMethod;
+		public MethodInstance method;
+        public IssueCategory category;
         public string url;
         public int line;
         public int column;
-        public bool resolved;
+        public string assembly;
 
-        public string location
+        public string filename
         {
             get
-            {                
-                return string.IsNullOrEmpty(url) ? String.Empty : string.Format("{0}({1},{2})", url, line, column);
+            {
+                if (string.IsNullOrEmpty(url))
+                    return String.Empty;
+                return Path.GetFileName(url);
             }
         }
 
@@ -32,6 +47,9 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
+                if (string.IsNullOrEmpty(url))
+                    return String.Empty;
+
                 string path = url;
                 if (path.Contains("BuiltInPackages"))
                 {
@@ -45,6 +63,29 @@ namespace Unity.ProjectAuditor.Editor
                 }
 
                 return path;
+            }
+        }
+        
+        public string callingMethodName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(callingMethod))
+                    return string.Empty;
+
+                var nameWithoutReturnTypeAndParameters = callingMethod.Substring(callingMethod.IndexOf(" "));
+                if (nameWithoutReturnTypeAndParameters.IndexOf("(") >= 0)
+                    nameWithoutReturnTypeAndParameters = nameWithoutReturnTypeAndParameters.Substring(0, nameWithoutReturnTypeAndParameters.IndexOf("("));
+                        
+                var name = nameWithoutReturnTypeAndParameters;
+                if (nameWithoutReturnTypeAndParameters.LastIndexOf("::") >= 0)
+                {
+                    var onlyNamespace = nameWithoutReturnTypeAndParameters.Substring(0, nameWithoutReturnTypeAndParameters.LastIndexOf("::"));
+                    if (onlyNamespace.LastIndexOf(".") >= 0)
+                        name = nameWithoutReturnTypeAndParameters.Substring(onlyNamespace.LastIndexOf(".") + 1);
+                }
+
+                return name.Trim(' ');
             }
         }
     }

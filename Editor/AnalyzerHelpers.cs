@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -17,15 +18,35 @@ namespace Unity.ProjectAuditor.Editor
             return PlayerSettings.accelerometerFrequency != 0;
         }
         
+        public bool PlayerSettingsGraphicsAPIs_iOS_OpenGLES()
+        {            
+            var graphicsAPIs = PlayerSettings.GetGraphicsAPIs(BuildTarget.iOS);
+           
+            var hasMetal = graphicsAPIs.Contains(GraphicsDeviceType.Metal); 
+            
+            return !hasMetal;
+        }
+
+        public bool PlayerSettingsGraphicsAPIs_iOS_OpenGLESAndMetal()
+        {            
+            var graphicsAPIs = PlayerSettings.GetGraphicsAPIs(BuildTarget.iOS);
+
+            var hasOpenGLES = graphicsAPIs.Contains(GraphicsDeviceType.OpenGLES2) ||
+                              graphicsAPIs.Contains(GraphicsDeviceType.OpenGLES3);  
+            
+            return graphicsAPIs.Contains(GraphicsDeviceType.Metal) && hasOpenGLES;
+        }
+
         public bool PlayerSettingsArchitecture_iOS()
         {
+            // PlayerSettings.GetArchitecture returns an integer value associated with the architecture of a BuildTargetPlatformGroup. 0 - None, 1 - ARM64, 2 - Universal.
             return PlayerSettings.GetArchitecture(BuildTargetGroup.iOS) == 2;
         }
 
         public bool PlayerSettingsArchitecture_Android()
         {
-            return (PlayerSettings.Android.targetArchitectures | AndroidArchitecture.ARMv7) != 0 &&
-                   (PlayerSettings.Android.targetArchitectures | AndroidArchitecture.ARM64) != 0;
+            return (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARMv7) != 0 &&
+                   (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) != 0;
         }
 
         public bool PhysicsLayerCollisionMatrix()

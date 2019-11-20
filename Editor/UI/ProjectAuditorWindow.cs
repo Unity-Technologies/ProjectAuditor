@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -6,65 +7,64 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    class ProjectAuditorWindow : EditorWindow
-    {       
+    class ProjectAuditorWindow : EditorWindow, IHasCustomMenu
+    {
+        private bool m_DeveloperMode = false;
+        
         private ProjectAuditor m_ProjectAuditor;
         private ProjectReport m_ProjectReport;
-        private IssueTable m_IssueTable;
+        private List<IssueTable> m_IssueTables = new List<IssueTable>();
+		private CallHierarchyView m_CallHierarchyView;
 
-        private ProjectIssue m_SelectedIssue = null;
+        private IssueTable m_ActiveIssueTable
+        {
+            get { return m_IssueTables[(int) m_ActiveMode]; }
+        }
         
-        private CallHierarchyView m_CallHierarchyView;
-        
-        private bool m_EnableCPU = true;
-        private bool m_EnableGPU = true;
-        private bool m_EnableMemory = true;
-        private bool m_EnableBuildSize = true;
-        private bool m_EnableLoadTimes = true;
-        private bool m_EnablePackages = false;
-//        private bool m_EnableResolvedItems = false;
-        private bool m_ShowDetails = false;
-        private bool m_ShowRecommendation = false;
-        private bool m_ShowCallTree = false;
+        private string[] m_AssemblyNames;
+        private const int AllAssembliesIndex = 0;
+        private const string m_DefaultAssemblyName = "Assembly-CSharp";
+        private int m_ActiveAssembly = AllAssembliesIndex;
+
+        private Area m_ActiveArea = Area.All;
 
         private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
-      
-        string[] ReportModeStrings = {
-            "API Calls",
-            "Project Settings"
-        };
 
-        enum Area{
-            CPU,
-            GPU,
-            Memory,
-            BuildSize,
-            LoadTimes
-        }
+        private bool m_ShowDetails = true;
+        private bool m_ShowRecommendation = true;
+        private bool m_ShowCallTree = false;
         
         static readonly string[] AreaEnumStrings = {
             "CPU",
             "GPU",
             "Memory",
             "Build Size",
-            "Load Times"
+            "Load Times",
+            "All Areas"
         };
 
+        private const int m_ToolbarWidth = 600;
         private const int m_FoldoutWidth = 300;
         private const int m_FoldoutMaxHeight = 220;
 
         internal static class Styles
         {
+            public static readonly GUIContent DeveloperMode = new GUIContent("Developer Mode");
+            public static readonly GUIContent UserMode = new GUIContent("User Mode");
+            
             public static readonly GUIStyle Toolbar = "Toolbar";
             public static readonly GUIContent WindowTitle = new GUIContent("Project Auditor");
             public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
-            public static readonly GUIContent SerializeButton = new GUIContent("Serialize", "Serialize project report to file.");
+            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to json file.");
 
-            public static readonly GUIContent ResolvedHeader = new GUIContent("Resolved?", "Issues that have already been looked at");
-            public static readonly GUIContent AreaHeader = new GUIContent("Area", "The area the issue might have an impact on");
-            public static readonly GUIContent DescriptionHeader = new GUIContent("Description", "Issue description");
-            public static readonly GUIContent LocationHeader = new GUIContent("Location", "Path to the script file");
+            public static readonly GUIContent[] ColumnHeaders = {
+                new GUIContent("Issue", "Issue description"),
+                // new GUIContent("Resolved?", "Issues that have already been looked at"),
+                new GUIContent("Area", "The area the issue might have an impact on"),
+                new GUIContent("Filename", "Filename and line number"),
+                new GUIContent("Assembly", "Managed Assembly name")
+            };
 
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout = new GUIContent("Recommendation", "Recommendation on how to solve the issue");
@@ -82,46 +82,40 @@ Once the project is analyzed, the tool displays list of issues.
 At the moment there are two types of issues: API calls or Project Settings. The tool allows the user to switch between the two.
 In addition, it is possible to filter issues by area (CPU/Memory/etc...).
 
-To generate a report, click on the Serialize button.
-To reload the issue database definition, click on Reload DB.";
+To generate a report, click on the Export button.
+To reload the issue database definition, click on Reload DB. (Developer Mode only)";
         }
 
+        public static readonly string NoIssueSelectedText = "No issue selected";
+        
         private void OnEnable()
         {
             m_ProjectAuditor = new ProjectAuditor();
-            m_CallHierarchyView = new CallHierarchyView(new TreeViewState());
+
+            var assemblyNames = new List<string>(new []{"All Assemblies"});
+            assemblyNames.AddRange(m_ProjectAuditor.GetAuditor<ScriptAuditor>().assemblyNames);
+            m_ActiveAssembly = assemblyNames.IndexOf(m_DefaultAssemblyName);
+            m_AssemblyNames = assemblyNames.ToArray();
+
+			m_CallHierarchyView = new CallHierarchyView(new TreeViewState());
         }
 
         private void OnGUI()
         {
             DrawToolbar();
+            DrawFilters();
+            DrawIssues(); // and right-end panels
+        }
 
-            if (m_IssueTable != null)
-            {
-                var activeMode = m_ActiveMode;
-                m_ActiveMode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, ReportModeStrings);
-
-                if (activeMode != m_ActiveMode)
-                {
-                    // the user switched view
-                    RefreshDisplay();
-                }                    
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.BeginVertical();
-
-                
-                Rect r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
-                m_IssueTable.OnGUI(r);
-
-                EditorGUILayout.EndVertical();
-
-                EditorGUILayout.BeginVertical(GUILayout.Width(m_FoldoutWidth));
-                DrawFoldouts();
-                EditorGUILayout.EndVertical();
-            
-                EditorGUILayout.EndHorizontal();
-            }
+        private void OnToggleDeveloperMode()
+        {
+            m_DeveloperMode = !m_DeveloperMode;
+        }
+        
+        public virtual void AddItemsToMenu(GenericMenu menu)
+        {
+            menu.AddItem(Styles.DeveloperMode, m_DeveloperMode, OnToggleDeveloperMode);
+            menu.AddItem(Styles.UserMode, !m_DeveloperMode, OnToggleDeveloperMode);
         }
 
         bool IsAnalysisValid()
@@ -131,137 +125,154 @@ To reload the issue database definition, click on Reload DB.";
         
         bool ShouldDisplay(ProjectIssue issue)
         {
-            string category = issue.category;
-
-            string url = issue.url;
-            if (!m_EnablePackages && category.Equals(Editor.IssueCategory.ApiCalls.ToString()) &&
-                (url.Contains("Library/PackageCache/") || url.Contains("Resources/PackageManager/BuiltInPackages/")))
+            if (m_ActiveAssembly != AllAssembliesIndex && !m_AssemblyNames[m_ActiveAssembly].Equals(issue.assembly))
+            {
                 return false;
+            }
+            
+            if (m_ActiveArea != Area.All && !AreaEnumStrings[(int)m_ActiveArea].Equals(issue.descriptor.area))
+            {
+                return false;
+            }
 
-// temporarily disabled Resolve Items button since there might be issues that have just been checked but are still shown in the list
-//            if (!m_EnableResolvedItems && issue.resolved == true)
-//                return false;
-
-            string area = issue.def.area;
-            if (m_EnableCPU && area.Contains(AreaEnumStrings[(int)Area.CPU]))
-                return true;
-            if (m_EnableGPU && area.Contains(AreaEnumStrings[(int)Area.GPU]))
-                return true;
-            if (m_EnableMemory && area.Contains(AreaEnumStrings[(int)Area.Memory]))
-                return true;
-            if (m_EnableBuildSize && area.Contains(AreaEnumStrings[(int)Area.BuildSize]))
-                return true;
-            if (m_EnableLoadTimes && area.Contains(AreaEnumStrings[(int)Area.LoadTimes]))
-                return true;
-
-            return false;
+            return true;
         }
 
         private void Analyze()
         {
-            m_ProjectReport = m_ProjectAuditor.Audit();
+            m_ProjectReport = new ProjectReport();
+
+            m_ProjectAuditor.Audit(m_ProjectReport);
+
             RefreshDisplay();
+        }
+
+        IssueTable CreateIssueTable(IssueCategory issueCategory)
+        {
+            var columnsList = new List<MultiColumnHeaderState.Column>();
+            var numColumns = (int) IssueTable.Column.Count;
+            for (int i = 0; i < numColumns; i++)
+            {
+                int width = 80;
+                int minWidth = 80;
+                switch ((IssueTable.Column) i)
+                {
+                    case IssueTable.Column.Description :
+                        width = 300;
+                        minWidth = 100;
+                        break;
+                    // case IssueTable.Column.Resolved :
+                    //     width = 80;
+                    //     minWidth = 80;
+                    //     break;
+                    case IssueTable.Column.Area :
+                        width = 50;
+                        minWidth = 50;
+                        break;
+                    case IssueTable.Column.Filename :
+                        if (issueCategory == IssueCategory.ProjectSettings)
+                        {
+                            width = 0;
+                            minWidth = 0;
+                        }
+                        else
+                        {
+                            width = 300;
+                            minWidth = 100;                            
+                        }
+                        break;
+                    case IssueTable.Column.Assembly :
+                        if (issueCategory == IssueCategory.ProjectSettings)
+                        {
+                            width = 0;
+                            minWidth = 0;
+                        }
+                        else
+                        {
+                            width = 300;
+                            minWidth = 100;                            
+                        }
+                        break;
+                }
+                                
+                columnsList.Add(new MultiColumnHeaderState.Column
+                {
+                    headerContent = Styles.ColumnHeaders[i],
+                    width = width,
+                    minWidth = minWidth,
+                    autoResize = true
+                } );
+            }
+
+            var issues = m_ProjectReport.GetIssues(issueCategory);
+            
+            var filteredList = issues.Where(x => ShouldDisplay(x));
+            
+            return new IssueTable(new TreeViewState(),
+                new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())), filteredList.ToArray(), issueCategory == IssueCategory.ApiCalls);
         }
 
         private void RefreshDisplay()
         {
-            if (m_ProjectReport == null)
+            if (!IsAnalysisValid())
                 return;
 
-            MultiColumnHeaderState.Column[] columns = new MultiColumnHeaderState.Column[]
-            {
-                new MultiColumnHeaderState.Column
-                {
-                    headerContent = Styles.ResolvedHeader,
-                    width = 80,
-                    minWidth = 80,
-                    autoResize = true
-                },
-                new MultiColumnHeaderState.Column
-                {
-                    headerContent = Styles.AreaHeader,
-                    width = 100,
-                    minWidth = 100,
-                    autoResize = true
-                },
-                new MultiColumnHeaderState.Column
-                {
-                    headerContent = Styles.DescriptionHeader,
-                    width = 300,
-                    minWidth = 100,
-                    autoResize = true
-                },
-                              
-            };
-
-            var columnsList = new List<MultiColumnHeaderState.Column>(columns);
+            m_IssueTables.Clear();
             
-            if (m_ActiveMode == IssueCategory.ApiCalls)
-                columnsList.Add(new MultiColumnHeaderState.Column
-                {
-                    headerContent = Styles.LocationHeader,
-                    width = 900,
-                    minWidth = 400,
-                    autoResize = true
-                } );
-
-            var issues = m_ProjectReport.GetIssues(m_ActiveMode);
-            
-            var filteredList = issues.Where(x => ShouldDisplay(x));
-
-            m_IssueTable = new IssueTable(new TreeViewState(),
-                new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())), filteredList.ToArray());
+            foreach (IssueCategory category in Enum.GetValues(typeof(IssueCategory)))
+                m_IssueTables.Add(CreateIssueTable(category));                
         }
 
         private void Reload()
         {
             m_ProjectAuditor.LoadDatabase();
-            m_IssueTable = null;
+            m_IssueTables.Clear();
         }
 
-        private void Serialize()
+        private void Export()
         {
-            if (m_ProjectReport != null)
+            if (IsAnalysisValid())
                 m_ProjectReport.WriteToFile();
+        }
+
+        private void DrawIssues()
+        {
+            if (IsAnalysisValid())
+            {
+                EditorGUILayout.LabelField("Issues : " + m_ActiveIssueTable.NumIssues(), GUILayout.ExpandWidth(true), GUILayout.Width(80));
+                
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.BeginVertical();
+
+                Rect r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
+                m_ActiveIssueTable.OnGUI(r);
+
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.BeginVertical(GUILayout.Width(m_FoldoutWidth));
+
+                DrawFoldouts();
+
+                EditorGUILayout.EndVertical();
+                EditorGUILayout.EndHorizontal();
+            }     
         }
         
         private void DrawFoldouts()
         {
-            ProjectIssue selectedIssue = null;
-            if (m_IssueTable != null && m_IssueTable.HasSelection())
-            {               
-                var issues = m_ProjectReport.GetIssues(m_ActiveMode);
-                var displayIndex = m_IssueTable.GetSelection()[0];
-                int listIndex = 0;
-                int i = 0;
-
-                for (; i < issues.Count; ++i)
-                {
-                    if (ShouldDisplay(issues[i]))
-                    {
-                        if (listIndex == displayIndex)
-                        {
-                            break;
-                        }
-                        ++listIndex;
-                    }
-                }
-
-                selectedIssue = issues[i];                
-            }
-
-            if (selectedIssue != m_SelectedIssue)
+            ProblemDescriptor problemDescriptor = null;
+            IssueTableItem selectedItem = null;
+            if (m_ActiveIssueTable != null && m_ActiveIssueTable.HasSelection())
             {
-                m_SelectedIssue = selectedIssue;
-
-                m_CallHierarchyView.SetCallTree(selectedIssue != null ? selectedIssue.method : null);
-                m_CallHierarchyView.Reload();
+                selectedItem = m_ActiveIssueTable.GetSelectedItem();
+                if (selectedItem != null)
+                    problemDescriptor = selectedItem.problemDescriptor;
             }
-            
-            DrawDetailsFoldout(selectedIssue);
-            DrawRecommendationFoldout(selectedIssue);
+
+            DrawDetailsFoldout(problemDescriptor);
+            DrawRecommendationFoldout(problemDescriptor);
             if (m_ActiveMode == IssueCategory.ApiCalls)
-                DrawCallTree(selectedIssue);
+                DrawCallTree(selectedItem != null ? selectedItem.m_ProjectIssue : null);             
         }
 
         private bool BoldFoldout(bool toggle, GUIContent content)
@@ -271,43 +282,43 @@ To reload the issue database definition, click on Reload DB.";
             return EditorGUILayout.Foldout(toggle, content, foldoutStyle);
         }
 
-        private void DrawDetailsFoldout(ProjectIssue issue)
+        private void DrawDetailsFoldout(ProblemDescriptor problemDescriptor)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
 
-            bool lastShowThreadSummary = m_ShowDetails;
             m_ShowDetails = BoldFoldout(m_ShowDetails, Styles.DetailsFoldout);
             if (m_ShowDetails)
             {
-                if (issue != null)
+                if (problemDescriptor != null)
                 {
                     EditorStyles.textField.wordWrap = true;
-                    EditorGUILayout.TextArea(issue.def.problem, GUILayout.MaxHeight(m_FoldoutMaxHeight));
+//                    var text = issue.description + " is called from " + issue.callingMethod + "\n\n" + issue.def.problem;
+                    var text = problemDescriptor.problem;
+					GUILayout.TextArea(text, GUILayout.MaxHeight(m_FoldoutMaxHeight));
                 }
                 else
                 {
-                    EditorGUILayout.LabelField("No issue selected");
+                    EditorGUILayout.LabelField(NoIssueSelectedText);
                 }
             }
             EditorGUILayout.EndVertical();
         }
 
-        private void DrawRecommendationFoldout(ProjectIssue issue)
+        private void DrawRecommendationFoldout(ProblemDescriptor problemDescriptor)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
 
-            bool lastShowThreadSummary = m_ShowRecommendation;
             m_ShowRecommendation = BoldFoldout(m_ShowRecommendation, Styles.RecommendationFoldout);
             if (m_ShowRecommendation)
             {
-                if (issue != null)
+                if (problemDescriptor != null)
                 {
                     EditorStyles.textField.wordWrap = true;
-                    EditorGUILayout.TextArea(issue.def.solution, GUILayout.MaxHeight(m_FoldoutMaxHeight));
+                    GUILayout.TextArea(problemDescriptor.solution, GUILayout.MaxHeight(m_FoldoutMaxHeight));
                 }
                 else
                 {
-                    EditorGUILayout.LabelField("No issue selected");
+                    EditorGUILayout.LabelField(NoIssueSelectedText);
                 }
             }
             EditorGUILayout.EndVertical();
@@ -317,7 +328,6 @@ To reload the issue database definition, click on Reload DB.";
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
 
-            bool lastShowThreadSummary = m_ShowCallTree;
             m_ShowCallTree = BoldFoldout(m_ShowCallTree, Styles.CallTreeFoldout);
             if (m_ShowCallTree)
             {
@@ -329,10 +339,37 @@ To reload the issue database definition, click on Reload DB.";
                 }
                 else
                 {
-                    EditorGUILayout.LabelField("No issue selected");
+                    EditorGUILayout.LabelField(NoIssueSelectedText);
                 }
             }
             EditorGUILayout.EndVertical();
+        }
+
+        void DrawFilters()
+        {
+            if (!IsAnalysisValid())
+                return;
+            
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_ToolbarWidth));
+
+            {
+                EditorGUILayout.BeginHorizontal();
+                
+                var assembly = EditorGUILayout.Popup(m_ActiveAssembly, m_AssemblyNames, GUILayout.MaxWidth(150));
+                var area = (Area)EditorGUILayout.Popup((int)m_ActiveArea, AreaEnumStrings, GUILayout.MaxWidth(150));
+                var mode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, m_ProjectAuditor.auditorNames, GUILayout.MaxWidth(150), GUILayout.ExpandWidth(true));
+
+                EditorGUILayout.EndHorizontal();
+
+                if (m_ActiveArea != area  || m_ActiveMode != mode || !assembly.Equals(m_ActiveAssembly))
+                {
+                    m_ActiveAssembly = assembly;
+                    m_ActiveArea = area;
+                    m_ActiveMode = mode;
+                    RefreshDisplay();
+                }
+            }
+            EditorGUILayout.EndVertical();            
         }
         
         private void DrawToolbar()
@@ -341,10 +378,12 @@ To reload the issue database definition, click on Reload DB.";
 
             if (GUILayout.Button(Styles.AnalyzeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                 Analyze();
-            if (GUILayout.Button(Styles.ReloadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
-                Reload();
+            
+            if (m_DeveloperMode)
+                if (GUILayout.Button(Styles.ReloadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                    Reload();
 
-            if (m_ProjectReport == null)
+            if (!IsAnalysisValid())
             {
                 EditorGUILayout.EndHorizontal();
 
@@ -358,37 +397,14 @@ To reload the issue database definition, click on Reload DB.";
             }
             else
             {
-                if (GUILayout.Button(Styles.SerializeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
-                    Serialize();
+                // Export button needs to be properly tested before exposing it
+                if (m_DeveloperMode)
+                    if (GUILayout.Button(Styles.ExportButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                        Export();
 
                 EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.BeginHorizontal(Styles.Toolbar);
-                GUILayout.Label("Filter By:", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-
-                EditorGUI.BeginChangeCheck();
-
-                m_EnableMemory = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.Memory], m_EnableMemory, GUILayout.Width(100));
-                m_EnableCPU = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.CPU], m_EnableCPU, GUILayout.Width(100));
-                m_EnableGPU = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.GPU], m_EnableGPU, GUILayout.Width(100));
-                m_EnableBuildSize = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.BuildSize], m_EnableBuildSize, GUILayout.Width(100));
-                m_EnableLoadTimes = EditorGUILayout.ToggleLeft(AreaEnumStrings[(int)Area.LoadTimes], m_EnableLoadTimes, GUILayout.Width(100));
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.BeginHorizontal(Styles.Toolbar);
-                GUILayout.Label("", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                m_EnablePackages = EditorGUILayout.ToggleLeft("Packages", m_EnablePackages, GUILayout.Width(100));
-    //            m_EnableResolvedItems = EditorGUILayout.ToggleLeft("Resolved Items", m_EnableResolvedItems, GUILayout.Width(100));
-                EditorGUILayout.EndHorizontal();
-
-                if (EditorGUI.EndChangeCheck())
-                {
-                    RefreshDisplay();
-                }
             }
         }
-
-        
         
 #if UNITY_2018_1_OR_NEWER
         [MenuItem("Window/Analysis/Project Auditor")]

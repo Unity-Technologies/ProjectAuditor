@@ -1,36 +1,48 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Unity.ProjectAuditor.Editor
 {
     public class ProjectReport
     {
-        private List<ProjectIssue> m_ApiCallsIssues = new List<ProjectIssue>();
-        private List<ProjectIssue> m_ProjectSettingsIssues = new List<ProjectIssue>();
+        private Dictionary<IssueCategory, List<ProjectIssue>> m_IssueDict = new Dictionary<IssueCategory, List<ProjectIssue>>();
 
-        public List<ProjectIssue> GetIssues(IssueCategory category)
+        public ProjectReport()
         {
-            return category == IssueCategory.ApiCalls
-                ? m_ApiCallsIssues
-                : m_ProjectSettingsIssues;
+            foreach (IssueCategory category in Enum.GetValues(typeof(IssueCategory)))
+            {
+                m_IssueDict.Add(category, new List<ProjectIssue>());
+            }
         }
 
-        public void AddIssue(ProjectIssue projectIssue, IssueCategory category)
+        public int NumIssues
         {
-            var issues = category == IssueCategory.ApiCalls
-                ? m_ApiCallsIssues
-                : m_ProjectSettingsIssues;
-            
-            issues.Add(projectIssue);
+            get
+            {
+                return m_IssueDict.Select(i => i.Value.Count).Sum();
+                
+            }
+        }
+        
+        public List<ProjectIssue> GetIssues(IssueCategory category)
+        {
+            return m_IssueDict[category];  
+        }
+
+        public void AddIssue(ProjectIssue projectIssue)
+        {
+            m_IssueDict[projectIssue.category].Add(projectIssue);
         }
         
         public void WriteToFile()
         {
-            
-            var json = JsonHelper.ToJson<ProjectIssue>(m_ApiCallsIssues.ToArray(), true);
-            File.WriteAllText("Report_ApiCalls.json", json);
-            json = JsonHelper.ToJson<ProjectIssue>(m_ProjectSettingsIssues.ToArray(), true);
-            File.WriteAllText("Report_ProjectSettings.json", json);
+            foreach (var issues in m_IssueDict)
+            {
+                var json = JsonHelper.ToJson<ProjectIssue>(issues.Value.ToArray(), true);
+                File.WriteAllText("Report_" + issues.Key + ".json", json);
+            }
         }
     }
 }
