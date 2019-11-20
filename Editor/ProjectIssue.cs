@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
@@ -37,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (string.IsNullOrEmpty(url))
                     return String.Empty;
-                return url.Substring(url.LastIndexOf("/")+1);
+                return Path.GetFileName(url);
             }
         }
 
