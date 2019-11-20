@@ -11,9 +11,9 @@ namespace Unity.ProjectAuditor.Editor
 
         public ProjectReport()
         {
-            foreach (IssueCategory category in Enum.GetValues(typeof(IssueCategory)))
+            for(int i = 0; i < (int)IssueCategory.NumCategories; ++i)
             {
-                m_IssueDict.Add(category, new List<ProjectIssue>());
+                m_IssueDict.Add((IssueCategory)i, new List<ProjectIssue>());
             }
         }
 
