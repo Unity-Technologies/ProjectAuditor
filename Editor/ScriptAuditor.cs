@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor
                 // Analyse all Player assemblies, including Package assemblies.
                 foreach (var assemblyPath in assemblies)
                 {
-                    progressBar.AdvanceProgressBar();
+                    progressBar.AdvanceProgressBar(string.Format("Analyzing {0} scripts", Path.GetFileName(assemblyPath)));
 
                     if (!File.Exists(assemblyPath))
                     {
