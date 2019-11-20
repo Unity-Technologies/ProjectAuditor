@@ -57,8 +57,8 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to json file.");
 
-            public static readonly GUIContent MarkAsReadButton = new GUIContent("Mute Selected", "Mark selected issues as read");
-            public static readonly GUIContent MarkAsUnreadButton = new GUIContent("Unmute Selected", "Mark selected issues as unread");
+            public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore selected issue.");
+            public static readonly GUIContent UnmuteButton = new GUIContent("Unmute", "Always show selected issues.");
                 
                 
             public static readonly GUIContent[] ColumnHeaders = {
@@ -135,7 +135,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 return false;
             }
 
-			if (!m_ProjectAuditor.config.displayReadIssues)
+			if (!m_ProjectAuditor.config.displayMutedIssues)
             {
                 var rule = m_ProjectAuditor.config.GetRule(issue.descriptor, issue.callingMethodName);
                 if (rule != null && rule.action == Rule.Action.None)
@@ -399,8 +399,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                     
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                    m_ProjectAuditor.config.displayReadIssues = EditorGUILayout.ToggleLeft("Show Muted Issues", m_ProjectAuditor.config.displayReadIssues, GUILayout.Width(120));
-                    if (GUILayout.Button(Styles.MarkAsReadButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    m_ProjectAuditor.config.displayMutedIssues = EditorGUILayout.ToggleLeft("Show Muted Issues", m_ProjectAuditor.config.displayMutedIssues, GUILayout.Width(120));
+                    if (GUILayout.Button(Styles.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                     {
                         var selectedItems = m_ActiveIssueTable.GetSelectedItems();
                         foreach (IssueTableItem item in selectedItems)
@@ -408,12 +408,12 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                             SetRuleForItem(item, Rule.Action.None);
                         }
 
-                        if (!m_ProjectAuditor.config.displayReadIssues)
+                        if (!m_ProjectAuditor.config.displayMutedIssues)
                         {
                             m_ActiveIssueTable.SetSelection(new List<int>());
                         }
                     }
-                    if (GUILayout.Button(Styles.MarkAsUnreadButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    if (GUILayout.Button(Styles.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                     {
                         var selectedItems = m_ActiveIssueTable.GetSelectedItems();
                         foreach (IssueTableItem item in selectedItems)

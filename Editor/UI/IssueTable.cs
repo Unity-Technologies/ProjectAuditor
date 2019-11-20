@@ -20,11 +20,6 @@ namespace Unity.ProjectAuditor.Editor
             Count
         }
 
-        internal static class Styles
-        {
-            public static readonly GUIContent MuteButton = new GUIContent("X", "Always ignore this type of issue.");
-        }
-
         private ProjectAuditor m_ProjectAuditor;
         ProjectIssue[] m_Issues;
 
