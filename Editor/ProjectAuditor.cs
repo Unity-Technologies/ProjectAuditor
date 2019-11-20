@@ -80,6 +80,18 @@ namespace Unity.ProjectAuditor.Editor
             LoadDatabase();
         }
 
+        public T GetAuditor<T>() where T: class
+        {
+            foreach (var iauditor in m_Auditors)
+            {
+                T auditor = iauditor as T;
+                if (auditor != null)
+                    return auditor;
+            }
+
+            return null;
+        }
+        
         public void Audit(ProjectReport projectReport)
         {
             foreach (var auditor in m_Auditors)

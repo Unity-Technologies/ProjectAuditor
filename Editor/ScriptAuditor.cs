@@ -20,6 +20,26 @@ namespace Unity.ProjectAuditor.Editor
         private UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
 
         private string[] m_WhitelistedPackages;
+        private string[] m_AssemblyNames;
+        
+        public string[] assemblyNames
+        {
+            get
+            {
+                if (m_AssemblyNames != null)
+                    return m_AssemblyNames;
+
+                List<string> names = new List<string>();
+                foreach (var assembly in m_PlayerAssemblies)
+                {
+                    names.Add(assembly.name);                    
+                }
+
+                m_AssemblyNames = names.ToArray();
+                return m_AssemblyNames;
+            }
+        }
+
         
         public ScriptAuditor()
         {

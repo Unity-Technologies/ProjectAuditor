@@ -3,12 +3,14 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    enum Area{
+    public enum Area{
         CPU,
         GPU,
         Memory,
         BuildSize,
-        LoadTimes
+        LoadTimes,
+        
+        All,        
     }
 
     public enum IssueCategory
