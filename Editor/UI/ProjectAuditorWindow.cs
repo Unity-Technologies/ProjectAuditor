@@ -46,6 +46,7 @@ namespace Unity.ProjectAuditor.Editor
 
         private const int m_ToolbarWidth = 600;
         private const int m_FoldoutWidth = 300;
+        private const int m_FoldoutMinHeight = 100;
         private const int m_FoldoutMaxHeight = 220;
 
         internal static class Styles
@@ -172,7 +173,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         minWidth = 100;
                         break;
                     case IssueTable.Column.Area :
-                        width = 50;
+                        width = 60;
                         minWidth = 50;
                         break;
                     case IssueTable.Column.Filename :
@@ -183,7 +184,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         }
                         else
                         {
-                            width = 300;
+                            width = 180;
                             minWidth = 100;                            
                         }
                         break;
@@ -195,7 +196,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         }
                         else
                         {
-                            width = 300;
+                            width = 180;
                             minWidth = 100;                            
                         }
                         break;
@@ -332,7 +333,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
         private void DrawDetailsFoldout(ProblemDescriptor problemDescriptor)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth), GUILayout.MinHeight(m_FoldoutMinHeight));
 
             m_ShowDetails = BoldFoldout(m_ShowDetails, Styles.DetailsFoldout);
             if (m_ShowDetails)
@@ -354,7 +355,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
         private void DrawRecommendationFoldout(ProblemDescriptor problemDescriptor)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth), GUILayout.MinHeight(m_FoldoutMinHeight));
 
             m_ShowRecommendation = BoldFoldout(m_ShowRecommendation, Styles.RecommendationFoldout);
             if (m_ShowRecommendation)
@@ -374,7 +375,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         
         private void DrawCallHierarchy(CallTreeNode callTree)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth), GUILayout.MinHeight(m_FoldoutMinHeight*2));
 
             m_ShowCallTree = BoldFoldout(m_ShowCallTree, Styles.CallTreeFoldout);
             if (m_ShowCallTree)

@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor
 			var allItems = new List<TreeViewItem>();
 
 			if (m_CallTree != null)
-				BuildNode(allItems, m_CallTree, 1);
+				BuildNode(allItems, m_CallTree, 0);
 										  
 			// Utility method that initializes the TreeViewItem.children and -parent for all items.
 			SetupParentsAndChildrenFromDepths (root, allItems);
