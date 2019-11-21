@@ -160,7 +160,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             {
                 if (!MatchesSearch(issue.description) &&
                     !MatchesSearch(issue.filename) &&
-                    !MatchesSearch(issue.callingMethod))
+                    !MatchesSearch(issue.callingMethodName))
                 {
                     return false;
                 }
@@ -170,7 +170,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
         private bool MatchesSearch(string field)
         {
-            return (!string.IsNullOrEmpty(field) && field.Contains(m_SearchText));
+            return (!string.IsNullOrEmpty(field) && field.IndexOf(m_SearchText, StringComparison.CurrentCultureIgnoreCase) >= 0);
         }
 
         private void Analyze()
@@ -437,11 +437,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 EditorGUI.BeginChangeCheck();
 
                 var searchRect = GUILayoutUtility.GetRect(1, 1, 18, 18, GUILayout.ExpandWidth(true), GUILayout.Width(200));
-                EditorGUILayout.BeginHorizontal();
-//                EditorGUILayout.LabelField("Search :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-//                m_SearchText =
-//                    EditorGUILayout.TextField(m_SearchText, GUILayout.ExpandWidth(true), GUILayout.Width(120));
-                
+                EditorGUILayout.BeginHorizontal();                
                 if(m_SearchField == null)
                 {
                     m_SearchField = new SearchField();
