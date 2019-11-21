@@ -14,6 +14,8 @@ namespace Unity.ProjectAuditor.Editor
         private ProjectAuditor m_ProjectAuditor;
         private ProjectReport m_ProjectReport;
         private List<IssueTable> m_IssueTables = new List<IssueTable>();
+		private CallHierarchyView m_CallHierarchyView;
+        private CallTreeNode m_CurrentCallTree = null;
 
         private IssueTable m_ActiveIssueTable
         {
@@ -47,6 +49,7 @@ namespace Unity.ProjectAuditor.Editor
 
         private const int m_ToolbarWidth = 600;
         private const int m_FoldoutWidth = 300;
+        private const int m_FoldoutMinHeight = 100;
         private const int m_FoldoutMaxHeight = 220;
 
         internal static class Styles
@@ -73,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor
 
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout = new GUIContent("Recommendation", "Recommendation on how to solve the issue");
-            public static readonly GUIContent CallTreeFoldout = new GUIContent("Call Tree", "Call Tree");
+            public static readonly GUIContent CallTreeFoldout = new GUIContent("Call Hierarchy", "Call Hierarchy");
             
             public static readonly string HelpText =
 @"Project Auditor is an experimental static analysis tool for Unity Projects.
@@ -107,6 +110,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             {
                 m_ActiveAssembly = 0;
             }
+
+			m_CallHierarchyView = new CallHierarchyView(new TreeViewState());
         }
 
         private void OnGUI()
@@ -155,7 +160,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             {
                 if (!MatchesSearch(issue.description) &&
                     !MatchesSearch(issue.filename) &&
-                    !MatchesSearch(issue.callingMethod))
+                    !MatchesSearch(issue.callingMethodName))
                 {
                     return false;
                 }
@@ -165,7 +170,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
         private bool MatchesSearch(string field)
         {
-            return (!string.IsNullOrEmpty(field) && field.Contains(m_SearchText));
+            return (!string.IsNullOrEmpty(field) && field.IndexOf(m_SearchText, StringComparison.CurrentCultureIgnoreCase) >= 0);
         }
 
         private void Analyze()
@@ -192,7 +197,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         minWidth = 100;
                         break;
                     case IssueTable.Column.Area :
-                        width = 50;
+                        width = 60;
                         minWidth = 50;
                         break;
                     case IssueTable.Column.Filename :
@@ -203,7 +208,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         }
                         else
                         {
-                            width = 300;
+                            width = 180;
                             minWidth = 100;                            
                         }
                         break;
@@ -215,7 +220,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                         }
                         else
                         {
-                            width = 300;
+                            width = 180;
                             minWidth = 100;                            
                         }
                         break;
@@ -321,8 +326,26 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
             DrawDetailsFoldout(problemDescriptor);
             DrawRecommendationFoldout(problemDescriptor);
-//            if (m_ActiveMode == IssueCategory.ApiCalls)
-//                DrawCallTree(selectedIssue);
+            if (m_ActiveMode == IssueCategory.ApiCalls)
+            {
+                CallTreeNode callTree = null;
+                if (selectedIssues.Count() == 1)
+                {
+                    var issue = selectedIssues.First();
+                    if (issue != null)
+                    {
+                        callTree = issue.callTree.children.Find(call => call.name.Contains(issue.callingMethod));    
+                    }
+                }
+                if (m_CurrentCallTree != callTree)
+                {
+                    m_CallHierarchyView.SetCallTree(callTree);
+                    m_CallHierarchyView.Reload();
+                    m_CurrentCallTree = callTree;
+                }
+ 
+                DrawCallHierarchy(callTree);
+            }
         }
 
         private bool BoldFoldout(bool toggle, GUIContent content)
@@ -334,7 +357,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
         private void DrawDetailsFoldout(ProblemDescriptor problemDescriptor)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth), GUILayout.MinHeight(m_FoldoutMinHeight));
 
             m_ShowDetails = BoldFoldout(m_ShowDetails, Styles.DetailsFoldout);
             if (m_ShowDetails)
@@ -356,7 +379,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
         private void DrawRecommendationFoldout(ProblemDescriptor problemDescriptor)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth), GUILayout.MinHeight(m_FoldoutMinHeight));
 
             m_ShowRecommendation = BoldFoldout(m_ShowRecommendation, Styles.RecommendationFoldout);
             if (m_ShowRecommendation)
@@ -373,18 +396,19 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             }
             EditorGUILayout.EndVertical();
         }
-
-        private void DrawCallTree(ProjectIssue issue)
+        
+        private void DrawCallHierarchy(CallTreeNode callTree)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth), GUILayout.MinHeight(m_FoldoutMinHeight*2));
 
             m_ShowCallTree = BoldFoldout(m_ShowCallTree, Styles.CallTreeFoldout);
             if (m_ShowCallTree)
             {
-                if (issue != null)
+                if (callTree != null)
                 {
-                    // display method name without return type
-                    EditorGUILayout.LabelField(issue.callingMethod.Substring(issue.callingMethod.IndexOf(" ")));
+                    Rect r = EditorGUILayout.GetControlRect(GUILayout.Height(400));
+
+                    m_CallHierarchyView.OnGUI(r);
                 }
                 else
                 {

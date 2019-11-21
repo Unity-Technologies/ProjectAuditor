@@ -2,7 +2,7 @@ using UnityEditor.IMGUI.Controls;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class IssueTableItem : TreeViewItem
+    class IssueTableItem : TreeViewItem
     {
         public ProjectIssue m_ProjectIssue;
         public ProblemDescriptor problemDescriptor;

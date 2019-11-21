@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class ProgressBarDisplay
+    class ProgressBarDisplay
     {
         private int m_Total;
         private int m_Current;

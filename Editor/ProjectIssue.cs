@@ -20,13 +20,13 @@ namespace Unity.ProjectAuditor.Editor
         ProjectSettings,
         NumCategories
     }
-    
+
     [Serializable]
     public class ProjectIssue
     {
         public ProblemDescriptor descriptor;
         public string description;
-        public string callingMethod;
+		public CallTreeNode callTree;
         public IssueCategory category;
         public string url;
         public int line;
@@ -63,6 +63,16 @@ namespace Unity.ProjectAuditor.Editor
                 }
 
                 return path;
+            }
+        }
+
+        public string callingMethod
+        {
+            get
+            {
+                if (callTree == null)
+                    return string.Empty;
+                return callTree.caller.name;
             }
         }
         
