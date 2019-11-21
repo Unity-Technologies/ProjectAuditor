@@ -26,8 +26,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         public ProblemDescriptor descriptor;
         public string description;
-        public string callingMethod;
-		public MethodInstance method;
+		public CallInstance callInstance;
         public IssueCategory category;
         public string url;
         public int line;
@@ -64,6 +63,14 @@ namespace Unity.ProjectAuditor.Editor
                 }
 
                 return path;
+            }
+        }
+
+        public string callingMethod
+        {
+            get
+            {
+                return callInstance.caller.name;
             }
         }
         

@@ -15,6 +15,7 @@ namespace Unity.ProjectAuditor.Editor
         private ProjectReport m_ProjectReport;
         private List<IssueTable> m_IssueTables = new List<IssueTable>();
 		private CallHierarchyView m_CallHierarchyView;
+        private CallInstance m_SelectedCallHierarchy = null;
 
         private IssueTable m_ActiveIssueTable
         {
@@ -301,7 +302,25 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             DrawDetailsFoldout(problemDescriptor);
             DrawRecommendationFoldout(problemDescriptor);
             if (m_ActiveMode == IssueCategory.ApiCalls)
-                DrawCallTree(selectedItem != null ? selectedItem.m_ProjectIssue : null);             
+            {
+                CallInstance callHierarchy = null;
+                if (selectedIssues.Count() == 1)
+                {
+                    var issue = selectedIssues.First();
+                    if (issue != null)
+                    {
+                        callHierarchy = issue.callInstance.children.Find(call => call.name.Contains(issue.callingMethod));    
+                    }
+                }
+                if (m_SelectedCallHierarchy != callHierarchy)
+                {
+                    m_CallHierarchyView.SetCallHierarchy(callHierarchy);
+                    m_CallHierarchyView.Reload();
+                    m_SelectedCallHierarchy = callHierarchy;
+                }
+ 
+                DrawCallHierarchy(callHierarchy);
+            }
         }
 
         private bool BoldFoldout(bool toggle, GUIContent content)
@@ -353,14 +372,14 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             EditorGUILayout.EndVertical();
         }
         
-        private void DrawCallTree(ProjectIssue issue)
+        private void DrawCallHierarchy(CallInstance callTree)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
 
             m_ShowCallTree = BoldFoldout(m_ShowCallTree, Styles.CallTreeFoldout);
             if (m_ShowCallTree)
             {
-                if (issue != null)
+                if (callTree != null)
                 {
                     Rect r = EditorGUILayout.GetControlRect(GUILayout.Height(400));
 

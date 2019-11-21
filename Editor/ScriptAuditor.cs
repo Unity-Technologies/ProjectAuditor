@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor
 
         private string[] m_WhitelistedPackages;
         private string[] m_AssemblyNames;
-        
+                
         public string[] assemblyNames
         {
             get
@@ -38,8 +38,7 @@ namespace Unity.ProjectAuditor.Editor
                 m_AssemblyNames = names.ToArray();
                 return m_AssemblyNames;
             }
-        }
-
+        }   
         
         public ScriptAuditor()
         {
@@ -63,6 +62,8 @@ namespace Unity.ProjectAuditor.Editor
             var assemblies = GetPlayerAssemblies();
             if (assemblies.Count > 0)
             {
+                var callCrawler = new CallCrawler();                
+                
                 // Analyse all Player assemblies, including Package assemblies.
                 foreach (var assemblyPath in assemblies)
                 {
@@ -74,8 +75,9 @@ namespace Unity.ProjectAuditor.Editor
                         return;
                     }
                     
-                    AnalyzeAssembly(assemblyPath, projectReport, config);                    
+                    AnalyzeAssembly(assemblyPath, projectReport, config, callCrawler);
                 }
+                callCrawler.BuildCallHierarchies(projectReport);
             }
             
             progressBar.ClearProgressBar();
@@ -108,7 +110,7 @@ namespace Unity.ProjectAuditor.Editor
             return assemblies;
         }
 
-        private void AnalyzeAssembly(string assemblyPath, ProjectReport projectReport, ProjectAuditorConfig config)
+        private void AnalyzeAssembly(string assemblyPath, ProjectReport projectReport, ProjectAuditorConfig config, CallCrawler callCrawler)
         {
             using (var a = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters() {ReadSymbols = true}))
             {
@@ -117,12 +119,12 @@ namespace Unity.ProjectAuditor.Editor
                     if (!m.HasBody)
                         continue;
 
-                    AnalyzeMethodBody(projectReport, config, a, m);
+                    AnalyzeMethodBody(projectReport, config, a, m, callCrawler);
                 }
             }
         }
 
-        private void AnalyzeMethodBody(ProjectReport projectReport, ProjectAuditorConfig config, AssemblyDefinition a, MethodDefinition m)
+        private void AnalyzeMethodBody(ProjectReport projectReport, ProjectAuditorConfig config, AssemblyDefinition a, MethodDefinition m, CallCrawler callCrawler)
         {
             List<ProjectIssue> methodBobyIssues = new List<ProjectIssue>();
 
@@ -131,6 +133,11 @@ namespace Unity.ProjectAuditor.Editor
             {
                 var calledMethod = ((MethodReference) inst.Operand);
 
+                var callee = calledMethod.FullName;
+                var caller = m.FullName;
+
+                callCrawler.Add(caller, callee);
+                
                 // HACK: need to figure out a way to know whether a method is actually a property
                 var descriptor = m_ProblemDescriptors.SingleOrDefault(c => c.type == calledMethod.DeclaringType.FullName &&
                                                                   (c.method == calledMethod.Name ||
@@ -175,10 +182,6 @@ namespace Unity.ProjectAuditor.Editor
 
                         if (!isPackageWhitelisted)
                         {
-							var leaf = new MethodInstance(m.FullName);
-                                        
-                            leaf.parents.Add(new MethodInstance("<return-type> Parent method not available"));
-
                             var description = descriptor.description;
                             if (description.Contains(".*"))
                             {
@@ -195,8 +198,7 @@ namespace Unity.ProjectAuditor.Editor
                                     description = description,
                                     category = IssueCategory.ApiCalls,
                                     descriptor = descriptor,
-                                    callingMethod = m.FullName,
-									method = leaf,
+                                    callInstance = new CallInstance(callee, new CallInstance(caller)),
                                     url = s.Document.Url.Replace("\\", "/"),
                                     line = s.StartLine,
                                     column = s.StartColumn,
