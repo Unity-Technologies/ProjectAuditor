@@ -414,10 +414,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
                 var searchRect = GUILayoutUtility.GetRect(1, 1, 18, 18, GUILayout.ExpandWidth(true), GUILayout.Width(200));
                 EditorGUILayout.BeginHorizontal();
-//                EditorGUILayout.LabelField("Search :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-//                m_SearchText =
-//                    EditorGUILayout.TextField(m_SearchText, GUILayout.ExpandWidth(true), GUILayout.Width(120));
-                
+
                 if(m_SearchField == null)
                 {
                     m_SearchField = new SearchField();
