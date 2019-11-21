@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor
             return "Scripts";
         }
 
-        public void Audit( ProjectReport projectReport)
+        public void Audit( ProjectReport projectReport, ProjectAuditorConfig config)
         {
             var progressBar =
                 new ProgressBarDisplay("Analyzing Scripts", "Analyzing project scripts", m_PlayerAssemblies.Length);
@@ -74,7 +74,7 @@ namespace Unity.ProjectAuditor.Editor
                         return;
                     }
                     
-                    AnalyzeAssembly(assemblyPath, projectReport);                    
+                    AnalyzeAssembly(assemblyPath, projectReport, config);                    
                 }
             }
             
@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor
             return assemblies;
         }
 
-        private void AnalyzeAssembly(string assemblyPath, ProjectReport projectReport)
+        private void AnalyzeAssembly(string assemblyPath, ProjectReport projectReport, ProjectAuditorConfig config)
         {
             using (var a = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters() {ReadSymbols = true}))
             {
@@ -117,89 +117,94 @@ namespace Unity.ProjectAuditor.Editor
                     if (!m.HasBody)
                         continue;
 
-                    List<ProjectIssue> methodBobyIssues = new List<ProjectIssue>();
+                    AnalyzeMethodBody(projectReport, config, a, m);
+                }
+            }
+        }
 
-                    foreach (var inst in m.Body.Instructions.Where(i =>
-                        (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt)))
+        private void AnalyzeMethodBody(ProjectReport projectReport, ProjectAuditorConfig config, AssemblyDefinition a, MethodDefinition m)
+        {
+            List<ProjectIssue> methodBobyIssues = new List<ProjectIssue>();
+
+            foreach (var inst in m.Body.Instructions.Where(i =>
+                (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt)))
+            {
+                var calledMethod = ((MethodReference) inst.Operand);
+
+                // HACK: need to figure out a way to know whether a method is actually a property
+                var descriptor = m_ProblemDescriptors.SingleOrDefault(c => c.type == calledMethod.DeclaringType.FullName &&
+                                                                  (c.method == calledMethod.Name ||
+                                                                   ("get_" + c.method) == calledMethod.Name));
+
+                if (descriptor == null)
+                {
+                    // Are we trying to warn about a whole namespace?
+                    descriptor = m_ProblemDescriptors.SingleOrDefault(c =>
+                        c.type == calledMethod.DeclaringType.Namespace && c.method == "*");
+                }
+
+                //if (p.type != null && m.HasCustomDebugInformations)
+                if (descriptor != null && m.DebugInformation.HasSequencePoints)
+                {
+                    //var msg = string.Empty;
+                    SequencePoint s = null;
+                    for (var i = inst; i != null; i = i.Previous)
                     {
-                        var calledMethod = ((MethodReference) inst.Operand);
-
-                        // HACK: need to figure out a way to know whether a method is actually a property
-                        var p = m_ProblemDescriptors.SingleOrDefault(c => c.type == calledMethod.DeclaringType.FullName &&
-                                                                          (c.method == calledMethod.Name ||
-                                                                           ("get_" + c.method) == calledMethod.Name));
-
-                        if (p == null)
+                        s = m.DebugInformation.GetSequencePoint(i);
+                        if (s != null)
                         {
-                            // Are we trying to warn about a whole namespace?
-                            p = m_ProblemDescriptors.SingleOrDefault(c =>
-                                c.type == calledMethod.DeclaringType.Namespace && c.method == "*");
+                            // msg = i == inst ? " exactly" : "nearby";
+                            break;
+                        }
+                    }
+
+                    if (s != null)
+                    {
+                        // Ignore whitelisted packages
+                        // (SteveM - I'd put this code further up in one of the outer loops but I don't
+                        // know if it's possible to get the URL further up to compare with the whitelist)
+                        bool isPackageWhitelisted = false;
+                        foreach (string package in m_WhitelistedPackages)
+                        {
+                            if (s.Document.Url.Contains(package))
+                            {
+                                isPackageWhitelisted = true;
+                                break;
+                            }
                         }
 
-                        //if (p.type != null && m.HasCustomDebugInformations)
-                        if (p != null && m.DebugInformation.HasSequencePoints)
+                        if (!isPackageWhitelisted)
                         {
-                            //var msg = string.Empty;
-                            SequencePoint s = null;
-                            for (var i = inst; i != null; i = i.Previous)
+							var leaf = new MethodInstance(m.FullName);
+                                        
+                            leaf.parents.Add(new MethodInstance("<return-type> Parent method not available"));
+
+                            var description = descriptor.description;
+                            if (description.Contains(".*"))
                             {
-                                s = m.DebugInformation.GetSequencePoint(i);
-                                if (s != null)
-                                {
-                                    // msg = i == inst ? " exactly" : "nearby";
-                                    break;
-                                }
+                                description = calledMethod.DeclaringType.FullName + "::" + calledMethod.Name;
                             }
 
-                            if (s != null)
+                            // do not add the same type of issue again (for example multiple Linq instructions) 
+                            var foundIssues = methodBobyIssues.Where(i =>
+                                i.column == s.StartColumn);
+                            if (foundIssues.FirstOrDefault() == null)
                             {
-                                // Ignore whitelisted packages
-                                // (SteveM - I'd put this code further up in one of the outer loops but I don't
-                                // know if it's possible to get the URL further up to compare with the whitelist)
-                                bool isPackageWhitelisted = false;
-                                foreach (string package in m_WhitelistedPackages)
+                                var projectIssue = new ProjectIssue
                                 {
-                                    if (s.Document.Url.Contains(package))
-                                    {
-                                        isPackageWhitelisted = true;
-                                        break;
-                                    }
-                                }
+                                    description = description,
+                                    category = IssueCategory.ApiCalls,
+                                    descriptor = descriptor,
+                                    callingMethod = m.FullName,
+									method = leaf,
+                                    url = s.Document.Url.Replace("\\", "/"),
+                                    line = s.StartLine,
+                                    column = s.StartColumn,
+                                    assembly = a.Name.Name
+                                };
 
-                                if (!isPackageWhitelisted)
-                                {
-                                    var leaf = new MethodInstance(m.FullName);
-                                        
-                                    leaf.parents.Add(new MethodInstance("<return-type> Parent method not available"));
-
-                                    var description = p.description;
-                                    if (description.Contains(".*"))
-                                    {
-                                        description = calledMethod.DeclaringType.FullName + "::" + calledMethod.Name;
-                                    }
-
-									// do not add the same type of issue again (for example multiple Linq instructions) 
-                                    var foundIssues = methodBobyIssues.Where(i =>
-                                        i.descriptor == p && i.line == s.StartLine &&
-                                        i.column == s.StartColumn);
-                                    if (foundIssues.FirstOrDefault() == null)
-                                    {
-                                        var projectIssue = new ProjectIssue
-                                        {
-                                            description = description,
-                                            category = IssueCategory.ApiCalls,
-                                            descriptor = p,
-                                            callingMethod = m.FullName,
-                                            method = leaf,
-                                            url = s.Document.Url.Replace("\\", "/"),
-                                            line = s.StartLine,
-                                            column = s.StartColumn,
-                                            assembly = a.Name.Name
-                                        };
-                                        projectReport.AddIssue(projectIssue);
-                                        methodBobyIssues.Add(projectIssue);
-                                    }
-                                }
+                                projectReport.AddIssue(projectIssue);
+                                methodBobyIssues.Add(projectIssue);   
                             }
                         }
                     }
