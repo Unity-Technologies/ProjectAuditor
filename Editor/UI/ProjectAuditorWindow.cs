@@ -98,6 +98,12 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             assemblyNames.AddRange(m_ProjectAuditor.GetAuditor<ScriptAuditor>().assemblyNames);
             m_ActiveAssembly = assemblyNames.IndexOf(m_DefaultAssemblyName);
             m_AssemblyNames = assemblyNames.ToArray();
+            
+            // Edge case: Running the Project Auditor when there are no uses scripts, so no default assembly
+            if (m_ActiveAssembly < 0 || m_ActiveAssembly >= m_AssemblyNames.Length)
+            {
+                m_ActiveAssembly = 0;
+            }
         }
 
         private void OnGUI()
