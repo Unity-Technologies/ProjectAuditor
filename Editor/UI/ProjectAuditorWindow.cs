@@ -34,6 +34,9 @@ namespace Unity.ProjectAuditor.Editor
         private bool m_ShowDetails = true;
         private bool m_ShowRecommendation = true;
         private bool m_ShowCallTree = false;
+
+        private SearchField m_SearchField;
+        private string m_SearchText;
         
         static readonly string[] AreaEnumStrings = {
             "CPU",
@@ -101,6 +104,12 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             assemblyNames.AddRange(m_ProjectAuditor.GetAuditor<ScriptAuditor>().assemblyNames);
             m_ActiveAssembly = assemblyNames.IndexOf(m_DefaultAssemblyName);
             m_AssemblyNames = assemblyNames.ToArray();
+            
+            // Edge case: Running the Project Auditor when there are no uses scripts, so no default assembly
+            if (m_ActiveAssembly < 0 || m_ActiveAssembly >= m_AssemblyNames.Length)
+            {
+                m_ActiveAssembly = 0;
+            }
 
 			m_CallHierarchyView = new CallHierarchyView(new TreeViewState());
         }
@@ -146,7 +155,22 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 if (rule != null && rule.action == Rule.Action.None)
                     return false;
             }
+
+            if (!string.IsNullOrEmpty(m_SearchText))
+            {
+                if (!MatchesSearch(issue.description) &&
+                    !MatchesSearch(issue.filename) &&
+                    !MatchesSearch(issue.callingMethod))
+                {
+                    return false;
+                }
+            }
             return true;
+        }
+
+        private bool MatchesSearch(string field)
+        {
+            return (!string.IsNullOrEmpty(field) && field.Contains(m_SearchText));
         }
 
         private void Analyze()
@@ -393,7 +417,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             }
             EditorGUILayout.EndVertical();
         }
-
+        
         void DrawFilters()
         {
             if (!IsAnalysisValid())
@@ -411,6 +435,21 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUI.BeginChangeCheck();
+
+                var searchRect = GUILayoutUtility.GetRect(1, 1, 18, 18, GUILayout.ExpandWidth(true), GUILayout.Width(200));
+                EditorGUILayout.BeginHorizontal();
+//                EditorGUILayout.LabelField("Search :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+//                m_SearchText =
+//                    EditorGUILayout.TextField(m_SearchText, GUILayout.ExpandWidth(true), GUILayout.Width(120));
+                
+                if(m_SearchField == null)
+                {
+                    m_SearchField = new SearchField();
+                }
+
+                m_SearchText = m_SearchField.OnGUI(searchRect, m_SearchText);
+                
+                EditorGUILayout.EndHorizontal();
                 
 				bool shouldRefresh = false;
                 if (m_DeveloperMode)
