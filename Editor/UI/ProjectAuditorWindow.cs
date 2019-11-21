@@ -57,7 +57,7 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to json file.");
 
-            public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore selected issue.");
+            public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore selected issues.");
             public static readonly GUIContent UnmuteButton = new GUIContent("Unmute", "Always show selected issues.");
                 
                 
@@ -96,8 +96,15 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
             var assemblyNames = new List<string>(new []{"All Assemblies"});
             assemblyNames.AddRange(m_ProjectAuditor.GetAuditor<ScriptAuditor>().assemblyNames);
-            m_ActiveAssembly = assemblyNames.IndexOf(m_DefaultAssemblyName);
             m_AssemblyNames = assemblyNames.ToArray();
+            
+            m_ActiveAssembly = assemblyNames.IndexOf(m_DefaultAssemblyName);
+
+            // Edge case: Running the Project Auditor when there are no uses scripts, so no default assembly
+            if (m_ActiveAssembly < 0 || m_ActiveAssembly >= m_AssemblyNames.Length)
+            {
+                m_ActiveAssembly = 0;
+            }
         }
 
         private void OnGUI()
@@ -161,6 +168,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             {
                 int width = 80;
                 int minWidth = 80;
+                bool canSort = true;
                 switch ((IssueTable.Column) i)
                 {
                     case IssueTable.Column.Description :
@@ -194,6 +202,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                             width = 300;
                             minWidth = 100;                            
                         }
+
+                        canSort = false;
                         break;
                 }
                                 
@@ -202,7 +212,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                     headerContent = Styles.ColumnHeaders[i],
                     width = width,
                     minWidth = minWidth,
-                    autoResize = true
+                    autoResize = true,
+                    canSort = canSort
                 } );
             }
 

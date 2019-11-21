@@ -19,6 +19,14 @@ namespace Unity.ProjectAuditor.Editor
 
             Count
         }
+        
+        // Sort options per column
+        private Column[] m_SortOptions =
+        {
+            Column.Description,
+            Column.Area,
+            Column.Filename
+        };
 
         private ProjectAuditor m_ProjectAuditor;
         ProjectIssue[] m_Issues;
@@ -30,6 +38,7 @@ namespace Unity.ProjectAuditor.Editor
             m_ProjectAuditor = projectAuditor;
             m_Issues = issues;
             m_GroupByDescription = groupByDescription;
+            multicolumnHeader.sortingChanged += OnSortingChanged;
             Reload();
         }
 
@@ -82,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor
                     
                     foreach (var issue in issues)
                     {
-                        var item = new IssueTableItem(index++, 1, "Not Used", issue.descriptor, issue);
+                        var item = new IssueTableItem(index++, 1, issue.callingMethodName, issue.descriptor, issue);
                         groupItem.AddChild(item);
                     }       
                 }                
@@ -92,7 +101,7 @@ namespace Unity.ProjectAuditor.Editor
                 // flat view
                foreach (var issue in m_Issues)
                {
-                   var item = new IssueTableItem(index++, 0, "", issue.descriptor, issue);
+                   var item = new IssueTableItem(index++, 0, issue.descriptor.description, issue.descriptor, issue);
                    root.AddChild(item);            
                }
             }
@@ -158,15 +167,13 @@ namespace Unity.ProjectAuditor.Editor
                     case Column.Description:
                         if (m_GroupByDescription)
                         {
-                            EditorGUI.LabelField(cellRect,
-                                new GUIContent(issue.callingMethodName, issue.callingMethod));
+                            EditorGUI.LabelField(cellRect, new GUIContent(issue.callingMethodName, issue.callingMethod));
                         }
                         else
                         {
                             string tooltip = descriptor.problem + " \n\n" + descriptor.solution;
                             EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
                         }
-
                         break;
                     case Column.Filename:
                         if (issue.filename != string.Empty)
@@ -187,6 +194,7 @@ namespace Unity.ProjectAuditor.Editor
                         break;
                 }
             }
+            
             if (rule != null && rule.action == Rule.Action.None)
             {
                 GUI.enabled = true;    
@@ -231,6 +239,114 @@ namespace Unity.ProjectAuditor.Editor
         public int NumIssues(IssueCategory category)
         {
             return m_Issues.Where(i => i.category == category).Count();
+        }
+        
+        void OnSortingChanged(MultiColumnHeader _multiColumnHeader)
+        {
+            SortIfNeeded(GetRows());
+        }
+        
+        void SortIfNeeded(IList<TreeViewItem> rows)
+        {
+            if (rows.Count <= 1)
+            {
+                return;
+            }
+
+            if (multiColumnHeader.sortedColumnIndex == -1)
+            {
+                return; // No column to sort for (just use the order the data are in)
+            }
+
+            // Sort the roots of the existing tree items
+            SortByMultipleColumns();
+
+            // Update the data with the sorted content
+            rows.Clear();
+            foreach (var node in rootItem.children)
+            {
+                rows.Add(node);
+            }
+
+            Repaint();
+        }
+        
+        IOrderedEnumerable<IssueTableItem> InitialOrder(IEnumerable<IssueTableItem> myTypes, int[] history)
+        {
+            Column column = m_SortOptions[history[0]];
+            bool ascending = multiColumnHeader.IsSortedAscending(history[0]);
+            switch (column)
+            {
+                case Column.Description:
+                    return myTypes.Order(l => l.displayName, ascending);
+                case Column.Area:
+                    return myTypes.Order(l => l.problemDescriptor.area, ascending);
+//                case Column.Filename:
+//                    return myTypes.Order(l => l.m_ProjectIssue.filename, ascending);
+            }
+
+            // default
+            return myTypes.Order(l => l.displayName, ascending);
+        }
+        
+        void SortByMultipleColumns()
+        {
+            var sortedColumns = multiColumnHeader.state.sortedColumns;
+
+            if (sortedColumns.Length == 0)
+            {
+                return;
+            }
+
+            var myTypes = rootItem.children.Cast<IssueTableItem>();
+            var orderedQuery = InitialOrder(myTypes, sortedColumns);
+            for (int i = 1; i < sortedColumns.Length; i++)
+            {
+                Column column = m_SortOptions[sortedColumns[i]];
+                bool ascending = multiColumnHeader.IsSortedAscending(sortedColumns[i]);
+
+                switch (column)
+                {
+                    case Column.Description:
+                        orderedQuery = orderedQuery.ThenBy(l => l.displayName, ascending);
+                        break;
+                    case Column.Area:
+                        orderedQuery = orderedQuery.ThenBy(l => l.problemDescriptor.area, ascending);
+                        break;
+//                    case Column.Filename:
+//                        orderedQuery = orderedQuery.ThenBy(l => l.m_ProjectIssue.filename, ascending);
+//                        break;
+                }
+            }
+
+            rootItem.children = orderedQuery.Cast<TreeViewItem>().ToList();
+        }
+    }
+    
+    static class MyExtensionMethods
+    {
+        public static IOrderedEnumerable<T> Order<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector, bool ascending)
+        {
+            if (ascending)
+            {
+                return source.OrderBy(selector);
+            }
+            else
+            {
+                return source.OrderByDescending(selector);
+            }
+        }
+
+        public static IOrderedEnumerable<T> ThenBy<T, TKey>(this IOrderedEnumerable<T> source, Func<T, TKey> selector, bool ascending)
+        {
+            if (ascending)
+            {
+                return source.ThenBy(selector);
+            }
+            else
+            {
+                return source.ThenByDescending(selector);
+            }
         }
     }
 }
