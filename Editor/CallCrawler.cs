@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor
         public string caller;
     }   
     
-    public class CallCrawler
+    class CallCrawler
     {
         private Dictionary<string, CallPair> m_CallPairs = new Dictionary<string, CallPair>();
 
@@ -33,11 +33,11 @@ namespace Unity.ProjectAuditor.Editor
             var issues = projectReport.GetIssues(IssueCategory.ApiCalls);
             foreach (var issue in issues)
             {
-                BuildHierarchy(issue.callInstance.caller);
+                BuildHierarchy(issue.callTree.caller);
             }  
         }
         
-        public void BuildHierarchy(CallInstance callee)
+        public void BuildHierarchy(CallTreeNode callee)
         {
             // let's find all callers with matching callee
             var callPairs = m_CallPairs.Where(call => call.Value.callee.Equals(callee.name));
@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor
                 // ignore recursive calls
                 if (!call.Value.caller.Equals(callee.name))
                 {
-                    var callerInstance = new CallInstance(call.Value.caller);
+                    var callerInstance = new CallTreeNode(call.Value.caller);
                     BuildHierarchy(callerInstance);
                     callee.children.Add(callerInstance); 
                 }    

@@ -198,7 +198,7 @@ namespace Unity.ProjectAuditor.Editor
                                     description = description,
                                     category = IssueCategory.ApiCalls,
                                     descriptor = descriptor,
-                                    callInstance = new CallInstance(callee, new CallInstance(caller)),
+                                    callTree = new CallTreeNode(callee, new CallTreeNode(caller)),
                                     url = s.Document.Url.Replace("\\", "/"),
                                     line = s.StartLine,
                                     column = s.StartColumn,

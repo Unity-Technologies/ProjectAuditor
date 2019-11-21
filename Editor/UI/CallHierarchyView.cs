@@ -6,7 +6,7 @@ namespace Unity.ProjectAuditor.Editor
 {
 	class CallHierarchyView : TreeView
 	{
-		private CallInstance m_RootCall = null;
+		private CallTreeNode m_CallTree = null;
 		
 		public CallHierarchyView(TreeViewState treeViewState)
 			: base(treeViewState)
@@ -19,8 +19,8 @@ namespace Unity.ProjectAuditor.Editor
 			var root = new TreeViewItem {id = 0, depth = -1, displayName = "Hidden Root"};
 			var allItems = new List<TreeViewItem>();
 
-			if (m_RootCall != null)
-				BuildNode(allItems, m_RootCall, 1);
+			if (m_CallTree != null)
+				BuildNode(allItems, m_CallTree, 1);
 										  
 			// Utility method that initializes the TreeViewItem.children and -parent for all items.
 			SetupParentsAndChildrenFromDepths (root, allItems);
@@ -29,12 +29,12 @@ namespace Unity.ProjectAuditor.Editor
 			return root;
 		}
 
-		public void SetCallHierarchy(CallInstance rootCall)
+		public void SetCallTree(CallTreeNode callTree)
 		{
-			m_RootCall = rootCall;
+			m_CallTree = callTree;
 		}
 
-		void BuildNode(List<TreeViewItem> items, CallInstance callTree, int depth)
+		void BuildNode(List<TreeViewItem> items, CallTreeNode callTree, int depth)
 		{
 			int id = items.Count;
 			items.Add(new TreeViewItem {id = id, depth = depth, displayName = callTree.name.Substring(callTree.name.IndexOf(" "))});

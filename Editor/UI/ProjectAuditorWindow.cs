@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor
         private ProjectReport m_ProjectReport;
         private List<IssueTable> m_IssueTables = new List<IssueTable>();
 		private CallHierarchyView m_CallHierarchyView;
-        private CallInstance m_SelectedCallHierarchy = null;
+        private CallTreeNode m_CurrentCallTree = null;
 
         private IssueTable m_ActiveIssueTable
         {
@@ -303,23 +303,23 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             DrawRecommendationFoldout(problemDescriptor);
             if (m_ActiveMode == IssueCategory.ApiCalls)
             {
-                CallInstance callHierarchy = null;
+                CallTreeNode callTree = null;
                 if (selectedIssues.Count() == 1)
                 {
                     var issue = selectedIssues.First();
                     if (issue != null)
                     {
-                        callHierarchy = issue.callInstance.children.Find(call => call.name.Contains(issue.callingMethod));    
+                        callTree = issue.callTree.children.Find(call => call.name.Contains(issue.callingMethod));    
                     }
                 }
-                if (m_SelectedCallHierarchy != callHierarchy)
+                if (m_CurrentCallTree != callTree)
                 {
-                    m_CallHierarchyView.SetCallHierarchy(callHierarchy);
+                    m_CallHierarchyView.SetCallTree(callTree);
                     m_CallHierarchyView.Reload();
-                    m_SelectedCallHierarchy = callHierarchy;
+                    m_CurrentCallTree = callTree;
                 }
  
-                DrawCallHierarchy(callHierarchy);
+                DrawCallHierarchy(callTree);
             }
         }
 
@@ -372,7 +372,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             EditorGUILayout.EndVertical();
         }
         
-        private void DrawCallHierarchy(CallInstance callTree)
+        private void DrawCallHierarchy(CallTreeNode callTree)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth));
 

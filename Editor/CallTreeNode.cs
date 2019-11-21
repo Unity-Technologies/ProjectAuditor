@@ -2,13 +2,13 @@ using System.Collections.Generic;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class CallInstance
+    public class CallTreeNode
     {
         public string name;
 
-        public List<CallInstance> children = new List<CallInstance>();
+        public List<CallTreeNode> children = new List<CallTreeNode>();
 
-        public CallInstance caller
+        public CallTreeNode caller
         {
             get
             {
@@ -16,12 +16,12 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        public CallInstance(string _name)
+        public CallTreeNode(string _name)
         {
             name = _name;
         }
 
-        public CallInstance(string _name, CallInstance caller)
+        public CallTreeNode(string _name, CallTreeNode caller)
         {
             name = _name;
             children.Add(caller); 

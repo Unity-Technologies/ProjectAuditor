@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         public ProblemDescriptor descriptor;
         public string description;
-		public CallInstance callInstance;
+		public CallTreeNode callTree;
         public IssueCategory category;
         public string url;
         public int line;
@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                return callInstance.caller.name;
+                return callTree.caller.name;
             }
         }
         
