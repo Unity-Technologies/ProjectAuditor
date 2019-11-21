@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor
         private bool m_ShowRecommendation = true;
         private bool m_ShowCallTree = false;
 
-        private SearchField m_SearchField = new SearchField();
+        private SearchField m_SearchField;
         private string m_SearchText;
         
         static readonly string[] AreaEnumStrings = {
@@ -417,6 +417,11 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 //                EditorGUILayout.LabelField("Search :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
 //                m_SearchText =
 //                    EditorGUILayout.TextField(m_SearchText, GUILayout.ExpandWidth(true), GUILayout.Width(120));
+                
+                if(m_SearchField == null)
+                {
+                    m_SearchField = new SearchField();
+                }
 
                 m_SearchText = m_SearchField.OnGUI(searchRect, m_SearchText);
                 
