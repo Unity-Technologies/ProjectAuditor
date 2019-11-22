@@ -111,7 +111,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             {
                 m_ActiveAssembly = 0;
             }
-			      m_CallHierarchyView = new CallHierarchyView(new TreeViewState());
+            m_CallHierarchyView = new CallHierarchyView(new TreeViewState());
         }
 
         private void OnGUI()
@@ -137,7 +137,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             return m_ProjectReport != null;
         }
         
-        bool ShouldDisplay(ProjectIssue issue)
+        public bool ShouldDisplay(ProjectIssue issue)
         {
             if (m_ActiveAssembly != AllAssembliesIndex && !m_AssemblyNames[m_ActiveAssembly].Equals(issue.assembly))
             {
@@ -178,6 +178,14 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             m_ProjectReport = new ProjectReport();
 
             m_ProjectAuditor.Audit(m_ProjectReport);
+            
+            m_IssueTables.Clear();
+
+            for(int i = 0; i < (int)IssueCategory.NumCategories; ++i)
+            {
+                IssueTable issueTable = CreateIssueTable((IssueCategory)i, new TreeViewState());
+                m_IssueTables.Add(issueTable);
+            }
 
             RefreshDisplay();
         }
@@ -236,11 +244,13 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             }
 
             var issues = m_ProjectReport.GetIssues(issueCategory);
-            
-            var filteredList = issues.Where(x => ShouldDisplay(x));
-            
+
             return new IssueTable(state,
-                new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())), filteredList.ToArray(), issueCategory == IssueCategory.ApiCalls, m_ProjectAuditor);
+                new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())),
+                issues.ToArray(),
+                issueCategory == IssueCategory.ApiCalls,
+                m_ProjectAuditor,
+                this);
         }
 
         private void RefreshDisplay()
@@ -248,29 +258,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             if (!IsAnalysisValid())
                 return;
 
-            // Store the state if we're recreating pre-existing IssueTables
-            // (or create new ones if this is the first time)
-            TreeViewState[] treeViewStates = new TreeViewState[(int)IssueCategory.NumCategories];
-
-            for (int i = 0; i < (int)IssueCategory.NumCategories; ++i)
-            {
-                if (m_IssueTables != null && m_IssueTables.Count > i)
-                {
-                    treeViewStates[i] = m_IssueTables[i].state;
-                }
-                else
-                {
-                    treeViewStates[i] = new TreeViewState();
-                }
-            }
-
-            m_IssueTables.Clear();
-
-            for(int i = 0; i < (int)IssueCategory.NumCategories; ++i)
-            {
-                IssueTable issueTable = CreateIssueTable((IssueCategory)i, treeViewStates[i]);
-                m_IssueTables.Add(issueTable);
-            }
+            if(m_ActiveIssueTable != null)
+                m_ActiveIssueTable.Reload();
         }
 
         private void Reload()

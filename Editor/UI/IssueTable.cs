@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -112,14 +111,16 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         private ProjectAuditor m_ProjectAuditor;
+        private ProjectAuditorWindow m_ProjectAuditorWindow;
         ProjectIssue[] m_Issues;
 
         bool m_GroupByDescription;
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader, ProjectIssue[] issues,
-            bool groupByDescription, ProjectAuditor projectAuditor) : base(state, multicolumnHeader)
+            bool groupByDescription, ProjectAuditor projectAuditor, ProjectAuditorWindow window) : base(state, multicolumnHeader)
         {
             m_ProjectAuditor = projectAuditor;
+            m_ProjectAuditorWindow = window;
             m_Issues = issues;
             m_GroupByDescription = groupByDescription;
             multicolumnHeader.sortingChanged += OnSortingChanged;
@@ -128,6 +129,11 @@ namespace Unity.ProjectAuditor.Editor
 
         protected override TreeViewItem BuildRoot()
         {
+            // SteveM TODO - Documentation says that BuildRoot should ONLY build the root table item,
+            // and all this logic should be moved to BuildRows()
+            // https://docs.unity3d.com/ScriptReference/IMGUI.Controls.TreeView.BuildRows.html
+            // This would involve implementing getNewSelectionOverride, GetAncestors() and GetDescendantsThatHaveChildren()
+            // Which seems like a lot of extra complexity unless we're running into serious performance issues
             int index = 0;
             int idForhiddenRoot = -1;
             int depthForHiddenRoot = -1;
@@ -141,7 +147,10 @@ namespace Unity.ProjectAuditor.Editor
                 {
                     if (!allGroupsSet.Contains(issue.descriptor.description))
                     {
-                        allGroupsSet.Add(issue.descriptor.description);
+                        if (m_ProjectAuditorWindow.ShouldDisplay(issue))
+                        {
+                            allGroupsSet.Add(issue.descriptor.description);
+                        }
                     }
                 }
 
@@ -158,8 +167,11 @@ namespace Unity.ProjectAuditor.Editor
 
                     foreach (var issue in issues)
                     {
-                        var item = new IssueTableItem(index++, 1, issue.callingMethodName, issue.descriptor, issue);
-                        groupItem.AddChild(item);
+                        if (m_ProjectAuditorWindow.ShouldDisplay(issue))
+                        {
+                            var item = new IssueTableItem(index++, 1, issue.callingMethodName, issue.descriptor, issue);
+                            groupItem.AddChild(item);
+                        }
                     }
                 }
             }
@@ -168,8 +180,11 @@ namespace Unity.ProjectAuditor.Editor
                 // flat view
                 foreach (var issue in m_Issues)
                 {
-                    var item = new IssueTableItem(index++, 0, issue.descriptor.description, issue.descriptor, issue);
-                    root.AddChild(item);
+                    if (m_ProjectAuditorWindow.ShouldDisplay(issue))
+                    {
+                        var item = new IssueTableItem(index++, 0, issue.descriptor.description, issue.descriptor, issue);
+                        root.AddChild(item);
+                    }
                 }
             }
 
