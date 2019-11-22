@@ -14,6 +14,8 @@ namespace Unity.ProjectAuditor.Editor
         private Dictionary<string, CallPair> m_CallPairs = new Dictionary<string, CallPair>();
         private Dictionary<string, List<CallPair>> m_BucketedCallPairs = new Dictionary<string, List<CallPair>>();
 
+        private const int m_MaxDepth = 10;
+        
         public void Add(string caller, string callee)
         {
             var key = string.Concat(caller, "->", callee);
@@ -45,13 +47,18 @@ namespace Unity.ProjectAuditor.Editor
             foreach (var issue in issues)
             {
                 progressBar.AdvanceProgressBar();
-                BuildHierarchy(issue.callTree.caller);
+
+                int depth = 0;
+                BuildHierarchy(issue.callTree.caller, depth);
             }
             progressBar.ClearProgressBar();
         }
         
-        public void BuildHierarchy(CallTreeNode callee)
+        public void BuildHierarchy(CallTreeNode callee, int depth)
         {
+            if (depth++ == m_MaxDepth)
+                return;
+
             // let's find all callers with matching callee
             if (m_BucketedCallPairs.ContainsKey(callee.name))
             {
@@ -63,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor
                     if (!call.caller.Equals(callee.name))
                     {
                         var callerInstance = new CallTreeNode(call.caller);
-                        BuildHierarchy(callerInstance);
+                        BuildHierarchy(callerInstance, depth);
                         callee.children.Add(callerInstance); 
                     }    
                 }  
