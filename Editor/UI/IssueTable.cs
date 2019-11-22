@@ -65,12 +65,12 @@ namespace Unity.ProjectAuditor.Editor
                                 secondString = secondTree.m_Item.problemDescriptor.area; 
                                 break;
                             case Column.Filename:
-                                firstString = firstTree.m_Item.m_ProjectIssue?.filename;
-                                secondString = secondTree.m_Item.m_ProjectIssue?.filename;
+                                firstString = firstTree.m_Item.m_ProjectIssue != null ? firstTree.m_Item.m_ProjectIssue.filename : string.Empty;
+                                secondString = secondTree.m_Item.m_ProjectIssue != null ? secondTree.m_Item.m_ProjectIssue.filename : string.Empty;
                                 break;
                             case Column.Assembly:
-                                firstString = firstTree.m_Item.m_ProjectIssue?.assembly;
-                                secondString = secondTree.m_Item.m_ProjectIssue?.assembly;
+                                firstString = firstTree.m_Item.m_ProjectIssue != null ? firstTree.m_Item.m_ProjectIssue.assembly : string.Empty;
+                                secondString = secondTree.m_Item.m_ProjectIssue != null ? secondTree.m_Item.m_ProjectIssue.assembly : string.Empty;
                                 break;
                             default:
                                 continue;
@@ -227,7 +227,7 @@ namespace Unity.ProjectAuditor.Editor
             var descriptor = item.problemDescriptor;
             var areaLongDescription = "This issue might have an impact on " + descriptor.area;
 
-            var rule = m_ProjectAuditor.config.GetRule(descriptor, issue?.callingMethodName);
+            var rule = m_ProjectAuditor.config.GetRule(descriptor, (issue != null) ? issue.callingMethodName : string.Empty);
             if (rule != null && rule.action == Rule.Action.None)
             {
                 GUI.enabled = false;
