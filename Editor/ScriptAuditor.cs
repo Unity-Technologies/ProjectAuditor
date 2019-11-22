@@ -121,6 +121,20 @@ namespace Unity.ProjectAuditor.Editor
 
                     AnalyzeMethodBody(projectReport, config, a, m, callCrawler);
                 }
+
+                if (assemblyPath.Contains("Assembly-CSharp"))
+                {
+                    foreach (var type in a.MainModule.Types)
+                    {
+                        if (!type.HasNestedTypes)
+                            continue;
+
+                        foreach (var m in type.NestedTypes.SelectMany(t => t.Methods))
+                        {
+                            AnalyzeMethodBody(projectReport, config, a, m, callCrawler);
+                        }
+                    }
+                }                
             }
         }
 

@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor
 		void BuildNode(List<TreeViewItem> items, CallTreeNode callTree, int depth)
 		{
 			int id = items.Count;
-			items.Add(new TreeViewItem {id = id, depth = depth, displayName = callTree.name.Substring(callTree.name.IndexOf(" "))});
+			items.Add(new TreeViewItem {id = id, depth = depth, displayName = callTree.prettyName});
 			
             foreach (var parent in callTree.children)
             {

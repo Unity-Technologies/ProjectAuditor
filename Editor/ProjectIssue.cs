@@ -72,7 +72,8 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (callTree == null)
                     return string.Empty;
-                return callTree.caller.name;
+
+                return callTree.caller.prettyName;
             }
         }
         

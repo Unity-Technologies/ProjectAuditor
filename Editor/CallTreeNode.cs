@@ -8,6 +8,22 @@ namespace Unity.ProjectAuditor.Editor
 
         public List<CallTreeNode> children = new List<CallTreeNode>();
 
+        public string prettyName
+        {
+            get
+            {
+                // check if it's a coroutine
+                if (name.IndexOf("/<") >= 0)
+                {
+                    var startIndex = name.IndexOf("/<") + 2;
+                    var length = name.IndexOf(">") - startIndex;
+                    return name.Substring(startIndex, length);
+                }
+
+                return name.Substring(name.IndexOf(" "));
+            }
+        }
+        
         public CallTreeNode caller
         {
             get
