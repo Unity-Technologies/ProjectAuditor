@@ -111,14 +111,6 @@ namespace Unity.ProjectAuditor.Editor
             Count
         }
 
-        // Sort options per column
-        private Column[] m_SortOptions =
-        {
-            Column.Description,
-            Column.Area,
-            Column.Filename
-        };
-
         private ProjectAuditor m_ProjectAuditor;
         ProjectIssue[] m_Issues;
 
