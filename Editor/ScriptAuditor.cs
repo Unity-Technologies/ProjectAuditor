@@ -56,14 +56,14 @@ namespace Unity.ProjectAuditor.Editor
 
         public void Audit( ProjectReport projectReport, ProjectAuditorConfig config)
         {
-            var progressBar =
-                new ProgressBarDisplay("Analyzing Scripts", "Analyzing project scripts", m_PlayerAssemblies.Length);
-
             var assemblies = GetPlayerAssemblies();
             if (assemblies.Count > 0)
             {
                 var callCrawler = new CallCrawler();                
                 
+                var progressBar =
+                    new ProgressBarDisplay("Analyzing Scripts", "Analyzing project scripts", m_PlayerAssemblies.Length);
+
                 // Analyse all Player assemblies, including Package assemblies.
                 foreach (var assemblyPath in assemblies)
                 {
@@ -77,10 +77,10 @@ namespace Unity.ProjectAuditor.Editor
                     
                     AnalyzeAssembly(assemblyPath, projectReport, config, callCrawler);
                 }
+                progressBar.ClearProgressBar();
+
                 callCrawler.BuildCallHierarchies(projectReport);
-            }
-            
-            progressBar.ClearProgressBar();
+            }            
         }
         
         private List<string> GetPlayerAssemblies()

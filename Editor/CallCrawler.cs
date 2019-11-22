@@ -12,10 +12,11 @@ namespace Unity.ProjectAuditor.Editor
     class CallCrawler
     {
         private Dictionary<string, CallPair> m_CallPairs = new Dictionary<string, CallPair>();
+        private Dictionary<string, List<CallPair>> m_BucketedCallPairs = new Dictionary<string, List<CallPair>>();
 
         public void Add(string caller, string callee)
         {
-            var key = string.Concat(caller, "->", caller);
+            var key = string.Concat(caller, "->", callee);
             if (!m_CallPairs.ContainsKey(key))
             {
                 var calledMethodPair = new CallPair
@@ -30,27 +31,42 @@ namespace Unity.ProjectAuditor.Editor
         
         public void BuildCallHierarchies(ProjectReport projectReport)
         {
+            foreach (var entry in m_CallPairs)
+            {
+                if (!m_BucketedCallPairs.ContainsKey(entry.Value.callee))                    
+                    m_BucketedCallPairs.Add(entry.Value.callee, new List<CallPair>());
+                m_BucketedCallPairs[entry.Value.callee].Add(entry.Value);                
+            }
+            
             var issues = projectReport.GetIssues(IssueCategory.ApiCalls);
+            var progressBar =
+                new ProgressBarDisplay("Analyzing Scripts", "Analyzing call trees", issues.Count);
+
             foreach (var issue in issues)
             {
+                progressBar.AdvanceProgressBar();
                 BuildHierarchy(issue.callTree.caller);
-            }  
+            }
+            progressBar.ClearProgressBar();
         }
         
         public void BuildHierarchy(CallTreeNode callee)
         {
             // let's find all callers with matching callee
-            var callPairs = m_CallPairs.Where(call => call.Value.callee.Equals(callee.name));
-
-            foreach (var call in callPairs)
+            if (m_BucketedCallPairs.ContainsKey(callee.name))
             {
-                // ignore recursive calls
-                if (!call.Value.caller.Equals(callee.name))
+                var callPairs = m_BucketedCallPairs[callee.name];
+
+                foreach (var call in callPairs)
                 {
-                    var callerInstance = new CallTreeNode(call.Value.caller);
-                    BuildHierarchy(callerInstance);
-                    callee.children.Add(callerInstance); 
-                }    
+                    // ignore recursive calls
+                    if (!call.caller.Equals(callee.name))
+                    {
+                        var callerInstance = new CallTreeNode(call.caller);
+                        BuildHierarchy(callerInstance);
+                        callee.children.Add(callerInstance); 
+                    }    
+                }  
             }
         }
     }
