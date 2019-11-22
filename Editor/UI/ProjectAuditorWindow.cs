@@ -168,7 +168,6 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             {
                 int width = 80;
                 int minWidth = 80;
-                bool canSort = true;
                 switch ((IssueTable.Column) i)
                 {
                     case IssueTable.Column.Description :
@@ -202,8 +201,6 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                             width = 300;
                             minWidth = 100;                            
                         }
-
-                        canSort = false;
                         break;
                 }
                                 
@@ -212,8 +209,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                     headerContent = Styles.ColumnHeaders[i],
                     width = width,
                     minWidth = minWidth,
-                    autoResize = true,
-                    canSort = canSort
+                    autoResize = true
                 } );
             }
 
