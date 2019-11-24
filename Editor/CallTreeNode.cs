@@ -42,5 +42,10 @@ namespace Unity.ProjectAuditor.Editor
             name = _name;
             children.Add(caller); 
         }
+
+        public CallTreeNode GetChild(int index = 0)
+        {
+            return children[0];
+        }
     }
 }

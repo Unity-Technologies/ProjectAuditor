@@ -323,7 +323,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                     var issue = selectedIssues.First();
                     if (issue != null)
                     {
-                        callTree = issue.callTree.children.Find(call => call.name.Contains(issue.callingMethod));    
+                        // get caller sub-tree
+                        callTree = issue.callTree.GetChild();    
                     }
                 }
                 if (m_CurrentCallTree != callTree)
