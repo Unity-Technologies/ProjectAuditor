@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using Mono.Cecil;
 
 namespace Unity.ProjectAuditor.Editor
 {
     public class CallTreeNode
     {
-        public string name;
+        public readonly string name;
+        public readonly string typeName;
+        public readonly string methodName;
 
         public List<CallTreeNode> children = new List<CallTreeNode>();
 
@@ -12,35 +15,31 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                // check if it's a coroutine
-                if (name.IndexOf("/<") >= 0)
-                {
-                    var startIndex = name.IndexOf("/<") + 2;
-                    var length = name.IndexOf(">") - startIndex;
-                    return name.Substring(startIndex, length);
-                }
-
-                return name.Substring(name.IndexOf(" "));
+                return typeName + "." + methodName;
             }
         }
         
-        public CallTreeNode caller
+        public CallTreeNode(MethodReference methodReference, CallTreeNode caller = null)
         {
-            get
+            name = methodReference.FullName;
+
+            // check if it's a coroutine
+            if (name.IndexOf("/<") >= 0)
             {
-                return children[0];
+                var fullName = methodReference.DeclaringType.FullName;
+                var methodStartIndex = fullName.IndexOf("<") + 1;
+                var length = fullName.IndexOf(">") - methodStartIndex;
+                typeName = fullName.Substring(0, fullName.IndexOf("/"));
+                methodName = fullName.Substring(methodStartIndex, length);
             }
-        }
+            else
+            {
+                typeName = methodReference.DeclaringType.Name;
+                methodName = methodReference.Name;
+            }
 
-        public CallTreeNode(string _name)
-        {
-            name = _name;
-        }
-
-        public CallTreeNode(string _name, CallTreeNode caller)
-        {
-            name = _name;
-            children.Add(caller); 
+            if (caller != null)
+                children.Add(caller); 
         }
 
         public CallTreeNode GetChild(int index = 0)

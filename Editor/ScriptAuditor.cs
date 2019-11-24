@@ -13,6 +13,20 @@ using UnityEditor.Build.Player;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    internal class MonoCecilHelper
+    {
+        public static IEnumerable<TypeDefinition> AggregateAllTypeDefinitions(IEnumerable<TypeDefinition> types)
+        {
+            var typeDefs = types.ToList();
+            foreach (var typeDefinition in types)
+            {
+                if (typeDefinition.HasNestedTypes)
+                    typeDefs.AddRange(AggregateAllTypeDefinitions(typeDefinition.NestedTypes));
+            }
+            return typeDefs;
+        }
+    }
+
     public class ScriptAuditor : IAuditor
     {
         private List<ProblemDescriptor> m_ProblemDescriptors;
@@ -114,64 +128,47 @@ namespace Unity.ProjectAuditor.Editor
         {
             using (var a = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters() {ReadSymbols = true}))
             {
-                foreach (var m in a.MainModule.Types.SelectMany(t => t.Methods))
+                foreach (var m in MonoCecilHelper.AggregateAllTypeDefinitions(a.MainModule.Types).SelectMany(t => t.Methods))
                 {
                     if (!m.HasBody)
                         continue;
 
                     AnalyzeMethodBody(projectReport, config, a, m, callCrawler);
-                }
-
-                if (assemblyPath.Contains("Assembly-CSharp"))
-                {
-                    foreach (var type in a.MainModule.Types)
-                    {
-                        if (!type.HasNestedTypes)
-                            continue;
-
-                        foreach (var m in type.NestedTypes.SelectMany(t => t.Methods))
-                        {
-                            AnalyzeMethodBody(projectReport, config, a, m, callCrawler);
-                        }
-                    }
-                }                
+                }     
             }
         }
 
-        private void AnalyzeMethodBody(ProjectReport projectReport, ProjectAuditorConfig config, AssemblyDefinition a, MethodDefinition m, CallCrawler callCrawler)
+        private void AnalyzeMethodBody(ProjectReport projectReport, ProjectAuditorConfig config, AssemblyDefinition a, MethodDefinition caller, CallCrawler callCrawler)
         {
             List<ProjectIssue> methodBobyIssues = new List<ProjectIssue>();
 
-            foreach (var inst in m.Body.Instructions.Where(i =>
+            foreach (var inst in caller.Body.Instructions.Where(i =>
                 (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt)))
             {
-                var calledMethod = ((MethodReference) inst.Operand);
-
-                var callee = calledMethod.FullName;
-                var caller = m.FullName;
+                var callee = ((MethodReference) inst.Operand);
 
                 callCrawler.Add(caller, callee);
                 
                 // HACK: need to figure out a way to know whether a method is actually a property
-                var descriptor = m_ProblemDescriptors.SingleOrDefault(c => c.type == calledMethod.DeclaringType.FullName &&
-                                                                  (c.method == calledMethod.Name ||
-                                                                   ("get_" + c.method) == calledMethod.Name));
+                var descriptor = m_ProblemDescriptors.SingleOrDefault(c => c.type == callee.DeclaringType.FullName &&
+                                                                  (c.method == callee.Name ||
+                                                                   ("get_" + c.method) == callee.Name));
 
                 if (descriptor == null)
                 {
                     // Are we trying to warn about a whole namespace?
                     descriptor = m_ProblemDescriptors.SingleOrDefault(c =>
-                        c.type == calledMethod.DeclaringType.Namespace && c.method == "*");
+                        c.type == callee.DeclaringType.Namespace && c.method == "*");
                 }
 
                 //if (p.type != null && m.HasCustomDebugInformations)
-                if (descriptor != null && m.DebugInformation.HasSequencePoints)
+                if (descriptor != null && caller.DebugInformation.HasSequencePoints)
                 {
                     //var msg = string.Empty;
                     SequencePoint s = null;
                     for (var i = inst; i != null; i = i.Previous)
                     {
-                        s = m.DebugInformation.GetSequencePoint(i);
+                        s = caller.DebugInformation.GetSequencePoint(i);
                         if (s != null)
                         {
                             // msg = i == inst ? " exactly" : "nearby";
@@ -199,7 +196,7 @@ namespace Unity.ProjectAuditor.Editor
                             var description = descriptor.description;
                             if (description.Contains(".*"))
                             {
-                                description = calledMethod.DeclaringType.FullName + "::" + calledMethod.Name;
+                                description = callee.DeclaringType.FullName + "::" + callee.Name;
                             }
 
                             // do not add the same type of issue again (for example multiple Linq instructions) 
