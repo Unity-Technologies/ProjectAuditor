@@ -72,7 +72,8 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (callTree == null)
                     return string.Empty;
-                return callTree.caller.name;
+
+                return callTree.GetChild().name;
             }
         }
         
@@ -82,20 +83,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (string.IsNullOrEmpty(callingMethod))
                     return string.Empty;
-
-                var nameWithoutReturnTypeAndParameters = callingMethod.Substring(callingMethod.IndexOf(" "));
-                if (nameWithoutReturnTypeAndParameters.IndexOf("(") >= 0)
-                    nameWithoutReturnTypeAndParameters = nameWithoutReturnTypeAndParameters.Substring(0, nameWithoutReturnTypeAndParameters.IndexOf("("));
-                        
-                var name = nameWithoutReturnTypeAndParameters;
-                if (nameWithoutReturnTypeAndParameters.LastIndexOf("::") >= 0)
-                {
-                    var onlyNamespace = nameWithoutReturnTypeAndParameters.Substring(0, nameWithoutReturnTypeAndParameters.LastIndexOf("::"));
-                    if (onlyNamespace.LastIndexOf(".") >= 0)
-                        name = nameWithoutReturnTypeAndParameters.Substring(onlyNamespace.LastIndexOf(".") + 1);
-                }
-
-                return name.Trim(' ');
+                return callTree.GetChild().prettyName;
             }
         }
     }

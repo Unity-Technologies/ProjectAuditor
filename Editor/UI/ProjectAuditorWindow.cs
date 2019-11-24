@@ -151,7 +151,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
 			if (!m_ProjectAuditor.config.displayMutedIssues)
             {
-                var rule = m_ProjectAuditor.config.GetRule(issue.descriptor, issue.callingMethodName);
+                var rule = m_ProjectAuditor.config.GetRule(issue.descriptor, issue.callingMethod);
                 if (rule != null && rule.action == Rule.Action.None)
                     return false;
             }
@@ -323,7 +323,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
                     var issue = selectedIssues.First();
                     if (issue != null)
                     {
-                        callTree = issue.callTree.children.Find(call => call.name.Contains(issue.callingMethod));    
+                        // get caller sub-tree
+                        callTree = issue.callTree.GetChild();    
                     }
                 }
                 if (m_CurrentCallTree != callTree)
@@ -502,8 +503,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             }
             else
             {
-                callingMethod = item.m_ProjectIssue.callingMethodName;
-                //rule = m_ProjectAuditor.config.GetRule(descriptor, callingMethod);
+                callingMethod = item.m_ProjectIssue.callingMethod;
                 rule = m_ProjectAuditor.config.rules.Where(r => r.id == descriptor.id && r.filter.Equals(callingMethod)).FirstOrDefault();
             }
 
@@ -534,7 +534,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             }
             else
             {
-                callingMethod = item.m_ProjectIssue.callingMethodName;
+                callingMethod = item.m_ProjectIssue.callingMethod;
                 rules = m_ProjectAuditor.config.rules.Where(r => r.id == descriptor.id && r.filter.Equals(callingMethod)).ToArray();
             }
 
