@@ -36,7 +36,6 @@ namespace Unity.ProjectAuditor.Editor
         
         private UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
 
-        private string[] m_AssemblyWhitelist;
         private string[] m_AssemblyNames;
                 
         public string[] assemblyNames
@@ -89,12 +88,6 @@ namespace Unity.ProjectAuditor.Editor
                     if (!File.Exists(assemblyPath))
                     {
                         Debug.LogError(assemblyPath + " not found.");
-                        continue;
-                    }
-                    
-                    // Ignore whitelisted packages
-                    if (m_AssemblyWhitelist.FirstOrDefault(p => p.Contains(Path.GetFileName(assemblyPath))) != null)
-                    {
                         continue;
                     }
                     
@@ -251,14 +244,6 @@ namespace Unity.ProjectAuditor.Editor
 
             m_ProblemsDefinedByOpCopde = descriptors.ToArray();
             m_ProblemDescriptors.Where(p => !string.IsNullOrEmpty(p.opcode)).ToArray();                        
-            SetupPackageWhitelist(path);
         }        
-
-        void SetupPackageWhitelist(string path)
-        {
-            var fullPath = Path.GetFullPath(Path.Combine(path, "AssemblyWhitelist.txt"));
-            var whitelist = File.ReadAllText(fullPath);
-            m_AssemblyWhitelist = whitelist.Replace("\r\n", "\n").Split('\n');
-        }
     }
 }

@@ -1,3 +1,0 @@
-UnityEditor.TestRunner.dll
-UnityEngine.TestRunner.dll
-Unity.ProjectAuditor.Editor.dll
