@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor
         
         private UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
 
-        private string[] m_WhitelistedPackages;
+        private string[] m_AssemblyWhitelist;
         private string[] m_AssemblyNames;
                 
         public string[] assemblyNames
@@ -89,7 +89,13 @@ namespace Unity.ProjectAuditor.Editor
                     if (!File.Exists(assemblyPath))
                     {
                         Debug.LogError(assemblyPath + " not found.");
-                        return;
+                        continue;
+                    }
+                    
+                    // Ignore whitelisted packages
+                    if (m_AssemblyWhitelist.FirstOrDefault(p => p.Contains(Path.GetFileName(assemblyPath))) != null)
+                    {
+                        continue;
                     }
                     
                     AnalyzeAssembly(assemblyPath, projectReport, config, callCrawler);
@@ -162,16 +168,6 @@ namespace Unity.ProjectAuditor.Editor
                         break;
                     }
                 }
-
-                if (s != null)
-                {
-                    // Ignore whitelisted packages
-                    if (m_WhitelistedPackages.FirstOrDefault(p => p.Contains(s.Document.Url)) != null)
-                    {
-                        // no need to look at any other instruction
-                        return;
-                    }
-                }               
                 
                 ProblemDescriptor descriptor = null;
                 var description = (descriptor != null) ? descriptor.description : string.Empty;
@@ -260,9 +256,9 @@ namespace Unity.ProjectAuditor.Editor
 
         void SetupPackageWhitelist(string path)
         {
-            var fullPath = Path.GetFullPath(Path.Combine(path, "PackageWhitelist.txt"));
+            var fullPath = Path.GetFullPath(Path.Combine(path, "AssemblyWhitelist.txt"));
             var whitelist = File.ReadAllText(fullPath);
-            m_WhitelistedPackages = whitelist.Replace("\r\n", "\n").Split('\n');
+            m_AssemblyWhitelist = whitelist.Replace("\r\n", "\n").Split('\n');
         }
     }
 }
