@@ -1,6 +1,18 @@
 {
     "Items": [
         {
+            "id": 106666,
+            "opcode": "Box",
+            "type": "*",
+            "method": "*",
+            "value": "",
+            "customevaluator": "",
+            "area": "CPU",
+            "problem": "",
+            "solution": ""
+        },
+
+        {
             "id": 101000,
             "type": "UnityEngine.Camera",
             "method": "main",

@@ -6,6 +6,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ProblemDescriptor
     {
         public int id;
+        public string opcode;
         public string type;
         public string method;
         public string value;
@@ -19,6 +20,8 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
+                if (!string.IsNullOrEmpty(opcode))
+                    return opcode;
                 return type + "." + method;
             }
         }

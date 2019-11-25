@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using UnityEditor;
@@ -30,6 +31,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ScriptAuditor : IAuditor
     {
         private List<ProblemDescriptor> m_ProblemDescriptors;
+        private ProblemDescriptor[] m_ProblemsDefinedByOpCopde;
         
         private UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
 
@@ -143,83 +145,85 @@ namespace Unity.ProjectAuditor.Editor
             List<ProjectIssue> methodBobyIssues = new List<ProjectIssue>();
 
             foreach (var inst in caller.Body.Instructions.Where(i =>
-                (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt)))
+                (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt || i.OpCode == OpCodes.Box)))
             {
-                var callee = ((MethodReference) inst.Operand);
-
-                callCrawler.Add(caller, callee);
+                if (!caller.DebugInformation.HasSequencePoints)
+                    continue;
                 
-                // HACK: need to figure out a way to know whether a method is actually a property
-                var descriptor = m_ProblemDescriptors.SingleOrDefault(c => c.type == callee.DeclaringType.FullName &&
-                                                                  (c.method == callee.Name ||
-                                                                   ("get_" + c.method) == callee.Name));
-
-                if (descriptor == null)
+                //var msg = string.Empty;
+                SequencePoint s = null;
+                for (var i = inst; i != null; i = i.Previous)
                 {
-                    // Are we trying to warn about a whole namespace?
-                    descriptor = m_ProblemDescriptors.SingleOrDefault(c =>
-                        c.type == callee.DeclaringType.Namespace && c.method == "*");
-                }
-
-                //if (p.type != null && m.HasCustomDebugInformations)
-                if (descriptor != null && caller.DebugInformation.HasSequencePoints)
-                {
-                    //var msg = string.Empty;
-                    SequencePoint s = null;
-                    for (var i = inst; i != null; i = i.Previous)
-                    {
-                        s = caller.DebugInformation.GetSequencePoint(i);
-                        if (s != null)
-                        {
-                            // msg = i == inst ? " exactly" : "nearby";
-                            break;
-                        }
-                    }
-
+                    s = caller.DebugInformation.GetSequencePoint(i);
                     if (s != null)
                     {
-                        // Ignore whitelisted packages
-                        // (SteveM - I'd put this code further up in one of the outer loops but I don't
-                        // know if it's possible to get the URL further up to compare with the whitelist)
-                        bool isPackageWhitelisted = false;
-                        foreach (string package in m_WhitelistedPackages)
+                        // msg = i == inst ? " exactly" : "nearby";
+                        break;
+                    }
+                }
+
+                if (s != null)
+                {
+                    // Ignore whitelisted packages
+                    if (m_WhitelistedPackages.FirstOrDefault(p => p.Contains(s.Document.Url)) != null)
+                        continue;
+                }               
+                
+                ProblemDescriptor descriptor = null;
+                var description = (descriptor != null) ? descriptor.description : string.Empty;
+                var callTree = new CallTreeNode(caller);
+                if (inst.OpCode == OpCodes.Box)
+                {
+                    string opcode = inst.OpCode.Code.ToString();
+                    descriptor = m_ProblemsDefinedByOpCopde.SingleOrDefault(p => p.opcode.Equals(opcode));
+                    callTree = new CallTreeNode(opcode, callTree);
+                }
+                else
+                {
+                    var callee = ((MethodReference) inst.Operand);
+
+                    callCrawler.Add(caller, callee);
+
+                    descriptor = m_ProblemDescriptors.SingleOrDefault(c => c.type == callee.DeclaringType.FullName &&
+                                                              (c.method == callee.Name ||
+                                                               ("get_" + c.method) == callee.Name));
+
+                    if (descriptor == null)
+                    {
+                        // Are we trying to warn about a whole namespace?
+                        descriptor = m_ProblemDescriptors.SingleOrDefault(c =>
+                            c.type == callee.DeclaringType.Namespace && c.method == "*");
+                    }
+                    
+                    if (description.Contains(".*"))
+                    {
+                        description = callee.DeclaringType.FullName + "::" + callee.Name;
+                    }
+
+                    // replace root with callee node
+                    callTree = new CallTreeNode(callee, callTree);
+                }
+
+                if (descriptor != null)
+                {
+                    // do not add the same type of issue again (for example multiple Linq instructions) 
+                    if (methodBobyIssues.FirstOrDefault(i =>
+                        i.column == s.StartColumn) == null)
+                    {
+                        var projectIssue = new ProjectIssue
                         {
-                            if (s.Document.Url.Contains(package))
-                            {
-                                isPackageWhitelisted = true;
-                                break;
-                            }
-                        }
+                            description = description,
+                            category = IssueCategory.ApiCalls,
+                            descriptor = descriptor,
+                            callTree = callTree,
+                            url = s.Document.Url.Replace("\\", "/"),
+                            line = s.StartLine,
+                            column = s.StartColumn,
+                            assembly = a.Name.Name
+                        };
 
-                        if (!isPackageWhitelisted)
-                        {
-                            var description = descriptor.description;
-                            if (description.Contains(".*"))
-                            {
-                                description = callee.DeclaringType.FullName + "::" + callee.Name;
-                            }
-
-                            // do not add the same type of issue again (for example multiple Linq instructions) 
-                            var foundIssues = methodBobyIssues.Where(i =>
-                                i.column == s.StartColumn);
-                            if (foundIssues.FirstOrDefault() == null)
-                            {
-                                var projectIssue = new ProjectIssue
-                                {
-                                    description = description,
-                                    category = IssueCategory.ApiCalls,
-                                    descriptor = descriptor,
-                                    callTree = new CallTreeNode(callee, new CallTreeNode(caller)),
-                                    url = s.Document.Url.Replace("\\", "/"),
-                                    line = s.StartLine,
-                                    column = s.StartColumn,
-                                    assembly = a.Name.Name
-                                };
-
-                                projectReport.AddIssue(projectIssue);
-                                methodBobyIssues.Add(projectIssue);   
-                            }
-                        }
+                        projectReport.AddIssue(projectIssue);
+                        methodBobyIssues.Add(projectIssue);   
                     }
                 }
             }
@@ -228,7 +232,7 @@ namespace Unity.ProjectAuditor.Editor
         public void LoadDatabase(string path)
         {
             m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors(path, "ApiDatabase");
-                        
+            m_ProblemsDefinedByOpCopde = m_ProblemDescriptors.Where(p => !string.IsNullOrEmpty(p.opcode)).ToArray();                        
             SetupPackageWhitelist(path);
         }        
 
