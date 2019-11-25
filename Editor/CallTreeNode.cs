@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Mono.Cecil;
 
@@ -15,8 +16,21 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
+                if (string.IsNullOrEmpty(typeName))
+                    return name;
                 return typeName + "." + methodName;
             }
+        }
+        
+        public CallTreeNode(string _name, CallTreeNode caller = null)
+        {
+            name = _name;
+
+            typeName = String.Empty;
+            methodName = String.Empty;
+
+            if (caller != null)
+                children.Add(caller); 
         }
         
         public CallTreeNode(MethodReference methodReference, CallTreeNode caller = null)
