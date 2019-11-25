@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using UnityEditor;
@@ -30,10 +32,10 @@ namespace Unity.ProjectAuditor.Editor
     public class ScriptAuditor : IAuditor
     {
         private List<ProblemDescriptor> m_ProblemDescriptors;
+        private ProblemDescriptor[] m_ProblemsDefinedByOpCopde;
         
         private UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
 
-        private string[] m_WhitelistedPackages;
         private string[] m_AssemblyNames;
                 
         public string[] assemblyNames
@@ -86,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor
                     if (!File.Exists(assemblyPath))
                     {
                         Debug.LogError(assemblyPath + " not found.");
-                        return;
+                        continue;
                     }
                     
                     AnalyzeAssembly(assemblyPath, projectReport, config, callCrawler);
@@ -140,86 +142,85 @@ namespace Unity.ProjectAuditor.Editor
 
         private void AnalyzeMethodBody(ProjectReport projectReport, ProjectAuditorConfig config, AssemblyDefinition a, MethodDefinition caller, CallCrawler callCrawler)
         {
+            if (!caller.DebugInformation.HasSequencePoints)
+                return;
+            
             List<ProjectIssue> methodBobyIssues = new List<ProjectIssue>();
 
             foreach (var inst in caller.Body.Instructions.Where(i =>
-                (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt)))
+                (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt || i.OpCode == OpCodes.Box)))
             {
-                var callee = ((MethodReference) inst.Operand);
-
-                callCrawler.Add(caller, callee);
-                
-                // HACK: need to figure out a way to know whether a method is actually a property
-                var descriptor = m_ProblemDescriptors.SingleOrDefault(c => c.type == callee.DeclaringType.FullName &&
-                                                                  (c.method == callee.Name ||
-                                                                   ("get_" + c.method) == callee.Name));
-
-                if (descriptor == null)
+                //var msg = string.Empty;
+                SequencePoint s = null;
+                for (var i = inst; i != null; i = i.Previous)
                 {
-                    // Are we trying to warn about a whole namespace?
-                    descriptor = m_ProblemDescriptors.SingleOrDefault(c =>
-                        c.type == callee.DeclaringType.Namespace && c.method == "*");
-                }
-
-                //if (p.type != null && m.HasCustomDebugInformations)
-                if (descriptor != null && caller.DebugInformation.HasSequencePoints)
-                {
-                    //var msg = string.Empty;
-                    SequencePoint s = null;
-                    for (var i = inst; i != null; i = i.Previous)
-                    {
-                        s = caller.DebugInformation.GetSequencePoint(i);
-                        if (s != null)
-                        {
-                            // msg = i == inst ? " exactly" : "nearby";
-                            break;
-                        }
-                    }
-
+                    s = caller.DebugInformation.GetSequencePoint(i);
                     if (s != null)
                     {
-                        // Ignore whitelisted packages
-                        // (SteveM - I'd put this code further up in one of the outer loops but I don't
-                        // know if it's possible to get the URL further up to compare with the whitelist)
-                        bool isPackageWhitelisted = false;
-                        foreach (string package in m_WhitelistedPackages)
+                        // msg = i == inst ? " exactly" : "nearby";
+                        break;
+                    }
+                }
+                
+                ProblemDescriptor descriptor = null;
+                var description = (descriptor != null) ? descriptor.description : string.Empty;
+                CallTreeNode callTree = null;
+                if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
+                {
+                    var callee = ((MethodReference) inst.Operand);
+
+                    callCrawler.Add(caller, callee);
+
+                    descriptor = m_ProblemDescriptors.SingleOrDefault(c => c.type == callee.DeclaringType.FullName &&
+                                                                           (c.method == callee.Name ||
+                                                                            ("get_" + c.method) == callee.Name));
+
+                    if (descriptor == null)
+                    {
+                        // Are we trying to warn about a whole namespace?
+                        descriptor = m_ProblemDescriptors.SingleOrDefault(c =>
+                            c.type == callee.DeclaringType.Namespace && c.method == "*");
+                    }
+                    
+                    if (description.Contains(".*"))
+                    {
+                        description = callee.DeclaringType.FullName + "::" + callee.Name;
+                    }
+
+                    // replace root with callee node
+                    callTree = new CallTreeNode(callee, new CallTreeNode(caller));
+                }
+                else
+                {
+                    string opcode = inst.OpCode.Code.ToString();
+                    descriptor = m_ProblemsDefinedByOpCopde.SingleOrDefault(p => p.opcode.Equals(opcode));
+                    if (descriptor == null)
+                    {
+                        continue;
+                    }
+                    callTree = new CallTreeNode(opcode, new CallTreeNode(caller));
+                }
+
+                if (descriptor != null)
+                {
+                    // do not add the same type of issue again (for example multiple Linq instructions) 
+                    if (methodBobyIssues.FirstOrDefault(i =>
+                        i.column == s.StartColumn) == null)
+                    {
+                        var projectIssue = new ProjectIssue
                         {
-                            if (s.Document.Url.Contains(package))
-                            {
-                                isPackageWhitelisted = true;
-                                break;
-                            }
-                        }
+                            description = description,
+                            category = IssueCategory.ApiCalls,
+                            descriptor = descriptor,
+                            callTree = callTree,
+                            url = s.Document.Url.Replace("\\", "/"),
+                            line = s.StartLine,
+                            column = s.StartColumn,
+                            assembly = a.Name.Name
+                        };
 
-                        if (!isPackageWhitelisted)
-                        {
-                            var description = descriptor.description;
-                            if (description.Contains(".*"))
-                            {
-                                description = callee.DeclaringType.FullName + "::" + callee.Name;
-                            }
-
-                            // do not add the same type of issue again (for example multiple Linq instructions) 
-                            var foundIssues = methodBobyIssues.Where(i =>
-                                i.column == s.StartColumn);
-                            if (foundIssues.FirstOrDefault() == null)
-                            {
-                                var projectIssue = new ProjectIssue
-                                {
-                                    description = description,
-                                    category = IssueCategory.ApiCalls,
-                                    descriptor = descriptor,
-                                    callTree = new CallTreeNode(callee, new CallTreeNode(caller)),
-                                    url = s.Document.Url.Replace("\\", "/"),
-                                    line = s.StartLine,
-                                    column = s.StartColumn,
-                                    assembly = a.Name.Name
-                                };
-
-                                projectReport.AddIssue(projectIssue);
-                                methodBobyIssues.Add(projectIssue);   
-                            }
-                        }
+                        projectReport.AddIssue(projectIssue);
+                        methodBobyIssues.Add(projectIssue);   
                     }
                 }
             }
@@ -228,15 +229,21 @@ namespace Unity.ProjectAuditor.Editor
         public void LoadDatabase(string path)
         {
             m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors(path, "ApiDatabase");
-                        
-            SetupPackageWhitelist(path);
-        }        
 
-        void SetupPackageWhitelist(string path)
-        {
-            var fullPath = Path.GetFullPath(Path.Combine(path, "PackageWhitelist.txt"));
-            var whitelist = File.ReadAllText(fullPath);
-            m_WhitelistedPackages = whitelist.Replace("\r\n", "\n").Split('\n');
-        }
+            var descriptors = new List<ProblemDescriptor>();
+            descriptors.Add(new ProblemDescriptor
+            {
+                id = 102000,
+                opcode = OpCodes.Box.Code.ToString(),
+                type = string.Empty,
+                method = string.Empty,
+                area = "Memory",
+                problem = "Boxing happens where a value type, such as an integer, is converted into an object of reference type. This causes an allocation on the heap, which might increase the size of the managed heap and the frequency of Garbage Collection.",
+                solution = "Try to avoid Boxing when possible.",
+            });
+
+            m_ProblemsDefinedByOpCopde = descriptors.ToArray();
+            m_ProblemDescriptors.Where(p => !string.IsNullOrEmpty(p.opcode)).ToArray();                        
+        }        
     }
 }
