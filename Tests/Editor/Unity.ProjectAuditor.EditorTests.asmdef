@@ -1,5 +1,5 @@
 {
-    "name": "Unity.[SubGroup].[YourPackageName].EditorTests",
+    "name": "Unity.ProjectAuditor.EditorTests",
     "references": [
         "Unity.ProjectAuditor.Editor"
     ],
@@ -12,7 +12,9 @@
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
-    "precompiledReferences": [],
+    "precompiledReferences": [
+        "Mono.Cecil.dll"        
+    ],
     "autoReferenced": true,
     "defineConstraints": []
 }
