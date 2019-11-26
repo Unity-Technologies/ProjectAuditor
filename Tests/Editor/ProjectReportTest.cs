@@ -14,8 +14,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		{
 			var uninitialised = new ProjectReport();
 			Assert.AreEqual(0, uninitialised.NumIssues);
-			Assert.AreEqual(0, uninitialised.GetIssues(IssueCategory.ApiCalls));
-			Assert.AreEqual(0, uninitialised.GetIssues(IssueCategory.ProjectSettings));
+			Assert.AreEqual(0, uninitialised.GetIssues(IssueCategory.ApiCalls).Count);
+			Assert.AreEqual(0, uninitialised.GetIssues(IssueCategory.ProjectSettings).Count);
 		}
 
 		[Test]
