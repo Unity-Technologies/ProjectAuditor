@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor
         public CallTreeNode(MethodReference methodReference, CallTreeNode caller = null)
         {
             name = methodReference.FullName;
-            methodName = "Anonymous"; // default value
+            methodName = "(anonymous)"; // default value
             
             // check if it's a coroutine
             if (name.IndexOf("/<") >= 0)
@@ -49,9 +49,19 @@ namespace Unity.ProjectAuditor.Editor
                     typeName = fullName.Substring(0, fullName.IndexOf("/"));
                     if (length > 0)
                         methodName = fullName.Substring(methodStartIndex, length);
+                    else
+                    {
+                        // handle example: System.Int32 DelegateTest/<>c::<Update>b__1_0()
+                        methodStartIndex = name.LastIndexOf("<") + 1;
+                        if (methodStartIndex > 0)
+                        {
+                            length = name.LastIndexOf(">") - methodStartIndex;
+                            methodName = name.Substring(methodStartIndex, length) + ".(anonymous)";
+                        }
+                    }
                 }
                 else
-                {
+                {                   
                     // for some reason, some generated types don't have the same syntax
                     typeName = fullName;
                 }
