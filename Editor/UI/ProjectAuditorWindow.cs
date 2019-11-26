@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor
 
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout = new GUIContent("Recommendation", "Recommendation on how to solve the issue");
-            public static readonly GUIContent CallTreeFoldout = new GUIContent("Call Hierarchy", "Call Hierarchy");
+            public static readonly GUIContent CallTreeFoldout = new GUIContent("Inverted Call Hierarchy", "Inverted Call Hierarchy");
             
             public static readonly string HelpText =
 @"Project Auditor is an experimental static analysis tool for Unity Projects.
