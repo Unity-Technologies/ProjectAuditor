@@ -22,6 +22,8 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (!string.IsNullOrEmpty(opcode))
                     return opcode;
+                if (string.IsNullOrEmpty(type) || string.IsNullOrEmpty(method))
+                    return string.Empty;
                 return type + "." + method;
             }
         }
