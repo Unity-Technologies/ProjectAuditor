@@ -30,7 +30,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			
 			Assert.AreEqual(1, projectReport.NumIssues);
 			Assert.AreEqual(1, projectReport.GetIssues(IssueCategory.ApiCalls).Count);
-			Assert.AreEqual(0, projectReport.GetIssues(IssueCategory.ProjectSettings));
+			Assert.AreEqual(0, projectReport.GetIssues(IssueCategory.ProjectSettings).Count);
 		}
 
 	}	
