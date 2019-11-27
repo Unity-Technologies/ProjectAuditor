@@ -145,7 +145,7 @@ namespace Unity.ProjectAuditor.Editor
                 var projectReport = new ProjectReport();
                 Audit(projectReport);
 
-                var numIssues = projectReport.NumIssues;
+                var numIssues = projectReport.NumTotalIssues;
                 if (numIssues > 0)
                 {
                     if (m_ProjectAuditorConfig.enableFailBuildOnIssues)

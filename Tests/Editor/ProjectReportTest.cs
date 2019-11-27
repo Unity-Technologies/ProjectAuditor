@@ -13,9 +13,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		public void UninitializedTestPasses()
 		{
 			var uninitialised = new ProjectReport();
-			Assert.AreEqual(0, uninitialised.NumIssues);
-			Assert.AreEqual(0, uninitialised.GetIssues(IssueCategory.ApiCalls).Count);
-			Assert.AreEqual(0, uninitialised.GetIssues(IssueCategory.ProjectSettings).Count);
+			Assert.Zero( uninitialised.NumTotalIssues);
+			Assert.Zero( uninitialised.GetNumIssues(IssueCategory.ApiCalls));
+			Assert.Zero( uninitialised.GetNumIssues(IssueCategory.ProjectSettings));
 		}
 
 		[Test]
@@ -28,9 +28,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 				category = IssueCategory.ApiCalls								
 			});
 			
-			Assert.AreEqual(1, projectReport.NumIssues);
-			Assert.AreEqual(1, projectReport.GetIssues(IssueCategory.ApiCalls).Count);
-			Assert.AreEqual(0, projectReport.GetIssues(IssueCategory.ProjectSettings).Count);
+			Assert.AreEqual(1, projectReport.NumTotalIssues);
+			Assert.AreEqual(1, projectReport.GetNumIssues(IssueCategory.ApiCalls));
+			Assert.AreEqual(0, projectReport.GetNumIssues(IssueCategory.ProjectSettings));
 		}
 
 	}	

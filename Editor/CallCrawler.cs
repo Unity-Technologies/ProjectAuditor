@@ -40,19 +40,23 @@ namespace Unity.ProjectAuditor.Editor
                     m_BucketedCallPairs.Add(entry.Value.callee.FullName, new List<CallPair>());
                 m_BucketedCallPairs[entry.Value.callee.FullName].Add(entry.Value);                
             }
-            
-            var issues = projectReport.GetIssues(IssueCategory.ApiCalls);
-            var progressBar =
-                new ProgressBarDisplay("Analyzing Scripts", "Analyzing call trees", issues.Count);
 
-            foreach (var issue in issues)
+            var numIssues = projectReport.GetNumIssues(IssueCategory.ApiCalls);
+            if (numIssues > 0)
             {
-                progressBar.AdvanceProgressBar();
+                var issues = projectReport.GetIssues(IssueCategory.ApiCalls);
+                var progressBar =
+                    new ProgressBarDisplay("Analyzing Scripts", "Analyzing call trees", numIssues);
 
-                int depth = 0;
-                BuildHierarchy(issue.callTree.GetChild(), depth);
+                foreach (var issue in issues)
+                {
+                    progressBar.AdvanceProgressBar();
+
+                    int depth = 0;
+                    BuildHierarchy(issue.callTree.GetChild(), depth);
+                }
+                progressBar.ClearProgressBar();                
             }
-            progressBar.ClearProgressBar();
         }
         
         public void BuildHierarchy(CallTreeNode callee, int depth)
