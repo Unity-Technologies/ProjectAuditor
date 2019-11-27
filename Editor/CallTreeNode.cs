@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor
             methodName = "(anonymous)"; // default value
             
             // check if it's a coroutine
-            if (name.IndexOf("/<") >= 0)
+            if (methodReference.DeclaringType.FullName.IndexOf("/<") >= 0)
             {
                 var fullName = methodReference.DeclaringType.FullName;
                 var methodStartIndex = fullName.IndexOf("<") + 1;
