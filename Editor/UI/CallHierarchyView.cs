@@ -38,11 +38,19 @@ namespace Unity.ProjectAuditor.Editor
 		{
 			int id = items.Count;
 			items.Add(new TreeViewItem {id = id, depth = depth, displayName = callTree.prettyName});
-			
-            foreach (var parent in callTree.children)
-            {
-	            BuildNode(items, parent, depth + 1);
-            }
+
+			// if the tree is too deep, serialization will exceed the 7 levels limit.
+			if (callTree.children == null)
+			{
+				items.Add(new TreeViewItem {id = id+1, depth = depth+1, displayName = "<Serialization Limit>"});
+			}
+			else
+			{
+				foreach (var parent in callTree.children)
+				{
+					BuildNode(items, parent, depth + 1);
+				}
+			}
 		}
 	}
 }
