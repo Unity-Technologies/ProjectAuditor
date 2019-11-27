@@ -187,6 +187,8 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
             m_ValidReport = true;
             
+            m_IssueTables.Clear();
+            
             RefreshDisplay();
         }
 
