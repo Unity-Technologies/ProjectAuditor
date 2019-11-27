@@ -72,6 +72,8 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (callTree == null)
                     return string.Empty;
+                if (!callTree.HasChildren())
+                    return string.Empty;
 
                 return callTree.GetChild().name;
             }
@@ -83,6 +85,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (string.IsNullOrEmpty(callingMethod))
                     return string.Empty;
+                
                 return callTree.GetChild().prettyName;
             }
         }

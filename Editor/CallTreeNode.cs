@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using Mono.Cecil;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    [Serializable]
     public class CallTreeNode
     {
-        public readonly string name;
-        public readonly string typeName;
-        public readonly string methodName;
+        public string name;
+        public string typeName;
+        public string methodName;
 
         public List<CallTreeNode> children = new List<CallTreeNode>();
 
@@ -76,6 +78,11 @@ namespace Unity.ProjectAuditor.Editor
                 children.Add(caller); 
         }
 
+        public bool HasChildren()
+        {
+            return children != null && children.Count > 0;
+        }
+        
         public CallTreeNode GetChild(int index = 0)
         {
             return children[0];

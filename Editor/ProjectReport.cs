@@ -2,46 +2,47 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    [Serializable]
     public class ProjectReport
     {
-        private Dictionary<IssueCategory, List<ProjectIssue>> m_IssueDict = new Dictionary<IssueCategory, List<ProjectIssue>>();
+        [SerializeField] private List<ProjectIssue> m_Issues = new List<ProjectIssue>();
 
-        public ProjectReport()
-        {
-            for(int i = 0; i < (int)IssueCategory.NumCategories; ++i)
-            {
-                m_IssueDict.Add((IssueCategory)i, new List<ProjectIssue>());
-            }
-        }
-
-        public int NumIssues
+        public int NumTotalIssues
         {
             get
             {
-                return m_IssueDict.Select(i => i.Value.Count).Sum();
+                return m_Issues.Count;
                 
             }
         }
         
-        public List<ProjectIssue> GetIssues(IssueCategory category)
+        public int GetNumIssues(IssueCategory category)
         {
-            return m_IssueDict[category];  
+            return m_Issues.Where(i => i.category == category).Count();  
+        }
+        
+        public IEnumerable<ProjectIssue> GetIssues(IssueCategory category)
+        {
+            return m_Issues.Where(i => i.category == category);  
         }
 
         public void AddIssue(ProjectIssue projectIssue)
         {
-            m_IssueDict[projectIssue.category].Add(projectIssue);
+            m_Issues.Add(projectIssue);
         }
         
+        //TODO: change to export csv
         public void WriteToFile()
         {
-            foreach (var issues in m_IssueDict)
+            for(int i=0; i<(int)IssueCategory.NumCategories; i++)
             {
-                var json = JsonHelper.ToJson<ProjectIssue>(issues.Value.ToArray(), true);
-                File.WriteAllText("Report_" + issues.Key + ".json", json);
+                var category = (IssueCategory) i;
+                var json = JsonHelper.ToJson<ProjectIssue>(GetIssues(category).ToArray(), true);
+                File.WriteAllText("Report_" + category.ToString() + ".json", json);
             }
         }
     }

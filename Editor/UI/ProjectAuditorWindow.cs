@@ -7,12 +7,11 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    class ProjectAuditorWindow : EditorWindow, IHasCustomMenu
-    {
-        private bool m_DeveloperMode = false;
-        
+    class ProjectAuditorWindow : EditorWindow//, IHasCustomMenu
+    {       
         private ProjectAuditor m_ProjectAuditor;
-        private ProjectReport m_ProjectReport;
+        [SerializeField] private ProjectReport m_ProjectReport;
+        
         private List<IssueTable> m_IssueTables = new List<IssueTable>();
 		private CallHierarchyView m_CallHierarchyView;
         private CallTreeNode m_CurrentCallTree = null;
@@ -23,20 +22,27 @@ namespace Unity.ProjectAuditor.Editor
         }
         
         private string[] m_AssemblyNames;
-        private const int AllAssembliesIndex = 0;
+
+        enum AssemblyIndex
+        {
+            None = -1,
+            All = 0
+        }
+       
         private const string m_DefaultAssemblyName = "Assembly-CSharp";
-        private int m_ActiveAssembly = AllAssembliesIndex;
-
-        private Area m_ActiveArea = Area.All;
-
-        private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
-
-        private bool m_ShowDetails = true;
-        private bool m_ShowRecommendation = true;
-        private bool m_ShowCallTree = false;
-
+        
         private SearchField m_SearchField;
-        private string m_SearchText;
+        
+        [SerializeField] private bool m_ValidReport = false;
+        [SerializeField] private int m_ActiveAssembly = (int)AssemblyIndex.None;
+        [SerializeField] private Area m_ActiveArea = Area.All;
+        [SerializeField] private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
+        [SerializeField] private bool m_ShowDetails = true;
+        [SerializeField] private bool m_ShowRecommendation = true;
+        [SerializeField] private bool m_ShowCallTree = false;
+        
+        [SerializeField] private string m_SearchText;
+        [SerializeField] private bool m_DeveloperMode = false;
         
         static readonly string[] AreaEnumStrings = {
             "CPU",
@@ -57,7 +63,6 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent DeveloperMode = new GUIContent("Developer Mode");
             public static readonly GUIContent UserMode = new GUIContent("User Mode");
             
-            public static readonly GUIStyle Toolbar = "Toolbar";
             public static readonly GUIContent WindowTitle = new GUIContent("Project Auditor");
             public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
@@ -65,7 +70,6 @@ namespace Unity.ProjectAuditor.Editor
 
             public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore selected issues.");
             public static readonly GUIContent UnmuteButton = new GUIContent("Unmute", "Always show selected issues.");
-                
                 
             public static readonly GUIContent[] ColumnHeaders = {
                 new GUIContent("Issue", "Issue description"),
@@ -94,24 +98,29 @@ To generate a report, click on the Export button.
 To reload the issue database definition, click on Reload DB. (Developer Mode only)";
         }
 
-        public static readonly string NoIssueSelectedText = "No issue selected";
+        public static readonly string NoIssueSelectedText = "No issue selected";      
         
         private void OnEnable()
         {
-            m_ProjectAuditor = new ProjectAuditor();
+            if (m_ProjectAuditor == null)
+            {
+                m_ProjectAuditor = new ProjectAuditor();    
+            }
 
             var assemblyNames = new List<string>(new []{"All Assemblies"});
             assemblyNames.AddRange(m_ProjectAuditor.GetAuditor<ScriptAuditor>().assemblyNames);
             m_AssemblyNames = assemblyNames.ToArray();
-            
-            m_ActiveAssembly = assemblyNames.IndexOf(m_DefaultAssemblyName);
 
-            // Edge case: Running the Project Auditor when there are no uses scripts, so no default assembly
-            if (m_ActiveAssembly < 0 || m_ActiveAssembly >= m_AssemblyNames.Length)
+            if (m_ActiveAssembly == (int)AssemblyIndex.None)
             {
-                m_ActiveAssembly = 0;
+                m_ActiveAssembly = assemblyNames.IndexOf(m_DefaultAssemblyName);
+                if (m_ActiveAssembly < 0)
+                    m_ActiveAssembly = (int)AssemblyIndex.All;
             }
+
             m_CallHierarchyView = new CallHierarchyView(new TreeViewState());
+            
+            RefreshDisplay();
         }
 
         private void OnGUI()
@@ -134,12 +143,12 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
         bool IsAnalysisValid()
         {
-            return m_ProjectReport != null;
+            return m_ValidReport;
         }
         
         public bool ShouldDisplay(ProjectIssue issue)
         {
-            if (m_ActiveMode == IssueCategory.ApiCalls && m_ActiveAssembly != AllAssembliesIndex && !m_AssemblyNames[m_ActiveAssembly].Equals(issue.assembly))
+            if (m_ActiveMode == IssueCategory.ApiCalls && m_ActiveAssembly != (int)AssemblyIndex.All && m_ActiveAssembly != (int)AssemblyIndex.None && !m_AssemblyNames[m_ActiveAssembly].Equals(issue.assembly))
             {
                 return false;
             }
@@ -178,15 +187,9 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             m_ProjectReport = new ProjectReport();
 
             m_ProjectAuditor.Audit(m_ProjectReport);
+
+            m_ValidReport = true;
             
-            m_IssueTables.Clear();
-
-            for(int i = 0; i < (int)IssueCategory.NumCategories; ++i)
-            {
-                IssueTable issueTable = CreateIssueTable((IssueCategory)i, new TreeViewState());
-                m_IssueTables.Add(issueTable);
-            }
-
             RefreshDisplay();
         }
 
@@ -258,8 +261,16 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
             if (!IsAnalysisValid())
                 return;
 
-            if(m_ActiveIssueTable != null)
-                m_ActiveIssueTable.Reload();
+            if (m_IssueTables.Count == 0)
+            {
+                for(int i = 0; i < (int)IssueCategory.NumCategories; ++i)
+                {
+                    IssueTable issueTable = CreateIssueTable((IssueCategory)i, new TreeViewState());
+                    m_IssueTables.Add(issueTable);
+                }               
+            }
+            
+            m_ActiveIssueTable.Reload();
         }
 
         private void Reload()
@@ -276,28 +287,28 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
 
         private void DrawIssues()
         {
-            if (IsAnalysisValid())
-            {
-                var selectedItems = m_ActiveIssueTable.GetSelectedItems();
-                var selectedIssues = selectedItems.Select(i => i.m_ProjectIssue).ToArray();
-                string info = selectedIssues.Length  + " / " + m_ActiveIssueTable.NumIssues(m_ActiveMode) + " issues";
+            if (!IsAnalysisValid())
+                return;
 
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.BeginVertical();
-                
-                Rect r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
-                m_ActiveIssueTable.OnGUI(r);
+            var selectedItems = m_ActiveIssueTable.GetSelectedItems();
+            var selectedIssues = selectedItems.Select(i => i.m_ProjectIssue).ToArray();
+            string info = selectedIssues.Length  + " / " + m_ActiveIssueTable.NumIssues(m_ActiveMode) + " issues";
 
-                EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
-                EditorGUILayout.EndVertical();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginVertical();
+            
+            Rect r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
+            m_ActiveIssueTable.OnGUI(r);
 
-                EditorGUILayout.BeginVertical(GUILayout.Width(m_FoldoutWidth));
+            EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
+            EditorGUILayout.EndVertical();
 
-                DrawFoldouts();
+            EditorGUILayout.BeginVertical(GUILayout.Width(m_FoldoutWidth));
 
-                EditorGUILayout.EndVertical();
-                EditorGUILayout.EndHorizontal();
-            }     
+            DrawFoldouts();
+
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndHorizontal();
         }
         
         private void DrawFoldouts()
@@ -546,35 +557,33 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         
         private void DrawToolbar()
         {
-            EditorGUILayout.BeginHorizontal(Styles.Toolbar);
+            EditorGUILayout.BeginHorizontal(GUI.skin.box);
+            {
+                if (GUILayout.Button(Styles.AnalyzeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                    Analyze();
 
-            if (GUILayout.Button(Styles.AnalyzeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
-                Analyze();
+                if (m_DeveloperMode)
+                {
+                    if (GUILayout.Button(Styles.ReloadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                        Reload();                
+
+                    // Export button needs to be properly tested before exposing it
+                    if (IsAnalysisValid() && GUILayout.Button(Styles.ExportButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                        Export();
+                }
+            }
+            EditorGUILayout.EndHorizontal();
             
-            if (m_DeveloperMode)
-                if (GUILayout.Button(Styles.ReloadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
-                    Reload();
-
             if (!IsAnalysisValid())
             {
-                EditorGUILayout.EndHorizontal();
-
                 EditorGUILayout.BeginVertical(GUI.skin.box);
          
                 GUIStyle helpStyle = new GUIStyle(EditorStyles.textField);
                 helpStyle.wordWrap = true;
 
                 EditorGUILayout.LabelField(Styles.HelpText, helpStyle);
-                EditorGUILayout.EndHorizontal();                
-            }
-            else
-            {
-                // Export button needs to be properly tested before exposing it
-                if (m_DeveloperMode)
-                    if (GUILayout.Button(Styles.ExportButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
-                        Export();
-
-                EditorGUILayout.EndHorizontal();
+    
+                EditorGUILayout.EndVertical();
             }
         }
         
