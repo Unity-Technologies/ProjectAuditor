@@ -5,7 +5,7 @@ Project Auditor is a static analysis tool for Unity Projects. Project Auditor an
 This project is still experimental and will likely change heavily in the future. So far this tool has only been tested with a few projects, therefore it might not work correctly depending on the version of Unity and the content of the project.
 
 ### Compatibility
-All versions of Unity should be compatible, however, check the Installation instructions for details regarding speficic branch required based on the version of Unity.
+All versions of Unity should be compatible, however, check the Installation instructions for more details.
 
 ### Disclaimer
 Although this project is developed by Unity employees, it is not officially supported by Unity and it is not on Unity's roadmap. Feedback and requests are more than welcome, please enter them as issues.
@@ -22,6 +22,9 @@ Add `com.unity.project-auditor` as a dependency to the project `Packages/manifes
   }
 }
 ```
+
+Alternatively it's possible to clone the repository, or decompress the pre-packaged zip, to the `Packages` folder of your project.
+
 ### Unity 2017 or older
 Clone this repository to your Unity project as follows:
 
