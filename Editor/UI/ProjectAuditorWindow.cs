@@ -139,7 +139,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         
         public bool ShouldDisplay(ProjectIssue issue)
         {
-            if (m_ActiveAssembly != AllAssembliesIndex && !m_AssemblyNames[m_ActiveAssembly].Equals(issue.assembly))
+            if (m_ActiveMode == IssueCategory.ApiCalls && m_ActiveAssembly != AllAssembliesIndex && !m_AssemblyNames[m_ActiveAssembly].Equals(issue.assembly))
             {
                 return false;
             }
