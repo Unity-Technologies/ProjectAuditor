@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    class ProjectAuditorWindow : EditorWindow//, IHasCustomMenu
+    class ProjectAuditorWindow : EditorWindow, IHasCustomMenu
     {       
         private ProjectAuditor m_ProjectAuditor;
         [SerializeField] private ProjectReport m_ProjectReport;
@@ -102,10 +102,7 @@ To reload the issue database definition, click on Reload DB. (Developer Mode onl
         
         private void OnEnable()
         {
-            if (m_ProjectAuditor == null)
-            {
-                m_ProjectAuditor = new ProjectAuditor();    
-            }
+            m_ProjectAuditor = new ProjectAuditor();    
 
             var assemblyNames = new List<string>(new []{"All Assemblies"});
             assemblyNames.AddRange(m_ProjectAuditor.GetAuditor<ScriptAuditor>().assemblyNames);
