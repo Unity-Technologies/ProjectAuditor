@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using UnityEditor.Macros;
 
@@ -28,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor
              m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors( path, "ProjectSettings");
         }
 
-        public void Audit(ProjectReport projectReport, ProjectAuditorConfig config)
+        public void Audit(ProjectReport projectReport)
         {
             var progressBar =
                 new ProgressBarDisplay("Analyzing Scripts", "Analyzing project settings", m_ProblemDescriptors.Count);
@@ -36,12 +35,12 @@ namespace Unity.ProjectAuditor.Editor
             foreach (var descriptor in m_ProblemDescriptors)
             {
                 progressBar.AdvanceProgressBar();
-                SearchAndEval(descriptor, projectReport, config);
+                SearchAndEval(descriptor, projectReport);
             }
             progressBar.ClearProgressBar();
         }
 
-        private void AddIssue(ProblemDescriptor descriptor, ProjectReport projectReport, ProjectAuditorConfig config)
+        private void AddIssue(ProblemDescriptor descriptor, ProjectReport projectReport)
         {
             projectReport.AddIssue(new ProjectIssue
             {
@@ -51,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor
             });
         }
         
-        void SearchAndEval(ProblemDescriptor descriptor, ProjectReport projectReport, ProjectAuditorConfig config)
+        private void SearchAndEval(ProblemDescriptor descriptor, ProjectReport projectReport)
         {
             if (string.IsNullOrEmpty(descriptor.customevaluator))
             {
@@ -65,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor
 
                         if (value.ToString() == descriptor.value)
                         {
-                            AddIssue(descriptor, projectReport, config);
+                            AddIssue(descriptor, projectReport);
                         
                             // stop iterating assemblies
                             break;
@@ -85,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor
 
                 if (isIssue)
                 {
-                    AddIssue(descriptor, projectReport, config);
+                    AddIssue(descriptor, projectReport);
                 }
             }
         }

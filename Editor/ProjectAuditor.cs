@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor
 
         private static string m_DataPath;
 
-        public static string dataPath
+        private static string dataPath
         {
             get
             {
@@ -60,8 +60,7 @@ namespace Unity.ProjectAuditor.Editor
                     if (!File.Exists(Path.GetFullPath(path)))
                     {
                         // if it's not a package, let's search through all assets
-                        string apiDatabasePath = AssetDatabase.GetAllAssetPaths()
-                            .Where(p => p.EndsWith("Data/ApiDatabase.json")).FirstOrDefault();
+                        string apiDatabasePath = AssetDatabase.GetAllAssetPaths().FirstOrDefault(p => p.EndsWith("Data/ApiDatabase.json"));
 
                         if (string.IsNullOrEmpty(apiDatabasePath))
                             throw new Exception("Could not find ApiDatabase.json");
@@ -101,11 +100,11 @@ namespace Unity.ProjectAuditor.Editor
             LoadDatabase();
         }
 
-        public void Audit(ProjectReport projectReport, ProjectAuditorConfig config = null)
+        public void Audit(ProjectReport projectReport)
         {
             foreach (var auditor in m_Auditors)
             {
-                auditor.Audit(projectReport, m_ProjectAuditorConfig);
+                auditor.Audit(projectReport);
             }
 
             EditorUtility.ClearProgressBar();

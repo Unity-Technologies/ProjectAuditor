@@ -4,7 +4,7 @@ using UnityEditor.IMGUI.Controls;
 
 namespace Unity.ProjectAuditor.Editor
 {
-	class CallHierarchyView : TreeView
+	internal class CallHierarchyView : TreeView
 	{
 		private CallTreeNode m_CallTree = null;
 		

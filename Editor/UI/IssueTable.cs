@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    class IssueTable : TreeView
+    internal class IssueTable : TreeView
     {
         internal class ItemTree
         {
@@ -135,9 +135,9 @@ namespace Unity.ProjectAuditor.Editor
             // This would involve implementing getNewSelectionOverride, GetAncestors() and GetDescendantsThatHaveChildren()
             // Which seems like a lot of extra complexity unless we're running into serious performance issues
             int index = 0;
-            int idForhiddenRoot = -1;
+            int idForHiddenRoot = -1;
             int depthForHiddenRoot = -1;
-            var root = new TreeViewItem(idForhiddenRoot, depthForHiddenRoot, "root");
+            var root = new TreeViewItem(idForHiddenRoot, depthForHiddenRoot, "root");
 
             if (m_GroupByDescription)
             {
@@ -329,15 +329,15 @@ namespace Unity.ProjectAuditor.Editor
 
         public int NumIssues(IssueCategory category)
         {
-            return m_Issues.Where(i => i.category == category).Count();
+            return m_Issues.Count(i => i.category == category);
         }
 
-        void OnSortingChanged(MultiColumnHeader _multiColumnHeader)
+        private void OnSortingChanged(MultiColumnHeader _multiColumnHeader)
         {
             SortIfNeeded(GetRows());
         }
 
-        void SortIfNeeded(IList<TreeViewItem> rows)
+        private void SortIfNeeded(IList<TreeViewItem> rows)
         {
             if (rows.Count <= 1)
             {
@@ -353,7 +353,7 @@ namespace Unity.ProjectAuditor.Editor
             Repaint();
         }
 
-        void SortByMultipleColumns(IList<TreeViewItem> rows)
+        private void SortByMultipleColumns(IList<TreeViewItem> rows)
         {
             int[] sortedColumns = multiColumnHeader.state.sortedColumns;
             if (sortedColumns.Length == 0)

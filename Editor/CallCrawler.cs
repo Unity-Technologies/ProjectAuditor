@@ -1,16 +1,15 @@
 using System.Collections.Generic;
-using System.Linq;
 using Mono.Cecil;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    class CallPair
+    internal class CallPair
     {
         public MethodReference callee;
         public MethodReference caller;
     }   
     
-    class CallCrawler
+    internal class CallCrawler
     {
         private Dictionary<string, CallPair> m_CallPairs = new Dictionary<string, CallPair>();
         private Dictionary<string, List<CallPair>> m_BucketedCallPairs = new Dictionary<string, List<CallPair>>();
@@ -59,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
         
-        public void BuildHierarchy(CallTreeNode callee, int depth)
+        private void BuildHierarchy(CallTreeNode callee, int depth)
         {
             if (depth++ == m_MaxDepth)
                 return;

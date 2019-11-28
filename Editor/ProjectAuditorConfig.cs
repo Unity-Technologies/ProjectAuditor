@@ -21,10 +21,10 @@ namespace Unity.ProjectAuditor.Editor
 
         public Rule GetRule(ProblemDescriptor descriptor, string filter = "")
         {
-            var rule = rules.Where(r => r.id == descriptor.id && r.filter.Equals(filter)).FirstOrDefault();
+            var rule = rules.FirstOrDefault(r => r.id == descriptor.id && r.filter.Equals(filter));
             if (rule != null)
                 return rule;
-            return rules.Where(r => r.id == descriptor.id && string.IsNullOrEmpty(r.filter)).FirstOrDefault();
+            return rules.FirstOrDefault(r => r.id == descriptor.id && string.IsNullOrEmpty(r.filter));
         }
         
         public Rule.Action GetAction(ProblemDescriptor descriptor, string filter = "")

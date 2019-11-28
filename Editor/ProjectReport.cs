@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor
         
         public int GetNumIssues(IssueCategory category)
         {
-            return m_Issues.Where(i => i.category == category).Count();  
+            return m_Issues.Count(i => i.category == category);  
         }
         
         public IEnumerable<ProjectIssue> GetIssues(IssueCategory category)

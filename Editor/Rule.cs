@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor
         
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as Rule);
+            return Equals(obj as Rule);
         }
         
         public bool Equals(Rule other)
