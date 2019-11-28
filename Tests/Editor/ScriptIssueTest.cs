@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
@@ -7,26 +8,26 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
 	class ScriptIssueTest {
 			
-		const string scriptPath = "Assets/ProjectAuditorTemp";
+		const string tempPath = "Assets/ProjectAuditor-Temp";
 		const string scriptName = "MyScript.cs";
 		
 		[SetUp]
 		public void SetUp()
 		{
-			Directory.CreateDirectory(scriptPath);
+			Directory.CreateDirectory(tempPath);
 
+			var relativePath = Path.Combine(tempPath, scriptName);
 			var className = Path.GetFileNameWithoutExtension(scriptName);
-			File.WriteAllText(Path.Combine(scriptPath, scriptName), string.Format("using UnityEngine; class {0} : MonoBehaviour {{ void Start() {{ Debug.Log(Camera.main.name); }} }}", className));
+			File.WriteAllText(relativePath, string.Format("using UnityEngine; class {0} : MonoBehaviour {{ void Start() {{ Debug.Log(Camera.main.name); }} }}", className));
 			
-			AssetDatabase.Refresh();
+			AssetDatabase.ImportAsset(relativePath, ImportAssetOptions.ForceUpdate);
 		}
 
-//		[TearDown]
-//		public void TearDown()
-//		{
-//			Directory.Delete(Path.Combine(scriptPath, scriptName));
-//			Directory.Delete(scriptPath);
-//		}
+		[TearDown]
+		public void TearDown()
+		{
+			Directory.Delete(tempPath, true);
+		}
 
 		[Test]
 		public void AnalysisTestPasses()
@@ -37,9 +38,30 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			projectAuditor.Audit(projectReport);
 			var issues = projectReport.GetIssues(IssueCategory.ApiCalls);
 
-			var myIssue = issues.FirstOrDefault(i => i.filename.Equals(Path.Combine(scriptPath, scriptName)));
+			Assert.NotNull(issues);
+			
+			Assert.Positive(issues.Count());
+
+			issues = issues.Where(i => i.relativePath.Equals(Path.Combine(tempPath, scriptName)));
+			
+			Assert.AreEqual(1, issues.Count());
+			
+			var myIssue = issues.FirstOrDefault();
 			
 			Assert.NotNull(myIssue);
+			Assert.NotNull(myIssue.descriptor);
+			
+			Assert.AreEqual(Rule.Action.Default, myIssue.descriptor.action);
+			Assert.AreEqual(101000, myIssue.descriptor.id);
+			Assert.True(myIssue.descriptor.type.Equals("UnityEngine.Camera"));
+			Assert.True(myIssue.descriptor.method.Equals("main"));
+			
+			Assert.True(myIssue.name.Equals("Camera.get_main"));
+			Assert.True(myIssue.filename.Equals(scriptName));
+			Assert.True(myIssue.description.Equals("UnityEngine.Camera.main"));
+			Assert.True(myIssue.callingMethod.Equals("System.Void MyScript::Start()"));
+			Assert.AreEqual(1, myIssue.line);
+			Assert.AreEqual(IssueCategory.ApiCalls, myIssue.category);
 		}
 	}	
 }
