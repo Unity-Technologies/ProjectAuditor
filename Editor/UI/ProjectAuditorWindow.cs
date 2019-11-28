@@ -92,10 +92,7 @@ To Analyze the project:
 
 Once the project is analyzed, the tool displays list of issues.
 At the moment there are two types of issues: API calls or Project Settings. The tool allows the user to switch between the two.
-In addition, it is possible to filter issues by area (CPU/Memory/etc...).
-
-To generate a report, click on the Export button.
-To reload the issue database definition, click on Reload DB. (Developer Mode only)";
+In addition, it is possible to filter issues by area (CPU/Memory/etc...) or assembly name or search for a specific string.";
         }
 
         public static readonly string NoIssueSelectedText = "No issue selected";      
