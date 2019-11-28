@@ -4,7 +4,7 @@ using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class ProjectAuditorTest {
+	class SettingIssueTest {
 		
 		[Test]
 		public void AnalysisTestPasses()
