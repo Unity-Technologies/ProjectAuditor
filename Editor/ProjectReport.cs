@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor
                     writer.WriteLine(issue.descriptor.area + "," +
                                      issue.descriptor.type + "," +
                                      issue.descriptor.method + "," +
-                                     issue.callingMethodName + "," +
+                                     issue.name + "," +
                                      issue.descriptor.problem.Replace(",", "") + "," +
                                      issue.descriptor.solution.Replace(",", "") + "," +
                                      issue.relativePath + "," +

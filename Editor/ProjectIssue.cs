@@ -25,7 +25,6 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectIssue
     {
         public ProblemDescriptor descriptor;
-        public string description;
 		public CallTreeNode callTree;
         public IssueCategory category;
         public string url;
@@ -33,6 +32,11 @@ namespace Unity.ProjectAuditor.Editor
         public int column;
         public string assembly;
 
+        public string description
+        {
+            get { return descriptor.description; }
+        }
+        
         public string filename
         {
             get
@@ -79,14 +83,21 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
         
-        public string callingMethodName
+        public string name
         {
             get
             {
-                if (string.IsNullOrEmpty(callingMethod))
+                if (callTree == null)
                     return string.Empty;
-                
-                return callTree.GetChild().prettyName;
+                if (callTree.prettyName.Equals(descriptor.description))
+                {
+                    // if name matches the descriptor's name, use caller's name instead
+                    return string.IsNullOrEmpty(callingMethod) ? string.Empty : callTree.GetChild().prettyName;
+                }
+                else
+                {
+                    return callTree.prettyName;
+                }
             }
         }
     }

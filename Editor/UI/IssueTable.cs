@@ -169,7 +169,7 @@ namespace Unity.ProjectAuditor.Editor
                     {
                         if (m_ProjectAuditorWindow.ShouldDisplay(issue))
                         {
-                            var item = new IssueTableItem(index++, 1, issue.callingMethodName, issue.descriptor, issue);
+                            var item = new IssueTableItem(index++, 1, issue.name, issue.descriptor, issue);
                             groupItem.AddChild(item);
                         }
                     }
@@ -257,12 +257,12 @@ namespace Unity.ProjectAuditor.Editor
                         if (m_GroupByDescription)
                         {
                             EditorGUI.LabelField(cellRect,
-                                new GUIContent(issue.callingMethodName, issue.callingMethod));
+                                new GUIContent(issue.name, issue.callingMethod));
                         }
                         else
                         {
                             string tooltip = descriptor.problem + " \n\n" + descriptor.solution;
-                            EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
+                            EditorGUI.LabelField(cellRect, new GUIContent(descriptor.description, tooltip));
                         }
 
                         break;

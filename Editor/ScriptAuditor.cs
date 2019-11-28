@@ -161,7 +161,6 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 
                 ProblemDescriptor descriptor = null;
-                var description = (descriptor != null) ? descriptor.description : string.Empty;
                 CallTreeNode callTree = null;
                 if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
                 {
@@ -179,12 +178,6 @@ namespace Unity.ProjectAuditor.Editor
                         descriptor = m_ProblemDescriptors.SingleOrDefault(c =>
                             c.type == callee.DeclaringType.Namespace && c.method == "*");
                     }
-                    
-                    if (description.Contains(".*"))
-                    {
-                        description = callee.DeclaringType.FullName + "::" + callee.Name;
-                    }
-
                     // replace root with callee node
                     callTree = new CallTreeNode(callee, new CallTreeNode(caller));
                 }
@@ -201,25 +194,19 @@ namespace Unity.ProjectAuditor.Editor
 
                 if (descriptor != null)
                 {
-                    // do not add the same type of issue again (for example multiple Linq instructions) 
-                    if (methodIssues.FirstOrDefault(i =>
-                        i.column == s.StartColumn) == null)
+                    var projectIssue = new ProjectIssue
                     {
-                        var projectIssue = new ProjectIssue
-                        {
-                            description = description,
-                            category = IssueCategory.ApiCalls,
-                            descriptor = descriptor,
-                            callTree = callTree,
-                            url = s.Document.Url.Replace("\\", "/"),
-                            line = s.StartLine,
-                            column = s.StartColumn,
-                            assembly = a.Name.Name
-                        };
+                        category = IssueCategory.ApiCalls,
+                        descriptor = descriptor,
+                        callTree = callTree,
+                        url = s.Document.Url.Replace("\\", "/"),
+                        line = s.StartLine,
+                        column = s.StartColumn,
+                        assembly = a.Name.Name
+                    };
 
-                        projectReport.AddIssue(projectIssue);
-                        methodIssues.Add(projectIssue);   
-                    }
+                    projectReport.AddIssue(projectIssue);
+                    methodIssues.Add(projectIssue);   
                 }
             }
         }

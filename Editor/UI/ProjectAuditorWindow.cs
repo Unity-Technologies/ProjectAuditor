@@ -163,7 +163,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             {
                 if (!MatchesSearch(issue.description) &&
                     !MatchesSearch(issue.filename) &&
-                    !MatchesSearch(issue.callingMethodName))
+                    !MatchesSearch(issue.name))
                 {
                     return false;
                 }
