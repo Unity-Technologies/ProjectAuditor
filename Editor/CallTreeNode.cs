@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Mono.Cecil;
-using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -85,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor
         
         public CallTreeNode GetChild(int index = 0)
         {
-            return children[0];
+            return children[index];
         }
     }
 }

@@ -72,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor
                 foreach (var call in callPairs)
                 {
                     // ignore recursive calls
-                    if (!call.caller.Equals(callee.name))
+                    if (!call.caller.FullName.Equals(callee.name))
                     {
                         var callerInstance = new CallTreeNode(call.caller);
                         BuildHierarchy(callerInstance, depth);
