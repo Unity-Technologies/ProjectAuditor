@@ -41,9 +41,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                if (string.IsNullOrEmpty(url))
-                    return String.Empty;
-                return Path.GetFileName(url);
+                return string.IsNullOrEmpty(url) ? string.Empty : Path.GetFileName(url);
             }
         }
 
@@ -52,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor
             get
             {
                 if (string.IsNullOrEmpty(url))
-                    return String.Empty;
+                    return string.Empty;
 
                 string path = url;
                 if (path.Contains("BuiltInPackages"))

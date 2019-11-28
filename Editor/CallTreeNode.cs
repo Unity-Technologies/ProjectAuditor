@@ -27,8 +27,8 @@ namespace Unity.ProjectAuditor.Editor
         {
             name = _name;
 
-            typeName = String.Empty;
-            methodName = String.Empty;
+            typeName = string.Empty;
+            methodName = string.Empty;
 
             if (caller != null)
                 children.Add(caller); 
