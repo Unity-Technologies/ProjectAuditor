@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor
         
         public int GetNumIssues(IssueCategory category)
         {
-            return m_Issues.Where(i => i.category == category).Count();  
+            return m_Issues.Count(i => i.category == category);  
         }
         
         public IEnumerable<ProjectIssue> GetIssues(IssueCategory category)
@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor
                     writer.WriteLine(issue.descriptor.area + "," +
                                      issue.descriptor.type + "," +
                                      issue.descriptor.method + "," +
-                                     issue.callingMethodName + "," +
+                                     issue.name + "," +
                                      issue.descriptor.problem.Replace(",", "") + "," +
                                      issue.descriptor.solution.Replace(",", "") + "," +
                                      issue.relativePath + "," +

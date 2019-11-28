@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    class ProjectAuditorWindow : EditorWindow, IHasCustomMenu
+    internal class ProjectAuditorWindow : EditorWindow, IHasCustomMenu
     {       
         private ProjectAuditor m_ProjectAuditor;
         [SerializeField] private ProjectReport m_ProjectReport;
@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor
         
         private string[] m_AssemblyNames;
 
-        enum AssemblyIndex
+        private enum AssemblyIndex
         {
             None = -1,
             All = 0
@@ -135,7 +135,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             menu.AddItem(Styles.UserMode, !m_DeveloperMode, OnToggleDeveloperMode);
         }
 
-        bool IsAnalysisValid()
+        private bool IsAnalysisValid()
         {
             return m_ValidReport;
         }
@@ -163,7 +163,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             {
                 if (!MatchesSearch(issue.description) &&
                     !MatchesSearch(issue.filename) &&
-                    !MatchesSearch(issue.callingMethodName))
+                    !MatchesSearch(issue.name))
                 {
                     return false;
                 }
@@ -189,7 +189,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             RefreshDisplay();
         }
 
-        IssueTable CreateIssueTable(IssueCategory issueCategory, TreeViewState state)
+        private IssueTable CreateIssueTable(IssueCategory issueCategory, TreeViewState state)
         {
             var columnsList = new List<MultiColumnHeaderState.Column>();
             var numColumns = (int) IssueTable.Column.Count;
@@ -315,7 +315,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             var selectedIssues = selectedItems.Select(i => i.m_ProjectIssue);
             // find out if all descriptors are the same
             var firstDescriptor = selectedDescriptors.FirstOrDefault();
-            if (selectedDescriptors.Count() == selectedDescriptors.Where(d => d.id == firstDescriptor.id).Count())
+            if (selectedDescriptors.Count() == selectedDescriptors.Count(d => d.id == firstDescriptor.id))
             {
                 problemDescriptor = firstDescriptor;    
             }
@@ -415,7 +415,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             EditorGUILayout.EndVertical();
         }
         
-        void DrawFilters()
+        private void DrawFilters()
         {
             if (!IsAnalysisValid())
                 return;
@@ -511,7 +511,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             else
             {
                 callingMethod = item.m_ProjectIssue.callingMethod;
-                rule = m_ProjectAuditor.config.rules.Where(r => r.id == descriptor.id && r.filter.Equals(callingMethod)).FirstOrDefault();
+                rule = m_ProjectAuditor.config.rules.FirstOrDefault(r => r.id == descriptor.id && r.filter.Equals(callingMethod));
             }
 
             if (rule == null)

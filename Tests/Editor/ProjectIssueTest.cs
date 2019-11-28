@@ -12,7 +12,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			Assert.AreEqual(string.Empty, uninitialised.filename);
 			Assert.AreEqual(string.Empty, uninitialised.relativePath);
 			Assert.AreEqual(string.Empty, uninitialised.callingMethod);
-			Assert.AreEqual(string.Empty, uninitialised.callingMethodName);
+			Assert.AreEqual(string.Empty, uninitialised.name);
 		}
 	}	
 }

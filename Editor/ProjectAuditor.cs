@@ -50,18 +50,17 @@ namespace Unity.ProjectAuditor.Editor
 
         private static string m_DataPath;
 
-        public static string dataPath
+        private static string dataPath
         {
             get
             {
                 if (string.IsNullOrEmpty(m_DataPath))
                 {
-                    var path = "Packages/com.unity.project-auditor/Data";
+                    const string path = "Packages/com.unity.project-auditor/Data";
                     if (!File.Exists(Path.GetFullPath(path)))
                     {
                         // if it's not a package, let's search through all assets
-                        string apiDatabasePath = AssetDatabase.GetAllAssetPaths()
-                            .Where(p => p.EndsWith("Data/ApiDatabase.json")).FirstOrDefault();
+                        string apiDatabasePath = AssetDatabase.GetAllAssetPaths().FirstOrDefault(p => p.EndsWith("Data/ApiDatabase.json"));
 
                         if (string.IsNullOrEmpty(apiDatabasePath))
                             throw new Exception("Could not find ApiDatabase.json");
@@ -80,8 +79,8 @@ namespace Unity.ProjectAuditor.Editor
       
         public ProjectAuditor()
         {
-            var path = "Assets/Editor"; 
-            var assetFilename = "ProjectAuditorConfig.asset";
+            const string path = "Assets/Editor"; 
+            const string assetFilename = "ProjectAuditorConfig.asset";
             var assetPath = Path.Combine(path, assetFilename);
             m_ProjectAuditorConfig = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
             if (m_ProjectAuditorConfig == null)
@@ -101,11 +100,11 @@ namespace Unity.ProjectAuditor.Editor
             LoadDatabase();
         }
 
-        public void Audit(ProjectReport projectReport, ProjectAuditorConfig config = null)
+        public void Audit(ProjectReport projectReport)
         {
             foreach (var auditor in m_Auditors)
             {
-                auditor.Audit(projectReport, m_ProjectAuditorConfig);
+                auditor.Audit(projectReport);
             }
 
             EditorUtility.ClearProgressBar();

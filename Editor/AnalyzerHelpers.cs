@@ -6,7 +6,7 @@ using UnityEditor.Rendering;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    class AnalyzerHelpers
+    internal class AnalyzerHelpers
     {
         // Edit this to reflect the target platforms for your project
         // TODO - Provide an interface for this, or something

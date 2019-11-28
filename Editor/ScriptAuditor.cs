@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using UnityEditor;
@@ -15,7 +13,7 @@ using UnityEditor.Build.Player;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    internal class MonoCecilHelper
+    internal static class MonoCecilHelper
     {
         public static IEnumerable<TypeDefinition> AggregateAllTypeDefinitions(IEnumerable<TypeDefinition> types)
         {
@@ -32,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ScriptAuditor : IAuditor
     {
         private List<ProblemDescriptor> m_ProblemDescriptors;
-        private ProblemDescriptor[] m_ProblemsDefinedByOpCopde;
+        private ProblemDescriptor[] m_ProblemsDefinedByOpCode;
         
         private UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
 
@@ -70,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor
             return "Scripts";
         }
 
-        public void Audit( ProjectReport projectReport, ProjectAuditorConfig config)
+        public void Audit( ProjectReport projectReport)
         {
             var assemblies = GetPlayerAssemblies();
             if (assemblies.Count > 0)
@@ -91,7 +89,7 @@ namespace Unity.ProjectAuditor.Editor
                         continue;
                     }
                     
-                    AnalyzeAssembly(assemblyPath, projectReport, config, callCrawler);
+                    AnalyzeAssembly(assemblyPath, projectReport, callCrawler);
                 }
                 progressBar.ClearProgressBar();
 
@@ -126,7 +124,7 @@ namespace Unity.ProjectAuditor.Editor
             return assemblies;
         }
 
-        private void AnalyzeAssembly(string assemblyPath, ProjectReport projectReport, ProjectAuditorConfig config, CallCrawler callCrawler)
+        private void AnalyzeAssembly(string assemblyPath, ProjectReport projectReport, CallCrawler callCrawler)
         {
             using (var a = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters() {ReadSymbols = true}))
             {
@@ -135,17 +133,17 @@ namespace Unity.ProjectAuditor.Editor
                     if (!m.HasBody)
                         continue;
 
-                    AnalyzeMethodBody(projectReport, config, a, m, callCrawler);
+                    AnalyzeMethodBody(projectReport, a, m, callCrawler);
                 }     
             }
         }
 
-        private void AnalyzeMethodBody(ProjectReport projectReport, ProjectAuditorConfig config, AssemblyDefinition a, MethodDefinition caller, CallCrawler callCrawler)
+        private void AnalyzeMethodBody(ProjectReport projectReport, AssemblyDefinition a, MethodDefinition caller, CallCrawler callCrawler)
         {
             if (!caller.DebugInformation.HasSequencePoints)
                 return;
             
-            List<ProjectIssue> methodBobyIssues = new List<ProjectIssue>();
+            List<ProjectIssue> methodIssues = new List<ProjectIssue>();
 
             foreach (var inst in caller.Body.Instructions.Where(i =>
                 (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt || i.OpCode == OpCodes.Box)))
@@ -163,7 +161,6 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 
                 ProblemDescriptor descriptor = null;
-                var description = (descriptor != null) ? descriptor.description : string.Empty;
                 CallTreeNode callTree = null;
                 if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
                 {
@@ -181,19 +178,13 @@ namespace Unity.ProjectAuditor.Editor
                         descriptor = m_ProblemDescriptors.SingleOrDefault(c =>
                             c.type == callee.DeclaringType.Namespace && c.method == "*");
                     }
-                    
-                    if (description.Contains(".*"))
-                    {
-                        description = callee.DeclaringType.FullName + "::" + callee.Name;
-                    }
-
                     // replace root with callee node
                     callTree = new CallTreeNode(callee, new CallTreeNode(caller));
                 }
                 else
                 {
                     string opcode = inst.OpCode.Code.ToString();
-                    descriptor = m_ProblemsDefinedByOpCopde.SingleOrDefault(p => p.opcode.Equals(opcode));
+                    descriptor = m_ProblemsDefinedByOpCode.SingleOrDefault(p => p.opcode.Equals(opcode));
                     if (descriptor == null)
                     {
                         continue;
@@ -203,25 +194,19 @@ namespace Unity.ProjectAuditor.Editor
 
                 if (descriptor != null)
                 {
-                    // do not add the same type of issue again (for example multiple Linq instructions) 
-                    if (methodBobyIssues.FirstOrDefault(i =>
-                        i.column == s.StartColumn) == null)
+                    var projectIssue = new ProjectIssue
                     {
-                        var projectIssue = new ProjectIssue
-                        {
-                            description = description,
-                            category = IssueCategory.ApiCalls,
-                            descriptor = descriptor,
-                            callTree = callTree,
-                            url = s.Document.Url.Replace("\\", "/"),
-                            line = s.StartLine,
-                            column = s.StartColumn,
-                            assembly = a.Name.Name
-                        };
+                        category = IssueCategory.ApiCalls,
+                        descriptor = descriptor,
+                        callTree = callTree,
+                        url = s.Document.Url.Replace("\\", "/"),
+                        line = s.StartLine,
+                        column = s.StartColumn,
+                        assembly = a.Name.Name
+                    };
 
-                        projectReport.AddIssue(projectIssue);
-                        methodBobyIssues.Add(projectIssue);   
-                    }
+                    projectReport.AddIssue(projectIssue);
+                    methodIssues.Add(projectIssue);   
                 }
             }
         }
@@ -239,10 +224,10 @@ namespace Unity.ProjectAuditor.Editor
                 method = string.Empty,
                 area = "Memory",
                 problem = "Boxing happens where a value type, such as an integer, is converted into an object of reference type. This causes an allocation on the heap, which might increase the size of the managed heap and the frequency of Garbage Collection.",
-                solution = "Try to avoid Boxing when possible.",
+                solution = "Try to avoid Boxing when possible."
             });
 
-            m_ProblemsDefinedByOpCopde = descriptors.ToArray();
+            m_ProblemsDefinedByOpCode = descriptors.ToArray();
             m_ProblemDescriptors.Where(p => !string.IsNullOrEmpty(p.opcode)).ToArray();                        
         }        
     }

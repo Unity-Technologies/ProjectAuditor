@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Mono.Cecil;
-using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -28,8 +27,8 @@ namespace Unity.ProjectAuditor.Editor
         {
             name = _name;
 
-            typeName = String.Empty;
-            methodName = String.Empty;
+            typeName = string.Empty;
+            methodName = string.Empty;
 
             if (caller != null)
                 children.Add(caller); 
@@ -85,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor
         
         public CallTreeNode GetChild(int index = 0)
         {
-            return children[0];
+            return children[index];
         }
     }
 }
