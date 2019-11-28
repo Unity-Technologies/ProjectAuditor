@@ -4,7 +4,7 @@ using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class ProjectAuditorTest {
+	class SettingIssueTest {
 		
 		[Test]
 		public void AnalysisTestPasses()
@@ -16,7 +16,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			projectAuditor.Audit(projectReport);
 			var issues = projectReport.GetIssues(IssueCategory.ProjectSettings);
 
-			Assert.AreNotEqual(null, issues.FirstOrDefault(i => i.descriptor.method.Equals("fixedDeltaTime")));
+			Assert.NotNull(issues.FirstOrDefault(i => i.descriptor.method.Equals("fixedDeltaTime")));
 			
 			UnityEngine.Time.fixedDeltaTime = 0.021f;
 			
@@ -24,7 +24,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			projectAuditor.Audit(projectReport);
 			issues = projectReport.GetIssues(IssueCategory.ProjectSettings);
 			
-			Assert.AreEqual(null, issues.FirstOrDefault(i => i.descriptor.method.Equals("fixedDeltaTime")));
+			Assert.NotNull(issues.FirstOrDefault(i => i.descriptor.method.Equals("fixedDeltaTime")));
 		}
 	}	
 }
