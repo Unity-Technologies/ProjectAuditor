@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent WindowTitle = new GUIContent("Project Auditor");
             public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
-            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to json file.");
+            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to .csv files.");
 
             public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore selected issues.");
             public static readonly GUIContent UnmuteButton = new GUIContent("Unmute", "Always show selected issues.");
@@ -278,7 +278,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         private void Export()
         {
             if (IsAnalysisValid())
-                m_ProjectReport.WriteToFile();
+                m_ProjectReport.Export();
         }
 
         private void DrawIssues()

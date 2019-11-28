@@ -35,14 +35,30 @@ namespace Unity.ProjectAuditor.Editor
             m_Issues.Add(projectIssue);
         }
         
-        //TODO: change to export csv
-        public void WriteToFile()
+        public void Export()
         {
-            for(int i=0; i<(int)IssueCategory.NumCategories; i++)
+            for (int i = 0; i < (int) IssueCategory.NumCategories; i++)
             {
                 var category = (IssueCategory) i;
-                var json = JsonHelper.ToJson<ProjectIssue>(GetIssues(category).ToArray(), true);
-                File.WriteAllText("Report_" + category.ToString() + ".json", json);
+                var issues = GetIssues(category).ToArray();
+
+                StreamWriter writer = new StreamWriter("ProjectAuditor_Report_" + category.ToString() + ".csv");
+                writer.WriteLine("Area,Type,Method,CallingMethod,Problem,Recommendation,Path,Line");
+
+                foreach (var issue in issues)
+                {
+                    writer.WriteLine(issue.descriptor.area + "," +
+                                     issue.descriptor.type + "," +
+                                     issue.descriptor.method + "," +
+                                     issue.callingMethodName + "," +
+                                     issue.descriptor.problem.Replace(",", "") + "," +
+                                     issue.descriptor.solution.Replace(",", "") + "," +
+                                     issue.relativePath + "," +
+                                     issue.line);
+                }
+
+                writer.Flush();
+                writer.Close();
             }
         }
     }
