@@ -24,7 +24,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			projectAuditor.Audit(projectReport);
 			issues = projectReport.GetIssues(IssueCategory.ProjectSettings);
 			
-			Assert.NotNull(issues.FirstOrDefault(i => i.descriptor.method.Equals("fixedDeltaTime")));
+			Assert.Null(issues.FirstOrDefault(i => i.descriptor.method.Equals("fixedDeltaTime")));
 		}
 	}	
 }

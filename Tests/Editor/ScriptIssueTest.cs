@@ -3,22 +3,29 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
 	class ScriptIssueTest {
 			
-		const string tempPath = "Assets/ProjectAuditor-Temp";
+		const string tempFolder = "ProjectAuditor-Temp";
 		const string scriptName = "MyScript.cs";
+
+		private string relativePath
+		{
+			get { return Path.Combine("Assets", tempFolder, scriptName);  }
+		}
 		
 		[SetUp]
 		public void SetUp()
 		{
-			Directory.CreateDirectory(tempPath);
+			Directory.CreateDirectory(Path.GetDirectoryName(relativePath));
 
-			var relativePath = Path.Combine(tempPath, scriptName);
 			var className = Path.GetFileNameWithoutExtension(scriptName);
 			File.WriteAllText(relativePath, string.Format("using UnityEngine; class {0} : MonoBehaviour {{ void Start() {{ Debug.Log(Camera.main.name); }} }}", className));
+
+			Assert.True(File.Exists(relativePath));
 			
 			AssetDatabase.ImportAsset(relativePath, ImportAssetOptions.ForceUpdate);
 		}
@@ -26,7 +33,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		[TearDown]
 		public void TearDown()
 		{
-			Directory.Delete(tempPath, true);
+			AssetDatabase.DeleteAsset(relativePath);
+			Directory.Delete(Path.GetDirectoryName(relativePath), true);
 		}
 
 		[Test]
@@ -42,9 +50,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			
 			Assert.Positive(issues.Count());
 
-			issues = issues.Where(i => i.relativePath.Equals(Path.Combine(tempPath, scriptName)));
+			issues = issues.Where(i => i.relativePath.Equals(relativePath));
 			
-			Assert.AreEqual(1, issues.Count());
+			Assert.Positive(issues.Count());
 			
 			var myIssue = issues.FirstOrDefault();
 			
