@@ -189,6 +189,30 @@ namespace Unity.ProjectAuditor.Editor
                     {
                         continue;
                     }
+                    var type = (TypeReference) inst.Operand;
+                    if (type.IsGenericParameter)
+                    {
+                        bool isValueType = true; // assume it's value type
+                        var genericType = (GenericParameter) type;
+                        if (genericType.HasReferenceTypeConstraint)
+                        {
+                            isValueType = false;
+                        }
+                        else
+                        {
+                            foreach (var constraint in genericType.Constraints)
+                            {
+                                if (!constraint.IsValueType)
+                                    isValueType = false;
+                            }                            
+                        }
+
+                        if (!isValueType)
+                        {
+                            // boxing on ref types are no-ops, so not a problem
+                            continue;                                
+                        }
+                    }
                     callTree = new CallTreeNode(opcode, new CallTreeNode(caller));
                 }
 
