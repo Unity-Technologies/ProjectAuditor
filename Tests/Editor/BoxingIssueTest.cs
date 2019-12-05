@@ -7,12 +7,12 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class ScriptIssueTest : ScriptIssueTestBase {
+	class BoxingIssueTest : ScriptIssueTestBase{
 			
 		[SetUp]
 		public void SetUp()
 		{
-			CreateScript("using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.main.name); } }");
+			CreateScript("using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(\"The number of the beast is: \" + 666); } }");
 		}
 
 		[TearDown]
@@ -44,13 +44,13 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			Assert.NotNull(myIssue.descriptor);
 			
 			Assert.AreEqual(Rule.Action.Default, myIssue.descriptor.action);
-			Assert.AreEqual(101000, myIssue.descriptor.id);
-			Assert.True(myIssue.descriptor.type.Equals("UnityEngine.Camera"));
-			Assert.True(myIssue.descriptor.method.Equals("main"));
+			Assert.AreEqual(102000, myIssue.descriptor.id);
+			Assert.True(string.IsNullOrEmpty(myIssue.descriptor.type));
+			Assert.True(string.IsNullOrEmpty(myIssue.descriptor.method));
 			
-			Assert.True(myIssue.name.Equals("Camera.get_main"));
+			Assert.True(myIssue.name.Equals("MyClass.Start"));
 			Assert.True(myIssue.filename.Equals(m_ScriptName));
-			Assert.True(myIssue.description.Equals("UnityEngine.Camera.main"));
+			Assert.True(myIssue.description.Equals("Box"));
 			Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Start()"));
 			Assert.AreEqual(1, myIssue.line);
 			Assert.AreEqual(IssueCategory.ApiCalls, myIssue.category);
