@@ -9,10 +9,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
     {
         static public IEnumerable<ProjectIssue> AnalyzeAndFindScriptIssues(string relativePath)
         {
-            var projectReport = new ProjectReport();
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-
-            projectAuditor.Audit(projectReport);
+            var projectReport = projectAuditor.Audit();
             return ScriptAuditor.FindScriptIssues(projectReport, relativePath);
         }
     }
