@@ -13,11 +13,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
             projectAuditor.Audit(projectReport);
-            var issues = projectReport.GetIssues(IssueCategory.ApiCalls);
-
-            Assert.NotNull(issues);
-			
-            return issues.Where(i => i.relativePath.Equals(relativePath));
-        }            
+            return ScriptAuditor.FindScriptIssues(projectReport, relativePath);
+        }
     }
 }

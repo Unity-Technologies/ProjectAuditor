@@ -240,6 +240,12 @@ namespace Unity.ProjectAuditor.Editor
 
             m_ProblemsDefinedByOpCode = descriptors.ToArray();
             m_ProblemDescriptors.Where(p => !string.IsNullOrEmpty(p.opcode)).ToArray();                        
-        }        
+        }
+        
+        public static IEnumerable<ProjectIssue> FindScriptIssues(ProjectReport projectReport, string relativePath)
+        {
+            return projectReport.GetIssues(IssueCategory.ApiCalls).Where(i => i.relativePath.Equals(relativePath));
+        }
+
     }
 }
