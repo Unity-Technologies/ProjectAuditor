@@ -228,6 +228,11 @@ namespace Unity.ProjectAuditor.Editor
             var areaLongDescription = "This issue might have an impact on " + descriptor.area;
 
             var rule = m_ProjectAuditor.config.GetRule(descriptor, (issue != null) ? issue.callingMethod : string.Empty);
+            if (rule == null && issue != null)
+            {
+                // try to find non-specific rule
+                rule = m_ProjectAuditor.config.GetRule(descriptor);
+            }
             if (rule != null && rule.action == Rule.Action.None)
             {
                 GUI.enabled = false;

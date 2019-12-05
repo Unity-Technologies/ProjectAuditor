@@ -12,24 +12,29 @@ namespace Unity.ProjectAuditor.Editor
         public bool displayMutedIssues = false;
         private List<Rule> m_Rules = new List<Rule>();
 
-        public void AddRule(Rule rule)
+        public void AddRule(Rule ruleToAdd)
         {
-            if (string.IsNullOrEmpty(rule.filter))
-                rule.filter = string.Empty;
-            m_Rules.Add(rule);
+            if (string.IsNullOrEmpty(ruleToAdd.filter))
+            {
+                ruleToAdd.filter = string.Empty; // make sure it's empty, as opposed to null
+
+                var rules = m_Rules.Where(r => r.id == ruleToAdd.id).ToArray();
+                foreach (var ruleToDelete in rules)
+                {
+                    m_Rules.Remove(ruleToDelete); 
+                }                
+            }
+            m_Rules.Add(ruleToAdd);
         }
 
         public Rule GetRule(ProblemDescriptor descriptor, string filter = "")
         {
-            var rule = m_Rules.FirstOrDefault(r => r.id == descriptor.id && r.filter.Equals(filter));
-            if (rule != null)
-                return rule;
-            return m_Rules.FirstOrDefault(r => r.id == descriptor.id && string.IsNullOrEmpty(r.filter));
+            return m_Rules.FirstOrDefault(r => r.id == descriptor.id && r.filter.Equals(filter));
         }
 
         public void ClearRules(ProblemDescriptor descriptor, string filter = "")
         {
-            var rules = m_Rules.Where(r => r.id == descriptor.id && r.filter.Equals(filter));
+            var rules = m_Rules.Where(r => r.id == descriptor.id && r.filter.Equals(filter)).ToArray();
             
             foreach (var rule in rules)
             {
