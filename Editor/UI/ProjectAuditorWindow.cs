@@ -178,9 +178,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
 
         private void Analyze()
         {
-            m_ProjectReport = new ProjectReport();
-
-            m_ProjectAuditor.Audit(m_ProjectReport);
+            m_ProjectReport = m_ProjectAuditor.Audit();
 
             m_ValidReport = true;
             

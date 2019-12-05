@@ -68,6 +68,11 @@ namespace Unity.ProjectAuditor.Editor
             return "Scripts";
         }
 
+        public IEnumerable<ProblemDescriptor> GetDescriptors()
+        {
+            return m_ProblemDescriptors;
+        }
+        
         public void Audit( ProjectReport projectReport)
         {
             var assemblies = GetPlayerAssemblies();

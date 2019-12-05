@@ -40,10 +40,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		[Test]
 		public void AnalysisTestPasses()
 		{
-			var projectReport = new ProjectReport();
 			var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
-			projectAuditor.Audit(projectReport);
+			var projectReport = projectAuditor.Audit();
 			var issues = projectReport.GetIssues(IssueCategory.ApiCalls);
 
 			Assert.NotNull(issues);
