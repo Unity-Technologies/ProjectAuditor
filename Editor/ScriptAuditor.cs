@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Packages.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
@@ -13,20 +14,6 @@ using UnityEditor.Build.Player;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    internal static class MonoCecilHelper
-    {
-        public static IEnumerable<TypeDefinition> AggregateAllTypeDefinitions(IEnumerable<TypeDefinition> types)
-        {
-            var typeDefs = types.ToList();
-            foreach (var typeDefinition in types)
-            {
-                if (typeDefinition.HasNestedTypes)
-                    typeDefs.AddRange(AggregateAllTypeDefinitions(typeDefinition.NestedTypes));
-            }
-            return typeDefs;
-        }
-    }
-
     public class ScriptAuditor : IAuditor
     {
         private List<ProblemDescriptor> m_ProblemDescriptors;
