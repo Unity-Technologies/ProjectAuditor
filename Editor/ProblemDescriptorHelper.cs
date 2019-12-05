@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
-using Packages.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor
 {

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Packages.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
