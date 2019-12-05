@@ -21,6 +21,11 @@ namespace Unity.ProjectAuditor.Editor
         {
             return "Settings";
         }
+
+        public IEnumerable<ProblemDescriptor> GetDescriptors()
+        {
+            return m_ProblemDescriptors;
+        }
         
         public void LoadDatabase(string path)
         {

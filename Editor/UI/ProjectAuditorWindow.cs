@@ -178,9 +178,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
 
         private void Analyze()
         {
-            m_ProjectReport = new ProjectReport();
-
-            m_ProjectAuditor.Audit(m_ProjectReport);
+            m_ProjectReport = m_ProjectAuditor.Audit();
 
             m_ValidReport = true;
             
@@ -511,7 +509,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             else
             {
                 callingMethod = item.m_ProjectIssue.callingMethod;
-                rule = m_ProjectAuditor.config.rules.FirstOrDefault(r => r.id == descriptor.id && r.filter.Equals(callingMethod));
+                rule = m_ProjectAuditor.config.GetRule(descriptor, callingMethod);
             }
 
             if (rule == null)
@@ -531,24 +529,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
 
         private void ClearRulesForItem(IssueTableItem item)
         {
-            var descriptor = item.problemDescriptor;
-
-            string callingMethod = "";
-            Rule[] rules;
-            if (item.hasChildren)
-            {
-                rules = m_ProjectAuditor.config.rules.Where(r => r.id == descriptor.id).ToArray();
-            }
-            else
-            {
-                callingMethod = item.m_ProjectIssue.callingMethod;
-                rules = m_ProjectAuditor.config.rules.Where(r => r.id == descriptor.id && r.filter.Equals(callingMethod)).ToArray();
-            }
-
-            foreach (var rule in rules)
-            {
-                m_ProjectAuditor.config.rules.Remove(rule);
-            }
+            m_ProjectAuditor.config.ClearRules(item.problemDescriptor, item.hasChildren ? string.Empty : item.m_ProjectIssue.callingMethod);
         }
         
         private void DrawToolbar()
