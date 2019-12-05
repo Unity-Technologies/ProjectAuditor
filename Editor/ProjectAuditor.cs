@@ -12,9 +12,9 @@ using UnityEditor.Build.Reporting;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class ProjectAuditor : IAuditor
+    public class ProjectAuditor
 #if UNITY_2018_1_OR_NEWER
-        , IPreprocessBuildWithReport
+        : IPreprocessBuildWithReport
 #endif
     {
         private List<IAuditor> m_Auditors = new List<IAuditor>();
@@ -72,11 +72,6 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        public string GetUIName()
-        {
-            return "Project Auditor";
-        }
-      
         public ProjectAuditor()
         {
             const string path = "Assets/Editor"; 
@@ -100,14 +95,17 @@ namespace Unity.ProjectAuditor.Editor
             LoadDatabase();
         }
 
-        public void Audit(ProjectReport projectReport)
+        public ProjectReport Audit()
         {
+            var projectReport = new ProjectReport(); 
             foreach (var auditor in m_Auditors)
             {
                 auditor.Audit(projectReport);
             }
 
             EditorUtility.ClearProgressBar();
+
+            return projectReport;
         }
 
         public T GetAuditor<T>() where T: class
@@ -141,8 +139,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             if (m_ProjectAuditorConfig.enableAnalyzeOnBuild)
             {
-                var projectReport = new ProjectReport();
-                Audit(projectReport);
+                var projectReport = Audit();
 
                 var numIssues = projectReport.NumTotalIssues;
                 if (numIssues > 0)

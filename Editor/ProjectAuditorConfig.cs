@@ -10,22 +10,37 @@ namespace Unity.ProjectAuditor.Editor
         public bool enableAnalyzeOnBuild = false;
         public bool enableFailBuildOnIssues = false;
         public bool displayMutedIssues = false;
-        public List<Rule> rules = new List<Rule>();
+        private List<Rule> m_Rules = new List<Rule>();
 
-        public void AddRule(Rule rule)
+        public void AddRule(Rule ruleToAdd)
         {
-            if (string.IsNullOrEmpty(rule.filter))
-                rule.filter = string.Empty;
-            rules.Add(rule);
+            if (string.IsNullOrEmpty(ruleToAdd.filter))
+            {
+                ruleToAdd.filter = string.Empty; // make sure it's empty, as opposed to null
+
+                var rules = m_Rules.Where(r => r.id == ruleToAdd.id).ToArray();
+                foreach (var ruleToDelete in rules)
+                {
+                    m_Rules.Remove(ruleToDelete); 
+                }                
+            }
+            m_Rules.Add(ruleToAdd);
         }
 
         public Rule GetRule(ProblemDescriptor descriptor, string filter = "")
         {
-            var rule = rules.FirstOrDefault(r => r.id == descriptor.id && r.filter.Equals(filter));
-            if (rule != null)
-                return rule;
-            return rules.FirstOrDefault(r => r.id == descriptor.id && string.IsNullOrEmpty(r.filter));
+            return m_Rules.FirstOrDefault(r => r.id == descriptor.id && r.filter.Equals(filter));
         }
+
+        public void ClearRules(ProblemDescriptor descriptor, string filter = "")
+        {
+            var rules = m_Rules.Where(r => r.id == descriptor.id && r.filter.Equals(filter)).ToArray();
+            
+            foreach (var rule in rules)
+            {
+                m_Rules.Remove(rule);
+            }   
+        }        
         
         public Rule.Action GetAction(ProblemDescriptor descriptor, string filter = "")
         {
