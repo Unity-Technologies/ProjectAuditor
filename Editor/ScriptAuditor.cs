@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
@@ -13,20 +14,6 @@ using UnityEditor.Build.Player;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    internal static class MonoCecilHelper
-    {
-        public static IEnumerable<TypeDefinition> AggregateAllTypeDefinitions(IEnumerable<TypeDefinition> types)
-        {
-            var typeDefs = types.ToList();
-            foreach (var typeDefinition in types)
-            {
-                if (typeDefinition.HasNestedTypes)
-                    typeDefs.AddRange(AggregateAllTypeDefinitions(typeDefinition.NestedTypes));
-            }
-            return typeDefs;
-        }
-    }
-
     public class ScriptAuditor : IAuditor
     {
         private List<ProblemDescriptor> m_ProblemDescriptors;
@@ -194,6 +181,30 @@ namespace Unity.ProjectAuditor.Editor
                     {
                         continue;
                     }
+                    var type = (TypeReference) inst.Operand;
+                    if (type.IsGenericParameter)
+                    {
+                        bool isValueType = true; // assume it's value type
+                        var genericType = (GenericParameter) type;
+                        if (genericType.HasReferenceTypeConstraint)
+                        {
+                            isValueType = false;
+                        }
+                        else
+                        {
+                            foreach (var constraint in genericType.Constraints)
+                            {
+                                if (!constraint.IsValueType)
+                                    isValueType = false;
+                            }                            
+                        }
+
+                        if (!isValueType)
+                        {
+                            // boxing on ref types are no-ops, so not a problem
+                            continue;                                
+                        }
+                    }
                     callTree = new CallTreeNode(opcode, new CallTreeNode(caller));
                 }
 
@@ -234,6 +245,12 @@ namespace Unity.ProjectAuditor.Editor
 
             m_ProblemsDefinedByOpCode = descriptors.ToArray();
             m_ProblemDescriptors.Where(p => !string.IsNullOrEmpty(p.opcode)).ToArray();                        
-        }        
+        }
+        
+        public static IEnumerable<ProjectIssue> FindScriptIssues(ProjectReport projectReport, string relativePath)
+        {
+            return projectReport.GetIssues(IssueCategory.ApiCalls).Where(i => i.relativePath.Equals(relativePath));
+        }
+
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.Utils
 {
     public static class JsonHelper
     {
