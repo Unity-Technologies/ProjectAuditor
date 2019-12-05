@@ -7,37 +7,29 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class ScriptIssueTest : ScriptIssueTestBase {
-			
+	class ScriptIssueTest {
+
+		private ScriptResource m_ScriptResource;
+		
 		[SetUp]
 		public void SetUp()
 		{
-			CreateScript("using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.main.name); } }");
+			 m_ScriptResource = new ScriptResource("MyClass.cs", "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.main.name); } }");
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			DeleteScript();
+			m_ScriptResource.Delete();
 		}
 
 		[Test]
 		public void AnalysisTestPasses()
 		{
-			var projectReport = new ProjectReport();
-			var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-
-			projectAuditor.Audit(projectReport);
-			var issues = projectReport.GetIssues(IssueCategory.ApiCalls);
-
-			Assert.NotNull(issues);
+			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResource.relativePath);
 			
-			Assert.Positive(issues.Count());
+			Assert.AreEqual(1, issues.Count());
 
-			issues = issues.Where(i => i.relativePath.Equals(relativePath));
-			
-			Assert.Positive(issues.Count());
-			
 			var myIssue = issues.FirstOrDefault();
 			
 			Assert.NotNull(myIssue);
@@ -49,7 +41,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			Assert.True(myIssue.descriptor.method.Equals("main"));
 			
 			Assert.True(myIssue.name.Equals("Camera.get_main"));
-			Assert.True(myIssue.filename.Equals(m_ScriptName));
+			Assert.True(myIssue.filename.Equals(m_ScriptResource.scriptName));
 			Assert.True(myIssue.description.Equals("UnityEngine.Camera.main"));
 			Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Start()"));
 			Assert.AreEqual(1, myIssue.line);

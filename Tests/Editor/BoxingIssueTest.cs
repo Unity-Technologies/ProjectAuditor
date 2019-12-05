@@ -7,36 +7,28 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class BoxingIssueTest : ScriptIssueTestBase{
-			
+	class BoxingIssueTest {
+
+		private ScriptResource m_ScriptResource;
+
 		[SetUp]
 		public void SetUp()
 		{
-			CreateScript("using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(\"The number of the beast is: \" + 666); } }");
+			m_ScriptResource = new ScriptResource("MyClass.cs", "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(\"The number of the beast is: \" + 666); } }");
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			DeleteScript();
+			m_ScriptResource.Delete();
 		}
 
 		[Test]
 		public void AnalysisTestPasses()
 		{
-			var projectReport = new ProjectReport();
-			var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-
-			projectAuditor.Audit(projectReport);
-			var issues = projectReport.GetIssues(IssueCategory.ApiCalls);
-
-			Assert.NotNull(issues);
+			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResource.relativePath);
 			
-			Assert.Positive(issues.Count());
-
-			issues = issues.Where(i => i.relativePath.Equals(relativePath));
-			
-			Assert.Positive(issues.Count());
+			Assert.AreEqual(1, issues.Count());
 			
 			var myIssue = issues.FirstOrDefault();
 			
@@ -49,7 +41,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			Assert.True(string.IsNullOrEmpty(myIssue.descriptor.method));
 			
 			Assert.True(myIssue.name.Equals("MyClass.Start"));
-			Assert.True(myIssue.filename.Equals(m_ScriptName));
+			Assert.True(myIssue.filename.Equals(m_ScriptResource.scriptName));
 			Assert.True(myIssue.description.Equals("Box"));
 			Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Start()"));
 			Assert.AreEqual(1, myIssue.line);

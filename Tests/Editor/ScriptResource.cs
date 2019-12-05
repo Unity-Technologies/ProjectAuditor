@@ -3,29 +3,34 @@ using NUnit.Framework;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public abstract class ScriptIssueTestBase
+    public class ScriptResource
     {
         const string TempFolder = "ProjectAuditor-Temp";
-        protected const string m_ScriptName = "MyScript.cs";
+        private string m_ScriptName;
 
-        protected string relativePath
+        public string relativePath
         {
             get { return Path.Combine("Assets", TempFolder, m_ScriptName);  }
         }
 
-        protected void CreateScript(string script)
+        public string scriptName
         {
+            get { return m_ScriptName;  }
+        }
+
+        public ScriptResource(string scriptName, string content)
+        {
+            m_ScriptName = scriptName;            
             Directory.CreateDirectory(Path.GetDirectoryName(relativePath));
 
-            var className = Path.GetFileNameWithoutExtension(m_ScriptName);
-            File.WriteAllText(relativePath, script);
+            File.WriteAllText(relativePath, content);
 
             Assert.True(File.Exists(relativePath));
 			
             AssetDatabase.ImportAsset(relativePath, ImportAssetOptions.ForceUpdate);
         }
 
-        protected void DeleteScript()
+        public void Delete()
         {
             AssetDatabase.DeleteAsset(relativePath);
             Directory.Delete(Path.GetDirectoryName(relativePath), true);            
