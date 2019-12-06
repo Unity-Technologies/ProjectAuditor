@@ -38,13 +38,20 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
+                if (location == null)
+                    return string.Empty;
                 return location.filename;
             }
         }
         
         public string relativePath
         {
-            get { return location.relativePath; }
+            get
+            {
+                if (location == null)
+                    return string.Empty;
+                return location.relativePath;
+            }
         }
 
         public int line
