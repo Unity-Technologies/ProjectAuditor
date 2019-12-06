@@ -151,14 +151,17 @@ namespace Unity.ProjectAuditor.Editor
                         break;
                     }
                 }
-                
+
                 ProblemDescriptor descriptor = null;
-                CallTreeNode callTree = null;
+                CallTreeNode calleeCallTreeNode = null;
+                CallTreeNode callerCallTreeNode = new CallTreeNode(caller);
+                Location location = callerCallTreeNode.location = new Location {path = s.Document.Url.Replace("\\", "/"), line = s.StartLine};
+
                 if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
                 {
                     var callee = ((MethodReference) inst.Operand);
 
-                    callCrawler.Add(caller, callee);
+                    callCrawler.Add(caller, callee, location);
 
                     descriptor = m_ProblemDescriptors.SingleOrDefault(c => c.type == callee.DeclaringType.FullName &&
                                                                            (c.method == callee.Name ||
@@ -171,7 +174,7 @@ namespace Unity.ProjectAuditor.Editor
                             c.type == callee.DeclaringType.Namespace && c.method == "*");
                     }
                     // replace root with callee node
-                    callTree = new CallTreeNode(callee, new CallTreeNode(caller));
+                    calleeCallTreeNode = new CallTreeNode(callee, callerCallTreeNode);
                 }
                 else
                 {
@@ -205,19 +208,17 @@ namespace Unity.ProjectAuditor.Editor
                             continue;                                
                         }
                     }
-                    callTree = new CallTreeNode(opcode, new CallTreeNode(caller));
+                    calleeCallTreeNode = new CallTreeNode(opcode, callerCallTreeNode);
                 }
-
+               
                 if (descriptor != null)
                 {
                     var projectIssue = new ProjectIssue
                     {
                         category = IssueCategory.ApiCalls,
                         descriptor = descriptor,
-                        callTree = callTree,
-                        url = s.Document.Url.Replace("\\", "/"),
-                        line = s.StartLine,
-                        column = s.StartColumn,
+                        callTree = calleeCallTreeNode,
+                        location = location,
                         assembly = a.Name.Name
                     };
 
@@ -251,6 +252,5 @@ namespace Unity.ProjectAuditor.Editor
         {
             return projectReport.GetIssues(IssueCategory.ApiCalls).Where(i => i.relativePath.Equals(relativePath));
         }
-
     }
 }

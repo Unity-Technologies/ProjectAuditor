@@ -1,6 +1,5 @@
 using System;
-using System.IO;
-using UnityEngine;
+using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -25,49 +24,34 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectIssue
     {
         public ProblemDescriptor descriptor;
-		public CallTreeNode callTree;
+        public CallTreeNode callTree;
         public IssueCategory category;
-        public string url;
-        public int line;
-        public int column;
+        public Location location;
         public string assembly;
 
         public string description
         {
             get { return descriptor.description; }
         }
-        
+
         public string filename
         {
             get
             {
-                return string.IsNullOrEmpty(url) ? string.Empty : Path.GetFileName(url);
+                return location.filename;
             }
         }
-
+        
         public string relativePath
         {
-            get
-            {
-                if (string.IsNullOrEmpty(url))
-                    return string.Empty;
-
-                string path = url;
-                if (path.Contains("BuiltInPackages"))
-                {
-                    path = path.Remove(0, path.IndexOf("BuiltInPackages") + "BuiltInPackages/".Length);                        
-                }
-                else
-                {
-                    var projectPathLength = Application.dataPath.Length - "Assets".Length;
-                    if (path.Length > projectPathLength)
-                        path = path.Remove(0, projectPathLength);                         
-                }
-
-                return path;
-            }
+            get { return location.relativePath; }
         }
 
+        public int line
+        {
+            get { return location.line;  }
+        }
+        
         public string callingMethod
         {
             get
@@ -80,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor
                 return callTree.GetChild().name;
             }
         }
-        
+
         public string name
         {
             get

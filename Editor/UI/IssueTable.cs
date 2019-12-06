@@ -305,19 +305,8 @@ namespace Unity.ProjectAuditor.Editor
             {
                 var issue = (item as IssueTableItem).m_ProjectIssue;
                 var path = issue.relativePath;
-                if (!string.IsNullOrEmpty(path))
-                {
-                    if ((path.StartsWith("Library/PackageCache") || path.StartsWith("Packages/") && path.Contains("@")))
-                    {
-                        // strip version from package path
-                        var version = path.Substring(path.IndexOf("@"));
-                        version = version.Substring(0, version.IndexOf("/"));
-                        path = path.Replace(version, "").Replace("Library/PackageCache", "Packages");
-                    }
-
-                    var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
-                    AssetDatabase.OpenAsset(obj, issue.line);
-                }
+                if (issue.location != null)
+                    issue.location.Open();
             }
         }
 
