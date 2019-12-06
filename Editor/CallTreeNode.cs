@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Mono.Cecil;
+using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -10,6 +11,7 @@ namespace Unity.ProjectAuditor.Editor
         public string name;
         public string typeName;
         public string methodName;
+        public Location location;
 
         public List<CallTreeNode> children = new List<CallTreeNode>();
 
