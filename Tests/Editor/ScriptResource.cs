@@ -6,21 +6,21 @@ namespace UnityEditor.ProjectAuditor.EditorTests
     public class ScriptResource
     {
         const string TempFolder = "ProjectAuditor-Temp";
-        private string m_ScriptName;
+        private string m_RelativePath;
 
         public string relativePath
         {
-            get { return Path.Combine("Assets", TempFolder, m_ScriptName);  }
+            get { return m_RelativePath;  }
         }
 
         public string scriptName
         {
-            get { return m_ScriptName;  }
+            get { return Path.GetFileName(m_RelativePath);  }
         }
 
         public ScriptResource(string scriptName, string content)
         {
-            m_ScriptName = scriptName;            
+            m_RelativePath = Path.Combine("Assets", TempFolder, scriptName).Replace("\\", "/");        
             Directory.CreateDirectory(Path.GetDirectoryName(relativePath));
 
             File.WriteAllText(relativePath, content);
