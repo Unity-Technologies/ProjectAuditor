@@ -7,7 +7,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public static class ScriptIssueTestHelper
     {
-        static public IEnumerable<ProjectIssue> AnalyzeAndFindScriptIssues(string relativePath)
+        public static IEnumerable<ProjectIssue> AnalyzeAndFindScriptIssues(string relativePath)
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit();
