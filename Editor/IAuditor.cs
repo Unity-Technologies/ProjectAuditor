@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor
         IEnumerable<ProblemDescriptor> GetDescriptors();
 
         void LoadDatabase(string path);
-
+        void RegisterDescriptor(ProblemDescriptor descriptor);
         void Audit( ProjectReport projectReport, IProgressBar progressBar = null);
     }
 }

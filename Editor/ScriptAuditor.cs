@@ -235,21 +235,33 @@ namespace Unity.ProjectAuditor.Editor
         public void LoadDatabase(string path)
         {
             m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors(path, "ApiDatabase");
-
-            var descriptors = new List<ProblemDescriptor>();
-            descriptors.Add(new ProblemDescriptor
+            
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assembly in assemblies)
             {
-                id = 102000,
-                opcode = OpCodes.Box.Code.ToString(),
-                type = string.Empty,
-                method = string.Empty,
-                area = "Memory",
-                problem = "Boxing happens where a value type, such as an integer, is converted into an object of reference type. This causes an allocation on the heap, which might increase the size of the managed heap and the frequency of Garbage Collection.",
-                solution = "Try to avoid Boxing when possible."
-            });
+                var problemDescriptorTypes = GetProblemDescriptorTypes(assembly);
 
-            m_ProblemsDefinedByOpCode = descriptors.ToArray();
-            m_ProblemDescriptors.Where(p => !string.IsNullOrEmpty(p.opcode)).ToArray();                        
+                foreach (var type in problemDescriptorTypes)
+                {
+                    Activator.CreateInstance(type, this);    
+                }
+            }
+
+            m_ProblemsDefinedByOpCode = m_ProblemDescriptors.Where(p => !string.IsNullOrEmpty(p.opcode)).ToArray();
+        }
+
+        static IEnumerable<Type> GetProblemDescriptorTypes(System.Reflection.Assembly assembly) {
+            foreach(Type type in assembly.GetTypes()) {
+                if (type.GetCustomAttributes(typeof(ScriptAnalyzerAttribute), true).Length > 0) {
+                    yield return type;
+                }
+            }
+        }
+        
+        public void RegisterDescriptor(ProblemDescriptor descriptor)
+        {
+            // TODO: check for id conflict
+            m_ProblemDescriptors.Add(descriptor);
         }
         
         public static IEnumerable<ProjectIssue> FindScriptIssues(ProjectReport projectReport, string relativePath)
