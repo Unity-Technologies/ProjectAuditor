@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Mono.Cecil;
+using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -7,6 +8,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         public MethodReference callee;
         public MethodReference caller;
+        public Location location;
     }   
     
     internal class CallCrawler
@@ -16,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor
 
         private const int m_MaxDepth = 10;
         
-        public void Add(MethodReference caller, MethodReference callee)
+        public void Add(MethodReference caller, MethodReference callee, Location location)
         {
             var key = string.Concat(caller, "->", callee);
             if (!m_CallPairs.ContainsKey(key))
@@ -24,14 +26,15 @@ namespace Unity.ProjectAuditor.Editor
                 var calledMethodPair = new CallPair
                 {
                     callee = callee,
-                    caller = caller
+                    caller = caller,
+                    location = location
                 };
                 
                 m_CallPairs.Add(key, calledMethodPair);
             }            
         }
         
-        public void BuildCallHierarchies(ProjectReport projectReport)
+        public void BuildCallHierarchies(ProjectReport projectReport, IProgressBar progressBar = null)
         {
             foreach (var entry in m_CallPairs)
             {
@@ -44,17 +47,19 @@ namespace Unity.ProjectAuditor.Editor
             if (numIssues > 0)
             {
                 var issues = projectReport.GetIssues(IssueCategory.ApiCalls);
-                var progressBar =
-                    new ProgressBarDisplay("Analyzing Scripts", "Analyzing call trees", numIssues);
+                if (progressBar != null)
+                    progressBar.Initialize("Analyzing Scripts", "Analyzing call trees", numIssues);
 
                 foreach (var issue in issues)
                 {
-                    progressBar.AdvanceProgressBar();
+                    if (progressBar != null)
+                        progressBar.AdvanceProgressBar();
 
                     int depth = 0;
                     BuildHierarchy(issue.callTree.GetChild(), depth);
                 }
-                progressBar.ClearProgressBar();                
+                if (progressBar != null)
+                    progressBar.ClearProgressBar();                
             }
         }
         
@@ -74,6 +79,8 @@ namespace Unity.ProjectAuditor.Editor
                     if (!call.caller.FullName.Equals(callee.name))
                     {
                         var callerInstance = new CallTreeNode(call.caller);
+                        callerInstance.location = call.location;
+
                         BuildHierarchy(callerInstance, depth);
                         callee.children.Add(callerInstance); 
                     }    
