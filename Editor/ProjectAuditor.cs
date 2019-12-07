@@ -94,16 +94,13 @@ namespace Unity.ProjectAuditor.Editor
 
             LoadDatabase();
         }
-
-        public ProjectReport Audit()
+        public ProjectReport Audit(IProgressBar progressBar = null)
         {
             var projectReport = new ProjectReport(); 
             foreach (var auditor in m_Auditors)
             {
-                auditor.Audit(projectReport);
+                auditor.Audit(projectReport, progressBar);
             }
-
-            EditorUtility.ClearProgressBar();
 
             return projectReport;
         }
