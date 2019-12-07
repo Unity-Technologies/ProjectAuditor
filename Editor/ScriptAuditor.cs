@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -60,20 +61,21 @@ namespace Unity.ProjectAuditor.Editor
             return m_ProblemDescriptors;
         }
         
-        public void Audit( ProjectReport projectReport)
+        public void Audit( ProjectReport projectReport, IProgressBar progressBar = null)
         {
             var assemblies = GetPlayerAssemblies();
             if (assemblies.Count > 0)
             {
                 var callCrawler = new CallCrawler();                
                 
-                var progressBar =
-                    new ProgressBarDisplay("Analyzing Scripts", "Analyzing project scripts", m_PlayerAssemblies.Length);
+                if (progressBar != null)
+                    progressBar.Initialize("Analyzing Scripts", "Analyzing project scripts", m_PlayerAssemblies.Length);
 
                 // Analyse all Player assemblies, including Package assemblies.
                 foreach (var assemblyPath in assemblies)
                 {
-                    progressBar.AdvanceProgressBar(string.Format("Analyzing {0} scripts", Path.GetFileName(assemblyPath)));
+                    if (progressBar != null)
+                        progressBar.AdvanceProgressBar(string.Format("Analyzing {0} scripts", Path.GetFileName(assemblyPath)));
 
                     if (!File.Exists(assemblyPath))
                     {
@@ -83,9 +85,11 @@ namespace Unity.ProjectAuditor.Editor
                     
                     AnalyzeAssembly(assemblyPath, projectReport, callCrawler);
                 }
-                progressBar.ClearProgressBar();
+                
+                if (progressBar != null)
+                    progressBar.ClearProgressBar();
 
-                callCrawler.BuildCallHierarchies(projectReport);
+                callCrawler.BuildCallHierarchies(projectReport, progressBar);
             }            
         }
         

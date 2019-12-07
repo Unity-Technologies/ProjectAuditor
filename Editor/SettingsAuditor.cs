@@ -32,17 +32,20 @@ namespace Unity.ProjectAuditor.Editor
              m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors( path, "ProjectSettings");
         }
 
-        public void Audit(ProjectReport projectReport)
+        public void Audit(ProjectReport projectReport, IProgressBar progressBar = null)
         {
-            var progressBar =
-                new ProgressBarDisplay("Analyzing Scripts", "Analyzing project settings", m_ProblemDescriptors.Count);
+            if (progressBar != null)
+                progressBar.Initialize("Analyzing Settings", "Analyzing project settings", m_ProblemDescriptors.Count);
 
             foreach (var descriptor in m_ProblemDescriptors)
             {
-                progressBar.AdvanceProgressBar();
+                if (progressBar != null)
+                    progressBar.AdvanceProgressBar();
+
                 SearchAndEval(descriptor, projectReport);
             }
-            progressBar.ClearProgressBar();
+            if (progressBar != null)
+                progressBar.ClearProgressBar();
         }
 
         private void AddIssue(ProblemDescriptor descriptor, ProjectReport projectReport)
