@@ -276,7 +276,13 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         private void Export()
         {
             if (IsAnalysisValid())
-                m_ProjectReport.Export();
+            {
+                string path = EditorUtility.SaveFilePanel("Save analysis CSV data", "", "project-auditor-report.csv", "csv");
+                if (path.Length != 0)
+                {
+                    m_ProjectReport.Export(path);
+                }
+            }    
         }
 
         private void DrawIssues()
@@ -539,14 +545,15 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 if (GUILayout.Button(Styles.AnalyzeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                     Analyze();
 
+                GUI.enabled = IsAnalysisValid();
+                if (GUILayout.Button(Styles.ExportButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                    Export();
+                GUI.enabled = true;
+
                 if (m_DeveloperMode)
                 {
                     if (GUILayout.Button(Styles.ReloadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                         Reload();                
-
-                    // Export button needs to be properly tested before exposing it
-                    if (IsAnalysisValid() && GUILayout.Button(Styles.ExportButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
-                        Export();
                 }
             }
             EditorGUILayout.EndHorizontal();

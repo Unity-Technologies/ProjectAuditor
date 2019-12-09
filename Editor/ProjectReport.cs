@@ -35,31 +35,28 @@ namespace Unity.ProjectAuditor.Editor
             m_Issues.Add(projectIssue);
         }
         
-        public void Export()
+        public void Export(string path)
         {
+            StreamWriter writer = new StreamWriter(path);
+            writer.WriteLine("Issue,Area,Details,Path,Line");
+
             for (int i = 0; i < (int) IssueCategory.NumCategories; i++)
             {
                 var category = (IssueCategory) i;
                 var issues = GetIssues(category).ToArray();
 
-                StreamWriter writer = new StreamWriter("ProjectAuditor_Report_" + category.ToString() + ".csv");
-                writer.WriteLine("Area,Type,Method,CallingMethod,Problem,Recommendation,Path,Line");
-
                 foreach (var issue in issues)
                 {
-                    writer.WriteLine(issue.descriptor.area + "," +
-                                     issue.descriptor.type + "," +
-                                     issue.descriptor.method + "," +
-                                     issue.name + "," +
-                                     issue.descriptor.problem.Replace(",", "") + "," +
-                                     issue.descriptor.solution.Replace(",", "") + "," +
-                                     issue.relativePath + "," +
-                                     issue.line);
+                    writer.WriteLine(
+                        issue.descriptor.description + "," +
+                        issue.descriptor.area + "," +
+                        issue.name + "," +
+                        issue.relativePath + "," +
+                        issue.line);
                 }
-
-                writer.Flush();
-                writer.Close();
             }
+            writer.Flush();
+            writer.Close();
         }
     }
 }
