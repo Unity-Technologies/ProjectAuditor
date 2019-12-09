@@ -181,6 +181,7 @@ namespace Unity.ProjectAuditor.Editor
 
                     // replace root with callee node
                     calleeCallTreeNode = new CallTreeNode(callee, callerCallTreeNode);
+                    description = calleeCallTreeNode.prettyName;
                 }
                 else
                 {
