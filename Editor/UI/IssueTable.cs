@@ -262,12 +262,12 @@ namespace Unity.ProjectAuditor.Editor
                         if (m_GroupByDescription)
                         {
                             EditorGUI.LabelField(cellRect,
-                                new GUIContent(issue.name, issue.callingMethod));
+                                new GUIContent(issue.description, issue.callingMethod));
                         }
                         else
                         {
                             string tooltip = descriptor.problem + " \n\n" + descriptor.solution;
-                            EditorGUI.LabelField(cellRect, new GUIContent(descriptor.description, tooltip));
+                            EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
                         }
 
                         break;

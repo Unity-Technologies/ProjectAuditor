@@ -42,7 +42,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			
 			Assert.True(myIssue.name.Equals("MyClass.Start"));
 			Assert.True(myIssue.filename.Equals(m_ScriptResource.scriptName));
-			Assert.True(myIssue.description.Equals("Box"));
+			Assert.True(myIssue.description.Equals("Conversion from value type 'Int32' to ref type"));
 			Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Start()"));
 			Assert.AreEqual(1, myIssue.line);
 			Assert.AreEqual(IssueCategory.ApiCalls, myIssue.category);
