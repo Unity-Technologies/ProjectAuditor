@@ -56,7 +56,12 @@ namespace Unity.ProjectAuditor.Editor
 
         public int line
         {
-            get { return location.line;  }
+            get
+            {
+                if (location == null)
+                    return 0;
+                return location.line;
+            }
         }
         
         public string callingMethod
