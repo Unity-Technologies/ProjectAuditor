@@ -62,10 +62,11 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 					problem = "",
 					solution = ""
 				}
-			});			
-			projectReport.Export();
-			Assert.True(File.Exists("ProjectAuditor_Report_" + IssueCategory.ApiCalls.ToString() + ".csv"));			
-			Assert.True(File.Exists("ProjectAuditor_Report_" + IssueCategory.ProjectSettings.ToString() + ".csv"));
+			});
+
+			const string path = "ProjectAuditor_Report.csv";
+			projectReport.Export(path);
+			Assert.True(File.Exists(path));
 		}
 	}	
 }
