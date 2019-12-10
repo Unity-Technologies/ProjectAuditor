@@ -1,12 +1,14 @@
 
+using System.Collections.Generic;
+using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 namespace Unity.ProjectAuditor.Editor
 {
     [ScriptAnalyzer]
-    public class BoxingAnalyzer
+    public class BoxingAnalyzer : IInstructionAnalyzer
     {
-        public static readonly ProblemDescriptor descriptor = new ProblemDescriptor
+        private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
         {
             id = 102000,
             opcode = OpCodes.Box.Code.ToString(),
@@ -17,9 +19,55 @@ namespace Unity.ProjectAuditor.Editor
             solution = "Try to avoid Boxing when possible."
         };
 
+        private OpCode[] m_OpCoCodes = new[] {OpCodes.Box};
+        
         public BoxingAnalyzer(ScriptAuditor auditor)
         {
             auditor.RegisterDescriptor(descriptor);
+        }
+        
+        public ProjectIssue Analyze(Instruction inst)
+        {
+            var type = (TypeReference) inst.Operand;
+            if (type.IsGenericParameter)
+            {
+                bool isValueType = true; // assume it's value type
+                var genericType = (GenericParameter) type;
+                if (genericType.HasReferenceTypeConstraint)
+                {
+                    isValueType = false;
+                }
+                else
+                {
+                    foreach (var constraint in genericType.Constraints)
+                    {
+                        if (!constraint.IsValueType)
+                            isValueType = false;
+                    }
+                }
+
+                if (!isValueType)
+                {
+                    // boxing on ref types are no-ops, so not a problem
+                    return null;
+                }
+            }
+
+            var description = string.Format("Conversion from value type '{0}' to ref type", type.Name);
+            var calleeNode = new CallTreeNode(inst.OpCode.Code.ToString());
+            
+            return new ProjectIssue
+            {
+                description = description,
+                category = IssueCategory.ApiCalls,
+                descriptor = descriptor,
+                callTree = calleeNode
+            };
+        }
+
+        public IEnumerable<OpCode> GetOpCodes()
+        {
+            return m_OpCoCodes;
         }
     }
 }
