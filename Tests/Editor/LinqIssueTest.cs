@@ -1,20 +1,17 @@
-﻿using System.Collections;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class BoxingIssueTest {
+	class LinqIssueTest {
 
 		private ScriptResource m_ScriptResource;
 
 		[SetUp]
 		public void SetUp()
 		{
-			m_ScriptResource = new ScriptResource("MyClass.cs", "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(\"The number of the beast is: \" + 666); } }");
+			m_ScriptResource = new ScriptResource("MyClass.cs", "using UnityEngine;using System.Linq;using System.Collections.Generic; struct Test{public int i;}class MyClass : MonoBehaviour { int Dummy() { var list = new List<Test>(); return list.Count(); } }");
 		}
 
 		[TearDown]
@@ -36,14 +33,14 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			Assert.NotNull(myIssue.descriptor);
 			
 			Assert.AreEqual(Rule.Action.Default, myIssue.descriptor.action);
-			Assert.AreEqual(102000, myIssue.descriptor.id);
-			Assert.True(string.IsNullOrEmpty(myIssue.descriptor.type));
-			Assert.True(string.IsNullOrEmpty(myIssue.descriptor.method));
+			Assert.AreEqual(101049, myIssue.descriptor.id);
+			Assert.True(myIssue.descriptor.type.Equals("System.Linq"));
+			Assert.True(myIssue.descriptor.method.Equals("*"));
 			
-			Assert.True(myIssue.name.Equals("MyClass.Start"));
+			Assert.True(myIssue.name.Equals("Enumerable.Count"));
 			Assert.True(myIssue.filename.Equals(m_ScriptResource.scriptName));
-			Assert.True(myIssue.description.Equals("Conversion from value type 'Int32' to ref type"));
-			Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Start()"));
+			Assert.True(myIssue.description.Equals("Enumerable.Count"));
+			Assert.True(myIssue.callingMethod.Equals("System.Int32 MyClass::Dummy()"));
 			Assert.AreEqual(1, myIssue.line);
 			Assert.AreEqual(IssueCategory.ApiCalls, myIssue.category);
 		}

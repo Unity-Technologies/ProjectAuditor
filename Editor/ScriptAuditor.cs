@@ -160,7 +160,8 @@ namespace Unity.ProjectAuditor.Editor
                 CallTreeNode calleeCallTreeNode = null;
                 CallTreeNode callerCallTreeNode = new CallTreeNode(caller);
                 Location location = callerCallTreeNode.location = new Location {path = s.Document.Url.Replace("\\", "/"), line = s.StartLine};
-
+                string description = String.Empty;
+                    
                 if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
                 {
                     var callee = ((MethodReference) inst.Operand);
@@ -177,8 +178,10 @@ namespace Unity.ProjectAuditor.Editor
                         descriptor = m_ProblemDescriptors.SingleOrDefault(c =>
                             c.type == callee.DeclaringType.Namespace && c.method == "*");
                     }
+
                     // replace root with callee node
                     calleeCallTreeNode = new CallTreeNode(callee, callerCallTreeNode);
+                    description = calleeCallTreeNode.prettyName;
                 }
                 else
                 {
@@ -212,13 +215,19 @@ namespace Unity.ProjectAuditor.Editor
                             continue;                                
                         }
                     }
+
+                    description = string.Format("Conversion from value type '{0}' to ref type", type.Name);
                     calleeCallTreeNode = new CallTreeNode(opcode, callerCallTreeNode);
                 }
                
                 if (descriptor != null)
                 {
+                    if (string.IsNullOrEmpty(description))
+                        description = descriptor.description;
+
                     var projectIssue = new ProjectIssue
                     {
+                        description = description,
                         category = IssueCategory.ApiCalls,
                         descriptor = descriptor,
                         callTree = calleeCallTreeNode,

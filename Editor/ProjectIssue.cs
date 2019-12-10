@@ -29,10 +29,7 @@ namespace Unity.ProjectAuditor.Editor
         public Location location;
         public string assembly;
 
-        public string description
-        {
-            get { return descriptor.description; }
-        }
+        public string description;
 
         public string filename
         {

@@ -53,10 +53,11 @@ namespace Unity.ProjectAuditor.Editor
                 progressBar.ClearProgressBar();
         }
 
-        private void AddIssue(ProblemDescriptor descriptor, ProjectReport projectReport)
+        private void AddIssue(ProblemDescriptor descriptor, string description, ProjectReport projectReport)
         {
             projectReport.AddIssue(new ProjectIssue
             {
+                description = description,
                 category = IssueCategory.ProjectSettings,
                 descriptor = descriptor
             });
@@ -76,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor
 
                         if (value.ToString() == descriptor.value)
                         {
-                            AddIssue(descriptor, projectReport);
+                            AddIssue(descriptor, string.Format("{0}: {1}", descriptor.description, value), projectReport);
                         
                             // stop iterating assemblies
                             break;
@@ -96,7 +97,7 @@ namespace Unity.ProjectAuditor.Editor
 
                 if (isIssue)
                 {
-                    AddIssue(descriptor, projectReport);
+                    AddIssue(descriptor, descriptor.description, projectReport);
                 }
             }
         }
