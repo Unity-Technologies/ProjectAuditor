@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor
     public class CallAnalyzer : IInstructionAnalyzer
     {
         private IEnumerable<ProblemDescriptor> m_Descriptors;
-        private OpCode[] m_OpCoCodes = new[] {OpCodes.Call, OpCodes.Callvirt};
+        private OpCode[] m_OpCodes = new[] {OpCodes.Call, OpCodes.Callvirt};
 
         public CallAnalyzer(ScriptAuditor auditor)
         {
@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public IEnumerable<OpCode> GetOpCodes()
         {
-            return m_OpCoCodes;
+            return m_OpCodes;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         private List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
         private List<ProblemDescriptor> m_ProblemDescriptors;
-        private List<OpCode> m_OpCoCodes = new List<OpCode>();
+        private List<OpCode> m_OpCodes = new List<OpCode>();
         
         private UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
 
@@ -142,7 +142,7 @@ namespace Unity.ProjectAuditor.Editor
             
             CallTreeNode callerNode = new CallTreeNode(caller);
 
-            foreach (var inst in caller.Body.Instructions.Where(i => m_OpCoCodes.Contains(i.OpCode)))
+            foreach (var inst in caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode)))
             {
                 //var msg = string.Empty;
                 SequencePoint s = null;
@@ -210,7 +210,7 @@ namespace Unity.ProjectAuditor.Editor
         void AddAnalyzer(IInstructionAnalyzer analyzer)
         {
             m_InstructionAnalyzers.Add(analyzer);
-            m_OpCoCodes.AddRange(analyzer.GetOpCodes());
+            m_OpCodes.AddRange(analyzer.GetOpCodes());
         }
         
         public void RegisterDescriptor(ProblemDescriptor descriptor)

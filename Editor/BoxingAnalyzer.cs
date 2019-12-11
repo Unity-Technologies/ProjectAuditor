@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor
             solution = "Try to avoid Boxing when possible."
         };
 
-        private OpCode[] m_OpCoCodes = new[] {OpCodes.Box};
+        private OpCode[] m_OpCodes = new[] {OpCodes.Box};
         
         public BoxingAnalyzer(ScriptAuditor auditor)
         {
@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public IEnumerable<OpCode> GetOpCodes()
         {
-            return m_OpCoCodes;
+            return m_OpCodes;
         }
     }
 }
