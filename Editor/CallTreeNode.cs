@@ -83,7 +83,12 @@ namespace Unity.ProjectAuditor.Editor
         {
             return children != null && children.Count > 0;
         }
-        
+
+        public void AddChild(CallTreeNode child)
+        {
+            children.Add(child);
+        }
+
         public CallTreeNode GetChild(int index = 0)
         {
             return children[index];

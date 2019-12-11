@@ -17,8 +17,9 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class ScriptAuditor : IAuditor
     {
+        private List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
         private List<ProblemDescriptor> m_ProblemDescriptors;
-        private ProblemDescriptor[] m_ProblemsDefinedByOpCode;
+        private List<OpCode> m_OpCodes = new List<OpCode>();
         
         private UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
 
@@ -139,10 +140,9 @@ namespace Unity.ProjectAuditor.Editor
             if (!caller.DebugInformation.HasSequencePoints)
                 return;
             
-            List<ProjectIssue> methodIssues = new List<ProjectIssue>();
+            CallTreeNode callerNode = new CallTreeNode(caller);
 
-            foreach (var inst in caller.Body.Instructions.Where(i =>
-                (i.OpCode == OpCodes.Call || i.OpCode == OpCodes.Callvirt || i.OpCode == OpCodes.Box)))
+            foreach (var inst in caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode)))
             {
                 //var msg = string.Empty;
                 SequencePoint s = null;
@@ -156,88 +156,30 @@ namespace Unity.ProjectAuditor.Editor
                     }
                 }
 
-                ProblemDescriptor descriptor = null;
-                CallTreeNode calleeCallTreeNode = null;
-                CallTreeNode callerCallTreeNode = new CallTreeNode(caller);
-                Location location = callerCallTreeNode.location = new Location {path = s.Document.Url.Replace("\\", "/"), line = s.StartLine};
+                Location location = callerNode.location = new Location
+                    {path = s.Document.Url.Replace("\\", "/"), line = s.StartLine};
                 string description = String.Empty;
                     
                 if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
                 {
-                    var callee = ((MethodReference) inst.Operand);
-
-                    callCrawler.Add(caller, callee, location);
-
-                    descriptor = m_ProblemDescriptors.SingleOrDefault(c => c.type == callee.DeclaringType.FullName &&
-                                                                           (c.method == callee.Name ||
-                                                                            ("get_" + c.method) == callee.Name));
-
-                    if (descriptor == null)
-                    {
-                        // Are we trying to warn about a whole namespace?
-                        descriptor = m_ProblemDescriptors.SingleOrDefault(c =>
-                            c.type == callee.DeclaringType.Namespace && c.method == "*");
-                    }
-
-                    // replace root with callee node
-                    calleeCallTreeNode = new CallTreeNode(callee, callerCallTreeNode);
-                    description = calleeCallTreeNode.prettyName;
+                    callCrawler.Add(caller, (MethodReference) inst.Operand, location);
                 }
-                else
+
+                foreach (var analyzer in m_InstructionAnalyzers)
                 {
-                    string opcode = inst.OpCode.Code.ToString();
-                    descriptor = m_ProblemsDefinedByOpCode.SingleOrDefault(p => p.opcode.Equals(opcode));
-                    if (descriptor == null)
+                    if (analyzer.GetOpCodes().Contains(inst.OpCode))
                     {
-                        continue;
+                        var projectIssue = analyzer.Analyze(inst);
+                        if (projectIssue != null)
+                        {
+                            projectIssue.callTree.AddChild(callerNode);
+                            projectIssue.location = location;
+                            projectIssue.assembly = a.Name.Name;
+
+                            projectReport.AddIssue(projectIssue);
+                        }                        
                     }
-                    var type = (TypeReference) inst.Operand;
-                    if (type.IsGenericParameter)
-                    {
-                        bool isValueType = true; // assume it's value type
-                        var genericType = (GenericParameter) type;
-                        if (genericType.HasReferenceTypeConstraint)
-                        {
-                            isValueType = false;
-                        }
-                        else
-                        {
-                            foreach (var constraint in genericType.Constraints)
-                            {
-                                if (!constraint.IsValueType)
-                                    isValueType = false;
-                            }                            
-                        }
-
-                        if (!isValueType)
-                        {
-                            // boxing on ref types are no-ops, so not a problem
-                            continue;                                
-                        }
-                    }
-
-                    description = string.Format("Conversion from value type '{0}' to ref type", type.Name);
-                    calleeCallTreeNode = new CallTreeNode(opcode, callerCallTreeNode);
-                }
-               
-                if (descriptor != null)
-                {
-                    if (string.IsNullOrEmpty(description))
-                        description = descriptor.description;
-
-                    var projectIssue = new ProjectIssue
-                    {
-                        description = description,
-                        category = IssueCategory.ApiCalls,
-                        descriptor = descriptor,
-                        callTree = calleeCallTreeNode,
-                        location = location,
-                        assembly = a.Name.Name
-                    };
-
-                    projectReport.AddIssue(projectIssue);
-                    methodIssues.Add(projectIssue);   
-                }
+                }               
             }
         }
 
@@ -252,11 +194,9 @@ namespace Unity.ProjectAuditor.Editor
 
                 foreach (var type in problemDescriptorTypes)
                 {
-                    Activator.CreateInstance(type, this);    
+                    AddAnalyzer(Activator.CreateInstance(type, this) as IInstructionAnalyzer);
                 }
             }
-
-            m_ProblemsDefinedByOpCode = m_ProblemDescriptors.Where(p => !string.IsNullOrEmpty(p.opcode)).ToArray();
         }
 
         static IEnumerable<Type> GetProblemDescriptorTypes(System.Reflection.Assembly assembly) {
@@ -265,6 +205,12 @@ namespace Unity.ProjectAuditor.Editor
                     yield return type;
                 }
             }
+        }
+
+        void AddAnalyzer(IInstructionAnalyzer analyzer)
+        {
+            m_InstructionAnalyzers.Add(analyzer);
+            m_OpCodes.AddRange(analyzer.GetOpCodes());
         }
         
         public void RegisterDescriptor(ProblemDescriptor descriptor)
