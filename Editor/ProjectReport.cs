@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor
         public void Export(string path)
         {
             StreamWriter writer = new StreamWriter(path);
-            writer.WriteLine("Issue,Area,Details,Path,Line");
+            writer.WriteLine("Issue,Area,Path,Line");
 
             for (int i = 0; i < (int) IssueCategory.NumCategories; i++)
             {
@@ -48,10 +48,9 @@ namespace Unity.ProjectAuditor.Editor
                 foreach (var issue in issues)
                 {
                     writer.WriteLine(
-                        issue.descriptor.description + "," +
+                        issue.description + "," +
                         issue.descriptor.area + "," +
-                        issue.name + "," +
-                        issue.relativePath + "," +
+                            issue.relativePath + "," +
                         issue.line);
                 }
             }

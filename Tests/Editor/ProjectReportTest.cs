@@ -67,6 +67,14 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			const string path = "ProjectAuditor_Report.csv";
 			projectReport.Export(path);
 			Assert.True(File.Exists(path));
+			
+			string line;
+			System.IO.StreamReader file = new System.IO.StreamReader(path);
+
+			line = file.ReadLine();
+			Assert.True(line.Equals("Issue,Area,Path,Line"));
+  
+			file.Close();  
 		}
 	}	
 }
