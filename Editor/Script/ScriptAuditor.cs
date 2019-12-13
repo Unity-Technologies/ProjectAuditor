@@ -8,7 +8,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
-
+using Assembly = System.Reflection.Assembly;
 #if UNITY_2018_1_OR_NEWER
 using UnityEditor.Build.Player;
 #endif
@@ -190,7 +190,7 @@ namespace Unity.ProjectAuditor.Editor
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies)
             {
-                var problemDescriptorTypes = GetProblemDescriptorTypes(assembly);
+                var problemDescriptorTypes = GetAnalyzerTypes(assembly);
 
                 foreach (var type in problemDescriptorTypes)
                 {
@@ -199,7 +199,8 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        static IEnumerable<Type> GetProblemDescriptorTypes(System.Reflection.Assembly assembly) {
+        public IEnumerable<Type> GetAnalyzerTypes(Assembly assembly)
+        {
             foreach(Type type in assembly.GetTypes()) {
                 if (type.GetCustomAttributes(typeof(ScriptAnalyzerAttribute), true).Length > 0) {
                     yield return type;

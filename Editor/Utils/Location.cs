@@ -42,6 +42,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
         }
 
+        public bool IsValid()
+        {
+            return !string.IsNullOrEmpty(path);
+        }
+        
         public void Open()
         {
             var path = relativePath;

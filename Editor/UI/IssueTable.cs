@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -304,9 +306,16 @@ namespace Unity.ProjectAuditor.Editor
             if (item != null && !item.hasChildren)
             {
                 var issue = (item as IssueTableItem).m_ProjectIssue;
-                var path = issue.relativePath;
-                if (issue.location != null)
-                    issue.location.Open();
+                if (issue.location != null && issue.location.IsValid())
+                {
+                    if (File.Exists(issue.location.path))
+                        issue.location.Open();
+                    else
+                    {
+                        var window = SettingsService.OpenProjectSettings(issue.location.path);
+                        window.Repaint();                        
+                    }
+                }
             }
         }
 

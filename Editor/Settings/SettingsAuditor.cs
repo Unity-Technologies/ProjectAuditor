@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.Macros;
 
 namespace Unity.ProjectAuditor.Editor
@@ -8,13 +10,24 @@ namespace Unity.ProjectAuditor.Editor
     public class SettingsAuditor : IAuditor
     {
         private System.Reflection.Assembly[] m_Assemblies;
+        
         private List<ProblemDescriptor> m_ProblemDescriptors;
-        private AnalyzerHelpers m_Helpers;
-
+        private AnalyzerHelpers m_Helpers = new AnalyzerHelpers();
+        private List<KeyValuePair<string, string>> m_ProjectSettingsMapping = new List<KeyValuePair<string, string>>();
+        
         public SettingsAuditor()
         {
             m_Assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            m_Helpers = new AnalyzerHelpers();
+            
+            // UnityEditor
+            m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEditor.PlayerSettings", "Project/Player"));
+            m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEditor.Rendering.EditorGraphicsSettings", "Project/Graphics"));
+
+            // UnityEngine
+            m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.Physics", "Project/Physics"));
+            m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.Physics2D", "Project/Physics2D"));
+            m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.Time", "Project/Time"));
+            m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.QualitySettings", "Project/QualitySettings"));
         }
 
         public string GetUIName()
@@ -30,6 +43,12 @@ namespace Unity.ProjectAuditor.Editor
         public void LoadDatabase(string path)
         {
              m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors( path, "ProjectSettings");
+        }
+
+        public IEnumerable<Type> GetAnalyzerTypes(System.Reflection.Assembly assembly)
+        {
+            // TODO
+            yield return null;
         }
 
         public void RegisterDescriptor(ProblemDescriptor descriptor)
@@ -55,11 +74,16 @@ namespace Unity.ProjectAuditor.Editor
 
         private void AddIssue(ProblemDescriptor descriptor, string description, ProjectReport projectReport)
         {
+            string projectWindowPath = "";
+            var mappings = m_ProjectSettingsMapping.Where(p => p.Key.Contains(descriptor.type));
+            if (mappings.Count() > 0)
+                projectWindowPath = mappings.First().Value;
             projectReport.AddIssue(new ProjectIssue
             {
                 description = description,
                 category = IssueCategory.ProjectSettings,
-                descriptor = descriptor
+                descriptor = descriptor,
+                location = new Location {path = projectWindowPath}
             });
         }
         
