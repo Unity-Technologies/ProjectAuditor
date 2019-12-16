@@ -8,8 +8,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		[Test]
 		public void UninitializedProblemDescriptorTestPasses()
 		{
+			// not much value in this test yet
 			var uninitialised = new ProblemDescriptor();
-			Assert.AreEqual(string.Empty, uninitialised.description);
+			Assert.Null(uninitialised.description);
 		}
 	}	
 }

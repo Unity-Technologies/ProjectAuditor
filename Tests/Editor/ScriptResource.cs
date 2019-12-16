@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using NUnit.Framework;
 
@@ -20,8 +21,11 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
         public ScriptResource(string scriptName, string content)
         {
-            m_RelativePath = Path.Combine("Assets", TempFolder, scriptName).Replace("\\", "/");        
-            Directory.CreateDirectory(Path.GetDirectoryName(relativePath));
+            m_RelativePath = Path.Combine("Assets", TempFolder, scriptName).Replace("\\", "/");
+            if (!File.Exists(relativePath))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(relativePath));   
+            }
 
             File.WriteAllText(relativePath, content);
 
@@ -33,7 +37,14 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         public void Delete()
         {
             AssetDatabase.DeleteAsset(relativePath);
-            Directory.Delete(Path.GetDirectoryName(relativePath), true);            
+            try
+            {
+                Directory.Delete(Path.GetDirectoryName(relativePath));
+            }
+            catch (IOException e)
+            {
+                // there might be a script still. 
+            }
         }
     }
 }

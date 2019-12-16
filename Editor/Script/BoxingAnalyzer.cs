@@ -53,14 +53,14 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
-            string typeName = type.FullName;
-            if (typeName.Equals("System.Single"))
+            string typeName = type.Name;
+            if (type.FullName.Equals("System.Single"))
                 typeName = "float";
-            else if (typeName.Equals("System.Double"))
+            else if (type.FullName.Equals("System.Double"))
                 typeName = "double";
 
             var description = string.Format("Conversion from value type '{0}' to ref type", typeName);
-            var calleeNode = new CallTreeNode(inst.OpCode.Code.ToString());
+            var calleeNode = new CallTreeNode(descriptor.description);
             
             return new ProjectIssue
             {
