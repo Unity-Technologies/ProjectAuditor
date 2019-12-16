@@ -10,24 +10,17 @@ namespace Unity.ProjectAuditor.Editor
         {
             var fullPath = Path.GetFullPath(Path.Combine(path, name + ".json"));
             var json = File.ReadAllText(fullPath);
-            var result = JsonHelper.FromJson<ProblemDescriptor>(json);
+            var descriptors = JsonHelper.FromJson<ProblemDescriptor>(json);
 
-//            int id = 1000;
-//            foreach (var d in result)
-//            {
-//                if (d.id == 0)
-//                {
-//                    d.id = id++;
-//                }
-//            }
-//
-//            if (id > 1000)
-//            {
-//                json = JsonHelper.ToJson(result, true);
-//                File.WriteAllText(fullPath, json);               
-//            }
+            foreach (var desc in descriptors)
+            {
+                if (string.IsNullOrEmpty(desc.type) || string.IsNullOrEmpty(desc.method))
+                    desc.description = string.Empty;
+                else
+                    desc.description = desc.type + "." + desc.method;
+            }
             
-            return new List<ProblemDescriptor>(result);
+            return new List<ProblemDescriptor>(descriptors);
         }
     }
 }

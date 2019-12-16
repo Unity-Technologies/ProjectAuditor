@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor
         private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
         {
             id = 102000,
-            opcode = OpCodes.Box.Code.ToString(),
+            description = "Boxing Allocation",
             type = string.Empty,
             method = string.Empty,
             area = "Memory",
@@ -53,7 +53,13 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
-            var description = string.Format("Conversion from value type '{0}' to ref type", type.Name);
+            string typeName = type.FullName;
+            if (typeName.Equals("System.Single"))
+                typeName = "float";
+            else if (typeName.Equals("System.Double"))
+                typeName = "double";
+
+            var description = string.Format("Conversion from value type '{0}' to ref type", typeName);
             var calleeNode = new CallTreeNode(inst.OpCode.Code.ToString());
             
             return new ProjectIssue

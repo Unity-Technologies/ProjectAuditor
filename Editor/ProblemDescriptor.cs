@@ -5,8 +5,9 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public class ProblemDescriptor
     {
+        // TODO: remove auditor-specific fields: method, type and customevaluator
         public int id;
-        public string opcode;
+        public string description;
         public string type;
         public string method;
         public string value;
@@ -15,17 +16,5 @@ namespace Unity.ProjectAuditor.Editor
         public string problem;
         public string solution;
         public Rule.Action action;
-
-        public string description
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(opcode))
-                    return opcode;
-                if (string.IsNullOrEmpty(type) || string.IsNullOrEmpty(method))
-                    return string.Empty;
-                return type + "." + method;
-            }
-        }
     }
 }
