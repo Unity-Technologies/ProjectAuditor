@@ -12,6 +12,11 @@ namespace Unity.ProjectAuditor.Editor
         public bool displayMutedIssues = false;
         private List<Rule> m_Rules = new List<Rule>();
 
+        public int NumRules
+        {
+            get { return m_Rules.Count; }            
+        }
+        
         public void AddRule(Rule ruleToAdd)
         {
             if (string.IsNullOrEmpty(ruleToAdd.filter))
@@ -32,6 +37,11 @@ namespace Unity.ProjectAuditor.Editor
             return m_Rules.FirstOrDefault(r => r.id == descriptor.id && r.filter.Equals(filter));
         }
 
+        public void ClearAllRules()
+        {
+            m_Rules.Clear();
+        }        
+
         public void ClearRules(ProblemDescriptor descriptor, string filter = "")
         {
             var rules = m_Rules.Where(r => r.id == descriptor.id && r.filter.Equals(filter)).ToArray();
@@ -44,12 +54,21 @@ namespace Unity.ProjectAuditor.Editor
         
         public Rule.Action GetAction(ProblemDescriptor descriptor, string filter = "")
         {
+            // is there a rule that matches the filter?
             var projectRule = GetRule(descriptor, filter);
             if (projectRule != null)
             {
                 return projectRule.action;
             }
 
+            // is there a rule that matches descriptor?
+            projectRule = GetRule(descriptor);
+            if (projectRule != null)
+            {
+                return projectRule.action;
+            }
+            
+            // return the default descriptor action
             return descriptor.action;
         }
     }

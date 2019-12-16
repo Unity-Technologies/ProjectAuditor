@@ -141,18 +141,16 @@ namespace Unity.ProjectAuditor.Editor
             int depthForHiddenRoot = -1;
             var root = new TreeViewItem(idForHiddenRoot, depthForHiddenRoot, "root");
 
+            var filteredIssues = m_Issues.Where(issue => m_ProjectAuditorWindow.ShouldDisplay(issue));
             if (m_GroupByDescription)
             {
                 // grouped by problem definition
                 HashSet<string> allGroupsSet = new HashSet<string>();
-                foreach (var issue in m_Issues)
+                foreach (var issue in filteredIssues)
                 {
                     if (!allGroupsSet.Contains(issue.descriptor.description))
                     {
-                        if (m_ProjectAuditorWindow.ShouldDisplay(issue))
-                        {
-                            allGroupsSet.Add(issue.descriptor.description);
-                        }
+                        allGroupsSet.Add(issue.descriptor.description);
                     }
                 }
 
@@ -161,32 +159,26 @@ namespace Unity.ProjectAuditor.Editor
 
                 foreach (var groupName in allGroups)
                 {
-                    var issues = m_Issues.Where(i => groupName.Equals(i.descriptor.description)).ToArray();
+                    var issues = filteredIssues.Where(i => groupName.Equals(i.descriptor.description));
 
-                    var displayName = string.Format("{0} ({1})", groupName, issues.Length);
+                    var displayName = string.Format("{0} ({1})", groupName, issues.Count());
                     var groupItem = new IssueTableItem(index++, 0, displayName, issues.FirstOrDefault().descriptor);
                     root.AddChild(groupItem);
 
                     foreach (var issue in issues)
                     {
-                        if (m_ProjectAuditorWindow.ShouldDisplay(issue))
-                        {
-                            var item = new IssueTableItem(index++, 1, issue.name, issue.descriptor, issue);
-                            groupItem.AddChild(item);
-                        }
+                        var item = new IssueTableItem(index++, 1, issue.name, issue.descriptor, issue);
+                        groupItem.AddChild(item);
                     }
                 }
             }
             else
             {
                 // flat view
-                foreach (var issue in m_Issues)
+                foreach (var issue in filteredIssues)
                 {
-                    if (m_ProjectAuditorWindow.ShouldDisplay(issue))
-                    {
-                        var item = new IssueTableItem(index++, 0, issue.descriptor.description, issue.descriptor, issue);
-                        root.AddChild(item);
-                    }
+                    var item = new IssueTableItem(index++, 0, issue.descriptor.description, issue.descriptor, issue);
+                    root.AddChild(item);
                 }
             }
 

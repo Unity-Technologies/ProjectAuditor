@@ -154,9 +154,8 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
 
 			if (!m_ProjectAuditor.config.displayMutedIssues)
             {
-                var rule = m_ProjectAuditor.config.GetRule(issue.descriptor, issue.callingMethod);
-                if (rule != null && rule.action == Rule.Action.None)
-                    return false;
+                if (m_ProjectAuditor.config.GetAction(issue.descriptor, issue.callingMethod) == Rule.Action.None)
+                    return false;                    
             }
 
             if (!string.IsNullOrEmpty(m_SearchText))

@@ -7,6 +7,53 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class RuleTest
     {
+        private ScriptResource m_ScriptResource;
+		
+        [SetUp]
+        public void SetUp()
+        {
+            m_ScriptResource = new ScriptResource("MyClass.cs", "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.main.name); } }");
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            m_ScriptResource.Delete();
+        }
+
+        [Test]
+        public void ShouldNotReportMutedIssue()
+        {
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var projectAuditorSettings = projectAuditor.config;
+            var projectReport = projectAuditor.Audit();
+            var issues = ScriptAuditor.FindScriptIssues(projectReport, m_ScriptResource.relativePath);
+ 
+            Assert.AreEqual(1, issues.Count());
+			
+            var issue = issues.FirstOrDefault();
+
+            projectAuditorSettings.ClearAllRules();
+
+            var action = projectAuditorSettings.GetAction(issue.descriptor, issue.callingMethod);
+
+            // expect default action specified in descriptor
+            Assert.AreEqual(issue.descriptor.action, action);
+            
+            // add rule with a filter.
+            projectAuditorSettings.AddRule(new Rule
+            {
+                id = issue.descriptor.id,
+                action = Rule.Action.None,
+                filter = issue.callingMethod 
+            });
+
+            action = projectAuditorSettings.GetAction(issue.descriptor, issue.callingMethod);
+            
+            // issue has been muted so it should not be reported  
+            Assert.AreEqual(Rule.Action.None, action);
+        }
+
         [Test]
         public void RuleTestPass()
         {
@@ -64,6 +111,19 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             config.ClearRules(firstDescriptor);
             rule = config.GetRule(firstDescriptor);
             Assert.IsNull(rule);
+
+            Assert.AreEqual(0, config.NumRules);
+
+            config.AddRule(new Rule
+            {
+                id = firstDescriptor.id,
+                action = Rule.Action.None
+            });
+            Assert.AreEqual(1, config.NumRules);
+            
+            config.ClearAllRules();
+            
+            Assert.AreEqual(0, config.NumRules);
         }
     }
 }
