@@ -42,8 +42,7 @@ namespace Unity.ProjectAuditor.Editor
 
             for (int i = 0; i < (int) IssueCategory.NumCategories; i++)
             {
-                var category = (IssueCategory) i;
-                var issues = GetIssues(category).ToArray();
+                var issues = GetIssues((IssueCategory) i);
 
                 foreach (var issue in issues)
                 {

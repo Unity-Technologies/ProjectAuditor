@@ -158,7 +158,6 @@ namespace Unity.ProjectAuditor.Editor
 
                 Location location = callerNode.location = new Location
                     {path = s.Document.Url.Replace("\\", "/"), line = s.StartLine};
-                string description = String.Empty;
                     
                 if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
                 {
