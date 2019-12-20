@@ -120,17 +120,17 @@ namespace Unity.ProjectAuditor.Editor
 #endif
             return assemblies;
         }
-
+        
         private void AnalyzeAssembly(string assemblyPath, ProjectReport projectReport, CallCrawler callCrawler)
         {
             using (var a = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters() {ReadSymbols = true}))
             {
-                foreach (var m in MonoCecilHelper.AggregateAllTypeDefinitions(a.MainModule.Types).SelectMany(t => t.Methods))
+                foreach (var methodDefinition in MonoCecilHelper.AggregateAllTypeDefinitions(a.MainModule.Types).SelectMany(t => t.Methods))
                 {
-                    if (!m.HasBody)
+                    if (!methodDefinition.HasBody)
                         continue;
-
-                    AnalyzeMethodBody(projectReport, a, m, callCrawler);
+                    
+                    AnalyzeMethodBody(projectReport, a, methodDefinition, callCrawler);
                 }     
             }
         }
@@ -168,7 +168,7 @@ namespace Unity.ProjectAuditor.Editor
                 {
                     if (analyzer.GetOpCodes().Contains(inst.OpCode))
                     {
-                        var projectIssue = analyzer.Analyze(inst);
+                        var projectIssue = analyzer.Analyze(caller, inst);
                         if (projectIssue != null)
                         {
                             projectIssue.callTree.AddChild(callerNode);

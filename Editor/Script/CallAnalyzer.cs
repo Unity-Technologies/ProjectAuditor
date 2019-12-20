@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor
             m_Descriptors = auditor.GetDescriptors();
         }
         
-        public ProjectIssue Analyze(Instruction inst)
+        public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             var callee = ((MethodReference) inst.Operand);
 

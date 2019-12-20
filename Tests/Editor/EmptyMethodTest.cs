@@ -7,21 +7,24 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 	class EmptyMethodTest
 	{
 		private ScriptResource m_ScriptResource;
+		private ScriptResource m_ScriptResourceSimpleClass;
 		
 		[SetUp]
 		public void SetUp()
 		{
-			 m_ScriptResource = new ScriptResource("MyClass.cs", "using UnityEngine; class MyClass : MonoBehaviour { void Update() { } }");
+			 m_ScriptResource = new ScriptResource("MyMonoBehaviour.cs", "using UnityEngine; class MyBaseClass : MonoBehaviour { } class MyMonoBehaviour : MyBaseClass { void Update() { } }");
+			 m_ScriptResourceSimpleClass = new ScriptResource("MyClass.cs", "class MyClass { void Update() { } }");
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
 			m_ScriptResource.Delete();
+			m_ScriptResourceSimpleClass.Delete();
 		}
 
 		[Test]
-		public void EmptyMethodIsFound()
+		public void EmptyMonoBehaviourMethodIsFound()
 		{
 			var scriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResource.relativePath);
 			
@@ -37,12 +40,20 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			Assert.True(string.IsNullOrEmpty(issue.descriptor.type));
 			Assert.True(string.IsNullOrEmpty(issue.descriptor.method));
 			
-			Assert.True(issue.name.Equals("MyClass.Update"));
+			Assert.True(issue.name.Equals("MyMonoBehaviour.Update"));
 			Assert.True(issue.filename.Equals(m_ScriptResource.scriptName));
 			Assert.True(issue.description.Equals(EmptyMethodAnalyzer.GetDescriptor().description));
-			Assert.True(issue.callingMethod.Equals("System.Void MyClass::Update()"));
+			Assert.True(issue.callingMethod.Equals("System.Void MyMonoBehaviour::Update()"));
 			Assert.AreEqual(1, issue.line);
 			Assert.AreEqual(IssueCategory.ApiCalls, issue.category);
+		}
+		
+		[Test]
+		public void EmptyMethodIsNotFound()
+		{
+			var scriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceSimpleClass.relativePath);
+			
+			Assert.AreEqual(0, scriptIssues.Count());
 		}
 	}	
 }

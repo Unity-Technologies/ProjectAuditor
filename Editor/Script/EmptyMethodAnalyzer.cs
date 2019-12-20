@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -29,9 +31,12 @@ namespace Unity.ProjectAuditor.Editor
             auditor.RegisterDescriptor(descriptor);
         }
         
-        public ProjectIssue Analyze(Instruction inst)
+        public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             if (inst.Previous != null)
+                return null;
+
+            if (!MonoCecilHelper.IsMonoBehaviour(methodDefinition.DeclaringType))
                 return null;
 
             var calleeNode = new CallTreeNode(descriptor.description);
