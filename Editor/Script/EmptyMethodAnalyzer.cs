@@ -39,10 +39,10 @@ namespace Unity.ProjectAuditor.Editor
             if (!MonoCecilHelper.IsMonoBehaviour(methodDefinition.DeclaringType))
                 return null;
 
-            var calleeNode = new CallTreeNode(descriptor.description);
+            var calleeNode = new CallTreeNode(methodDefinition.FullName);
             return new ProjectIssue
             {
-                description = descriptor.description,
+                description = methodDefinition.FullName,
                 category = IssueCategory.ApiCalls,
                 descriptor = descriptor,
                 callTree = calleeNode
