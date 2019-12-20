@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor
             type = string.Empty,
             method = string.Empty,
             area = "CPU",
-            problem = "If this is a MonoBehaviour class, any empty Awake/Start/Update/LateUpdate/FixedUpdate will be included in the build and executed anyway.",
+            problem = "Any empty Awake/Start/Update/LateUpdate/FixedUpdate will be included in the build and executed anyway.",
             solution = "Remove any empty MonoBehaviour methods."
         };
 
