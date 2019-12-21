@@ -24,8 +24,6 @@ namespace Unity.ProjectAuditor.Editor
             return descriptor;
         }
         
-        private OpCode[] m_OpCodes = new[] {OpCodes.Ret};
-        
         public EmptyMethodAnalyzer(ScriptAuditor auditor)
         {
             auditor.RegisterDescriptor(descriptor);
@@ -51,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public IEnumerable<OpCode> GetOpCodes()
         {
-            return m_OpCodes;
+            yield return OpCodes.Ret;
         }
     }
 }
