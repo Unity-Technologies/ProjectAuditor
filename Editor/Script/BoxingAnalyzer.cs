@@ -18,8 +18,6 @@ namespace Unity.ProjectAuditor.Editor
             problem = "Boxing happens where a value type, such as an integer, is converted into an object of reference type. This causes an allocation on the heap, which might increase the size of the managed heap and the frequency of Garbage Collection.",
             solution = "Try to avoid Boxing when possible."
         };
-
-        private OpCode[] m_OpCodes = new[] {OpCodes.Box};
         
         public BoxingAnalyzer(ScriptAuditor auditor)
         {
@@ -73,7 +71,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public IEnumerable<OpCode> GetOpCodes()
         {
-            return m_OpCodes;
+            yield return OpCodes.Box;
         }
     }
 }
