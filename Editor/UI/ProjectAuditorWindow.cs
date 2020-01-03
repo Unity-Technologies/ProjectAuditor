@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    internal class ProjectAuditorWindow : EditorWindow, IHasCustomMenu
+    public class ProjectAuditorWindow : EditorWindow, IHasCustomMenu
     {       
         private ProjectAuditor m_ProjectAuditor;
         [SerializeField] private ProjectReport m_ProjectReport;
@@ -22,19 +22,12 @@ namespace Unity.ProjectAuditor.Editor
         }
         
         private string[] m_AssemblyNames;
-
-        private enum AssemblyIndex
-        {
-            None = -1,
-            All = 0
-        }
-       
+        private TreeViewSelection m_AssemblySelection = null;
         private const string m_DefaultAssemblyName = "Assembly-CSharp";
         
         private SearchField m_SearchField;
         
         [SerializeField] private bool m_ValidReport = false;
-        [SerializeField] private int m_ActiveAssembly = (int)AssemblyIndex.None;
         [SerializeField] private Area m_ActiveArea = Area.All;
         [SerializeField] private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
         [SerializeField] private bool m_ShowDetails = true;
@@ -44,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField] private string m_SearchText;
         [SerializeField] private bool m_DeveloperMode = false;
         
-        static readonly string[] AreaEnumStrings = {
+        private static readonly string[] AreaEnumStrings = {
             "CPU",
             "GPU",
             "Memory",
@@ -53,10 +46,15 @@ namespace Unity.ProjectAuditor.Editor
             "All Areas"
         };
 
-        private const int m_ToolbarWidth = 600;
-        private const int m_FoldoutWidth = 300;
-        private const int m_FoldoutMinHeight = 100;
-        private const int m_FoldoutMaxHeight = 220;
+        internal static class LayoutSize
+        {
+            public static readonly int ToolbarWidth = 600;
+            public static readonly int FoldoutWidth = 300;
+            public static readonly int FoldoutMinHeight = 100;
+            public static readonly int FoldoutMaxHeight = 220;
+            public static readonly int FilterOptionsLeftLabelWidth = 100;
+            public static readonly int FilterOptionsEnumWidth = 50;
+        };
 
         internal static class Styles
         {
@@ -67,6 +65,12 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent AnalyzeButton = new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ReloadButton = new GUIContent("Reload DB", "Reload Issue Definition files.");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to .csv files.");
+            
+            public static readonly GUIContent assemblyFilter = new GUIContent("Assembly : ", "Select assemblies to examine");
+            public static readonly GUIContent assemblyFilterSelect = new GUIContent("Select", "Select assemblies to examine");
+            
+            public static readonly GUIContent areaFilter = new GUIContent("Area : ", "Select performance areas to display");
+            public static readonly GUIContent areaFilterSelect = new GUIContent("Select", "Select performance areas to display");
 
             public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore selected issues.");
             public static readonly GUIContent UnmuteButton = new GUIContent("Unmute", "Always show selected issues.");
@@ -101,15 +105,21 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         {
             m_ProjectAuditor = new ProjectAuditor();    
 
-            var assemblyNames = new List<string>(new []{"All Assemblies"});
+            var assemblyNames = new List<string>();
             assemblyNames.AddRange(m_ProjectAuditor.GetAuditor<ScriptAuditor>().assemblyNames);
             m_AssemblyNames = assemblyNames.ToArray();
 
-            if (m_ActiveAssembly == (int)AssemblyIndex.None)
+            if (m_AssemblySelection == null)
             {
-                m_ActiveAssembly = assemblyNames.IndexOf(m_DefaultAssemblyName);
-                if (m_ActiveAssembly < 0)
-                    m_ActiveAssembly = (int)AssemblyIndex.All;
+                m_AssemblySelection = new TreeViewSelection();
+                if (m_AssemblyNames.Contains(m_DefaultAssemblyName))
+                {
+                    m_AssemblySelection.Set(m_DefaultAssemblyName);    
+                }
+                else
+                {
+                    m_AssemblySelection.SetAll();
+                }
             }
 
             m_CallHierarchyView = new CallHierarchyView(new TreeViewState());
@@ -142,7 +152,9 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         
         public bool ShouldDisplay(ProjectIssue issue)
         {
-            if (m_ActiveMode == IssueCategory.ApiCalls && m_ActiveAssembly != (int)AssemblyIndex.All && m_ActiveAssembly != (int)AssemblyIndex.None && !m_AssemblyNames[m_ActiveAssembly].Equals(issue.assembly))
+            if (m_ActiveMode == IssueCategory.ApiCalls &&
+                !m_AssemblySelection.Contains(issue.assembly) &&
+                !m_AssemblySelection.ContainsGroup("All"))
             {
                 return false;
             }
@@ -303,7 +315,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
             EditorGUILayout.EndVertical();
 
-            EditorGUILayout.BeginVertical(GUILayout.Width(m_FoldoutWidth));
+            EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
 
             DrawFoldouts();
 
@@ -358,7 +370,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
 
         private void DrawDetailsFoldout(ProblemDescriptor problemDescriptor)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth), GUILayout.MinHeight(m_FoldoutMinHeight));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth), GUILayout.MinHeight(LayoutSize.FoldoutMinHeight));
 
             m_ShowDetails = BoldFoldout(m_ShowDetails, Styles.DetailsFoldout);
             if (m_ShowDetails)
@@ -368,7 +380,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                     EditorStyles.textField.wordWrap = true;
 //                    var text = issue.description + " is called from " + issue.callingMethod + "\n\n" + issue.def.problem;
                     var text = problemDescriptor.problem;
-					GUILayout.TextArea(text, GUILayout.MaxHeight(m_FoldoutMaxHeight));
+					GUILayout.TextArea(text, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 }
                 else
                 {
@@ -380,7 +392,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
 
         private void DrawRecommendationFoldout(ProblemDescriptor problemDescriptor)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth), GUILayout.MinHeight(m_FoldoutMinHeight));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth), GUILayout.MinHeight(LayoutSize.FoldoutMinHeight));
 
             m_ShowRecommendation = BoldFoldout(m_ShowRecommendation, Styles.RecommendationFoldout);
             if (m_ShowRecommendation)
@@ -388,7 +400,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 if (problemDescriptor != null)
                 {
                     EditorStyles.textField.wordWrap = true;
-                    GUILayout.TextArea(problemDescriptor.solution, GUILayout.MaxHeight(m_FoldoutMaxHeight));
+                    GUILayout.TextArea(problemDescriptor.solution, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 }
                 else
                 {
@@ -400,7 +412,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         
         private void DrawCallHierarchy(CallTreeNode callTree)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_FoldoutWidth), GUILayout.MinHeight(m_FoldoutMinHeight*2));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth), GUILayout.MinHeight(LayoutSize.FoldoutMinHeight*2));
 
             m_ShowCallTree = BoldFoldout(m_ShowCallTree, Styles.CallTreeFoldout);
             if (m_ShowCallTree)
@@ -419,17 +431,199 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             EditorGUILayout.EndVertical();
         }
         
+        // SteveM TODO - This seems wildly more complex than it needs to be... UNLESS assemblies can have sub-assemblies?
+        // If that's the case, we need to test for that. Otherwise we need to strip a bunch of this complexity out.
+        string GetSelectedAssembliesSummary()
+        {
+            if (m_AssemblySelection.selection == null || m_AssemblySelection.selection.Count == 0)
+                return "None";
+
+            // Count all assemblies in a group
+            var assemblyDict = new Dictionary<string, int>();
+            var assemblySelectionDict = new Dictionary<string, int>();
+            foreach (var assemblyNameWithIndex in m_AssemblyNames)
+            {
+                var assemblyIdentifier = new AssemblyIdentifier(assemblyNameWithIndex);
+                if (assemblyIdentifier.index == AssemblyIdentifier.kAll)
+                    continue;
+
+                int count;
+                if (assemblyDict.TryGetValue(assemblyIdentifier.name, out count))
+                    assemblyDict[assemblyIdentifier.name] = count + 1;
+                else
+                    assemblyDict[assemblyIdentifier.name] = 1;
+
+                assemblySelectionDict[assemblyIdentifier.name] = 0;
+            }
+
+            // Count all the assemblies we have 'selected' in a group
+            foreach (var assemblyNameWithIndex in m_AssemblySelection.selection)
+            {
+                var assemblyIdentifier = new AssemblyIdentifier(assemblyNameWithIndex);
+
+                if (assemblyDict.ContainsKey(assemblyIdentifier.name) &&
+                    assemblySelectionDict.ContainsKey(assemblyIdentifier.name) &&
+                    assemblyIdentifier.index <= assemblyDict[assemblyIdentifier.name])
+                {
+                    // Selected thread valid and in the thread list
+                    // and also within the range of valid threads for this data set
+                    assemblySelectionDict[assemblyIdentifier.name]++;
+                }
+            }
+
+            // Count all assembly groups where we have 'selected all the assemblies'
+            int assembliesSelected = 0;
+            foreach (var assemblyName in assemblyDict.Keys)
+            {
+                if (assemblySelectionDict[assemblyName] != assemblyDict[assemblyName])
+                    continue;
+
+                assembliesSelected++;
+            }
+            
+            // If we've just added all the assembly names we have everything selected
+            // Note we don't compare against the m_AssemblyNames directly as this contains the 'all' versions
+            if (assembliesSelected == assemblyDict.Keys.Count)
+                return "All";
+
+            // Add all the individual assemblies were we haven't already added the group
+            List<string> assemblies = new List<string>();
+            foreach (var assemblyName in assemblySelectionDict.Keys)
+            {
+                int selectionCount = assemblySelectionDict[assemblyName];
+                if (selectionCount <= 0)
+                    continue;
+                int threadCount = assemblyDict[assemblyName];
+                if (threadCount == 1)
+                    assemblies.Add(assemblyName);
+                else if (selectionCount != threadCount)
+                    assemblies.Add(string.Format("{0} ({1} of {2})", assemblyName, selectionCount, threadCount));
+                else
+                    assemblies.Add(string.Format("{0} (All)", assemblyName));
+            }
+
+            // Maintain alphabetical order
+            assemblies.Sort(CompareUINames);
+
+            if (assemblies.Count == 0)
+                return "None";
+
+            string threadsSelectedText = string.Join(", ", assemblies.ToArray());
+            return threadsSelectedText;
+        }
+        
+        private int CompareUINames(string a, string b)
+        {
+            string[] aTokens = a.Split(':');
+            string[] bTokens = b.Split(':');
+
+            if (aTokens.Length > 1 && bTokens.Length > 1)
+            {
+                var aThreadName = aTokens[0].Trim();
+                var bThreadName = bTokens[0].Trim();
+
+                if (aThreadName == bThreadName)
+                {
+                    string aThreadIndex = aTokens[1].Trim();
+                    string bThreadIndex = bTokens[1].Trim();
+
+                    if (aThreadIndex == "All" && bThreadIndex != "All")
+                        return -1;
+                    if (aThreadIndex != "All" && bThreadIndex == "All")
+                        return 1;
+
+                    int aGroupIndex;
+                    if (int.TryParse(aThreadIndex, out aGroupIndex))
+                    {
+                        int bGroupIndex;
+                        if (int.TryParse(bThreadIndex, out bGroupIndex))
+                        {
+                            return aGroupIndex.CompareTo(bGroupIndex);
+                        }
+                    }
+                }
+            }
+
+            return a.CompareTo(b);
+        }
+        
+        private void DrawSelectedText(string text)
+        {
+#if UNITY_2019_1_OR_NEWER
+            GUIStyle treeViewSelectionStyle = "TV Selection";
+            GUIStyle backgroundStyle = new GUIStyle(treeViewSelectionStyle);
+
+            GUIStyle treeViewLineStyle = "TV Line";
+            GUIStyle textStyle = new GUIStyle(treeViewLineStyle);
+#else
+            GUIStyle textStyle = GUI.skin.label;
+#endif
+
+            GUIContent content = new GUIContent(text, text);
+            Vector2 size = textStyle.CalcSize(content);
+            Rect rect = EditorGUILayout.GetControlRect(GUILayout.MaxWidth(size.x), GUILayout.Height(size.y));
+            if (Event.current.type == EventType.Repaint)
+            {
+#if UNITY_2019_1_OR_NEWER
+                backgroundStyle.Draw(rect, false, false, true, true);
+#endif
+                GUI.Label(rect, content, textStyle);
+            }
+        }
+        
+        private void ShowSelectedAssemblies()
+        {
+            string selectedAssemblies = GetSelectedAssembliesSummary();
+            DrawSelectedText(selectedAssemblies);
+        }
+        
+        private void DrawAssemblyFilter()
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(Styles.assemblyFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
+            
+            if (m_AssemblyNames.Length > 0)
+            {
+                bool lastEnabled = GUI.enabled;
+                // SteveM TODO - We don't currently have any sense of when the Auditor is busy and should disallow user input
+                bool enabled = /*!IsAnalysisRunning() &&*/ !AssemblySelectionWindow.IsOpen();
+                GUI.enabled = enabled;
+                if (GUILayout.Button(Styles.assemblyFilterSelect, EditorStyles.miniButton, GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
+                {
+                    // Note: Window auto closes as it loses focus so this isn't strictly required
+                    if (AssemblySelectionWindow.IsOpen())
+                    {
+                        AssemblySelectionWindow.CloseAll();
+                    }
+                    else
+                    {
+                        Vector2 windowPosition = new Vector2(Event.current.mousePosition.x + LayoutSize.FilterOptionsEnumWidth, Event.current.mousePosition.y + GUI.skin.label.lineHeight);
+                        Vector2 screenPosition = GUIUtility.GUIToScreenPoint(windowPosition);
+
+                        AssemblySelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AssemblySelection, m_AssemblyNames);
+                    }
+                }
+
+                GUI.enabled = lastEnabled;
+                ShowSelectedAssemblies();
+                GUILayout.FlexibleSpace();
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+        
         private void DrawFilters()
         {
             if (!IsAnalysisValid())
                 return;
             
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(m_ToolbarWidth));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.ToolbarWidth));
 
             {
+                DrawAssemblyFilter();
+                
                 EditorGUILayout.BeginHorizontal();
                 
-                var assembly = EditorGUILayout.Popup(m_ActiveAssembly, m_AssemblyNames, GUILayout.MaxWidth(150));
                 var area = (Area)EditorGUILayout.Popup((int)m_ActiveArea, AreaEnumStrings, GUILayout.MaxWidth(150));
                 var mode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, m_ProjectAuditor.auditorNames, GUILayout.MaxWidth(150), GUILayout.ExpandWidth(true));
 
@@ -492,9 +686,8 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
     	            shouldRefresh = true;
         	    }
 
-                if (shouldRefresh || m_ActiveArea != area  || m_ActiveMode != mode || !assembly.Equals(m_ActiveAssembly))
+                if (shouldRefresh || m_ActiveArea != area  || m_ActiveMode != mode)
                 {
-                    m_ActiveAssembly = assembly;
                     m_ActiveArea = area;
                     m_ActiveMode = mode;
                     RefreshDisplay();
@@ -502,6 +695,13 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             }
             EditorGUILayout.EndVertical();            
         }
+        
+        public void SetAssemblySelection(TreeViewSelection assemblySelection)
+        {
+            m_AssemblySelection = assemblySelection;
+            RefreshDisplay();
+        }
+        
         private void SetRuleForItem(IssueTableItem item, Rule.Action ruleAction)
         {
             var descriptor = item.problemDescriptor;
