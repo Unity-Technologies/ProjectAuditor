@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
-// SteveM TODO - Wanted to make this a generalised tree view selection (because I'm going to use it for both Assemblies and Areas),
-// but right now it relies on AssemblyIdentifier. Maybe that can be made generic too? Or this can become some kind of generic base class?
 namespace Unity.ProjectAuditor.Editor
 {
     public class TreeViewSelection
@@ -23,13 +22,24 @@ namespace Unity.ProjectAuditor.Editor
             Set(threadSelection);
         }
 
-        public void SetAll()
+        public void SetAll(string[] names)
         {
             groups.Clear();
+             TreeItemIdentifier allIdentifier = new TreeItemIdentifier("All",TreeItemIdentifier.kAll);
+            groups.Add(allIdentifier.nameWithIndex);
+            
             selection.Clear();
-
-            AssemblyIdentifier allTreeViewSelection = new AssemblyIdentifier("All",AssemblyIdentifier.kAll);
-            groups.Add(allTreeViewSelection.assemblyNameWithIndex);
+            foreach (string nameWithIndex in names)
+            {
+                if (nameWithIndex != allIdentifier.nameWithIndex)
+                {
+                    var identifier = new TreeItemIdentifier(nameWithIndex);
+                    if (identifier.index != TreeItemIdentifier.kAll)
+                    {
+                        selection.Add(nameWithIndex);
+                    }
+                }
+            }
         }
 
         public void Set(string name)
@@ -44,8 +54,8 @@ namespace Unity.ProjectAuditor.Editor
             groups.Clear();
             selection.Clear();
 
-            AssemblyIdentifier allTreeViewSelection = new AssemblyIdentifier(groupName,AssemblyIdentifier.kAll);
-            groups.Add(allTreeViewSelection.assemblyNameWithIndex);
+            TreeItemIdentifier allTreeViewSelection = new TreeItemIdentifier(groupName,TreeItemIdentifier.kAll);
+            groups.Add(allTreeViewSelection.nameWithIndex);
         }
 
         public void Set(TreeViewSelection threadSelection)

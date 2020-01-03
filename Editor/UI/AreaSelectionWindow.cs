@@ -4,16 +4,16 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class AssemblySelectionWindow : EditorWindow
+    public class AreaSelectionWindow : EditorWindow
     {
         ProjectAuditorWindow m_ProjectAuditorWindow;
         TreeViewState m_TreeViewState;
         MultiColumnHeaderState m_MultiColumnHeaderState;
-        MultiSelectionTable m_MultiSelectionTable;
+        MultiSelectionTable m_AreaTable;
 
-        static public AssemblySelectionWindow Open(float screenX, float screenY, ProjectAuditorWindow projectAuditorWindow, TreeViewSelection selection, string[] names)
+        static public AreaSelectionWindow Open(float screenX, float screenY, ProjectAuditorWindow projectAuditorWindow, TreeViewSelection selection, string[] names)
         {
-            AssemblySelectionWindow window = GetWindow<AssemblySelectionWindow>("Assemblies");
+            AreaSelectionWindow window = GetWindow<AreaSelectionWindow>("Areas");
             window.position = new Rect(screenX, screenY, 400, 500);
             window.SetData(projectAuditorWindow, selection, names);
             window.Show();
@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor
 
         static public void CloseAll()
         {
-            AssemblySelectionWindow window = GetWindow<AssemblySelectionWindow>("Assemblies");
+            AreaSelectionWindow window = GetWindow<AreaSelectionWindow>("Areas");
             window.Close();
         }
         
@@ -34,12 +34,12 @@ namespace Unity.ProjectAuditor.Editor
         
         private void OnDestroy()
         {
-            m_ProjectAuditorWindow.SetAssemblySelection(m_MultiSelectionTable.GetTreeViewSelection());
+            m_ProjectAuditorWindow.SetAreaSelection(m_AreaTable.GetTreeViewSelection());
         }
         
         static public bool IsOpen()
         {
-            UnityEngine.Object[] windows = Resources.FindObjectsOfTypeAll(typeof(AssemblySelectionWindow));
+            UnityEngine.Object[] windows = Resources.FindObjectsOfTypeAll(typeof(AreaSelectionWindow));
             if (windows != null && windows.Length > 0)
                 return true;
 
@@ -56,12 +56,12 @@ namespace Unity.ProjectAuditor.Editor
         {
             if (m_TreeViewState == null)
                 m_TreeViewState = new TreeViewState();
-            
+
             MultiSelectionTable.HeaderData[] headerData = new MultiSelectionTable.HeaderData[]
             {
-                new MultiSelectionTable.HeaderData("Assembly", "Assembly Name", 350, 100, true, false),
-                new MultiSelectionTable.HeaderData("Show", "Check to show this assembly in the analysis views", 40, 100, false, false),
-                new MultiSelectionTable.HeaderData("Group", "Assembly Group", 100, 100, true, false),
+                new MultiSelectionTable.HeaderData("Area", "Area Name", 350, 100, true, false),
+                new MultiSelectionTable.HeaderData("Show", "Check to show issues affecting this area in the analysis views", 40, 100, false, false),
+                new MultiSelectionTable.HeaderData("Group", "Group", 100, 100, true, false),
 
             };
             m_MultiColumnHeaderState = MultiSelectionTable.CreateDefaultMultiColumnHeaderState(headerData);
@@ -69,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor
             var multiColumnHeader = new MultiColumnHeader(m_MultiColumnHeaderState);
             multiColumnHeader.SetSorting((int)MultiSelectionTable.MyColumns.ItemName, true);
             multiColumnHeader.ResizeToFit();
-            m_MultiSelectionTable = new MultiSelectionTable(m_TreeViewState, multiColumnHeader, names, selection);
+            m_AreaTable = new MultiSelectionTable(m_TreeViewState, multiColumnHeader, names, selection);
         }
         
         void OnGUI()
@@ -77,23 +77,23 @@ namespace Unity.ProjectAuditor.Editor
             EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));
             GUIStyle style = new GUIStyle(GUI.skin.label);
             style.alignment = TextAnchor.MiddleLeft;
-            GUILayout.Label("Select Assembly : ", style);
+            GUILayout.Label("Select Area : ", style);
 
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Clear", GUILayout.Width(50)))
             {
-                m_MultiSelectionTable.ClearSelection();
+                m_AreaTable.ClearSelection();
             }
             if (GUILayout.Button("Apply", GUILayout.Width(50)))
             {
-                m_ProjectAuditorWindow.SetAssemblySelection(m_MultiSelectionTable.GetTreeViewSelection());
+                m_ProjectAuditorWindow.SetAreaSelection(m_AreaTable.GetTreeViewSelection());
             }
             EditorGUILayout.EndHorizontal();
 
-            if (m_MultiSelectionTable != null)
+            if (m_AreaTable != null)
             {
                 Rect r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
-                m_MultiSelectionTable.OnGUI(r);
+                m_AreaTable.OnGUI(r);
             }
 
             EditorGUILayout.EndVertical();

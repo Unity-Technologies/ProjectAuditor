@@ -8,31 +8,21 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    class AssemblyTreeViewItem : TreeViewItem
-    {
-        public readonly AssemblyIdentifier assemblyIdentifier;
-
-        public AssemblyTreeViewItem(int id, int depth, string displayName, AssemblyIdentifier assemblyIdentifier) : base(id, depth, displayName)
-        {
-            this.assemblyIdentifier = assemblyIdentifier;
-        }
-    }
-
-    class AssemblyTable : TreeView
+    class MultiSelectionTable : TreeView
     {
         const float kRowHeights = 20f;
         readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
 
-        private string[] m_AssemblyNames;
-        AssemblyIdentifier m_AllAssemblyIdentifier;
-        TreeViewSelection m_AssemblySelection;
+        private string[] m_Names;
+        TreeItemIdentifier m_AllIdentifier;
+        TreeViewSelection m_Selection;
 
         private GUIStyle m_ActiveLineStyle;
 
         // All columns
         public enum MyColumns
         {
-            AssemblyName,
+            ItemName,
             State,
             GroupName
         }
@@ -41,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor
         // this is based on). So maybe rip this all out?
         public enum SortOption
         {
-            AssemblyName,
+            ItemName,
             GroupName
         }
 
@@ -50,16 +40,16 @@ namespace Unity.ProjectAuditor.Editor
         // Sort options per column
         SortOption[] m_SortOptions =
         {
-            SortOption.AssemblyName,
-            SortOption.AssemblyName,
+            SortOption.ItemName,
+            SortOption.ItemName,
             SortOption.GroupName
         };
 
-        public AssemblyTable(TreeViewState state, MultiColumnHeader multicolumnHeader, string[] assemblyNames, TreeViewSelection assemblySelection) : base(state, multicolumnHeader)
+        public MultiSelectionTable(TreeViewState state, MultiColumnHeader multicolumnHeader, string[] names, TreeViewSelection selection) : base(state, multicolumnHeader)
         {
-            m_AllAssemblyIdentifier = new AssemblyIdentifier();
-            m_AllAssemblyIdentifier.SetName("All");
-            m_AllAssemblyIdentifier.SetAll();
+            m_AllIdentifier = new TreeItemIdentifier();
+            m_AllIdentifier.SetName("All");
+            m_AllIdentifier.SetAll();
 
             Assert.AreEqual(m_SortOptions.Length, Enum.GetValues(typeof(MyColumns)).Length, "Ensure number of sort options are in sync with number of MyColumns enum values");
 
@@ -71,57 +61,57 @@ namespace Unity.ProjectAuditor.Editor
             // extraSpaceBeforeIconAndLabel = 0;
             multicolumnHeader.sortingChanged += OnSortingChanged;
 
-            m_AssemblyNames = assemblyNames;
-            m_AssemblySelection = new TreeViewSelection(assemblySelection);
+            m_Names = names;
+            m_Selection = new TreeViewSelection(selection);
             Reload();
         }
 
-        public void ClearAssemblySelection()
+        public void ClearSelection()
         {
-            m_AssemblySelection.selection.Clear();
-            m_AssemblySelection.groups.Clear();
+            m_Selection.selection.Clear();
+            m_Selection.groups.Clear();
             Reload();
         }
 
-        public TreeViewSelection GetAssemblySelection()
+        public TreeViewSelection GetTreeViewSelection()
         {
-            return m_AssemblySelection;
+            return m_Selection;
         }
 
-        protected int GetChildCount(AssemblyIdentifier selectedAssemblyIdentifier, out int selected)
+        protected int GetChildCount(TreeItemIdentifier selectedIdentifier, out int selected)
         {
             int count = 0;
             int selectedCount = 0;
 
-            if (selectedAssemblyIdentifier.index == AssemblyIdentifier.kAll)
+            if (selectedIdentifier.index == TreeItemIdentifier.kAll)
             {
-                if (selectedAssemblyIdentifier.name == "All")
+                if (selectedIdentifier.name == "All")
                 {
-                    for (int index = 0; index < m_AssemblyNames.Length; ++index)
+                    for (int index = 0; index < m_Names.Length; ++index)
                     {
-                        var assemblyNameWithIndex = m_AssemblyNames[index];
-                        var assemblyIdentifier = new AssemblyIdentifier(assemblyNameWithIndex);
+                        var nameWithIndex = m_Names[index];
+                        var identifier = new TreeItemIdentifier(nameWithIndex);
 
-                        if (assemblyIdentifier.index != AssemblyIdentifier.kAll)
+                        if (identifier.index != TreeItemIdentifier.kAll)
                         {
                             count++;
-                            if (m_AssemblySelection.selection.Contains(assemblyNameWithIndex))
+                            if (m_Selection.selection.Contains(nameWithIndex))
                                 selectedCount++;
                         }
                     }
                 }
                 else
                 {
-                    for (int index = 0; index < m_AssemblyNames.Length; ++index)
+                    for (int index = 0; index < m_Names.Length; ++index)
                     {
-                        var assemblyNameWithIndex = m_AssemblyNames[index];
-                        var assemblyIdentifier = new AssemblyIdentifier(assemblyNameWithIndex);
+                        var nameWithIndex = m_Names[index];
+                        var identifier = new TreeItemIdentifier(nameWithIndex);
 
-                        if (selectedAssemblyIdentifier.name == assemblyIdentifier.name &&
-                            assemblyIdentifier.index != AssemblyIdentifier.kAll)
+                        if (selectedIdentifier.name == identifier.name &&
+                            identifier.index != TreeItemIdentifier.kAll)
                         {
                             count++;
-                            if (m_AssemblySelection.selection.Contains(assemblyNameWithIndex))
+                            if (m_Selection.selection.Contains(nameWithIndex))
                                 selectedCount++;
                         }
                     }
@@ -140,34 +130,34 @@ namespace Unity.ProjectAuditor.Editor
 
             int depth = 0;
 
-            var top = new AssemblyTreeViewItem(-1, depth, m_AllAssemblyIdentifier.name, m_AllAssemblyIdentifier);
+            var top = new SelectionWindowTreeViewItem(-1, depth, m_AllIdentifier.name, m_AllIdentifier);
             root.AddChild(top);
 
             var expandList = new List<int>() {-1};
-            string lastAssemblyName = "";
+            string lastName = "";
             TreeViewItem node = root;
-            for (int index = 0; index < m_AssemblyNames.Length; ++index)
+            for (int index = 0; index < m_Names.Length; ++index)
             {
-                var assemblyNameWithIndex = m_AssemblyNames[index];
-                if (assemblyNameWithIndex == m_AllAssemblyIdentifier.assemblyNameWithIndex)
+                var nameWithIndex = m_Names[index];
+                if (nameWithIndex == m_AllIdentifier.nameWithIndex)
                     continue;
 
-                var assemblyIdentifier = new AssemblyIdentifier(assemblyNameWithIndex);
-                var item = new AssemblyTreeViewItem(index, depth, m_AssemblyNames[index], assemblyIdentifier);
+                var identifier = new TreeItemIdentifier(nameWithIndex);
+                var item = new SelectionWindowTreeViewItem(index, depth, m_Names[index], identifier);
 
-                if (assemblyIdentifier.name != lastAssemblyName)
+                if (identifier.name != lastName)
                 {
-                    // New assemblies at root
+                    // New items at root
                     node = top;
                     depth = 0;
                 }
 
                 node.AddChild(item);
 
-                if (assemblyIdentifier.name != lastAssemblyName)
+                if (identifier.name != lastName)
                 {
                     // Extra instances hang of the parent
-                    lastAssemblyName = assemblyIdentifier.name;
+                    lastName = identifier.name;
                     node = item;
                     depth = 1;
                 }
@@ -185,7 +175,7 @@ namespace Unity.ProjectAuditor.Editor
             if (!IsExpanded(item.id))
                 return;
 
-            foreach (AssemblyTreeViewItem subNode in item.children)
+            foreach (SelectionWindowTreeViewItem subNode in item.children)
             {
                 rows.Add(subNode);
 
@@ -203,7 +193,7 @@ namespace Unity.ProjectAuditor.Editor
             if (rootItem.children == null)
                 return;
 
-            foreach (AssemblyTreeViewItem node in rootItem.children)
+            foreach (SelectionWindowTreeViewItem node in rootItem.children)
             {
                 rows.Add(node);
 
@@ -246,9 +236,9 @@ namespace Unity.ProjectAuditor.Editor
             Repaint();
         }
 
-        string GetItemGroupName(AssemblyTreeViewItem item)
+        string GetItemGroupName(SelectionWindowTreeViewItem item)
         {
-            string[] tokens = item.assemblyIdentifier.name.Split('.');
+            string[] tokens = item.TreeItemIdentifier.name.Split('.');
             if (tokens.Length <= 1)
             {
                 return "";
@@ -266,7 +256,7 @@ namespace Unity.ProjectAuditor.Editor
                 return;
             }
 
-            var myTypes = rootItem.children.Cast<AssemblyTreeViewItem>();
+            var myTypes = rootItem.children.Cast<SelectionWindowTreeViewItem>();
             var orderedQuery = InitialOrder(myTypes, sortedColumns);
             for (int i = 1; i < sortedColumns.Length; i++)
             {
@@ -278,7 +268,7 @@ namespace Unity.ProjectAuditor.Editor
                     case SortOption.GroupName:
                         orderedQuery = orderedQuery.ThenBy(l => GetItemGroupName(l), ascending);
                         break;
-                    case SortOption.AssemblyName:
+                    case SortOption.ItemName:
                         orderedQuery = orderedQuery.ThenBy(l => l.displayName, ascending);
                         break;
                 }
@@ -287,7 +277,7 @@ namespace Unity.ProjectAuditor.Editor
             rootItem.children = orderedQuery.Cast<TreeViewItem>().ToList();
         }
 
-        IOrderedEnumerable<AssemblyTreeViewItem> InitialOrder(IEnumerable<AssemblyTreeViewItem> myTypes, int[] history)
+        IOrderedEnumerable<SelectionWindowTreeViewItem> InitialOrder(IEnumerable<SelectionWindowTreeViewItem> myTypes, int[] history)
         {
             SortOption sortOption = m_SortOptions[history[0]];
             bool ascending = multiColumnHeader.IsSortedAscending(history[0]);
@@ -295,7 +285,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 case SortOption.GroupName:
                     return myTypes.Order(l => GetItemGroupName(l), ascending);
-                case SortOption.AssemblyName:
+                case SortOption.ItemName:
                     return myTypes.Order(l => l.displayName, ascending);
                 default:
                     Assert.IsTrue(false, "Unhandled enum");
@@ -308,7 +298,7 @@ namespace Unity.ProjectAuditor.Editor
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            AssemblyTreeViewItem item = (AssemblyTreeViewItem)args.item;
+            SelectionWindowTreeViewItem item = (SelectionWindowTreeViewItem)args.item;
 
             for (int i = 0; i < args.GetNumVisibleColumns(); ++i)
             {
@@ -316,55 +306,55 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        bool AssemblySelected(AssemblyIdentifier selectedAssemblyIdentifier)
+        bool TreeItemSelected(TreeItemIdentifier selectedIdentifier)
         {
-            if (m_AssemblySelection.selection != null &&
-                m_AssemblySelection.selection.Count > 0 &&
-                m_AssemblySelection.selection.Contains(selectedAssemblyIdentifier.assemblyNameWithIndex))
+            if (m_Selection.selection != null &&
+                m_Selection.selection.Count > 0 &&
+                m_Selection.selection.Contains(selectedIdentifier.nameWithIndex))
                 return true;
 
             // If querying the 'All' filter then check if all selected
-            if (selectedAssemblyIdentifier.assemblyNameWithIndex == m_AllAssemblyIdentifier.assemblyNameWithIndex)
+            if (selectedIdentifier.nameWithIndex == m_AllIdentifier.nameWithIndex)
             {
-                // Check all assemblys without All in the name are selected
-                foreach (var assemblyNameWithIndex in m_AssemblyNames)
+                // Check all items without All in the name are selected
+                foreach (var nameWithIndex in m_Names)
                 {
-                    var assemblyIdentifier = new AssemblyIdentifier(assemblyNameWithIndex);
-                    if (assemblyIdentifier.index == AssemblyIdentifier.kAll/* || assemblyIdentifier.index == AssemblyIdentifier.kSingle*/)
+                    var identifier = new TreeItemIdentifier(nameWithIndex);
+                    if (identifier.index == TreeItemIdentifier.kAll/* || identifier.index == TreeItemIdentifier.kSingle*/)
                         continue;
 
-                    if (!m_AssemblySelection.selection.Contains(assemblyNameWithIndex))
+                    if (!m_Selection.selection.Contains(nameWithIndex))
                         return false;
                 }
 
                 return true;
             }
 
-            // Need to check 'all' and assembly group all.
-            if (selectedAssemblyIdentifier.index == AssemblyIdentifier.kAll)
+            // Need to check 'all' and item group all.
+            if (selectedIdentifier.index == TreeItemIdentifier.kAll)
             {
-                // Count all assemblys that match this assembly group
+                // Count all items that match this item group
                 int count = 0;
-                foreach (var assemblyNameWithIndex in m_AssemblyNames)
+                foreach (var nameWithIndex in m_Names)
                 {
-                    var assemblyIdentifier = new AssemblyIdentifier(assemblyNameWithIndex);
-                    if (assemblyIdentifier.index == AssemblyIdentifier.kAll || assemblyIdentifier.index == AssemblyIdentifier.kSingle)
+                    var identifier = new TreeItemIdentifier(nameWithIndex);
+                    if (identifier.index == TreeItemIdentifier.kAll || identifier.index == TreeItemIdentifier.kSingle)
                         continue;
                     
-                    if (selectedAssemblyIdentifier.name != assemblyIdentifier.name)
+                    if (selectedIdentifier.name != identifier.name)
                         continue;
 
                     count++;
                 }
 
-                // Count all the assemblys we have selected that match this assembly group
+                // Count all the items we have selected that match this item group
                 int selectedCount = 0;
-                foreach (var assemblyNameWithIndex in m_AssemblySelection.selection)
+                foreach (var nameWithIndex in m_Selection.selection)
                 {
-                    var assemblyIdentifier = new AssemblyIdentifier(assemblyNameWithIndex);
-                    if (selectedAssemblyIdentifier.name != assemblyIdentifier.name)
+                    var identifier = new TreeItemIdentifier(nameWithIndex);
+                    if (selectedIdentifier.name != identifier.name)
                         continue;
-                    if (assemblyIdentifier.index > count)
+                    if (identifier.index > count)
                         continue;
 
                     selectedCount++;
@@ -378,14 +368,14 @@ namespace Unity.ProjectAuditor.Editor
         }
 
 
-        void CellGUI(Rect cellRect, AssemblyTreeViewItem item, MyColumns column, ref RowGUIArgs args)
+        void CellGUI(Rect cellRect, SelectionWindowTreeViewItem item, MyColumns column, ref RowGUIArgs args)
         {
             // Center cell rect vertically (makes it easier to place controls, icons etc in the cells)
             CenterRectUsingSingleLineHeight(ref cellRect);
 
             switch (column)
             {
-                case MyColumns.AssemblyName:
+                case MyColumns.ItemName:
                     {
                         args.rowRect = cellRect;
                         // base.RowGUI(args);    // Required to show tree indenting
@@ -395,11 +385,11 @@ namespace Unity.ProjectAuditor.Editor
                         if (Event.current.rawType == EventType.Repaint)
                         {
                             int selectedChildren;
-                            int childCount = GetChildCount(item.assemblyIdentifier, out selectedChildren);
+                            int childCount = GetChildCount(item.TreeItemIdentifier, out selectedChildren);
 
                             string text;
                             string tooltip;
-                            string fullAssemblyName = item.assemblyIdentifier.name;
+                            string fullName = item.TreeItemIdentifier.name;
                             string groupName = GetItemGroupName(item);
 
                             if (childCount <= 1)
@@ -409,12 +399,12 @@ namespace Unity.ProjectAuditor.Editor
                             }
                             else if (selectedChildren != childCount)
                             {
-                                text = string.Format("{0} ({1} of {2})", fullAssemblyName, selectedChildren, childCount);
+                                text = string.Format("{0} ({1} of {2})", fullName, selectedChildren, childCount);
                                 tooltip = (groupName == "") ? text : string.Format("{0}\n{1}", text, groupName);
                             }
                             else
                             {
-                                text = string.Format("{0} (All)", fullAssemblyName);
+                                text = string.Format("{0} (All)", fullName);
                                 tooltip = (groupName == "") ? text : string.Format("{0}\n{1}", text, groupName);
                             }
                             var content = new GUIContent(text, tooltip);
@@ -459,81 +449,81 @@ namespace Unity.ProjectAuditor.Editor
                     }
                     break;
                 case MyColumns.State:
-                    bool oldState = AssemblySelected(item.assemblyIdentifier);
+                    bool oldState = TreeItemSelected(item.TreeItemIdentifier);
                     bool newState = EditorGUI.Toggle(cellRect, oldState);
                     if (newState != oldState)
                     {
-                        if (item.assemblyIdentifier.assemblyNameWithIndex == m_AllAssemblyIdentifier.assemblyNameWithIndex)
+                        if (item.TreeItemIdentifier.nameWithIndex == m_AllIdentifier.nameWithIndex)
                         {
                             // Record active groups
-                            m_AssemblySelection.groups.Clear();
+                            m_Selection.groups.Clear();
                             if (newState)
                             {
-                                if (!m_AssemblySelection.groups.Contains(item.assemblyIdentifier.assemblyNameWithIndex))
-                                    m_AssemblySelection.groups.Add(item.assemblyIdentifier.assemblyNameWithIndex);
+                                if (!m_Selection.groups.Contains(item.TreeItemIdentifier.nameWithIndex))
+                                    m_Selection.groups.Add(item.TreeItemIdentifier.nameWithIndex);
                             }
 
                             // Update selection
-                            m_AssemblySelection.selection.Clear();
+                            m_Selection.selection.Clear();
                             if (newState)
                             {
-                                foreach (string assemblyNameWithIndex in m_AssemblyNames)
+                                foreach (string nameWithIndex in m_Names)
                                 {
-                                    if (assemblyNameWithIndex != m_AllAssemblyIdentifier.assemblyNameWithIndex)
+                                    if (nameWithIndex != m_AllIdentifier.nameWithIndex)
                                     {
-                                        var assemblyIdentifier = new AssemblyIdentifier(assemblyNameWithIndex);
-                                        if (assemblyIdentifier.index != AssemblyIdentifier.kAll)
+                                        var identifier = new TreeItemIdentifier(nameWithIndex);
+                                        if (identifier.index != TreeItemIdentifier.kAll)
                                         {
-                                            m_AssemblySelection.selection.Add(assemblyNameWithIndex);
+                                            m_Selection.selection.Add(nameWithIndex);
                                         }
                                     }
                                 }
                             }
                         }
-                        else if (item.assemblyIdentifier.index == AssemblyIdentifier.kAll)
+                        else if (item.TreeItemIdentifier.index == TreeItemIdentifier.kAll)
                         {
                             // Record active groups
                             if (newState)
                             {
-                                if (!m_AssemblySelection.groups.Contains(item.assemblyIdentifier.assemblyNameWithIndex))
-                                    m_AssemblySelection.groups.Add(item.assemblyIdentifier.assemblyNameWithIndex);
+                                if (!m_Selection.groups.Contains(item.TreeItemIdentifier.nameWithIndex))
+                                    m_Selection.groups.Add(item.TreeItemIdentifier.nameWithIndex);
                             }
                             else
                             {
-                                m_AssemblySelection.groups.Remove(item.assemblyIdentifier.assemblyNameWithIndex);
+                                m_Selection.groups.Remove(item.TreeItemIdentifier.nameWithIndex);
                                 // When turning off a sub group, turn of the 'all' group too
-                                m_AssemblySelection.groups.Remove(m_AllAssemblyIdentifier.assemblyNameWithIndex);
+                                m_Selection.groups.Remove(m_AllIdentifier.nameWithIndex);
                             }
 
                             // Update selection
                             if (newState)
                             {
-                                foreach (string assemblyNameWithIndex in m_AssemblyNames)
+                                foreach (string nameWithIndex in m_Names)
                                 {
-                                    var assemblyIdentifier = new AssemblyIdentifier(assemblyNameWithIndex);
-                                    if (assemblyIdentifier.name == item.assemblyIdentifier.name &&
-                                        assemblyIdentifier.index != AssemblyIdentifier.kAll)
+                                    var identifier = new TreeItemIdentifier(nameWithIndex);
+                                    if (identifier.name == item.TreeItemIdentifier.name &&
+                                        identifier.index != TreeItemIdentifier.kAll)
                                     {
-                                        if (!m_AssemblySelection.selection.Contains(assemblyNameWithIndex))
-                                            m_AssemblySelection.selection.Add(assemblyNameWithIndex);
+                                        if (!m_Selection.selection.Contains(nameWithIndex))
+                                            m_Selection.selection.Add(nameWithIndex);
                                     }
                                 }
                             }
                             else
                             {
                                 var removeSelection = new List<string>();
-                                foreach (string assemblyNameWithIndex in m_AssemblySelection.selection)
+                                foreach (string nameWithIndex in m_Selection.selection)
                                 {
-                                    var assemblyIdentifier = new AssemblyIdentifier(assemblyNameWithIndex);
-                                    if (assemblyIdentifier.name == item.assemblyIdentifier.name &&
-                                        assemblyIdentifier.index != AssemblyIdentifier.kAll)
+                                    var identifier = new TreeItemIdentifier(nameWithIndex);
+                                    if (identifier.name == item.TreeItemIdentifier.name &&
+                                        identifier.index != TreeItemIdentifier.kAll)
                                     {
-                                        removeSelection.Add(assemblyNameWithIndex);
+                                        removeSelection.Add(nameWithIndex);
                                     }
                                 }
-                                foreach (string assemblyNameWithIndex in removeSelection)
+                                foreach (string nameWithIndex in removeSelection)
                                 {
-                                    m_AssemblySelection.selection.Remove(assemblyNameWithIndex);
+                                    m_Selection.selection.Remove(nameWithIndex);
                                 }
                             }
                         }
@@ -541,19 +531,19 @@ namespace Unity.ProjectAuditor.Editor
                         {
                             if (newState)
                             {
-                                m_AssemblySelection.selection.Add(item.assemblyIdentifier.assemblyNameWithIndex);
+                                m_Selection.selection.Add(item.TreeItemIdentifier.nameWithIndex);
                             }
                             else
                             {
-                                m_AssemblySelection.selection.Remove(item.assemblyIdentifier.assemblyNameWithIndex);
+                                m_Selection.selection.Remove(item.TreeItemIdentifier.nameWithIndex);
 
                                 // Turn off any group its in too
-                                var groupIdentifier = new AssemblyIdentifier(item.assemblyIdentifier);
+                                var groupIdentifier = new TreeItemIdentifier(item.TreeItemIdentifier);
                                 groupIdentifier.SetAll();
-                                m_AssemblySelection.groups.Remove(groupIdentifier.assemblyNameWithIndex);
+                                m_Selection.groups.Remove(groupIdentifier.nameWithIndex);
 
                                 // Turn of the 'all' group too
-                                m_AssemblySelection.groups.Remove(m_AllAssemblyIdentifier.assemblyNameWithIndex);
+                                m_Selection.groups.Remove(m_AllIdentifier.nameWithIndex);
                             }
                         }
                     }
@@ -570,7 +560,7 @@ namespace Unity.ProjectAuditor.Editor
             return false;
         }
 
-        struct HeaderData
+        public struct HeaderData
         {
             public GUIContent content;
             public float width;
@@ -588,16 +578,10 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        public static MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(float treeViewWidth)
+        public static MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(HeaderData[] headerData)
         {
             var columnList = new List<MultiColumnHeaderState.Column>();
-            HeaderData[] headerData = new HeaderData[]
-            {
-                new HeaderData("Assembly", "Assembly Name", 350, 100, true, false),
-                new HeaderData("Show", "Check to show this assembly in the analysis views", 40, 100, false, false),
-                new HeaderData("Group", "Assembly Group", 100, 100, true, false),
-
-            };
+            
             foreach (var header in headerData)
             {
                 columnList.Add(new MultiColumnHeaderState.Column
@@ -618,7 +602,7 @@ namespace Unity.ProjectAuditor.Editor
 
             var state = new MultiColumnHeaderState(columns);
             state.visibleColumns = new int[] {
-                        (int)MyColumns.AssemblyName,
+                        (int)MyColumns.ItemName,
                         (int)MyColumns.State,
                         //(int)MyColumns.GroupName
                     };

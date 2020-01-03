@@ -28,7 +28,6 @@ namespace Unity.ProjectAuditor.Editor
         private SearchField m_SearchField;
         
         [SerializeField] private bool m_ValidReport = false;
-        [SerializeField] private Area m_ActiveArea = Area.All;
         [SerializeField] private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
         [SerializeField] private bool m_ShowDetails = true;
         [SerializeField] private bool m_ShowRecommendation = true;
@@ -37,14 +36,14 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField] private string m_SearchText;
         [SerializeField] private bool m_DeveloperMode = false;
         
-        private static readonly string[] AreaEnumStrings = {
+        private static readonly string[] m_AreaNames = {
             "CPU",
             "GPU",
             "Memory",
             "Build Size",
-            "Load Times",
-            "All Areas"
+            "Load Times"
         };
+        private TreeViewSelection m_AreaSelection = null;
 
         internal static class LayoutSize
         {
@@ -118,8 +117,14 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 }
                 else
                 {
-                    m_AssemblySelection.SetAll();
+                    m_AssemblySelection.SetAll(m_AssemblyNames);
                 }
+            }
+
+            if (m_AreaSelection == null)
+            {
+                m_AreaSelection = new TreeViewSelection();
+                m_AreaSelection.SetAll(m_AreaNames);
             }
 
             m_CallHierarchyView = new CallHierarchyView(new TreeViewState());
@@ -158,8 +163,9 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             {
                 return false;
             }
-            
-            if (m_ActiveArea != Area.All && !AreaEnumStrings[(int)m_ActiveArea].Equals(issue.descriptor.area))
+
+            if (!m_AreaSelection.Contains(issue.descriptor.area) &&
+                !m_AreaSelection.ContainsGroup("All"))
             {
                 return false;
             }
@@ -431,85 +437,95 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             EditorGUILayout.EndVertical();
         }
         
-        // SteveM TODO - This seems wildly more complex than it needs to be... UNLESS assemblies can have sub-assemblies?
-        // If that's the case, we need to test for that. Otherwise we need to strip a bunch of this complexity out.
         string GetSelectedAssembliesSummary()
         {
-            if (m_AssemblySelection.selection == null || m_AssemblySelection.selection.Count == 0)
+            return GetSelectedSummary(m_AssemblySelection, m_AssemblyNames);
+        }
+        
+        string GetSelectedAreasSummary()
+        {
+            return GetSelectedSummary(m_AreaSelection, m_AreaNames);
+        }
+
+        // SteveM TODO - This seems wildly more complex than it needs to be... UNLESS assemblies can have sub-assemblies?
+        // If that's the case, we need to test for that. Otherwise we need to strip a bunch of this complexity out.
+        string GetSelectedSummary(TreeViewSelection selection, string[] names)
+        {
+            if (selection.selection == null || selection.selection.Count == 0)
                 return "None";
 
-            // Count all assemblies in a group
-            var assemblyDict = new Dictionary<string, int>();
-            var assemblySelectionDict = new Dictionary<string, int>();
-            foreach (var assemblyNameWithIndex in m_AssemblyNames)
+            // Count all items in a group
+            var dict = new Dictionary<string, int>();
+            var selectionDict = new Dictionary<string, int>();
+            foreach (var nameWithIndex in names)
             {
-                var assemblyIdentifier = new AssemblyIdentifier(assemblyNameWithIndex);
-                if (assemblyIdentifier.index == AssemblyIdentifier.kAll)
+                var identifier = new TreeItemIdentifier(nameWithIndex);
+                if (identifier.index == TreeItemIdentifier.kAll)
                     continue;
 
                 int count;
-                if (assemblyDict.TryGetValue(assemblyIdentifier.name, out count))
-                    assemblyDict[assemblyIdentifier.name] = count + 1;
+                if (dict.TryGetValue(identifier.name, out count))
+                    dict[identifier.name] = count + 1;
                 else
-                    assemblyDict[assemblyIdentifier.name] = 1;
+                    dict[identifier.name] = 1;
 
-                assemblySelectionDict[assemblyIdentifier.name] = 0;
+                selectionDict[identifier.name] = 0;
             }
 
-            // Count all the assemblies we have 'selected' in a group
-            foreach (var assemblyNameWithIndex in m_AssemblySelection.selection)
+            // Count all the items we have 'selected' in a group
+            foreach (var nameWithIndex in selection.selection)
             {
-                var assemblyIdentifier = new AssemblyIdentifier(assemblyNameWithIndex);
+                var identifier = new TreeItemIdentifier(nameWithIndex);
 
-                if (assemblyDict.ContainsKey(assemblyIdentifier.name) &&
-                    assemblySelectionDict.ContainsKey(assemblyIdentifier.name) &&
-                    assemblyIdentifier.index <= assemblyDict[assemblyIdentifier.name])
+                if (dict.ContainsKey(identifier.name) &&
+                    selectionDict.ContainsKey(identifier.name) &&
+                    identifier.index <= dict[identifier.name])
                 {
                     // Selected thread valid and in the thread list
                     // and also within the range of valid threads for this data set
-                    assemblySelectionDict[assemblyIdentifier.name]++;
+                    selectionDict[identifier.name]++;
                 }
             }
 
-            // Count all assembly groups where we have 'selected all the assemblies'
-            int assembliesSelected = 0;
-            foreach (var assemblyName in assemblyDict.Keys)
+            // Count all groups where we have 'selected all the items'
+            int selectedCount = 0;
+            foreach (var name in dict.Keys)
             {
-                if (assemblySelectionDict[assemblyName] != assemblyDict[assemblyName])
+                if (selectionDict[name] != dict[name])
                     continue;
 
-                assembliesSelected++;
+                selectedCount++;
             }
             
-            // If we've just added all the assembly names we have everything selected
-            // Note we don't compare against the m_AssemblyNames directly as this contains the 'all' versions
-            if (assembliesSelected == assemblyDict.Keys.Count)
+            // If we've just added all the item names we have everything selected
+            // Note we don't compare against the names array directly as this contains the 'all' versions
+            if (selectedCount == dict.Keys.Count)
                 return "All";
 
-            // Add all the individual assemblies were we haven't already added the group
-            List<string> assemblies = new List<string>();
-            foreach (var assemblyName in assemblySelectionDict.Keys)
+            // Add all the individual items were we haven't already added the group
+            List<string> individualItems = new List<string>();
+            foreach (var name in selectionDict.Keys)
             {
-                int selectionCount = assemblySelectionDict[assemblyName];
+                int selectionCount = selectionDict[name];
                 if (selectionCount <= 0)
                     continue;
-                int threadCount = assemblyDict[assemblyName];
-                if (threadCount == 1)
-                    assemblies.Add(assemblyName);
-                else if (selectionCount != threadCount)
-                    assemblies.Add(string.Format("{0} ({1} of {2})", assemblyName, selectionCount, threadCount));
+                int itemCount = dict[name];
+                if (itemCount == 1)
+                    individualItems.Add(name);
+                else if (selectionCount != itemCount)
+                    individualItems.Add(string.Format("{0} ({1} of {2})", name, selectionCount, itemCount));
                 else
-                    assemblies.Add(string.Format("{0} (All)", assemblyName));
+                    individualItems.Add(string.Format("{0} (All)", name));
             }
 
             // Maintain alphabetical order
-            assemblies.Sort(CompareUINames);
+            individualItems.Sort(CompareUINames);
 
-            if (assemblies.Count == 0)
+            if (individualItems.Count == 0)
                 return "None";
 
-            string threadsSelectedText = string.Join(", ", assemblies.ToArray());
-            return threadsSelectedText;
+            string selectedText = string.Join(", ", individualItems.ToArray());
+            return selectedText;
         }
         
         private int CompareUINames(string a, string b)
@@ -570,13 +586,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 GUI.Label(rect, content, textStyle);
             }
         }
-        
-        private void ShowSelectedAssemblies()
-        {
-            string selectedAssemblies = GetSelectedAssembliesSummary();
-            DrawSelectedText(selectedAssemblies);
-        }
-        
+
         private void DrawAssemblyFilter()
         {
             EditorGUILayout.BeginHorizontal();
@@ -605,7 +615,51 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 }
 
                 GUI.enabled = lastEnabled;
-                ShowSelectedAssemblies();
+                
+                string selectedSummary = GetSelectedAssembliesSummary();
+                DrawSelectedText(selectedSummary);
+                
+                GUILayout.FlexibleSpace();
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+        
+        // SteveM TODO - if AssemblySelectionWindow and AreaSelectionWindow end up sharing a common base class then
+        // DrawAssemblyFilter() and DrawAreaFilter() can be made to call a common method and just pass the selection, names
+        // and the type of window we want.
+        private void DrawAreaFilter()
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(Styles.areaFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
+            
+            if (m_AreaNames.Length > 0)
+            {
+                bool lastEnabled = GUI.enabled;
+                // SteveM TODO - We don't currently have any sense of when the Auditor is busy and should disallow user input
+                bool enabled = /*!IsAnalysisRunning() &&*/ !AreaSelectionWindow.IsOpen();
+                GUI.enabled = enabled;
+                if (GUILayout.Button(Styles.areaFilterSelect, EditorStyles.miniButton, GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
+                {
+                    // Note: Window auto closes as it loses focus so this isn't strictly required
+                    if (AreaSelectionWindow.IsOpen())
+                    {
+                        AreaSelectionWindow.CloseAll();
+                    }
+                    else
+                    {
+                        Vector2 windowPosition = new Vector2(Event.current.mousePosition.x + LayoutSize.FilterOptionsEnumWidth, Event.current.mousePosition.y + GUI.skin.label.lineHeight);
+                        Vector2 screenPosition = GUIUtility.GUIToScreenPoint(windowPosition);
+
+                        AreaSelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AreaSelection, m_AreaNames);
+                    }
+                }
+
+                GUI.enabled = lastEnabled;
+                
+                string selectedSummary = GetSelectedAreasSummary();
+                DrawSelectedText(selectedSummary);
+                
                 GUILayout.FlexibleSpace();
             }
 
@@ -620,15 +674,15 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.ToolbarWidth));
 
             {
-                DrawAssemblyFilter();
-                
                 EditorGUILayout.BeginHorizontal();
                 
-                var area = (Area)EditorGUILayout.Popup((int)m_ActiveArea, AreaEnumStrings, GUILayout.MaxWidth(150));
                 var mode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, m_ProjectAuditor.auditorNames, GUILayout.MaxWidth(150), GUILayout.ExpandWidth(true));
 
                 EditorGUILayout.EndHorizontal();
 
+                DrawAssemblyFilter();
+                DrawAreaFilter();
+                
                 EditorGUI.BeginChangeCheck();
 
                 var searchRect = GUILayoutUtility.GetRect(1, 1, 18, 18, GUILayout.ExpandWidth(true), GUILayout.Width(200));
@@ -686,9 +740,8 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
     	            shouldRefresh = true;
         	    }
 
-                if (shouldRefresh || m_ActiveArea != area  || m_ActiveMode != mode)
+                if (shouldRefresh || m_ActiveMode != mode)
                 {
-                    m_ActiveArea = area;
                     m_ActiveMode = mode;
                     RefreshDisplay();
                 }
@@ -696,9 +749,15 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             EditorGUILayout.EndVertical();            
         }
         
-        public void SetAssemblySelection(TreeViewSelection assemblySelection)
+        public void SetAssemblySelection(TreeViewSelection selection)
         {
-            m_AssemblySelection = assemblySelection;
+            m_AssemblySelection = selection;
+            RefreshDisplay();
+        }
+        
+        public void SetAreaSelection(TreeViewSelection selection)
+        {
+            m_AreaSelection = selection;
             RefreshDisplay();
         }
         

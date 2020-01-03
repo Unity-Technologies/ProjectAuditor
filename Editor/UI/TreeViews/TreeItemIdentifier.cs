@@ -1,43 +1,43 @@
-﻿
-using System;
+﻿using System;
+using UnityEditor.IMGUI.Controls;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public struct AssemblyIdentifier
+    public struct TreeItemIdentifier
     {
-        public string assemblyNameWithIndex { get; private set; }
+        public string nameWithIndex { get; private set; }
         public string name { get; private set; }
         // SteveM TODO - Pretty sure this can go. Assemblies don't have indeces. I think the most we'll need is a flag
-        // to say whether this is the "All" AssemblyIdentifier (i.e. (assemblyNameWithIndex == "All"))
+        // to say whether this is the "All" TreeItemIdentifier (i.e. (nameWithIndex == "All"))
         public int index { get; private set; }
 
         public static int kAll = -1;
         public static int kSingle = 0;
 
-        public AssemblyIdentifier(string name, int index)
+        public TreeItemIdentifier(string name, int index)
         {
             this.name = name;
             this.index = index;
             if (index == kAll)
-                assemblyNameWithIndex = string.Format("All:{1}", index, name);
+                nameWithIndex = string.Format("All:{1}", index, name);
             else
-                assemblyNameWithIndex = string.Format("{0}:{1}", index, name);
+                nameWithIndex = string.Format("{0}:{1}", index, name);
         }
 
-        public AssemblyIdentifier(AssemblyIdentifier assemblyIdentifier)
+        public TreeItemIdentifier(TreeItemIdentifier treeItemIdentifier)
         {
-            name = assemblyIdentifier.name;
-            index = assemblyIdentifier.index;
-            assemblyNameWithIndex = assemblyIdentifier.assemblyNameWithIndex;
+            name = treeItemIdentifier.name;
+            index = treeItemIdentifier.index;
+            nameWithIndex = treeItemIdentifier.nameWithIndex;
         }
 
-        public AssemblyIdentifier(string assemblyNameWithIndex)
+        public TreeItemIdentifier(string nameWithIndex)
         {
             // SteveM TODO - Pretty sure this can go. Assembly names don't have a foo:N (or N:foo?) naming convention like threads do.
             // So index should probably always be treated as 0 (sorry, "kSingle")
-            this.assemblyNameWithIndex = assemblyNameWithIndex;
+            this.nameWithIndex = nameWithIndex;
 
-            string[] tokens = assemblyNameWithIndex.Split(':');
+            string[] tokens = nameWithIndex.Split(':');
             if (tokens.Length >= 2)
             {
                 name = tokens[1];
@@ -58,16 +58,16 @@ namespace Unity.ProjectAuditor.Editor
             else
             {
                 index = kSingle;
-                name = assemblyNameWithIndex;
+                name = nameWithIndex;
             }
         }
 
         void UpdateAssemblyNameWithIndex()
         {
             if (index == kAll)
-                assemblyNameWithIndex = string.Format("All:{1}", index, name);
+                nameWithIndex = string.Format("All:{1}", index, name);
             else
-                assemblyNameWithIndex = string.Format("{0}:{1}", index, name);
+                nameWithIndex = string.Format("{0}:{1}", index, name);
         }
 
         public void SetName(string newName)
@@ -85,6 +85,16 @@ namespace Unity.ProjectAuditor.Editor
         public void SetAll()
         {
             SetIndex(kAll);
+        }
+    }
+    
+    class SelectionWindowTreeViewItem : TreeViewItem
+    {
+        public readonly TreeItemIdentifier TreeItemIdentifier;
+
+        public SelectionWindowTreeViewItem(int id, int depth, string displayName, TreeItemIdentifier treeItemIdentifier) : base(id, depth, displayName)
+        {
+            this.TreeItemIdentifier = treeItemIdentifier;
         }
     }
 }
