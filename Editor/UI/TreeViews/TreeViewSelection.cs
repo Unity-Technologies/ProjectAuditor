@@ -14,12 +14,12 @@ namespace Unity.ProjectAuditor.Editor
             selection = new List<string>();
         }
 
-        public TreeViewSelection(TreeViewSelection threadSelection)
+        public TreeViewSelection(TreeViewSelection selection)
         {
             groups = new List<string>();
-            selection = new List<string>();
+            this.selection = new List<string>();
 
-            Set(threadSelection);
+            Set(selection);
         }
 
         public void SetAll(string[] names)
@@ -58,15 +58,15 @@ namespace Unity.ProjectAuditor.Editor
             groups.Add(allTreeViewSelection.nameWithIndex);
         }
 
-        public void Set(TreeViewSelection threadSelection)
+        public void Set(TreeViewSelection selection)
         {
             groups.Clear();
-            selection.Clear();
+            this.selection.Clear();
 
-            if (threadSelection.groups != null)
-                groups.AddRange(threadSelection.groups);
-            if (threadSelection.selection != null)
-                selection.AddRange(threadSelection.selection);
+            if (selection.groups != null)
+                groups.AddRange(selection.groups);
+            if (selection.selection != null)
+                this.selection.AddRange(selection.selection);
         }
 
         public bool Contains(string name)

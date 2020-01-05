@@ -4,7 +4,7 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class AssemblySelectionWindow : EditorWindow
+    internal class AssemblySelectionWindow : EditorWindow
     {
         ProjectAuditorWindow m_ProjectAuditorWindow;
         TreeViewState m_TreeViewState;

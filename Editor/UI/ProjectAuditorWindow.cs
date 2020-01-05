@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class ProjectAuditorWindow : EditorWindow, IHasCustomMenu
+    internal class ProjectAuditorWindow : EditorWindow, IHasCustomMenu
     {       
         private ProjectAuditor m_ProjectAuditor;
         [SerializeField] private ProjectReport m_ProjectReport;
@@ -23,6 +23,7 @@ namespace Unity.ProjectAuditor.Editor
         
         private string[] m_AssemblyNames;
         private TreeViewSelection m_AssemblySelection = null;
+        [SerializeField] private string m_AssemblySelectionSummary;
         private const string m_DefaultAssemblyName = "Assembly-CSharp";
         
         private SearchField m_SearchField;
@@ -44,6 +45,7 @@ namespace Unity.ProjectAuditor.Editor
             "Load Times"
         };
         private TreeViewSelection m_AreaSelection = null;
+        [SerializeField] private string m_AreaSelectionSummary;
 
         internal static class LayoutSize
         {
@@ -53,6 +55,7 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly int FoldoutMaxHeight = 220;
             public static readonly int FilterOptionsLeftLabelWidth = 100;
             public static readonly int FilterOptionsEnumWidth = 50;
+            public static readonly int ModeTabWidth = 300;
         };
 
         internal static class Styles
@@ -111,7 +114,21 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             if (m_AssemblySelection == null)
             {
                 m_AssemblySelection = new TreeViewSelection();
-                if (m_AssemblyNames.Contains(m_DefaultAssemblyName))
+                
+                if(!string.IsNullOrEmpty(m_AssemblySelectionSummary))
+                {
+                    if(m_AssemblySelectionSummary == "All")
+                        m_AssemblySelection.SetAll(m_AssemblyNames);
+                    else if (m_AssemblySelectionSummary != "None")
+                    {
+                        string[] assemblies = m_AssemblySelectionSummary.Split(new string[] { ", " }, StringSplitOptions.None);
+                        foreach (string assembly in assemblies)
+                        {
+                            m_AssemblySelection.selection.Add(assembly);
+                        }
+                    }
+                }
+                else if (m_AssemblyNames.Contains(m_DefaultAssemblyName))
                 {
                     m_AssemblySelection.Set(m_DefaultAssemblyName);    
                 }
@@ -124,7 +141,23 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             if (m_AreaSelection == null)
             {
                 m_AreaSelection = new TreeViewSelection();
-                m_AreaSelection.SetAll(m_AreaNames);
+                if(!string.IsNullOrEmpty(m_AreaSelectionSummary))
+                {
+                    if(m_AreaSelectionSummary == "All")
+                        m_AreaSelection.SetAll(m_AreaNames);
+                    else if (m_AreaSelectionSummary != "None")
+                    {
+                        string[] areas = m_AreaSelectionSummary.Split(new string[] { ", " }, StringSplitOptions.None);
+                        foreach (string area in areas)
+                        {
+                            m_AreaSelection.selection.Add(area);
+                        }
+                    }
+                }
+                else
+                {
+                    m_AreaSelection.SetAll(m_AreaNames);    
+                }
             }
 
             m_CallHierarchyView = new CallHierarchyView(new TreeViewState());
@@ -616,8 +649,8 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
 
                 GUI.enabled = lastEnabled;
                 
-                string selectedSummary = GetSelectedAssembliesSummary();
-                DrawSelectedText(selectedSummary);
+                m_AssemblySelectionSummary = GetSelectedAssembliesSummary();
+                DrawSelectedText(m_AssemblySelectionSummary);
                 
                 GUILayout.FlexibleSpace();
             }
@@ -657,8 +690,8 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
 
                 GUI.enabled = lastEnabled;
                 
-                string selectedSummary = GetSelectedAreasSummary();
-                DrawSelectedText(selectedSummary);
+                m_AreaSelectionSummary = GetSelectedAreasSummary();
+                DrawSelectedText(m_AreaSelectionSummary);
                 
                 GUILayout.FlexibleSpace();
             }
@@ -671,12 +704,12 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             if (!IsAnalysisValid())
                 return;
             
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.ToolbarWidth));
+            EditorGUILayout.BeginVertical(GUI.skin.box/*, GUILayout.Width(LayoutSize.ToolbarWidth), GUILayout.ExpandWidth(true)*/);
 
             {
                 EditorGUILayout.BeginHorizontal();
                 
-                var mode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, m_ProjectAuditor.auditorNames, GUILayout.MaxWidth(150), GUILayout.ExpandWidth(true));
+                var mode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, m_ProjectAuditor.auditorNames, GUILayout.MaxWidth(LayoutSize.ModeTabWidth)/*, GUILayout.ExpandWidth(true)*/);
 
                 EditorGUILayout.EndHorizontal();
 
