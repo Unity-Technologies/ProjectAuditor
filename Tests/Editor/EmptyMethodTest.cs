@@ -14,7 +14,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		public void SetUp()
 		{
 			 m_MonoBehaviourWithEmptyMagicMethod = new ScriptResource("MonoBehaviourWithEmptyMagicMethod.cs", "using UnityEngine; class MyBaseClass : MonoBehaviour { } class MonoBehaviourWithEmptyMagicMethod : MyBaseClass { void Update() { } }");
-			 m_MonoBehaviourWithEmptyMethod = new ScriptResource("MonoBehaviourWithEmptyMethod.cs", "class MonoBehaviourWithEmptyMethod { void NotMagicMethod() { } }");
+			 m_MonoBehaviourWithEmptyMethod = new ScriptResource("MonoBehaviourWithEmptyMethod.cs", "using UnityEngine; class MonoBehaviourWithEmptyMethod : MonoBehaviour{ void NotMagicMethod() { } }");
 			 m_NotMonoBehaviourWithEmptyMethod = new ScriptResource("NotMonoBehaviourWithEmptyMethod.cs", "class NotMonoBehaviourWithEmptyMethod { void Update() { } }");
 		}
 
@@ -68,4 +68,3 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		}
 	}	
 }
-
