@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -11,11 +12,11 @@ namespace Unity.ProjectAuditor.Editor
         private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
         {
             id = 10201,
-            description = "Empty Method",
+            description = "Empty MonoBehaviour Method",
             type = string.Empty,
             method = string.Empty,
             area = "CPU",
-            problem = "Any empty Awake/Start/Update/LateUpdate/FixedUpdate will be included in the build and executed anyway.",
+            problem = "Any empty MonoBehaviour magic method will be included in the build and executed anyway.",
             solution = "Remove any empty MonoBehaviour methods."
         };
 
@@ -23,6 +24,9 @@ namespace Unity.ProjectAuditor.Editor
         {
             return descriptor;
         }
+
+        private string[] m_MonoBehaviourMagicMethods = new[]
+            {"Awake", "Start", "OnEnable", "OnDisable", "Update", "LateUpdate", "OnEnable", "FixedUpdate"};
         
         public EmptyMethodAnalyzer(ScriptAuditor auditor)
         {
@@ -37,6 +41,9 @@ namespace Unity.ProjectAuditor.Editor
             if (!MonoCecilHelper.IsMonoBehaviour(methodDefinition.DeclaringType))
                 return null;
 
+            if (!m_MonoBehaviourMagicMethods.Contains(methodDefinition.Name))
+                return null;
+            
             var calleeNode = new CallTreeNode(methodDefinition.FullName);
             return new ProjectIssue
             {
