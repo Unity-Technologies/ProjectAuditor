@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
@@ -7,6 +6,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
 {
     internal static class MonoCecilHelper
     {
+        private static readonly int objectHashCode = "System.Object".GetHashCode();
+        private static readonly int monoBehaviourHashCode = "UnityEngine.MonoBehaviour".GetHashCode();
+        
         public static IEnumerable<TypeDefinition> AggregateAllTypeDefinitions(IEnumerable<TypeDefinition> types)
         {
             var typeDefs = types.ToList();
@@ -20,17 +22,14 @@ namespace Unity.ProjectAuditor.Editor.Utils
         
         public static bool IsMonoBehaviour(TypeDefinition typeDefinition)
         {
-            if (typeDefinition.BaseType.FullName.Equals("UnityEngine.MonoBehaviour"))
+            var baseType = typeDefinition.BaseType;
+            if (baseType.FullName.GetHashCode() == monoBehaviourHashCode)
                 return true;
 
-            try
-            {
-                return IsMonoBehaviour( typeDefinition.BaseType.Resolve());
-            }
-            catch (Exception e)
-            {
+            if (baseType.FullName.GetHashCode() == objectHashCode)
                 return false;
-            }            
+            
+            return IsMonoBehaviour( baseType.Resolve());
         }
     }
 }
