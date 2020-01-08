@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor
             if (userAssemblies.Count > 0)
             {
                 m_AssemblyResolver = new DefaultAssemblyResolver();
-#if UNITY_2018_2_OR_NEWER
+#if UNITY_2019_1_OR_NEWER
                 List<string> assemblyPaths = new List<string>();
                 assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(CompilationPipeline.PrecompiledAssemblySources
                     .UserAssembly));
