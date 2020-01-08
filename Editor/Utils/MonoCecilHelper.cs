@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
@@ -28,8 +30,17 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             if (baseType.FullName.GetHashCode() == objectHashCode)
                 return false;
+
+            try
+            {
+                return IsMonoBehaviour( baseType.Resolve());
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Cannot Resolve BaseType " + baseType.FullName);
+                return false;
+            }
             
-            return IsMonoBehaviour( baseType.Resolve());
         }
     }
 }
