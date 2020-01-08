@@ -8,7 +8,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
 {
     internal static class MonoCecilHelper
     {
-        private static readonly int objectHashCode = "System.Object".GetHashCode();
         private static readonly int monoBehaviourHashCode = "UnityEngine.MonoBehaviour".GetHashCode();
         
         public static IEnumerable<TypeDefinition> AggregateAllTypeDefinitions(IEnumerable<TypeDefinition> types)
@@ -22,25 +21,17 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return typeDefs;
         }
         
-        public static bool IsMonoBehaviour(TypeDefinition typeDefinition)
+        public static bool IsMonoBehaviour(TypeReference typeReference)
         {
-            var baseType = typeDefinition.BaseType;
-            if (baseType.FullName.GetHashCode() == monoBehaviourHashCode)
+            var typeDefinition = typeReference.Resolve();
+
+            if (typeDefinition.FullName.GetHashCode() == monoBehaviourHashCode && typeDefinition.Module.Name.Equals("UnityEngine.CoreModule.dll"))
                 return true;
 
-            if (baseType.FullName.GetHashCode() == objectHashCode)
-                return false;
+            if (typeDefinition.BaseType != null)
+                return IsMonoBehaviour(typeDefinition.BaseType);
 
-            try
-            {
-                return IsMonoBehaviour( baseType.Resolve());
-            }
-            catch (Exception e)
-            {
-                Debug.Log("Cannot Resolve BaseType " + baseType.FullName);
-                return false;
-            }
-            
+            return false;
         }
     }
 }
