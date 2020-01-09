@@ -29,7 +29,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		[Test]
 		public void MonoBehaviourWithEmptyMagicMethodIsReported()
 		{
-			var scriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_MonoBehaviourWithEmptyMagicMethod.relativePath);
+			var scriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_MonoBehaviourWithEmptyMagicMethod);
 			
 			Assert.AreEqual(1, scriptIssues.Count());
 
@@ -54,7 +54,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		[Test]
 		public void MonoBehaviourWithEmptyMethodIsNotReported()
 		{
-			var scriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_MonoBehaviourWithEmptyMethod.relativePath);
+			var scriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_MonoBehaviourWithEmptyMethod);
 			
 			Assert.AreEqual(0, scriptIssues.Count());
 		}
@@ -62,7 +62,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		[Test]
 		public void NotMonoBehaviourWithEmptyMethodIsNotReported()
 		{
-			var scriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_NotMonoBehaviourWithEmptyMethod.relativePath);
+			var scriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_NotMonoBehaviourWithEmptyMethod);
 			
 			Assert.AreEqual(0, scriptIssues.Count());
 		}

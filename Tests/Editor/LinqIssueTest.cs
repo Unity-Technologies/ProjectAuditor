@@ -23,7 +23,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		[Test]
 		public void LinqIssueIsReported()
 		{
-			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResource.relativePath);
+			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResource);
 			
 			Assert.AreEqual(1, issues.Count());
 			
