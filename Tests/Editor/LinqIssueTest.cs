@@ -4,8 +4,8 @@ using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class LinqIssueTest {
-
+	class LinqIssueTest
+	{
 		private ScriptResource m_ScriptResource;
 
 		[SetUp]
@@ -21,7 +21,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		}
 
 		[Test]
-		public void AnalysisTestPasses()
+		public void LinqIssueIsReported()
 		{
 			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResource.relativePath);
 			

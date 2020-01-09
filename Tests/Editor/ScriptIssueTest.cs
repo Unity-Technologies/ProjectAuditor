@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class ScriptIssueTest {
-
+	class ScriptIssueTest
+	{
 		private ScriptResource m_ScriptResource;
 		
 		[SetUp]

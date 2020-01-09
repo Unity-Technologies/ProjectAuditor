@@ -4,10 +4,10 @@ using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class SettingIssueTest {
-		
+	class SettingIssueTest
+	{	
 		[Test]
-		public void AnalysisTestPasses()
+		public void SettingIssuesAreReported()
 		{
 			var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
