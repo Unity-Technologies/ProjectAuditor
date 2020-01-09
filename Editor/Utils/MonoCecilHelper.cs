@@ -23,7 +23,16 @@ namespace Unity.ProjectAuditor.Editor.Utils
         
         public static bool IsMonoBehaviour(TypeReference typeReference)
         {
-            var typeDefinition = typeReference.Resolve();
+            TypeDefinition typeDefinition = null;
+            try
+            {
+                typeDefinition = typeReference.Resolve();
+            }
+            catch (AssemblyResolutionException e)
+            {
+                Debug.LogWarning(e);
+                return false;
+            }
 
             if (typeDefinition.FullName.GetHashCode() == monoBehaviourHashCode && typeDefinition.Module.Name.Equals("UnityEngine.CoreModule.dll"))
                 return true;
