@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor
             auditor.RegisterDescriptor(descriptor);
         }
         
-        public ProjectIssue Analyze(Instruction inst)
+        public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             var type = (TypeReference) inst.Operand;
             if (type.IsGenericParameter)
