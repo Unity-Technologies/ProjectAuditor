@@ -90,7 +90,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		}
 
 		[Test]
-		public void BoxingGenericValueTypeIsReported()
+		public void BoxingGenericIsReported()
 		{
 			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceBoxingGeneric.relativePath);
 
