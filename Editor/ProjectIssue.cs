@@ -91,5 +91,31 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
         }
+
+        private ProjectIssue()
+        {}
+        
+        public ProjectIssue(ProblemDescriptor descriptor,
+            string description,
+            IssueCategory category,
+            Location location = null)
+        {
+            this.descriptor = descriptor;
+            this.description = description;
+            this.category = category;
+            this.location = location;
+        }
+        
+        public ProjectIssue(ProblemDescriptor descriptor,
+            string description,
+            IssueCategory category,
+            CallTreeNode callTreeNode)
+        {
+            this.descriptor = descriptor;
+            this.description = description;
+            this.category = category;
+            this.callTree = callTreeNode;
+        }
+
     }
 }

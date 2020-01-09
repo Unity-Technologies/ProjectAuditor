@@ -44,14 +44,13 @@ namespace Unity.ProjectAuditor.Editor
             if (!m_MonoBehaviourMagicMethods.Contains(methodDefinition.Name))
                 return null;
             
-            var calleeNode = new CallTreeNode(methodDefinition.FullName);
             return new ProjectIssue
-            {
-                description = methodDefinition.FullName,
-                category = IssueCategory.ApiCalls,
-                descriptor = descriptor,
-                callTree = calleeNode
-            };
+            (
+                descriptor,
+                methodDefinition.FullName,
+                IssueCategory.ApiCalls,
+                new CallTreeNode(methodDefinition.FullName)
+            );
         }
 
         public IEnumerable<OpCode> GetOpCodes()

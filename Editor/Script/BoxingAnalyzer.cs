@@ -61,12 +61,12 @@ namespace Unity.ProjectAuditor.Editor
             var calleeNode = new CallTreeNode(descriptor.description);
             
             return new ProjectIssue
-            {
-                description = description,
-                category = IssueCategory.ApiCalls,
-                descriptor = descriptor,
-                callTree = calleeNode
-            };
+            (
+                descriptor,
+                description,
+                IssueCategory.ApiCalls,
+                calleeNode
+            );
         }
 
         public IEnumerable<OpCode> GetOpCodes()

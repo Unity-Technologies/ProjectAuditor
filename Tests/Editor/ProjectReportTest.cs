@@ -25,9 +25,11 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			var projectReport = new ProjectReport();
 			
 			projectReport.AddIssue(new ProjectIssue
-			{
-				category = IssueCategory.ApiCalls								
-			});
+			(
+				new ProblemDescriptor{},
+				"dummy issue",
+				IssueCategory.ApiCalls								
+			));
 			
 			Assert.AreEqual(1, projectReport.NumTotalIssues);
 			Assert.AreEqual(1, projectReport.GetNumIssues(IssueCategory.ApiCalls));
@@ -40,29 +42,31 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			var projectReport = new ProjectReport();
 			
 			projectReport.AddIssue(new ProjectIssue
-			{
-				category = IssueCategory.ApiCalls,
-				descriptor = new ProblemDescriptor
+			(
+				new ProblemDescriptor
 				{
 					area = "CPU",
 					type = "SomeType",
 					method = "SomeMethod",
 					problem = "",
 					solution = ""
-				}
-			});
+				},
+				"dummy issue",
+				IssueCategory.ApiCalls
+			));
 			projectReport.AddIssue(new ProjectIssue
-			{
-				category = IssueCategory.ProjectSettings,
-				descriptor = new ProblemDescriptor
+			(
+				new ProblemDescriptor
 				{
 					area = "CPU",
 					type = "SomeType",
 					method = "SomeMethod",
 					problem = "",
 					solution = ""
-				}
-			});
+				},
+				"dummy issue #2",
+				IssueCategory.ProjectSettings
+			));
 
 			const string path = "ProjectAuditor_Report.csv";
 			projectReport.Export(path);

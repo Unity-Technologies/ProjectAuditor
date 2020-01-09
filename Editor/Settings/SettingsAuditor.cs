@@ -79,12 +79,12 @@ namespace Unity.ProjectAuditor.Editor
             if (mappings.Count() > 0)
                 projectWindowPath = mappings.First().Value;
             projectReport.AddIssue(new ProjectIssue
-            {
+            (
+                descriptor,
                 description = description,
-                category = IssueCategory.ProjectSettings,
-                descriptor = descriptor,
-                location = new Location {path = projectWindowPath}
-            });
+                IssueCategory.ProjectSettings,
+                new Location {path = projectWindowPath}
+            ));
         }
         
         private void SearchAndEval(ProblemDescriptor descriptor, ProjectReport projectReport)
