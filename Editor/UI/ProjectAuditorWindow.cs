@@ -107,8 +107,8 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         {
             m_ProjectAuditor = new ProjectAuditor();    
 
-            var assemblyNames = new List<string>();
-            assemblyNames.AddRange(m_ProjectAuditor.GetAuditor<ScriptAuditor>().assemblyNames);
+            var assemblyNames = m_ProjectAuditor.GetAuditor<ScriptAuditor>().assemblyNames.ToList();
+            assemblyNames.Sort();
             m_AssemblyNames = assemblyNames.ToArray();
 
             if (m_AssemblySelection == null)
