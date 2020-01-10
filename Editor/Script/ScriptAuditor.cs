@@ -66,26 +66,18 @@ namespace Unity.ProjectAuditor.Editor
 
         public void Audit( ProjectReport projectReport, IProgressBar progressBar = null)
         {
-            var userAssemblies = GetPlayerAssemblies();
-            if (userAssemblies.Count > 0)
+            if (AssemblyHelper.CompileAssemblies())
             {
+                var compiledAssemblyPaths = AssemblyHelper.GetCompiledAssemblyPaths();
+                    
                 m_AssemblyResolver = new DefaultAssemblyResolver();
-#if UNITY_2019_1_OR_NEWER
-                List<string> assemblyPaths = new List<string>();
-                assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(CompilationPipeline.PrecompiledAssemblySources
-                    .UserAssembly));
-                assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(CompilationPipeline.PrecompiledAssemblySources
-                    .UnityEngine));
-                foreach (var dir in assemblyPaths.Select(path => Path.GetDirectoryName(path)).Distinct())
+
+                foreach (var dir in AssemblyHelper.GetPrecompiledAssemblyDirectories())
                 {
                     m_AssemblyResolver.AddSearchDirectory(dir);    
                 }
-#else
-                m_AssemblyResolver.AddSearchDirectory(Path.Combine(EditorApplication.applicationContentsPath, "Managed", "UnityEngine"));
-#endif
-                m_AssemblyResolver.AddSearchDirectory(Path.Combine(EditorApplication.applicationContentsPath, "UnityExtensions", "Unity", "GUISystem"));
 
-                foreach (var dir in userAssemblies.Select(path => Path.GetDirectoryName(path)).Distinct())
+                foreach (var dir in AssemblyHelper.GetCompiledAssemblyDirectories())
                 {
                     m_AssemblyResolver.AddSearchDirectory(dir);    
                 }
@@ -96,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor
                     progressBar.Initialize("Analyzing Scripts", "Analyzing project scripts", m_PlayerAssemblies.Length);
 
                 // Analyse all Player assemblies, including Package assemblies.
-                foreach (var assemblyPath in userAssemblies)
+                foreach (var assemblyPath in compiledAssemblyPaths)
                 {
                     if (progressBar != null)
                         progressBar.AdvanceProgressBar(string.Format("Analyzing {0} scripts", Path.GetFileName(assemblyPath)));
@@ -116,34 +108,6 @@ namespace Unity.ProjectAuditor.Editor
                 callCrawler.BuildCallHierarchies(projectReport, progressBar);
             }            
         }
-        
-        private List<string> GetPlayerAssemblies()
-        {
-            List<string> assemblies = new List<string>();  
-#if UNITY_2018_2_OR_NEWER
-            var outputFolder = FileUtil.GetUniqueTempPathInProject();
-            if (Directory.Exists(outputFolder))
-                Directory.Delete(outputFolder, true);
-
-            ScriptCompilationSettings input = new ScriptCompilationSettings();
-            input.target = EditorUserBuildSettings.activeBuildTarget;
-            input.@group = EditorUserBuildSettings.selectedBuildTargetGroup;
-
-            var compilationResult = PlayerBuildInterface.CompilePlayerScripts(input, outputFolder);
-            foreach (var assembly in compilationResult.assemblies)
-            {
-                assemblies.Add(Path.Combine(outputFolder, assembly));    
-            }
-#else
-            // fallback to CompilationPipeline assemblies 
-            foreach (var playerAssembly in m_PlayerAssemblies)
-            {
-                assemblies.Add(playerAssembly.outputPath);                   
-            }   
-#endif
-            return assemblies;
-        }
-        
         private void AnalyzeAssembly(string assemblyPath, ProjectReport projectReport, CallCrawler callCrawler)
         {
             using (var a = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters() {ReadSymbols = true, AssemblyResolver = m_AssemblyResolver}))
