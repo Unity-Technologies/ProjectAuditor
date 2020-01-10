@@ -89,8 +89,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
             assemblyPaths.AddRange( Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath, "Managed",
                 "UnityEngine")).Where(path => Path.GetExtension(path).Equals(".dll")));
 #endif
-            assemblyPaths.AddRange( Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath, "UnityExtensions",
-                "Unity", "GUISystem")).Where(path => Path.GetExtension(path).Equals(".dll")));
+
+#if !UNITY_2019_2_OR_NEWER
+            var files = Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath, "UnityExtensions",
+                "Unity", "GUISystem"));
+            assemblyPaths.AddRange( files.Where(path => Path.GetExtension(path).Equals(".dll")));
+#endif
             return assemblyPaths;
         }
         
