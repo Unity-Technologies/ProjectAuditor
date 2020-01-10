@@ -65,22 +65,41 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 .UserAssembly));
             assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(CompilationPipeline.PrecompiledAssemblySources
                 .UnityEngine));
+#else
+            assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyNames().Select(a => CompilationPipeline.GetPrecompiledAssemblyPathFromAssemblyName(a)));
 #endif
             return assemblyPaths;
         }
 
         static public IEnumerable<string> GetPrecompiledAssemblyDirectories()
         {
-#if UNITY_2019_1_OR_NEWER
             foreach (var dir in GetPrecompiledAssemblyPaths().Select(path => Path.GetDirectoryName(path)).Distinct())
             {
                 yield return dir;
             }
-#else            
-            yield return Path.Combine(EditorApplication.applicationContentsPath, "Managed", "UnityEngine");
+        }
+        
+        static public IEnumerable<string> GetPrecompiledEngineAssemblyPaths()
+        {
+            var assemblyPaths = new List<string>();
+#if UNITY_2019_1_OR_NEWER
+            assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(CompilationPipeline.PrecompiledAssemblySources
+                .UnityEngine));
+#else
+            assemblyPaths.AddRange( Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath, "Managed",
+                "UnityEngine")).Where(path => Path.GetExtension(path).Equals(".dll")));
 #endif
-            yield return Path.Combine(EditorApplication.applicationContentsPath, "UnityExtensions", "Unity",
-                "GUISystem");
+            assemblyPaths.AddRange( Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath, "UnityExtensions",
+                "Unity", "GUISystem")).Where(path => Path.GetExtension(path).Equals(".dll")));
+            return assemblyPaths;
+        }
+        
+        static public IEnumerable<string> GetPrecompiledEngineAssemblyDirectories()
+        {
+            foreach (var dir in GetPrecompiledEngineAssemblyPaths().Select(path => Path.GetDirectoryName(path)).Distinct())
+            {
+                yield return dir;
+            }
         }
     }
 }

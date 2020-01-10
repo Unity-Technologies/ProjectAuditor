@@ -77,6 +77,11 @@ namespace Unity.ProjectAuditor.Editor
                     m_AssemblyResolver.AddSearchDirectory(dir);    
                 }
 
+                foreach (var dir in AssemblyHelper.GetPrecompiledEngineAssemblyDirectories())
+                {
+                    m_AssemblyResolver.AddSearchDirectory(dir);    
+                }
+
                 foreach (var dir in AssemblyHelper.GetCompiledAssemblyDirectories())
                 {
                     m_AssemblyResolver.AddSearchDirectory(dir);    
