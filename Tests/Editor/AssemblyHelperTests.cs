@@ -6,6 +6,21 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class AssemblyHelperTests
     {
+        private ScriptResource m_ScriptResource;
+
+        [OneTimeSetUp]
+        public void SetUp()
+        {
+            // this is required so the default assembly is generated
+            m_ScriptResource = new ScriptResource("MyClass.cs", "class MyClass { }");
+        }
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            m_ScriptResource.Delete();
+        }
+        
         [Test]
         public void DefaultAssemblyPathIsFound()
         {
