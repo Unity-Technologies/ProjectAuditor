@@ -30,24 +30,6 @@ namespace Unity.ProjectAuditor.Editor
         
         private string[] m_AuditorNames;
         
-        public string[] auditorNames
-        {
-            get
-            {
-                if (m_AuditorNames != null)
-                    return m_AuditorNames;
-
-                List<string> names = new List<string>();
-                foreach (var auditor in m_Auditors)
-                {
-                    names.Add(auditor.GetUIName());                    
-                }
-
-                m_AuditorNames = names.ToArray();
-                return m_AuditorNames;
-            }
-        }
-
         private static string m_DataPath;
 
         private static string dataPath
