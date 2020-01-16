@@ -17,15 +17,13 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class ScriptAuditor : IAuditor
     {
-        private List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
         private List<ProblemDescriptor> m_ProblemDescriptors;
-        private List<OpCode> m_OpCodes = new List<OpCode>();
-        
-        private UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
-
         private string[] m_AssemblyNames;
-
         private DefaultAssemblyResolver m_AssemblyResolver;
+
+        private readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
+        private readonly List<OpCode> m_OpCodes = new List<OpCode>();
+        private readonly UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
                 
         public string[] assemblyNames
         {
@@ -34,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor
                 if (m_AssemblyNames != null)
                     return m_AssemblyNames;
 
-                List<string> names = new List<string>();
+                var names = new List<string>();
                 foreach (var assembly in m_PlayerAssemblies)
                 {
                     names.Add(assembly.name);                    
@@ -54,11 +52,6 @@ namespace Unity.ProjectAuditor.Editor
 #endif
         }
 
-        public string GetUIName()
-        {
-            return "Scripts";
-        }
-
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             return m_ProblemDescriptors;
@@ -71,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 m_AssemblyResolver = new DefaultAssemblyResolver();
 #if UNITY_2019_1_OR_NEWER
-                List<string> assemblyPaths = new List<string>();
+                var assemblyPaths = new List<string>();
                 assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(CompilationPipeline.PrecompiledAssemblySources
                     .UserAssembly));
                 assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(CompilationPipeline.PrecompiledAssemblySources
@@ -119,13 +112,13 @@ namespace Unity.ProjectAuditor.Editor
         
         private List<string> GetPlayerAssemblies()
         {
-            List<string> assemblies = new List<string>();  
+            var assemblies = new List<string>();  
 #if UNITY_2018_2_OR_NEWER
             var outputFolder = FileUtil.GetUniqueTempPathInProject();
             if (Directory.Exists(outputFolder))
                 Directory.Delete(outputFolder, true);
 
-            ScriptCompilationSettings input = new ScriptCompilationSettings();
+            var input = new ScriptCompilationSettings();
             input.target = EditorUserBuildSettings.activeBuildTarget;
             input.@group = EditorUserBuildSettings.selectedBuildTargetGroup;
 
@@ -163,7 +156,7 @@ namespace Unity.ProjectAuditor.Editor
             if (!caller.DebugInformation.HasSequencePoints)
                 return;
             
-            CallTreeNode callerNode = new CallTreeNode(caller);
+             var callerNode = new CallTreeNode(caller);
 
             foreach (var inst in caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode)))
             {
@@ -179,7 +172,7 @@ namespace Unity.ProjectAuditor.Editor
                     }
                 }
 
-                Location location = callerNode.location = new Location
+                var location = callerNode.location = new Location
                     {path = s.Document.Url.Replace("\\", "/"), line = s.StartLine};
                     
                 if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
@@ -223,7 +216,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public IEnumerable<Type> GetAnalyzerTypes(Assembly assembly)
         {
-            foreach(Type type in assembly.GetTypes()) {
+            foreach(var type in assembly.GetTypes()) {
                 if (type.GetCustomAttributes(typeof(ScriptAnalyzerAttribute), true).Length > 0) {
                     yield return type;
                 }

@@ -9,11 +9,11 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class SettingsAuditor : IAuditor
     {
-        private System.Reflection.Assembly[] m_Assemblies;
-        
         private List<ProblemDescriptor> m_ProblemDescriptors;
-        private AnalyzerHelpers m_Helpers = new AnalyzerHelpers();
-        private List<KeyValuePair<string, string>> m_ProjectSettingsMapping = new List<KeyValuePair<string, string>>();
+        
+        private readonly System.Reflection.Assembly[] m_Assemblies;
+        private readonly AnalyzerHelpers m_Helpers = new AnalyzerHelpers();
+        private readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping = new List<KeyValuePair<string, string>>();
         
         public SettingsAuditor()
         {
@@ -28,11 +28,6 @@ namespace Unity.ProjectAuditor.Editor
             m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.Physics2D", "Project/Physics 2D"));
             m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.Time", "Project/Time"));
             m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.QualitySettings", "Project/Quality"));
-        }
-
-        public string GetUIName()
-        {
-            return "Settings";
         }
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
