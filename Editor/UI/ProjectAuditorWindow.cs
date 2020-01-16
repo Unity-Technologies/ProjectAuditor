@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField] private bool m_DeveloperMode = false;
 
         // UI
-		private CallHierarchyView m_CallHierarchyView;
+        private CallHierarchyView m_CallHierarchyView;
         private CallTreeNode m_CurrentCallTree = null;
         private TreeViewSelection m_AreaSelection = null;
         private TreeViewSelection m_AssemblySelection = null;
@@ -222,7 +222,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             m_DeveloperMode = !m_DeveloperMode;
         }
         
-        public virtual void AddItemsToMenu(GenericMenu menu)
+        public void AddItemsToMenu(GenericMenu menu)
         {
             menu.AddItem(Styles.DeveloperMode, m_DeveloperMode, OnToggleDeveloperMode);
             menu.AddItem(Styles.UserMode, !m_DeveloperMode, OnToggleDeveloperMode);
@@ -762,7 +762,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 
                 EditorGUILayout.EndHorizontal();
                 
-				var shouldRefresh = false;
+                var shouldRefresh = false;
                 if (m_DeveloperMode)
                 {
                     EditorGUILayout.BeginHorizontal();
