@@ -28,7 +28,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var paths = AssemblyHelper.GetCompiledAssemblyPaths();
 
             Assert.Positive(paths.Count());
-            Assert.NotNull(paths.Where(path => path.Contains("Assembly-CSharp.dll")).FirstOrDefault());
+            Assert.NotNull(paths.FirstOrDefault(path => path.Contains("Assembly-CSharp.dll")));
         }
         
         [Test]
@@ -37,7 +37,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var paths = AssemblyHelper.GetPrecompiledEngineAssemblyPaths();
 
             Assert.Positive(paths.Count());
-            Assert.NotNull(paths.Where(path => path.Contains("UnityEngine.CoreModule.dll")).FirstOrDefault());
+            Assert.NotNull(paths.FirstOrDefault(path => path.Contains("UnityEngine.CoreModule.dll")));
         }
     }
 }
