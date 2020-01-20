@@ -25,6 +25,8 @@ Add `com.unity.project-auditor` as a dependency to the project `Packages/manifes
 
 Alternatively it's possible to clone the repository, or decompress the pre-packaged zip, to the `Packages` folder of your project.
 
+IMPORTANT: that Project Auditor is supposed to work as a Package as of Unity 2018, therefore it should NOT live in `Assets` folder.
+
 ### Unity 2017 or older
 Clone this repository to your Unity project as follows:
 
