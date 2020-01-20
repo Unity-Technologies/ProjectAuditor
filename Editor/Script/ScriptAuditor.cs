@@ -25,8 +25,6 @@ namespace Unity.ProjectAuditor.Editor
 
         private string[] m_AssemblyNames;
 
-        private DefaultAssemblyResolver m_AssemblyResolver;
-                
         public string[] assemblyNames
         {
             get
@@ -66,28 +64,28 @@ namespace Unity.ProjectAuditor.Editor
 
         public void Audit( ProjectReport projectReport, IProgressBar progressBar = null)
         {
-            if (AssemblyHelper.CompileAssemblies())
+            if (!AssemblyHelper.CompileAssemblies())
+                return;
+
+            var callCrawler = new CallCrawler();                
+
+            using (var assemblyResolver = new DefaultAssemblyResolver())
             {
                 var compiledAssemblyPaths = AssemblyHelper.GetCompiledAssemblyPaths();
-                    
-                m_AssemblyResolver = new DefaultAssemblyResolver();
-
                 foreach (var dir in AssemblyHelper.GetPrecompiledAssemblyDirectories())
                 {
-                    m_AssemblyResolver.AddSearchDirectory(dir);    
+                    assemblyResolver.AddSearchDirectory(dir);    
                 }
 
                 foreach (var dir in AssemblyHelper.GetPrecompiledEngineAssemblyDirectories())
                 {
-                    m_AssemblyResolver.AddSearchDirectory(dir);    
+                    assemblyResolver.AddSearchDirectory(dir);    
                 }
 
                 foreach (var dir in AssemblyHelper.GetCompiledAssemblyDirectories())
                 {
-                    m_AssemblyResolver.AddSearchDirectory(dir);    
+                    assemblyResolver.AddSearchDirectory(dir);    
                 }
-
-                var callCrawler = new CallCrawler();                
                 
                 if (progressBar != null)
                     progressBar.Initialize("Analyzing Scripts", "Analyzing project scripts", m_PlayerAssemblies.Length);
@@ -104,18 +102,18 @@ namespace Unity.ProjectAuditor.Editor
                         continue;
                     }
                     
-                    AnalyzeAssembly(assemblyPath, projectReport, callCrawler);
-                }
+                    AnalyzeAssembly(assemblyPath, assemblyResolver, projectReport, callCrawler);
+                }  
+            }
                 
-                if (progressBar != null)
-                    progressBar.ClearProgressBar();
+            if (progressBar != null)
+                progressBar.ClearProgressBar();
 
-                callCrawler.BuildCallHierarchies(projectReport, progressBar);
-            }            
+            callCrawler.BuildCallHierarchies(projectReport, progressBar);
         }
-        private void AnalyzeAssembly(string assemblyPath, ProjectReport projectReport, CallCrawler callCrawler)
+        private void AnalyzeAssembly(string assemblyPath, IAssemblyResolver assemblyResolver, ProjectReport projectReport, CallCrawler callCrawler)
         {
-            using (var a = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters() {ReadSymbols = true, AssemblyResolver = m_AssemblyResolver}))
+            using (var a = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters() {ReadSymbols = true, AssemblyResolver = assemblyResolver}))
             {
                 foreach (var methodDefinition in MonoCecilHelper.AggregateAllTypeDefinitions(a.MainModule.Types).SelectMany(t => t.Methods))
                 {
