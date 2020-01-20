@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -43,7 +44,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             }
             catch (IOException e)
             {
-                // there might be a script still. 
+                // there might be a script still.
+                Debug.LogWarning(e);
             }
         }
     }
