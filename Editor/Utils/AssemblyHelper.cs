@@ -10,11 +10,11 @@ using UnityEditor.Build.Player;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    public class AssemblyHelper
+    public static class AssemblyHelper
     {
-        static private  List<string> compiledAssemblyPaths = new List<string>();
+        private static  List<string> compiledAssemblyPaths = new List<string>();
 
-        static public bool CompileAssemblies()
+        public static bool CompileAssemblies()
         {
 #if UNITY_2018_2_OR_NEWER
             var path = compiledAssemblyPaths.FirstOrDefault();
@@ -27,9 +27,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
             if (Directory.Exists(outputFolder))
                 Directory.Delete(outputFolder, true);
 
-            ScriptCompilationSettings input = new ScriptCompilationSettings();
-            input.target = EditorUserBuildSettings.activeBuildTarget;
-            input.@group = EditorUserBuildSettings.selectedBuildTargetGroup;
+            ScriptCompilationSettings input = new ScriptCompilationSettings
+            {
+                target = EditorUserBuildSettings.activeBuildTarget,
+                @group = EditorUserBuildSettings.selectedBuildTargetGroup
+            };
 
             var compilationResult = PlayerBuildInterface.CompilePlayerScripts(input, outputFolder);
             
@@ -50,17 +52,17 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return true;
 #endif
         }
-        static public IEnumerable<string> GetCompiledAssemblyPaths()
+        public static IEnumerable<string> GetCompiledAssemblyPaths()
         {
             return compiledAssemblyPaths;  
         }
 
-        static public IEnumerable<string> GetCompiledAssemblyDirectories()
+        public static IEnumerable<string> GetCompiledAssemblyDirectories()
         {
             return GetCompiledAssemblyPaths().Select(path => Path.GetDirectoryName(path)).Distinct();
         }
 
-        static public IEnumerable<string> GetPrecompiledAssemblyPaths()
+        public static IEnumerable<string> GetPrecompiledAssemblyPaths()
         {
             var assemblyPaths = new List<string>();
 #if UNITY_2019_1_OR_NEWER
@@ -74,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return assemblyPaths;
         }
 
-        static public IEnumerable<string> GetPrecompiledAssemblyDirectories()
+        public static IEnumerable<string> GetPrecompiledAssemblyDirectories()
         {
             foreach (var dir in GetPrecompiledAssemblyPaths().Select(path => Path.GetDirectoryName(path)).Distinct())
             {
@@ -82,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
         }
         
-        static public IEnumerable<string> GetPrecompiledEngineAssemblyPaths()
+        public static IEnumerable<string> GetPrecompiledEngineAssemblyPaths()
         {
             var assemblyPaths = new List<string>();
 #if UNITY_2019_1_OR_NEWER
@@ -101,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return assemblyPaths;
         }
         
-        static public IEnumerable<string> GetPrecompiledEngineAssemblyDirectories()
+        public static IEnumerable<string> GetPrecompiledEngineAssemblyDirectories()
         {
             foreach (var dir in GetPrecompiledEngineAssemblyPaths().Select(path => Path.GetDirectoryName(path)).Distinct())
             {
