@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor
             projectReport.AddIssue(new ProjectIssue
             (
                 descriptor,
-                description = description,
+                description,
                 IssueCategory.ProjectSettings,
                 new Location {path = projectWindowPath}
             ));
