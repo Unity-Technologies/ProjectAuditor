@@ -11,7 +11,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		{
 			var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
-			UnityEditor.PlayerSettings.enableMetalAPIValidation = true;
+			UnityEditor.PlayerSettings.stripEngineCode = false;
 			UnityEngine.Time.fixedDeltaTime = 0.02f; // default value
 			var projectReport = projectAuditor.Audit();
 			var issues = projectReport.GetIssues(IssueCategory.ProjectSettings);
@@ -26,10 +26,10 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			issues = projectReport.GetIssues(IssueCategory.ProjectSettings);			
 			Assert.Null(issues.FirstOrDefault(i => i.descriptor.method.Equals("fixedDeltaTime")));
 
-			var metalValidationIssue =
-				issues.FirstOrDefault(i => i.descriptor.method.Equals("enableMetalAPIValidation")); 
-			Assert.NotNull(metalValidationIssue); 
-			Assert.True(metalValidationIssue.location.path.Equals("Project/Player"));
+			var playerSettingIssue =
+				issues.FirstOrDefault(i => i.descriptor.method.Equals("stripEngineCode")); 
+			Assert.NotNull(playerSettingIssue); 
+			Assert.True(playerSettingIssue.location.path.Equals("Project/Player"));
 		}
 	}	
 }

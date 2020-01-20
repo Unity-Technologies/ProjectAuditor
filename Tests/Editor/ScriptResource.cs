@@ -22,7 +22,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
         public ScriptResource(string scriptName, string content)
         {
-            m_RelativePath = Path.Combine("Assets", TempFolder, scriptName).Replace("\\", "/");
+            m_RelativePath = Path.Combine("Assets", Path.Combine(TempFolder, scriptName)).Replace("\\", "/");
             if (!File.Exists(relativePath))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(relativePath));   

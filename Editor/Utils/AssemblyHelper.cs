@@ -2,8 +2,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Build.Player;
 using UnityEditor.Compilation;
+
+#if UNITY_2018_2_OR_NEWER
+using UnityEditor.Build.Player;
+#endif
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
@@ -65,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 .UserAssembly));
             assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(CompilationPipeline.PrecompiledAssemblySources
                 .UnityEngine));
-#else
+#elif UNITY_2018_4_OR_NEWER 
             assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyNames().Select(a => CompilationPipeline.GetPrecompiledAssemblyPathFromAssemblyName(a)));
 #endif
             return assemblyPaths;
@@ -86,13 +89,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
             assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(CompilationPipeline.PrecompiledAssemblySources
                 .UnityEngine));
 #else
-            assemblyPaths.AddRange( Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath, "Managed",
-                "UnityEngine")).Where(path => Path.GetExtension(path).Equals(".dll")));
+            assemblyPaths.AddRange( Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath, Path.Combine("Managed",
+                "UnityEngine"))).Where(path => Path.GetExtension(path).Equals(".dll")));
 #endif
 
 #if !UNITY_2019_2_OR_NEWER
-            var files = Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath, "UnityExtensions",
-                "Unity", "GUISystem"));
+            var files = Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath, Path.Combine("UnityExtensions",
+                Path.Combine("Unity", "GUISystem"))));
             assemblyPaths.AddRange( files.Where(path => Path.GetExtension(path).Equals(".dll")));
 #endif
             return assemblyPaths;

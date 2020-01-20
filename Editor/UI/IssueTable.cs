@@ -304,8 +304,10 @@ namespace Unity.ProjectAuditor.Editor
                         issue.location.Open();
                     else
                     {
+#if UNITY_2018_3_OR_NEWER
                         var window = SettingsService.OpenProjectSettings(issue.location.path);
-                        window.Repaint();                        
+                        window.Repaint();
+#endif
                     }
                 }
             }
