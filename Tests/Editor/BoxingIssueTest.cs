@@ -35,7 +35,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		[Test]
 		public void BoxingIntValueIsReported()
 		{
-			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceBoxingInt.relativePath);
+			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceBoxingInt);
 
 			Assert.AreEqual(1, issues.Count());
 
@@ -64,7 +64,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		[Test]
 		public void BoxingFloatValueIsReported()
 		{
-			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceBoxingFloat.relativePath);
+			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceBoxingFloat);
 			
 			Assert.AreEqual(1, issues.Count());
 			
@@ -92,7 +92,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		[Test]
 		public void BoxingGenericIsReported()
 		{
-			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceBoxingGeneric.relativePath);
+			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceBoxingGeneric);
 
 			Assert.AreEqual(1, issues.Count());
 		}
@@ -100,7 +100,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		[Test]
 		public void BoxingGenericRefTypeIsNotReported()
 		{
-			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceBoxingGenericRefType.relativePath);
+			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceBoxingGenericRefType);
 
 			Assert.Zero(issues.Count());			
 		}

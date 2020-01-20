@@ -13,8 +13,8 @@ namespace Unity.ProjectAuditor.Editor
     {
         internal class ItemTree
         {
-            private IssueTableItem m_Item;
-            private List<ItemTree> m_Children;
+            private readonly IssueTableItem m_Item;
+            private readonly List<ItemTree> m_Children;
 
             public int Depth
             {
@@ -36,8 +36,8 @@ namespace Unity.ProjectAuditor.Editor
             {
                 m_Children.Sort(delegate(ItemTree a, ItemTree b)
                 {
-                    int rtn = 0;
-                    for (int i = 0; i < columnSortOrder.Length; i++)
+                    var rtn = 0;
+                    for (var i = 0; i < columnSortOrder.Length; i++)
                     {
                         ItemTree firstTree;
                         ItemTree secondTree;
@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor
                     return rtn;
                 });
 
-                foreach (ItemTree child in m_Children)
+                foreach (var child in m_Children)
                     child.Sort(columnSortOrder, isColumnAscending);
             }
 
@@ -97,7 +97,7 @@ namespace Unity.ProjectAuditor.Editor
                 // TODO be good to optimise this, rarely used, so not required
                 if (m_Item != null)
                     list.Add(m_Item);
-                foreach (ItemTree child in m_Children)
+                foreach (var child in m_Children)
                     child.ToList(list);
             }
         }
@@ -112,17 +112,17 @@ namespace Unity.ProjectAuditor.Editor
             Count
         }
 
-        private ProjectAuditor m_ProjectAuditor;
-        private ProjectAuditorWindow m_ProjectAuditorWindow;
-        ProjectIssue[] m_Issues;
+        private readonly ProjectAuditorConfig m_Config;
+        private readonly IIssuesFilter m_IssuesFilter;
+        private readonly ProjectIssue[] m_Issues;
 
-        bool m_GroupByDescription;
+        private readonly bool m_GroupByDescription;
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader, ProjectIssue[] issues,
-            bool groupByDescription, ProjectAuditor projectAuditor, ProjectAuditorWindow window) : base(state, multicolumnHeader)
+            bool groupByDescription, ProjectAuditorConfig config, IIssuesFilter issuesFilter) : base(state, multicolumnHeader)
         {
-            m_ProjectAuditor = projectAuditor;
-            m_ProjectAuditorWindow = window;
+            m_Config = config;
+            m_IssuesFilter = issuesFilter;
             m_Issues = issues;
             m_GroupByDescription = groupByDescription;
             multicolumnHeader.sortingChanged += OnSortingChanged;
@@ -141,7 +141,7 @@ namespace Unity.ProjectAuditor.Editor
             int depthForHiddenRoot = -1;
             var root = new TreeViewItem(idForHiddenRoot, depthForHiddenRoot, "root");
 
-            var filteredIssues = m_Issues.Where(issue => m_ProjectAuditorWindow.ShouldDisplay(issue));
+            var filteredIssues = m_Issues.Where(issue => m_IssuesFilter.ShouldDisplay(issue));
             if (m_GroupByDescription)
             {
                 // grouped by problem definition
@@ -197,7 +197,7 @@ namespace Unity.ProjectAuditor.Editor
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            for (int i = 0; i < args.GetNumVisibleColumns(); ++i)
+            for (var i = 0; i < args.GetNumVisibleColumns(); ++i)
             {
                 CellGUI(args.GetCellRect(i), args.item, args.GetColumn(i), ref args);
             }
@@ -221,11 +221,11 @@ namespace Unity.ProjectAuditor.Editor
             var descriptor = item.problemDescriptor;
             var areaLongDescription = "This issue might have an impact on " + descriptor.area;
 
-            var rule = m_ProjectAuditor.config.GetRule(descriptor, (issue != null) ? issue.callingMethod : string.Empty);
+            var rule = m_Config.GetRule(descriptor, (issue != null) ? issue.callingMethod : string.Empty);
             if (rule == null && issue != null)
             {
                 // try to find non-specific rule
-                rule = m_ProjectAuditor.config.GetRule(descriptor);
+                rule = m_Config.GetRule(descriptor);
             }
             if (rule != null && rule.action == Rule.Action.None)
             {
@@ -322,11 +322,6 @@ namespace Unity.ProjectAuditor.Editor
             return new IssueTableItem[0];
         }
 
-        public int NumIssues(IssueCategory category)
-        {
-            return m_Issues.Count(i => i.category == category);
-        }
-
         private void OnSortingChanged(MultiColumnHeader _multiColumnHeader)
         {
             SortIfNeeded(GetRows());
@@ -350,26 +345,26 @@ namespace Unity.ProjectAuditor.Editor
 
         private void SortByMultipleColumns(IList<TreeViewItem> rows)
         {
-            int[] sortedColumns = multiColumnHeader.state.sortedColumns;
+            var sortedColumns = multiColumnHeader.state.sortedColumns;
             if (sortedColumns.Length == 0)
                 return;
 
-            bool[] columnAscending = new bool[sortedColumns.Length];
+            var columnAscending = new bool[sortedColumns.Length];
             for (int i = 0; i < sortedColumns.Length; i++)
             {
                 columnAscending[i] = multiColumnHeader.IsSortedAscending(sortedColumns[i]);
             }
 
-            ItemTree root = new ItemTree(null);
-            Stack<ItemTree> stack = new Stack<ItemTree>();
+            var root = new ItemTree(null);
+            var stack = new Stack<ItemTree>();
             stack.Push(root);
             foreach (TreeViewItem row in rows)
             {
-                IssueTableItem r = row as IssueTableItem;
+                var r = row as IssueTableItem;
                 if (r == null)
                     continue;
 
-                int activeParentDepth = stack.Peek().Depth;
+                var activeParentDepth = stack.Peek().Depth;
 
                 while (row.depth <= activeParentDepth)
                 {
@@ -388,7 +383,7 @@ namespace Unity.ProjectAuditor.Editor
             root.Sort(sortedColumns, columnAscending);
 
             // convert back to rows
-            List<TreeViewItem> newRows = new List<TreeViewItem>(rows.Count);
+            var newRows = new List<TreeViewItem>(rows.Count);
             root.ToList(newRows);
             rows.Clear();
             foreach (TreeViewItem treeViewItem in newRows)

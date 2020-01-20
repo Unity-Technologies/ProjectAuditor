@@ -7,36 +7,51 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    internal class ProjectAuditorWindow : EditorWindow, IHasCustomMenu
+    internal struct ModeDescriptor
+    {
+        public IssueCategory category;
+        public bool groupByDescription;
+        public bool showAssemblySelection;
+        public bool showInvertedCallTree;
+        public bool showFilenameColumn;
+        public bool showAssemblyColumn;
+    }
+
+    interface IIssuesFilter
+    {
+        bool ShouldDisplay(ProjectIssue issue);
+    }
+    
+    internal class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IIssuesFilter
     {       
         private ProjectAuditor m_ProjectAuditor;
+        
+        // Serialized fields
         [SerializeField] private ProjectReport m_ProjectReport;
-        
-        private List<IssueTable> m_IssueTables = new List<IssueTable>();
-		private CallHierarchyView m_CallHierarchyView;
-        private CallTreeNode m_CurrentCallTree = null;
-
-        private IssueTable m_ActiveIssueTable
-        {
-            get { return m_IssueTables[(int) m_ActiveMode]; }
-        }
-        
-        private string[] m_AssemblyNames;
-        private TreeViewSelection m_AssemblySelection = null;
-        [SerializeField] private string m_AssemblySelectionSummary;
-        private const string m_DefaultAssemblyName = "Assembly-CSharp";
-        
-        private SearchField m_SearchField;
-        
         [SerializeField] private bool m_ValidReport = false;
-        [SerializeField] private IssueCategory m_ActiveMode = IssueCategory.ApiCalls;
+        [SerializeField] private int m_ActiveMode = 0;
         [SerializeField] private bool m_ShowDetails = true;
         [SerializeField] private bool m_ShowRecommendation = true;
         [SerializeField] private bool m_ShowCallTree = false;
-        
+        [SerializeField] private string m_AssemblySelectionSummary;
+        [SerializeField] private string m_AreaSelectionSummary;        
         [SerializeField] private string m_SearchText;
         [SerializeField] private bool m_DeveloperMode = false;
-        
+
+        // UI
+        private CallHierarchyView m_CallHierarchyView;
+        private CallTreeNode m_CurrentCallTree = null;
+        private TreeViewSelection m_AreaSelection = null;
+        private TreeViewSelection m_AssemblySelection = null;
+        private List<IssueTable> m_IssueTables = new List<IssueTable>();
+        private IssueTable m_ActiveIssueTable
+        {
+            get { return m_IssueTables[m_ActiveMode]; }
+        }
+        private SearchField m_SearchField;
+
+        // strings
+        private const string m_DefaultAssemblyName = "Assembly-CSharp";
         private static readonly string[] m_AreaNames = {
             "CPU",
             "GPU",
@@ -44,10 +59,33 @@ namespace Unity.ProjectAuditor.Editor
             "Build Size",
             "Load Times"
         };
-        private TreeViewSelection m_AreaSelection = null;
-        [SerializeField] private string m_AreaSelectionSummary;
+        private string[] m_AssemblyNames;
+        private string[] m_CategoryNames;
+        
+        private readonly ModeDescriptor[] m_ModeDescriptor = new[]
+        {
+            new ModeDescriptor
+            {
+                category = IssueCategory.ApiCalls,
+                groupByDescription = true,
+                showAssemblySelection = true,
+                showInvertedCallTree = true,
+                showFilenameColumn = true,
+                showAssemblyColumn = true
+            },
+            new ModeDescriptor
+            {
+                category = IssueCategory.ProjectSettings,
+                groupByDescription = false,
+                showAssemblySelection = false,
+                showInvertedCallTree = false,
+                showFilenameColumn = false,
+                showAssemblyColumn = false
+            },
+        };
 
-        internal static class LayoutSize
+        // UI styles and layout
+        private static class LayoutSize
         {
             public static readonly int ToolbarWidth = 600;
             public static readonly int FoldoutWidth = 300;
@@ -58,7 +96,7 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly int ModeTabWidth = 300;
         };
 
-        internal static class Styles
+        private static class Styles
         {
             public static readonly GUIContent DeveloperMode = new GUIContent("Developer Mode");
             public static readonly GUIContent UserMode = new GUIContent("User Mode");
@@ -101,14 +139,21 @@ At the moment there are two types of issues: API calls or Project Settings. The 
 In addition, it is possible to filter issues by area (CPU/Memory/etc...) or assembly name or search for a specific string.";
         }
 
-        public static readonly string NoIssueSelectedText = "No issue selected";      
+        private static readonly string NoIssueSelectedText = "No issue selected";      
         
         private void OnEnable()
         {
             m_ProjectAuditor = new ProjectAuditor();    
 
-            var assemblyNames = new List<string>();
-            assemblyNames.AddRange(m_ProjectAuditor.GetAuditor<ScriptAuditor>().assemblyNames);
+            var categoryNames = new List<string>();
+            for(IssueCategory i = 0; i < IssueCategory.NumCategories; ++i)
+            {                
+                categoryNames.Add(i.ToString());
+            }
+            m_CategoryNames = categoryNames.ToArray();
+            
+            var assemblyNames = m_ProjectAuditor.GetAuditor<ScriptAuditor>().assemblyNames.ToList();
+            assemblyNames.Sort();
             m_AssemblyNames = assemblyNames.ToArray();
 
             if (m_AssemblySelection == null)
@@ -177,7 +222,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             m_DeveloperMode = !m_DeveloperMode;
         }
         
-        public virtual void AddItemsToMenu(GenericMenu menu)
+        public void AddItemsToMenu(GenericMenu menu)
         {
             menu.AddItem(Styles.DeveloperMode, m_DeveloperMode, OnToggleDeveloperMode);
             menu.AddItem(Styles.UserMode, !m_DeveloperMode, OnToggleDeveloperMode);
@@ -190,7 +235,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         
         public bool ShouldDisplay(ProjectIssue issue)
         {
-            if (m_ActiveMode == IssueCategory.ApiCalls &&
+            if (m_ModeDescriptor[m_ActiveMode].showAssemblySelection &&
                 !m_AssemblySelection.Contains(issue.assembly) &&
                 !m_AssemblySelection.ContainsGroup("All"))
             {
@@ -237,14 +282,14 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             RefreshDisplay();
         }
 
-        private IssueTable CreateIssueTable(IssueCategory issueCategory, TreeViewState state)
+        private IssueTable CreateIssueTable(ModeDescriptor modeDescriptor, TreeViewState state)
         {
             var columnsList = new List<MultiColumnHeaderState.Column>();
             var numColumns = (int) IssueTable.Column.Count;
             for (int i = 0; i < numColumns; i++)
             {
-                int width = 80;
-                int minWidth = 80;
+                int width = 0;
+                int minWidth = 0;
                 switch ((IssueTable.Column) i)
                 {
                     case IssueTable.Column.Description :
@@ -256,24 +301,14 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                         minWidth = 50;
                         break;
                     case IssueTable.Column.Filename :
-                        if (issueCategory == IssueCategory.ProjectSettings)
-                        {
-                            width = 0;
-                            minWidth = 0;
-                        }
-                        else
+                        if (modeDescriptor.showFilenameColumn)
                         {
                             width = 180;
                             minWidth = 100;                            
                         }
                         break;
                     case IssueTable.Column.Assembly :
-                        if (issueCategory == IssueCategory.ProjectSettings)
-                        {
-                            width = 0;
-                            minWidth = 0;
-                        }
-                        else
+                        if (modeDescriptor.showAssemblyColumn)
                         {
                             width = 180;
                             minWidth = 100;                            
@@ -290,13 +325,13 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 } );
             }
 
-            var issues = m_ProjectReport.GetIssues(issueCategory);
+            var issues = m_ProjectReport.GetIssues(modeDescriptor.category);
 
             return new IssueTable(state,
                 new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())),
                 issues.ToArray(),
-                issueCategory == IssueCategory.ApiCalls,
-                m_ProjectAuditor,
+                modeDescriptor.groupByDescription,
+                m_ProjectAuditor.config,
                 this);
         }
 
@@ -309,7 +344,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             {
                 for(int i = 0; i < (int)IssueCategory.NumCategories; ++i)
                 {
-                    IssueTable issueTable = CreateIssueTable((IssueCategory)i, new TreeViewState());
+                    IssueTable issueTable = CreateIssueTable(m_ModeDescriptor[i], new TreeViewState());
                     m_IssueTables.Add(issueTable);
                 }               
             }
@@ -340,14 +375,15 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             if (!IsAnalysisValid())
                 return;
 
+            var issues = m_ProjectReport.GetIssues(m_ModeDescriptor[m_ActiveMode].category);
             var selectedItems = m_ActiveIssueTable.GetSelectedItems();
             var selectedIssues = selectedItems.Select(i => i.m_ProjectIssue).ToArray();
-            string info = selectedIssues.Length  + " / " + m_ActiveIssueTable.NumIssues(m_ActiveMode) + " issues";
+            var info = selectedIssues.Length  + " / " + issues.Count() + " issues";
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.BeginVertical();
             
-            Rect r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
+            var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
             m_ActiveIssueTable.OnGUI(r);
 
             EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
@@ -376,7 +412,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
 
             DrawDetailsFoldout(problemDescriptor);
             DrawRecommendationFoldout(problemDescriptor);
-            if (m_ActiveMode == IssueCategory.ApiCalls)
+            if (m_ModeDescriptor[m_ActiveMode].showInvertedCallTree)
             {
                 CallTreeNode callTree = null;
                 if (selectedIssues.Count() == 1)
@@ -401,7 +437,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
 
         private bool BoldFoldout(bool toggle, GUIContent content)
         {
-            GUIStyle foldoutStyle = new GUIStyle(EditorStyles.foldout);
+            var foldoutStyle = new GUIStyle(EditorStyles.foldout);
             foldoutStyle.fontStyle = FontStyle.Bold;
             return EditorGUILayout.Foldout(toggle, content, foldoutStyle);
         }
@@ -416,9 +452,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 if (problemDescriptor != null)
                 {
                     EditorStyles.textField.wordWrap = true;
-//                    var text = issue.description + " is called from " + issue.callingMethod + "\n\n" + issue.def.problem;
-                    var text = problemDescriptor.problem;
-					GUILayout.TextArea(text, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+					GUILayout.TextArea(problemDescriptor.problem, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 }
                 else
                 {
@@ -457,7 +491,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             {
                 if (callTree != null)
                 {
-                    Rect r = EditorGUILayout.GetControlRect(GUILayout.Height(400));
+                    var r = EditorGUILayout.GetControlRect(GUILayout.Height(400));
 
                     m_CallHierarchyView.OnGUI(r);
                 }
@@ -520,7 +554,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             }
 
             // Count all groups where we have 'selected all the items'
-            int selectedCount = 0;
+            var selectedCount = 0;
             foreach (var name in dict.Keys)
             {
                 if (selectionDict[name] != dict[name])
@@ -535,13 +569,13 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 return "All";
 
             // Add all the individual items were we haven't already added the group
-            List<string> individualItems = new List<string>();
+            var individualItems = new List<string>();
             foreach (var name in selectionDict.Keys)
             {
-                int selectionCount = selectionDict[name];
+                var selectionCount = selectionDict[name];
                 if (selectionCount <= 0)
                     continue;
-                int itemCount = dict[name];
+                var itemCount = dict[name];
                 if (itemCount == 1)
                     individualItems.Add(name);
                 else if (selectionCount != itemCount)
@@ -556,35 +590,34 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             if (individualItems.Count == 0)
                 return "None";
 
-            string selectedText = string.Join(", ", individualItems.ToArray());
-            return selectedText;
+            return string.Join(", ", individualItems.ToArray());
         }
         
         private int CompareUINames(string a, string b)
         {
-            string[] aTokens = a.Split(':');
-            string[] bTokens = b.Split(':');
+            var aTokens = a.Split(':');
+            var bTokens = b.Split(':');
 
             if (aTokens.Length > 1 && bTokens.Length > 1)
             {
-                var aThreadName = aTokens[0].Trim();
-                var bThreadName = bTokens[0].Trim();
+                var firstName = aTokens[0].Trim();
+                var secondName = bTokens[0].Trim();
 
-                if (aThreadName == bThreadName)
+                if (firstName == secondName)
                 {
-                    string aThreadIndex = aTokens[1].Trim();
-                    string bThreadIndex = bTokens[1].Trim();
+                    var firstNameIndex = aTokens[1].Trim();
+                    var secondNameIndex = bTokens[1].Trim();
 
-                    if (aThreadIndex == "All" && bThreadIndex != "All")
+                    if (firstNameIndex == "All" && secondNameIndex != "All")
                         return -1;
-                    if (aThreadIndex != "All" && bThreadIndex == "All")
+                    if (firstNameIndex != "All" && secondNameIndex == "All")
                         return 1;
 
                     int aGroupIndex;
-                    if (int.TryParse(aThreadIndex, out aGroupIndex))
+                    if (int.TryParse(firstNameIndex, out aGroupIndex))
                     {
                         int bGroupIndex;
-                        if (int.TryParse(bThreadIndex, out bGroupIndex))
+                        if (int.TryParse(secondNameIndex, out bGroupIndex))
                         {
                             return aGroupIndex.CompareTo(bGroupIndex);
                         }
@@ -626,9 +659,9 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             
             if (m_AssemblyNames.Length > 0)
             {
-                bool lastEnabled = GUI.enabled;
+                var lastEnabled = GUI.enabled;
                 // SteveM TODO - We don't currently have any sense of when the Auditor is busy and should disallow user input
-                bool enabled = /*!IsAnalysisRunning() &&*/ !AssemblySelectionWindow.IsOpen();
+                var enabled = /*!IsAnalysisRunning() &&*/ !AssemblySelectionWindow.IsOpen() && m_ModeDescriptor[m_ActiveMode].showAssemblySelection;
                 GUI.enabled = enabled;
                 if (GUILayout.Button(Styles.assemblyFilterSelect, EditorStyles.miniButton, GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
                 {
@@ -667,9 +700,9 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             
             if (m_AreaNames.Length > 0)
             {
-                bool lastEnabled = GUI.enabled;
+                var lastEnabled = GUI.enabled;
                 // SteveM TODO - We don't currently have any sense of when the Auditor is busy and should disallow user input
-                bool enabled = /*!IsAnalysisRunning() &&*/ !AreaSelectionWindow.IsOpen();
+                var enabled = /*!IsAnalysisRunning() &&*/ !AreaSelectionWindow.IsOpen();
                 GUI.enabled = enabled;
                 if (GUILayout.Button(Styles.areaFilterSelect, EditorStyles.miniButton, GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
                 {
@@ -708,7 +741,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             {
                 EditorGUILayout.BeginHorizontal();
                 
-                var mode = (IssueCategory)GUILayout.Toolbar((int)m_ActiveMode, m_ProjectAuditor.auditorNames, GUILayout.MaxWidth(LayoutSize.ModeTabWidth)/*, GUILayout.ExpandWidth(true)*/);
+                var mode = GUILayout.Toolbar(m_ActiveMode, m_CategoryNames, GUILayout.MaxWidth(LayoutSize.ModeTabWidth)/*, GUILayout.ExpandWidth(true)*/);
 
                 EditorGUILayout.EndHorizontal();
 
@@ -729,7 +762,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 
                 EditorGUILayout.EndHorizontal();
                 
-				bool shouldRefresh = false;
+                var shouldRefresh = false;
                 if (m_DeveloperMode)
                 {
                     EditorGUILayout.BeginHorizontal();
@@ -797,7 +830,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         {
             var descriptor = item.problemDescriptor;
 
-            string callingMethod = "";
+            var callingMethod = "";
             Rule rule;
             if (item.hasChildren)
             {

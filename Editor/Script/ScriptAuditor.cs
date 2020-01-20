@@ -17,13 +17,12 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class ScriptAuditor : IAuditor
     {
-        private List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
         private List<ProblemDescriptor> m_ProblemDescriptors;
-        private List<OpCode> m_OpCodes = new List<OpCode>();
-        
-        private UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
-
         private string[] m_AssemblyNames;
+
+        private readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
+        private readonly List<OpCode> m_OpCodes = new List<OpCode>();
+        private readonly UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
 
         public string[] assemblyNames
         {
@@ -32,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor
                 if (m_AssemblyNames != null)
                     return m_AssemblyNames;
 
-                List<string> names = new List<string>();
+                var names = new List<string>();
                 foreach (var assembly in m_PlayerAssemblies)
                 {
                     names.Add(assembly.name);                    
@@ -52,11 +51,6 @@ namespace Unity.ProjectAuditor.Editor
 #endif
         }
 
-        public string GetUIName()
-        {
-            return "Scripts";
-        }
-
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             return m_ProblemDescriptors;
@@ -72,6 +66,7 @@ namespace Unity.ProjectAuditor.Editor
             using (var assemblyResolver = new DefaultAssemblyResolver())
             {
                 var compiledAssemblyPaths = AssemblyHelper.GetCompiledAssemblyPaths();
+                var assemblyPaths = new List<string>();
                 foreach (var dir in AssemblyHelper.GetPrecompiledAssemblyDirectories())
                 {
                     assemblyResolver.AddSearchDirectory(dir);    
@@ -130,7 +125,7 @@ namespace Unity.ProjectAuditor.Editor
             if (!caller.DebugInformation.HasSequencePoints)
                 return;
             
-            CallTreeNode callerNode = new CallTreeNode(caller);
+             var callerNode = new CallTreeNode(caller);
 
             foreach (var inst in caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode)))
             {
@@ -146,7 +141,7 @@ namespace Unity.ProjectAuditor.Editor
                     }
                 }
 
-                Location location = callerNode.location = new Location
+                var location = callerNode.location = new Location
                     {path = s.Document.Url.Replace("\\", "/"), line = s.StartLine};
                     
                 if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
@@ -190,7 +185,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public IEnumerable<Type> GetAnalyzerTypes(Assembly assembly)
         {
-            foreach(Type type in assembly.GetTypes()) {
+            foreach(var type in assembly.GetTypes()) {
                 if (type.GetCustomAttributes(typeof(ScriptAnalyzerAttribute), true).Length > 0) {
                     yield return type;
                 }
