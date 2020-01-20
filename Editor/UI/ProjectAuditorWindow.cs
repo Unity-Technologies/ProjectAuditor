@@ -7,16 +7,6 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    internal struct ModeDescriptor
-    {
-        public IssueCategory category;
-        public bool groupByDescription;
-        public bool showAssemblySelection;
-        public bool showInvertedCallTree;
-        public bool showFilenameColumn;
-        public bool showAssemblyColumn;
-    }
-
     interface IIssuesFilter
     {
         bool ShouldDisplay(ProjectIssue issue);
@@ -29,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor
         // Serialized fields
         [SerializeField] private ProjectReport m_ProjectReport;
         [SerializeField] private bool m_ValidReport = false;
-        [SerializeField] private int m_ActiveMode = 0;
+        [SerializeField] private int m_ActiveModeIndex = 0;
         [SerializeField] private bool m_ShowDetails = true;
         [SerializeField] private bool m_ShowRecommendation = true;
         [SerializeField] private bool m_ShowCallTree = false;
@@ -44,12 +34,17 @@ namespace Unity.ProjectAuditor.Editor
         private CallTreeNode m_CurrentCallTree = null;
         private TreeViewSelection m_AreaSelection = null;
         private TreeViewSelection m_AssemblySelection = null;
-        private List<IssueTable> m_IssueTables = new List<IssueTable>();
+        private SearchField m_SearchField;
+
+        private AnalysisView m_ActiveAnalysisView
+        {
+            get { return m_AnalysisViews[m_ActiveModeIndex]; }
+        }
+
         private IssueTable m_ActiveIssueTable
         {
-            get { return m_IssueTables[m_ActiveMode]; }
+            get { return m_ActiveAnalysisView.m_Table; }
         }
-        private SearchField m_SearchField;
 
         // strings
         private static readonly string[] m_AreaNames = {
@@ -59,22 +54,25 @@ namespace Unity.ProjectAuditor.Editor
             "Build Size",
             "Load Times"
         };
-        private string[] m_CategoryNames;
+
+		private string[] m_ModeNames;
         
-        private readonly ModeDescriptor[] m_ModeDescriptor = new[]
+        private readonly AnalysisViewDescriptor[] m_AnalysisViewDescriptors = new[]
         {
-            new ModeDescriptor
+            new AnalysisViewDescriptor
             {
                 category = IssueCategory.ApiCalls,
+                name = IssueCategory.ApiCalls.ToString(),
                 groupByDescription = true,
                 showAssemblySelection = true,
                 showInvertedCallTree = true,
                 showFilenameColumn = true,
                 showAssemblyColumn = true
             },
-            new ModeDescriptor
+            new AnalysisViewDescriptor
             {
                 category = IssueCategory.ProjectSettings,
+                name = IssueCategory.ProjectSettings.ToString(),
                 groupByDescription = false,
                 showAssemblySelection = false,
                 showInvertedCallTree = false,
@@ -83,6 +81,8 @@ namespace Unity.ProjectAuditor.Editor
             },
         };
 
+        private readonly List<AnalysisView> m_AnalysisViews = new List<AnalysisView>();
+        
         // UI styles and layout
         private static class LayoutSize
         {
@@ -114,13 +114,6 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore selected issues.");
             public static readonly GUIContent UnmuteButton = new GUIContent("Unmute", "Always show selected issues.");
                 
-            public static readonly GUIContent[] ColumnHeaders = {
-                new GUIContent("Issue", "Issue description"),
-                new GUIContent("Area", "The area the issue might have an impact on"),
-                new GUIContent("Filename", "Filename and line number"),
-                new GUIContent("Assembly", "Managed Assembly name")
-            };
-
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout = new GUIContent("Recommendation", "Recommendation on how to solve the issue");
             public static readonly GUIContent CallTreeFoldout = new GUIContent("Inverted Call Hierarchy", "Inverted Call Hierarchy");
@@ -144,12 +137,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         {
             m_ProjectAuditor = new ProjectAuditor();    
 
-            var categoryNames = new List<string>();
-            for(IssueCategory i = 0; i < IssueCategory.NumCategories; ++i)
-            {                
-                categoryNames.Add(i.ToString());
-            }
-            m_CategoryNames = categoryNames.ToArray();
+            m_ModeNames = m_AnalysisViewDescriptors.Select(m => m.name).ToArray();
 
             UpdateAssemblySelection();
 
@@ -207,7 +195,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         
         public bool ShouldDisplay(ProjectIssue issue)
         {
-            if (m_ModeDescriptor[m_ActiveMode].showAssemblySelection &&
+            if (m_ActiveAnalysisView.desc.showAssemblySelection &&
                 !m_AssemblySelection.Contains(issue.assembly) &&
                 !m_AssemblySelection.ContainsGroup("All"))
             {
@@ -261,63 +249,8 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 Debug.LogError(e);
                 m_ValidReport = false;
             }
-            
-            m_IssueTables.Clear();
-            
+
             RefreshDisplay();
-        }
-
-        private IssueTable CreateIssueTable(ModeDescriptor modeDescriptor, TreeViewState state)
-        {
-            var columnsList = new List<MultiColumnHeaderState.Column>();
-            var numColumns = (int) IssueTable.Column.Count;
-            for (int i = 0; i < numColumns; i++)
-            {
-                int width = 0;
-                int minWidth = 0;
-                switch ((IssueTable.Column) i)
-                {
-                    case IssueTable.Column.Description :
-                        width = 300;
-                        minWidth = 100;
-                        break;
-                    case IssueTable.Column.Area :
-                        width = 60;
-                        minWidth = 50;
-                        break;
-                    case IssueTable.Column.Filename :
-                        if (modeDescriptor.showFilenameColumn)
-                        {
-                            width = 180;
-                            minWidth = 100;                            
-                        }
-                        break;
-                    case IssueTable.Column.Assembly :
-                        if (modeDescriptor.showAssemblyColumn)
-                        {
-                            width = 180;
-                            minWidth = 100;                            
-                        }
-                        break;
-                }
-                                
-                columnsList.Add(new MultiColumnHeaderState.Column
-                {
-                    headerContent = Styles.ColumnHeaders[i],
-                    width = width,
-                    minWidth = minWidth,
-                    autoResize = true
-                } );
-            }
-
-            var issues = m_ProjectReport.GetIssues(modeDescriptor.category);
-
-            return new IssueTable(state,
-                new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())),
-                issues.ToArray(),
-                modeDescriptor.groupByDescription,
-                m_ProjectAuditor.config,
-                this);
         }
 
         private void RefreshDisplay()
@@ -325,13 +258,15 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             if (!IsAnalysisValid())
                 return;
 
-            if (m_IssueTables.Count == 0)
+            m_AnalysisViews.Clear();
+            foreach (var desc in m_AnalysisViewDescriptors)
             {
-                for(int i = 0; i < (int)IssueCategory.NumCategories; ++i)
-                {
-                    IssueTable issueTable = CreateIssueTable(m_ModeDescriptor[i], new TreeViewState());
-                    m_IssueTables.Add(issueTable);
-                }               
+                m_AnalysisViews.Add(new AnalysisView(desc, m_ProjectAuditor.config, this));
+            }
+            
+            foreach (var view in m_AnalysisViews)
+            {
+                view.CreateTable(m_ProjectReport, new TreeViewState());
             }
             
             m_ActiveIssueTable.Reload();
@@ -340,7 +275,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         private void Reload()
         {
             m_ProjectAuditor.LoadDatabase();
-            m_IssueTables.Clear();
+            // m_IssueTables.Clear();
         }
 
         private void Export()
@@ -360,7 +295,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             if (!IsAnalysisValid())
                 return;
 
-            var issues = m_ProjectReport.GetIssues(m_ModeDescriptor[m_ActiveMode].category).Where(ShouldDisplay);
+            var issues = m_ProjectReport.GetIssues(m_ActiveAnalysisView.desc.category).Where(ShouldDisplay);
             var selectedItems = m_ActiveIssueTable.GetSelectedItems();
             var selectedIssues = selectedItems.Select(i => i.m_ProjectIssue).ToArray();
             var info = selectedIssues.Length  + " / " + issues.Count() + " issues";
@@ -397,7 +332,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
 
             DrawDetailsFoldout(problemDescriptor);
             DrawRecommendationFoldout(problemDescriptor);
-            if (m_ModeDescriptor[m_ActiveMode].showInvertedCallTree)
+            if (m_ActiveAnalysisView.desc.showInvertedCallTree)
             {
                 CallTreeNode callTree = null;
                 if (selectedIssues.Count() == 1)
@@ -648,7 +583,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             {
                 var lastEnabled = GUI.enabled;
                 // SteveM TODO - We don't currently have any sense of when the Auditor is busy and should disallow user input
-                var enabled = /*!IsAnalysisRunning() &&*/ !AssemblySelectionWindow.IsOpen() && m_ModeDescriptor[m_ActiveMode].showAssemblySelection;
+                var enabled = /*!IsAnalysisRunning() &&*/ !AssemblySelectionWindow.IsOpen() && m_ActiveAnalysisView.desc.showAssemblySelection;
                 GUI.enabled = enabled;
                 if (GUILayout.Button(Styles.assemblyFilterSelect, EditorStyles.miniButton, GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
                 {
@@ -728,7 +663,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             {
                 EditorGUILayout.BeginHorizontal();
                 
-                var mode = GUILayout.Toolbar(m_ActiveMode, m_CategoryNames, GUILayout.MaxWidth(LayoutSize.ModeTabWidth)/*, GUILayout.ExpandWidth(true)*/);
+                var activeModeIndex = GUILayout.Toolbar(m_ActiveModeIndex, m_ModeNames, GUILayout.MaxWidth(LayoutSize.ModeTabWidth)/*, GUILayout.ExpandWidth(true)*/);
 
                 EditorGUILayout.EndHorizontal();
 
@@ -782,9 +717,9 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
     	            shouldRefresh = true;
         	    }
 
-                if (shouldRefresh || m_ActiveMode != mode)
+                if (shouldRefresh || m_ActiveModeIndex != activeModeIndex)
                 {
-                    m_ActiveMode = mode;
+                    m_ActiveModeIndex = activeModeIndex;
                     RefreshDisplay();
                 }
             }
