@@ -152,7 +152,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             }
             m_CategoryNames = categoryNames.ToArray();
             
-            var assemblyNames = m_ProjectAuditor.GetAuditor<ScriptAuditor>().assemblyNames.ToList();
+            var assemblyNames = m_ProjectAuditor.GetAuditor<ScriptAuditor>().GetAssemblyNames().ToList();
             assemblyNames.Sort();
             m_AssemblyNames = assemblyNames.ToArray();
 
@@ -166,7 +166,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                         m_AssemblySelection.SetAll(m_AssemblyNames);
                     else if (m_AssemblySelectionSummary != "None")
                     {
-                        string[] assemblies = m_AssemblySelectionSummary.Split(new string[] { ", " }, StringSplitOptions.None);
+                        var assemblies = m_AssemblySelectionSummary.Split(new string[] { ", " }, StringSplitOptions.None);
                         foreach (string assembly in assemblies)
                         {
                             m_AssemblySelection.selection.Add(assembly);

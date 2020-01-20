@@ -22,25 +22,7 @@ namespace Unity.ProjectAuditor.Editor
 
         private readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
         private readonly List<OpCode> m_OpCodes = new List<OpCode>();
-        private readonly UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;
-
-        public string[] assemblyNames
-        {
-            get
-            {
-                if (m_AssemblyNames != null)
-                    return m_AssemblyNames;
-
-                var names = new List<string>();
-                foreach (var assembly in m_PlayerAssemblies)
-                {
-                    names.Add(assembly.name);                    
-                }
-
-                m_AssemblyNames = names.ToArray();
-                return m_AssemblyNames;
-            }
-        }   
+        private readonly UnityEditor.Compilation.Assembly[] m_PlayerAssemblies;  
         
         public ScriptAuditor()
         {
@@ -54,6 +36,21 @@ namespace Unity.ProjectAuditor.Editor
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             return m_ProblemDescriptors;
+        }
+
+        public IEnumerable<string> GetAssemblyNames()
+        {
+            if (m_AssemblyNames != null)
+                return m_AssemblyNames;
+
+            var names = new List<string>();
+            foreach (var assembly in m_PlayerAssemblies)
+            {
+                names.Add(assembly.name);
+            }
+
+            m_AssemblyNames = names.ToArray();
+            return m_AssemblyNames;
         }
 
         public void Audit( ProjectReport projectReport, IProgressBar progressBar = null)
