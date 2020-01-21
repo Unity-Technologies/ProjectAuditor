@@ -29,6 +29,7 @@ class MyClass
 {
 	void Dummy()
 	{
+		// Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
 		Debug.Log(Camera.main.name);
 	}
 }
@@ -197,7 +198,7 @@ class ClassWithDelegate
 			Assert.True(myIssue.filename.Equals(m_ScriptResource.scriptName));
 			Assert.True(myIssue.description.Equals("UnityEngine.Camera.main"));
 			Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Dummy()"));
-			Assert.AreEqual(7, myIssue.line);
+			Assert.AreEqual(8, myIssue.line);
 			Assert.AreEqual(IssueCategory.ApiCalls, myIssue.category);
 		}
 
