@@ -4,7 +4,7 @@ using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class LinqIssueTest
+	class LinqIssueTests
 	{
 		private ScriptResource m_ScriptResource;
 

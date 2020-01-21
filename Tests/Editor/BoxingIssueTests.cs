@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class BoxingIssueTest 
+	class BoxingIssueTests 
 	{
 		private ScriptResource m_ScriptResourceBoxingInt;
 		private ScriptResource m_ScriptResourceBoxingFloat;

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    class RuleTest
+    class RuleTests
     {
         private ScriptResource m_ScriptResource;
 		
