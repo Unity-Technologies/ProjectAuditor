@@ -3,7 +3,7 @@ using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class ProblemDescriptorTest
+	class ProblemDescriptorTests
 	{
 		[Test]
 		public void UninitializedProblemDescriptorTestPasses()

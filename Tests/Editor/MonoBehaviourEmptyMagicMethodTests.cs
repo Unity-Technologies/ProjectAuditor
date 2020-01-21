@@ -4,7 +4,7 @@ using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class MonoBehaviourEmptyMagicMethodTest
+	class MonoBehaviourEmptyMagicMethodTests
 	{
 		private ScriptResource m_MonoBehaviourWithEmptyMagicMethod;
 		private ScriptResource m_MonoBehaviourWithEmptyMethod;

@@ -8,7 +8,7 @@ using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class ProjectReportTest
+	class ProjectReportTests
 	{
 		[Test]
 		public void UninitializedTestPasses()
