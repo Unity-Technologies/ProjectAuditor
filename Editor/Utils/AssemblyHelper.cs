@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,13 +9,17 @@ using UnityEditor.Compilation;
 using UnityEditor.Build.Player;
 #endif
 
+#if UNITY_2019_3_OR_NEWER
+using UnityEditor.PackageManager;
+#endif
+
 namespace Unity.ProjectAuditor.Editor.Utils
 {
     public static class AssemblyHelper
     {
-        private static  List<string> compiledAssemblyPaths = new List<string>();
-
-        public static bool CompileAssemblies()
+        private static  string[] compiledAssemblyPaths = new string[]{};
+        
+        public static bool CompileAssemblies(bool compilePackages = false)
         {
 #if UNITY_2018_2_OR_NEWER
             var path = compiledAssemblyPaths.FirstOrDefault();
@@ -22,12 +27,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
             {
                 Directory.Delete(Path.GetDirectoryName(path), true);
             }
-            compiledAssemblyPaths.Clear();
+
             var outputFolder = FileUtil.GetUniqueTempPathInProject();
             if (Directory.Exists(outputFolder))
                 Directory.Delete(outputFolder, true);
 
-            ScriptCompilationSettings input = new ScriptCompilationSettings
+            var input = new ScriptCompilationSettings
             {
                 target = EditorUserBuildSettings.activeBuildTarget,
                 @group = EditorUserBuildSettings.selectedBuildTargetGroup
@@ -35,19 +40,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             var compilationResult = PlayerBuildInterface.CompilePlayerScripts(input, outputFolder);
             
-            foreach (var assembly in compilationResult.assemblies)
-            {
-                compiledAssemblyPaths.Add(Path.Combine(outputFolder, assembly));    
-            }
+            compiledAssemblyPaths = compilationResult.assemblies.Select(assembly => Path.Combine(outputFolder, assembly)).Where(assemblyPath => compilePackages || !IsPackageAssembly(assemblyPath)).ToArray();
 
             return compilationResult.assemblies.Count > 0;
 #else
-            compiledAssemblyPaths.Clear();
             // fallback to CompilationPipeline assemblies 
-            foreach (var playerAssembly in CompilationPipeline.GetAssemblies().Where(a => a.flags != AssemblyFlags.EditorAssembly))
-            {
-                compiledAssemblyPaths.Add(playerAssembly.outputPath);                   
-            }   
+            compiledAssemblyPaths = CompilationPipeline.GetAssemblies()
+                .Where(a => a.flags != AssemblyFlags.EditorAssembly).Select(assembly => assembly.outputPath);
 
             return true;
 #endif
@@ -55,6 +54,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static IEnumerable<string> GetCompiledAssemblyPaths()
         {
             return compiledAssemblyPaths;  
+        }
+
+        public static IEnumerable<string> GetCompiledAssemblyNames()
+        {
+            var list = compiledAssemblyPaths.Select(assemblyPath => Path.GetFileNameWithoutExtension(assemblyPath)).ToList();
+            list.Sort();            
+            return list.ToArray();
         }
 
         public static IEnumerable<string> GetCompiledAssemblyDirectories()
@@ -110,5 +116,19 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 yield return dir;
             }
         }
+        
+        public static bool IsPackageAssembly(string assemblyPath)
+        {
+#if UNITY_2019_3_OR_NEWER
+            var assemblyName = Path.GetFileName(assemblyPath);
+            var module = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.Modules)
+                .FirstOrDefault(a => a.Name.Equals(assemblyName));
+            return UnityEditor.PackageManager.PackageInfo.FindForAssembly(module.Assembly) != null;
+#else
+            // assume it's not a package
+            return false;
+#endif
+        }
+
     }
 }

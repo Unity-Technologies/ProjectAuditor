@@ -9,14 +9,16 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class SettingsAuditor : IAuditor
     {
+        private ProjectAuditorConfig m_Config;
         private List<ProblemDescriptor> m_ProblemDescriptors;
         
         private readonly System.Reflection.Assembly[] m_Assemblies;
         private readonly AnalyzerHelpers m_Helpers = new AnalyzerHelpers();
         private readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping = new List<KeyValuePair<string, string>>();
         
-        public SettingsAuditor()
+        internal SettingsAuditor(ProjectAuditorConfig config)
         {
+            m_Config = config;
             m_Assemblies = AppDomain.CurrentDomain.GetAssemblies();
             
             // UnityEditor

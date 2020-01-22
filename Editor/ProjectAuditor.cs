@@ -70,8 +70,8 @@ namespace Unity.ProjectAuditor.Editor
                 AssetDatabase.CreateAsset(m_ProjectAuditorConfig, assetPath);
             }
             
-            m_Auditors.Add(new ScriptAuditor());
-            m_Auditors.Add(new SettingsAuditor());
+            m_Auditors.Add(new ScriptAuditor(m_ProjectAuditorConfig));
+            m_Auditors.Add(new SettingsAuditor(m_ProjectAuditorConfig));
             // Add more Auditors here...
 
             LoadDatabase();
