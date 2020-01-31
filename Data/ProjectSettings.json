@@ -249,6 +249,27 @@
             "area": "GPU",
             "problem": "This project uses deferred rendering, as set in the \"Rendering Path\" settings in Graphics Settings.",
             "solution": "This rendering path is suitable for games with more complex rendering requirements - for instance, games that make uses of dynamic lighting or certain types of fullscreen post-processing effects. If the project doesn't make use of such rendering techniques, consider experimenting with changing \"Rendering Path\" to Forward to see whether doing so improves GPU rendering times."
+        },
+        {
+            "id": 201025,
+            "type": "UnityEditor.PlayerSettings",
+            "method": "GetManagedStrippingLevel",
+            "value": "",
+            "customevaluator": "PlayerSettingsManagedCodeStripping_Android",
+            "area": "Build Size",
+            "problem": "Managed code stripping on Android is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",
+            "solution": "Set managed stripping level to Medium or High."
+
+        },
+        {
+            "id": 201026,
+            "type": "UnityEditor.PlayerSettings",
+            "method": "GetManagedStrippingLevel",
+            "value": "",
+            "customevaluator": "PlayerSettingsManagedCodeStripping_iOS",
+            "area": "Build Size",
+            "problem": "Managed code stripping on iOS is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",
+            "solution": "Set managed stripping level to Medium or High."
         }
     ]
 }
