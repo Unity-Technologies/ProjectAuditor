@@ -49,6 +49,18 @@ namespace Unity.ProjectAuditor.Editor
                    (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) != 0;
         }
 
+        public bool PlayerSettingsManagedCodeStripping_iOS()
+        {
+            var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.iOS);
+            return value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low;
+        }
+
+        public bool PlayerSettingsManagedCodeStripping_Android()
+        {
+            var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.Android);
+            return value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low;
+        }
+
         public bool PhysicsLayerCollisionMatrix()
         {
             const int NUM_LAYERS = 32;
@@ -202,5 +214,7 @@ namespace Unity.ProjectAuditor.Editor
 
             return false;
         }
+        
+        
     }
 }
