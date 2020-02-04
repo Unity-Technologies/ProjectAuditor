@@ -51,14 +51,23 @@ namespace Unity.ProjectAuditor.Editor
 
         public bool PlayerSettingsManagedCodeStripping_iOS()
         {
+#if UNITY_2018_3_OR_NEWER
             var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.iOS);
             return value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low;
+#else
+            return false;
+#endif
+
         }
 
         public bool PlayerSettingsManagedCodeStripping_Android()
         {
+#if UNITY_2018_3_OR_NEWER
             var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.Android);
             return value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low;
+#else
+            return false;
+#endif        
         }
 
         public bool PhysicsLayerCollisionMatrix()
