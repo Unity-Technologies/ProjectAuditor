@@ -1,26 +1,46 @@
-﻿using UnityEngine;
-using UnityEditor;
-using UnityEngine.TestTools;
-using NUnit.Framework;
-using System.Collections;
-using System.IO;
+﻿using NUnit.Framework;
+using System.Linq;
 using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
 	class ProjectReportTests
 	{
-		[Test]
-		public void UninitializedTestPasses()
+		private ScriptResource m_ScriptResource;
+
+		[OneTimeSetUp]
+		public void SetUp()
 		{
-			var uninitialised = new ProjectReport();
-			Assert.Zero( uninitialised.NumTotalIssues);
-			Assert.Zero( uninitialised.GetNumIssues(IssueCategory.ApiCalls));
-			Assert.Zero( uninitialised.GetNumIssues(IssueCategory.ProjectSettings));
+			m_ScriptResource = new ScriptResource("MyClass.cs", @"
+using UnityEngine;
+class MyClass
+{
+	void Dummy()
+	{
+		// Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
+		Debug.Log(Camera.main.name);
+	}
+}
+");
+		}
+
+		[OneTimeTearDown]
+		public void TearDown()
+		{
+			m_ScriptResource.Delete();
+		}
+		
+		[Test]
+		public void NewReportIsValid()
+		{
+			var projectReport = new ProjectReport();
+			Assert.Zero( projectReport.NumTotalIssues);
+			Assert.Zero( projectReport.GetNumIssues(IssueCategory.ApiCalls));
+			Assert.Zero( projectReport.GetNumIssues(IssueCategory.ProjectSettings));
 		}
 
 		[Test]
-		public void AddIssueTestPasses()
+		public void IssueIsAddedToReport()
 		{
 			var projectReport = new ProjectReport();
 			
@@ -37,48 +57,28 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		}
 
 		[Test]
-		public void CanExportReport()
+		public void ReportIsExportedAndFormatted()
 		{
-			var projectReport = new ProjectReport();
-			
-			projectReport.AddIssue(new ProjectIssue
-			(
-				new ProblemDescriptor
-				{
-					area = "CPU",
-					type = "SomeType",
-					method = "SomeMethod",
-					problem = "",
-					solution = ""
-				},
-				"dummy issue",
-				IssueCategory.ApiCalls
-			));
-			projectReport.AddIssue(new ProjectIssue
-			(
-				new ProblemDescriptor
-				{
-					area = "CPU",
-					type = "SomeType",
-					method = "SomeMethod",
-					problem = "",
-					solution = ""
-				},
-				"dummy issue #2",
-				IssueCategory.ProjectSettings
-			));
+			var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
+			var projectReport = projectAuditor.Audit();
+		
 			const string path = "ProjectAuditor_Report.csv";
 			projectReport.Export(path);
-			Assert.True(File.Exists(path));
+			Assert.True(System.IO.File.Exists(path));
 			
-			string line;
-			System.IO.StreamReader file = new System.IO.StreamReader(path);
+			var scriptIssue = projectReport.GetIssues(IssueCategory.ApiCalls).Where(i => i.relativePath.Equals(m_ScriptResource.relativePath)).First();
 
-			line = file.ReadLine();
-			Assert.True(line.Equals("Issue,Area,Path,Line"));
-  
-			file.Close();  
+			using (var file = new System.IO.StreamReader(path))
+			{
+				var line = file.ReadLine();
+				Assert.True(line.Equals("Issue,Message,Area,Path"));
+
+				var expectedLine =
+					$"{scriptIssue.descriptor.description},{scriptIssue.description},{scriptIssue.descriptor.area},{scriptIssue.relativePath}:{scriptIssue.line}"; 
+				line = file.ReadLine();
+				Assert.True(line.Equals(expectedLine));
+			}			
 		}
 	}	
 }

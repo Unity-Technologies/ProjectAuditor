@@ -35,22 +35,26 @@ namespace Unity.ProjectAuditor.Editor
             m_Issues.Add(projectIssue);
         }
         
-        public void Export(string path)
+        public void Export(string reportPath)
         {
-            StreamWriter writer = new StreamWriter(path);
-            writer.WriteLine("Issue,Area,Path,Line");
+            var writer = new StreamWriter(reportPath);
+            writer.WriteLine("Issue,Message,Area,Path");
 
-            for (int i = 0; i < (int) IssueCategory.NumCategories; i++)
+            for (IssueCategory category = 0; category < IssueCategory.NumCategories; category++)
             {
-                var issues = GetIssues((IssueCategory) i);
+                var issues = GetIssues(category);
 
                 foreach (var issue in issues)
                 {
+                    var path = issue.relativePath;
+                    if (category != IssueCategory.ProjectSettings)
+                        path += ":" + issue.line;
                     writer.WriteLine(
+                        issue.descriptor.description + "," +
                         issue.description + "," +
                         issue.descriptor.area + "," +
-                            issue.relativePath + "," +
-                        issue.line);
+                        path
+                        );
                 }
             }
             writer.Flush();
