@@ -11,8 +11,12 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		{
 			var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
-			UnityEditor.PlayerSettings.stripEngineCode = false;
-			UnityEngine.Time.fixedDeltaTime = 0.02f; // default value
+			// disabling stripEngineCode will be reported as an issue	
+			PlayerSettings.stripEngineCode = false;
+			
+			// 0.02f is the default Time.fixedDeltaTime value and will be reported as an issue			
+			UnityEngine.Time.fixedDeltaTime = 0.02f;
+			
 			var projectReport = projectAuditor.Audit();
 			var issues = projectReport.GetIssues(IssueCategory.ProjectSettings);
 
