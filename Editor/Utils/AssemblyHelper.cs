@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #else
             // fallback to CompilationPipeline assemblies 
             compiledAssemblyPaths = CompilationPipeline.GetAssemblies()
-                .Where(a => a.flags != AssemblyFlags.EditorAssembly).Select(assembly => assembly.outputPath);
+                .Where(a => a.flags != AssemblyFlags.EditorAssembly).Select(assembly => assembly.outputPath).ToArray();
 
             return true;
 #endif
