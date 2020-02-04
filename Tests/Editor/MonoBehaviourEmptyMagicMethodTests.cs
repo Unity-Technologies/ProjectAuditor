@@ -43,7 +43,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			Assert.True(string.IsNullOrEmpty(issue.descriptor.type));
 			Assert.True(string.IsNullOrEmpty(issue.descriptor.method));
 			
-			Assert.True(issue.name.Equals("System.Void MonoBehaviourWithEmptyMagicMethod::Update()"));
+			Assert.True(issue.name.Equals("MonoBehaviourWithEmptyMagicMethod.Update"));
 			Assert.True(issue.filename.Equals(m_MonoBehaviourWithEmptyMagicMethod.scriptName));
 			Assert.True(issue.description.Equals("System.Void MonoBehaviourWithEmptyMagicMethod::Update()"));
 			Assert.True(issue.callingMethod.Equals("System.Void MonoBehaviourWithEmptyMagicMethod::Update()"));

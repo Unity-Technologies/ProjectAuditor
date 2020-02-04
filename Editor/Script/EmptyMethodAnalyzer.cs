@@ -49,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor
                 descriptor,
                 methodDefinition.FullName,
                 IssueCategory.ApiCalls,
-                new CallTreeNode(methodDefinition.FullName)
+                new CallTreeNode(methodDefinition)
             );
         }
 

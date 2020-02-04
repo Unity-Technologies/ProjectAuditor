@@ -11,6 +11,7 @@ namespace Unity.ProjectAuditor.Editor
         public string name;
         public string typeName;
         public string methodName;
+        public string assemblyName;
         public Location location;
 
         public List<CallTreeNode> children = new List<CallTreeNode>();
@@ -19,27 +20,15 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                if (string.IsNullOrEmpty(typeName))
-                    return name;
-                return typeName + "." + methodName;
+                return GetPrettyName();
             }
         }
-        
-        public CallTreeNode(string _name, CallTreeNode caller = null)
-        {
-            name = _name;
 
-            typeName = string.Empty;
-            methodName = string.Empty;
-
-            if (caller != null)
-                children.Add(caller); 
-        }
-        
         public CallTreeNode(MethodReference methodReference, CallTreeNode caller = null)
         {
             name = methodReference.FullName;
             methodName = "(anonymous)"; // default value
+            assemblyName = methodReference.Module.Name;
             
             // check if it's a coroutine
             if (methodReference.DeclaringType.FullName.IndexOf("/<") >= 0)
@@ -92,6 +81,17 @@ namespace Unity.ProjectAuditor.Editor
         public CallTreeNode GetChild(int index = 0)
         {
             return children[index];
+        }
+        
+        public string GetPrettyName(bool withAssembly = false)
+        {
+            if (string.IsNullOrEmpty(typeName))
+                return name;
+            if (string.IsNullOrEmpty(assemblyName) || !withAssembly)
+            {
+                return string.Format("{0}.{1}", typeName, methodName);
+            }
+            return string.Format("{0}.{1} [{2}]", typeName, methodName, assemblyName);
         }
     }
 }

@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor
                 typeName = "double";
 
             var description = string.Format("Conversion from value type '{0}' to ref type", typeName);
-            var calleeNode = new CallTreeNode(descriptor.description);
+            var calleeNode = new CallTreeNode(methodDefinition);
             
             return new ProjectIssue
             (
