@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public void Audit(ProjectReport projectReport, IProgressBar progressBar = null)
         {
-            if (!AssemblyHelper.CompileAssemblies(m_Config.enablePackages))
+            if (!AssemblyHelper.CompileAssemblies())
                 return;
 
             var callCrawler = new CallCrawler();                
@@ -102,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor
             if (!caller.DebugInformation.HasSequencePoints)
                 return;
             
-             var callerNode = new CallTreeNode(caller);
+            var callerNode = new CallTreeNode(caller);
 
             foreach (var inst in caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode)))
             {

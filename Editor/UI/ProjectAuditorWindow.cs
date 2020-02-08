@@ -817,13 +817,19 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 }
             }
 
-            if (m_AssemblySelection.selection.Count() == 0)
+            if (!m_AssemblySelection.selection.Any())
             {
+                // setup initial selection: either default assembly or non-package assemblies depending on Unity version
+#if UNITY_2018_3_OR_NEWER
+                m_AssemblySelection.selection.AddRange(m_AssemblyNames.Where(assemblyPath => !Utils.AssemblyHelper.IsPackageAssembly(assemblyPath)));
+#else
                 if (m_AssemblyNames.Contains(m_DefaultAssemblyName))
                 {
                     m_AssemblySelection.Set(m_DefaultAssemblyName);    
                 }
-                else
+#endif
+                // if the selection is still empty, select all
+                if (!m_AssemblySelection.selection.Any())
                 {
                     m_AssemblySelection.SetAll(m_AssemblyNames);
                 }
@@ -916,12 +922,6 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         {
             if (m_DeveloperMode)
             {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Analysis :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                m_ProjectAuditor.config.enablePackages = EditorGUILayout.ToggleLeft("Packages",
-                    m_ProjectAuditor.config.enablePackages, GUILayout.Width(100));
-                EditorGUILayout.EndHorizontal();
-                    
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Build :", GUILayout.ExpandWidth(true), GUILayout.Width(80));                        
                 m_ProjectAuditor.config.enableAnalyzeOnBuild = EditorGUILayout.ToggleLeft("Auto Analyze",
