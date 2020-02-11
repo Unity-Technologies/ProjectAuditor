@@ -819,17 +819,21 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
 
             if (!m_AssemblySelection.selection.Any())
             {
-                // setup initial selection: either default assembly or non-package assemblies depending on Unity version
-#if UNITY_2018_3_OR_NEWER
-                m_AssemblySelection.selection.AddRange(m_AssemblyNames.Where(assemblyPath => !Utils.AssemblyHelper.IsPackageAssembly(assemblyPath)));
-#else
-                if (m_AssemblyNames.Contains(m_DefaultAssemblyName))
+                // initial selection setup:
+                // - non-package assembly, or
+                // - default assembly, or,
+                // - all generated assemblies
+
+                if (Utils.AssemblyHelper.IsPackageInfoAvailable())
+                {
+                    m_AssemblySelection.selection.AddRange(m_AssemblyNames.Where(assemblyName => !Utils.AssemblyHelper.IsPackageAssembly(assemblyName)));
+                }
+
+                if (!m_AssemblySelection.selection.Any() && m_AssemblyNames.Contains(m_DefaultAssemblyName))
                 {
                     m_AssemblySelection.Set(m_DefaultAssemblyName);    
                 }
-#endif
-                // if the selection is still empty, select all
-                if (!m_AssemblySelection.selection.Any())
+                else
                 {
                     m_AssemblySelection.SetAll(m_AssemblyNames);
                 }

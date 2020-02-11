@@ -117,7 +117,16 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 yield return dir;
             }
         }
-        
+
+        public static bool IsPackageInfoAvailable()
+        {
+#if UNITY_2019_3_OR_NEWER
+            return true;
+#else
+            return false;
+#endif
+        }
+
         public static bool IsPackageAssembly(string assemblyName)
         {
 #if UNITY_2019_3_OR_NEWER
@@ -128,6 +137,5 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return false;
 #endif
         }
-
     }
 }
