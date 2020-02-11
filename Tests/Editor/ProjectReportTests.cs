@@ -69,6 +69,7 @@ class MyClass
 			
 			var scriptIssue = projectReport.GetIssues(IssueCategory.ApiCalls).Where(i => i.relativePath.Equals(m_ScriptResource.relativePath)).First();
 
+			var issueFound = false;
 			using (var file = new System.IO.StreamReader(path))
 			{
 				var line = file.ReadLine();
@@ -76,9 +77,17 @@ class MyClass
 
 				var expectedLine = string.Format("{0},{1},{2},{3}:{4}", scriptIssue.descriptor.description, scriptIssue.description,
 					scriptIssue.descriptor.area, scriptIssue.relativePath, scriptIssue.line);
-				line = file.ReadLine();
-				Assert.True(line.Equals(expectedLine));
-			}			
+				while (file.Peek() >= 0) 
+				{
+					line = file.ReadLine();
+					if (line.Equals(expectedLine))
+					{
+						issueFound = true;
+						break;
+					}
+				}
+			}
+			Assert.True(issueFound);
 		}
 	}	
 }
