@@ -52,7 +52,6 @@ namespace Unity.ProjectAuditor.Editor
         private SearchField m_SearchField;
 
         // strings
-        private const string m_DefaultAssemblyName = "Assembly-CSharp";
         private static readonly string[] m_AreaNames = {
             "CPU",
             "GPU",
@@ -829,9 +828,9 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                     m_AssemblySelection.selection.AddRange(m_AssemblyNames.Where(assemblyName => !Utils.AssemblyHelper.IsPackageAssembly(assemblyName)));
                 }
 
-                if (!m_AssemblySelection.selection.Any() && m_AssemblyNames.Contains(m_DefaultAssemblyName))
+                if (!m_AssemblySelection.selection.Any() && m_AssemblyNames.Contains(Utils.AssemblyHelper.DefaultAssemblyName))
                 {
-                    m_AssemblySelection.Set(m_DefaultAssemblyName);    
+                    m_AssemblySelection.Set(Utils.AssemblyHelper.DefaultAssemblyName);    
                 }
                 else
                 {
