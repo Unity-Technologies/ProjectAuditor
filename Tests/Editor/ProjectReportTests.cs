@@ -59,6 +59,9 @@ class MyClass
 		[Test]
 		public void ReportIsExportedAndFormatted()
 		{
+			// disabling stripEngineCode will be reported as a ProjectSettings issue
+			PlayerSettings.stripEngineCode = false;
+
 			var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
 			var projectReport = projectAuditor.Audit();
@@ -66,19 +69,36 @@ class MyClass
 			const string path = "ProjectAuditor_Report.csv";
 			projectReport.Export(path);
 			Assert.True(System.IO.File.Exists(path));
-			
-			var scriptIssue = projectReport.GetIssues(IssueCategory.ApiCalls).Where(i => i.relativePath.Equals(m_ScriptResource.relativePath)).First();
 
+			var settingsIssue = projectReport.GetIssues(IssueCategory.ProjectSettings).First(i => i.descriptor.method.Equals("stripEngineCode"));
+			var scriptIssue = projectReport.GetIssues(IssueCategory.ApiCalls).First(i => i.relativePath.Equals(m_ScriptResource.relativePath));
+
+			var settingsIssueFound = false;
+			var scriptIssueFound = false;
 			using (var file = new System.IO.StreamReader(path))
 			{
 				var line = file.ReadLine();
 				Assert.True(line.Equals("Issue,Message,Area,Path"));
 
-				var expectedLine = string.Format("{0},{1},{2},{3}:{4}", scriptIssue.descriptor.description, scriptIssue.description,
+				var expectedSettingsIssueLine = string.Format("{0},{1},{2},{3}:{4}", scriptIssue.descriptor.description, scriptIssue.description,
 					scriptIssue.descriptor.area, scriptIssue.relativePath, scriptIssue.line);
-				line = file.ReadLine();
-				Assert.True(line.Equals(expectedLine));
-			}			
+				var expectedScriptIssueLine = string.Format("{0},{1},{2},{3}:{4}", scriptIssue.descriptor.description, scriptIssue.description,
+					scriptIssue.descriptor.area, scriptIssue.relativePath, scriptIssue.line);
+				while (file.Peek() >= 0) 
+				{
+					line = file.ReadLine();
+					if (line.Equals(expectedSettingsIssueLine))
+					{
+						settingsIssueFound = true;
+					}
+					if (line.Equals(expectedScriptIssueLine))
+					{
+						scriptIssueFound = true;
+					}
+				}
+			}
+			Assert.True(settingsIssueFound);
+			Assert.True(scriptIssueFound);
 		}
 	}	
 }

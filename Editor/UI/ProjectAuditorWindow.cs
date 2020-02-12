@@ -52,7 +52,6 @@ namespace Unity.ProjectAuditor.Editor
         private SearchField m_SearchField;
 
         // strings
-        private const string m_DefaultAssemblyName = "Assembly-CSharp";
         private static readonly string[] m_AreaNames = {
             "CPU",
             "GPU",
@@ -817,11 +816,21 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 }
             }
 
-            if (m_AssemblySelection.selection.Count() == 0)
+            if (!m_AssemblySelection.selection.Any())
             {
-                if (m_AssemblyNames.Contains(m_DefaultAssemblyName))
+                // initial selection setup:
+                // - non-package assembly, or
+                // - default assembly, or,
+                // - all generated assemblies
+
+                if (Utils.AssemblyHelper.IsPackageInfoAvailable())
                 {
-                    m_AssemblySelection.Set(m_DefaultAssemblyName);    
+                    m_AssemblySelection.selection.AddRange(m_AssemblyNames.Where(assemblyName => !Utils.AssemblyHelper.IsPackageAssembly(assemblyName)));
+                }
+
+                if (!m_AssemblySelection.selection.Any() && m_AssemblyNames.Contains(Utils.AssemblyHelper.DefaultAssemblyName))
+                {
+                    m_AssemblySelection.Set(Utils.AssemblyHelper.DefaultAssemblyName);    
                 }
                 else
                 {
@@ -916,12 +925,6 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         {
             if (m_DeveloperMode)
             {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Analysis :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                m_ProjectAuditor.config.enablePackages = EditorGUILayout.ToggleLeft("Packages",
-                    m_ProjectAuditor.config.enablePackages, GUILayout.Width(100));
-                EditorGUILayout.EndHorizontal();
-                    
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Build :", GUILayout.ExpandWidth(true), GUILayout.Width(80));                        
                 m_ProjectAuditor.config.enableAnalyzeOnBuild = EditorGUILayout.ToggleLeft("Auto Analyze",
