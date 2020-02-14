@@ -137,6 +137,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #endif
         }
 
+        public static bool IsModuleAssembly(string assemblyName)
+        {
+            return GetPrecompiledEngineAssemblyPaths().FirstOrDefault(a => a.Contains(assemblyName)) != null;
+        }
+
         public static bool IsPackageAssembly(string assemblyName)
         {
 #if UNITY_2019_3_OR_NEWER

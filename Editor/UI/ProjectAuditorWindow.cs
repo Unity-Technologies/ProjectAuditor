@@ -823,18 +823,24 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 // - default assembly, or,
                 // - all generated assemblies
 
+                var compiledAssemblies = m_AssemblyNames.Where(a => !Utils.AssemblyHelper.IsModuleAssembly(a));
                 if (Utils.AssemblyHelper.IsPackageInfoAvailable())
                 {
-                    m_AssemblySelection.selection.AddRange(m_AssemblyNames.Where(assemblyName => !Utils.AssemblyHelper.IsPackageAssembly(assemblyName)));
+                    compiledAssemblies = compiledAssemblies.Where(a =>
+                        !Utils.AssemblyHelper.IsPackageAssembly(a));
                 }
+                m_AssemblySelection.selection.AddRange(compiledAssemblies);
 
-                if (!m_AssemblySelection.selection.Any() && m_AssemblyNames.Contains(Utils.AssemblyHelper.DefaultAssemblyName))
+                if (!m_AssemblySelection.selection.Any())
                 {
-                    m_AssemblySelection.Set(Utils.AssemblyHelper.DefaultAssemblyName);    
-                }
-                else
-                {
-                    m_AssemblySelection.SetAll(m_AssemblyNames);
+                    if (m_AssemblyNames.Contains(Utils.AssemblyHelper.DefaultAssemblyName))
+                    {
+                        m_AssemblySelection.Set(Utils.AssemblyHelper.DefaultAssemblyName);    
+                    }
+                    else
+                    {
+                        m_AssemblySelection.SetAll(m_AssemblyNames);
+                    }
                 }
             }
             
