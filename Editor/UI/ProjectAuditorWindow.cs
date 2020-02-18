@@ -245,13 +245,22 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
 
         private void Analyze()
         {
-            m_ProjectReport = m_ProjectAuditor.Audit(new ProgressBarDisplay());
+            try
+            {
+                m_ProjectReport = m_ProjectAuditor.Audit(new ProgressBarDisplay());
 
-            // update list of assembly names
-            m_AssemblyNames = Utils.AssemblyHelper.GetCompiledAssemblyNames().ToArray();
-            UpdateAssemblySelection();
+                // update list of assembly names
+                var scriptIssues = m_ProjectReport.GetIssues(IssueCategory.ApiCalls);
+                m_AssemblyNames = scriptIssues.Select(i => i.assembly).Distinct().OrderBy(str => str).ToArray();
+                UpdateAssemblySelection();
 
-            m_ValidReport = true;
+                m_ValidReport = true;
+            }
+            catch (AssemblyCompilationException e)
+            {
+                Debug.LogError(e);
+                m_ValidReport = false;
+            }
             
             m_IssueTables.Clear();
             

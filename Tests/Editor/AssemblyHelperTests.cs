@@ -24,11 +24,13 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void DefaultAssemblyPathIsFound()
         {
-            AssemblyHelper.CompileAssemblies();
-            var paths = AssemblyHelper.GetCompiledAssemblyPaths();
-
-            Assert.Positive(paths.Count());
-            Assert.NotNull(paths.FirstOrDefault(path => path.Contains(AssemblyHelper.DefaultAssemblyFileName)));
+            using (var compilationHelper = new AssemblyCompilationHelper())
+            {
+                var paths = compilationHelper.Compile();
+                
+                Assert.Positive(paths.Count());
+                Assert.NotNull(paths.FirstOrDefault(path => path.Contains(AssemblyHelper.DefaultAssemblyFileName)));
+            }
         }
         
         [Test]

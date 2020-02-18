@@ -35,14 +35,12 @@ namespace Unity.ProjectAuditor.Editor
 
         public void Audit(ProjectReport projectReport, IProgressBar progressBar = null)
         {
-            if (!AssemblyHelper.CompileAssemblies())
-                return;
-
             var callCrawler = new CallCrawler();                
 
+            using (var compilationHelper = new AssemblyCompilationHelper())
             using (var assemblyResolver = new DefaultAssemblyResolver())
             {
-                var compiledAssemblyPaths = AssemblyHelper.GetCompiledAssemblyPaths();
+                var compiledAssemblyPaths = compilationHelper.Compile();
   
                 foreach (var dir in AssemblyHelper.GetPrecompiledAssemblyDirectories())
                 {
@@ -54,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor
                     assemblyResolver.AddSearchDirectory(dir);    
                 }
 
-                foreach (var dir in AssemblyHelper.GetCompiledAssemblyDirectories())
+                foreach (var dir in compilationHelper.GetCompiledAssemblyDirectories())
                 {
                     assemblyResolver.AddSearchDirectory(dir);    
                 }

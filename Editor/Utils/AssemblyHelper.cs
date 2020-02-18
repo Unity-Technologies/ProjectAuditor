@@ -6,7 +6,8 @@ using UnityEditor;
 using UnityEditor.Compilation;
 
 #if UNITY_2018_2_OR_NEWER
-using UnityEditor.Build.Player;
+using UnityEngine;
+
 #endif
 
 #if UNITY_2019_3_OR_NEWER
@@ -17,8 +18,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
 {
     public static class AssemblyHelper
     {
-        private static string[] compiledAssemblyPaths = new string[]{};
-
         public static string DefaultAssemblyFileName = "Assembly-CSharp.dll";
         
         public static string DefaultAssemblyName
@@ -27,56 +26,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
             {
                 return Path.GetFileNameWithoutExtension(DefaultAssemblyFileName);
             }
-        }
-        
-        public static bool CompileAssemblies()
-        {
-#if UNITY_2018_2_OR_NEWER
-            var path = compiledAssemblyPaths.FirstOrDefault();
-            if (!string.IsNullOrEmpty(path))
-            {
-                Directory.Delete(Path.GetDirectoryName(path), true);
-            }
-
-            var outputFolder = FileUtil.GetUniqueTempPathInProject();
-            if (Directory.Exists(outputFolder))
-                Directory.Delete(outputFolder, true);
-
-            var input = new ScriptCompilationSettings
-            {
-                target = EditorUserBuildSettings.activeBuildTarget,
-                @group = EditorUserBuildSettings.selectedBuildTargetGroup
-            };
-
-            var compilationResult = PlayerBuildInterface.CompilePlayerScripts(input, outputFolder);
-
-            compiledAssemblyPaths =
-                compilationResult.assemblies.Select(assembly => Path.Combine(outputFolder, assembly)).ToArray();
-
-            return compilationResult.assemblies.Count > 0;
-#else
-            // fallback to CompilationPipeline assemblies 
-            compiledAssemblyPaths = CompilationPipeline.GetAssemblies()
-                .Where(a => a.flags != AssemblyFlags.EditorAssembly).Select(assembly => assembly.outputPath).ToArray();
-
-            return true;
-#endif
-        }
-        public static IEnumerable<string> GetCompiledAssemblyPaths()
-        {
-            return compiledAssemblyPaths;  
-        }
-
-        public static IEnumerable<string> GetCompiledAssemblyNames()
-        {
-            var list = compiledAssemblyPaths.Select(assemblyPath => Path.GetFileNameWithoutExtension(assemblyPath)).ToList();
-            list.Sort();            
-            return list.ToArray();
-        }
-
-        public static IEnumerable<string> GetCompiledAssemblyDirectories()
-        {
-            return GetCompiledAssemblyPaths().Select(path => Path.GetDirectoryName(path)).Distinct();
         }
 
         public static IEnumerable<string> GetPrecompiledAssemblyPaths()
