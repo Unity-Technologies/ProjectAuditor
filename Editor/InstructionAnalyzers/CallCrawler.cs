@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Mono.Cecil;
 using Unity.ProjectAuditor.Editor.Utils;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     internal class CallPair
     {

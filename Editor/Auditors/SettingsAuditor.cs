@@ -5,14 +5,14 @@ using System.Reflection;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.Macros;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public class SettingsAuditor : IAuditor
     {
         private List<ProblemDescriptor> m_ProblemDescriptors;
         
         private readonly System.Reflection.Assembly[] m_Assemblies;
-        private readonly AnalyzerHelpers m_Helpers = new AnalyzerHelpers();
+        private readonly SettingsEvaluators m_Helpers = new SettingsEvaluators();
         private readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping = new List<KeyValuePair<string, string>>();
         
         internal SettingsAuditor(ProjectAuditorConfig config)
