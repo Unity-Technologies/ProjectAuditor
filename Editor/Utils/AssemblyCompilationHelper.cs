@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Build.Player;
 using UnityEditor.Compilation;
+
+#if UNITY_2018_2_OR_NEWER
+using UnityEditor.Build.Player;
+#endif
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
@@ -57,8 +60,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #if UNITY_2018_2_OR_NEWER
             yield return m_OutputFolder;
 #else
-            yield return CompilationPipeline.GetAssemblies()
-                .Where(a => a.flags != AssemblyFlags.EditorAssembly).Select(assembly => assembly.outputPath)
+            foreach (var dir in CompilationPipeline.GetAssemblies()
+                .Where(a => a.flags != AssemblyFlags.EditorAssembly).Select(assembly => Path.GetDirectoryName(assembly.outputPath)).Distinct())
+            {
+                yield return dir;
+            }
 #endif
         }
 

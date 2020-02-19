@@ -9,7 +9,6 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class SettingsAuditor : IAuditor
     {
-        private ProjectAuditorConfig m_Config;
         private List<ProblemDescriptor> m_ProblemDescriptors;
         
         private readonly System.Reflection.Assembly[] m_Assemblies;
@@ -18,7 +17,6 @@ namespace Unity.ProjectAuditor.Editor
         
         internal SettingsAuditor(ProjectAuditorConfig config)
         {
-            m_Config = config;
             m_Assemblies = AppDomain.CurrentDomain.GetAssemblies();
             
             // UnityEditor

@@ -16,7 +16,6 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class ScriptAuditor : IAuditor
     {
-        private ProjectAuditorConfig m_Config;
         private List<ProblemDescriptor> m_ProblemDescriptors;
         private string[] m_AssemblyNames;
 
@@ -25,7 +24,6 @@ namespace Unity.ProjectAuditor.Editor
         
         internal ScriptAuditor(ProjectAuditorConfig config)
         {
-            m_Config = config;
         }
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
