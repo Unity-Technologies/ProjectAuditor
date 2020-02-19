@@ -296,18 +296,11 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             if (!IsAnalysisValid())
                 return;
 
-            var issues = m_ProjectReport.GetIssues(m_ActiveAnalysisView.desc.category).Where(ShouldDisplay);
-            var selectedItems = m_ActiveIssueTable.GetSelectedItems();
-            var selectedIssues = selectedItems.Select(i => i.m_ProjectIssue).ToArray();
-            var info = selectedIssues.Length  + " / " + issues.Count() + " issues";
-
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.BeginVertical();
-            
-            var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
-            m_ActiveIssueTable.OnGUI(r);
 
-            EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
+            m_ActiveAnalysisView.OnGUI(m_ProjectReport);
+            
             EditorGUILayout.EndVertical();
 
             EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
