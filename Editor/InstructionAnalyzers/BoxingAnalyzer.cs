@@ -1,11 +1,12 @@
-
 using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Unity.ProjectAuditor.Editor.Auditors;
+using Unity.ProjectAuditor.Editor.CallAnalysis;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    [ScriptAnalyzer]
+    [Attribute]
     public class BoxingAnalyzer : IInstructionAnalyzer
     {
         private static readonly ProblemDescriptor descriptor = new ProblemDescriptor

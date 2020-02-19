@@ -4,15 +4,18 @@ using System.IO;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Unity.ProjectAuditor.Editor.CallAnalysis;
+using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.Compilation;
 using UnityEngine;
 using Assembly = System.Reflection.Assembly;
+using Attribute = Unity.ProjectAuditor.Editor.InstructionAnalyzers.Attribute;
 #if UNITY_2018_1_OR_NEWER
 using UnityEditor.Build.Player;
 #endif
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public class ScriptAuditor : IAuditor
     {
@@ -159,7 +162,7 @@ namespace Unity.ProjectAuditor.Editor
         public IEnumerable<Type> GetAnalyzerTypes(Assembly assembly)
         {
             foreach(var type in assembly.GetTypes()) {
-                if (type.GetCustomAttributes(typeof(ScriptAnalyzerAttribute), true).Length > 0) {
+                if (type.GetCustomAttributes(typeof(Attribute), true).Length > 0) {
                     yield return type;
                 }
             }

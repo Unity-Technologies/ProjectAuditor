@@ -2,11 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Unity.ProjectAuditor.Editor.Auditors;
+using Unity.ProjectAuditor.Editor.CallAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    [ScriptAnalyzer]
+    [Attribute]
     public class EmptyMethodAnalyzer : IInstructionAnalyzer
     {
         private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
