@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         private List<ProblemDescriptor> m_ProblemDescriptors;
         
         private readonly System.Reflection.Assembly[] m_Assemblies;
-        private readonly SettingsEvaluators m_Helpers = new SettingsEvaluators();
+        private readonly Evaluators m_Helpers = new Evaluators();
         private readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping = new List<KeyValuePair<string, string>>();
         private readonly Dictionary<int, ISettingsAnalyzer> m_SettingsAnalyzers = new Dictionary<int, ISettingsAnalyzer>();
         
@@ -143,9 +143,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
             else
             {
-                Type helperType = m_Helpers.GetType();
-                MethodInfo theMethod = helperType.GetMethod(descriptor.customevaluator);
-                bool isIssue = (bool)theMethod.Invoke(m_Helpers, null);
+                var helperType = m_Helpers.GetType();
+                var theMethod = helperType.GetMethod(descriptor.customevaluator);
+                var isIssue = (bool)theMethod.Invoke(m_Helpers, null);
 
                 if (isIssue)
                 {

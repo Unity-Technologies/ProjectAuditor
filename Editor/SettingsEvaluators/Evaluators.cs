@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEditor.Rendering;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
-    internal class SettingsEvaluators
+    internal class Evaluators
     {
         // Edit this to reflect the target platforms for your project
         // TODO - Provide an interface for this, or something
