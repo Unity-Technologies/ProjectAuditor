@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Unity.ProjectAuditor.Editor.SettingsAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.Macros;
 
@@ -14,6 +15,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         private readonly System.Reflection.Assembly[] m_Assemblies;
         private readonly SettingsEvaluators m_Helpers = new SettingsEvaluators();
         private readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping = new List<KeyValuePair<string, string>>();
+        private readonly Dictionary<int, ISettingsAnalyzer> m_SettingsAnalyzers = new Dictionary<int, ISettingsAnalyzer>();
         
         internal SettingsAuditor(ProjectAuditorConfig config)
         {
@@ -38,12 +40,31 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public void LoadDatabase(string path)
         {
              m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors( path, "ProjectSettings");
+             
+             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+             {
+                 foreach (var type in GetAnalyzerTypes(assembly))
+                 {
+                     AddAnalyzer(Activator.CreateInstance(type, this) as ISettingsAnalyzer);
+                 }
+             }
+
         }
 
         public IEnumerable<Type> GetAnalyzerTypes(System.Reflection.Assembly assembly)
         {
-            // TODO
-            yield return null;
+            foreach(var type in assembly.GetTypes())
+            {
+                if (type.GetCustomAttributes(typeof(SettingsAnalyzers.Attribute), true).Length > 0)
+                {
+                    yield return type;
+                }
+            }
+        }
+
+        void AddAnalyzer(ISettingsAnalyzer analyzer)
+        {
+            m_SettingsAnalyzers.Add(analyzer.GetDescriptorId(), analyzer);
         }
 
         public void RegisterDescriptor(ProblemDescriptor descriptor)
@@ -61,7 +82,19 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 if (progressBar != null)
                     progressBar.AdvanceProgressBar();
 
-                SearchAndEval(descriptor, projectReport);
+                if (m_SettingsAnalyzers.ContainsKey(descriptor.id))
+                {
+                    var analyzer = m_SettingsAnalyzers[descriptor.id];
+                    var projectIssue = analyzer.Analyze();
+                    if (projectIssue != null)
+                    {
+                        projectReport.AddIssue(projectIssue);
+                    }
+                }
+                else
+                {
+                    SearchAndEval(descriptor, projectReport);    
+                }
             }
             if (progressBar != null)
                 progressBar.ClearProgressBar();

@@ -147,12 +147,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
             m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors(path, "ApiDatabase");
             
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (var assembly in assemblies)
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                var problemDescriptorTypes = GetAnalyzerTypes(assembly);
-
-                foreach (var type in problemDescriptorTypes)
+                foreach (var type in GetAnalyzerTypes(assembly))
                 {
                     AddAnalyzer(Activator.CreateInstance(type, this) as IInstructionAnalyzer);
                 }
@@ -161,8 +158,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public IEnumerable<Type> GetAnalyzerTypes(Assembly assembly)
         {
-            foreach(var type in assembly.GetTypes()) {
-                if (type.GetCustomAttributes(typeof(Attribute), true).Length > 0) {
+            foreach(var type in assembly.GetTypes())
+            {
+                if (type.GetCustomAttributes(typeof(InstructionAnalyzers.Attribute), true).Length > 0)
+                {
                     yield return type;
                 }
             }
