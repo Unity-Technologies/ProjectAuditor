@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     {
         private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
         {
-            id = 10201,
+            id = 102001,
             description = "Empty MonoBehaviour Method",
             type = string.Empty,
             method = string.Empty,
