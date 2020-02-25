@@ -102,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 return;
             
             var callerNode = new CallTreeNode(caller);
-            var perfCriticalContext = IsPerformanceCriticalContext(caller.DeclaringType, caller);
+            var perfCriticalContext = IsPerformanceCriticalContext(caller);
             
             foreach (var inst in caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode)))
             {
@@ -186,9 +186,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             return projectReport.GetIssues(IssueCategory.ApiCalls).Where(i => i.relativePath.Equals(relativePath));
         }
         
-        private static bool IsPerformanceCriticalContext(TypeReference typeReference, MethodDefinition methodDefinition)
+        private static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)
         {
-            return MonoBehaviourAnalysis.IsMonoBehaviour(typeReference) && MonoBehaviourAnalysis.IsMonoBehaviourUpdateMethod(methodDefinition);
+            return MonoBehaviourAnalysis.IsMonoBehaviour(methodDefinition.DeclaringType) && MonoBehaviourAnalysis.IsMonoBehaviourUpdateMethod(methodDefinition);
         }
     }
 }
