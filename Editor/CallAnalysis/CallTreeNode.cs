@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Mono.Cecil;
 using Unity.ProjectAuditor.Editor.Utils;
 
@@ -98,20 +99,7 @@ namespace Unity.ProjectAuditor.Editor.CallAnalysis
 
         public bool IsPerfCriticalContext()
         {
-            if (perfCriticalContext)
-                return true;
-
-            bool value = false;
-            foreach (var child in children)
-            {
-                if (child.IsPerfCriticalContext())
-                {
-                    value = true;
-                    break;
-                }
-            }
-
-            return value;
+            return perfCriticalContext || children.Any(child => child.IsPerfCriticalContext());
         }
     }
 }
