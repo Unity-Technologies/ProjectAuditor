@@ -105,6 +105,7 @@ namespace Unity.ProjectAuditor.Editor
         public enum Column
         {
             Description = 0,
+            Priority,
             Area,
             Filename,
             Assembly,
@@ -118,6 +119,8 @@ namespace Unity.ProjectAuditor.Editor
 
         private readonly bool m_GroupByDescription;
 
+        private static readonly string PerfCriticalIconName = "console.warnicon";
+        
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader, ProjectIssue[] issues,
             bool groupByDescription, ProjectAuditorConfig config, IIssuesFilter issuesFilter) : base(state, multicolumnHeader)
         {
@@ -248,6 +251,11 @@ namespace Unity.ProjectAuditor.Editor
             {
                 switch ((Column) column)
                 {
+                    case Column.Priority:
+                        if (issue.isPerfCriticalContext)
+                            EditorGUI.LabelField(cellRect,
+                                EditorGUIUtility.TrTextContent( "Performance Critical Context", "Performance Critical Context", PerfCriticalIconName));
+                        break;
                     case Column.Area:
                         if (!m_GroupByDescription)
                             EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));

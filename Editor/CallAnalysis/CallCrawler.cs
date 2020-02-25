@@ -9,6 +9,7 @@ namespace Unity.ProjectAuditor.Editor.CallAnalysis
         public MethodReference callee;
         public MethodReference caller;
         public Location location;
+        public bool perfCriticalContext;
     }   
     
     internal class CallCrawler
@@ -18,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.CallAnalysis
 
         private const int m_MaxDepth = 10;
         
-        public void Add(MethodReference caller, MethodReference callee, Location location)
+        public void Add(MethodReference caller, MethodReference callee, Location location, bool perfCriticalContext)
         {
             var key = string.Concat(caller, "->", callee);
             if (!m_CallPairs.ContainsKey(key))
@@ -27,7 +28,8 @@ namespace Unity.ProjectAuditor.Editor.CallAnalysis
                 {
                     callee = callee,
                     caller = caller,
-                    location = location
+                    location = location,
+                    perfCriticalContext = perfCriticalContext
                 };
                 
                 m_CallPairs.Add(key, calledMethodPair);
@@ -80,6 +82,7 @@ namespace Unity.ProjectAuditor.Editor.CallAnalysis
                     {
                         var callerInstance = new CallTreeNode(call.caller);
                         callerInstance.location = call.location;
+                        callerInstance.perfCriticalContext = call.perfCriticalContext;
 
                         BuildHierarchy(callerInstance, depth);
                         callee.children.Add(callerInstance); 

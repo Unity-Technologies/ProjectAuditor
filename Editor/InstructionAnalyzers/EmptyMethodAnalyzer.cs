@@ -26,10 +26,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         {
             return descriptor;
         }
-
-        private string[] m_MonoBehaviourMagicMethods = new[]
-            {"Awake", "Start", "OnEnable", "OnDisable", "Update", "LateUpdate", "OnEnable", "FixedUpdate"};
-        
+      
         public EmptyMethodAnalyzer(ScriptAuditor auditor)
         {
             auditor.RegisterDescriptor(descriptor);
@@ -40,10 +37,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             if (inst.Previous != null)
                 return null;
 
-            if (!MonoCecilHelper.IsMonoBehaviour(methodDefinition.DeclaringType))
+            if (!MonoBehaviourAnalysis.IsMonoBehaviour(methodDefinition.DeclaringType))
                 return null;
 
-            if (!m_MonoBehaviourMagicMethods.Contains(methodDefinition.Name))
+            if (!MonoBehaviourAnalysis.IsMonoBehaviourMagicMethod(methodDefinition))
                 return null;
             
             return new ProjectIssue

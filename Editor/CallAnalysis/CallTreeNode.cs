@@ -13,7 +13,8 @@ namespace Unity.ProjectAuditor.Editor.CallAnalysis
         public string methodName;
         public string assemblyName;
         public Location location;
-
+        public bool perfCriticalContext;
+        
         public List<CallTreeNode> children = new List<CallTreeNode>();
 
         public string prettyName
@@ -65,7 +66,8 @@ namespace Unity.ProjectAuditor.Editor.CallAnalysis
             }
 
             if (caller != null)
-                children.Add(caller); 
+                children.Add(caller);
+            perfCriticalContext = false;
         }
 
         public bool HasChildren()
@@ -82,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor.CallAnalysis
         {
             return children[index];
         }
-        
+
         public string GetPrettyName(bool withAssembly = false)
         {
             if (string.IsNullOrEmpty(typeName))
@@ -92,6 +94,24 @@ namespace Unity.ProjectAuditor.Editor.CallAnalysis
                 return string.Format("{0}.{1}", typeName, methodName);
             }
             return string.Format("{0}.{1} [{2}]", typeName, methodName, assemblyName);
+        }
+
+        public bool IsPerfCriticalContext()
+        {
+            if (perfCriticalContext)
+                return true;
+
+            bool value = false;
+            foreach (var child in children)
+            {
+                if (child.IsPerfCriticalContext())
+                {
+                    value = true;
+                    break;
+                }
+            }
+
+            return value;
         }
     }
 }

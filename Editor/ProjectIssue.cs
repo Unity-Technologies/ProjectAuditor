@@ -75,6 +75,17 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
+        public bool isPerfCriticalContext
+        {
+            get
+            {
+                if (callTree == null)
+                    return false;
+
+                return callTree.IsPerfCriticalContext();
+            }
+        }
+        
         public string name
         {
             get
@@ -117,6 +128,5 @@ namespace Unity.ProjectAuditor.Editor
             this.category = category;
             this.callTree = callTreeNode;
         }
-
     }
 }

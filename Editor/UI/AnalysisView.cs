@@ -37,6 +37,7 @@ namespace Unity.ProjectAuditor.Editor
             public static readonly GUIContent[] ColumnHeaders =
             {
                 new GUIContent("Issue", "Issue description"),
+                new GUIContent(" ! ", "Issue priority"),
                 new GUIContent("Area", "The area the issue might have an impact on"),
                 new GUIContent("Filename", "Filename and line number"),
                 new GUIContent("Assembly", "Managed Assembly name")
@@ -64,6 +65,10 @@ namespace Unity.ProjectAuditor.Editor
                     case IssueTable.Column.Description :
                         width = 300;
                         minWidth = 100;
+                        break;
+                    case IssueTable.Column.Priority :
+                        width = 22;
+                        minWidth = 22;
                         break;
                     case IssueTable.Column.Area :
                         width = 60;
