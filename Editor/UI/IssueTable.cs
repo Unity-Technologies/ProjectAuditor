@@ -253,8 +253,11 @@ namespace Unity.ProjectAuditor.Editor
                 {
                     case Column.Priority:
                         if (issue.isPerfCriticalContext)
-                            EditorGUI.LabelField(cellRect,
-                                EditorGUIUtility.TrTextContent( "Performance Critical Context", "Performance Critical Context", PerfCriticalIconName));
+#if UNITY_2018_3_OR_NEWER
+                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrIconContent(PerfCriticalIconName, "Performance Critical Context"));
+#else
+                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(PerfCriticalIconName), "Performance Critical Context"));
+#endif                            
                         break;
                     case Column.Area:
                         if (!m_GroupByDescription)
