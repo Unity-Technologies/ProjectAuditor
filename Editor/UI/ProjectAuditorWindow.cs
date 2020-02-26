@@ -136,9 +136,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         
         private void OnEnable()
         {
-            m_ProjectAuditor = new ProjectAuditor();    
-
-            m_ModeNames = m_AnalysisViewDescriptors.Select(m => m.name).ToArray();
+            m_ProjectAuditor = new ProjectAuditor();
 
             UpdateAssemblySelection();
 
@@ -162,6 +160,14 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
                 {
                     m_AreaSelection.SetAll(m_AreaNames);    
                 }
+            }
+
+            m_ModeNames = m_AnalysisViewDescriptors.Select(m => m.name).ToArray();
+
+            m_AnalysisViews.Clear();
+            foreach (var desc in m_AnalysisViewDescriptors)
+            {
+                m_AnalysisViews.Add(new AnalysisView(desc, m_ProjectAuditor.config, this));
             }
 
             m_CallHierarchyView = new CallHierarchyView(new TreeViewState());
@@ -259,12 +265,6 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             if (!IsAnalysisValid())
                 return;
 
-            m_AnalysisViews.Clear();
-            foreach (var desc in m_AnalysisViewDescriptors)
-            {
-                m_AnalysisViews.Add(new AnalysisView(desc, m_ProjectAuditor.config, this));
-            }
-            
             foreach (var view in m_AnalysisViews)
             {
                 view.CreateTable(m_ProjectReport, new TreeViewState());

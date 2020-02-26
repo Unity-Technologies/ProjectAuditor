@@ -54,6 +54,9 @@ namespace Unity.ProjectAuditor.Editor
         
         public void CreateTable(ProjectReport projectReport, TreeViewState state)
         {
+            if (m_Table != null)
+                return;
+
             var columnsList = new List<MultiColumnHeaderState.Column>();
             var numColumns = (int) IssueTable.Column.Count;
             for (int i = 0; i < numColumns; i++)
