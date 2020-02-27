@@ -2259,6 +2259,16 @@
             "area": "CPU",
             "problem": "Adding components to GameObjects at runtime can be a very expensive operation.",
             "solution": "Try to avoid getting this property in frequently-updated code. Prefer instantiating GameObjects from Prefabs will all the necessary components instead."
+        },
+        {
+            "id": 101226,
+            "type": "System.String",
+            "method": "Concat",
+            "value": "",
+            "customevaluator": "",
+            "area": "Memory",
+            "problem": "String concatenation operations allocates managed memory",
+            "solution": "Try to avoid concatenating strings in frequently-updated code. Prefer using a StringBuilder instead, as this minimizes managed allocations."
         }
     ]
 }

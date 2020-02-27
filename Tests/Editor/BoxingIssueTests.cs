@@ -17,10 +17,10 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		[OneTimeSetUp]
 		public void SetUp()
 		{
-			m_ScriptResourceBoxingInt = new ScriptResource("BoxingIntTest.cs", "using UnityEngine; class BoxingIntTest : MonoBehaviour { void Start() { Debug.Log(\"The number of the beast is: \" + 666); } }");
-			m_ScriptResourceBoxingFloat = new ScriptResource("BoxingFloatTest.cs", "using UnityEngine; class BoxingFloatTest : MonoBehaviour { void Start() { Debug.Log(\"The number of the beast is: \" + 666.0f); } }");
-			m_ScriptResourceBoxingGenericRefType = new ScriptResource("BoxingGenericRefType.cs", "using UnityEngine; class SomeClass {}; class BoxingGenericRefType<T> where T : SomeClass { T refToGenericType; void Start() { if (refToGenericType == null){} } }");
-			m_ScriptResourceBoxingGeneric = new ScriptResource("BoxingGeneric.cs", "using UnityEngine; class BoxingGeneric<T> { T refToGenericType; void Start() { if (refToGenericType == null){} } }");
+			m_ScriptResourceBoxingInt = new ScriptResource("BoxingIntTest.cs", "using System; class BoxingIntTest { Object Dummy() { return 666; } }");
+			m_ScriptResourceBoxingFloat = new ScriptResource("BoxingFloatTest.cs", "using System; class BoxingFloatTest { Object Dummy() { return 666.0f; } }");
+			m_ScriptResourceBoxingGenericRefType = new ScriptResource("BoxingGenericRefType.cs", "class SomeClass {}; class BoxingGenericRefType<T> where T : SomeClass { T refToGenericType; void Dummy() { if (refToGenericType == null){} } }");
+			m_ScriptResourceBoxingGeneric = new ScriptResource("BoxingGeneric.cs", "class BoxingGeneric<T> { T refToGenericType; void Dummy() { if (refToGenericType == null){} } }");
 		}
 
 		[OneTimeTearDown]
@@ -43,10 +43,10 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
 			// check issue
 			Assert.NotNull(boxingInt);
-			Assert.True(boxingInt.name.Equals("BoxingIntTest.Start"));
+			Assert.True(boxingInt.name.Equals("BoxingIntTest.Dummy"));
 			Assert.True(boxingInt.filename.Equals(m_ScriptResourceBoxingInt.scriptName));
 			Assert.True(boxingInt.description.Equals("Conversion from value type 'Int32' to ref type"));
-			Assert.True(boxingInt.callingMethod.Equals("System.Void BoxingIntTest::Start()"));
+			Assert.True(boxingInt.callingMethod.Equals("System.Object BoxingIntTest::Dummy()"));
 			Assert.AreEqual(1, boxingInt.line);
 			Assert.AreEqual(IssueCategory.ApiCalls, boxingInt.category);
 
@@ -72,10 +72,10 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
 			// check issue
 			Assert.NotNull(boxingFloat);
-			Assert.True(boxingFloat.name.Equals("BoxingFloatTest.Start"));
+			Assert.True(boxingFloat.name.Equals("BoxingFloatTest.Dummy"));
 			Assert.True(boxingFloat.filename.Equals(m_ScriptResourceBoxingFloat.scriptName));
 			Assert.True(boxingFloat.description.Equals("Conversion from value type 'float' to ref type"));
-			Assert.True(boxingFloat.callingMethod.Equals("System.Void BoxingFloatTest::Start()"));
+			Assert.True(boxingFloat.callingMethod.Equals("System.Object BoxingFloatTest::Dummy()"));
 			Assert.AreEqual(1, boxingFloat.line);
 			Assert.AreEqual(IssueCategory.ApiCalls, boxingFloat.category);
 			
