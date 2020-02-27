@@ -2239,6 +2239,26 @@
             "area": "Memory",
             "problem": "The GameObject.tag property allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Prefer using GameObject.CompareTag() instead, as this does not result in managed allocations."
+        },
+        {
+            "id": 101224,
+            "type": "UnityEngine.Object",
+            "method": "Instantiate",
+            "value": "",
+            "customevaluator": "",
+            "area": "CPU",
+            "problem": "Instantiationg Objects at runtime can be a very expensive operation.",
+            "solution": "Try to avoid calling Object.Instantiate frequently-updated code."
+        },
+        {
+            "id": 101225,
+            "type": "UnityEngine.GameObject",
+            "method": "AddComponent",
+            "value": "",
+            "customevaluator": "",
+            "area": "CPU",
+            "problem": "Adding components to GameObjects at runtime can be a very expensive operation.",
+            "solution": "Try to avoid getting this property in frequently-updated code. Prefer instantiating GameObjects from Prefabs will all the necessary components instead."
         }
     ]
 }
