@@ -283,11 +283,11 @@ class ClassWithDelegate
 		[Test]
 		public void IssueInDelegateIsFound()
 		{
-			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInDelegate);
-			
-			Assert.AreEqual(1, issues.Count());
+			var allScriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInDelegate);
+			var issue = allScriptIssues.FirstOrDefault(i => i.name.Equals("Camera.get_main"));			
+			Assert.NotNull(issue);
 						
-			Assert.True(issues.First().callingMethod.Equals("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()"));
+			Assert.True(issue.callingMethod.Equals("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()"));
 		}
 	}	
 }

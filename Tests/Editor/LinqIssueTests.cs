@@ -11,7 +11,18 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 		[SetUp]
 		public void SetUp()
 		{
-			m_ScriptResource = new ScriptResource("MyClass.cs", "using UnityEngine;using System.Linq;using System.Collections.Generic; struct Test{public int i;}class MyClass : MonoBehaviour { int Dummy() { var list = new List<Test>(); return list.Count(); } }");
+			m_ScriptResource = new ScriptResource("MyClass.cs", @"
+using System.Linq;
+using System.Collections.Generic;
+
+class MyClass
+{
+	int Dummy(List<int> list)
+	{
+		return list.Count();
+	}
+}"
+			);
 		}
 
 		[TearDown]
@@ -40,8 +51,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 			Assert.True(myIssue.name.Equals("Enumerable.Count"));
 			Assert.True(myIssue.filename.Equals(m_ScriptResource.scriptName));
 			Assert.True(myIssue.description.Equals("Enumerable.Count"));
-			Assert.True(myIssue.callingMethod.Equals("System.Int32 MyClass::Dummy()"));
-			Assert.AreEqual(1, myIssue.line);
+			Assert.True(myIssue.callingMethod.Equals("System.Int32 MyClass::Dummy(System.Collections.Generic.List`1<System.Int32>)"));
+			Assert.AreEqual(9, myIssue.line);
 			Assert.AreEqual(IssueCategory.ApiCalls, myIssue.category);
 		}
 	}	
