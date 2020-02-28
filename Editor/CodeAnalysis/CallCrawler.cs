@@ -60,11 +60,17 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                         progressBar.AdvanceProgressBar();
 
                     var depth = 0;
-                    BuildHierarchy(issue.callTree.GetChild(), depth);
+                    var callTree = issue.callTree;
+                    BuildHierarchy(callTree.GetChild(), depth);
+                    
+                    // temp fix for null location (ScriptAuditor was unable to get sequence point)
+                    if (issue.location == null && callTree.HasChildren())
+                    {
+                        issue.location = callTree.GetChild().location;
+                    }
                 }
-
                 if (progressBar != null)
-                    progressBar.ClearProgressBar();
+                    progressBar.ClearProgressBar();                
             }
         }
 
