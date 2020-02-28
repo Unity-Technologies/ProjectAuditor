@@ -2,7 +2,7 @@ using System.Linq;
 using Mono.Cecil;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.Utils
+namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     internal static class MonoBehaviourAnalysis
     {

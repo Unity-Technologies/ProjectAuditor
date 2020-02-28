@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
 
-namespace Unity.ProjectAuditor.Editor.Utils
+namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     internal static class MonoCecilHelper
     {
