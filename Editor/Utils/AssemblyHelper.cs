@@ -1,11 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Compilation;
-#if UNITY_2018_2_OR_NEWER
-
-#endif
 
 #if UNITY_2019_3_OR_NEWER
 using UnityEditor.PackageManager;
@@ -87,8 +85,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static bool IsPackageAssembly(string assemblyName)
         {
 #if UNITY_2019_3_OR_NEWER
-            var module =
- AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.Modules).FirstOrDefault(a => a.Name.Contains(assemblyName));
+            var module = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.Modules).FirstOrDefault(a => a.Name.Contains(assemblyName));
             return UnityEditor.PackageManager.PackageInfo.FindForAssembly(module.Assembly) != null;
 #else
             // assume it's not a package

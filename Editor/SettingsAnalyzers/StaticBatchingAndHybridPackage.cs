@@ -2,6 +2,9 @@ using System;
 using System.Reflection;
 using Unity.ProjectAuditor.Editor.Auditors;
 using UnityEditor;
+#if UNITY_2019_3_OR_NEWER
+using PackageInfo = UnityEditor.PackageManager.PackageInfo;
+#endif
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
