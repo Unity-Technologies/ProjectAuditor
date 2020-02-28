@@ -65,7 +65,10 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             perfCriticalContext = false;
         }
 
-        public string prettyName => GetPrettyName();
+        public string prettyName
+        {
+            get { return GetPrettyName(); }
+        }
 
         public bool HasChildren()
         {

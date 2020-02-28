@@ -17,7 +17,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
     {
         public static string DefaultAssemblyFileName = "Assembly-CSharp.dll";
 
-        public static string DefaultAssemblyName => Path.GetFileNameWithoutExtension(DefaultAssemblyFileName);
+        public static string DefaultAssemblyName
+        {
+            get { return Path.GetFileNameWithoutExtension(DefaultAssemblyFileName); }
+        }
 
         public static IEnumerable<string> GetPrecompiledAssemblyPaths()
         {

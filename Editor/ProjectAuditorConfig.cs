@@ -11,7 +11,10 @@ namespace Unity.ProjectAuditor.Editor
         public bool enableFailBuildOnIssues;
         private readonly List<Rule> m_Rules = new List<Rule>();
 
-        public int NumRules => m_Rules.Count;
+        public int NumRules
+        {
+            get{ return m_Rules.Count; }   
+        }
 
         public void AddRule(Rule ruleToAdd)
         {

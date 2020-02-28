@@ -11,7 +11,10 @@ namespace Unity.ProjectAuditor.Editor
     {
         [SerializeField] private List<ProjectIssue> m_Issues = new List<ProjectIssue>();
 
-        public int NumTotalIssues => m_Issues.Count;
+        public int NumTotalIssues
+        {
+            get { return m_Issues.Count; }
+        }
 
         public int GetNumIssues(IssueCategory category)
         {

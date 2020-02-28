@@ -11,7 +11,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public int line;
         public string path;
 
-        public string filename => string.IsNullOrEmpty(path) ? string.Empty : Path.GetFileName(path);
+        public string filename
+        {
+            get { return string.IsNullOrEmpty(path) ? string.Empty : Path.GetFileName(path); }
+        }
 
         public string relativePath
         {
