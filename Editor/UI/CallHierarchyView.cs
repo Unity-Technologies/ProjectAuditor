@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.CallAnalysis;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using UnityEditor.IMGUI.Controls;
 
 namespace Unity.ProjectAuditor.Editor

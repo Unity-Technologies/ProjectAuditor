@@ -1,5 +1,5 @@
 using System;
-using Unity.ProjectAuditor.Editor.CallAnalysis;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor

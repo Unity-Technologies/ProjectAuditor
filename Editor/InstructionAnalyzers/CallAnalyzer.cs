@@ -3,7 +3,7 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.Auditors;
-using Unity.ProjectAuditor.Editor.CallAnalysis;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
