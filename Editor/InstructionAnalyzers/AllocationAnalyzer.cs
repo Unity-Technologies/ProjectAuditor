@@ -36,44 +36,44 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             auditor.RegisterDescriptor(objectAllocationDescriptor);
             auditor.RegisterDescriptor(arrayAllocationDescriptor);
         }
-        
+
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             if (inst.OpCode == OpCodes.Newobj)
             {
-                var methodReference = (MethodReference)inst.Operand;
+                var methodReference = (MethodReference) inst.Operand;
                 var typeReference = methodReference.DeclaringType;
                 if (typeReference.IsValueType)
                     return null;
 
                 var descriptor = objectAllocationDescriptor;
                 var description = string.Format("'{0}' object allocation", typeReference.Name);
-                
+
                 var calleeNode = new CallTreeNode(methodDefinition);
-            
+
                 return new ProjectIssue
                 (
                     descriptor,
                     description,
                     IssueCategory.ApiCalls,
                     calleeNode
-                );                
+                );
             }
             else // OpCodes.Newarr
             {
-                var typeReference = (TypeReference)inst.Operand;
+                var typeReference = (TypeReference) inst.Operand;
                 var descriptor = arrayAllocationDescriptor;
                 var description = string.Format("'{0}' array allocation", typeReference.Name);
-                
+
                 var calleeNode = new CallTreeNode(methodDefinition);
-        
+
                 return new ProjectIssue
                 (
                     descriptor,
                     description,
                     IssueCategory.ApiCalls,
                     calleeNode
-                );                
+                );
             }
         }
 

@@ -1,29 +1,26 @@
-﻿using System.Collections;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class ScriptIssueTests
-	{
-		private ScriptResource m_ScriptResource;
-		private ScriptResource m_ScriptResourceInPlayerCode;
-		private ScriptResource m_ScriptResourceInEditorCode;
-		private ScriptResource m_ScriptResourceIssueInNestedClass;
-		private ScriptResource m_ScriptResourceIssueInGenericClass;
-		private ScriptResource m_ScriptResourceIssueInMonoBehaviour;
-		private ScriptResource m_ScriptResourceIssueInVirtualMethod;
-		private ScriptResource m_ScriptResourceIssueInOverrideMethod;
-		private ScriptResource m_ScriptResourceIssueInCoroutine;
-		private ScriptResource m_ScriptResourceIssueInDelegate;
-		
-		[OneTimeSetUp]
-		public void SetUp()
-		{
-			 m_ScriptResource = new ScriptResource("MyClass.cs", @"
+    internal class ScriptIssueTests
+    {
+        private ScriptResource m_ScriptResource;
+        private ScriptResource m_ScriptResourceInEditorCode;
+        private ScriptResource m_ScriptResourceInPlayerCode;
+        private ScriptResource m_ScriptResourceIssueInCoroutine;
+        private ScriptResource m_ScriptResourceIssueInDelegate;
+        private ScriptResource m_ScriptResourceIssueInGenericClass;
+        private ScriptResource m_ScriptResourceIssueInMonoBehaviour;
+        private ScriptResource m_ScriptResourceIssueInNestedClass;
+        private ScriptResource m_ScriptResourceIssueInOverrideMethod;
+        private ScriptResource m_ScriptResourceIssueInVirtualMethod;
+
+        [OneTimeSetUp]
+        public void SetUp()
+        {
+            m_ScriptResource = new ScriptResource("MyClass.cs", @"
 using UnityEngine;
 class MyClass
 {
@@ -35,7 +32,7 @@ class MyClass
 }
 ");
 
-			 m_ScriptResourceInPlayerCode = new ScriptResource("IssueInPlayerCode.cs", @"
+            m_ScriptResourceInPlayerCode = new ScriptResource("IssueInPlayerCode.cs", @"
 using UnityEngine;
 class MyClassWithPlayerOnlyCode
 {
@@ -48,7 +45,7 @@ class MyClassWithPlayerOnlyCode
 }
 ");
 
-			 m_ScriptResourceInEditorCode = new ScriptResource("IssueInEditorCode.cs", @"
+            m_ScriptResourceInEditorCode = new ScriptResource("IssueInEditorCode.cs", @"
 using UnityEngine;
 class MyClassWithEditorOnlyCode
 {
@@ -60,8 +57,8 @@ class MyClassWithEditorOnlyCode
 	}
 }
 ");
-			 
-			 m_ScriptResourceIssueInNestedClass = new ScriptResource("IssueInNestedClass.cs", @"
+
+            m_ScriptResourceIssueInNestedClass = new ScriptResource("IssueInNestedClass.cs", @"
 using UnityEngine;
 class MyClassWithNested
 {
@@ -75,7 +72,7 @@ class MyClassWithNested
 }
 ");
 
-			 m_ScriptResourceIssueInGenericClass = new ScriptResource("IssueInGenericClass.cs", @"
+            m_ScriptResourceIssueInGenericClass = new ScriptResource("IssueInGenericClass.cs", @"
 using UnityEngine;
 class GenericClass<T>
 {
@@ -85,8 +82,8 @@ class GenericClass<T>
 	}
 }
 ");
-			 
-			 m_ScriptResourceIssueInVirtualMethod = new ScriptResource("IssueInVirtualMethod.cs", @"
+
+            m_ScriptResourceIssueInVirtualMethod = new ScriptResource("IssueInVirtualMethod.cs", @"
 using UnityEngine;
 abstract class AbstractClass
 {
@@ -96,8 +93,8 @@ abstract class AbstractClass
     }
 }
 ");
-			 
-			 m_ScriptResourceIssueInOverrideMethod = new ScriptResource("IssueInOverrideMethod.cs", @"
+
+            m_ScriptResourceIssueInOverrideMethod = new ScriptResource("IssueInOverrideMethod.cs", @"
 using UnityEngine;
 class BaseClass
 {
@@ -113,8 +110,8 @@ class DerivedClass : BaseClass
     }
 }
 ");
-			 
-			 m_ScriptResourceIssueInMonoBehaviour = new ScriptResource("IssueInMonoBehaviour.cs", @"
+
+            m_ScriptResourceIssueInMonoBehaviour = new ScriptResource("IssueInMonoBehaviour.cs", @"
 using UnityEngine;
 class MyMonoBehaviour : MonoBehaviour
 {
@@ -125,7 +122,7 @@ class MyMonoBehaviour : MonoBehaviour
 }
 ");
 
-			 m_ScriptResourceIssueInCoroutine = new ScriptResource("IssueInCoroutine.cs", @"
+            m_ScriptResourceIssueInCoroutine = new ScriptResource("IssueInCoroutine.cs", @"
 using UnityEngine;
 using System.Collections;
 class MyMonoBehaviourWithCoroutine : MonoBehaviour
@@ -141,8 +138,8 @@ class MyMonoBehaviourWithCoroutine : MonoBehaviour
     }
 }
 ");
-			 
-			 m_ScriptResourceIssueInDelegate = new ScriptResource("IssueInDelegate.cs", @"
+
+            m_ScriptResourceIssueInDelegate = new ScriptResource("IssueInDelegate.cs", @"
 using UnityEngine;
 using System;
 class ClassWithDelegate
@@ -158,137 +155,136 @@ class ClassWithDelegate
         }; 
     }
 }
-");		
-			 
-		}
+");
+        }
 
-		[OneTimeTearDown]
-		public void TearDown()
-		{
-			m_ScriptResource.Delete();
-			m_ScriptResourceInPlayerCode.Delete();
-			m_ScriptResourceInEditorCode.Delete();
-			m_ScriptResourceIssueInNestedClass.Delete();
-			m_ScriptResourceIssueInGenericClass.Delete();
-			m_ScriptResourceIssueInVirtualMethod.Delete();
-			m_ScriptResourceIssueInOverrideMethod.Delete();
-			m_ScriptResourceIssueInMonoBehaviour.Delete();
-			m_ScriptResourceIssueInCoroutine.Delete();
-			m_ScriptResourceIssueInDelegate.Delete();
-		}
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            m_ScriptResource.Delete();
+            m_ScriptResourceInPlayerCode.Delete();
+            m_ScriptResourceInEditorCode.Delete();
+            m_ScriptResourceIssueInNestedClass.Delete();
+            m_ScriptResourceIssueInGenericClass.Delete();
+            m_ScriptResourceIssueInVirtualMethod.Delete();
+            m_ScriptResourceIssueInOverrideMethod.Delete();
+            m_ScriptResourceIssueInMonoBehaviour.Delete();
+            m_ScriptResourceIssueInCoroutine.Delete();
+            m_ScriptResourceIssueInDelegate.Delete();
+        }
 
-		[Test]
-		public void IssueIsFound()
-		{
-			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResource);
-			
-			Assert.AreEqual(1, issues.Count());
+        [Test]
+        public void IssueIsFound()
+        {
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResource);
 
-			var myIssue = issues.FirstOrDefault();
-			
-			Assert.NotNull(myIssue);
-			Assert.NotNull(myIssue.descriptor);
-			
-			Assert.AreEqual(Rule.Action.Default, myIssue.descriptor.action);
-			Assert.AreEqual(101000, myIssue.descriptor.id);
-			Assert.True(myIssue.descriptor.type.Equals("UnityEngine.Camera"));
-			Assert.True(myIssue.descriptor.method.Equals("main"));
-			
-			Assert.True(myIssue.name.Equals("Camera.get_main"));
-			Assert.True(myIssue.filename.Equals(m_ScriptResource.scriptName));
-			Assert.True(myIssue.description.Equals("UnityEngine.Camera.main"));
-			Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Dummy()"));
-			Assert.AreEqual(8, myIssue.line);
-			Assert.AreEqual(IssueCategory.ApiCalls, myIssue.category);
-		}
+            Assert.AreEqual(1, issues.Count());
 
-		[Test]
-		public void IssueInPlayerCodeIsFound()
-		{
-			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceInPlayerCode);
-			
-			Assert.AreEqual(1, issues.Count());
-						
-			Assert.True(issues.First().callingMethod.Equals("System.Void MyClassWithPlayerOnlyCode::Dummy()"));
-		}
+            var myIssue = issues.FirstOrDefault();
 
-		[Test]
-		public void IssueInEditorCodeIsNotFound()
-		{
-			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceInEditorCode);
-			
-			Assert.AreEqual(0, issues.Count());
-		}
+            Assert.NotNull(myIssue);
+            Assert.NotNull(myIssue.descriptor);
 
-		[Test]
-		public void IssueInNestedClassIsFound()
-		{
-			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInNestedClass);
-			
-			Assert.AreEqual(1, issues.Count());
-						
-			Assert.True(issues.First().callingMethod.Equals("System.Void MyClassWithNested/NestedClass::Dummy()"));
-		}
+            Assert.AreEqual(Rule.Action.Default, myIssue.descriptor.action);
+            Assert.AreEqual(101000, myIssue.descriptor.id);
+            Assert.True(myIssue.descriptor.type.Equals("UnityEngine.Camera"));
+            Assert.True(myIssue.descriptor.method.Equals("main"));
 
-		[Test]
-		public void IssueInGenericClassIsFound()
-		{
-				var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInGenericClass);
-			
-			Assert.AreEqual(1, issues.Count());
-						
-			Assert.True(issues.First().callingMethod.Equals("System.Void GenericClass`1::Dummy()"));
-		}
-		
-		[Test]
-		public void IssueInVirtualMethodIsFound()
-		{
-			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInVirtualMethod);
-			
-			Assert.AreEqual(1, issues.Count());
-						
-			Assert.True(issues.First().callingMethod.Equals("System.Void AbstractClass::Dummy()"));
-		}
+            Assert.True(myIssue.name.Equals("Camera.get_main"));
+            Assert.True(myIssue.filename.Equals(m_ScriptResource.scriptName));
+            Assert.True(myIssue.description.Equals("UnityEngine.Camera.main"));
+            Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Dummy()"));
+            Assert.AreEqual(8, myIssue.line);
+            Assert.AreEqual(IssueCategory.ApiCalls, myIssue.category);
+        }
 
-		[Test]
-		public void IssueInOverrideMethodIsFound()
-		{
-			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInOverrideMethod);
-			
-			Assert.AreEqual(1, issues.Count());
-						
-			Assert.True(issues.First().callingMethod.Equals("System.Void DerivedClass::Dummy()"));
-		}
+        [Test]
+        public void IssueInPlayerCodeIsFound()
+        {
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceInPlayerCode);
 
-		[Test]
-		public void IssueInMonoBehaviourIsFound()
-		{
-			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInMonoBehaviour);
-			
-			Assert.AreEqual(1, issues.Count());
-						
-			Assert.True(issues.First().callingMethod.Equals("System.Void MyMonoBehaviour::Start()"));
-		}
+            Assert.AreEqual(1, issues.Count());
 
-		[Test]
-		public void IssueInCoroutineIsFound()
-		{
-			var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInCoroutine);
-			
-			Assert.AreEqual(1, issues.Count());
-						
-			Assert.True(issues.First().callingMethod.Equals("System.Boolean MyMonoBehaviourWithCoroutine/<MyCoroutine>d__1::MoveNext()"));
-		}
-		
-		[Test]
-		public void IssueInDelegateIsFound()
-		{
-			var allScriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInDelegate);
-			var issue = allScriptIssues.FirstOrDefault(i => i.name.Equals("Camera.get_main"));			
-			Assert.NotNull(issue);
-						
-			Assert.True(issue.callingMethod.Equals("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()"));
-		}
-	}	
+            Assert.True(issues.First().callingMethod.Equals("System.Void MyClassWithPlayerOnlyCode::Dummy()"));
+        }
+
+        [Test]
+        public void IssueInEditorCodeIsNotFound()
+        {
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceInEditorCode);
+
+            Assert.AreEqual(0, issues.Count());
+        }
+
+        [Test]
+        public void IssueInNestedClassIsFound()
+        {
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInNestedClass);
+
+            Assert.AreEqual(1, issues.Count());
+
+            Assert.True(issues.First().callingMethod.Equals("System.Void MyClassWithNested/NestedClass::Dummy()"));
+        }
+
+        [Test]
+        public void IssueInGenericClassIsFound()
+        {
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInGenericClass);
+
+            Assert.AreEqual(1, issues.Count());
+
+            Assert.True(issues.First().callingMethod.Equals("System.Void GenericClass`1::Dummy()"));
+        }
+
+        [Test]
+        public void IssueInVirtualMethodIsFound()
+        {
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInVirtualMethod);
+
+            Assert.AreEqual(1, issues.Count());
+
+            Assert.True(issues.First().callingMethod.Equals("System.Void AbstractClass::Dummy()"));
+        }
+
+        [Test]
+        public void IssueInOverrideMethodIsFound()
+        {
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInOverrideMethod);
+
+            Assert.AreEqual(1, issues.Count());
+
+            Assert.True(issues.First().callingMethod.Equals("System.Void DerivedClass::Dummy()"));
+        }
+
+        [Test]
+        public void IssueInMonoBehaviourIsFound()
+        {
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInMonoBehaviour);
+
+            Assert.AreEqual(1, issues.Count());
+
+            Assert.True(issues.First().callingMethod.Equals("System.Void MyMonoBehaviour::Start()"));
+        }
+
+        [Test]
+        public void IssueInCoroutineIsFound()
+        {
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInCoroutine);
+
+            Assert.AreEqual(1, issues.Count());
+
+            Assert.True(issues.First().callingMethod
+                .Equals("System.Boolean MyMonoBehaviourWithCoroutine/<MyCoroutine>d__1::MoveNext()"));
+        }
+
+        [Test]
+        public void IssueInDelegateIsFound()
+        {
+            var allScriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInDelegate);
+            var issue = allScriptIssues.FirstOrDefault(i => i.name.Equals("Camera.get_main"));
+            Assert.NotNull(issue);
+
+            Assert.True(issue.callingMethod.Equals("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()"));
+        }
+    }
 }
-

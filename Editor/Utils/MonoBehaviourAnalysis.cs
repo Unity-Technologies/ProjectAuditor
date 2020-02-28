@@ -8,11 +8,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
     {
         private static readonly int ClassNameHashCode = "UnityEngine.MonoBehaviour".GetHashCode();
 
-        private static readonly string[] MagicMethodNames = new[]
+        private static readonly string[] MagicMethodNames =
             {"Awake", "Start", "OnEnable", "OnDisable", "Update", "LateUpdate", "OnEnable", "FixedUpdate"};
 
-        private static readonly string[] UpdateMethodNames = new[]
-            {"Update", "LateUpdate", "FixedUpdate"};
+        private static readonly string[] UpdateMethodNames = {"Update", "LateUpdate", "FixedUpdate"};
 
         public static bool IsMonoBehaviour(TypeReference typeReference)
         {
@@ -27,7 +26,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 return false;
             }
 
-            if (typeDefinition.FullName.GetHashCode() == ClassNameHashCode && typeDefinition.Module.Name.Equals("UnityEngine.CoreModule.dll"))
+            if (typeDefinition.FullName.GetHashCode() == ClassNameHashCode &&
+                typeDefinition.Module.Name.Equals("UnityEngine.CoreModule.dll"))
                 return true;
 
             if (typeDefinition.BaseType != null)
@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
             return MagicMethodNames.Contains(methodDefinition.Name);
         }
-        
+
         public static bool IsMonoBehaviourUpdateMethod(MethodDefinition methodDefinition)
         {
             return UpdateMethodNames.Contains(methodDefinition.Name);

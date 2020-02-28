@@ -6,8 +6,8 @@ namespace Unity.ProjectAuditor.Editor
 {
     internal class CallHierarchyView : TreeView
     {
-        private CallTreeNode m_CallTree;
         private readonly Dictionary<int, CallTreeNode> m_CallTreeDictionary = new Dictionary<int, CallTreeNode>();
+        private CallTreeNode m_CallTree;
 
         public CallHierarchyView(TreeViewState treeViewState)
             : base(treeViewState)

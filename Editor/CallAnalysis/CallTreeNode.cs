@@ -9,29 +9,21 @@ namespace Unity.ProjectAuditor.Editor.CallAnalysis
     [Serializable]
     public class CallTreeNode
     {
-        public string name;
-        public string typeName;
-        public string methodName;
         public string assemblyName;
-        public Location location;
-        public bool perfCriticalContext;
-        
-        public List<CallTreeNode> children = new List<CallTreeNode>();
 
-        public string prettyName
-        {
-            get
-            {
-                return GetPrettyName();
-            }
-        }
+        public List<CallTreeNode> children = new List<CallTreeNode>();
+        public Location location;
+        public string methodName;
+        public string name;
+        public bool perfCriticalContext;
+        public string typeName;
 
         public CallTreeNode(MethodReference methodReference, CallTreeNode caller = null)
         {
             name = methodReference.FullName;
             methodName = "(anonymous)"; // default value
             assemblyName = methodReference.Module.Name;
-            
+
             // check if it's a coroutine
             if (methodReference.DeclaringType.FullName.IndexOf("/<") >= 0)
             {
@@ -42,7 +34,9 @@ namespace Unity.ProjectAuditor.Editor.CallAnalysis
                     var length = fullName.IndexOf(">") - methodStartIndex;
                     typeName = fullName.Substring(0, fullName.IndexOf("/"));
                     if (length > 0)
+                    {
                         methodName = fullName.Substring(methodStartIndex, length);
+                    }
                     else
                     {
                         // handle example: System.Int32 DelegateTest/<>c::<Update>b__1_0()
@@ -55,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor.CallAnalysis
                     }
                 }
                 else
-                {                   
+                {
                     // for some reason, some generated types don't have the same syntax
                     typeName = fullName;
                 }
@@ -70,6 +64,8 @@ namespace Unity.ProjectAuditor.Editor.CallAnalysis
                 children.Add(caller);
             perfCriticalContext = false;
         }
+
+        public string prettyName => GetPrettyName();
 
         public bool HasChildren()
         {
@@ -91,9 +87,7 @@ namespace Unity.ProjectAuditor.Editor.CallAnalysis
             if (string.IsNullOrEmpty(typeName))
                 return name;
             if (string.IsNullOrEmpty(assemblyName) || !withAssembly)
-            {
                 return string.Format("{0}.{1}", typeName, methodName);
-            }
             return string.Format("{0}.{1} [{2}]", typeName, methodName, assemblyName);
         }
 

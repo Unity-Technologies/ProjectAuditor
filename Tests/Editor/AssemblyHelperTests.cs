@@ -20,19 +20,19 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         {
             m_ScriptResource.Delete();
         }
-        
+
         [Test]
         public void DefaultAssemblyPathIsFound()
         {
             using (var compilationHelper = new AssemblyCompilationHelper())
             {
                 var paths = compilationHelper.Compile();
-                
+
                 Assert.Positive(paths.Count());
                 Assert.NotNull(paths.FirstOrDefault(path => path.Contains(AssemblyHelper.DefaultAssemblyFileName)));
             }
         }
-        
+
         [Test]
         public void UnityEngineAssemblyPathIsFound()
         {

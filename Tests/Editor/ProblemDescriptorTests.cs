@@ -3,15 +3,14 @@ using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-	class ProblemDescriptorTests
-	{
-		[Test]
-		public void UninitializedProblemDescriptorTestPasses()
-		{
-			// not much value in this test yet
-			var uninitialised = new ProblemDescriptor();
-			Assert.Null(uninitialised.description);
-		}
-	}	
+    internal class ProblemDescriptorTests
+    {
+        [Test]
+        public void UninitializedProblemDescriptorTestPasses()
+        {
+            // not much value in this test yet
+            var uninitialised = new ProblemDescriptor();
+            Assert.Null(uninitialised.description);
+        }
+    }
 }
-

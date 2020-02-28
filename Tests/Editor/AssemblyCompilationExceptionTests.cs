@@ -1,4 +1,3 @@
-using System;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -28,7 +27,7 @@ class MyClass {
         {
             m_ScriptResource.Delete();
         }
-        
+
         [Test]
         [ExplicitAttribute]
         public void ExceptionIsThrownOnCompilationError()
@@ -47,10 +46,11 @@ class MyClass {
             {
                 exceptionThrown = true;
             }
-            
+
             Assert.True(exceptionThrown);
-            
-            LogAssert.Expect(LogType.Error, "Assets/ProjectAuditor-Temp/MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration");
+
+            LogAssert.Expect(LogType.Error,
+                "Assets/ProjectAuditor-Temp/MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration");
             LogAssert.Expect(LogType.Error, "Failed to compile player scripts");
             LogAssert.ignoreFailingMessages = false;
         }

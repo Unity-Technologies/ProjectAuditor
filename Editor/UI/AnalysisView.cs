@@ -19,9 +19,8 @@ namespace Unity.ProjectAuditor.Editor
 
     internal class AnalysisView
     {
-        private readonly AnalysisViewDescriptor m_Desc;
-
         private readonly ProjectAuditorConfig m_Config;
+        private readonly AnalysisViewDescriptor m_Desc;
         private readonly IIssuesFilter m_Filter;
 
         public IssueTable m_Table;

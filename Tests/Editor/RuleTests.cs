@@ -6,14 +6,15 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    class RuleTests
+    internal class RuleTests
     {
         private ScriptResource m_ScriptResource;
-		
+
         [SetUp]
         public void SetUp()
         {
-            m_ScriptResource = new ScriptResource("MyClass.cs", "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.main.name); } }");
+            m_ScriptResource = new ScriptResource("MyClass.cs",
+                "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.main.name); } }");
         }
 
         [TearDown]
@@ -29,9 +30,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var projectAuditorSettings = projectAuditor.config;
             var projectReport = projectAuditor.Audit();
             var issues = ScriptAuditor.FindScriptIssues(projectReport, m_ScriptResource.relativePath);
- 
+
             Assert.AreEqual(1, issues.Count());
-			
+
             var issue = issues.FirstOrDefault();
 
             projectAuditorSettings.ClearAllRules();
@@ -40,17 +41,17 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
             // expect default action specified in descriptor
             Assert.AreEqual(issue.descriptor.action, action);
-            
+
             // add rule with a filter.
             projectAuditorSettings.AddRule(new Rule
             {
                 id = issue.descriptor.id,
                 action = Rule.Action.None,
-                filter = issue.callingMethod 
+                filter = issue.callingMethod
             });
 
             action = projectAuditorSettings.GetAction(issue.descriptor, issue.callingMethod);
-            
+
             // issue has been muted so it should not be reported  
             Assert.AreEqual(Rule.Action.None, action);
         }
@@ -63,9 +64,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var descriptors = settingsAuditor.GetDescriptors();
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             var firstDescriptor = descriptors.FirstOrDefault();
-            
+
             // make sure there are no rules
-            Rule rule = config.GetRule(firstDescriptor);
+            var rule = config.GetRule(firstDescriptor);
             Assert.IsNull(rule);
 
             var filter = "dummy";
@@ -75,17 +76,17 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             {
                 id = firstDescriptor.id,
                 action = Rule.Action.None,
-                filter = filter 
+                filter = filter
             });
 
             // search for non-specific rule for this descriptor
             rule = config.GetRule(firstDescriptor);
-            Assert.IsNull(rule);            
+            Assert.IsNull(rule);
 
             // search for specific rule
             rule = config.GetRule(firstDescriptor, filter);
-            Assert.IsNotNull(rule);            
-            
+            Assert.IsNotNull(rule);
+
             // add rule with no filter, which will replace any specific rule
             config.AddRule(new Rule
             {
@@ -95,19 +96,19 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
             // search for specific rule again
             rule = config.GetRule(firstDescriptor, filter);
-            Assert.IsNull(rule);            
+            Assert.IsNull(rule);
 
             // search for non-specific rule again
             rule = config.GetRule(firstDescriptor);
-            Assert.IsNotNull(rule);            
+            Assert.IsNotNull(rule);
 
             // try to delete specific rule which has been already replaced by non-specific one
             config.ClearRules(firstDescriptor, filter);
-            
+
             // generic rule should still exist
             rule = config.GetRule(firstDescriptor);
             Assert.IsNotNull(rule);
-            
+
             // try to delete non-specific rule
             config.ClearRules(firstDescriptor);
             rule = config.GetRule(firstDescriptor);
@@ -121,9 +122,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
                 action = Rule.Action.None
             });
             Assert.AreEqual(1, config.NumRules);
-            
+
             config.ClearAllRules();
-            
+
             Assert.AreEqual(0, config.NumRules);
         }
     }

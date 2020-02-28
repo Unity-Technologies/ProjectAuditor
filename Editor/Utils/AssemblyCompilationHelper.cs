@@ -4,17 +4,25 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Compilation;
-
 #if UNITY_2018_2_OR_NEWER
 using UnityEditor.Build.Player;
+
 #endif
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
     public class AssemblyCompilationHelper : IDisposable
     {
+        private string m_OutputFolder;
         private bool m_Success = true;
-        private string m_OutputFolder = null;
+
+        public void Dispose()
+        {
+#if UNITY_2018_2_OR_NEWER
+            CompilationPipeline.assemblyCompilationFinished -= OnAssemblyCompilationFinished;
+#endif
+            if (!string.IsNullOrEmpty(m_OutputFolder)) Directory.Delete(m_OutputFolder, true);
+        }
 
         public IEnumerable<string> Compile()
         {
@@ -22,13 +30,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 throw new AssemblyCompilationException();
 #if UNITY_2018_2_OR_NEWER
             m_OutputFolder = FileUtil.GetUniqueTempPathInProject();
-            
+
             CompilationPipeline.assemblyCompilationFinished += OnAssemblyCompilationFinished;
-            
+
             var input = new ScriptCompilationSettings
             {
                 target = EditorUserBuildSettings.activeBuildTarget,
-                @group = EditorUserBuildSettings.selectedBuildTargetGroup
+                group = EditorUserBuildSettings.selectedBuildTargetGroup
             };
 
             var compilationResult = PlayerBuildInterface.CompilePlayerScripts(input, m_OutputFolder);
@@ -43,18 +51,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 .Where(a => a.flags != AssemblyFlags.EditorAssembly).Select(assembly => assembly.outputPath);
 #endif
         }
-        
-        public void Dispose()
-        {
-#if UNITY_2018_2_OR_NEWER
-            CompilationPipeline.assemblyCompilationFinished -= OnAssemblyCompilationFinished;
-#endif
-            if (!string.IsNullOrEmpty(m_OutputFolder))
-            {
-                Directory.Delete(m_OutputFolder, true);
-            }
-        }
-        
+
         public IEnumerable<string> GetCompiledAssemblyDirectories()
         {
 #if UNITY_2018_2_OR_NEWER

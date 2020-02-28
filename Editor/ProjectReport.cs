@@ -11,30 +11,23 @@ namespace Unity.ProjectAuditor.Editor
     {
         [SerializeField] private List<ProjectIssue> m_Issues = new List<ProjectIssue>();
 
-        public int NumTotalIssues
-        {
-            get
-            {
-                return m_Issues.Count;
-                
-            }
-        }
-        
+        public int NumTotalIssues => m_Issues.Count;
+
         public int GetNumIssues(IssueCategory category)
         {
-            return m_Issues.Count(i => i.category == category);  
+            return m_Issues.Count(i => i.category == category);
         }
-        
+
         public IEnumerable<ProjectIssue> GetIssues(IssueCategory category)
         {
-            return m_Issues.Where(i => i.category == category);  
+            return m_Issues.Where(i => i.category == category);
         }
 
         public void AddIssue(ProjectIssue projectIssue)
         {
             m_Issues.Add(projectIssue);
         }
-        
+
         public void Export(string reportPath)
         {
             var writer = new StreamWriter(reportPath);
@@ -54,9 +47,10 @@ namespace Unity.ProjectAuditor.Editor
                         issue.description + "," +
                         issue.descriptor.area + "," +
                         path
-                        );
+                    );
                 }
             }
+
             writer.Flush();
             writer.Close();
         }

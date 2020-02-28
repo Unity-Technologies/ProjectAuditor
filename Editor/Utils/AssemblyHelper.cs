@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Compilation;
-
 #if UNITY_2018_2_OR_NEWER
-using UnityEngine;
 
 #endif
 
@@ -19,14 +16,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
     public static class AssemblyHelper
     {
         public static string DefaultAssemblyFileName = "Assembly-CSharp.dll";
-        
-        public static string DefaultAssemblyName
-        {
-            get
-            {
-                return Path.GetFileNameWithoutExtension(DefaultAssemblyFileName);
-            }
-        }
+
+        public static string DefaultAssemblyName => Path.GetFileNameWithoutExtension(DefaultAssemblyFileName);
 
         public static IEnumerable<string> GetPrecompiledAssemblyPaths()
         {
@@ -36,8 +27,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 .UserAssembly));
             assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(CompilationPipeline.PrecompiledAssemblySources
                 .UnityEngine));
-#elif UNITY_2018_4_OR_NEWER 
-            assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyNames().Select(a => CompilationPipeline.GetPrecompiledAssemblyPathFromAssemblyName(a)));
+#elif UNITY_2018_4_OR_NEWER
+            assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyNames()
+                .Select(a => CompilationPipeline.GetPrecompiledAssemblyPathFromAssemblyName(a)));
 #endif
             return assemblyPaths;
         }
@@ -45,11 +37,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static IEnumerable<string> GetPrecompiledAssemblyDirectories()
         {
             foreach (var dir in GetPrecompiledAssemblyPaths().Select(path => Path.GetDirectoryName(path)).Distinct())
-            {
                 yield return dir;
-            }
         }
-        
+
         public static IEnumerable<string> GetPrecompiledEngineAssemblyPaths()
         {
             var assemblyPaths = new List<string>();
@@ -57,24 +47,24 @@ namespace Unity.ProjectAuditor.Editor.Utils
             assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(CompilationPipeline.PrecompiledAssemblySources
                 .UnityEngine));
 #else
-            assemblyPaths.AddRange( Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath, Path.Combine("Managed",
-                "UnityEngine"))).Where(path => Path.GetExtension(path).Equals(".dll")));
+            assemblyPaths.AddRange(Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath,
+                Path.Combine("Managed",
+                    "UnityEngine"))).Where(path => Path.GetExtension(path).Equals(".dll")));
 #endif
 
 #if !UNITY_2019_2_OR_NEWER
-            var files = Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath, Path.Combine("UnityExtensions",
+            var files = Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath, Path.Combine(
+                "UnityExtensions",
                 Path.Combine("Unity", "GUISystem"))));
-            assemblyPaths.AddRange( files.Where(path => Path.GetExtension(path).Equals(".dll")));
+            assemblyPaths.AddRange(files.Where(path => Path.GetExtension(path).Equals(".dll")));
 #endif
             return assemblyPaths;
         }
-        
+
         public static IEnumerable<string> GetPrecompiledEngineAssemblyDirectories()
         {
-            foreach (var dir in GetPrecompiledEngineAssemblyPaths().Select(path => Path.GetDirectoryName(path)).Distinct())
-            {
-                yield return dir;
-            }
+            foreach (var dir in GetPrecompiledEngineAssemblyPaths().Select(path => Path.GetDirectoryName(path))
+                .Distinct()) yield return dir;
         }
 
         public static bool IsPackageInfoAvailable()
@@ -94,7 +84,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static bool IsPackageAssembly(string assemblyName)
         {
 #if UNITY_2019_3_OR_NEWER
-            var module = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.Modules).FirstOrDefault(a => a.Name.Contains(assemblyName));
+            var module =
+ AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.Modules).FirstOrDefault(a => a.Name.Contains(assemblyName));
             return UnityEditor.PackageManager.PackageInfo.FindForAssembly(module.Assembly) != null;
 #else
             // assume it's not a package

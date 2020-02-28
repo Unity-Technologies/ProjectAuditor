@@ -27,12 +27,10 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         private const float kRowHeights = 20f;
-        private readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
-
-        private GUIStyle m_ActiveLineStyle;
         private readonly TreeItemIdentifier m_AllIdentifier;
 
         private readonly string[] m_Names;
+        private readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
         private readonly TreeViewSelection m_Selection;
 
         // SteveM TODO - Sorting doesn't work in this window (or in the Thread Selection Window in Profile Analyzer that
@@ -44,6 +42,8 @@ namespace Unity.ProjectAuditor.Editor
             SortOption.ItemName,
             SortOption.GroupName
         };
+
+        private GUIStyle m_ActiveLineStyle;
 
         public MultiSelectionTable(TreeViewState state, MultiColumnHeader multicolumnHeader, string[] names,
             TreeViewSelection selection) : base(state, multicolumnHeader)

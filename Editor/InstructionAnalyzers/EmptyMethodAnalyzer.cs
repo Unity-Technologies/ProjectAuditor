@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.Auditors;
@@ -22,16 +21,11 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             solution = "Remove any empty MonoBehaviour methods."
         };
 
-        public static ProblemDescriptor GetDescriptor()
-        {
-            return descriptor;
-        }
-      
         public EmptyMethodAnalyzer(ScriptAuditor auditor)
         {
             auditor.RegisterDescriptor(descriptor);
         }
-        
+
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             if (inst.Previous != null)
@@ -42,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
             if (!MonoBehaviourAnalysis.IsMonoBehaviourMagicMethod(methodDefinition))
                 return null;
-            
+
             return new ProjectIssue
             (
                 descriptor,
@@ -55,6 +49,11 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         public IEnumerable<OpCode> GetOpCodes()
         {
             yield return OpCodes.Ret;
+        }
+
+        public static ProblemDescriptor GetDescriptor()
+        {
+            return descriptor;
         }
     }
 }
