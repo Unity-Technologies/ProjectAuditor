@@ -112,7 +112,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     s = caller.DebugInformation.GetSequencePoint(i);
                     if (s != null)
                     {
-                        // msg = i == inst ? " exactly" : "nearby";
                         break;
                     }
                 }
