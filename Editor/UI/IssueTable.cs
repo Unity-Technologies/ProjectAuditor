@@ -63,16 +63,16 @@ namespace Unity.ProjectAuditor.Editor
                                 secondString = secondTree.m_Item.displayName;
                             break;
                             case Column.Area:
-                                firstString = firstTree.m_Item.problemDescriptor.area;
-                                secondString = secondTree.m_Item.problemDescriptor.area; 
+                                firstString = firstTree.m_Item.ProblemDescriptor.area;
+                                secondString = secondTree.m_Item.ProblemDescriptor.area; 
                                 break;
                             case Column.Filename:
-                                firstString = firstTree.m_Item.m_ProjectIssue != null ? firstTree.m_Item.m_ProjectIssue.filename : string.Empty;
-                                secondString = secondTree.m_Item.m_ProjectIssue != null ? secondTree.m_Item.m_ProjectIssue.filename : string.Empty;
+                                firstString = firstTree.m_Item.ProjectIssue != null ? firstTree.m_Item.ProjectIssue.filename : string.Empty;
+                                secondString = secondTree.m_Item.ProjectIssue != null ? secondTree.m_Item.ProjectIssue.filename : string.Empty;
                                 break;
                             case Column.Assembly:
-                                firstString = firstTree.m_Item.m_ProjectIssue != null ? firstTree.m_Item.m_ProjectIssue.assembly : string.Empty;
-                                secondString = secondTree.m_Item.m_ProjectIssue != null ? secondTree.m_Item.m_ProjectIssue.assembly : string.Empty;
+                                firstString = firstTree.m_Item.ProjectIssue != null ? firstTree.m_Item.ProjectIssue.assembly : string.Empty;
+                                secondString = secondTree.m_Item.ProjectIssue != null ? secondTree.m_Item.ProjectIssue.assembly : string.Empty;
                                 break;
                             default:
                                 continue;
@@ -220,8 +220,8 @@ namespace Unity.ProjectAuditor.Editor
             if (item == null)
                 return;
 
-            var issue = item.m_ProjectIssue;
-            var descriptor = item.problemDescriptor;
+            var issue = item.ProjectIssue;
+            var descriptor = item.ProblemDescriptor;
             var areaLongDescription = "This issue might have an impact on " + descriptor.area;
 
             var rule = m_Config.GetRule(descriptor, (issue != null) ? issue.callingMethod : string.Empty);
@@ -308,7 +308,7 @@ namespace Unity.ProjectAuditor.Editor
             var item = rows.FirstOrDefault();
             if (item != null && !item.hasChildren)
             {
-                var issue = (item as IssueTableItem).m_ProjectIssue;
+                var issue = (item as IssueTableItem).ProjectIssue;
                 if (issue.location != null && issue.location.IsValid())
                 {
                     if (File.Exists(issue.location.path))

@@ -116,7 +116,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             var issues = projectReport.GetIssues(m_Desc.category).Where(m_Filter.ShouldDisplay);
             var selectedItems = m_Table.GetSelectedItems();
-            var selectedIssues = selectedItems.Select(i => i.m_ProjectIssue).ToArray();
+            var selectedIssues = selectedItems.Select(i => i.ProjectIssue).ToArray();
             var info = selectedIssues.Length  + " / " + issues.Count() + " issues";
 
             var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));

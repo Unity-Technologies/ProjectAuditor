@@ -4,13 +4,13 @@ namespace Unity.ProjectAuditor.Editor
 {
     internal class IssueTableItem : TreeViewItem
     {
-        public ProjectIssue m_ProjectIssue;
-        public ProblemDescriptor problemDescriptor;
+        public readonly ProjectIssue ProjectIssue;
+        public readonly ProblemDescriptor ProblemDescriptor;
 
         public IssueTableItem(int id, int depth, string displayName, ProblemDescriptor problemDescriptor, ProjectIssue projectIssue = null) : base(id, depth, displayName)
         {
-            this.problemDescriptor = problemDescriptor;
-            m_ProjectIssue = projectIssue;
+            ProblemDescriptor = problemDescriptor;
+            ProjectIssue = projectIssue;
         }
     }
 }

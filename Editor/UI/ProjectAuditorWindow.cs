@@ -315,8 +315,8 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         {
             ProblemDescriptor problemDescriptor = null;
             var selectedItems = m_ActiveIssueTable.GetSelectedItems();
-            var selectedDescriptors = selectedItems.Select(i => i.problemDescriptor);
-            var selectedIssues = selectedItems.Select(i => i.m_ProjectIssue);
+            var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor);
+            var selectedIssues = selectedItems.Select(i => i.ProjectIssue);
             // find out if all descriptors are the same
             var firstDescriptor = selectedDescriptors.FirstOrDefault();
             if (selectedDescriptors.Count() == selectedDescriptors.Count(d => d.id == firstDescriptor.id))
@@ -794,7 +794,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         
         private void SetRuleForItem(IssueTableItem item, Rule.Action ruleAction)
         {
-            var descriptor = item.problemDescriptor;
+            var descriptor = item.ProblemDescriptor;
 
             var callingMethod = "";
             Rule rule;
@@ -804,7 +804,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
             }
             else
             {
-                callingMethod = item.m_ProjectIssue.callingMethod;
+                callingMethod = item.ProjectIssue.callingMethod;
                 rule = m_ProjectAuditor.config.GetRule(descriptor, callingMethod);
             }
 
@@ -825,7 +825,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
 
         private void ClearRulesForItem(IssueTableItem item)
         {
-            m_ProjectAuditor.config.ClearRules(item.problemDescriptor, item.hasChildren ? string.Empty : item.m_ProjectIssue.callingMethod);
+            m_ProjectAuditor.config.ClearRules(item.ProblemDescriptor, item.hasChildren ? string.Empty : item.ProjectIssue.callingMethod);
         }
         
         private void DrawToolbar()
