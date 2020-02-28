@@ -1,12 +1,13 @@
-﻿using System;
-using UnityEditor.IMGUI.Controls;
+﻿using UnityEditor.IMGUI.Controls;
 
 namespace Unity.ProjectAuditor.Editor
 {
     public struct TreeItemIdentifier
     {
         public string nameWithIndex { get; private set; }
+
         public string name { get; private set; }
+
         // SteveM TODO - Pretty sure this can go. Assemblies don't have indeces. I think the most we'll need is a flag
         // to say whether this is the "All" TreeItemIdentifier (i.e. (nameWithIndex == "All"))
         public int index { get; private set; }
@@ -37,11 +38,11 @@ namespace Unity.ProjectAuditor.Editor
             // So index should probably always be treated as 0 (sorry, "kSingle")
             this.nameWithIndex = nameWithIndex;
 
-            string[] tokens = nameWithIndex.Split(':');
+            var tokens = nameWithIndex.Split(':');
             if (tokens.Length >= 2)
             {
                 name = tokens[1];
-                string indexString = tokens[0];
+                var indexString = tokens[0];
                 if (indexString == "All")
                 {
                     index = kAll;
@@ -49,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor
                 else
                 {
                     int intValue;
-                    if (Int32.TryParse(tokens[0], out intValue))
+                    if (int.TryParse(tokens[0], out intValue))
                         index = intValue;
                     else
                         index = kSingle;
@@ -62,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        void UpdateAssemblyNameWithIndex()
+        private void UpdateAssemblyNameWithIndex()
         {
             if (index == kAll)
                 nameWithIndex = string.Format("All:{1}", index, name);
@@ -87,14 +88,15 @@ namespace Unity.ProjectAuditor.Editor
             SetIndex(kAll);
         }
     }
-    
-    class SelectionWindowTreeViewItem : TreeViewItem
+
+    internal class SelectionWindowTreeViewItem : TreeViewItem
     {
         public readonly TreeItemIdentifier TreeItemIdentifier;
 
-        public SelectionWindowTreeViewItem(int id, int depth, string displayName, TreeItemIdentifier treeItemIdentifier) : base(id, depth, displayName)
+        public SelectionWindowTreeViewItem(int id, int depth, string displayName, TreeItemIdentifier treeItemIdentifier)
+            : base(id, depth, displayName)
         {
-            this.TreeItemIdentifier = treeItemIdentifier;
+            TreeItemIdentifier = treeItemIdentifier;
         }
     }
 }

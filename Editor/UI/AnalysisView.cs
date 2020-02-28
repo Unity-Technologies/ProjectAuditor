@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Graphs;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
@@ -22,27 +21,10 @@ namespace Unity.ProjectAuditor.Editor
     {
         private readonly AnalysisViewDescriptor m_Desc;
 
-        public AnalysisViewDescriptor desc
-        {
-            get { return m_Desc; }
-        }
-
-        private ProjectAuditorConfig m_Config;
-        private IIssuesFilter m_Filter;
+        private readonly ProjectAuditorConfig m_Config;
+        private readonly IIssuesFilter m_Filter;
 
         public IssueTable m_Table;
-
-        private static class Styles
-        {
-            public static readonly GUIContent[] ColumnHeaders =
-            {
-                new GUIContent("Issue", "Issue description"),
-                new GUIContent(" ! ", "Issue priority"),
-                new GUIContent("Area", "The area the issue might have an impact on"),
-                new GUIContent("Filename", "Filename and line number"),
-                new GUIContent("Assembly", "Managed Assembly name")
-            };
-        }
 
         public AnalysisView(AnalysisViewDescriptor desc, ProjectAuditorConfig config, IIssuesFilter filter)
         {
@@ -51,7 +33,9 @@ namespace Unity.ProjectAuditor.Editor
             m_Filter = filter;
             m_Table = null;
         }
-        
+
+        public AnalysisViewDescriptor desc => m_Desc;
+
         public void CreateTable(ProjectReport projectReport, TreeViewState state)
         {
             if (m_Table != null)
@@ -59,47 +43,49 @@ namespace Unity.ProjectAuditor.Editor
 
             var columnsList = new List<MultiColumnHeaderState.Column>();
             var numColumns = (int) IssueTable.Column.Count;
-            for (int i = 0; i < numColumns; i++)
+            for (var i = 0; i < numColumns; i++)
             {
-                int width = 0;
-                int minWidth = 0;
+                var width = 0;
+                var minWidth = 0;
                 switch ((IssueTable.Column) i)
                 {
-                    case IssueTable.Column.Description :
+                    case IssueTable.Column.Description:
                         width = 300;
                         minWidth = 100;
                         break;
-                    case IssueTable.Column.Priority :
+                    case IssueTable.Column.Priority:
                         width = 22;
                         minWidth = 22;
                         break;
-                    case IssueTable.Column.Area :
+                    case IssueTable.Column.Area:
                         width = 60;
                         minWidth = 50;
                         break;
-                    case IssueTable.Column.Filename :
+                    case IssueTable.Column.Filename:
                         if (m_Desc.showFilenameColumn)
                         {
                             width = 180;
-                            minWidth = 100;                            
+                            minWidth = 100;
                         }
+
                         break;
-                    case IssueTable.Column.Assembly :
+                    case IssueTable.Column.Assembly:
                         if (m_Desc.showAssemblyColumn)
                         {
                             width = 180;
-                            minWidth = 100;                            
+                            minWidth = 100;
                         }
+
                         break;
                 }
-                                
+
                 columnsList.Add(new MultiColumnHeaderState.Column
                 {
                     headerContent = Styles.ColumnHeaders[i],
                     width = width,
                     minWidth = minWidth,
                     autoResize = true
-                } );
+                });
             }
 
             var issues = projectReport.GetIssues(m_Desc.category);
@@ -117,11 +103,23 @@ namespace Unity.ProjectAuditor.Editor
             var issues = projectReport.GetIssues(m_Desc.category).Where(m_Filter.ShouldDisplay);
             var selectedItems = m_Table.GetSelectedItems();
             var selectedIssues = selectedItems.Select(i => i.ProjectIssue).ToArray();
-            var info = selectedIssues.Length  + " / " + issues.Count() + " issues";
+            var info = selectedIssues.Length + " / " + issues.Count() + " issues";
 
             var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
             m_Table.OnGUI(r);
             EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
+        }
+
+        private static class Styles
+        {
+            public static readonly GUIContent[] ColumnHeaders =
+            {
+                new GUIContent("Issue", "Issue description"),
+                new GUIContent(" ! ", "Issue priority"),
+                new GUIContent("Area", "The area the issue might have an impact on"),
+                new GUIContent("Filename", "Filename and line number"),
+                new GUIContent("Assembly", "Managed Assembly name")
+            };
         }
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -11,97 +10,6 @@ namespace Unity.ProjectAuditor.Editor
 {
     internal class IssueTable : TreeView
     {
-        internal class ItemTree
-        {
-            private readonly IssueTableItem m_Item;
-            private readonly List<ItemTree> m_Children;
-
-            public int Depth
-            {
-                get { return m_Item == null ? -1 : m_Item.depth; }
-            }
-
-            public ItemTree(IssueTableItem i)
-            {
-                m_Item = i;
-                m_Children = new List<ItemTree>();
-            }
-
-            public void AddChild(ItemTree item)
-            {
-                m_Children.Add(item);
-            }
-
-            public void Sort(int[] columnSortOrder, bool[] isColumnAscending)
-            {
-                m_Children.Sort(delegate(ItemTree a, ItemTree b)
-                {
-                    var rtn = 0;
-                    for (var i = 0; i < columnSortOrder.Length; i++)
-                    {
-                        ItemTree firstTree;
-                        ItemTree secondTree;
-
-                        if (isColumnAscending[i])
-                        {
-                            firstTree = a;
-                            secondTree = b;
-                        }
-                        else
-                        {
-                            firstTree = b;
-                            secondTree = a;
-                        }
-
-                        string firstString;
-                        string secondString;
-                        
-                        switch ((Column)columnSortOrder[i])
-                        {
-                            case Column.Description:
-                                firstString = firstTree.m_Item.displayName;
-                                secondString = secondTree.m_Item.displayName;
-                            break;
-                            case Column.Area:
-                                firstString = firstTree.m_Item.ProblemDescriptor.area;
-                                secondString = secondTree.m_Item.ProblemDescriptor.area; 
-                                break;
-                            case Column.Filename:
-                                firstString = firstTree.m_Item.ProjectIssue != null ? firstTree.m_Item.ProjectIssue.filename : string.Empty;
-                                secondString = secondTree.m_Item.ProjectIssue != null ? secondTree.m_Item.ProjectIssue.filename : string.Empty;
-                                break;
-                            case Column.Assembly:
-                                firstString = firstTree.m_Item.ProjectIssue != null ? firstTree.m_Item.ProjectIssue.assembly : string.Empty;
-                                secondString = secondTree.m_Item.ProjectIssue != null ? secondTree.m_Item.ProjectIssue.assembly : string.Empty;
-                                break;
-                            default:
-                                continue;
-        
-                        }
-                        
-                        rtn = string.Compare(firstString, secondString, StringComparison.Ordinal);
-                        if (rtn == 0)
-                            continue;
-                        return rtn;
-                    }
-
-                    return rtn;
-                });
-
-                foreach (var child in m_Children)
-                    child.Sort(columnSortOrder, isColumnAscending);
-            }
-
-            public void ToList(List<TreeViewItem> list)
-            {
-                // TODO be good to optimise this, rarely used, so not required
-                if (m_Item != null)
-                    list.Add(m_Item);
-                foreach (var child in m_Children)
-                    child.ToList(list);
-            }
-        }
-
         public enum Column
         {
             Description = 0,
@@ -113,16 +21,17 @@ namespace Unity.ProjectAuditor.Editor
             Count
         }
 
+        private static readonly string PerfCriticalIconName = "console.warnicon";
+
         private readonly ProjectAuditorConfig m_Config;
-        private readonly IIssuesFilter m_IssuesFilter;
-        private readonly ProjectIssue[] m_Issues;
 
         private readonly bool m_GroupByDescription;
+        private readonly ProjectIssue[] m_Issues;
+        private readonly IIssuesFilter m_IssuesFilter;
 
-        private static readonly string PerfCriticalIconName = "console.warnicon";
-        
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader, ProjectIssue[] issues,
-            bool groupByDescription, ProjectAuditorConfig config, IIssuesFilter issuesFilter) : base(state, multicolumnHeader)
+            bool groupByDescription, ProjectAuditorConfig config, IIssuesFilter issuesFilter) : base(state,
+            multicolumnHeader)
         {
             m_Config = config;
             m_IssuesFilter = issuesFilter;
@@ -139,23 +48,19 @@ namespace Unity.ProjectAuditor.Editor
             // https://docs.unity3d.com/ScriptReference/IMGUI.Controls.TreeView.BuildRows.html
             // This would involve implementing getNewSelectionOverride, GetAncestors() and GetDescendantsThatHaveChildren()
             // Which seems like a lot of extra complexity unless we're running into serious performance issues
-            int index = 0;
-            int idForHiddenRoot = -1;
-            int depthForHiddenRoot = -1;
+            var index = 0;
+            var idForHiddenRoot = -1;
+            var depthForHiddenRoot = -1;
             var root = new TreeViewItem(idForHiddenRoot, depthForHiddenRoot, "root");
 
             var filteredIssues = m_Issues.Where(issue => m_IssuesFilter.ShouldDisplay(issue));
             if (m_GroupByDescription)
             {
                 // grouped by problem definition
-                HashSet<string> allGroupsSet = new HashSet<string>();
+                var allGroupsSet = new HashSet<string>();
                 foreach (var issue in filteredIssues)
-                {
                     if (!allGroupsSet.Contains(issue.descriptor.description))
-                    {
                         allGroupsSet.Add(issue.descriptor.description);
-                    }
-                }
 
                 var allGroups = allGroupsSet.ToList();
                 allGroups.Sort();
@@ -201,22 +106,20 @@ namespace Unity.ProjectAuditor.Editor
         protected override void RowGUI(RowGUIArgs args)
         {
             for (var i = 0; i < args.GetNumVisibleColumns(); ++i)
-            {
                 CellGUI(args.GetCellRect(i), args.item, args.GetColumn(i), ref args);
-            }
         }
 
-        void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int column, ref RowGUIArgs args)
+        private void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int column, ref RowGUIArgs args)
         {
             // only indent first column
-            if ((int) IssueTable.Column.Description == column)
+            if ((int) Column.Description == column)
             {
                 var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
                 CenterRectUsingSingleLineHeight(ref cellRect);
             }
 
-            var item = (treeViewItem as IssueTableItem);
+            var item = treeViewItem as IssueTableItem;
             if (item == null)
                 return;
 
@@ -224,19 +127,13 @@ namespace Unity.ProjectAuditor.Editor
             var descriptor = item.ProblemDescriptor;
             var areaLongDescription = "This issue might have an impact on " + descriptor.area;
 
-            var rule = m_Config.GetRule(descriptor, (issue != null) ? issue.callingMethod : string.Empty);
+            var rule = m_Config.GetRule(descriptor, issue != null ? issue.callingMethod : string.Empty);
             if (rule == null && issue != null)
-            {
                 // try to find non-specific rule
                 rule = m_Config.GetRule(descriptor);
-            }
-            if (rule != null && rule.action == Rule.Action.None)
-            {
-                GUI.enabled = false;
-            }
+            if (rule != null && rule.action == Rule.Action.None) GUI.enabled = false;
 
             if (item.hasChildren)
-            {
                 switch ((Column) column)
                 {
                     case Column.Description:
@@ -246,18 +143,17 @@ namespace Unity.ProjectAuditor.Editor
                         EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
                         break;
                 }
-            }
             else
-            {
                 switch ((Column) column)
                 {
                     case Column.Priority:
                         if (issue.isPerfCriticalContext)
 #if UNITY_2018_3_OR_NEWER
-                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrIconContent(PerfCriticalIconName, "Performance Critical Context"));
+                            EditorGUI.LabelField(cellRect,
+                                EditorGUIUtility.TrIconContent(PerfCriticalIconName, "Performance Critical Context"));
 #else
                             EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(PerfCriticalIconName), "Performance Critical Context"));
-#endif                            
+#endif
                         break;
                     case Column.Area:
                         if (!m_GroupByDescription)
@@ -271,7 +167,7 @@ namespace Unity.ProjectAuditor.Editor
                         }
                         else
                         {
-                            string tooltip = descriptor.problem + " \n\n" + descriptor.solution;
+                            var tooltip = descriptor.problem + " \n\n" + descriptor.solution;
                             EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
                         }
 
@@ -288,18 +184,12 @@ namespace Unity.ProjectAuditor.Editor
                         break;
                     case Column.Assembly:
                         if (issue.assembly != string.Empty)
-                        {
                             EditorGUI.LabelField(cellRect, new GUIContent(issue.assembly, issue.assembly));
-                        }
 
                         break;
                 }
-            }
 
-            if (rule != null && rule.action == Rule.Action.None)
-            {
-                GUI.enabled = true;
-            }
+            if (rule != null && rule.action == Rule.Action.None) GUI.enabled = true;
         }
 
         protected override void DoubleClickedItem(int id)
@@ -312,7 +202,9 @@ namespace Unity.ProjectAuditor.Editor
                 if (issue.location != null && issue.location.IsValid())
                 {
                     if (File.Exists(issue.location.path))
+                    {
                         issue.location.Open();
+                    }
                     else
                     {
 #if UNITY_2018_3_OR_NEWER
@@ -327,10 +219,7 @@ namespace Unity.ProjectAuditor.Editor
         public IssueTableItem[] GetSelectedItems()
         {
             var ids = GetSelection();
-            if (ids.Count() > 0)
-            {
-                return FindRows(ids).OfType<IssueTableItem>().ToArray();
-            }
+            if (ids.Count() > 0) return FindRows(ids).OfType<IssueTableItem>().ToArray();
 
             return new IssueTableItem[0];
         }
@@ -342,15 +231,10 @@ namespace Unity.ProjectAuditor.Editor
 
         private void SortIfNeeded(IList<TreeViewItem> rows)
         {
-            if (rows.Count <= 1)
-            {
-                return;
-            }
+            if (rows.Count <= 1) return;
 
             if (multiColumnHeader.sortedColumnIndex == -1)
-            {
                 return; // No column to sort for (just use the order the data are in)
-            }
 
             SortByMultipleColumns(rows);
             Repaint();
@@ -363,15 +247,13 @@ namespace Unity.ProjectAuditor.Editor
                 return;
 
             var columnAscending = new bool[sortedColumns.Length];
-            for (int i = 0; i < sortedColumns.Length; i++)
-            {
+            for (var i = 0; i < sortedColumns.Length; i++)
                 columnAscending[i] = multiColumnHeader.IsSortedAscending(sortedColumns[i]);
-            }
 
             var root = new ItemTree(null);
             var stack = new Stack<ItemTree>();
             stack.Push(root);
-            foreach (TreeViewItem row in rows)
+            foreach (var row in rows)
             {
                 var r = row as IssueTableItem;
                 if (r == null)
@@ -387,7 +269,7 @@ namespace Unity.ProjectAuditor.Editor
 
                 if (row.depth > activeParentDepth)
                 {
-                    ItemTree t = new ItemTree(r);
+                    var t = new ItemTree(r);
                     stack.Peek().AddChild(t);
                     stack.Push(t);
                 }
@@ -399,8 +281,103 @@ namespace Unity.ProjectAuditor.Editor
             var newRows = new List<TreeViewItem>(rows.Count);
             root.ToList(newRows);
             rows.Clear();
-            foreach (TreeViewItem treeViewItem in newRows)
+            foreach (var treeViewItem in newRows)
                 rows.Add(treeViewItem);
+        }
+
+        internal class ItemTree
+        {
+            private readonly List<ItemTree> m_Children;
+            private readonly IssueTableItem m_Item;
+
+            public ItemTree(IssueTableItem i)
+            {
+                m_Item = i;
+                m_Children = new List<ItemTree>();
+            }
+
+            public int Depth => m_Item == null ? -1 : m_Item.depth;
+
+            public void AddChild(ItemTree item)
+            {
+                m_Children.Add(item);
+            }
+
+            public void Sort(int[] columnSortOrder, bool[] isColumnAscending)
+            {
+                m_Children.Sort(delegate(ItemTree a, ItemTree b)
+                {
+                    var rtn = 0;
+                    for (var i = 0; i < columnSortOrder.Length; i++)
+                    {
+                        ItemTree firstTree;
+                        ItemTree secondTree;
+
+                        if (isColumnAscending[i])
+                        {
+                            firstTree = a;
+                            secondTree = b;
+                        }
+                        else
+                        {
+                            firstTree = b;
+                            secondTree = a;
+                        }
+
+                        string firstString;
+                        string secondString;
+
+                        switch ((Column) columnSortOrder[i])
+                        {
+                            case Column.Description:
+                                firstString = firstTree.m_Item.displayName;
+                                secondString = secondTree.m_Item.displayName;
+                                break;
+                            case Column.Area:
+                                firstString = firstTree.m_Item.ProblemDescriptor.area;
+                                secondString = secondTree.m_Item.ProblemDescriptor.area;
+                                break;
+                            case Column.Filename:
+                                firstString = firstTree.m_Item.ProjectIssue != null
+                                    ? firstTree.m_Item.ProjectIssue.filename
+                                    : string.Empty;
+                                secondString = secondTree.m_Item.ProjectIssue != null
+                                    ? secondTree.m_Item.ProjectIssue.filename
+                                    : string.Empty;
+                                break;
+                            case Column.Assembly:
+                                firstString = firstTree.m_Item.ProjectIssue != null
+                                    ? firstTree.m_Item.ProjectIssue.assembly
+                                    : string.Empty;
+                                secondString = secondTree.m_Item.ProjectIssue != null
+                                    ? secondTree.m_Item.ProjectIssue.assembly
+                                    : string.Empty;
+                                break;
+                            default:
+                                continue;
+                        }
+
+                        rtn = string.Compare(firstString, secondString, StringComparison.Ordinal);
+                        if (rtn == 0)
+                            continue;
+                        return rtn;
+                    }
+
+                    return rtn;
+                });
+
+                foreach (var child in m_Children)
+                    child.Sort(columnSortOrder, isColumnAscending);
+            }
+
+            public void ToList(List<TreeViewItem> list)
+            {
+                // TODO be good to optimise this, rarely used, so not required
+                if (m_Item != null)
+                    list.Add(m_Item);
+                foreach (var child in m_Children)
+                    child.ToList(list);
+            }
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -25,21 +24,16 @@ namespace Unity.ProjectAuditor.Editor
         public void SetAll(string[] names)
         {
             groups.Clear();
-             TreeItemIdentifier allIdentifier = new TreeItemIdentifier("All",TreeItemIdentifier.kAll);
+            var allIdentifier = new TreeItemIdentifier("All", TreeItemIdentifier.kAll);
             groups.Add(allIdentifier.nameWithIndex);
-            
+
             selection.Clear();
-            foreach (string nameWithIndex in names)
-            {
+            foreach (var nameWithIndex in names)
                 if (nameWithIndex != allIdentifier.nameWithIndex)
                 {
                     var identifier = new TreeItemIdentifier(nameWithIndex);
-                    if (identifier.index != TreeItemIdentifier.kAll)
-                    {
-                        selection.Add(nameWithIndex);
-                    }
+                    if (identifier.index != TreeItemIdentifier.kAll) selection.Add(nameWithIndex);
                 }
-            }
         }
 
         public void Set(string name)
@@ -54,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor
             groups.Clear();
             selection.Clear();
 
-            TreeItemIdentifier allTreeViewSelection = new TreeItemIdentifier(groupName,TreeItemIdentifier.kAll);
+            var allTreeViewSelection = new TreeItemIdentifier(groupName, TreeItemIdentifier.kAll);
             groups.Add(allTreeViewSelection.nameWithIndex);
         }
 
@@ -73,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             return selection.Contains(name);
         }
-        
+
         public bool ContainsGroup(string groupName)
         {
             return groups.Contains(groupName);

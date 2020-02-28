@@ -1,24 +1,15 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UnityEditor.IMGUI.Controls;
-using UnityEngine.Assertions;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.IMGUI.Controls;
+using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    class MultiSelectionTable : TreeView
+    internal class MultiSelectionTable : TreeView
     {
-        const float kRowHeights = 20f;
-        readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
-
-        private string[] m_Names;
-        TreeItemIdentifier m_AllIdentifier;
-        TreeViewSelection m_Selection;
-
-        private GUIStyle m_ActiveLineStyle;
-
         // All columns
         public enum MyColumns
         {
@@ -35,29 +26,42 @@ namespace Unity.ProjectAuditor.Editor
             GroupName
         }
 
+        private const float kRowHeights = 20f;
+        private readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
+
+        private GUIStyle m_ActiveLineStyle;
+        private readonly TreeItemIdentifier m_AllIdentifier;
+
+        private readonly string[] m_Names;
+        private readonly TreeViewSelection m_Selection;
+
         // SteveM TODO - Sorting doesn't work in this window (or in the Thread Selection Window in Profile Analyzer that
         // this is based on). So maybe rip this all out?
         // Sort options per column
-        SortOption[] m_SortOptions =
+        private readonly SortOption[] m_SortOptions =
         {
             SortOption.ItemName,
             SortOption.ItemName,
             SortOption.GroupName
         };
 
-        public MultiSelectionTable(TreeViewState state, MultiColumnHeader multicolumnHeader, string[] names, TreeViewSelection selection) : base(state, multicolumnHeader)
+        public MultiSelectionTable(TreeViewState state, MultiColumnHeader multicolumnHeader, string[] names,
+            TreeViewSelection selection) : base(state, multicolumnHeader)
         {
             m_AllIdentifier = new TreeItemIdentifier();
             m_AllIdentifier.SetName("All");
             m_AllIdentifier.SetAll();
 
-            Assert.AreEqual(m_SortOptions.Length, Enum.GetValues(typeof(MyColumns)).Length, "Ensure number of sort options are in sync with number of MyColumns enum values");
+            Assert.AreEqual(m_SortOptions.Length, Enum.GetValues(typeof(MyColumns)).Length,
+                "Ensure number of sort options are in sync with number of MyColumns enum values");
 
             // Custom setup
             rowHeight = kRowHeights;
             showAlternatingRowBackgrounds = true;
             showBorder = true;
-            customFoldoutYOffset = (kRowHeights - EditorGUIUtility.singleLineHeight) * 0.5f; // center foldout in the row since we also center content. See RowGUI
+            customFoldoutYOffset =
+                (kRowHeights - EditorGUIUtility.singleLineHeight) *
+                0.5f; // center foldout in the row since we also center content. See RowGUI
             // extraSpaceBeforeIconAndLabel = 0;
             multicolumnHeader.sortingChanged += OnSortingChanged;
 
@@ -80,14 +84,13 @@ namespace Unity.ProjectAuditor.Editor
 
         protected int GetChildCount(TreeItemIdentifier selectedIdentifier, out int selected)
         {
-            int count = 0;
-            int selectedCount = 0;
+            var count = 0;
+            var selectedCount = 0;
 
             if (selectedIdentifier.index == TreeItemIdentifier.kAll)
             {
                 if (selectedIdentifier.name == "All")
-                {
-                    for (int index = 0; index < m_Names.Length; ++index)
+                    for (var index = 0; index < m_Names.Length; ++index)
                     {
                         var nameWithIndex = m_Names[index];
                         var identifier = new TreeItemIdentifier(nameWithIndex);
@@ -99,10 +102,8 @@ namespace Unity.ProjectAuditor.Editor
                                 selectedCount++;
                         }
                     }
-                }
                 else
-                {
-                    for (int index = 0; index < m_Names.Length; ++index)
+                    for (var index = 0; index < m_Names.Length; ++index)
                     {
                         var nameWithIndex = m_Names[index];
                         var identifier = new TreeItemIdentifier(nameWithIndex);
@@ -115,7 +116,6 @@ namespace Unity.ProjectAuditor.Editor
                                 selectedCount++;
                         }
                     }
-                }
             }
 
             selected = selectedCount;
@@ -124,19 +124,19 @@ namespace Unity.ProjectAuditor.Editor
 
         protected override TreeViewItem BuildRoot()
         {
-            int idForHiddenRoot = -1;
-            int depthForHiddenRoot = -1;
-            TreeViewItem root = new TreeViewItem(idForHiddenRoot, depthForHiddenRoot, "root");
+            var idForHiddenRoot = -1;
+            var depthForHiddenRoot = -1;
+            var root = new TreeViewItem(idForHiddenRoot, depthForHiddenRoot, "root");
 
-            int depth = 0;
+            var depth = 0;
 
             var top = new SelectionWindowTreeViewItem(-1, depth, m_AllIdentifier.name, m_AllIdentifier);
             root.AddChild(top);
 
-            var expandList = new List<int>() {-1};
-            string lastName = "";
-            TreeViewItem node = root;
-            for (int index = 0; index < m_Names.Length; ++index)
+            var expandList = new List<int> {-1};
+            var lastName = "";
+            var node = root;
+            for (var index = 0; index < m_Names.Length; ++index)
             {
                 var nameWithIndex = m_Names[index];
                 if (nameWithIndex == m_AllIdentifier.nameWithIndex)
@@ -162,14 +162,14 @@ namespace Unity.ProjectAuditor.Editor
                     depth = 1;
                 }
             }
-            
+
             SetExpanded(expandList);
-            
+
             SetupDepthsFromParentsAndChildren(root);
 
             return root;
         }
-        
+
         private void BuildRowRecursive(IList<TreeViewItem> rows, TreeViewItem item)
         {
             if (!IsExpanded(item.id))
@@ -179,7 +179,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 rows.Add(subNode);
 
-                if (subNode.children!=null)
+                if (subNode.children != null)
                     BuildRowRecursive(rows, subNode);
             }
         }
@@ -211,57 +211,46 @@ namespace Unity.ProjectAuditor.Editor
             return m_Rows;
         }
 
-        void OnSortingChanged(MultiColumnHeader _multiColumnHeader)
+        private void OnSortingChanged(MultiColumnHeader _multiColumnHeader)
         {
             SortIfNeeded(GetRows());
         }
 
-        void SortIfNeeded(IList<TreeViewItem> rows)
+        private void SortIfNeeded(IList<TreeViewItem> rows)
         {
-            if (rows.Count <= 1)
-            {
-                return;
-            }
+            if (rows.Count <= 1) return;
 
             if (multiColumnHeader.sortedColumnIndex == -1)
-            {
                 return; // No column to sort for (just use the order the data are in)
-            }
 
             // Sort the roots of the existing tree items
             SortByMultipleColumns();
-            
+
             BuildAllRows(rows, rootItem);
 
             Repaint();
         }
 
-        string GetItemGroupName(SelectionWindowTreeViewItem item)
+        private string GetItemGroupName(SelectionWindowTreeViewItem item)
         {
-            string[] tokens = item.TreeItemIdentifier.name.Split('.');
-            if (tokens.Length <= 1)
-            {
-                return "";
-            }
+            var tokens = item.TreeItemIdentifier.name.Split('.');
+            if (tokens.Length <= 1) return "";
 
             return tokens[0];
         }
 
-        void SortByMultipleColumns()
+        private void SortByMultipleColumns()
         {
-            int[] sortedColumns = multiColumnHeader.state.sortedColumns;
+            var sortedColumns = multiColumnHeader.state.sortedColumns;
 
-            if (sortedColumns.Length == 0)
-            {
-                return;
-            }
+            if (sortedColumns.Length == 0) return;
 
             var myTypes = rootItem.children.Cast<SelectionWindowTreeViewItem>();
             var orderedQuery = InitialOrder(myTypes, sortedColumns);
-            for (int i = 1; i < sortedColumns.Length; i++)
+            for (var i = 1; i < sortedColumns.Length; i++)
             {
-                SortOption sortOption = m_SortOptions[sortedColumns[i]];
-                bool ascending = multiColumnHeader.IsSortedAscending(sortedColumns[i]);
+                var sortOption = m_SortOptions[sortedColumns[i]];
+                var ascending = multiColumnHeader.IsSortedAscending(sortedColumns[i]);
 
                 switch (sortOption)
                 {
@@ -277,10 +266,11 @@ namespace Unity.ProjectAuditor.Editor
             rootItem.children = orderedQuery.Cast<TreeViewItem>().ToList();
         }
 
-        IOrderedEnumerable<SelectionWindowTreeViewItem> InitialOrder(IEnumerable<SelectionWindowTreeViewItem> myTypes, int[] history)
+        private IOrderedEnumerable<SelectionWindowTreeViewItem> InitialOrder(
+            IEnumerable<SelectionWindowTreeViewItem> myTypes, int[] history)
         {
-            SortOption sortOption = m_SortOptions[history[0]];
-            bool ascending = multiColumnHeader.IsSortedAscending(history[0]);
+            var sortOption = m_SortOptions[history[0]];
+            var ascending = multiColumnHeader.IsSortedAscending(history[0]);
             switch (sortOption)
             {
                 case SortOption.GroupName:
@@ -298,15 +288,13 @@ namespace Unity.ProjectAuditor.Editor
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            SelectionWindowTreeViewItem item = (SelectionWindowTreeViewItem)args.item;
+            var item = (SelectionWindowTreeViewItem) args.item;
 
-            for (int i = 0; i < args.GetNumVisibleColumns(); ++i)
-            {
-                CellGUI(args.GetCellRect(i), item, (MyColumns)args.GetColumn(i), ref args);
-            }
+            for (var i = 0; i < args.GetNumVisibleColumns(); ++i)
+                CellGUI(args.GetCellRect(i), item, (MyColumns) args.GetColumn(i), ref args);
         }
 
-        bool TreeItemSelected(TreeItemIdentifier selectedIdentifier)
+        private bool TreeItemSelected(TreeItemIdentifier selectedIdentifier)
         {
             if (m_Selection.selection != null &&
                 m_Selection.selection.Count > 0 &&
@@ -320,7 +308,8 @@ namespace Unity.ProjectAuditor.Editor
                 foreach (var nameWithIndex in m_Names)
                 {
                     var identifier = new TreeItemIdentifier(nameWithIndex);
-                    if (identifier.index == TreeItemIdentifier.kAll/* || identifier.index == TreeItemIdentifier.kSingle*/)
+                    if (identifier.index ==
+                        TreeItemIdentifier.kAll /* || identifier.index == TreeItemIdentifier.kSingle*/)
                         continue;
 
                     if (!m_Selection.selection.Contains(nameWithIndex))
@@ -334,13 +323,13 @@ namespace Unity.ProjectAuditor.Editor
             if (selectedIdentifier.index == TreeItemIdentifier.kAll)
             {
                 // Count all items that match this item group
-                int count = 0;
+                var count = 0;
                 foreach (var nameWithIndex in m_Names)
                 {
                     var identifier = new TreeItemIdentifier(nameWithIndex);
                     if (identifier.index == TreeItemIdentifier.kAll || identifier.index == TreeItemIdentifier.kSingle)
                         continue;
-                    
+
                     if (selectedIdentifier.name != identifier.name)
                         continue;
 
@@ -348,7 +337,7 @@ namespace Unity.ProjectAuditor.Editor
                 }
 
                 // Count all the items we have selected that match this item group
-                int selectedCount = 0;
+                var selectedCount = 0;
                 foreach (var nameWithIndex in m_Selection.selection)
                 {
                     var identifier = new TreeItemIdentifier(nameWithIndex);
@@ -368,7 +357,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
 
-        void CellGUI(Rect cellRect, SelectionWindowTreeViewItem item, MyColumns column, ref RowGUIArgs args)
+        private void CellGUI(Rect cellRect, SelectionWindowTreeViewItem item, MyColumns column, ref RowGUIArgs args)
         {
             // Center cell rect vertically (makes it easier to place controls, icons etc in the cells)
             CenterRectUsingSingleLineHeight(ref cellRect);
@@ -376,81 +365,82 @@ namespace Unity.ProjectAuditor.Editor
             switch (column)
             {
                 case MyColumns.ItemName:
+                {
+                    args.rowRect = cellRect;
+                    // base.RowGUI(args);    // Required to show tree indenting
+
+                    // Draw manually to keep indenting by add a tooltip
+                    var rect = cellRect;
+                    if (Event.current.rawType == EventType.Repaint)
                     {
-                        args.rowRect = cellRect;
-                        // base.RowGUI(args);    // Required to show tree indenting
+                        int selectedChildren;
+                        var childCount = GetChildCount(item.TreeItemIdentifier, out selectedChildren);
 
-                        // Draw manually to keep indenting by add a tooltip
-                        Rect rect = cellRect;
-                        if (Event.current.rawType == EventType.Repaint)
+                        string text;
+                        string tooltip;
+                        var fullName = item.TreeItemIdentifier.name;
+                        var groupName = GetItemGroupName(item);
+
+                        if (childCount <= 1)
                         {
-                            int selectedChildren;
-                            int childCount = GetChildCount(item.TreeItemIdentifier, out selectedChildren);
-
-                            string text;
-                            string tooltip;
-                            string fullName = item.TreeItemIdentifier.name;
-                            string groupName = GetItemGroupName(item);
-
-                            if (childCount <= 1)
-                            {
-                                text = item.displayName;
-                                tooltip = (groupName == "") ? text : string.Format("{0}\n{1}", text, groupName);
-                            }
-                            else if (selectedChildren != childCount)
-                            {
-                                text = string.Format("{0} ({1} of {2})", fullName, selectedChildren, childCount);
-                                tooltip = (groupName == "") ? text : string.Format("{0}\n{1}", text, groupName);
-                            }
-                            else
-                            {
-                                text = string.Format("{0} (All)", fullName);
-                                tooltip = (groupName == "") ? text : string.Format("{0}\n{1}", text, groupName);
-                            }
-                            var content = new GUIContent(text, tooltip);
-
-                            if (m_ActiveLineStyle == null)
-                            {
-                                m_ActiveLineStyle = new GUIStyle(DefaultStyles.label);
-                                m_ActiveLineStyle.normal.textColor = DefaultStyles.boldLabel.onActive.textColor;
-                            }
-                       
-                            // The rect is assumed indented and sized after the content when pinging
-                            float indent = GetContentIndent(item) + extraSpaceBeforeIconAndLabel;
-                            rect.xMin += indent;
-
-                            int iconRectWidth = 16;
-                            int kSpaceBetweenIconAndText = 2;
-
-                            // Draw icon
-                            Rect iconRect = rect;
-                            iconRect.width = iconRectWidth;
-                            // iconRect.x += 7f;
-
-                            Texture icon = args.item.icon;
-                            if (icon != null)
-                                GUI.DrawTexture(iconRect, icon, ScaleMode.ScaleToFit);
-
-                            rect.xMin += icon == null ? 0 : iconRectWidth + kSpaceBetweenIconAndText;
-
-                            //bool mouseOver = rect.Contains(Event.current.mousePosition);
-                            //DefaultStyles.label.Draw(rect, content, mouseOver, false, args.selected, args.focused);
-
-                            // Must use this call to draw tooltip
-                            EditorGUI.LabelField(rect, content, args.selected ? m_ActiveLineStyle : DefaultStyles.label);
+                            text = item.displayName;
+                            tooltip = groupName == "" ? text : string.Format("{0}\n{1}", text, groupName);
                         }
+                        else if (selectedChildren != childCount)
+                        {
+                            text = string.Format("{0} ({1} of {2})", fullName, selectedChildren, childCount);
+                            tooltip = groupName == "" ? text : string.Format("{0}\n{1}", text, groupName);
+                        }
+                        else
+                        {
+                            text = string.Format("{0} (All)", fullName);
+                            tooltip = groupName == "" ? text : string.Format("{0}\n{1}", text, groupName);
+                        }
+
+                        var content = new GUIContent(text, tooltip);
+
+                        if (m_ActiveLineStyle == null)
+                        {
+                            m_ActiveLineStyle = new GUIStyle(DefaultStyles.label);
+                            m_ActiveLineStyle.normal.textColor = DefaultStyles.boldLabel.onActive.textColor;
+                        }
+
+                        // The rect is assumed indented and sized after the content when pinging
+                        var indent = GetContentIndent(item) + extraSpaceBeforeIconAndLabel;
+                        rect.xMin += indent;
+
+                        var iconRectWidth = 16;
+                        var kSpaceBetweenIconAndText = 2;
+
+                        // Draw icon
+                        var iconRect = rect;
+                        iconRect.width = iconRectWidth;
+                        // iconRect.x += 7f;
+
+                        Texture icon = args.item.icon;
+                        if (icon != null)
+                            GUI.DrawTexture(iconRect, icon, ScaleMode.ScaleToFit);
+
+                        rect.xMin += icon == null ? 0 : iconRectWidth + kSpaceBetweenIconAndText;
+
+                        //bool mouseOver = rect.Contains(Event.current.mousePosition);
+                        //DefaultStyles.label.Draw(rect, content, mouseOver, false, args.selected, args.focused);
+
+                        // Must use this call to draw tooltip
+                        EditorGUI.LabelField(rect, content, args.selected ? m_ActiveLineStyle : DefaultStyles.label);
                     }
+                }
                     break;
                 case MyColumns.GroupName:
-                    {
-                        string groupName = GetItemGroupName(item);
-                        var content = new GUIContent(groupName, groupName);
-                        EditorGUI.LabelField(cellRect, content);
-                    }
+                {
+                    var groupName = GetItemGroupName(item);
+                    var content = new GUIContent(groupName, groupName);
+                    EditorGUI.LabelField(cellRect, content);
+                }
                     break;
                 case MyColumns.State:
-                    bool oldState = TreeItemSelected(item.TreeItemIdentifier);
-                    bool newState = EditorGUI.Toggle(cellRect, oldState);
+                    var oldState = TreeItemSelected(item.TreeItemIdentifier);
+                    var newState = EditorGUI.Toggle(cellRect, oldState);
                     if (newState != oldState)
                     {
                         if (item.TreeItemIdentifier.nameWithIndex == m_AllIdentifier.nameWithIndex)
@@ -458,27 +448,19 @@ namespace Unity.ProjectAuditor.Editor
                             // Record active groups
                             m_Selection.groups.Clear();
                             if (newState)
-                            {
                                 if (!m_Selection.groups.Contains(item.TreeItemIdentifier.nameWithIndex))
                                     m_Selection.groups.Add(item.TreeItemIdentifier.nameWithIndex);
-                            }
 
                             // Update selection
                             m_Selection.selection.Clear();
                             if (newState)
-                            {
-                                foreach (string nameWithIndex in m_Names)
-                                {
+                                foreach (var nameWithIndex in m_Names)
                                     if (nameWithIndex != m_AllIdentifier.nameWithIndex)
                                     {
                                         var identifier = new TreeItemIdentifier(nameWithIndex);
                                         if (identifier.index != TreeItemIdentifier.kAll)
-                                        {
                                             m_Selection.selection.Add(nameWithIndex);
-                                        }
                                     }
-                                }
-                            }
                         }
                         else if (item.TreeItemIdentifier.index == TreeItemIdentifier.kAll)
                         {
@@ -498,33 +480,28 @@ namespace Unity.ProjectAuditor.Editor
                             // Update selection
                             if (newState)
                             {
-                                foreach (string nameWithIndex in m_Names)
+                                foreach (var nameWithIndex in m_Names)
                                 {
                                     var identifier = new TreeItemIdentifier(nameWithIndex);
                                     if (identifier.name == item.TreeItemIdentifier.name &&
                                         identifier.index != TreeItemIdentifier.kAll)
-                                    {
                                         if (!m_Selection.selection.Contains(nameWithIndex))
                                             m_Selection.selection.Add(nameWithIndex);
-                                    }
                                 }
                             }
                             else
                             {
                                 var removeSelection = new List<string>();
-                                foreach (string nameWithIndex in m_Selection.selection)
+                                foreach (var nameWithIndex in m_Selection.selection)
                                 {
                                     var identifier = new TreeItemIdentifier(nameWithIndex);
                                     if (identifier.name == item.TreeItemIdentifier.name &&
                                         identifier.index != TreeItemIdentifier.kAll)
-                                    {
                                         removeSelection.Add(nameWithIndex);
-                                    }
                                 }
-                                foreach (string nameWithIndex in removeSelection)
-                                {
+
+                                foreach (var nameWithIndex in removeSelection)
                                     m_Selection.selection.Remove(nameWithIndex);
-                                }
                             }
                         }
                         else
@@ -547,6 +524,7 @@ namespace Unity.ProjectAuditor.Editor
                             }
                         }
                     }
+
                     break;
             }
         }
@@ -560,30 +538,11 @@ namespace Unity.ProjectAuditor.Editor
             return false;
         }
 
-        public struct HeaderData
-        {
-            public GUIContent content;
-            public float width;
-            public float minWidth;
-            public bool autoResize;
-            public bool allowToggleVisibility;
-
-            public HeaderData(string name, string tooltip = "", float _width = 50, float _minWidth = 30, bool _autoResize = true, bool _allowToggleVisibility = true)
-            {
-                content = new GUIContent(name, tooltip);
-                width = _width;
-                minWidth = _minWidth;
-                autoResize = _autoResize;
-                allowToggleVisibility = _allowToggleVisibility;
-            }
-        }
-
         public static MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(HeaderData[] headerData)
         {
             var columnList = new List<MultiColumnHeaderState.Column>();
-            
+
             foreach (var header in headerData)
-            {
                 columnList.Add(new MultiColumnHeaderState.Column
                 {
                     headerContent = header.content,
@@ -595,18 +554,39 @@ namespace Unity.ProjectAuditor.Editor
                     autoResize = header.autoResize,
                     allowToggleVisibility = header.allowToggleVisibility
                 });
-            };
+            ;
             var columns = columnList.ToArray();
 
-            Assert.AreEqual(columns.Length, Enum.GetValues(typeof(MyColumns)).Length, "Number of columns should match number of enum values: You probably forgot to update one of them.");
+            Assert.AreEqual(columns.Length, Enum.GetValues(typeof(MyColumns)).Length,
+                "Number of columns should match number of enum values: You probably forgot to update one of them.");
 
             var state = new MultiColumnHeaderState(columns);
-            state.visibleColumns = new int[] {
-                        (int)MyColumns.ItemName,
-                        (int)MyColumns.State,
-                        //(int)MyColumns.GroupName
-                    };
+            state.visibleColumns = new[]
+            {
+                (int) MyColumns.ItemName,
+                (int) MyColumns.State
+                //(int)MyColumns.GroupName
+            };
             return state;
+        }
+
+        public struct HeaderData
+        {
+            public GUIContent content;
+            public float width;
+            public float minWidth;
+            public bool autoResize;
+            public bool allowToggleVisibility;
+
+            public HeaderData(string name, string tooltip = "", float _width = 50, float _minWidth = 30,
+                bool _autoResize = true, bool _allowToggleVisibility = true)
+            {
+                content = new GUIContent(name, tooltip);
+                width = _width;
+                minWidth = _minWidth;
+                autoResize = _autoResize;
+                allowToggleVisibility = _allowToggleVisibility;
+            }
         }
 
 //        protected override void SelectionChanged(IList<int> selectedIds)
@@ -619,32 +599,24 @@ namespace Unity.ProjectAuditor.Editor
 //        }
     }
 
-    
+
     // SteveM TODO - Can ditch this if we ditch sorting.
-    static class MyExtensionMethods
+    internal static class MyExtensionMethods
     {
-        public static IOrderedEnumerable<T> Order<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector, bool ascending)
+        public static IOrderedEnumerable<T> Order<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector,
+            bool ascending)
         {
             if (ascending)
-            {
                 return source.OrderBy(selector);
-            }
-            else
-            {
-                return source.OrderByDescending(selector);
-            }
+            return source.OrderByDescending(selector);
         }
 
-        public static IOrderedEnumerable<T> ThenBy<T, TKey>(this IOrderedEnumerable<T> source, Func<T, TKey> selector, bool ascending)
+        public static IOrderedEnumerable<T> ThenBy<T, TKey>(this IOrderedEnumerable<T> source, Func<T, TKey> selector,
+            bool ascending)
         {
             if (ascending)
-            {
                 return source.ThenBy(selector);
-            }
-            else
-            {
-                return source.ThenByDescending(selector);
-            }
+            return source.ThenByDescending(selector);
         }
     }
 }
