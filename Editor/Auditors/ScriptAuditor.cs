@@ -106,7 +106,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             
             foreach (var inst in caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode)))
             {
-                //var msg = string.Empty;
                 SequencePoint s = null;
                 for (var i = inst; i != null; i = i.Previous)
                 {
@@ -118,9 +117,18 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     }
                 }
 
-                var location = callerNode.location = new Location
-                    {path = s.Document.Url.Replace("\\", "/"), line = s.StartLine};
-                    
+                Location location = null;
+                if (s != null)
+                {
+                    location = new Location
+                        {path = s.Document.Url.Replace("\\", "/"), line = s.StartLine};
+                    callerNode.location = location;
+                }
+                else
+                {
+                    // sequence point not found. Assuming caller.IsHideBySig == true
+                }
+
                 if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
                 {
                     callCrawler.Add(caller, (MethodReference) inst.Operand, location, perfCriticalContext);
