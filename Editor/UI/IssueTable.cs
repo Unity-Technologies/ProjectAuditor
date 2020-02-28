@@ -296,7 +296,10 @@ namespace Unity.ProjectAuditor.Editor
                 m_Children = new List<ItemTree>();
             }
 
-            public int Depth => m_Item == null ? -1 : m_Item.depth;
+            public int Depth
+            {
+                get { return m_Item == null ? -1 : m_Item.depth; }
+            }
 
             public void AddChild(ItemTree item)
             {

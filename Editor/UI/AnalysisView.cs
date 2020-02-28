@@ -33,7 +33,10 @@ namespace Unity.ProjectAuditor.Editor
             m_Table = null;
         }
 
-        public AnalysisViewDescriptor desc => m_Desc;
+        public AnalysisViewDescriptor desc
+        {
+            get { return m_Desc; }
+        }
 
         public void CreateTable(ProjectReport projectReport, TreeViewState state)
         {

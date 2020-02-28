@@ -52,34 +52,39 @@ namespace Unity.ProjectAuditor.Editor
             }
         };
 
-        private readonly List<AnalysisView> m_AnalysisViews = new List<AnalysisView>();
-        [SerializeField] private int m_ActiveModeIndex;
-        private TreeViewSelection m_AreaSelection;
-        [SerializeField] private string m_AreaSelectionSummary;
-        [SerializeField] private string[] m_AssemblyNames;
-        private TreeViewSelection m_AssemblySelection;
-        [SerializeField] private string m_AssemblySelectionSummary;
-
-        // UI
-        private CallHierarchyView m_CallHierarchyView;
-        private CallTreeNode m_CurrentCallTree;
-        [SerializeField] private bool m_DeveloperMode;
-
         private string[] m_ModeNames;
         private ProjectAuditor m_ProjectAuditor;
 
-        // Serialized fields
-        [SerializeField] private ProjectReport m_ProjectReport;
+        // UI
+        private readonly List<AnalysisView> m_AnalysisViews = new List<AnalysisView>();
+        private TreeViewSelection m_AreaSelection;
+        private TreeViewSelection m_AssemblySelection;
+        private CallHierarchyView m_CallHierarchyView;
+        private CallTreeNode m_CurrentCallTree;
         private SearchField m_SearchField;
+
+        // Serialized fields
+        [SerializeField] private int m_ActiveModeIndex;
+        [SerializeField] private string m_AreaSelectionSummary;
+        [SerializeField] private string[] m_AssemblyNames;
+        [SerializeField] private string m_AssemblySelectionSummary;
+        [SerializeField] private bool m_DeveloperMode;
+        [SerializeField] private ProjectReport m_ProjectReport;
         [SerializeField] private string m_SearchText;
         [SerializeField] private bool m_ShowCallTree;
         [SerializeField] private bool m_ShowDetails = true;
         [SerializeField] private bool m_ShowRecommendation = true;
         [SerializeField] private bool m_ValidReport;
 
-        private AnalysisView m_ActiveAnalysisView => m_AnalysisViews[m_ActiveModeIndex];
+        private AnalysisView m_ActiveAnalysisView
+        {
+            get { return m_AnalysisViews[m_ActiveModeIndex]; }
+        }
 
-        private IssueTable m_ActiveIssueTable => m_ActiveAnalysisView.m_Table;
+        private IssueTable m_ActiveIssueTable
+        {
+            get { return m_ActiveAnalysisView.m_Table; }
+        }
 
         public void AddItemsToMenu(GenericMenu menu)
         {

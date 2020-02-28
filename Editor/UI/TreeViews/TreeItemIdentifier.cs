@@ -15,10 +15,10 @@ namespace Unity.ProjectAuditor.Editor
         public static int kAll = -1;
         public static int kSingle = 0;
 
-        public TreeItemIdentifier(string name, int index)
+        public TreeItemIdentifier(string _name, int _index)
         {
-            this.name = name;
-            this.index = index;
+            name = _name;
+            index = _index;
             if (index == kAll)
                 nameWithIndex = string.Format("All:{1}", index, name);
             else
@@ -32,11 +32,11 @@ namespace Unity.ProjectAuditor.Editor
             nameWithIndex = treeItemIdentifier.nameWithIndex;
         }
 
-        public TreeItemIdentifier(string nameWithIndex)
+        public TreeItemIdentifier(string _nameWithIndex)
         {
             // SteveM TODO - Pretty sure this can go. Assembly names don't have a foo:N (or N:foo?) naming convention like threads do.
             // So index should probably always be treated as 0 (sorry, "kSingle")
-            this.nameWithIndex = nameWithIndex;
+            nameWithIndex = _nameWithIndex;
 
             var tokens = nameWithIndex.Split(':');
             if (tokens.Length >= 2)

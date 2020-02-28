@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 {
     public class AssemblyCompilationHelper : IDisposable
     {
-        private string m_OutputFolder;
+        private string m_OutputFolder = String.Empty;
         private bool m_Success = true;
 
         public void Dispose()

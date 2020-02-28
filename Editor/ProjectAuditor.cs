@@ -43,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor
             LoadDatabase();
         }
 
-        public ProjectAuditorConfig config { get; }
+        public ProjectAuditorConfig config { get; set; }
 
         private static string dataPath
         {
