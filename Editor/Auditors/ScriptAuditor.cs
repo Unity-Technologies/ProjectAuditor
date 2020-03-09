@@ -180,8 +180,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         private static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)
         {
-            return MonoBehaviourAnalysis.IsMonoBehaviour(methodDefinition.DeclaringType) &&
-                   MonoBehaviourAnalysis.IsMonoBehaviourUpdateMethod(methodDefinition);
+            if (MonoBehaviourAnalysis.IsMonoBehaviour(methodDefinition.DeclaringType) &&
+                MonoBehaviourAnalysis.IsMonoBehaviourUpdateMethod(methodDefinition))
+                return true;
+            if (ComponentSystemAnalysis.IsComponentSystem(methodDefinition.DeclaringType) &&
+                ComponentSystemAnalysis.IsOnUpdateMethod(methodDefinition))
+                return true;
+            return false;
         }
     }
 }
