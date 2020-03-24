@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                 return false;
             }
 
-            if (ClassNameHashCodes.FirstOrDefault(i => i == typeDefinition.FullName.GetHashCode()) != null &&
+            if (ClassNameHashCodes.FirstOrDefault(i => i == typeDefinition.FullName.GetHashCode()) != 0 &&
                 typeDefinition.Module.Name.Equals("Unity.Entities.dll"))
                 return true;
 
