@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             using (var compilationHelper = new AssemblyCompilationHelper())
             using (var assemblyResolver = new DefaultAssemblyResolver())
             {
-                var compiledAssemblyPaths = compilationHelper.Compile();
+                var compiledAssemblyPaths = compilationHelper.Compile(progressBar);
 
                 foreach (var dir in AssemblyHelper.GetPrecompiledAssemblyDirectories())
                     assemblyResolver.AddSearchDirectory(dir);

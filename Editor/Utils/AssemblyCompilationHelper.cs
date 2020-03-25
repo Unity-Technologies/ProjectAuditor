@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Compilation;
+using UnityEngine;
 #if UNITY_2018_2_OR_NEWER
 using UnityEditor.Build.Player;
 
@@ -15,23 +16,39 @@ namespace Unity.ProjectAuditor.Editor.Utils
     {
         private string m_OutputFolder = String.Empty;
         private bool m_Success = true;
+        
+        private Action<string> m_OnAssemblyCompilationStarted;
 
         public void Dispose()
         {
 #if UNITY_2018_2_OR_NEWER
+            if (m_OnAssemblyCompilationStarted != null)
+                CompilationPipeline.assemblyCompilationStarted -= m_OnAssemblyCompilationStarted;
+
             CompilationPipeline.assemblyCompilationFinished -= OnAssemblyCompilationFinished;
 #endif
             if (!string.IsNullOrEmpty(m_OutputFolder)) Directory.Delete(m_OutputFolder, true);
         }
 
-        public IEnumerable<string> Compile()
+        public IEnumerable<string> Compile(IProgressBar progressBar)
         {
             if (EditorUtility.scriptCompilationFailed)
                 throw new AssemblyCompilationException();
 #if UNITY_2018_2_OR_NEWER
-            m_OutputFolder = FileUtil.GetUniqueTempPathInProject();
-
+            if (progressBar != null)
+            {
+                var numAssemblies = CompilationPipeline.GetAssemblies(AssembliesType.Player).Length;
+                progressBar.Initialize("Assembly Compilation", "Compiling project scripts",
+                    numAssemblies);
+                m_OnAssemblyCompilationStarted = (s) =>
+                {
+                    progressBar.AdvanceProgressBar(Path.GetFileName(s));
+                };
+                CompilationPipeline.assemblyCompilationStarted += m_OnAssemblyCompilationStarted;
+            }
             CompilationPipeline.assemblyCompilationFinished += OnAssemblyCompilationFinished;
+
+            m_OutputFolder = FileUtil.GetUniqueTempPathInProject();
 
             var input = new ScriptCompilationSettings
             {
