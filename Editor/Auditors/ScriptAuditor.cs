@@ -10,9 +10,6 @@ using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 using Attribute = Unity.ProjectAuditor.Editor.InstructionAnalyzers.Attribute;
-#if UNITY_2018_1_OR_NEWER
-
-#endif
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
