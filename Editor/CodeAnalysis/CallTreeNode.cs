@@ -6,6 +6,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
+    [Serializable]
     public class CallTreeNode
     {
         public string assemblyName;
