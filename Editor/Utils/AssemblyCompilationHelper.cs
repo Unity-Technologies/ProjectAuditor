@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             if (!string.IsNullOrEmpty(m_OutputFolder)) Directory.Delete(m_OutputFolder, true);
         }
 
-        public IEnumerable<string> Compile(IProgressBar progressBar)
+        public IEnumerable<string> Compile(IProgressBar progressBar = null)
         {
             if (EditorUtility.scriptCompilationFailed)
                 throw new AssemblyCompilationException();
