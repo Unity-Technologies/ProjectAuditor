@@ -99,7 +99,8 @@ namespace Unity.ProjectAuditor.Editor
         }
 
 #if UNITY_2018_1_OR_NEWER
-        public int callbackOrder { get; }
+        public int callbackOrder { get { return 0; } }
+
         public void OnPreprocessBuild(BuildReport report)
         {
             if (config.enableAnalyzeOnBuild)
