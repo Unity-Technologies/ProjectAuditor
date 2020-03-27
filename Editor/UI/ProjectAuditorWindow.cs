@@ -205,7 +205,7 @@ namespace Unity.ProjectAuditor.Editor
             if (!IsAnalysisValid())
                 return;
 
-            foreach (var view in m_AnalysisViews) view.CreateTable(m_ProjectReport, new TreeViewState());
+            foreach (var view in m_AnalysisViews) view.CreateTable(m_ProjectReport);
 
             m_ActiveIssueTable.Reload();
         }
