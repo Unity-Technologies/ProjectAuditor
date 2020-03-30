@@ -20,7 +20,6 @@ namespace Unity.ProjectAuditor.Editor
     {
         private static string m_DataPath;
 
-        private string[] m_AuditorNames;
         private readonly List<IAuditor> m_Auditors = new List<IAuditor>();
 
         public ProjectAuditor()
