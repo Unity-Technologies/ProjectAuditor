@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Auditors;
 using UnityEditor;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 #if UNITY_2018_1_OR_NEWER
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -69,9 +71,19 @@ namespace Unity.ProjectAuditor.Editor
 
         public ProjectReport Audit(IProgressBar progressBar = null)
         {
-            var projectReport = new ProjectReport();
-            foreach (var auditor in m_Auditors) auditor.Audit(projectReport, progressBar);
+            var stopwatch = Stopwatch.StartNew();
 
+            var projectReport = new ProjectReport();
+            foreach (var auditor in m_Auditors)
+            {
+                var startTime = stopwatch.ElapsedMilliseconds;
+                auditor.Audit(projectReport, progressBar);
+                if (config.logTimingsInfo) Debug.Log(auditor.GetType().Name + " took: " + (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
+            }
+
+            stopwatch.Stop();
+            if (config.logTimingsInfo) Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
+            
             return projectReport;
         }
 
