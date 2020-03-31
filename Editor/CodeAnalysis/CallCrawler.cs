@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             }
         }
 
-        public void BuildCallHierarchies(ProjectReport projectReport, IProgressBar progressBar = null)
+        public void BuildCallHierarchies(List<ProjectIssue> issues, IProgressBar progressBar = null)
         {
             foreach (var entry in m_CallPairs)
             {
@@ -47,10 +47,9 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                 m_BucketedCallPairs[entry.Value.callee.FullName].Add(entry.Value);
             }
 
-            var numIssues = projectReport.GetNumIssues(IssueCategory.ApiCalls);
+            var numIssues = issues.Count;
             if (numIssues > 0)
             {
-                var issues = projectReport.GetIssues(IssueCategory.ApiCalls);
                 if (progressBar != null)
                     progressBar.Initialize("Analyzing Scripts", "Analyzing call trees", numIssues);
 

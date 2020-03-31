@@ -13,6 +13,6 @@ namespace Unity.ProjectAuditor.Editor
         IEnumerable<Type> GetAnalyzerTypes(Assembly assembly);
 
         void RegisterDescriptor(ProblemDescriptor descriptor);
-        void Audit(ProjectReport projectReport, IProgressBar progressBar = null);
+        void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null);
     }
 }

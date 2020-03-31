@@ -29,9 +29,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             return m_ProblemDescriptors;
         }
 
-        public void Audit(ProjectReport projectReport, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
             var callCrawler = new CallCrawler();
+            var issues = new List<ProjectIssue>();
 
             using (var compilationHelper = new AssemblyCompilationHelper())
             using (var assemblyResolver = new DefaultAssemblyResolver())
@@ -64,14 +65,20 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         continue;
                     }
 
-                    AnalyzeAssembly(assemblyPath, assemblyResolver, projectReport, callCrawler);
+                    AnalyzeAssembly(assemblyPath, assemblyResolver, callCrawler, (issue) =>
+                    {
+                        issues.Add(issue);
+                        onIssueFound(issue);
+                    });
                 }
             }
 
             if (progressBar != null)
                 progressBar.ClearProgressBar();
 
-            callCrawler.BuildCallHierarchies(projectReport, progressBar);
+            callCrawler.BuildCallHierarchies(issues, progressBar);
+
+            onComplete();
         }
 
         public void LoadDatabase(string path)
@@ -97,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         }
 
         private void AnalyzeAssembly(string assemblyPath, IAssemblyResolver assemblyResolver,
-            ProjectReport projectReport, CallCrawler callCrawler)
+            CallCrawler callCrawler, Action<ProjectIssue> onIssueFound)
         {
             using (var a = AssemblyDefinition.ReadAssembly(assemblyPath,
                 new ReaderParameters {ReadSymbols = true, AssemblyResolver = assemblyResolver}))
@@ -108,13 +115,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     if (!methodDefinition.HasBody)
                         continue;
 
-                    AnalyzeMethodBody(projectReport, a, methodDefinition, callCrawler);
+                    AnalyzeMethodBody(a, methodDefinition, callCrawler, onIssueFound);
                 }
             }
         }
 
-        private void AnalyzeMethodBody(ProjectReport projectReport, AssemblyDefinition a, MethodDefinition caller,
-            CallCrawler callCrawler)
+        private void AnalyzeMethodBody(AssemblyDefinition a, MethodDefinition caller,
+            CallCrawler callCrawler, Action<ProjectIssue> onIssueFound)
         {
             if (!caller.DebugInformation.HasSequencePoints)
                 return;
@@ -158,7 +165,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                             projectIssue.location = location;
                             projectIssue.assembly = a.Name.Name;
 
-                            projectReport.AddIssue(projectIssue);
+                            onIssueFound(projectIssue);
                         }
                     }
             }

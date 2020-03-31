@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_ProblemDescriptors.Add(descriptor);
         }
 
-        public void Audit(ProjectReport projectReport, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
             if (progressBar != null)
                 progressBar.Initialize("Analyzing Settings", "Analyzing project settings", m_ProblemDescriptors.Count);
@@ -81,16 +81,18 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 {
                     var analyzer = m_SettingsAnalyzers[descriptor.id];
                     var projectIssue = analyzer.Analyze();
-                    if (projectIssue != null) projectReport.AddIssue(projectIssue);
+                    if (projectIssue != null) onIssueFound(projectIssue);
                 }
                 else
                 {
-                    SearchAndEval(descriptor, projectReport);
+                    SearchAndEval(descriptor, onIssueFound);
                 }
             }
 
             if (progressBar != null)
                 progressBar.ClearProgressBar();
+            
+            onComplete();
         }
 
         private void AddAnalyzer(ISettingsAnalyzer analyzer)
@@ -98,13 +100,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_SettingsAnalyzers.Add(analyzer.GetDescriptorId(), analyzer);
         }
 
-        private void AddIssue(ProblemDescriptor descriptor, string description, ProjectReport projectReport)
+        private void AddIssue(ProblemDescriptor descriptor, string description, Action<ProjectIssue> onIssueFound)
         {
             var projectWindowPath = "";
             var mappings = m_ProjectSettingsMapping.Where(p => p.Key.Contains(descriptor.type));
             if (mappings.Count() > 0)
                 projectWindowPath = mappings.First().Value;
-            projectReport.AddIssue(new ProjectIssue
+            onIssueFound(new ProjectIssue
             (
                 descriptor,
                 description,
@@ -113,7 +115,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             ));
         }
 
-        private void SearchAndEval(ProblemDescriptor descriptor, ProjectReport projectReport)
+        private void SearchAndEval(ProblemDescriptor descriptor, Action<ProjectIssue> onIssueFound)
         {
             if (string.IsNullOrEmpty(descriptor.customevaluator))
             {
@@ -127,7 +129,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         if (value.ToString() == descriptor.value)
                         {
                             AddIssue(descriptor, string.Format("{0}: {1}", descriptor.description, value),
-                                projectReport);
+                                onIssueFound);
 
                             // stop iterating assemblies
                             break;
@@ -144,7 +146,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var theMethod = helperType.GetMethod(descriptor.customevaluator);
                 var isIssue = (bool) theMethod.Invoke(m_Helpers, null);
 
-                if (isIssue) AddIssue(descriptor, descriptor.description, projectReport);
+                if (isIssue) AddIssue(descriptor, descriptor.description, onIssueFound);
             }
         }
     }
