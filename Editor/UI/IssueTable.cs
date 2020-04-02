@@ -91,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor
             }
 
             if (!root.hasChildren)
-                root.AddChild(new TreeViewItem(index++, 0, "No elements found"));
+                root.AddChild(new TreeViewItem(index++, 0, "No issue found"));
 
             return root;
         }
@@ -121,7 +121,11 @@ namespace Unity.ProjectAuditor.Editor
 
             var item = treeViewItem as IssueTableItem;
             if (item == null)
+            {
+                if ((Column)column == Column.Description)
+                    EditorGUI.LabelField(cellRect, new GUIContent(treeViewItem.displayName, treeViewItem.displayName));
                 return;
+            }
 
             var issue = item.ProjectIssue;
             var descriptor = item.ProblemDescriptor;
