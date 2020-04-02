@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         private static readonly int ClassNameHashCode = "UnityEngine.MonoBehaviour".GetHashCode();
 
         private static readonly string[] MagicMethodNames =
-            {"Awake", "Start", "OnEnable", "OnDisable", "Update", "LateUpdate", "OnEnable", "FixedUpdate"};
+        {"Awake", "Start", "OnEnable", "OnDisable", "Update", "LateUpdate", "OnEnable", "FixedUpdate"};
 
         private static readonly string[] UpdateMethodNames = {"Update", "LateUpdate", "FixedUpdate"};
 

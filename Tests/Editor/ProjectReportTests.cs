@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
@@ -16,11 +16,11 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 using UnityEngine;
 class MyClass
 {
-	void Dummy()
-	{
-		// Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
-		Debug.Log(Camera.main.name);
-	}
+    void Dummy()
+    {
+        // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
+        Debug.Log(Camera.main.name);
+    }
 }
 ");
         }
@@ -46,11 +46,12 @@ class MyClass
             var projectReport = new ProjectReport();
 
             projectReport.AddIssue(new ProjectIssue
-            (
-                new ProblemDescriptor(),
-                "dummy issue",
-                IssueCategory.ApiCalls
-            ));
+                (
+                    new ProblemDescriptor(),
+                    "dummy issue",
+                    IssueCategory.ApiCalls
+                )
+            );
 
             Assert.AreEqual(1, projectReport.NumTotalIssues);
             Assert.AreEqual(1, projectReport.GetNumIssues(IssueCategory.ApiCalls));

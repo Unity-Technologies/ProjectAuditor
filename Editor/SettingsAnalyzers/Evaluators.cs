@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         // Edit this to reflect the target platforms for your project
         // TODO - Provide an interface for this, or something
         private readonly BuildTargetGroup[] _buildTargets =
-            {BuildTargetGroup.iOS, BuildTargetGroup.Android, BuildTargetGroup.Standalone};
+        {BuildTargetGroup.iOS, BuildTargetGroup.Android, BuildTargetGroup.Standalone};
 
         private readonly GraphicsTier[] _graphicsTiers = {GraphicsTier.Tier1, GraphicsTier.Tier2, GraphicsTier.Tier3};
 
@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             var graphicsAPIs = PlayerSettings.GetGraphicsAPIs(BuildTarget.iOS);
 
             var hasOpenGLES = graphicsAPIs.Contains(GraphicsDeviceType.OpenGLES2) ||
-                              graphicsAPIs.Contains(GraphicsDeviceType.OpenGLES3);
+                graphicsAPIs.Contains(GraphicsDeviceType.OpenGLES3);
 
             return graphicsAPIs.Contains(GraphicsDeviceType.Metal) && hasOpenGLES;
         }
@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         public bool PlayerSettingsArchitecture_Android()
         {
             return (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARMv7) != 0 &&
-                   (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) != 0;
+                (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) != 0;
         }
 
         public bool PlayerSettingsManagedCodeStripping_iOS()
@@ -75,9 +75,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         {
             const int NUM_LAYERS = 32;
             for (var i = 0; i < NUM_LAYERS; ++i)
-            for (var j = 0; j < i; ++j)
-                if (Physics.GetIgnoreLayerCollision(i, j))
-                    return false;
+                for (var j = 0; j < i; ++j)
+                    if (Physics.GetIgnoreLayerCollision(i, j))
+                        return false;
             return true;
         }
 
@@ -85,21 +85,21 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         {
             const int NUM_LAYERS = 32;
             for (var i = 0; i < NUM_LAYERS; ++i)
-            for (var j = 0; j < i; ++j)
-                if (Physics2D.GetIgnoreLayerCollision(i, j))
-                    return false;
+                for (var j = 0; j < i; ++j)
+                    if (Physics2D.GetIgnoreLayerCollision(i, j))
+                        return false;
             return true;
         }
 
         public bool QualityUsingDefaultSettings()
         {
             return QualitySettings.names.Length == 6 &&
-                   QualitySettings.names[0] == "Very Low" &&
-                   QualitySettings.names[1] == "Low" &&
-                   QualitySettings.names[2] == "Medium" &&
-                   QualitySettings.names[3] == "High" &&
-                   QualitySettings.names[4] == "Very High" &&
-                   QualitySettings.names[5] == "Ultra";
+                QualitySettings.names[0] == "Very Low" &&
+                QualitySettings.names[1] == "Low" &&
+                QualitySettings.names[2] == "Medium" &&
+                QualitySettings.names[3] == "High" &&
+                QualitySettings.names[4] == "Very High" &&
+                QualitySettings.names[5] == "Ultra";
         }
 
         public bool QualityUsingLowQualityTextures()
@@ -162,7 +162,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return usingDefaultAsyncUploadBufferSize;
         }
 
-
         public bool GraphicsMixedStandardShaderQuality()
         {
             for (var btIdx = 0; btIdx < _buildTargets.Length; ++btIdx)
@@ -185,14 +184,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         public bool GraphicsUsingForwardRendering()
         {
             for (var btIdx = 0; btIdx < _buildTargets.Length; ++btIdx)
-            for (var tierIdx = 0; tierIdx < _graphicsTiers.Length; ++tierIdx)
-            {
-                var tierSettings =
-                    EditorGraphicsSettings.GetTierSettings(_buildTargets[btIdx], _graphicsTiers[tierIdx]);
+                for (var tierIdx = 0; tierIdx < _graphicsTiers.Length; ++tierIdx)
+                {
+                    var tierSettings =
+                        EditorGraphicsSettings.GetTierSettings(_buildTargets[btIdx], _graphicsTiers[tierIdx]);
 
-                if (tierSettings.renderingPath == RenderingPath.Forward)
-                    return true;
-            }
+                    if (tierSettings.renderingPath == RenderingPath.Forward)
+                        return true;
+                }
 
             return false;
         }
@@ -200,14 +199,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         public bool GraphicsUsingDeferredRendering()
         {
             for (var btIdx = 0; btIdx < _buildTargets.Length; ++btIdx)
-            for (var tierIdx = 0; tierIdx < _graphicsTiers.Length; ++tierIdx)
-            {
-                var tierSettings =
-                    EditorGraphicsSettings.GetTierSettings(_buildTargets[btIdx], _graphicsTiers[tierIdx]);
+                for (var tierIdx = 0; tierIdx < _graphicsTiers.Length; ++tierIdx)
+                {
+                    var tierSettings =
+                        EditorGraphicsSettings.GetTierSettings(_buildTargets[btIdx], _graphicsTiers[tierIdx]);
 
-                if (tierSettings.renderingPath == RenderingPath.DeferredShading)
-                    return true;
-            }
+                    if (tierSettings.renderingPath == RenderingPath.DeferredShading)
+                        return true;
+                }
 
             return false;
         }

@@ -1,0 +1,294 @@
+// This file is generated. Do not modify by hand.
+// XML documentation file not found. To check if public methods have XML comments,
+// make sure the XML doc file is present and located next to the scraped dll
+namespace Unity.ProjectAuditor.Editor
+{
+    public enum Area
+    {
+        public const Unity.ProjectAuditor.Editor.Area All = 5;
+        public const Unity.ProjectAuditor.Editor.Area BuildSize = 3;
+        public const Unity.ProjectAuditor.Editor.Area CPU = 0;
+        public const Unity.ProjectAuditor.Editor.Area GPU = 1;
+        public const Unity.ProjectAuditor.Editor.Area LoadTimes = 4;
+        public const Unity.ProjectAuditor.Editor.Area Memory = 2;
+        public int value__;
+    }
+
+    public class AssemblyCompilationException : System.Exception
+    {
+        public AssemblyCompilationException() {}
+    }
+
+    public interface IAuditor
+    {
+        public abstract void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
+        public abstract System.Collections.Generic.IEnumerable<System.Type> GetAnalyzerTypes(System.Reflection.Assembly assembly);
+        public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
+        public abstract void LoadDatabase(string path);
+        public abstract void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+    }
+
+    public interface IProgressBar
+    {
+        public abstract void AdvanceProgressBar(string description = );
+        public abstract void ClearProgressBar();
+        public abstract void Initialize(string title, string description, int total);
+    }
+
+    public enum IssueCategory
+    {
+        public const Unity.ProjectAuditor.Editor.IssueCategory ApiCalls = 0;
+        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 2;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 1;
+        public int value__;
+    }
+
+    public class ProblemDescriptor
+    {
+        public Unity.ProjectAuditor.Editor.Rule.Action action;
+        public string area;
+        public string customevaluator;
+        public string description;
+        public int id;
+        public string method;
+        public string problem;
+        public string solution;
+        public string type;
+        public string value;
+        public ProblemDescriptor() {}
+    }
+
+    public static class ProblemDescriptorHelper
+    {
+        public static System.Collections.Generic.List<Unity.ProjectAuditor.Editor.ProblemDescriptor> LoadProblemDescriptors(string path, string name);
+    }
+
+    public class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport
+    {
+        public virtual int callbackOrder { get; }
+        public Unity.ProjectAuditor.Editor.ProjectAuditorConfig config { get; set; }
+        public ProjectAuditor() {}
+        public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
+        public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
+        public T GetAuditor<T>() where T : class;
+        public void LoadDatabase();
+        public void LoadDatabase(string path);
+        public virtual void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
+    }
+
+    public class ProjectAuditorConfig : UnityEngine.ScriptableObject
+    {
+        public bool displayMutedIssues;
+        public bool displayOnlyCrititalIssues;
+        public bool enableAnalyzeOnBuild;
+        public bool enableFailBuildOnIssues;
+        public bool logTimingsInfo;
+        public int NumRules { get; }
+        public ProjectAuditorConfig() {}
+        public void AddRule(Unity.ProjectAuditor.Editor.Rule ruleToAdd);
+        public void ClearAllRules();
+        public void ClearRules(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string filter = );
+        public Unity.ProjectAuditor.Editor.Rule.Action GetAction(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string filter = );
+        public Unity.ProjectAuditor.Editor.Rule GetRule(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string filter = );
+    }
+
+    public class ProjectIssue
+    {
+        public string assembly;
+        public Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode callTree;
+        public Unity.ProjectAuditor.Editor.IssueCategory category;
+        public string description;
+        public Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor;
+        public Unity.ProjectAuditor.Editor.Utils.Location location;
+        public string callingMethod { get; }
+        public string filename { get; }
+        public bool isPerfCriticalContext { get; }
+        public int line { get; }
+        public string name { get; }
+        public string relativePath { get; }
+        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode callTreeNode) {}
+        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location = default(Unity.ProjectAuditor.Editor.Utils.Location)) {}
+    }
+
+    public class ProjectReport
+    {
+        public int NumTotalIssues { get; }
+        public ProjectReport() {}
+        public void AddIssue(Unity.ProjectAuditor.Editor.ProjectIssue projectIssue);
+        public void Export(string reportPath);
+        public System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> GetIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public int GetNumIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
+    }
+
+    public class Rule : System.IEquatable<Unity.ProjectAuditor.Editor.Rule>
+    {
+        public Unity.ProjectAuditor.Editor.Rule.Action action;
+        public string filter;
+        public int id;
+        public Rule() {}
+        public virtual bool Equals(object obj);
+        public virtual bool Equals(Unity.ProjectAuditor.Editor.Rule other);
+        public virtual int GetHashCode();
+        public static bool operator ==(Unity.ProjectAuditor.Editor.Rule a, Unity.ProjectAuditor.Editor.Rule b);
+        public static bool operator !=(Unity.ProjectAuditor.Editor.Rule a, Unity.ProjectAuditor.Editor.Rule b);
+        public enum Action
+        {
+            public const Unity.ProjectAuditor.Editor.Rule.Action Default = 0;
+            public const Unity.ProjectAuditor.Editor.Rule.Action Error = 1;
+            public const Unity.ProjectAuditor.Editor.Rule.Action Hidden = 5;
+            public const Unity.ProjectAuditor.Editor.Rule.Action Info = 3;
+            public const Unity.ProjectAuditor.Editor.Rule.Action None = 4;
+            public int value__;
+            public const Unity.ProjectAuditor.Editor.Rule.Action Warning = 2;
+        }
+    }
+}
+
+namespace Unity.ProjectAuditor.Editor.Auditors
+{
+    public class ScriptAuditor : Unity.ProjectAuditor.Editor.IAuditor
+    {
+        public virtual void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
+        public static System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> FindScriptIssues(Unity.ProjectAuditor.Editor.ProjectReport projectReport, string relativePath);
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor.<GetAnalyzerTypes>d__8))] public virtual System.Collections.Generic.IEnumerable<System.Type> GetAnalyzerTypes(System.Reflection.Assembly assembly);
+        public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
+        public virtual void LoadDatabase(string path);
+        public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+    }
+
+    public class SettingsAuditor : Unity.ProjectAuditor.Editor.IAuditor
+    {
+        public virtual void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.SettingsAuditor.<GetAnalyzerTypes>d__8))] public virtual System.Collections.Generic.IEnumerable<System.Type> GetAnalyzerTypes(System.Reflection.Assembly assembly);
+        public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
+        public virtual void LoadDatabase(string path);
+        public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+    }
+}
+
+namespace Unity.ProjectAuditor.Editor.CodeAnalysis
+{
+    public class CallTreeNode
+    {
+        public string assemblyName;
+        public System.Collections.Generic.List<Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode> children;
+        public Unity.ProjectAuditor.Editor.Utils.Location location;
+        public string methodName;
+        public string name;
+        public bool perfCriticalContext;
+        public string typeName;
+        public string prettyName { get; }
+        public CallTreeNode(Mono.Cecil.MethodReference methodReference, Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode caller = default(Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode)) {}
+        public void AddChild(Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode child);
+        public Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode GetChild(int index = 0);
+        public string GetPrettyName(bool withAssembly = False);
+        public bool HasChildren();
+        public bool IsPerfCriticalContext();
+    }
+}
+
+namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
+{
+    [Unity.ProjectAuditor.Editor.InstructionAnalyzers.] public class AllocationAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer
+    {
+        public AllocationAnalyzer(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor auditor) {}
+        public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.AllocationAnalyzer.<GetOpCodes>d__4))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
+    }
+
+    public class Attribute : System.Attribute
+    {
+        public Attribute() {}
+    }
+
+    [Unity.ProjectAuditor.Editor.InstructionAnalyzers.] public class BoxingAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer
+    {
+        public BoxingAnalyzer(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor auditor) {}
+        public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.BoxingAnalyzer.<GetOpCodes>d__3))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
+    }
+
+    [Unity.ProjectAuditor.Editor.InstructionAnalyzers.] public class CallAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer
+    {
+        public CallAnalyzer(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor auditor) {}
+        public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.CallAnalyzer.<GetOpCodes>d__3))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
+    }
+
+    [Unity.ProjectAuditor.Editor.InstructionAnalyzers.] public class EmptyMethodAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer
+    {
+        public EmptyMethodAnalyzer(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor auditor) {}
+        public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
+        public static Unity.ProjectAuditor.Editor.ProblemDescriptor GetDescriptor();
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.EmptyMethodAnalyzer.<GetOpCodes>d__3))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
+    }
+
+    public interface IInstructionAnalyzer
+    {
+        public abstract Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
+        public abstract System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
+    }
+}
+
+namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
+{
+    public class Attribute : System.Attribute
+    {
+        public Attribute() {}
+    }
+
+    public interface ISettingsAnalyzer
+    {
+        public abstract Unity.ProjectAuditor.Editor.ProjectIssue Analyze();
+        public abstract int GetDescriptorId();
+    }
+
+    [Unity.ProjectAuditor.Editor.SettingsAnalyzers.] public class StaticBatchingAndHybridPackage : Unity.ProjectAuditor.Editor.SettingsAnalyzers.ISettingsAnalyzer
+    {
+        public StaticBatchingAndHybridPackage(Unity.ProjectAuditor.Editor.Auditors.SettingsAuditor auditor) {}
+        public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze();
+        public virtual int GetDescriptorId();
+    }
+}
+
+namespace Unity.ProjectAuditor.Editor.Utils
+{
+    public class AssemblyCompilationHelper : System.IDisposable
+    {
+        public AssemblyCompilationHelper() {}
+        public System.Collections.Generic.IEnumerable<string> Compile(Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
+        public virtual void Dispose();
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Utils.AssemblyCompilationHelper.<GetCompiledAssemblyDirectories>d__5))] public System.Collections.Generic.IEnumerable<string> GetCompiledAssemblyDirectories();
+    }
+
+    public static class AssemblyHelper
+    {
+        public static string DefaultAssemblyFileName;
+        public static string DefaultAssemblyName { get; }
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Utils.AssemblyHelper.<GetPrecompiledAssemblyDirectories>d__4))] public static System.Collections.Generic.IEnumerable<string> GetPrecompiledAssemblyDirectories();
+        public static System.Collections.Generic.IEnumerable<string> GetPrecompiledAssemblyPaths();
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Utils.AssemblyHelper.<GetPrecompiledEngineAssemblyDirectories>d__6))] public static System.Collections.Generic.IEnumerable<string> GetPrecompiledEngineAssemblyDirectories();
+        public static System.Collections.Generic.IEnumerable<string> GetPrecompiledEngineAssemblyPaths();
+        public static bool IsModuleAssembly(string assemblyName);
+        public static bool IsPackageAssembly(string assemblyName);
+        public static bool IsPackageInfoAvailable();
+    }
+
+    public static class JsonHelper
+    {
+        public static T[] FromJson<T>(string json);
+        public static string ToJson<T>(T[] array);
+        public static string ToJson<T>(T[] array, bool prettyPrint);
+    }
+
+    public class Location
+    {
+        public int line;
+        public string path;
+        public string filename { get; }
+        public string relativePath { get; }
+        public Location() {}
+        public bool IsValid();
+        public void Open();
+    }
+}

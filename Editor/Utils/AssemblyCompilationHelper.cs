@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
     {
         private string m_OutputFolder = String.Empty;
         private bool m_Success = true;
-        
+
         private Action<string> m_OnAssemblyCompilationStarted;
 
         public void Dispose()
@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             return compilationResult.assemblies.Select(assembly => Path.Combine(m_OutputFolder, assembly));
 #else
-            // fallback to CompilationPipeline assemblies 
+            // fallback to CompilationPipeline assemblies
             return CompilationPipeline.GetAssemblies()
                 .Where(a => a.flags != AssemblyFlags.EditorAssembly).Select(assembly => assembly.outputPath);
 #endif
@@ -75,7 +75,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             yield return m_OutputFolder;
 #else
             foreach (var dir in CompilationPipeline.GetAssemblies()
-                .Where(a => a.flags != AssemblyFlags.EditorAssembly).Select(assembly => Path.GetDirectoryName(assembly.outputPath)).Distinct())
+                     .Where(a => a.flags != AssemblyFlags.EditorAssembly).Select(assembly => Path.GetDirectoryName(assembly.outputPath)).Distinct())
             {
                 yield return dir;
             }

@@ -30,8 +30,8 @@ namespace Unity.ProjectAuditor.Editor
         private readonly IIssuesFilter m_IssuesFilter;
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader, ProjectIssue[] issues,
-            bool groupByDescription, ProjectAuditorConfig config, IIssuesFilter issuesFilter) : base(state,
-            multicolumnHeader)
+                          bool groupByDescription, ProjectAuditorConfig config, IIssuesFilter issuesFilter) : base(state,
+                                                                                                                   multicolumnHeader)
         {
             m_Config = config;
             m_IssuesFilter = issuesFilter;
@@ -112,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor
         private void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int column, ref RowGUIArgs args)
         {
             // only indent first column
-            if ((int) Column.Description == column)
+            if ((int)Column.Description == column)
             {
                 var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
@@ -134,7 +134,7 @@ namespace Unity.ProjectAuditor.Editor
             if (rule != null && rule.action == Rule.Action.None) GUI.enabled = false;
 
             if (item.hasChildren)
-                switch ((Column) column)
+                switch ((Column)column)
                 {
                     case Column.Description:
                         EditorGUI.LabelField(cellRect, new GUIContent(item.displayName, item.displayName));
@@ -144,13 +144,13 @@ namespace Unity.ProjectAuditor.Editor
                         break;
                 }
             else
-                switch ((Column) column)
+                switch ((Column)column)
                 {
                     case Column.Priority:
                         if (issue.isPerfCriticalContext)
 #if UNITY_2018_3_OR_NEWER
                             EditorGUI.LabelField(cellRect,
-                                EditorGUIUtility.TrIconContent(PerfCriticalIconName, "Performance Critical Context"));
+                            EditorGUIUtility.TrIconContent(PerfCriticalIconName, "Performance Critical Context"));
 #else
                             EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(PerfCriticalIconName), "Performance Critical Context"));
 #endif
@@ -330,7 +330,7 @@ namespace Unity.ProjectAuditor.Editor
                         string firstString;
                         string secondString;
 
-                        switch ((Column) columnSortOrder[i])
+                        switch ((Column)columnSortOrder[i])
                         {
                             case Column.Description:
                                 firstString = firstTree.m_Item.displayName;

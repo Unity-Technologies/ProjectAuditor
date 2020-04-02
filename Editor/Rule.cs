@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor
             return Equals(obj as Rule);
         }
 
-        public static bool operator ==(Rule a, Rule b)
+        public static bool operator==(Rule a, Rule b)
         {
             if (ReferenceEquals(a, null))
             {
@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor
             return a.Equals(b);
         }
 
-        public static bool operator !=(Rule a, Rule b)
+        public static bool operator!=(Rule a, Rule b)
         {
             return !(a == b);
         }

@@ -51,8 +51,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors(path, "ProjectSettings");
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            foreach (var type in GetAnalyzerTypes(assembly))
-                AddAnalyzer(Activator.CreateInstance(type, this) as ISettingsAnalyzer);
+                foreach (var type in GetAnalyzerTypes(assembly))
+                    AddAnalyzer(Activator.CreateInstance(type, this) as ISettingsAnalyzer);
         }
 
         public IEnumerable<Type> GetAnalyzerTypes(Assembly assembly)
@@ -91,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             if (progressBar != null)
                 progressBar.ClearProgressBar();
-            
+
             onComplete();
         }
 
@@ -107,12 +107,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (mappings.Count() > 0)
                 projectWindowPath = mappings.First().Value;
             onIssueFound(new ProjectIssue
-            (
-                descriptor,
-                description,
-                IssueCategory.ProjectSettings,
-                new Location {path = projectWindowPath}
-            ));
+                (
+                    descriptor,
+                    description,
+                    IssueCategory.ProjectSettings,
+                    new Location {path = projectWindowPath}
+                )
+            );
         }
 
         private void SearchAndEval(ProblemDescriptor descriptor, Action<ProjectIssue> onIssueFound)
@@ -124,7 +125,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     try
                     {
                         var value = MethodEvaluator.Eval(assembly.Location,
-                            descriptor.type, "get_" + descriptor.method, new Type[0] { }, new object[0] { });
+                            descriptor.type, "get_" + descriptor.method, new Type[0] {}, new object[0] {});
 
                         if (value.ToString() == descriptor.value)
                         {
@@ -144,7 +145,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 var helperType = m_Helpers.GetType();
                 var theMethod = helperType.GetMethod(descriptor.customevaluator);
-                var isIssue = (bool) theMethod.Invoke(m_Helpers, null);
+                var isIssue = (bool)theMethod.Invoke(m_Helpers, null);
 
                 if (isIssue) AddIssue(descriptor, descriptor.description, onIssueFound);
             }

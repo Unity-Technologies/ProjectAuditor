@@ -19,15 +19,15 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
-            var callee = (MethodReference) inst.Operand;
+            var callee = (MethodReference)inst.Operand;
 
             // replace root with callee node
             var calleeNode = new CallTreeNode(callee);
 
             var description = string.Empty;
             var descriptor = m_Descriptors.SingleOrDefault(c => c.type == callee.DeclaringType.FullName &&
-                                                                (c.method == callee.Name ||
-                                                                 "get_" + c.method == callee.Name));
+                (c.method == callee.Name ||
+                    "get_" + c.method == callee.Name));
 
             if (descriptor != null)
             {

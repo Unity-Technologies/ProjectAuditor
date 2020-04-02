@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor
         public readonly ProjectIssue ProjectIssue;
 
         public IssueTableItem(int id, int depth, string displayName, ProblemDescriptor problemDescriptor,
-            ProjectIssue projectIssue = null) : base(id, depth, displayName)
+                              ProjectIssue projectIssue = null) : base(id, depth, displayName)
         {
             ProblemDescriptor = problemDescriptor;
             ProjectIssue = projectIssue;

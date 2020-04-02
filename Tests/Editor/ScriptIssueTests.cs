@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 
@@ -24,11 +24,11 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 using UnityEngine;
 class MyClass
 {
-	void Dummy()
-	{
-		// Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
-		Debug.Log(Camera.main.name);
-	}
+    void Dummy()
+    {
+        // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
+        Debug.Log(Camera.main.name);
+    }
 }
 ");
 
@@ -36,12 +36,12 @@ class MyClass
 using UnityEngine;
 class MyClassWithPlayerOnlyCode
 {
-	void Dummy()
-	{
+    void Dummy()
+    {
 #if !UNITY_EDITOR
-		Debug.Log(Camera.main.name);
+        Debug.Log(Camera.main.name);
 #endif
-	}
+    }
 }
 ");
 
@@ -49,12 +49,12 @@ class MyClassWithPlayerOnlyCode
 using UnityEngine;
 class MyClassWithEditorOnlyCode
 {
-	void Dummy()
-	{
+    void Dummy()
+    {
 #if UNITY_EDITOR
-		Debug.Log(Camera.main.name);
+        Debug.Log(Camera.main.name);
 #endif
-	}
+    }
 }
 ");
 
@@ -62,13 +62,13 @@ class MyClassWithEditorOnlyCode
 using UnityEngine;
 class MyClassWithNested
 {
-	class NestedClass
-	{
-		void Dummy()
-		{
-			Debug.Log(Camera.main.name);
-		}
-	}
+    class NestedClass
+    {
+        void Dummy()
+        {
+            Debug.Log(Camera.main.name);
+        }
+    }
 }
 ");
 
@@ -76,10 +76,10 @@ class MyClassWithNested
 using UnityEngine;
 class GenericClass<T>
 {
-	void Dummy()
-	{
-		Debug.Log(Camera.main.name);
-	}
+    void Dummy()
+    {
+        Debug.Log(Camera.main.name);
+    }
 }
 ");
 
@@ -87,9 +87,9 @@ class GenericClass<T>
 using UnityEngine;
 abstract class AbstractClass
 {
-	public virtual void Dummy()
+    public virtual void Dummy()
     {
-		Debug.Log(Camera.main.name);
+        Debug.Log(Camera.main.name);
     }
 }
 ");
@@ -98,15 +98,15 @@ abstract class AbstractClass
 using UnityEngine;
 class BaseClass
 {
-	public virtual void Dummy()
+    public virtual void Dummy()
     { }
 }
 
 class DerivedClass : BaseClass
 {
-	public override void Dummy()
+    public override void Dummy()
     {
-		Debug.Log(Camera.main.name);
+        Debug.Log(Camera.main.name);
     }
 }
 ");
@@ -115,10 +115,10 @@ class DerivedClass : BaseClass
 using UnityEngine;
 class MyMonoBehaviour : MonoBehaviour
 {
-	void Start()
-	{
-		Debug.Log(Camera.main.name);
-	}
+    void Start()
+    {
+        Debug.Log(Camera.main.name);
+    }
 }
 ");
 
@@ -144,15 +144,15 @@ using UnityEngine;
 using System;
 class ClassWithDelegate
 {
-	private Func<int> myFunc;
-    
+    private Func<int> myFunc;
+
     void Dummy()
     {
         myFunc = () =>
         {
             Debug.Log(Camera.main.name);
             return 0;
-        }; 
+        };
     }
 }
 ");

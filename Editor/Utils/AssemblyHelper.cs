@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static IEnumerable<string> GetPrecompiledEngineAssemblyDirectories()
         {
             foreach (var dir in GetPrecompiledEngineAssemblyPaths().Select(path => Path.GetDirectoryName(path))
-                .Distinct()) yield return dir;
+                     .Distinct()) yield return dir;
         }
 
         public static bool IsPackageInfoAvailable()

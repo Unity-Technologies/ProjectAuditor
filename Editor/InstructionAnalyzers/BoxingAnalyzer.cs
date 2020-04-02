@@ -28,11 +28,11 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
-            var type = (TypeReference) inst.Operand;
+            var type = (TypeReference)inst.Operand;
             if (type.IsGenericParameter)
             {
                 var isValueType = true; // assume it's value type
-                var genericType = (GenericParameter) type;
+                var genericType = (GenericParameter)type;
                 if (genericType.HasReferenceTypeConstraint)
                     isValueType = false;
                 else

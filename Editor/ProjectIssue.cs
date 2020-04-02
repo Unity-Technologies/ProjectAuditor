@@ -38,9 +38,9 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         public ProjectIssue(ProblemDescriptor descriptor,
-            string description,
-            IssueCategory category,
-            Location location = null)
+                            string description,
+                            IssueCategory category,
+                            Location location = null)
         {
             this.descriptor = descriptor;
             this.description = description;
@@ -49,9 +49,9 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         public ProjectIssue(ProblemDescriptor descriptor,
-            string description,
-            IssueCategory category,
-            CallTreeNode callTreeNode)
+                            string description,
+                            IssueCategory category,
+                            CallTreeNode callTreeNode)
         {
             this.descriptor = descriptor;
             this.description = description;

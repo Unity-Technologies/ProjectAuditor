@@ -15,12 +15,12 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 using UnityEngine;
 class InstantiateObject : MonoBehaviour
 {
-	public GameObject Prefab;
-	public GameObject Instance;
-	void Start()
-	{
+    public GameObject Prefab;
+    public GameObject Instance;
+    void Start()
+    {
         Instance = Instantiate(Prefab);
-	}
+    }
 }
 ");
 
@@ -28,11 +28,11 @@ class InstantiateObject : MonoBehaviour
 using UnityEngine;
 class AddComponentToGameObject : MonoBehaviour
 {
-	public GameObject Instance;
-	void Start()
-	{
-		Instance.AddComponent<Rigidbody>();
-	}
+    public GameObject Instance;
+    void Start()
+    {
+        Instance.AddComponent<Rigidbody>();
+    }
 }
 ");
         }

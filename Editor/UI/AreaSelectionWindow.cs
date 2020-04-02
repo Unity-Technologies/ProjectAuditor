@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor
             m_MultiColumnHeaderState = MultiSelectionTable.CreateDefaultMultiColumnHeaderState(headerData);
 
             var multiColumnHeader = new MultiColumnHeader(m_MultiColumnHeaderState);
-            multiColumnHeader.SetSorting((int) MultiSelectionTable.MyColumns.ItemName, true);
+            multiColumnHeader.SetSorting((int)MultiSelectionTable.MyColumns.ItemName, true);
             multiColumnHeader.ResizeToFit();
             m_AreaTable = new MultiSelectionTable(m_TreeViewState, multiColumnHeader, names, selection);
         }

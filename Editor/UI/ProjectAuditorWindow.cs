@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
@@ -182,7 +182,7 @@ namespace Unity.ProjectAuditor.Editor
         private bool MatchesSearch(string field)
         {
             return !string.IsNullOrEmpty(field) &&
-                   field.IndexOf(m_SearchText, StringComparison.CurrentCultureIgnoreCase) >= 0;
+                field.IndexOf(m_SearchText, StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
         private void Analyze()
@@ -646,14 +646,14 @@ namespace Unity.ProjectAuditor.Editor
                 }
 
                 EditorGUILayout.EndHorizontal();
-                
+
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
 
                 GUI.enabled = m_ActiveAnalysisView.desc.showCritical;
                 m_ProjectAuditor.config.displayOnlyCrititalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
                     m_ProjectAuditor.config.displayOnlyCrititalIssues, GUILayout.Width(160));
-                GUI.enabled = true; 
+                GUI.enabled = true;
 
                 m_ProjectAuditor.config.displayMutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
                     m_ProjectAuditor.config.displayMutedIssues, GUILayout.Width(127));
@@ -877,7 +877,7 @@ namespace Unity.ProjectAuditor.Editor
                 new GUIContent("Inverted Call Hierarchy", "Inverted Call Hierarchy");
 
             public static readonly string HelpText =
-                @"Project Auditor is an experimental static analysis tool for Unity Projects.
+@"Project Auditor is an experimental static analysis tool for Unity Projects.
 This tool will analyze scripts and project settings of any Unity project
 and report a list a possible problems that might affect performance, memory and other areas.
 

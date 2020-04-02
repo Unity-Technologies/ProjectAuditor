@@ -46,12 +46,12 @@ namespace Unity.ProjectAuditor.Editor
 
             var state = new TreeViewState();
             var columnsList = new List<MultiColumnHeaderState.Column>();
-            var numColumns = (int) IssueTable.Column.Count;
+            var numColumns = (int)IssueTable.Column.Count;
             for (var i = 0; i < numColumns; i++)
             {
                 var width = 0;
                 var minWidth = 0;
-                switch ((IssueTable.Column) i)
+                switch ((IssueTable.Column)i)
                 {
                     case IssueTable.Column.Description:
                         width = 300;

@@ -1,4 +1,4 @@
-﻿using UnityEditor.IMGUI.Controls;
+using UnityEditor.IMGUI.Controls;
 
 namespace Unity.ProjectAuditor.Editor
 {

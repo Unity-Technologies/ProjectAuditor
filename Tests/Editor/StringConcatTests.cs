@@ -13,10 +13,10 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             m_ScriptResourceStringConcat = new ScriptResource("StringConcat.cs", @"
 class StringConcat
 {
-	string text;
-	string Dummy()
-	{
-		return text + text;
+    string text;
+    string Dummy()
+    {
+        return text + text;
     }
 }
 ");

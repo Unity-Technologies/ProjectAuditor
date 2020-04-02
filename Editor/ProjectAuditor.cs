@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor
 
             return projectReport;
         }
-        
+
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
             var stopwatch = Stopwatch.StartNew();
@@ -145,6 +145,7 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
         }
+
 #endif
     }
 }

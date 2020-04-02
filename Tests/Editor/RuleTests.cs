@@ -52,7 +52,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
             action = projectAuditorSettings.GetAction(issue.descriptor, issue.callingMethod);
 
-            // issue has been muted so it should not be reported  
+            // issue has been muted so it should not be reported
             Assert.AreEqual(Rule.Action.None, action);
         }
 

@@ -42,7 +42,7 @@ class ParamsArrayAllocation
     void DummyImpl(params object[] args)
     {
     }
-    
+
     void Dummy(object C)
     {
         // implicit array allocation

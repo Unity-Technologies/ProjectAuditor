@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor
                 m_Description = description;
             m_Current++;
             var currentFrame = Mathf.Clamp(0, m_Current, m_Total);
-            var progress = m_Total > 0 ? (float) currentFrame / m_Total : 0f;
+            var progress = m_Total > 0 ? (float)currentFrame / m_Total : 0f;
             EditorUtility.DisplayProgressBar(m_Title, description, progress);
         }
 

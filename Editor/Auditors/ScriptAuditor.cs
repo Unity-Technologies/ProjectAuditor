@@ -86,8 +86,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors(path, "ApiDatabase");
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            foreach (var type in GetAnalyzerTypes(assembly))
-                AddAnalyzer(Activator.CreateInstance(type, this) as IInstructionAnalyzer);
+                foreach (var type in GetAnalyzerTypes(assembly))
+                    AddAnalyzer(Activator.CreateInstance(type, this) as IInstructionAnalyzer);
         }
 
         public IEnumerable<Type> GetAnalyzerTypes(Assembly assembly)
@@ -110,7 +110,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new ReaderParameters {ReadSymbols = true, AssemblyResolver = assemblyResolver}))
             {
                 foreach (var methodDefinition in MonoCecilHelper.AggregateAllTypeDefinitions(a.MainModule.Types)
-                    .SelectMany(t => t.Methods))
+                         .SelectMany(t => t.Methods))
                 {
                     if (!methodDefinition.HasBody)
                         continue;
@@ -143,7 +143,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 if (s != null)
                 {
                     location = new Location
-                        {path = s.Document.Url.Replace("\\", "/"), line = s.StartLine};
+                    {path = s.Document.Url.Replace("\\", "/"), line = s.StartLine};
                     callerNode.location = location;
                 }
                 else
@@ -152,7 +152,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 }
 
                 if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
-                    callCrawler.Add(caller, (MethodReference) inst.Operand, location, perfCriticalContext);
+                    callCrawler.Add(caller, (MethodReference)inst.Operand, location, perfCriticalContext);
 
                 foreach (var analyzer in m_InstructionAnalyzers)
                     if (analyzer.GetOpCodes().Contains(inst.OpCode))

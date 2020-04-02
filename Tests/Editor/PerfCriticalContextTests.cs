@@ -15,13 +15,13 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         {
             m_ScriptResourceIssueInSimpleClass = new ScriptResource("IssueInSimpleClass.cs", @"
 using UnityEngine;
-class IssueInSimpleClass	
+class IssueInSimpleClass
 {
-	void Dummy()
-	{
-		// Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
-		Debug.Log(Camera.main.name);
-	}
+    void Dummy()
+    {
+        // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
+        Debug.Log(Camera.main.name);
+    }
 }
 ");
 
@@ -29,10 +29,10 @@ class IssueInSimpleClass
 using UnityEngine;
 class IssueInMonoBehaviourUpdate : MonoBehaviour
 {
-	void Update()
-	{
-		Debug.Log(Camera.main.name);
-	}
+    void Update()
+    {
+        Debug.Log(Camera.main.name);
+    }
 }
 ");
 
@@ -42,20 +42,20 @@ using UnityEngine;
 
 class IssueInClassMethodCalledFromMonoBehaviourUpdate : MonoBehaviour
 {
-	class NestedClass
-	{
-		public void Dummy()
-		{
-			// Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
-			Debug.Log(Camera.main.name);
-		}
-	}
+    class NestedClass
+    {
+        public void Dummy()
+        {
+            // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
+            Debug.Log(Camera.main.name);
+        }
+    }
 
-	NestedClass m_MyObj;
-	void Update()
-	{
-		m_MyObj.Dummy();
-	}
+    NestedClass m_MyObj;
+    void Update()
+    {
+        m_MyObj.Dummy();
+    }
 }
 ");
 
@@ -68,10 +68,10 @@ class A : MonoBehaviour
 
 class B : A
 {
-	void Update()
-	{
-		Debug.Log(Camera.main.name);
-	}
+    void Update()
+    {
+        Debug.Log(Camera.main.name);
+    }
 }
 ");
         }

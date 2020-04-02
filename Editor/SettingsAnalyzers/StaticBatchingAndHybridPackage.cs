@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             };
 
             method.Invoke(null, args);
-            return (int) args[1] > 0;
+            return (int)args[1] > 0;
         }
     }
 }

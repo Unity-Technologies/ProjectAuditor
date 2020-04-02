@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 
@@ -17,10 +17,10 @@ using System.Collections.Generic;
 
 class MyClass
 {
-	int Dummy(List<int> list)
-	{
-		return list.Count();
-	}
+    int Dummy(List<int> list)
+    {
+        return list.Count();
+    }
 }"
             );
         }

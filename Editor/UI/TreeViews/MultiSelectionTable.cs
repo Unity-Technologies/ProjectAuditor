@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor
         private GUIStyle m_ActiveLineStyle;
 
         public MultiSelectionTable(TreeViewState state, MultiColumnHeader multicolumnHeader, string[] names,
-            TreeViewSelection selection) : base(state, multicolumnHeader)
+                                   TreeViewSelection selection) : base(state, multicolumnHeader)
         {
             m_AllIdentifier = new TreeItemIdentifier();
             m_AllIdentifier.SetName("All");
@@ -288,10 +288,10 @@ namespace Unity.ProjectAuditor.Editor
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            var item = (SelectionWindowTreeViewItem) args.item;
+            var item = (SelectionWindowTreeViewItem)args.item;
 
             for (var i = 0; i < args.GetNumVisibleColumns(); ++i)
-                CellGUI(args.GetCellRect(i), item, (MyColumns) args.GetColumn(i), ref args);
+                CellGUI(args.GetCellRect(i), item, (MyColumns)args.GetColumn(i), ref args);
         }
 
         private bool TreeItemSelected(TreeItemIdentifier selectedIdentifier)
@@ -355,7 +355,6 @@ namespace Unity.ProjectAuditor.Editor
 
             return false;
         }
-
 
         private void CellGUI(Rect cellRect, SelectionWindowTreeViewItem item, MyColumns column, ref RowGUIArgs args)
         {
@@ -430,14 +429,14 @@ namespace Unity.ProjectAuditor.Editor
                         EditorGUI.LabelField(rect, content, args.selected ? m_ActiveLineStyle : DefaultStyles.label);
                     }
                 }
-                    break;
+                break;
                 case MyColumns.GroupName:
                 {
                     var groupName = GetItemGroupName(item);
                     var content = new GUIContent(groupName, groupName);
                     EditorGUI.LabelField(cellRect, content);
                 }
-                    break;
+                break;
                 case MyColumns.State:
                     var oldState = TreeItemSelected(item.TreeItemIdentifier);
                     var newState = EditorGUI.Toggle(cellRect, oldState);
@@ -529,7 +528,6 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-
         // Misc
         //--------
 
@@ -563,8 +561,8 @@ namespace Unity.ProjectAuditor.Editor
             var state = new MultiColumnHeaderState(columns);
             state.visibleColumns = new[]
             {
-                (int) MyColumns.ItemName,
-                (int) MyColumns.State
+                (int)MyColumns.ItemName,
+                (int)MyColumns.State
                 //(int)MyColumns.GroupName
             };
             return state;
@@ -579,7 +577,7 @@ namespace Unity.ProjectAuditor.Editor
             public bool allowToggleVisibility;
 
             public HeaderData(string name, string tooltip = "", float _width = 50, float _minWidth = 30,
-                bool _autoResize = true, bool _allowToggleVisibility = true)
+                              bool _autoResize = true, bool _allowToggleVisibility = true)
             {
                 content = new GUIContent(name, tooltip);
                 width = _width;

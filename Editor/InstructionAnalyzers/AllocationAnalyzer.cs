@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         {
             if (inst.OpCode == OpCodes.Newobj)
             {
-                var methodReference = (MethodReference) inst.Operand;
+                var methodReference = (MethodReference)inst.Operand;
                 var typeReference = methodReference.DeclaringType;
                 if (typeReference.IsValueType)
                     return null;
@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             }
             else // OpCodes.Newarr
             {
-                var typeReference = (TypeReference) inst.Operand;
+                var typeReference = (TypeReference)inst.Operand;
                 var descriptor = arrayAllocationDescriptor;
                 var description = string.Format("'{0}' array allocation", typeReference.Name);
 
