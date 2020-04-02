@@ -12,6 +12,7 @@ namespace Unity.ProjectAuditor.Editor
         public string name;
         public bool groupByDescription;
         public bool showAssemblySelection;
+        public bool showCritical;
         public bool showInvertedCallTree;
         public bool showFilenameColumn;
         public bool showAssemblyColumn;
@@ -57,8 +58,11 @@ namespace Unity.ProjectAuditor.Editor
                         minWidth = 100;
                         break;
                     case IssueTable.Column.Priority:
-                        width = 22;
-                        minWidth = 22;
+                        if (m_Desc.showCritical)
+                        {
+                            width = 22;
+                            minWidth = 22;
+                        }
                         break;
                     case IssueTable.Column.Area:
                         width = 60;
