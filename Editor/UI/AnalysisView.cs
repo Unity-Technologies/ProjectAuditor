@@ -99,21 +99,22 @@ namespace Unity.ProjectAuditor.Editor
 
             m_Table = new IssueTable(state,
                 new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())),
-                issues.ToArray(),
                 m_Desc.groupByDescription,
                 m_Config,
                 m_Filter);
+            m_Table.SetData(issues.ToArray());
         }
 
         public void OnGUI(ProjectReport projectReport)
         {
+            var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
+            m_Table.OnGUI(r);
+
             var issues = projectReport.GetIssues(m_Desc.category).Where(m_Filter.ShouldDisplay);
             var selectedItems = m_Table.GetSelectedItems();
             var selectedIssues = selectedItems.Select(i => i.ProjectIssue).ToArray();
             var info = selectedIssues.Length + " / " + issues.Count() + " issues";
 
-            var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
-            m_Table.OnGUI(r);
             EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
         }
 

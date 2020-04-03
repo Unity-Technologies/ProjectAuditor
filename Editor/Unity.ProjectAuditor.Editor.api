@@ -43,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor
         public int value__;
     }
 
-    public class ProblemDescriptor
+    public class ProblemDescriptor : System.IEquatable<Unity.ProjectAuditor.Editor.ProblemDescriptor>
     {
         public Unity.ProjectAuditor.Editor.Rule.Action action;
         public string area;
@@ -56,6 +56,9 @@ namespace Unity.ProjectAuditor.Editor
         public string type;
         public string value;
         public ProblemDescriptor() {}
+        public virtual bool Equals(object obj);
+        public virtual bool Equals(Unity.ProjectAuditor.Editor.ProblemDescriptor other);
+        public virtual int GetHashCode();
     }
 
     public static class ProblemDescriptorHelper

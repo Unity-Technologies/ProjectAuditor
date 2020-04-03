@@ -26,81 +26,100 @@ namespace Unity.ProjectAuditor.Editor
         private readonly ProjectAuditorConfig m_Config;
 
         private readonly bool m_GroupByDescription;
-        private readonly ProjectIssue[] m_Issues;
         private readonly IIssuesFilter m_IssuesFilter;
 
-        public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader, ProjectIssue[] issues,
+        List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
+        List<IssueTableItem> m_TreeViewItemGroups;
+        List<IssueTableItem> m_TreeViewItemIssues;
+
+        public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
                           bool groupByDescription, ProjectAuditorConfig config, IIssuesFilter issuesFilter) : base(state,
                                                                                                                    multicolumnHeader)
         {
             m_Config = config;
             m_IssuesFilter = issuesFilter;
-            m_Issues = issues;
             m_GroupByDescription = groupByDescription;
             multicolumnHeader.sortingChanged += OnSortingChanged;
-            Reload();
+        }
+
+        public void SetData(ProjectIssue[] issues)
+        {
+            var id = 1;
+
+            if (m_GroupByDescription)
+            {
+                var descriptors = issues.Select(i => i.descriptor).Distinct();
+                m_TreeViewItemGroups = new List<IssueTableItem>(descriptors.Count());
+
+                foreach (var descriptor in descriptors)
+                {
+                    var groupItem = new IssueTableItem(id++, 0, descriptor);
+                    m_TreeViewItemGroups.Add(groupItem);
+                }
+            }
+
+            m_TreeViewItemIssues = new List<IssueTableItem>(issues.Length);
+            foreach (var issue in issues)
+            {
+                var depth = m_GroupByDescription ? 1 : 0;
+                var item = new IssueTableItem(id++, depth, issue.name, issue.descriptor, issue);
+                m_TreeViewItemIssues.Add(item);
+            }
         }
 
         protected override TreeViewItem BuildRoot()
         {
-            // SteveM TODO - Documentation says that BuildRoot should ONLY build the root table item,
-            // and all this logic should be moved to BuildRows()
-            // https://docs.unity3d.com/ScriptReference/IMGUI.Controls.TreeView.BuildRows.html
-            // This would involve implementing getNewSelectionOverride, GetAncestors() and GetDescendantsThatHaveChildren()
-            // Which seems like a lot of extra complexity unless we're running into serious performance issues
-            var index = 0;
             var idForHiddenRoot = -1;
             var depthForHiddenRoot = -1;
             var root = new TreeViewItem(idForHiddenRoot, depthForHiddenRoot, "root");
-
-            var filteredIssues = m_Issues.Where(issue => m_IssuesFilter.ShouldDisplay(issue));
-            if (m_GroupByDescription)
-            {
-                // grouped by problem definition
-                var allGroupsSet = new HashSet<string>();
-                foreach (var issue in filteredIssues)
-                    if (!allGroupsSet.Contains(issue.descriptor.description))
-                        allGroupsSet.Add(issue.descriptor.description);
-
-                var allGroups = allGroupsSet.ToList();
-                allGroups.Sort();
-
-                foreach (var groupName in allGroups)
-                {
-                    var issues = filteredIssues.Where(i => groupName.Equals(i.descriptor.description));
-
-                    var displayName = string.Format("{0} ({1})", groupName, issues.Count());
-                    var groupItem = new IssueTableItem(index++, 0, displayName, issues.FirstOrDefault().descriptor);
-                    root.AddChild(groupItem);
-
-                    foreach (var issue in issues)
-                    {
-                        var item = new IssueTableItem(index++, 1, issue.name, issue.descriptor, issue);
-                        groupItem.AddChild(item);
-                    }
-                }
-            }
-            else
-            {
-                // flat view
-                foreach (var issue in filteredIssues)
-                {
-                    var item = new IssueTableItem(index++, 0, issue.descriptor.description, issue.descriptor, issue);
-                    root.AddChild(item);
-                }
-            }
-
-            if (!root.hasChildren)
-                root.AddChild(new TreeViewItem(index++, 0, "No issue found"));
 
             return root;
         }
 
         protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
         {
-            var rows = base.BuildRows(root);
-            SortIfNeeded(rows);
-            return rows;
+            m_Rows.Clear();
+
+            var filteredItems = m_TreeViewItemIssues.Where(item => m_IssuesFilter.ShouldDisplay(item.ProjectIssue));
+            if (!filteredItems.Any())
+            {
+                m_Rows.Add(new TreeViewItem(0, 0, "No issue found"));
+                return m_Rows;
+            }
+
+            if (m_GroupByDescription)
+            {
+                var descriptors = filteredItems.Select(i => i.ProblemDescriptor).Distinct();
+                foreach (var descriptor in descriptors)
+                {
+                    var group = m_TreeViewItemGroups.Find(g => g.ProblemDescriptor.Equals(descriptor));
+                    m_Rows.Add(group);
+
+                    var groupIsExpanded = state.expandedIDs.Contains(group.id);
+                    var children = filteredItems.Where(item => item.ProblemDescriptor.Equals(descriptor));
+
+                    group.displayName = string.Format("{0} ({1})", descriptor.description, children.Count());
+                    if (group.children != null)
+                        group.children.Clear();
+
+                    foreach (var child in children)
+                    {
+                        if (groupIsExpanded)
+                            m_Rows.Add(child);
+                        group.AddChild(child);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var item in filteredItems)
+                {
+                    m_Rows.Add(item);
+                }
+            }
+            SortIfNeeded(m_Rows);
+
+            return m_Rows;
         }
 
         protected override void RowGUI(RowGUIArgs args)

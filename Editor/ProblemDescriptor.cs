@@ -3,7 +3,7 @@ using System;
 namespace Unity.ProjectAuditor.Editor
 {
     [Serializable]
-    public class ProblemDescriptor
+    public class ProblemDescriptor : IEquatable<ProblemDescriptor>
     {
         public Rule.Action action;
         public string area;
@@ -18,5 +18,25 @@ namespace Unity.ProjectAuditor.Editor
         public string solution;
         public string type;
         public string value;
+
+        public bool Equals(ProblemDescriptor other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return id == other.id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ProblemDescriptor)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return id;
+        }
     }
 }
