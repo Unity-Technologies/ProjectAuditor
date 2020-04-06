@@ -219,22 +219,26 @@ namespace Unity.ProjectAuditor.Editor
         {
             var rows = FindRows(new[] {id});
             var item = rows.FirstOrDefault();
-            if (item != null && !item.hasChildren)
+            if (item == null || item.hasChildren)
+                return;
+
+            var issueTableItem = item as IssueTableItem;
+            if (issueTableItem == null)
+                return;
+
+            var issue = issueTableItem.ProjectIssue;
+            if (issue.location != null && issue.location.IsValid())
             {
-                var issue = (item as IssueTableItem).ProjectIssue;
-                if (issue.location != null && issue.location.IsValid())
+                if (File.Exists(issue.location.path))
                 {
-                    if (File.Exists(issue.location.path))
-                    {
-                        issue.location.Open();
-                    }
-                    else
-                    {
+                    issue.location.Open();
+                }
+                else
+                {
 #if UNITY_2018_3_OR_NEWER
-                        var window = SettingsService.OpenProjectSettings(issue.location.path);
-                        window.Repaint();
+                    var window = SettingsService.OpenProjectSettings(issue.location.path);
+                    window.Repaint();
 #endif
-                    }
                 }
             }
         }
