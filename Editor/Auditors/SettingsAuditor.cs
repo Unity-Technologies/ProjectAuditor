@@ -5,13 +5,14 @@ using System.Reflection;
 using Unity.ProjectAuditor.Editor.SettingsAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.Macros;
+using UnityEngine;
 using Attribute = Unity.ProjectAuditor.Editor.SettingsAnalyzers.Attribute;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public class SettingsAuditor : IAuditor
     {
-        private readonly Assembly[] m_Assemblies;
+        private readonly List<Assembly> m_Assemblies = new List<Assembly>();
         private readonly Evaluators m_Helpers = new Evaluators();
 
         private readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping =
@@ -24,7 +25,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         internal SettingsAuditor(ProjectAuditorConfig config)
         {
-            m_Assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            m_Assemblies.Add(assemblies.First(a => a.Location.Contains("UnityEngine.dll")));
+            m_Assemblies.Add(assemblies.First(a => a.Location.Contains("UnityEditor.dll")));
 
             // UnityEditor
             m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEditor.PlayerSettings",
@@ -120,26 +123,33 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
             if (string.IsNullOrEmpty(descriptor.customevaluator))
             {
+                var paramTypes = new Type[0] {};
+                var args = new object[0] {};
+                var found = false;
                 // do we actually need to look in all assemblies? Maybe we can find a way to only evaluate on the right assembly
                 foreach (var assembly in m_Assemblies)
                     try
                     {
                         var value = MethodEvaluator.Eval(assembly.Location,
-                            descriptor.type, "get_" + descriptor.method, new Type[0] {}, new object[0] {});
+                            descriptor.type, "get_" + descriptor.method, paramTypes, args);
 
                         if (value.ToString() == descriptor.value)
                         {
                             AddIssue(descriptor, string.Format("{0}: {1}", descriptor.description, value),
                                 onIssueFound);
-
-                            // stop iterating assemblies
-                            break;
                         }
+
+                        // Eval did not throw exception so we can stop iterating assemblies
+                        found = true;
+                        break;
                     }
                     catch (Exception)
                     {
                         // this is safe to ignore
                     }
+
+                if (!found)
+                    Debug.Log(descriptor.method + " not found in any assembly");
             }
             else
             {
