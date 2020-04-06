@@ -106,16 +106,16 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         private void AnalyzeAssembly(string assemblyPath, IAssemblyResolver assemblyResolver,
             CallCrawler callCrawler, Action<ProjectIssue> onIssueFound)
         {
-            using (var a = AssemblyDefinition.ReadAssembly(assemblyPath,
+            using (var assembly = AssemblyDefinition.ReadAssembly(assemblyPath,
                 new ReaderParameters {ReadSymbols = true, AssemblyResolver = assemblyResolver}))
             {
-                foreach (var methodDefinition in MonoCecilHelper.AggregateAllTypeDefinitions(a.MainModule.Types)
+                foreach (var methodDefinition in MonoCecilHelper.AggregateAllTypeDefinitions(assembly.MainModule.Types)
                          .SelectMany(t => t.Methods))
                 {
                     if (!methodDefinition.HasBody)
                         continue;
 
-                    AnalyzeMethodBody(a, methodDefinition, callCrawler, onIssueFound);
+                    AnalyzeMethodBody(assembly, methodDefinition, callCrawler, onIssueFound);
                 }
             }
         }
