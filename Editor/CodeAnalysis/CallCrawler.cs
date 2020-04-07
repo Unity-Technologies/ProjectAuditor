@@ -4,7 +4,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
-    internal class CallPair
+    internal class CallInfo
     {
         public MethodReference callee;
         public MethodReference caller;
@@ -16,17 +16,17 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
     {
         private const int m_MaxDepth = 10;
 
-        private readonly Dictionary<string, List<CallPair>> m_BucketedCallPairs =
-            new Dictionary<string, List<CallPair>>();
+        private readonly Dictionary<string, List<CallInfo>> m_BucketedCallPairs =
+            new Dictionary<string, List<CallInfo>>();
 
-        private readonly Dictionary<string, CallPair> m_CallPairs = new Dictionary<string, CallPair>();
+        private readonly Dictionary<string, CallInfo> m_CallPairs = new Dictionary<string, CallInfo>();
 
-        public void Add(CallPair callPair)
+        public void Add(CallInfo callInfo)
         {
-            var key = string.Concat(callPair.caller, "->", callPair.callee);
+            var key = string.Concat(callInfo.caller, "->", callInfo.callee);
             if (!m_CallPairs.ContainsKey(key))
             {
-                m_CallPairs.Add(key, callPair);
+                m_CallPairs.Add(key, callInfo);
             }
         }
 
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             foreach (var entry in m_CallPairs)
             {
                 if (!m_BucketedCallPairs.ContainsKey(entry.Value.callee.FullName))
-                    m_BucketedCallPairs.Add(entry.Value.callee.FullName, new List<CallPair>());
+                    m_BucketedCallPairs.Add(entry.Value.callee.FullName, new List<CallInfo>());
                 m_BucketedCallPairs[entry.Value.callee.FullName].Add(entry.Value);
             }
 

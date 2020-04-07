@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var localAssemblyPaths = assemblyInfos.Where(info => !info.readOnly).Select(info => info.path).ToArray();
             var readOnlyAssemblyPaths = assemblyInfos.Where(info => info.readOnly).Select(info => info.path).ToArray();
 
-            var onCallFound = new Action<CallPair>(pair =>
+            var onCallFound = new Action<CallInfo>(pair =>
             {
                 callCrawler.Add(pair);
             });
@@ -92,7 +92,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
-        private void AnalyzeAssemblies(IEnumerable<string> assemblyPaths, Action<CallPair> onCallFound, Action<ProjectIssue> onIssueFound, Action<IProgressBar> onComplete, IProgressBar progressBar = null)
+        private void AnalyzeAssemblies(IEnumerable<string> assemblyPaths, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound, Action<IProgressBar> onComplete, IProgressBar progressBar = null)
         {
             var compiledAssemblyDirectories = assemblyPaths.Select(Path.GetDirectoryName).Distinct();
 
@@ -159,7 +159,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_ProblemDescriptors.Add(descriptor);
         }
 
-        private void AnalyzeAssembly(string assemblyPath, IAssemblyResolver assemblyResolver, Action<CallPair> onCallFound, Action<ProjectIssue> onIssueFound)
+        private void AnalyzeAssembly(string assemblyPath, IAssemblyResolver assemblyResolver, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)
         {
             using (var assembly = AssemblyDefinition.ReadAssembly(assemblyPath,
                 new ReaderParameters {ReadSymbols = true, AssemblyResolver = assemblyResolver}))
@@ -176,7 +176,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
-        private void AnalyzeMethodBody(string assemblyName, MethodDefinition caller, Action<CallPair> onCallFound, Action<ProjectIssue> onIssueFound)
+        private void AnalyzeMethodBody(string assemblyName, MethodDefinition caller, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)
         {
             if (!caller.DebugInformation.HasSequencePoints)
                 return;
@@ -210,7 +210,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
                 if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
                 {
-                    onCallFound(new CallPair
+                    onCallFound(new CallInfo
                     {
                         callee = (MethodReference)inst.Operand,
                         caller = caller,
