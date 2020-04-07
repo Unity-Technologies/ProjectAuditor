@@ -119,7 +119,7 @@ namespace Unity.ProjectAuditor.Editor
                     return false;
 
             if (m_ActiveAnalysisView.desc.showCritical &&
-                m_ProjectAuditor.config.displayOnlyCrititalIssues &&
+                m_ProjectAuditor.config.displayOnlyCriticalIssues &&
                 !issue.isPerfCriticalContext)
                 return false;
 
@@ -692,8 +692,8 @@ namespace Unity.ProjectAuditor.Editor
                 EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
 
                 GUI.enabled = m_ActiveAnalysisView.desc.showCritical;
-                m_ProjectAuditor.config.displayOnlyCrititalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
-                    m_ProjectAuditor.config.displayOnlyCrititalIssues, GUILayout.Width(160));
+                m_ProjectAuditor.config.displayOnlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
+                    m_ProjectAuditor.config.displayOnlyCriticalIssues, GUILayout.Width(160));
                 GUI.enabled = true;
 
                 m_ProjectAuditor.config.displayMutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
