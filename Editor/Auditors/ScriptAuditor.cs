@@ -73,8 +73,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             // first phase: analyze assemblies generated from editable scripts
             AnalyzeAssemblies(localAssemblyPaths, onCallFound, onIssueFoundInternal, null, progressBar);
 
+            var enableBackgroundAnalysis = m_Config.enableBackgroundAnalysis;
+#if !UNITY_2019_3_OR_NEWER
+            enableBackgroundAnalysis = false;
+#endif
             // second phase: analyze all remaining assemblies, in a separate thread if enableBackgroundAnalysis is enabled
-            if (m_Config.enableBackgroundAnalysis)
+            if (enableBackgroundAnalysis)
             {
                 m_AssemblyAnalysisThread = new Thread(() =>
                     AnalyzeAssemblies(readOnlyAssemblyPaths, onCallFound, onIssueFound, onCompleteInternal));
