@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
@@ -10,6 +11,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectReport
     {
         [SerializeField] private List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+        private static Mutex mutex = new Mutex();
 
         public int NumTotalIssues
         {
@@ -18,17 +20,25 @@ namespace Unity.ProjectAuditor.Editor
 
         public int GetNumIssues(IssueCategory category)
         {
-            return m_Issues.Count(i => i.category == category);
+            mutex.WaitOne();
+            var result = m_Issues.Count(i => i.category == category);
+            mutex.ReleaseMutex();
+            return result;
         }
 
-        public IEnumerable<ProjectIssue> GetIssues(IssueCategory category)
+        public ProjectIssue[] GetIssues(IssueCategory category)
         {
-            return m_Issues.Where(i => i.category == category);
+            mutex.WaitOne();
+            var result = m_Issues.Where(i => i.category == category).ToArray();
+            mutex.ReleaseMutex();
+            return result;
         }
 
         public void AddIssue(ProjectIssue projectIssue)
         {
+            mutex.WaitOne();
             m_Issues.Add(projectIssue);
+            mutex.ReleaseMutex();
         }
 
         public void Export(string reportPath)

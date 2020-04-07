@@ -72,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor
         public Unity.ProjectAuditor.Editor.ProjectAuditorConfig config { get; set; }
         public ProjectAuditor() {}
         public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
-        public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
+        public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<bool> onUpdate, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public T GetAuditor<T>() where T : class;
         public void LoadDatabase();
         public void LoadDatabase(string path);
@@ -84,6 +84,7 @@ namespace Unity.ProjectAuditor.Editor
         public bool displayMutedIssues;
         public bool displayOnlyCrititalIssues;
         public bool enableAnalyzeOnBuild;
+        public bool enableBackgroundAnalysis;
         public bool enableFailBuildOnIssues;
         public bool logTimingsInfo;
         public int NumRules { get; }
@@ -119,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectReport() {}
         public void AddIssue(Unity.ProjectAuditor.Editor.ProjectIssue projectIssue);
         public void Export(string reportPath);
-        public System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> GetIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
         public int GetNumIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
     }
 
@@ -153,7 +154,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     {
         public virtual void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public static System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> FindScriptIssues(Unity.ProjectAuditor.Editor.ProjectReport projectReport, string relativePath);
-        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor.<GetAnalyzerTypes>d__8))] public virtual System.Collections.Generic.IEnumerable<System.Type> GetAnalyzerTypes(System.Reflection.Assembly assembly);
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor.<GetAnalyzerTypes>d__11))] public virtual System.Collections.Generic.IEnumerable<System.Type> GetAnalyzerTypes(System.Reflection.Assembly assembly);
         public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
         public virtual void LoadDatabase(string path);
         public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
@@ -272,8 +273,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static System.Collections.Generic.IEnumerable<string> GetPrecompiledAssemblyPaths();
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Utils.AssemblyHelper.<GetPrecompiledEngineAssemblyDirectories>d__6))] public static System.Collections.Generic.IEnumerable<string> GetPrecompiledEngineAssemblyDirectories();
         public static System.Collections.Generic.IEnumerable<string> GetPrecompiledEngineAssemblyPaths();
+        public static bool IsAssemblyFromReadOnlyPackage(string assemblyName);
         public static bool IsModuleAssembly(string assemblyName);
-        public static bool IsPackageAssembly(string assemblyName);
         public static bool IsPackageInfoAvailable();
     }
 

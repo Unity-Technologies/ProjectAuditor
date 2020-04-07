@@ -74,6 +74,14 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
+        public void Reset()
+        {
+            if (m_TreeViewItemGroups != null)
+                m_TreeViewItemGroups.Clear();
+            if (m_TreeViewItemIssues != null)
+                m_TreeViewItemIssues.Clear();
+        }
+
         protected override TreeViewItem BuildRoot()
         {
             var idForHiddenRoot = -1;

@@ -20,7 +20,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         private readonly Dictionary<int, ISettingsAnalyzer> m_SettingsAnalyzers =
             new Dictionary<int, ISettingsAnalyzer>();
-
         private List<ProblemDescriptor> m_ProblemDescriptors;
 
         internal SettingsAuditor(ProjectAuditorConfig config)
@@ -135,8 +134,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
                         if (value.ToString() == descriptor.value)
                         {
-                            AddIssue(descriptor, string.Format("{0}: {1}", descriptor.description, value),
-                                onIssueFound);
+                            AddIssue(descriptor, string.Format("{0}: {1}", descriptor.description, value), onIssueFound);
                         }
 
                         // Eval did not throw exception so we can stop iterating assemblies
@@ -156,7 +154,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var helperType = m_Helpers.GetType();
                 var theMethod = helperType.GetMethod(descriptor.customevaluator);
                 var isIssue = (bool)theMethod.Invoke(m_Helpers, null);
-
                 if (isIssue) AddIssue(descriptor, descriptor.description, onIssueFound);
             }
         }

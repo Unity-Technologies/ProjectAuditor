@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
@@ -10,18 +11,23 @@ using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 using Attribute = Unity.ProjectAuditor.Editor.InstructionAnalyzers.Attribute;
+using ThreadPriority = System.Threading.ThreadPriority;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public class ScriptAuditor : IAuditor
     {
+        private readonly ProjectAuditorConfig m_Config;
         private readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
         private readonly List<OpCode> m_OpCodes = new List<OpCode>();
         private string[] m_AssemblyNames;
         private List<ProblemDescriptor> m_ProblemDescriptors;
 
+        private Thread m_AssemblyAnalysisThread;
+
         internal ScriptAuditor(ProjectAuditorConfig config)
         {
+            m_Config = config;
         }
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
@@ -31,29 +37,78 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
+            if (m_Config.enableBackgroundAnalysis && m_AssemblyAnalysisThread != null)
+                m_AssemblyAnalysisThread.Join();
+
+            var compilationHelper = new AssemblyCompilationHelper();
             var callCrawler = new CallCrawler();
+            var compiledAssemblyPaths = compilationHelper.Compile(progressBar).Select(Path.GetFullPath);
             var issues = new List<ProjectIssue>();
 
-            using (var compilationHelper = new AssemblyCompilationHelper())
+            var assemblyInfos = compiledAssemblyPaths.Select(path => new
+            {
+                path, readOnly = AssemblyHelper.IsAssemblyFromReadOnlyPackage(Path.GetFileName(path))
+            });
+            var localAssemblyPaths = assemblyInfos.Where(info => !info.readOnly).Select(info => info.path).ToArray();
+            var readOnlyAssemblyPaths = assemblyInfos.Where(info => info.readOnly).Select(info => info.path).ToArray();
+
+            var onCallFound = new Action<CallPair>(pair =>
+            {
+                callCrawler.Add(pair);
+            });
+
+            var onCompleteInternal = new Action<IProgressBar>(bar =>
+            {
+                compilationHelper.Dispose();
+                callCrawler.BuildCallHierarchies(issues, bar);
+                onComplete();
+            });
+
+            var onIssueFoundInternal = new Action<ProjectIssue>(issue =>
+            {
+                issues.Add(issue);
+                onIssueFound(issue);
+            });
+
+            // first phase: analyze assemblies generated from editable scripts
+            AnalyzeAssemblies(localAssemblyPaths, onCallFound, onIssueFoundInternal, null, progressBar);
+
+            // second phase: analyze all remaining assemblies, in a separate thread if enableBackgroundAnalysis is enabled
+            if (m_Config.enableBackgroundAnalysis)
+            {
+                m_AssemblyAnalysisThread = new Thread(() =>
+                    AnalyzeAssemblies(readOnlyAssemblyPaths, onCallFound, onIssueFound, onCompleteInternal));
+                m_AssemblyAnalysisThread.Name = "Assembly Analysis";
+                m_AssemblyAnalysisThread.Priority = ThreadPriority.BelowNormal;
+                m_AssemblyAnalysisThread.Start();
+            }
+            else
+            {
+                AnalyzeAssemblies(readOnlyAssemblyPaths, onCallFound, onIssueFoundInternal, onCompleteInternal, progressBar);
+            }
+        }
+
+        private void AnalyzeAssemblies(IEnumerable<string> assemblyPaths, Action<CallPair> onCallFound, Action<ProjectIssue> onIssueFound, Action<IProgressBar> onComplete, IProgressBar progressBar = null)
+        {
+            var compiledAssemblyDirectories = assemblyPaths.Select(Path.GetDirectoryName).Distinct();
+
             using (var assemblyResolver = new DefaultAssemblyResolver())
             {
-                var compiledAssemblyPaths = compilationHelper.Compile(progressBar);
-
                 foreach (var dir in AssemblyHelper.GetPrecompiledAssemblyDirectories())
                     assemblyResolver.AddSearchDirectory(dir);
 
                 foreach (var dir in AssemblyHelper.GetPrecompiledEngineAssemblyDirectories())
                     assemblyResolver.AddSearchDirectory(dir);
 
-                foreach (var dir in compilationHelper.GetCompiledAssemblyDirectories())
+                foreach (var dir in compiledAssemblyDirectories)
                     assemblyResolver.AddSearchDirectory(dir);
 
                 if (progressBar != null)
                     progressBar.Initialize("Analyzing Scripts", "Analyzing project scripts",
-                        compiledAssemblyPaths.Count());
+                        assemblyPaths.Count());
 
                 // Analyse all Player assemblies
-                foreach (var assemblyPath in compiledAssemblyPaths)
+                foreach (var assemblyPath in assemblyPaths)
                 {
                     if (progressBar != null)
                         progressBar.AdvanceProgressBar(string.Format("Analyzing {0} scripts",
@@ -65,20 +120,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         continue;
                     }
 
-                    AnalyzeAssembly(assemblyPath, assemblyResolver, callCrawler, (issue) =>
-                    {
-                        issues.Add(issue);
-                        onIssueFound(issue);
-                    });
+                    AnalyzeAssembly(assemblyPath, assemblyResolver, onCallFound, onIssueFound);
                 }
             }
 
             if (progressBar != null)
                 progressBar.ClearProgressBar();
 
-            callCrawler.BuildCallHierarchies(issues, progressBar);
-
-            onComplete();
+            if (onComplete != null)
+            {
+                onComplete(progressBar);
+            }
         }
 
         public void LoadDatabase(string path)
@@ -103,8 +155,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_ProblemDescriptors.Add(descriptor);
         }
 
-        private void AnalyzeAssembly(string assemblyPath, IAssemblyResolver assemblyResolver,
-            CallCrawler callCrawler, Action<ProjectIssue> onIssueFound)
+        private void AnalyzeAssembly(string assemblyPath, IAssemblyResolver assemblyResolver, Action<CallPair> onCallFound, Action<ProjectIssue> onIssueFound)
         {
             using (var assembly = AssemblyDefinition.ReadAssembly(assemblyPath,
                 new ReaderParameters {ReadSymbols = true, AssemblyResolver = assemblyResolver}))
@@ -116,13 +167,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     if (!methodDefinition.HasBody)
                         continue;
 
-                    AnalyzeMethodBody(assemblyName, methodDefinition, callCrawler, onIssueFound);
+                    AnalyzeMethodBody(assemblyName, methodDefinition, onCallFound, onIssueFound);
                 }
             }
         }
 
-        private void AnalyzeMethodBody(string assemblyName, MethodDefinition caller,
-            CallCrawler callCrawler, Action<ProjectIssue> onIssueFound)
+        private void AnalyzeMethodBody(string assemblyName, MethodDefinition caller, Action<CallPair> onCallFound, Action<ProjectIssue> onIssueFound)
         {
             if (!caller.DebugInformation.HasSequencePoints)
                 return;
@@ -144,7 +194,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 if (s != null)
                 {
                     location = new Location
-                    {path = s.Document.Url.Replace("\\", "/"), line = s.StartLine};
+                    {
+                        path = s.Document.Url.Replace("\\", "/"), line = s.StartLine
+                    };
                     callerNode.location = location;
                 }
                 else
@@ -153,7 +205,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 }
 
                 if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
-                    callCrawler.Add(caller, (MethodReference)inst.Operand, location, perfCriticalContext);
+                {
+                    onCallFound(new CallPair
+                    {
+                        callee = (MethodReference)inst.Operand,
+                        caller = caller,
+                        location = location,
+                        perfCriticalContext = perfCriticalContext
+                    });
+                }
 
                 foreach (var analyzer in m_InstructionAnalyzers)
                     if (analyzer.GetOpCodes().Contains(inst.OpCode))

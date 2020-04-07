@@ -58,6 +58,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             var compilationResult = PlayerBuildInterface.CompilePlayerScripts(input, m_OutputFolder);
 
+            if (progressBar != null)
+                progressBar.ClearProgressBar();
+
             if (!m_Success)
                 throw new AssemblyCompilationException();
 
