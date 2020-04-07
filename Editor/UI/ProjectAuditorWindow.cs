@@ -898,7 +898,7 @@ namespace Unity.ProjectAuditor.Editor
                 new GUIContent("Analyze", "Analyze Project and list all issues found.");
 
             public static readonly GUIContent AnalysisInProgressLabel =
-                new GUIContent("Analysis in progress", "Analysis in progress...please wait.");
+                new GUIContent("Analysis in progress...", "Analysis in progress...please wait.");
 
 
             public static readonly GUIContent ReloadButton =
