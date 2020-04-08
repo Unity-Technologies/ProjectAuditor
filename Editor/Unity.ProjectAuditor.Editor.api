@@ -216,7 +216,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     {
         public CallAnalyzer(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor auditor) {}
         public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
-        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.CallAnalyzer.<GetOpCodes>d__3))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.CallAnalyzer.<GetOpCodes>d__4))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
     }
 
     [Unity.ProjectAuditor.Editor.InstructionAnalyzers.] public class EmptyMethodAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer

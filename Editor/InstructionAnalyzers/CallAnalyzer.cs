@@ -10,11 +10,13 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     [Attribute]
     public class CallAnalyzer : IInstructionAnalyzer
     {
-        private readonly IEnumerable<ProblemDescriptor> m_Descriptors;
+        private readonly Dictionary<string, ProblemDescriptor> m_Descriptors; // type+method name as key
+        private readonly Dictionary<string, ProblemDescriptor> m_WholeNamespaceDescriptors; // namespace as key
 
         public CallAnalyzer(ScriptAuditor auditor)
         {
-            m_Descriptors = auditor.GetDescriptors();
+            m_Descriptors = auditor.GetDescriptors().Where(descriptor => !descriptor.method.Equals("*") && !string.IsNullOrEmpty(descriptor.type)).ToDictionary(descriptor => descriptor.type + "." + descriptor.method);
+            m_WholeNamespaceDescriptors = auditor.GetDescriptors().Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
         }
 
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
@@ -23,12 +25,14 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
             // replace root with callee node
             var calleeNode = new CallTreeNode(callee);
-
             var description = string.Empty;
-            var descriptor = m_Descriptors.SingleOrDefault(c => c.type == callee.DeclaringType.FullName &&
-                (c.method == callee.Name ||
-                    "get_" + c.method == callee.Name));
 
+            ProblemDescriptor descriptor;
+            var methodName = callee.Name;
+            if (methodName.StartsWith("get_"))
+                methodName = methodName.Substring("get_".Length);
+
+            m_Descriptors.TryGetValue(callee.DeclaringType.FullName + "." + methodName, out descriptor);
             if (descriptor != null)
             {
                 // by default use descriptor issue description
@@ -37,8 +41,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             else
             {
                 // Are we trying to warn about a whole namespace?
-                descriptor = m_Descriptors.SingleOrDefault(c =>
-                    c.type == callee.DeclaringType.Namespace && c.method == "*");
+                m_WholeNamespaceDescriptors.TryGetValue(callee.DeclaringType.Namespace, out descriptor);
                 if (descriptor == null)
                     // no issue found
                     return null;
