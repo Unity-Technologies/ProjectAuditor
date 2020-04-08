@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             solution = "Remove any empty MonoBehaviour methods."
         };
 
-        public EmptyMethodAnalyzer(ScriptAuditor auditor)
+        public EmptyMethodAnalyzer(IAuditor auditor)
         {
             auditor.RegisterDescriptor(descriptor);
         }

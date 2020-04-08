@@ -15,23 +15,21 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         public static bool IsMonoBehaviour(TypeReference typeReference)
         {
-            TypeDefinition typeDefinition = null;
             try
             {
-                typeDefinition = typeReference.Resolve();
+                var typeDefinition = typeReference.Resolve();
+
+                if (typeDefinition.FullName.GetHashCode() == ClassNameHashCode &&
+                    typeDefinition.Module.Name.Equals("UnityEngine.CoreModule.dll"))
+                    return true;
+
+                if (typeDefinition.BaseType != null)
+                    return IsMonoBehaviour(typeDefinition.BaseType);
             }
             catch (AssemblyResolutionException e)
             {
                 Debug.LogWarning(e);
-                return false;
             }
-
-            if (typeDefinition.FullName.GetHashCode() == ClassNameHashCode &&
-                typeDefinition.Module.Name.Equals("UnityEngine.CoreModule.dll"))
-                return true;
-
-            if (typeDefinition.BaseType != null)
-                return IsMonoBehaviour(typeDefinition.BaseType);
 
             return false;
         }

@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             solution = "Try to avoid allocating arrays in frequently-updated code."
         };
 
-        public AllocationAnalyzer(ScriptAuditor auditor)
+        public AllocationAnalyzer(IAuditor auditor)
         {
             auditor.RegisterDescriptor(objectAllocationDescriptor);
             auditor.RegisterDescriptor(arrayAllocationDescriptor);

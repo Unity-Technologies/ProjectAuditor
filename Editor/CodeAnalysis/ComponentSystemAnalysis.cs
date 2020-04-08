@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Mono.Cecil;
 using UnityEngine;
@@ -13,23 +12,21 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         public static bool IsComponentSystem(TypeReference typeReference)
         {
-            TypeDefinition typeDefinition = null;
             try
             {
-                typeDefinition = typeReference.Resolve();
+                var typeDefinition = typeReference.Resolve();
+
+                if (ClassNameHashCodes.FirstOrDefault(i => i == typeDefinition.FullName.GetHashCode()) != 0 &&
+                    typeDefinition.Module.Name.Equals("Unity.Entities.dll"))
+                    return true;
+
+                if (typeDefinition.BaseType != null)
+                    return IsComponentSystem(typeDefinition.BaseType);
             }
             catch (AssemblyResolutionException e)
             {
                 Debug.LogWarning(e);
-                return false;
             }
-
-            if (ClassNameHashCodes.FirstOrDefault(i => i == typeDefinition.FullName.GetHashCode()) != 0 &&
-                typeDefinition.Module.Name.Equals("Unity.Entities.dll"))
-                return true;
-
-            if (typeDefinition.BaseType != null)
-                return IsComponentSystem(typeDefinition.BaseType);
 
             return false;
         }

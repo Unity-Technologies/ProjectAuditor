@@ -122,8 +122,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
             if (string.IsNullOrEmpty(descriptor.customevaluator))
             {
-                var paramTypes = new Type[0] {};
-                var args = new object[0] {};
+                var paramTypes = new Type[] {};
+                var args = new object[] {};
                 var found = false;
                 // do we actually need to look in all assemblies? Maybe we can find a way to only evaluate on the right assembly
                 foreach (var assembly in m_Assemblies)

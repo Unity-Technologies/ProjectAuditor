@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             solution = "Disable static batching in Player Settings"
         };
 
-        public StaticBatchingAndHybridPackage(SettingsAuditor auditor)
+        public StaticBatchingAndHybridPackage(IAuditor auditor)
         {
             auditor.RegisterDescriptor(descriptor);
         }

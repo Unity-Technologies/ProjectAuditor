@@ -195,7 +195,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     [Unity.ProjectAuditor.Editor.InstructionAnalyzers.] public class AllocationAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer
     {
-        public AllocationAnalyzer(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor auditor) {}
+        public AllocationAnalyzer(Unity.ProjectAuditor.Editor.IAuditor auditor) {}
         public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.AllocationAnalyzer.<GetOpCodes>d__4))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
     }
@@ -207,21 +207,21 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
     [Unity.ProjectAuditor.Editor.InstructionAnalyzers.] public class BoxingAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer
     {
-        public BoxingAnalyzer(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor auditor) {}
+        public BoxingAnalyzer(Unity.ProjectAuditor.Editor.IAuditor auditor) {}
         public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.BoxingAnalyzer.<GetOpCodes>d__3))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
     }
 
     [Unity.ProjectAuditor.Editor.InstructionAnalyzers.] public class BuiltinInstructionAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer
     {
-        public BuiltinInstructionAnalyzer(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor auditor) {}
+        public BuiltinInstructionAnalyzer(Unity.ProjectAuditor.Editor.IAuditor auditor) {}
         public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.BuiltinInstructionAnalyzer.<GetOpCodes>d__3))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
     }
 
     [Unity.ProjectAuditor.Editor.InstructionAnalyzers.] public class EmptyMethodAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer
     {
-        public EmptyMethodAnalyzer(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor auditor) {}
+        public EmptyMethodAnalyzer(Unity.ProjectAuditor.Editor.IAuditor auditor) {}
         public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
         public static Unity.ProjectAuditor.Editor.ProblemDescriptor GetDescriptor();
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.EmptyMethodAnalyzer.<GetOpCodes>d__3))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
@@ -249,7 +249,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
     [Unity.ProjectAuditor.Editor.SettingsAnalyzers.] public class StaticBatchingAndHybridPackage : Unity.ProjectAuditor.Editor.SettingsAnalyzers.ISettingsAnalyzer
     {
-        public StaticBatchingAndHybridPackage(Unity.ProjectAuditor.Editor.Auditors.SettingsAuditor auditor) {}
+        public StaticBatchingAndHybridPackage(Unity.ProjectAuditor.Editor.IAuditor auditor) {}
         public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze();
         public virtual int GetDescriptorId();
     }
@@ -267,7 +267,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
     public static class AssemblyHelper
     {
-        public static string DefaultAssemblyFileName;
+        public static readonly string DefaultAssemblyFileName;
         public static string DefaultAssemblyName { get; }
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Utils.AssemblyHelper.<GetPrecompiledAssemblyDirectories>d__4))] public static System.Collections.Generic.IEnumerable<string> GetPrecompiledAssemblyDirectories();
         public static System.Collections.Generic.IEnumerable<string> GetPrecompiledAssemblyPaths();

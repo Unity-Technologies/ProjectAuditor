@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 {
     public static class AssemblyHelper
     {
-        public static string DefaultAssemblyFileName = "Assembly-CSharp.dll";
+        public static readonly string DefaultAssemblyFileName = "Assembly-CSharp.dll";
 
         public static string DefaultAssemblyName
         {

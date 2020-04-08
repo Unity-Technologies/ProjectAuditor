@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             solution = "Try to avoid Boxing when possible."
         };
 
-        public BoxingAnalyzer(ScriptAuditor auditor)
+        public BoxingAnalyzer(IAuditor auditor)
         {
             auditor.RegisterDescriptor(descriptor);
         }
