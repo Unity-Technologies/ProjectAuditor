@@ -10,6 +10,7 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
+using UnityEngine.Profiling;
 using Attribute = Unity.ProjectAuditor.Editor.InstructionAnalyzers.Attribute;
 using ThreadPriority = System.Threading.ThreadPriority;
 
@@ -42,9 +43,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var compilationHelper = new AssemblyCompilationHelper();
             var callCrawler = new CallCrawler();
-            var compiledAssemblyPaths = compilationHelper.Compile(progressBar).Select(Path.GetFullPath);
-            var issues = new List<ProjectIssue>();
 
+            Profiler.BeginSample("ScriptAuditor.Audit.Compilation");
+            var compiledAssemblyPaths = compilationHelper.Compile(progressBar).Select(Path.GetFullPath);
+            Profiler.EndSample();
+
+            var issues = new List<ProjectIssue>();
             var assemblyInfos = compiledAssemblyPaths.Select(path => new
             {
                 path, readOnly = AssemblyHelper.IsAssemblyFromReadOnlyPackage(Path.GetFileName(path))
@@ -70,6 +74,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 onIssueFound(issue);
             });
 
+            Profiler.BeginSample("ScriptAuditor.Audit.Analysis");
+
             // first phase: analyze assemblies generated from editable scripts
             AnalyzeAssemblies(localAssemblyPaths, onCallFound, onIssueFoundInternal, null, progressBar);
 
@@ -88,8 +94,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
             else
             {
+                Profiler.BeginSample("ScriptAuditor.Audit.AnalysisReadOnly");
                 AnalyzeAssemblies(readOnlyAssemblyPaths, onCallFound, onIssueFoundInternal, onCompleteInternal, progressBar);
+                Profiler.EndSample();
             }
+            Profiler.EndSample();
         }
 
         private void AnalyzeAssemblies(IEnumerable<string> assemblyPaths, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound, Action<IProgressBar> onComplete, IProgressBar progressBar = null)
@@ -115,7 +124,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 foreach (var assemblyPath in assemblyPaths)
                 {
                     if (progressBar != null)
-                        progressBar.AdvanceProgressBar(string.Format("Analyzing {0} scripts",
+                        progressBar.AdvanceProgressBar(string.Format("Analyzing {0}",
                             Path.GetFileName(assemblyPath)));
 
                     if (!File.Exists(assemblyPath))
@@ -161,6 +170,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         private void AnalyzeAssembly(string assemblyPath, IAssemblyResolver assemblyResolver, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)
         {
+            Profiler.BeginSample("ScriptAuditor.AnalyzeAssembly " + Path.GetFileNameWithoutExtension(assemblyPath));
+
             using (var assembly = AssemblyDefinition.ReadAssembly(assemblyPath,
                 new ReaderParameters {ReadSymbols = true, AssemblyResolver = assemblyResolver}))
             {
@@ -174,12 +185,16 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     AnalyzeMethodBody(assemblyName, methodDefinition, onCallFound, onIssueFound);
                 }
             }
+
+            Profiler.EndSample();
         }
 
         private void AnalyzeMethodBody(string assemblyName, MethodDefinition caller, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)
         {
             if (!caller.DebugInformation.HasSequencePoints)
                 return;
+
+            Profiler.BeginSample("ScriptAuditor.AnalyzeMethodBody");
 
             var callerNode = new CallTreeNode(caller);
             var perfCriticalContext = IsPerformanceCriticalContext(caller);
@@ -234,6 +249,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         }
                     }
             }
+            Profiler.EndSample();
         }
 
         private void AddAnalyzer(IInstructionAnalyzer analyzer)

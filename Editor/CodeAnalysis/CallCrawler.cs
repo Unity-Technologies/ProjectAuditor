@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Mono.Cecil;
+using UnityEngine.Profiling;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
@@ -41,6 +42,8 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
             if (issues.Count > 0)
             {
+                Profiler.BeginSample("CallCrawler.BuildCallHierarchies");
+
                 if (progressBar != null)
                     progressBar.Initialize("Analyzing Scripts", "Analyzing call trees", issues.Count);
 
@@ -61,6 +64,8 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                 }
                 if (progressBar != null)
                     progressBar.ClearProgressBar();
+
+                Profiler.EndSample();
             }
         }
 

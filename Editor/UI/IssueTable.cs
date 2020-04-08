@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -102,6 +103,7 @@ namespace Unity.ProjectAuditor.Editor
                 return m_Rows;
             }
 
+            Profiler.BeginSample("IssueTable.BuildRows");
             if (m_GroupByDescription)
             {
                 var descriptors = filteredItems.Select(i => i.ProblemDescriptor).Distinct();
@@ -133,6 +135,8 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
             SortIfNeeded(m_Rows);
+
+            Profiler.EndSample();
 
             return m_Rows;
         }
