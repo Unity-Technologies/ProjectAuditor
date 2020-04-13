@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor
 {
     internal interface IIssuesFilter
     {
-        bool ShouldDisplay(ProjectIssue issue);
+        bool Match(ProjectIssue issue);
     }
 
     internal class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IIssuesFilter
@@ -102,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor
             menu.AddItem(Styles.UserMode, !m_DeveloperMode, OnToggleDeveloperMode);
         }
 
-        public bool ShouldDisplay(ProjectIssue issue)
+        public bool Match(ProjectIssue issue)
         {
             if (m_ActiveAnalysisView.desc.showAssemblySelection &&
                 m_AssemblySelection != null &&

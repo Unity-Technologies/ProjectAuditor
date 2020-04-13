@@ -96,7 +96,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             m_Rows.Clear();
 
-            var filteredItems = m_TreeViewItemIssues.Where(item => m_IssuesFilter.ShouldDisplay(item.ProjectIssue));
+            var filteredItems = m_TreeViewItemIssues.Where(item => m_IssuesFilter.Match(item.ProjectIssue));
             if (!filteredItems.Any())
             {
                 m_Rows.Add(new TreeViewItem(0, 0, "No issue found"));
