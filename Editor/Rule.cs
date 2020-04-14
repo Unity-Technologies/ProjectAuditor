@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             if (ReferenceEquals(a, null))
             {
-                if (ReferenceEquals(a, null))
+                if (ReferenceEquals(b, null))
                     return true;
                 return false;
             }
