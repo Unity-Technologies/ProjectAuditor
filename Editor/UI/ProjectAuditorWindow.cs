@@ -104,19 +104,30 @@ namespace Unity.ProjectAuditor.Editor
 
         public bool Match(ProjectIssue issue)
         {
-            if (m_ActiveAnalysisView.desc.showAssemblySelection &&
-                m_AssemblySelection != null &&
-                !m_AssemblySelection.Contains(issue.assembly) &&
-                !m_AssemblySelection.ContainsGroup("All"))
+            UnityEngine.Profiling.Profiler.BeginSample("MatchAssembly");
+            var matchAssembly = !m_ActiveAnalysisView.desc.showAssemblySelection ||
+                                 m_AssemblySelection != null &&
+                                 (m_AssemblySelection.Contains(issue.assembly) ||
+                                 m_AssemblySelection.ContainsGroup("All"));
+            UnityEngine.Profiling.Profiler.EndSample();
+            if (!matchAssembly)
                 return false;
 
-            if (!m_AreaSelection.Contains(issue.descriptor.area) &&
-                !m_AreaSelection.ContainsGroup("All"))
+            UnityEngine.Profiling.Profiler.BeginSample("MatchArea");
+            var matchArea = m_AreaSelection.Contains(issue.descriptor.area) ||
+                             m_AreaSelection.ContainsGroup("All");
+            UnityEngine.Profiling.Profiler.EndSample();
+            if (!matchArea)
                 return false;
 
             if (!m_ProjectAuditor.config.displayMutedIssues)
-                if (m_ProjectAuditor.config.GetAction(issue.descriptor, issue.callingMethod) == Rule.Action.None)
+            {
+                UnityEngine.Profiling.Profiler.BeginSample("IsMuted");
+                var muted = m_ProjectAuditor.config.GetAction(issue.descriptor, issue.callingMethod) == Rule.Action.None;
+                UnityEngine.Profiling.Profiler.EndSample();
+                if (muted)
                     return false;
+            }
 
             if (m_ActiveAnalysisView.desc.showCritical &&
                 m_ProjectAuditor.config.displayOnlyCriticalIssues &&
@@ -283,7 +294,7 @@ namespace Unity.ProjectAuditor.Editor
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.BeginVertical();
 
-            m_ActiveAnalysisView.OnGUI(m_ProjectReport);
+            m_ActiveAnalysisView.OnGUI();
 
             EditorGUILayout.EndVertical();
 
