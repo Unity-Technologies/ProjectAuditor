@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                return location == null ? string.Empty : location.filename;
+                return location == null ? string.Empty : location.Filename;
             }
         }
 
@@ -71,7 +71,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                return location == null ? string.Empty : location.relativePath;
+                return location == null ? string.Empty : location.Path;
             }
         }
 
@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                return location == null ? 0 : location.line;
+                return location == null ? 0 : location.Line;
             }
         }
 

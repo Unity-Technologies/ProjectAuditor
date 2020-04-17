@@ -113,7 +113,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     descriptor,
                     description,
                     IssueCategory.ProjectSettings,
-                    new Location {path = projectWindowPath}
+                    new Location(projectWindowPath)
                 )
             );
         }

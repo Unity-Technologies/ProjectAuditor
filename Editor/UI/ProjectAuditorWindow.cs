@@ -106,16 +106,16 @@ namespace Unity.ProjectAuditor.Editor
         {
             UnityEngine.Profiling.Profiler.BeginSample("MatchAssembly");
             var matchAssembly = !m_ActiveAnalysisView.desc.showAssemblySelection ||
-                                 m_AssemblySelection != null &&
-                                 (m_AssemblySelection.Contains(issue.assembly) ||
-                                 m_AssemblySelection.ContainsGroup("All"));
+                m_AssemblySelection != null &&
+                (m_AssemblySelection.Contains(issue.assembly) ||
+                    m_AssemblySelection.ContainsGroup("All"));
             UnityEngine.Profiling.Profiler.EndSample();
             if (!matchAssembly)
                 return false;
 
             UnityEngine.Profiling.Profiler.BeginSample("MatchArea");
             var matchArea = m_AreaSelection.Contains(issue.descriptor.area) ||
-                             m_AreaSelection.ContainsGroup("All");
+                m_AreaSelection.ContainsGroup("All");
             UnityEngine.Profiling.Profiler.EndSample();
             if (!matchArea)
                 return false;
@@ -763,7 +763,7 @@ namespace Unity.ProjectAuditor.Editor
                 var compiledAssemblies = m_AssemblyNames.Where(a => !AssemblyHelper.IsModuleAssembly(a));
                 if (AssemblyHelper.IsPackageInfoAvailable())
                     compiledAssemblies = compiledAssemblies.Where(a =>
-                        !AssemblyHelper.IsAssemblyFromReadOnlyPackage(a));
+                        !AssemblyHelper.GetAssemblyInfoFromAssemblyPath(a).readOnly);
                 m_AssemblySelection.selection.AddRange(compiledAssemblies);
 
                 if (!m_AssemblySelection.selection.Any())

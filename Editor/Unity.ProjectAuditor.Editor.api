@@ -154,7 +154,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     {
         public virtual void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public static System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> FindScriptIssues(Unity.ProjectAuditor.Editor.ProjectReport projectReport, string relativePath);
-        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor.<GetAnalyzerTypes>d__11))] public virtual System.Collections.Generic.IEnumerable<System.Type> GetAnalyzerTypes(System.Reflection.Assembly assembly);
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor.<GetAnalyzerTypes>d__10))] public virtual System.Collections.Generic.IEnumerable<System.Type> GetAnalyzerTypes(System.Reflection.Assembly assembly);
         public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
         public virtual void LoadDatabase(string path);
         public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
@@ -260,22 +260,33 @@ namespace Unity.ProjectAuditor.Editor.Utils
     public class AssemblyCompilationHelper : System.IDisposable
     {
         public AssemblyCompilationHelper() {}
-        public System.Collections.Generic.IEnumerable<string> Compile(Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
+        public System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.Utils.AssemblyInfo> Compile(Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public virtual void Dispose();
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Utils.AssemblyCompilationHelper.<GetCompiledAssemblyDirectories>d__5))] public System.Collections.Generic.IEnumerable<string> GetCompiledAssemblyDirectories();
     }
 
     public static class AssemblyHelper
     {
-        public static readonly string DefaultAssemblyFileName;
+        public const string DefaultAssemblyFileName = Assembly-CSharp.dll;
         public static string DefaultAssemblyName { get; }
-        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Utils.AssemblyHelper.<GetPrecompiledAssemblyDirectories>d__4))] public static System.Collections.Generic.IEnumerable<string> GetPrecompiledAssemblyDirectories();
+        public static Unity.ProjectAuditor.Editor.Utils.AssemblyInfo GetAssemblyInfoFromAssemblyPath(string assemblyPath);
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Utils.AssemblyHelper.<GetPrecompiledAssemblyDirectories>d__5))] public static System.Collections.Generic.IEnumerable<string> GetPrecompiledAssemblyDirectories();
         public static System.Collections.Generic.IEnumerable<string> GetPrecompiledAssemblyPaths();
-        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Utils.AssemblyHelper.<GetPrecompiledEngineAssemblyDirectories>d__6))] public static System.Collections.Generic.IEnumerable<string> GetPrecompiledEngineAssemblyDirectories();
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Utils.AssemblyHelper.<GetPrecompiledEngineAssemblyDirectories>d__7))] public static System.Collections.Generic.IEnumerable<string> GetPrecompiledEngineAssemblyDirectories();
         public static System.Collections.Generic.IEnumerable<string> GetPrecompiledEngineAssemblyPaths();
-        public static bool IsAssemblyFromReadOnlyPackage(string assemblyName);
         public static bool IsModuleAssembly(string assemblyName);
         public static bool IsPackageInfoAvailable();
+        public static string ResolveAssetPath(Unity.ProjectAuditor.Editor.Utils.AssemblyInfo assemblyInfo, string path);
+    }
+
+    public struct AssemblyInfo
+    {
+        public string asmDefPath;
+        public string name;
+        public string path;
+        public bool readOnly;
+        public string relativePath;
+        public string[] sourcePaths;
     }
 
     public static class JsonHelper
@@ -287,12 +298,20 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
     public class Location
     {
-        public int line;
-        public string path;
-        public string filename { get; }
-        public string relativePath { get; }
-        public Location() {}
+        public string Filename { get; }
+        public int Line { get; }
+        public string Path { get; }
+        public Unity.ProjectAuditor.Editor.Utils.LocationType Type { get; }
+        public Location(string path, Unity.ProjectAuditor.Editor.Utils.LocationType type = 1) {}
+        public Location(string path, int line, Unity.ProjectAuditor.Editor.Utils.LocationType type = 0) {}
         public bool IsValid();
         public void Open();
+    }
+
+    public enum LocationType
+    {
+        public const Unity.ProjectAuditor.Editor.Utils.LocationType Asset = 0;
+        public const Unity.ProjectAuditor.Editor.Utils.LocationType Setting = 1;
+        public int value__;
     }
 }

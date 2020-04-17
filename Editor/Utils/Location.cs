@@ -5,60 +5,78 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
+    public enum LocationType
+    {
+        Asset,
+        Setting
+    }
+
     [Serializable]
     public class Location
     {
-        public int line;
-        public string path;
+        private int m_Line;
+        private string m_Path; // path relative to the project folder
+        private LocationType m_Type;
 
-        public string filename
+        public string Filename
         {
-            get { return string.IsNullOrEmpty(path) ? string.Empty : Path.GetFileName(path); }
+            get { return string.IsNullOrEmpty(m_Path) ? string.Empty : System.IO.Path.GetFileName(m_Path); }
         }
 
-        public string relativePath
+        public int Line
+        {
+            get { return m_Line; }
+        }
+
+        public string Path
         {
             get
             {
-                if (string.IsNullOrEmpty(this.path))
+                if (string.IsNullOrEmpty(this.m_Path))
                     return string.Empty;
-
-                var path = this.path;
-                if (path.Contains("BuiltInPackages"))
-                {
-                    path = path.Remove(0, path.IndexOf("BuiltInPackages") + "BuiltInPackages/".Length);
-                }
-                else
-                {
-                    var projectPathLength = Application.dataPath.Length - "Assets".Length;
-                    if (path.Length > projectPathLength)
-                        path = path.Remove(0, projectPathLength);
-                }
-
-                return path;
+                return m_Path;
             }
+        }
+
+        public LocationType Type
+        {
+            get
+            {
+                return m_Type;
+            }
+        }
+
+        public Location(string path, LocationType type = LocationType.Setting)
+        {
+            m_Path = path;
+            m_Type = type;
+        }
+
+        public Location(string path, int line, LocationType type = LocationType.Asset)
+        {
+            m_Path = path;
+            m_Line = line;
+            m_Type = type;
         }
 
         public bool IsValid()
         {
-            return !string.IsNullOrEmpty(path);
+            return !string.IsNullOrEmpty(m_Path);
         }
 
         public void Open()
         {
-            var path = relativePath;
-            if (!string.IsNullOrEmpty(path))
+            if (m_Type == LocationType.Setting)
             {
-                if (path.StartsWith("Library/PackageCache") || path.StartsWith("Packages/") && path.Contains("@"))
-                {
-                    // strip version from package path
-                    var version = path.Substring(path.IndexOf("@"));
-                    version = version.Substring(0, version.IndexOf("/"));
-                    path = path.Replace(version, "").Replace("Library/PackageCache", "Packages");
-                }
-
-                var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
-                AssetDatabase.OpenAsset(obj, line);
+#if UNITY_2018_3_OR_NEWER
+                var window = SettingsService.OpenProjectSettings(m_Path);
+                window.Repaint();
+#endif
+            }
+            else if (File.Exists(m_Path))
+            {
+                var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(m_Path);
+                AssetDatabase.OpenAsset(obj, m_Line);
             }
         }
     }

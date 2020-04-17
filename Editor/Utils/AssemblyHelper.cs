@@ -4,16 +4,15 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Compilation;
-
-#if UNITY_2019_3_OR_NEWER
-using UnityEditor.PackageManager;
-#endif
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
     public static class AssemblyHelper
     {
-        public static readonly string DefaultAssemblyFileName = "Assembly-CSharp.dll";
+        public const string DefaultAssemblyFileName = "Assembly-CSharp.dll";
+
+        const string BuiltInPackagesFolder = "BuiltInPackages";
 
         public static string DefaultAssemblyName
         {
@@ -82,20 +81,71 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return GetPrecompiledEngineAssemblyPaths().FirstOrDefault(a => a.Contains(assemblyName)) != null;
         }
 
-        public static bool IsAssemblyFromReadOnlyPackage(string assemblyName)
+        public static AssemblyInfo GetAssemblyInfoFromAssemblyPath(string assemblyPath)
         {
+            // by default let's assume it's not a package
+            var assemblyInfo = new AssemblyInfo
+            {
+                name = Path.GetFileNameWithoutExtension(assemblyPath),
+                path = assemblyPath,
+                relativePath = "Assets",
+                readOnly = false
+            };
+
+            var asmDefPath = CompilationPipeline.GetAssemblyDefinitionFilePathFromAssemblyName(assemblyInfo.name);
+            if (asmDefPath != null)
+            {
+                assemblyInfo.asmDefPath = asmDefPath;
+                var folders = asmDefPath.Split('/');
+                if (folders.Length > 2 && folders[0].Equals("Packages"))
+                {
+                    assemblyInfo.relativePath = Path.Combine(folders[0], folders[1]);
 #if UNITY_2019_3_OR_NEWER
-            var module = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.Modules).FirstOrDefault(a => a.Name.Contains(assemblyName));
-            if (module == null)
-                return false;
-            var info =  UnityEditor.PackageManager.PackageInfo.FindForAssembly(module.Assembly);
-            if (info == null)
-                return false;
-            return info.source != PackageSource.Embedded;
+                    var info =  UnityEditor.PackageManager.PackageInfo.FindForAssetPath(asmDefPath);
+                    if (info != null)
+                    {
+                        assemblyInfo.readOnly = info.source != UnityEditor.PackageManager.PackageSource.Embedded && info.source != UnityEditor.PackageManager.PackageSource.Local;
+                    }
 #else
-            // assume it's not a package
-            return false;
+                    assemblyInfo.readOnly = true;
 #endif
+                }
+                else
+                {
+                    // non-package user-defined assembly
+                }
+            }
+            else
+            {
+                // default assembly
+            }
+
+            return assemblyInfo;
+        }
+
+        public static string ResolveAssetPath(AssemblyInfo assemblyInfo, string path)
+        {
+            // sanitize path
+            path = path.Replace("\\", "/");
+
+            if (!string.IsNullOrEmpty(assemblyInfo.asmDefPath) && assemblyInfo.asmDefPath.StartsWith("Packages"))
+            {
+                var asmDefFolder = Path.GetDirectoryName(assemblyInfo.asmDefPath.Remove(0, assemblyInfo.relativePath.Length + 1));
+                if (path.IndexOf(asmDefFolder) < 0)
+                {
+                    // handle source files that are not located with asmdef
+                    return Path.Combine(assemblyInfo.relativePath, assemblyInfo.sourcePaths.First(sourcePath => path.Contains(sourcePath)));
+                }
+                return Path.Combine(assemblyInfo.relativePath, path.Substring(path.IndexOf(asmDefFolder)));
+            }
+            if (path.Contains(BuiltInPackagesFolder))
+            {
+                return path.Remove(0, path.IndexOf(BuiltInPackagesFolder) + BuiltInPackagesFolder.Length);
+            }
+
+            // remove Assets folder
+            var projectPath = Path.GetDirectoryName(Application.dataPath);
+            return path.Remove(0, projectPath.Length + 1);
         }
     }
 }

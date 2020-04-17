@@ -252,17 +252,7 @@ namespace Unity.ProjectAuditor.Editor
             var issue = issueTableItem.ProjectIssue;
             if (issue.location != null && issue.location.IsValid())
             {
-                if (File.Exists(issue.location.path))
-                {
-                    issue.location.Open();
-                }
-                else
-                {
-#if UNITY_2018_3_OR_NEWER
-                    var window = SettingsService.OpenProjectSettings(issue.location.path);
-                    window.Repaint();
-#endif
-                }
+                issue.location.Open();
             }
         }
 
