@@ -27,7 +27,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             CompilationPipeline.assemblyCompilationFinished -= OnAssemblyCompilationFinished;
 #endif
-            if (!string.IsNullOrEmpty(m_OutputFolder)) Directory.Delete(m_OutputFolder, true);
+            if (!string.IsNullOrEmpty(m_OutputFolder))
+            {
+                FileUtil.DeleteFileOrDirectory(m_OutputFolder);
+            }
+            m_OutputFolder = string.Empty;
         }
 
         public IEnumerable<AssemblyInfo> Compile(IProgressBar progressBar = null)

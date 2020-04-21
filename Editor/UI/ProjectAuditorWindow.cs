@@ -249,6 +249,7 @@ namespace Unity.ProjectAuditor.Editor
             }
             catch (AssemblyCompilationException e)
             {
+                m_AnalysisState = AnalysisState.NotStarted;
                 Debug.LogError(e);
             }
         }
