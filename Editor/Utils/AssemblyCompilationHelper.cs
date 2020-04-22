@@ -70,7 +70,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 progressBar.ClearProgressBar();
 
             if (!m_Success)
+            {
+                Dispose();
                 throw new AssemblyCompilationException();
+            }
 
             var compiledAssemblyPaths = compilationResult.assemblies.Select(assembly => Path.Combine(m_OutputFolder, assembly));
 #else
