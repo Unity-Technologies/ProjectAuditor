@@ -1,8 +1,8 @@
 using UnityEditor.IMGUI.Controls;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.UI
 {
-    public struct TreeItemIdentifier
+    internal struct TreeItemIdentifier
     {
         public string nameWithIndex { get; private set; }
 

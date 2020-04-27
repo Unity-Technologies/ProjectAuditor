@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using UnityEditor.IMGUI.Controls;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.UI
 {
     internal class CallHierarchyView : TreeView
     {

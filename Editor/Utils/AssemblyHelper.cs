@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    public static class AssemblyHelper
+    internal static class AssemblyHelper
     {
         public const string DefaultAssemblyFileName = "Assembly-CSharp.dll";
 

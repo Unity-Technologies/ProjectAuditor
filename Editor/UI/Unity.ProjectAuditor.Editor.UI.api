@@ -1,34 +1,3 @@
 // This file is generated. Do not modify by hand.
 // XML documentation file not found. To check if public methods have XML comments,
 // make sure the XML doc file is present and located next to the scraped dll
-namespace Unity.ProjectAuditor.Editor
-{
-    public struct TreeItemIdentifier
-    {
-        public static int kAll;
-        public static int kSingle;
-        public int index { get; }
-        public string name { get; }
-        public string nameWithIndex { get; }
-        public TreeItemIdentifier(string _nameWithIndex) {}
-        public TreeItemIdentifier(Unity.ProjectAuditor.Editor.TreeItemIdentifier treeItemIdentifier) {}
-        public TreeItemIdentifier(string _name, int _index) {}
-        public void SetAll();
-        public void SetIndex(int newIndex);
-        public void SetName(string newName);
-    }
-
-    public class TreeViewSelection
-    {
-        public System.Collections.Generic.List<string> groups;
-        public System.Collections.Generic.List<string> selection;
-        public TreeViewSelection() {}
-        public TreeViewSelection(Unity.ProjectAuditor.Editor.TreeViewSelection selection) {}
-        public bool Contains(string name);
-        public bool ContainsGroup(string groupName);
-        public void Set(string name);
-        public void Set(Unity.ProjectAuditor.Editor.TreeViewSelection selection);
-        public void SetAll(string[] names);
-        public void SetGroup(string groupName);
-    }
-}

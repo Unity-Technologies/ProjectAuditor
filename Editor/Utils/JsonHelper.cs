@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    public static class JsonHelper
+    internal static class JsonHelper
     {
         public static T[] FromJson<T>(string json)
         {

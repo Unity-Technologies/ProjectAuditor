@@ -12,7 +12,7 @@ using UnityEditor.Build.Player;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    public class AssemblyCompilationHelper : IDisposable
+    internal class AssemblyCompilationHelper : IDisposable
     {
         private string m_OutputFolder = String.Empty;
         private bool m_Success = true;

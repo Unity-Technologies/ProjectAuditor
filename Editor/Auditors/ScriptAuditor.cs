@@ -251,7 +251,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_OpCodes.AddRange(analyzer.GetOpCodes());
         }
 
-        public static IEnumerable<ProjectIssue> FindScriptIssues(ProjectReport projectReport, string relativePath)
+        internal static IEnumerable<ProjectIssue> FindScriptIssues(ProjectReport projectReport, string relativePath)
         {
             return projectReport.GetIssues(IssueCategory.ApiCalls).Where(i => i.relativePath.Equals(relativePath));
         }

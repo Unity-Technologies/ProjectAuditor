@@ -4,7 +4,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public static class ProblemDescriptorHelper
+    internal static class ProblemDescriptorHelper
     {
         public static List<ProblemDescriptor> LoadProblemDescriptors(string path, string name)
         {
