@@ -27,9 +27,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             CompilationPipeline.assemblyCompilationFinished -= OnAssemblyCompilationFinished;
 #endif
-            if (!string.IsNullOrEmpty(m_OutputFolder))
+            if (!string.IsNullOrEmpty(m_OutputFolder) && Directory.Exists(m_OutputFolder))
             {
-                FileUtil.DeleteFileOrDirectory(m_OutputFolder);
+                Directory.Delete(m_OutputFolder, true);
             }
             m_OutputFolder = string.Empty;
         }
