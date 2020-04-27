@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added "experimental" allocation analyzer
 * Added performance critical context analysis
 * Detect *MonoBehaviour.Update/LateUpdate/FixedUpdate* as perf critical contexts
-* Detect *ComponentSystem/JobComponentSystem.OnUpdat*e as perf critical contexts
+* Detect *ComponentSystem/JobComponentSystem.OnUpdate* as perf critical contexts
 * Added critical-only UI filter
 * Optimized UI refresh performance and Assembly analysis
 * Added profiler markers
