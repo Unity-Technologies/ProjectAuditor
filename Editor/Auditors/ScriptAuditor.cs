@@ -169,9 +169,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             using (var assembly = AssemblyDefinition.ReadAssembly(assemblyInfo.path,
                 new ReaderParameters {ReadSymbols = true, AssemblyResolver = assemblyResolver}))
             {
-                var assemblyName = assembly.Name.Name;
-                //   var packageInfo = AssemblyHelper.GetPackageInfoFromAssembly(assemblyName);
-
                 foreach (var methodDefinition in MonoCecilHelper.AggregateAllTypeDefinitions(assembly.MainModule.Types)
                          .SelectMany(t => t.Methods))
                 {
