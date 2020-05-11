@@ -51,6 +51,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var localAssemblyInfos = assemblyInfos.Where(info => !info.readOnly).ToArray();
             var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.readOnly).ToArray();
 
+            var assemblyDirectories = new List<string>();
+            assemblyDirectories.AddRange(AssemblyHelper.GetPrecompiledAssemblyDirectories());
+            assemblyDirectories.AddRange(AssemblyHelper.GetPrecompiledEngineAssemblyDirectories());
+
             var onCallFound = new Action<CallInfo>(pair =>
             {
                 callCrawler.Add(pair);
@@ -72,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Profiler.BeginSample("ScriptAuditor.Audit.Analysis");
 
             // first phase: analyze assemblies generated from editable scripts
-            AnalyzeAssemblies(localAssemblyInfos, onCallFound, onIssueFoundInternal, null, progressBar);
+            AnalyzeAssemblies(localAssemblyInfos, assemblyDirectories, onCallFound, onIssueFoundInternal, null, progressBar);
 
             var enableBackgroundAnalysis = m_Config.enableBackgroundAnalysis;
 #if !UNITY_2019_3_OR_NEWER
@@ -82,7 +86,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (enableBackgroundAnalysis)
             {
                 m_AssemblyAnalysisThread = new Thread(() =>
-                    AnalyzeAssemblies(readOnlyAssemblyInfos, onCallFound, onIssueFound, onCompleteInternal));
+                    AnalyzeAssemblies(readOnlyAssemblyInfos, assemblyDirectories, onCallFound, onIssueFound, onCompleteInternal));
                 m_AssemblyAnalysisThread.Name = "Assembly Analysis";
                 m_AssemblyAnalysisThread.Priority = ThreadPriority.BelowNormal;
                 m_AssemblyAnalysisThread.Start();
@@ -90,25 +94,20 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             else
             {
                 Profiler.BeginSample("ScriptAuditor.Audit.AnalysisReadOnly");
-                AnalyzeAssemblies(readOnlyAssemblyInfos, onCallFound, onIssueFoundInternal, onCompleteInternal, progressBar);
+                AnalyzeAssemblies(readOnlyAssemblyInfos, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal, progressBar);
                 Profiler.EndSample();
             }
             Profiler.EndSample();
         }
 
-        private void AnalyzeAssemblies(IEnumerable<AssemblyInfo> assemblyInfos, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound, Action<IProgressBar> onComplete, IProgressBar progressBar = null)
+        private void AnalyzeAssemblies(IEnumerable<AssemblyInfo> assemblyInfos, List<string> assemblyDirectories, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound, Action<IProgressBar> onComplete, IProgressBar progressBar = null)
         {
-            var compiledAssemblyDirectories = assemblyInfos.Select(info => Path.GetDirectoryName(info.path)).Distinct();
-
             using (var assemblyResolver = new DefaultAssemblyResolver())
             {
-                foreach (var dir in AssemblyHelper.GetPrecompiledAssemblyDirectories())
-                    assemblyResolver.AddSearchDirectory(dir);
+                foreach (var path in assemblyDirectories)
+                    assemblyResolver.AddSearchDirectory(path);
 
-                foreach (var dir in AssemblyHelper.GetPrecompiledEngineAssemblyDirectories())
-                    assemblyResolver.AddSearchDirectory(dir);
-
-                foreach (var dir in compiledAssemblyDirectories)
+                foreach (var dir in assemblyInfos.Select(info => Path.GetDirectoryName(info.path)).Distinct())
                     assemblyResolver.AddSearchDirectory(dir);
 
                 if (progressBar != null)
@@ -118,6 +117,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 // Analyse all Player assemblies
                 foreach (var assemblyInfo in assemblyInfos)
                 {
+                    Console.WriteLine("[Project Auditor] Analyzing {0}", assemblyInfo.name);
                     if (progressBar != null)
                         progressBar.AdvanceProgressBar(string.Format("Analyzing {0}", assemblyInfo.name));
 
