@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             Profiler.BeginSample("IssueTable.BuildRows");
-            if (m_GroupByDescription)
+            if (m_GroupByDescription && !this.hasSearch)
             {
                 var descriptors = filteredItems.Select(i => i.ProblemDescriptor).Distinct();
                 foreach (var descriptor in descriptors)
@@ -253,6 +253,19 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (issue.location != null && issue.location.IsValid())
             {
                 issue.location.Open();
+            }
+        }
+
+        protected override void SearchChanged(string newSearch)
+        {
+            // auto-expand groups containing selected items
+            foreach (var id in this.state.selectedIDs)
+            {
+                var item = m_TreeViewItemIssues.FirstOrDefault(issue => issue.id == id && issue.parent != null);
+                if (item != null && !this.state.expandedIDs.Contains(item.parent.id))
+                {
+                    this.state.expandedIDs.Add(item.parent.id);
+                }
             }
         }
 
