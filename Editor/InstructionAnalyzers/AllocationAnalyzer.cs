@@ -9,26 +9,22 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     internal class AllocationAnalyzer : IInstructionAnalyzer
     {
         private static readonly ProblemDescriptor objectAllocationDescriptor = new ProblemDescriptor
-        {
-            id = 102002,
-            description = "Object Allocation (experimental)",
-            type = string.Empty,
-            method = string.Empty,
-            area = "Memory",
-            problem = "An object is allocated in managed memory",
-            solution = "Try to avoid allocating objects in frequently-updated code."
-        };
+            (
+            102002,
+            "Object Allocation (experimental)",
+            Area.Memory,
+            "An object is allocated in managed memory",
+            "Try to avoid allocating objects in frequently-updated code."
+            );
 
         private static readonly ProblemDescriptor arrayAllocationDescriptor = new ProblemDescriptor
-        {
-            id = 102003,
-            description = "Array Allocation (experimental)",
-            type = string.Empty,
-            method = string.Empty,
-            area = "Memory",
-            problem = "An array is allocated in managed memory",
-            solution = "Try to avoid allocating arrays in frequently-updated code."
-        };
+            (
+            102003,
+            "Array Allocation (experimental)",
+            Area.Memory,
+            "An array is allocated in managed memory",
+            "Try to avoid allocating arrays in frequently-updated code."
+            );
 
         public void Initialize(IAuditor auditor)
         {

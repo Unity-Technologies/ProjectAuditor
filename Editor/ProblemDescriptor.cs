@@ -22,6 +22,18 @@ namespace Unity.ProjectAuditor.Editor
         public string type;
         public string value;
 
+        public ProblemDescriptor(int id, string description, Area area, string problem, string solution)
+        {
+            this.id = id;
+            this.description = description;
+            this.area = area.ToString();
+            this.problem = problem;
+            this.solution = solution;
+
+            this.type = String.Empty;
+            this.method = String.Empty;
+        }
+
         public bool Equals(ProblemDescriptor other)
         {
             if (ReferenceEquals(null, other)) return false;

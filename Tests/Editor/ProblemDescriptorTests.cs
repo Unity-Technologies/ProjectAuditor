@@ -6,24 +6,24 @@ namespace UnityEditor.ProjectAuditor.EditorTests
     internal class ProblemDescriptorTests
     {
         [Test]
-        public void UninitializedProblemDescriptorTestPasses()
-        {
-            // not much value in this test yet
-            var uninitialised = new ProblemDescriptor();
-            Assert.Null(uninitialised.description);
-        }
-
-        [Test]
         public void ProblemDescriptorsAreEqual()
         {
             var a = new ProblemDescriptor
-            {
-                id = 102001
-            };
+                (
+                102001,
+                "test",
+                Area.CPU,
+                "this is not actually a problem",
+                "do nothing"
+                );
             var b = new ProblemDescriptor
-            {
-                id = 102001
-            };
+                (
+                102001,
+                "test",
+                Area.CPU,
+                "this is not actually a problem",
+                "do nothing"
+                );
 
             Assert.True(a.Equals(a));
             Assert.True(a.Equals((object)a));
@@ -38,9 +38,13 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         public void ProblemDescriptorHashIsId()
         {
             var p = new ProblemDescriptor
-            {
-                id = 102001
-            };
+                (
+                102001,
+                "test",
+                Area.CPU,
+                "this is not actually a problem",
+                "do nothing"
+                );
 
             Assert.True(p.GetHashCode() == p.id);
         }

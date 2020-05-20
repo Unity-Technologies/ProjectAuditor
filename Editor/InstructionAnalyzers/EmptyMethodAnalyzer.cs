@@ -10,15 +10,13 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     internal class EmptyMethodAnalyzer : IInstructionAnalyzer
     {
         private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
-        {
-            id = 102001,
-            description = "Empty MonoBehaviour Method",
-            type = string.Empty,
-            method = string.Empty,
-            area = "CPU",
-            problem = "Any empty MonoBehaviour magic method will be included in the build and executed anyway.",
-            solution = "Remove any empty MonoBehaviour methods."
-        };
+            (
+            102001,
+            "Empty MonoBehaviour Method",
+            Area.CPU,
+            "Any empty MonoBehaviour magic method will be included in the build and executed anyway.",
+            "Remove any empty MonoBehaviour methods."
+            );
 
         public void Initialize(IAuditor auditor)
         {

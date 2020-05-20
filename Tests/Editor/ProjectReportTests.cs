@@ -44,10 +44,18 @@ class MyClass
         public void IssueIsAddedToReport()
         {
             var projectReport = new ProjectReport();
+            var p = new ProblemDescriptor
+                (
+                102001,
+                "test",
+                Area.CPU,
+                "this is not actually a problem",
+                "do nothing"
+                );
 
             projectReport.AddIssue(new ProjectIssue
                 (
-                    new ProblemDescriptor(),
+                    p,
                     "dummy issue",
                     IssueCategory.ApiCalls
                 )

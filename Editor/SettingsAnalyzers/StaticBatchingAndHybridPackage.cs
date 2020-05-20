@@ -10,15 +10,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
     internal class StaticBatchingAndHybridPackage : ISettingsAnalyzer
     {
-        private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
-        {
-            id = 202000,
-            description = "Player Settings: Static batching is enabled",
-            area = "CPU",
-            problem =
-                "Static batching is enabled and the package com.unity.rendering.hybrid is installed. Static batching is incompatible with the batching techniques used in the Hybrid Renderer and Scriptable Render Pipeline, and will result in poor rendering performance and excessive memory use.",
-            solution = "Disable static batching in Player Settings"
-        };
+        private static readonly ProblemDescriptor descriptor = new ProblemDescriptor(
+            202000,
+            "Player Settings: Static batching is enabled",
+            Area.CPU,
+            "Static batching is enabled and the package com.unity.rendering.hybrid is installed. Static batching is incompatible with the batching techniques used in the Hybrid Renderer and Scriptable Render Pipeline, and will result in poor rendering performance and excessive memory use.",
+            "Disable static batching in Player Settings"
+        );
 
         public void Initialize(IAuditor auditor)
         {
