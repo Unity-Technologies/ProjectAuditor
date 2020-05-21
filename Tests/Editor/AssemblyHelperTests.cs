@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.Compilation;
+using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -46,6 +47,17 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
 #if UNITY_2018_1_OR_NEWER
         [Test]
+        public void CanResolveDefaultAssemblyAssetPath()
+        {
+            var assembly = CompilationPipeline.GetAssemblies(AssembliesType.Player).FirstOrDefault(a => a.name.Equals(Path.GetFileNameWithoutExtension(AssemblyHelper.DefaultAssemblyFileName)));
+            var assemblyInfo = AssemblyHelper.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
+
+            var path = AssemblyHelper.ResolveAssetPath(assemblyInfo, Path.Combine(Application.dataPath, "somefile"));
+
+            Assert.True(path.Equals("Assets/somefile"));
+        }
+
+        [Test]
         public void DefaultAssemblyInfoIsCorrect()
         {
             var assembly = CompilationPipeline.GetAssemblies(AssembliesType.Player).FirstOrDefault(a => a.name.Equals(Path.GetFileNameWithoutExtension(AssemblyHelper.DefaultAssemblyFileName)));
@@ -66,6 +78,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.IsTrue(assemblyInfo.asmDefPath.Equals("Packages/com.unity.project-auditor/Editor/Unity.ProjectAuditor.Editor.asmdef"));
             Assert.IsTrue(assemblyInfo.relativePath.Equals("Packages/com.unity.project-auditor"));
         }
+
 #endif
     }
 }
