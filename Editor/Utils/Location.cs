@@ -14,9 +14,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
     [Serializable]
     public class Location
     {
-        private int m_Line;
-        private string m_Path; // path relative to the project folder
-        private LocationType m_Type;
+        [SerializeField] private int m_Line;
+        [SerializeField] private string m_Path; // path relative to the project folder
+        [SerializeField] private LocationType m_Type;
 
         public string Filename
         {
