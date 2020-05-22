@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             new AnalysisViewDescriptor
             {
                 category = IssueCategory.ApiCalls,
-                name = IssueCategory.ApiCalls.ToString(),
+                name = "Code",
                 groupByDescription = true,
                 showAssemblySelection = true,
                 showCritical = true,
@@ -51,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             new AnalysisViewDescriptor
             {
                 category = IssueCategory.ProjectSettings,
-                name = IssueCategory.ProjectSettings.ToString(),
+                name = "Project Settings",
                 groupByDescription = false,
                 showAssemblySelection = false,
                 showCritical = false,

@@ -34,6 +34,36 @@ git clone https://github.com/mtrive/ProjectAuditor.git
 # Using Project Auditor
 To open the Project Auditor window in Unity, go to Window => Analysis => Project Auditor.
 
+<img src="images/window-menu.png" width="30%" height=30%>
+
+Once the Project Auditor window is opened. Press *Analyze* to analyse the project.
+
+<img src="images/intro.png">
+
+The analysis might take several seconds, depending on how large the project is. Once the analysis completes, Project Auditor will show the report of potential issues, filters and additional information.
+
+<img src="images/overview.png">
+
+The issues are categorized based on whether they are found in code or project settings. The active category can also be changed.
+
+<img src="images/category.png" width="50%" height=50%>
+
+The filters allow the user to search through the list of potential issues by string, Assembly and other criterias.
+
+<img src="images/filters.png" width="50%" height=50%>
+
+The issues are displayed in a table containing some details regarding impacted area, filename, etc.
+
+<img src="images/issues.png">
+
+The panels on the right hand side of the window provide additional information regarding the selected issue. The top panel shows an extended description of the problem, the next panel down contains a recommendation on how to solve the problem, and (when viewing script issues) the bottom panel shows an inverted call tree which allows you to see all of the code paths which lead to the currently-selected line of code.
+
+<img src="images/panels.png">
+
+The mute/unmute buttons can be used to silence specific issues, or groups of issues, that are currently selected.
+
+<img src="images/mute.png" width="50%" height=50%>
+
 # Technical details
 ## Requirements
 This version of Project Auditor is compatible with the following versions of the Unity Editor:
@@ -53,10 +83,12 @@ The following table indicates the package directory structure:
 |---|---|
 |`Data`|Contains the issue definition database.|
 |`Documentation~`|Contains documentation files.|
-|`Editor`|Contains all editor scripts: Project Auditor, Editor window and external DLLs.|
+|`Editor`|Contains all editor scripts: Project Auditor and external DLLs.|
+|`Editor/UI`|Project Auditor Editor window.|
 |`Tests`|Contains all scripts required to test the package.|
 
 ## Document revision history 
 |Date|Reason|
 |---|---|
+|May 21, 2019|Expanded *Using Project Auditor* section|
 |Dec 4, 2019|First draft.|
