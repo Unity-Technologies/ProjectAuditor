@@ -99,7 +99,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 var folders = asmDefPath.Split('/');
                 if (folders.Length > 2 && folders[0].Equals("Packages"))
                 {
-                    assemblyInfo.relativePath = Path.Combine(folders[0], folders[1]);
+                    assemblyInfo.relativePath = Path.Combine(folders[0], folders[1]).Replace("\\", "/");;
 #if UNITY_2019_3_OR_NEWER
                     var info =  UnityEditor.PackageManager.PackageInfo.FindForAssetPath(asmDefPath);
                     if (info != null)
