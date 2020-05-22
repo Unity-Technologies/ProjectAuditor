@@ -5,12 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [0.2.1] - 2020-05-22
-# Improved text search UX
-# Improved test coverage
-# Fixed background assembly analysis
-# Fixed lost issue location after domain reload
-# Fixed Yamato configuration
-# Updated documentation
+* Improved text search UX
+* Improved test coverage
+* Fixed background assembly analysis
+* Fixed lost issue location after domain reload
+* Fix tree view selection when background analysis is enabled
+* Fixed Yamato configuration
+* Updated documentation
 
 ## [0.2.0] - 2020-04-27
 * Added Boxing allocation analyzer
