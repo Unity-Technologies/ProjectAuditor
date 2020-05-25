@@ -2,6 +2,9 @@ using System;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    /// <summary>
+    /// ProblemDescriptor defines the problem and a possible recommendation.
+    /// </summary>
     [Serializable]
     public class ProblemDescriptor : IEquatable<ProblemDescriptor>
     {

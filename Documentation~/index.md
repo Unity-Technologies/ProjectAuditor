@@ -34,7 +34,7 @@ git clone https://github.com/mtrive/ProjectAuditor.git
 # Using Project Auditor
 To open the Project Auditor window in Unity, go to Window => Analysis => Project Auditor.
 
-<img src="images/window-menu.png" width="30%" height=30%>
+<img src="images/window-menu.png">
 
 Once the Project Auditor window is opened. Press *Analyze* to analyse the project.
 
@@ -46,11 +46,11 @@ The analysis might take several seconds, depending on how large the project is. 
 
 The issues are categorized based on whether they are found in code or project settings. The active category can also be changed.
 
-<img src="images/category.png" width="50%" height=50%>
+<img src="images/category.png">
 
 The filters allow the user to search through the list of potential issues by string, Assembly and other criterias.
 
-<img src="images/filters.png" width="50%" height=50%>
+<img src="images/filters.png">
 
 The issues are displayed in a table containing some details regarding impacted area, filename, etc.
 
@@ -62,7 +62,7 @@ The panels on the right hand side of the window provide additional information r
 
 The mute/unmute buttons can be used to silence specific issues, or groups of issues, that are currently selected.
 
-<img src="images/mute.png" width="50%" height=50%>
+<img src="images/mute.png">
 
 # Technical details
 ## Requirements

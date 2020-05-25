@@ -9,7 +9,7 @@ using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
     [Attribute]
-    public class StaticBatchingAndHybridPackage : ISettingsAnalyzer
+    internal class StaticBatchingAndHybridPackage : ISettingsAnalyzer
     {
         private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
         {

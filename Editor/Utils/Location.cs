@@ -46,13 +46,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
         }
 
-        public Location(string path, LocationType type = LocationType.Setting)
+        internal Location(string path, LocationType type = LocationType.Setting)
         {
             m_Path = path;
             m_Type = type;
         }
 
-        public Location(string path, int line, LocationType type = LocationType.Asset)
+        internal Location(string path, int line, LocationType type = LocationType.Asset)
         {
             m_Path = path;
             m_Line = line;

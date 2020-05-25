@@ -10,7 +10,7 @@ using Attribute = Unity.ProjectAuditor.Editor.SettingsAnalyzers.Attribute;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
-    public class SettingsAuditor : IAuditor
+    internal class SettingsAuditor : IAuditor
     {
         private readonly List<Assembly> m_Assemblies = new List<Assembly>();
         private readonly Evaluators m_Helpers = new Evaluators();

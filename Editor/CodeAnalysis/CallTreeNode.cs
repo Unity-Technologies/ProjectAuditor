@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         public bool perfCriticalContext;
         public string typeName;
 
-        public CallTreeNode(MethodReference methodReference, CallTreeNode caller = null)
+        internal CallTreeNode(MethodReference methodReference, CallTreeNode caller = null)
         {
             name = methodReference.FullName;
             methodName = "(anonymous)"; // default value

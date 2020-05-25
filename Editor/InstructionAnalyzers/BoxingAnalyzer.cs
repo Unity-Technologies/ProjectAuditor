@@ -7,7 +7,7 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     [Attribute]
-    public class BoxingAnalyzer : IInstructionAnalyzer
+    internal class BoxingAnalyzer : IInstructionAnalyzer
     {
         private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
         {

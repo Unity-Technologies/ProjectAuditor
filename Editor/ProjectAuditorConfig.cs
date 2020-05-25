@@ -4,14 +4,41 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    /// <summary>
+    /// Project-specific settings
+    /// </summary>
     public class ProjectAuditorConfig : ScriptableObject
     {
+        /// <summary>
+        /// If enabled, non-critical issues will not be shown in the report.
+        /// </summary>
         public bool displayOnlyCriticalIssues;
+
+        /// <summary>
+        /// If enabled, muted issues will also be displayed in the report.
+        /// </summary>
         public bool displayMutedIssues;
+
+        /// <summary>
+        /// If enabled, ProjectAuditor will run every time the project is built.
+        /// </summary>
         public bool enableAnalyzeOnBuild;
+
+        /// <summary>
+        /// If enabled, ProjectAuditor will try to partially analyze the project in the background.
+        /// </summary>
         public bool enableBackgroundAnalysis = true;
+
+        /// <summary>
+        /// If enabled, any issue reported by ProjectAuditor will cause the build to fail.
+        /// </summary>
         public bool enableFailBuildOnIssues;
+
+        /// <summary>
+        /// If enabled, ProjectAuditor will log statistics about analysis time.
+        /// </summary>
         public bool logTimingsInfo = false;
+
         private readonly List<Rule> m_Rules = new List<Rule>();
 
         public int NumRules

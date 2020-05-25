@@ -16,7 +16,7 @@ using ThreadPriority = System.Threading.ThreadPriority;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
-    public class ScriptAuditor : IAuditor
+    internal class ScriptAuditor : IAuditor
     {
         private readonly ProjectAuditorConfig m_Config;
         private readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();

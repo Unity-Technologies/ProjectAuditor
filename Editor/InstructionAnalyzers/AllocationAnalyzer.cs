@@ -7,7 +7,7 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     [Attribute]
-    public class AllocationAnalyzer : IInstructionAnalyzer
+    internal class AllocationAnalyzer : IInstructionAnalyzer
     {
         private static readonly ProblemDescriptor objectAllocationDescriptor = new ProblemDescriptor
         {

@@ -4,14 +4,39 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    /// <summary>
+    /// Affected area
+    /// </summary>
     public enum Area
     {
+        /// <summary>
+        /// CPU Performance
+        /// </summary>
         CPU,
+
+        /// <summary>
+        /// GPU Performance
+        /// </summary>
         GPU,
+
+        /// <summary>
+        /// Memory consumption
+        /// </summary>
         Memory,
+
+        /// <summary>
+        /// Application size
+        /// </summary>
         BuildSize,
+
+        /// <summary>
+        /// Load times
+        /// </summary>
         LoadTimes,
 
+        /// <summary>
+        /// All areas
+        /// </summary>
         All
     }
 
@@ -22,6 +47,9 @@ namespace Unity.ProjectAuditor.Editor
         NumCategories
     }
 
+    /// <summary>
+    /// ProjectAuditor Issue found in the current project
+    /// </summary>
     [Serializable]
     public class ProjectIssue
     {
@@ -33,10 +61,13 @@ namespace Unity.ProjectAuditor.Editor
         public ProblemDescriptor descriptor;
         public Location location;
 
-        private ProjectIssue()
-        {
-        }
-
+        /// <summary>
+        /// ProjectIssue constructor
+        /// </summary>
+        /// <param name="descriptor"> descriptor </param>
+        /// <param name="description"> Issue-specific description of the problem </param>
+        /// <param name="category"> Issue category </param>
+        /// <param name="location"> Issue address </param>
         public ProjectIssue(ProblemDescriptor descriptor,
                             string description,
                             IssueCategory category,

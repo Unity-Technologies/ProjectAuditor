@@ -8,7 +8,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     [Attribute]
-    public class EmptyMethodAnalyzer : IInstructionAnalyzer
+    internal class EmptyMethodAnalyzer : IInstructionAnalyzer
     {
         private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
         {

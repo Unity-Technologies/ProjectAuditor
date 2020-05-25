@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    /// <summary>
+    /// ProjectReport contains a list of all issues found by ProjectAuditor
+    /// </summary>
     [Serializable]
     public class ProjectReport
     {
@@ -18,6 +21,11 @@ namespace Unity.ProjectAuditor.Editor
             get { return m_Issues.Count; }
         }
 
+        /// <summary>
+        /// Get total number of issues for a specific IssueCategory
+        /// </summary>
+        /// <param name="category"> Desired IssueCategory</param>
+        /// <returns> Number of project issues</returns>
         public int GetNumIssues(IssueCategory category)
         {
             mutex.WaitOne();
@@ -26,6 +34,11 @@ namespace Unity.ProjectAuditor.Editor
             return result;
         }
 
+        /// <summary>
+        /// Get all issues for a specific IssueCategory
+        /// </summary>
+        /// <param name="category"> Desired IssueCategory</param>
+        /// <returns> Array of project issues</returns>
         public ProjectIssue[] GetIssues(IssueCategory category)
         {
             mutex.WaitOne();
@@ -41,6 +54,9 @@ namespace Unity.ProjectAuditor.Editor
             mutex.ReleaseMutex();
         }
 
+        /// <summary>
+        /// Export report to json format
+        /// </summary>
         public void Export(string reportPath)
         {
             var writer = new StreamWriter(reportPath);

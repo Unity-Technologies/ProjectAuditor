@@ -143,27 +143,6 @@ namespace Unity.ProjectAuditor.Editor
     }
 }
 
-namespace Unity.ProjectAuditor.Editor.Auditors
-{
-    public class ScriptAuditor : Unity.ProjectAuditor.Editor.IAuditor
-    {
-        public virtual void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
-        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.ScriptAuditor.<GetAnalyzerTypes>d__10))] public virtual System.Collections.Generic.IEnumerable<System.Type> GetAnalyzerTypes(System.Reflection.Assembly assembly);
-        public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
-        public virtual void LoadDatabase(string path);
-        public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-    }
-
-    public class SettingsAuditor : Unity.ProjectAuditor.Editor.IAuditor
-    {
-        public virtual void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
-        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.SettingsAuditor.<GetAnalyzerTypes>d__8))] public virtual System.Collections.Generic.IEnumerable<System.Type> GetAnalyzerTypes(System.Reflection.Assembly assembly);
-        public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
-        public virtual void LoadDatabase(string path);
-        public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-    }
-}
-
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     public class CallTreeNode
@@ -176,7 +155,6 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         public bool perfCriticalContext;
         public string typeName;
         public string prettyName { get; }
-        public CallTreeNode(Mono.Cecil.MethodReference methodReference, Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode caller = default(Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode)) {}
         public void AddChild(Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode child);
         public Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode GetChild(int index = 0);
         public string GetPrettyName(bool withAssembly = False);
@@ -187,38 +165,9 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    [Unity.ProjectAuditor.Editor.InstructionAnalyzers.] public class AllocationAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer
-    {
-        public AllocationAnalyzer(Unity.ProjectAuditor.Editor.IAuditor auditor) {}
-        public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
-        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.AllocationAnalyzer.<GetOpCodes>d__4))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
-    }
-
     public class Attribute : System.Attribute
     {
         public Attribute() {}
-    }
-
-    [Unity.ProjectAuditor.Editor.InstructionAnalyzers.] public class BoxingAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer
-    {
-        public BoxingAnalyzer(Unity.ProjectAuditor.Editor.IAuditor auditor) {}
-        public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
-        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.BoxingAnalyzer.<GetOpCodes>d__3))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
-    }
-
-    [Unity.ProjectAuditor.Editor.InstructionAnalyzers.] public class BuiltinInstructionAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer
-    {
-        public BuiltinInstructionAnalyzer(Unity.ProjectAuditor.Editor.IAuditor auditor) {}
-        public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
-        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.BuiltinInstructionAnalyzer.<GetOpCodes>d__4))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
-    }
-
-    [Unity.ProjectAuditor.Editor.InstructionAnalyzers.] public class EmptyMethodAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer
-    {
-        public EmptyMethodAnalyzer(Unity.ProjectAuditor.Editor.IAuditor auditor) {}
-        public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
-        public static Unity.ProjectAuditor.Editor.ProblemDescriptor GetDescriptor();
-        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.EmptyMethodAnalyzer.<GetOpCodes>d__3))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
     }
 
     public interface IInstructionAnalyzer
@@ -240,13 +189,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         public abstract Unity.ProjectAuditor.Editor.ProjectIssue Analyze();
         public abstract int GetDescriptorId();
     }
-
-    [Unity.ProjectAuditor.Editor.SettingsAnalyzers.] public class StaticBatchingAndHybridPackage : Unity.ProjectAuditor.Editor.SettingsAnalyzers.ISettingsAnalyzer
-    {
-        public StaticBatchingAndHybridPackage(Unity.ProjectAuditor.Editor.IAuditor auditor) {}
-        public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze();
-        public virtual int GetDescriptorId();
-    }
 }
 
 namespace Unity.ProjectAuditor.Editor.Utils
@@ -257,8 +199,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public int Line { get; }
         public string Path { get; }
         public Unity.ProjectAuditor.Editor.Utils.LocationType Type { get; }
-        public Location(string path, Unity.ProjectAuditor.Editor.Utils.LocationType type = 1) {}
-        public Location(string path, int line, Unity.ProjectAuditor.Editor.Utils.LocationType type = 0) {}
         public bool IsValid();
         public void Open();
     }
