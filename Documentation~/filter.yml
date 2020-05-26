@@ -1,0 +1,16 @@
+apiRules:
+  - exclude:
+      uidRegex: ^UnityEditor\.ProjectAuditor\.EditorTests$
+      type: Namespace
+  - exclude:
+      uidRegex: ^Unity\.ProjectAuditor\.Editor\.CodeAnalysis$
+      type: Namespace
+  - exclude:
+      uidRegex: ^Unity\.ProjectAuditor\.Editor\.Utils$
+      type: Namespace
+  - exclude:
+      uidRegex: \.LoadDatabase\(
+      type: Method
+  - exclude:
+      uidRegex: Rule$
+      type: Type
