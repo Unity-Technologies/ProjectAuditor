@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             GroupName
         }
 
-        // SteveM TODO - Sorting doesn't work in this window (or in the Thread Selection Window in Profile Analyzer that
+        // stephenm TODO - Sorting doesn't work in this window (or in the Thread Selection Window in Profile Analyzer that
         // this is based on). So maybe rip this all out?
         public enum SortOption
         {
@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         private readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
         private readonly TreeViewSelection m_Selection;
 
-        // SteveM TODO - Sorting doesn't work in this window (or in the Thread Selection Window in Profile Analyzer that
+        // stephenm TODO - Sorting doesn't work in this window (or in the Thread Selection Window in Profile Analyzer that
         // this is based on). So maybe rip this all out?
         // Sort options per column
         private readonly SortOption[] m_SortOptions =
@@ -598,7 +598,7 @@ namespace Unity.ProjectAuditor.Editor.UI
     }
 
 
-    // SteveM TODO - Can ditch this if we ditch sorting.
+    // stephenm TODO - Can ditch this if we ditch sorting.
     internal static class MyExtensionMethods
     {
         public static IOrderedEnumerable<T> Order<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector,

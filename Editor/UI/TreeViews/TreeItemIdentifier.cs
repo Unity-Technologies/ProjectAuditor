@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public string name { get; private set; }
 
-        // SteveM TODO - Pretty sure this can go. Assemblies don't have indeces. I think the most we'll need is a flag
+        // stephenm TODO - Pretty sure this can go. Assemblies don't have indeces. I think the most we'll need is a flag
         // to say whether this is the "All" TreeItemIdentifier (i.e. (nameWithIndex == "All"))
         public int index { get; private set; }
 
@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public TreeItemIdentifier(string _nameWithIndex)
         {
-            // SteveM TODO - Pretty sure this can go. Assembly names don't have a foo:N (or N:foo?) naming convention like threads do.
+            // stephenm TODO - Pretty sure this can go. Assembly names don't have a foo:N (or N:foo?) naming convention like threads do.
             // So index should probably always be treated as 0 (sorry, "kSingle")
             nameWithIndex = _nameWithIndex;
 

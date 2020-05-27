@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -35,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         private void OnDestroy()
         {
-            m_ProjectAuditorWindow.SetAreaSelection(m_AreaTable.GetTreeViewSelection());
+            ApplySelection();
         }
 
         public static bool IsOpen()
@@ -73,6 +74,16 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_AreaTable = new MultiSelectionTable(m_TreeViewState, multiColumnHeader, names, selection);
         }
 
+        private void ApplySelection()
+        {
+            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+            m_ProjectAuditorWindow.SetAreaSelection(m_AreaTable.GetTreeViewSelection());
+
+            var payload = new Dictionary<string, string>();
+            payload["areas"] = m_ProjectAuditorWindow.GetSelectedAreasSummary();
+            ProjectAuditorAnalytics.SendUIButtonEventWithKeyValues(ProjectAuditorAnalytics.UIButton.AreaSelectApply, analytic, payload);
+        }
+
         private void OnGUI()
         {
             EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));
@@ -83,7 +94,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Clear", GUILayout.Width(50))) m_AreaTable.ClearSelection();
             if (GUILayout.Button("Apply", GUILayout.Width(50)))
-                m_ProjectAuditorWindow.SetAreaSelection(m_AreaTable.GetTreeViewSelection());
+            {
+                ApplySelection();
+            }
+
             EditorGUILayout.EndHorizontal();
 
             if (m_AreaTable != null)

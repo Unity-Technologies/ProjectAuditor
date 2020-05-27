@@ -64,6 +64,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         private string[] m_ModeNames;
         private ProjectAuditor m_ProjectAuditor;
         private bool m_ShouldRefresh = false;
+        private ProjectAuditorAnalytics.Analytic m_AnalyzeButtonAnalytic;
 
         // UI
         private readonly List<AnalysisView> m_AnalysisViews = new List<AnalysisView>();
@@ -144,6 +145,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         private void OnEnable()
         {
+            ProjectAuditorAnalytics.EnableAnalytics();
+
             m_ProjectAuditor = new ProjectAuditor();
 
             UpdateAssemblySelection();
@@ -215,6 +218,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         private void Analyze()
         {
+            m_AnalyzeButtonAnalytic = ProjectAuditorAnalytics.BeginAnalytic();
+
             m_ShouldRefresh = true;
             m_AnalysisState = AnalysisState.InProgress;
             m_ProjectReport = new ProjectReport();
@@ -242,7 +247,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                         newIssues.Clear();
 
                         if (completed)
+                        {
                             m_AnalysisState = AnalysisState.Completed;
+                        }
+
                         m_ShouldRefresh = true;
                     },
                     new ProgressBarDisplay());
@@ -267,6 +275,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 UpdateAssemblySelection();
 
                 m_AnalysisState = AnalysisState.Valid;
+
+                ProjectAuditorAnalytics.SendUIButtonEventWithAnalyzeSummary(ProjectAuditorAnalytics.UIButton.Analyze, m_AnalyzeButtonAnalytic, m_ProjectReport);
             }
 
             m_ActiveIssueTable.Reload();
@@ -423,119 +433,23 @@ namespace Unity.ProjectAuditor.Editor.UI
             return string.Empty;
         }
 
-        private string GetSelectedAreasSummary()
+        internal string GetSelectedAreasSummary()
         {
             return GetSelectedSummary(m_AreaSelection, m_AreaNames);
         }
 
-        // SteveM TODO - This seems wildly more complex than it needs to be... UNLESS assemblies can have sub-assemblies?
-        // If that's the case, we need to test for that. Otherwise we need to strip a bunch of this complexity out.
         private string GetSelectedSummary(TreeViewSelection selection, string[] names)
         {
-            if (selection.selection == null || selection.selection.Count == 0)
+            string[] selectedStrings = selection.GetSelectedStrings(names, true);
+            int numStrings = selectedStrings.Length;
+
+            if (numStrings == 0)
                 return "None";
 
-            // Count all items in a group
-            var dict = new Dictionary<string, int>();
-            var selectionDict = new Dictionary<string, int>();
-            foreach (var nameWithIndex in names)
-            {
-                var identifier = new TreeItemIdentifier(nameWithIndex);
-                if (identifier.index == TreeItemIdentifier.kAll)
-                    continue;
+            if (numStrings == 1)
+                return selectedStrings[0];
 
-                int count;
-                if (dict.TryGetValue(identifier.name, out count))
-                    dict[identifier.name] = count + 1;
-                else
-                    dict[identifier.name] = 1;
-
-                selectionDict[identifier.name] = 0;
-            }
-
-            // Count all the items we have 'selected' in a group
-            foreach (var nameWithIndex in selection.selection)
-            {
-                var identifier = new TreeItemIdentifier(nameWithIndex);
-
-                if (dict.ContainsKey(identifier.name) &&
-                    selectionDict.ContainsKey(identifier.name) &&
-                    identifier.index <= dict[identifier.name])
-                    // Selected assembly valid and in the assembly list
-                    // and also within the range of valid assemblies for this data set
-                    selectionDict[identifier.name]++;
-            }
-
-            // Count all groups where we have 'selected all the items'
-            var selectedCount = 0;
-            foreach (var name in dict.Keys)
-            {
-                if (selectionDict[name] != dict[name])
-                    continue;
-
-                selectedCount++;
-            }
-
-            // If we've just added all the item names we have everything selected
-            // Note we don't compare against the names array directly as this contains the 'all' versions
-            if (selectedCount == dict.Keys.Count)
-                return "All";
-
-            // Add all the individual items were we haven't already added the group
-            var individualItems = new List<string>();
-            foreach (var name in selectionDict.Keys)
-            {
-                var selectionCount = selectionDict[name];
-                if (selectionCount <= 0)
-                    continue;
-                var itemCount = dict[name];
-                if (itemCount == 1)
-                    individualItems.Add(name);
-                else if (selectionCount != itemCount)
-                    individualItems.Add(string.Format("{0} ({1} of {2})", name, selectionCount, itemCount));
-                else
-                    individualItems.Add(string.Format("{0} (All)", name));
-            }
-
-            // Maintain alphabetical order
-            individualItems.Sort(CompareUINames);
-
-            if (individualItems.Count == 0)
-                return "None";
-
-            return string.Join(", ", individualItems.ToArray());
-        }
-
-        private int CompareUINames(string a, string b)
-        {
-            var aTokens = a.Split(':');
-            var bTokens = b.Split(':');
-
-            if (aTokens.Length > 1 && bTokens.Length > 1)
-            {
-                var firstName = aTokens[0].Trim();
-                var secondName = bTokens[0].Trim();
-
-                if (firstName == secondName)
-                {
-                    var firstNameIndex = aTokens[1].Trim();
-                    var secondNameIndex = bTokens[1].Trim();
-
-                    if (firstNameIndex == "All" && secondNameIndex != "All")
-                        return -1;
-                    if (firstNameIndex != "All" && secondNameIndex == "All")
-                        return 1;
-
-                    int aGroupIndex;
-                    if (int.TryParse(firstNameIndex, out aGroupIndex))
-                    {
-                        int bGroupIndex;
-                        if (int.TryParse(secondNameIndex, out bGroupIndex)) return aGroupIndex.CompareTo(bGroupIndex);
-                    }
-                }
-            }
-
-            return a.CompareTo(b);
+            return string.Join(", ", selectedStrings);
         }
 
         private void DrawSelectedText(string text)
@@ -575,6 +489,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 if (m_AssemblyNames != null && m_AssemblyNames.Length > 0)
                 {
+                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+
                     // Note: Window auto closes as it loses focus so this isn't strictly required
                     if (AssemblySelectionWindow.IsOpen())
                     {
@@ -590,6 +506,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                         AssemblySelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AssemblySelection,
                             m_AssemblyNames);
                     }
+
+                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.AssemblySelect, analytic);
                 }
             }
             GUI.enabled = lastEnabled;
@@ -602,7 +520,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndHorizontal();
         }
 
-        // SteveM TODO - if AssemblySelectionWindow and AreaSelectionWindow end up sharing a common base class then
+        // stephenm TODO - if AssemblySelectionWindow and AreaSelectionWindow end up sharing a common base class then
         // DrawAssemblyFilter() and DrawAreaFilter() can be made to call a common method and just pass the selection, names
         // and the type of window we want.
         private void DrawAreaFilter()
@@ -613,12 +531,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_AreaNames.Length > 0)
             {
                 var lastEnabled = GUI.enabled;
-                // SteveM TODO - We don't currently have any sense of when the Auditor is busy and should disallow user input
+                // stephenm TODO - We don't currently have any sense of when the Auditor is busy and should disallow user input
                 var enabled = /*!IsAnalysisRunning() &&*/ !AreaSelectionWindow.IsOpen();
                 GUI.enabled = enabled;
                 if (GUILayout.Button(Styles.AreaFilterSelect, EditorStyles.miniButton,
                     GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
                 {
+                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+
                     // Note: Window auto closes as it loses focus so this isn't strictly required
                     if (AreaSelectionWindow.IsOpen())
                     {
@@ -634,6 +554,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                         AreaSelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AreaSelection,
                             m_AreaNames);
                     }
+
+                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.AreaSelect, analytic);
                 }
 
                 GUI.enabled = lastEnabled;
@@ -684,39 +606,92 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+
                 if (GUILayout.Button(Styles.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                 {
+                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                     var selectedItems = m_ActiveIssueTable.GetSelectedItems();
-                    foreach (var item in selectedItems) SetRuleForItem(item, Rule.Action.None);
+                    foreach (var item in selectedItems)
+                    {
+                        SetRuleForItem(item, Rule.Action.None);
+                    }
 
-                    if (!m_ProjectAuditor.config.displayMutedIssues) m_ActiveIssueTable.SetSelection(new List<int>());
+                    if (!m_ProjectAuditor.config.displayMutedIssues)
+                    {
+                        m_ActiveIssueTable.SetSelection(new List<int>());
+                    }
+                    ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute, analytic, m_ActiveIssueTable.GetSelectedItems());
                 }
 
                 if (GUILayout.Button(Styles.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                 {
+                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                     var selectedItems = m_ActiveIssueTable.GetSelectedItems();
-                    foreach (var item in selectedItems) ClearRulesForItem(item);
+                    foreach (var item in selectedItems)
+                    {
+                        ClearRulesForItem(item);
+                    }
+                    ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Unmute, analytic, m_ActiveIssueTable.GetSelectedItems());
                 }
 
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-
                 GUI.enabled = m_ActiveAnalysisView.desc.showCritical;
+
+                bool wasShowingCritical = m_ProjectAuditor.config.displayOnlyCriticalIssues;
                 m_ProjectAuditor.config.displayOnlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
                     m_ProjectAuditor.config.displayOnlyCriticalIssues, GUILayout.Width(160));
                 GUI.enabled = true;
 
+                if (wasShowingCritical != m_ProjectAuditor.config.displayOnlyCriticalIssues)
+                {
+                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                    var payload = new Dictionary<string, string>();
+                    payload["selected"] = m_ActiveAnalysisView.desc.showCritical ? "true" : "false";
+                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues, analytic);
+                }
+
+                bool wasDisplayingMuted = m_ProjectAuditor.config.displayMutedIssues;
                 m_ProjectAuditor.config.displayMutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
                     m_ProjectAuditor.config.displayMutedIssues, GUILayout.Width(127));
+
+                if (wasDisplayingMuted != m_ProjectAuditor.config.displayMutedIssues)
+                {
+                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                    var payload = new Dictionary<string, string>();
+                    payload["selected"] = m_ProjectAuditor.config.displayMutedIssues ? "true" : "false";
+                    ProjectAuditorAnalytics.SendUIButtonEventWithKeyValues(ProjectAuditorAnalytics.UIButton.ShowMuted, analytic, payload);
+                }
+
                 EditorGUILayout.EndHorizontal();
 
                 if (EditorGUI.EndChangeCheck()) shouldRefresh = true;
 
-                if (shouldRefresh || m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed || m_ActiveModeIndex != activeModeIndex)
+                bool activeModeChanged = (m_ActiveModeIndex != activeModeIndex);
+                if (activeModeChanged)
                 {
+                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                     m_ActiveModeIndex = activeModeIndex;
+
+                    RefreshDisplay();
+
+                    if (m_ActiveModeIndex == (int)IssueCategory.ApiCalls)
+                    {
+                        ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.ApiCalls, analytic);
+                    }
+                    else if (m_ActiveModeIndex == (int)IssueCategory.ProjectSettings)
+                    {
+                        ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.ProjectSettings, analytic);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Unrecognised active mode: couldn't sent analytics event");
+                    }
+                }
+                else if (shouldRefresh || m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed)
+                {
                     RefreshDisplay();
                     m_ShouldRefresh = false;
                 }
@@ -826,18 +801,29 @@ namespace Unity.ProjectAuditor.Editor.UI
                 GUI.enabled = (m_AnalysisState == AnalysisState.Valid || m_AnalysisState == AnalysisState.NotStarted);
 
                 if (GUILayout.Button(Styles.AnalyzeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                {
                     Analyze();
+                }
 
                 GUI.enabled = m_AnalysisState == AnalysisState.Valid;
 
                 if (GUILayout.Button(Styles.ExportButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                {
+                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                     Export();
+                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Export, analytic);
+                }
 
                 GUI.enabled = true;
 
                 if (m_DeveloperMode)
+                {
                     if (GUILayout.Button(Styles.ReloadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                    {
                         Reload();
+                    }
+                }
+
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
                     GUILayout.Label(Styles.AnalysisInProgressLabel, GUILayout.ExpandWidth(true));
