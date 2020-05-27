@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     internal class EmptyMethodAnalyzer : IInstructionAnalyzer
     {
-        private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
+        private static readonly ProblemDescriptor s_Descriptor = new ProblemDescriptor
             (
             102001,
             "Empty MonoBehaviour Method",
@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public void Initialize(IAuditor auditor)
         {
-            auditor.RegisterDescriptor(descriptor);
+            auditor.RegisterDescriptor(s_Descriptor);
         }
 
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
             return new ProjectIssue
             (
-                descriptor,
+                s_Descriptor,
                 methodDefinition.FullName,
                 IssueCategory.ApiCalls,
                 new CallTreeNode(methodDefinition)
@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public static ProblemDescriptor GetDescriptor()
         {
-            return descriptor;
+            return s_Descriptor;
         }
     }
 }

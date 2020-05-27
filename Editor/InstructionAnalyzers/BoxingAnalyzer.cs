@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     internal class BoxingAnalyzer : IInstructionAnalyzer
     {
-        private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
+        private static readonly ProblemDescriptor s_Descriptor = new ProblemDescriptor
             (
             102000,
             "Boxing Allocation",
@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public void Initialize(IAuditor auditor)
         {
-            auditor.RegisterDescriptor(descriptor);
+            auditor.RegisterDescriptor(s_Descriptor);
         }
 
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
             return new ProjectIssue
             (
-                descriptor,
+                s_Descriptor,
                 description,
                 IssueCategory.ApiCalls,
                 calleeNode
