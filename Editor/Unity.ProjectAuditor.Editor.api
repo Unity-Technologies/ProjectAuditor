@@ -145,7 +145,6 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
     public class CallTreeNode
     {
         public string assemblyName;
-        public System.Collections.Generic.List<Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode> children;
         public Unity.ProjectAuditor.Editor.Utils.Location location;
         public string methodName;
         public string name;

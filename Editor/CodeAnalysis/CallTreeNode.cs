@@ -10,7 +10,8 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
     [Serializable]
     public class CallTreeNode
     {
-        [SerializeField] private List<CallTreeNode> children = new List<CallTreeNode>();
+        [SerializeField] private List<CallTreeNode> m_Children = new List<CallTreeNode>();
+
         public string assemblyName;
         public Location location;
         public string methodName;
@@ -72,27 +73,27 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         public bool HasChildren()
         {
-            return children != null && children.Count > 0;
+            return m_Children != null && m_Children.Count > 0;
         }
 
         public void AddChild(CallTreeNode child)
         {
-            children.Add(child);
+            m_Children.Add(child);
         }
 
         public CallTreeNode GetChild(int index = 0)
         {
-            return children[index];
+            return m_Children[index];
         }
 
         public int GetNumChildren()
         {
-            return children.Count;
+            return m_Children.Count;
         }
 
         public bool HasValidChildren()
         {
-            return children != null;
+            return m_Children != null;
         }
 
         public string GetPrettyName(bool withAssembly = false)
@@ -106,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         public bool IsPerfCriticalContext()
         {
-            return perfCriticalContext || (HasChildren() && children.Any(child => child.IsPerfCriticalContext()));
+            return perfCriticalContext || (HasChildren() && m_Children.Any(child => child.IsPerfCriticalContext()));
         }
     }
 }
