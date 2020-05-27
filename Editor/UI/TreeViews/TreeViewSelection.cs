@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             if (selection == null || selection.Count == 0)
             {
-                if(summarize)
+                if (summarize)
                 {
                     return new string[] { "None" };
                 }

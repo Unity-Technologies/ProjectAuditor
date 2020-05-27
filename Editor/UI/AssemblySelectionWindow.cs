@@ -86,7 +86,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var payload = new Dictionary<string, string>();
             string[] selectedAsmNames = selection.GetSelectedStrings(m_Names, false);
 
-            if(selectedAsmNames == null || selectedAsmNames.Length == 0)
+            if (selectedAsmNames == null || selectedAsmNames.Length == 0)
             {
                 payload["numSelected"] = "0";
                 payload["numUnityAssemblies"] = "0";
