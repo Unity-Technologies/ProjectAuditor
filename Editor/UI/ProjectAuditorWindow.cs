@@ -284,7 +284,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         private void Reload()
         {
-            m_ProjectAuditor.LoadDatabase();
+            OnEnable();
         }
 
         private void Export()

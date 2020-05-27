@@ -6,7 +6,6 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    [Attribute]
     internal class BoxingAnalyzer : IInstructionAnalyzer
     {
         private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
@@ -21,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             solution = "Try to avoid Boxing when possible."
         };
 
-        public BoxingAnalyzer(IAuditor auditor)
+        public void Initialize(IAuditor auditor)
         {
             auditor.RegisterDescriptor(descriptor);
         }

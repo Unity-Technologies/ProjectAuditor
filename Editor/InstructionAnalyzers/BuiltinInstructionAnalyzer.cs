@@ -7,13 +7,12 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    [Attribute]
     internal class BuiltinInstructionAnalyzer : IInstructionAnalyzer
     {
-        private readonly Dictionary<string, ProblemDescriptor> m_Descriptors; // type+method name as key
-        private readonly Dictionary<string, ProblemDescriptor> m_WholeNamespaceDescriptors; // namespace as key
+        private Dictionary<string, ProblemDescriptor> m_Descriptors; // type+method name as key
+        private Dictionary<string, ProblemDescriptor> m_WholeNamespaceDescriptors; // namespace as key
 
-        public BuiltinInstructionAnalyzer(IAuditor auditor)
+        public void Initialize(IAuditor auditor)
         {
             m_Descriptors = auditor.GetDescriptors().Where(descriptor => !descriptor.method.Equals("*") && !string.IsNullOrEmpty(descriptor.type)).ToDictionary(descriptor => descriptor.type + "." + descriptor.method);
             m_WholeNamespaceDescriptors = auditor.GetDescriptors().Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);

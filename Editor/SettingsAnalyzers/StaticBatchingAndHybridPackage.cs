@@ -8,7 +8,6 @@ using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
-    [Attribute]
     internal class StaticBatchingAndHybridPackage : ISettingsAnalyzer
     {
         private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
@@ -21,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             solution = "Disable static batching in Player Settings"
         };
 
-        public StaticBatchingAndHybridPackage(IAuditor auditor)
+        public void Initialize(IAuditor auditor)
         {
             auditor.RegisterDescriptor(descriptor);
         }

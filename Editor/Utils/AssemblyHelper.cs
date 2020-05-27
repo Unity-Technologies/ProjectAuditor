@@ -19,6 +19,18 @@ namespace Unity.ProjectAuditor.Editor.Utils
             get { return Path.GetFileNameWithoutExtension(DefaultAssemblyFileName); }
         }
 
+        public static IEnumerable<Type> GetAllTypes()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes());
+        }
+
+        public static IEnumerable<Type> GetAllTypesInheritedFromInterface<InterfaceT>()
+        {
+            var interfaceType = typeof(InterfaceT);
+            return GetAllTypes()
+                .Where(type => type != interfaceType && interfaceType.IsAssignableFrom(type));
+        }
+
         public static IEnumerable<string> GetPrecompiledAssemblyPaths()
         {
             var assemblyPaths = new List<string>();

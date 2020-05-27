@@ -22,10 +22,10 @@ namespace Unity.ProjectAuditor.Editor
     public interface IAuditor
     {
         public abstract void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
-        public abstract System.Collections.Generic.IEnumerable<System.Type> GetAnalyzerTypes(System.Reflection.Assembly assembly);
         public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
-        public abstract void LoadDatabase(string path);
+        public abstract void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
         public abstract void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+        public abstract void Reload(string path);
     }
 
     public interface IProgressBar
@@ -69,9 +69,8 @@ namespace Unity.ProjectAuditor.Editor
         public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<bool> onUpdate, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public T GetAuditor<T>() where T : class;
-        public void LoadDatabase();
-        public void LoadDatabase(string path);
         public virtual void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
+        public void Reload(string path);
     }
 
     public class ProjectAuditorConfig : UnityEngine.ScriptableObject
@@ -165,29 +164,21 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    public class Attribute : System.Attribute
-    {
-        public Attribute() {}
-    }
-
     public interface IInstructionAnalyzer
     {
         public abstract Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
         public abstract System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
+        public abstract void Initialize(Unity.ProjectAuditor.Editor.IAuditor auditor);
     }
 }
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
-    public class Attribute : System.Attribute
-    {
-        public Attribute() {}
-    }
-
     public interface ISettingsAnalyzer
     {
         public abstract Unity.ProjectAuditor.Editor.ProjectIssue Analyze();
         public abstract int GetDescriptorId();
+        public abstract void Initialize(Unity.ProjectAuditor.Editor.IAuditor auditor);
     }
 }
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Unity.ProjectAuditor.Editor.Auditors;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -44,11 +45,13 @@ namespace Unity.ProjectAuditor.Editor
                 AssetDatabase.CreateAsset(config, assetPath);
             }
 
-            m_Auditors.Add(new ScriptAuditor(config));
-            m_Auditors.Add(new SettingsAuditor(config));
-            // Add more Auditors here...
-
-            LoadDatabase();
+            foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<IAuditor>())
+            {
+                var instance = Activator.CreateInstance(type) as IAuditor;
+                instance.Initialize(config);
+                instance.Reload(dataPath);
+                m_Auditors.Add(instance);
+            }
         }
 
         public ProjectAuditorConfig config { get; set; }
@@ -140,14 +143,9 @@ namespace Unity.ProjectAuditor.Editor
             return null;
         }
 
-        public void LoadDatabase(string path)
+        public void Reload(string path)
         {
-            foreach (var auditor in m_Auditors) auditor.LoadDatabase(path);
-        }
-
-        public void LoadDatabase()
-        {
-            LoadDatabase(dataPath);
+            foreach (var auditor in m_Auditors) auditor.Reload(path);
         }
 
 #if UNITY_2018_1_OR_NEWER

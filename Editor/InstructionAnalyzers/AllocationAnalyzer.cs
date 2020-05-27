@@ -6,7 +6,6 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    [Attribute]
     internal class AllocationAnalyzer : IInstructionAnalyzer
     {
         private static readonly ProblemDescriptor objectAllocationDescriptor = new ProblemDescriptor
@@ -31,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             solution = "Try to avoid allocating arrays in frequently-updated code."
         };
 
-        public AllocationAnalyzer(IAuditor auditor)
+        public void Initialize(IAuditor auditor)
         {
             auditor.RegisterDescriptor(objectAllocationDescriptor);
             auditor.RegisterDescriptor(arrayAllocationDescriptor);

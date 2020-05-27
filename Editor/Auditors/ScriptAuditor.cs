@@ -11,21 +11,21 @@ using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 using UnityEngine.Profiling;
-using Attribute = Unity.ProjectAuditor.Editor.InstructionAnalyzers.Attribute;
 using ThreadPriority = System.Threading.ThreadPriority;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
     internal class ScriptAuditor : IAuditor
     {
-        private readonly ProjectAuditorConfig m_Config;
         private readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
         private readonly List<OpCode> m_OpCodes = new List<OpCode>();
+
+        private ProjectAuditorConfig m_Config;
         private List<ProblemDescriptor> m_ProblemDescriptors;
 
         private Thread m_AssemblyAnalysisThread;
 
-        internal ScriptAuditor(ProjectAuditorConfig config)
+        public void Initialize(ProjectAuditorConfig config)
         {
             m_Config = config;
         }
@@ -33,6 +33,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             return m_ProblemDescriptors;
+        }
+
+        public void Reload(string path)
+        {
+            m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors(path, "ApiDatabase");
+
+            foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<IInstructionAnalyzer>())
+                AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
         }
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
@@ -140,22 +148,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
-        public void LoadDatabase(string path)
-        {
-            m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors(path, "ApiDatabase");
-
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-                foreach (var type in GetAnalyzerTypes(assembly))
-                    AddAnalyzer(Activator.CreateInstance(type, this) as IInstructionAnalyzer);
-        }
-
-        public IEnumerable<Type> GetAnalyzerTypes(Assembly assembly)
-        {
-            foreach (var type in assembly.GetTypes())
-                if (type.GetCustomAttributes(typeof(Attribute), true).Length > 0)
-                    yield return type;
-        }
-
         public void RegisterDescriptor(ProblemDescriptor descriptor)
         {
             // TODO: check for id conflict
@@ -244,6 +236,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         private void AddAnalyzer(IInstructionAnalyzer analyzer)
         {
+            analyzer.Initialize(this);
             m_InstructionAnalyzers.Add(analyzer);
             m_OpCodes.AddRange(analyzer.GetOpCodes());
         }

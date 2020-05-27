@@ -7,7 +7,6 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    [Attribute]
     internal class EmptyMethodAnalyzer : IInstructionAnalyzer
     {
         private static readonly ProblemDescriptor descriptor = new ProblemDescriptor
@@ -21,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             solution = "Remove any empty MonoBehaviour methods."
         };
 
-        public EmptyMethodAnalyzer(IAuditor auditor)
+        public void Initialize(IAuditor auditor)
         {
             auditor.RegisterDescriptor(descriptor);
         }

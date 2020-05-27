@@ -6,7 +6,6 @@ using Unity.ProjectAuditor.Editor.SettingsAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.Macros;
 using UnityEngine;
-using Attribute = Unity.ProjectAuditor.Editor.SettingsAnalyzers.Attribute;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
@@ -22,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             new Dictionary<int, ISettingsAnalyzer>();
         private List<ProblemDescriptor> m_ProblemDescriptors;
 
-        internal SettingsAuditor(ProjectAuditorConfig config)
+        public void Initialize(ProjectAuditorConfig config)
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             m_Assemblies.Add(assemblies.First(a => a.Location.Contains("UnityEngine.dll")));
@@ -48,20 +47,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             return m_ProblemDescriptors;
         }
 
-        public void LoadDatabase(string path)
+        public void Reload(string path)
         {
             m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors(path, "ProjectSettings");
 
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-                foreach (var type in GetAnalyzerTypes(assembly))
-                    AddAnalyzer(Activator.CreateInstance(type, this) as ISettingsAnalyzer);
-        }
-
-        public IEnumerable<Type> GetAnalyzerTypes(Assembly assembly)
-        {
-            foreach (var type in assembly.GetTypes())
-                if (type.GetCustomAttributes(typeof(Attribute), true).Length > 0)
-                    yield return type;
+            foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<ISettingsAnalyzer>())
+                AddAnalyzer(Activator.CreateInstance(type) as ISettingsAnalyzer);
         }
 
         public void RegisterDescriptor(ProblemDescriptor descriptor)
@@ -99,6 +90,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         private void AddAnalyzer(ISettingsAnalyzer analyzer)
         {
+            analyzer.Initialize(this);
             m_SettingsAnalyzers.Add(analyzer.GetDescriptorId(), analyzer);
         }
 

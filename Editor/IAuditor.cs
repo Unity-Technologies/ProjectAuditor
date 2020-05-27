@@ -11,10 +11,9 @@ namespace Unity.ProjectAuditor.Editor
     {
         IEnumerable<ProblemDescriptor> GetDescriptors();
 
-        void LoadDatabase(string path);
+        void Initialize(ProjectAuditorConfig config);
 
-        IEnumerable<Type> GetAnalyzerTypes(Assembly assembly);
-
+        void Reload(string path);
         void RegisterDescriptor(ProblemDescriptor descriptor);
 
         /// <summary>
