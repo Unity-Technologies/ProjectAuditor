@@ -154,8 +154,10 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         public string prettyName { get; }
         public void AddChild(Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode child);
         public Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode GetChild(int index = 0);
+        public int GetNumChildren();
         public string GetPrettyName(bool withAssembly = False);
         public bool HasChildren();
+        public bool HasValidChildren();
         public bool IsPerfCriticalContext();
     }
 }

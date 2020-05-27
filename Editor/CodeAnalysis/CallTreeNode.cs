@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     [Serializable]
     public class CallTreeNode
     {
+        [SerializeField] private List<CallTreeNode> children = new List<CallTreeNode>();
         public string assemblyName;
-
-        public List<CallTreeNode> children = new List<CallTreeNode>();
         public Location location;
         public string methodName;
         public string name;
@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             }
 
             if (caller != null)
-                children.Add(caller);
+                AddChild(caller);
             perfCriticalContext = false;
         }
 
@@ -83,6 +83,16 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         public CallTreeNode GetChild(int index = 0)
         {
             return children[index];
+        }
+
+        public int GetNumChildren()
+        {
+            return children.Count;
+        }
+
+        public bool HasValidChildren()
+        {
+            return children != null;
         }
 
         public string GetPrettyName(bool withAssembly = false)

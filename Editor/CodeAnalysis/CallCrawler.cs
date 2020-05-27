@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                         callerInstance.perfCriticalContext = call.perfCriticalContext;
 
                         BuildHierarchy(callerInstance, depth);
-                        callee.children.Add(callerInstance);
+                        callee.AddChild(callerInstance);
                     }
             }
         }
