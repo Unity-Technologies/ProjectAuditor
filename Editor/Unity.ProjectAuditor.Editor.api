@@ -68,7 +68,6 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectAuditor() {}
         public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<bool> onUpdate, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
-        public T GetAuditor<T>() where T : class;
         public virtual void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
         public void Reload(string path);
     }
@@ -112,7 +111,6 @@ namespace Unity.ProjectAuditor.Editor
     {
         public int NumTotalIssues { get; }
         public ProjectReport() {}
-        public void AddIssue(Unity.ProjectAuditor.Editor.ProjectIssue projectIssue);
         public void Export(string reportPath);
         public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
         public int GetNumIssues(Unity.ProjectAuditor.Editor.IssueCategory category);

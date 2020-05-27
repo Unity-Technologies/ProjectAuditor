@@ -131,7 +131,7 @@ namespace Unity.ProjectAuditor.Editor
             Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
         }
 
-        public T GetAuditor<T>() where T : class
+        internal T GetAuditor<T>() where T : class
         {
             foreach (var iauditor in m_Auditors)
             {

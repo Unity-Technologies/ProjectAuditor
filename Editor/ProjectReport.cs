@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor
             return result;
         }
 
-        public void AddIssue(ProjectIssue projectIssue)
+        internal void AddIssue(ProjectIssue projectIssue)
         {
             mutex.WaitOne();
             m_Issues.Add(projectIssue);
