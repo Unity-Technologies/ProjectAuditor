@@ -112,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor
                 var startTime = stopwatch.ElapsedMilliseconds;
                 auditor.Audit(onIssueFound, () =>
                 {
-                    if (config.logTimingsInfo) Debug.Log(auditor.GetType().Name + " took: " + (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
+                    if (config.LogTimingsInfo) Debug.Log(auditor.GetType().Name + " took: " + (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
 
                     onUpdate(false);
 
@@ -121,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor
                     if (numAuditors == 0)
                     {
                         stopwatch.Stop();
-                        if (config.logTimingsInfo)
+                        if (config.LogTimingsInfo)
                             Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
 
                         onUpdate(true);
@@ -153,14 +153,14 @@ namespace Unity.ProjectAuditor.Editor
 
         public void OnPreprocessBuild(BuildReport report)
         {
-            if (config.enableAnalyzeOnBuild)
+            if (config.AnalyzeOnBuild)
             {
                 var projectReport = Audit();
 
                 var numIssues = projectReport.NumTotalIssues;
                 if (numIssues > 0)
                 {
-                    if (config.enableFailBuildOnIssues)
+                    if (config.FailBuildOnIssues)
                         Debug.LogError("Project Auditor found " + numIssues + " issues");
                     else
                         Debug.Log("Project Auditor found " + numIssues + " issues");

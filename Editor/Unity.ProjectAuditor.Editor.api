@@ -74,12 +74,12 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectAuditorConfig : UnityEngine.ScriptableObject
     {
-        public bool displayMutedIssues;
-        public bool displayOnlyCriticalIssues;
-        public bool enableAnalyzeOnBuild;
-        public bool enableBackgroundAnalysis;
-        public bool enableFailBuildOnIssues;
-        public bool logTimingsInfo;
+        public bool DisplayMutedIssues;
+        public bool DisplayOnlyCriticalIssues;
+        public bool EnableAnalyzeOnBuild;
+        public bool EnableBackgroundAnalysis;
+        public bool EnableFailBuildOnIssues;
+        public bool LogTimingsInfo;
         public int NumRules { get; }
         public ProjectAuditorConfig() {}
         public void AddRule(Unity.ProjectAuditor.Editor.Rule ruleToAdd);

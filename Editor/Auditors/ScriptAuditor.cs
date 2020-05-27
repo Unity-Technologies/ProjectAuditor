@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
-            if (m_Config.enableBackgroundAnalysis && m_AssemblyAnalysisThread != null)
+            if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
             var compilationHelper = new AssemblyCompilationHelper();
@@ -86,7 +86,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             // first phase: analyze assemblies generated from editable scripts
             AnalyzeAssemblies(localAssemblyInfos, assemblyDirectories, onCallFound, onIssueFoundInternal, null, progressBar);
 
-            var enableBackgroundAnalysis = m_Config.enableBackgroundAnalysis;
+            var enableBackgroundAnalysis = m_Config.AnalyzeInBackground;
 #if !UNITY_2019_3_OR_NEWER
             enableBackgroundAnalysis = false;
 #endif

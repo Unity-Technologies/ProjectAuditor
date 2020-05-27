@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -12,32 +13,32 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// If enabled, non-critical issues will not be shown in the report.
         /// </summary>
-        public bool displayOnlyCriticalIssues;
+        public bool DisplayOnlyCriticalIssues;
 
         /// <summary>
         /// If enabled, muted issues will also be displayed in the report.
         /// </summary>
-        public bool displayMutedIssues;
+        public bool DisplayMutedIssues;
 
         /// <summary>
         /// If enabled, ProjectAuditor will run every time the project is built.
         /// </summary>
-        public bool enableAnalyzeOnBuild;
+        public bool AnalyzeOnBuild;
 
         /// <summary>
         /// If enabled, ProjectAuditor will try to partially analyze the project in the background.
         /// </summary>
-        public bool enableBackgroundAnalysis = true;
+        public bool AnalyzeInBackground = true;
 
         /// <summary>
         /// If enabled, any issue reported by ProjectAuditor will cause the build to fail.
         /// </summary>
-        public bool enableFailBuildOnIssues;
+        public bool FailBuildOnIssues;
 
         /// <summary>
         /// If enabled, ProjectAuditor will log statistics about analysis time.
         /// </summary>
-        public bool logTimingsInfo = false;
+        public bool LogTimingsInfo = false;
 
         private readonly List<Rule> m_Rules = new List<Rule>();
 

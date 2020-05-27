@@ -121,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!matchArea)
                 return false;
 
-            if (!m_ProjectAuditor.config.displayMutedIssues)
+            if (!m_ProjectAuditor.config.DisplayMutedIssues)
             {
                 UnityEngine.Profiling.Profiler.BeginSample("IsMuted");
                 var muted = m_ProjectAuditor.config.GetAction(issue.descriptor, issue.callingMethod) == Rule.Action.None;
@@ -131,7 +131,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             if (m_ActiveAnalysisView.desc.showCritical &&
-                m_ProjectAuditor.config.displayOnlyCriticalIssues &&
+                m_ProjectAuditor.config.DisplayOnlyCriticalIssues &&
                 !issue.isPerfCriticalContext)
                 return false;
 
@@ -616,7 +616,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         SetRuleForItem(item, Rule.Action.None);
                     }
 
-                    if (!m_ProjectAuditor.config.displayMutedIssues)
+                    if (!m_ProjectAuditor.config.DisplayMutedIssues)
                     {
                         m_ActiveIssueTable.SetSelection(new List<int>());
                     }
@@ -640,12 +640,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
                 GUI.enabled = m_ActiveAnalysisView.desc.showCritical;
 
-                bool wasShowingCritical = m_ProjectAuditor.config.displayOnlyCriticalIssues;
-                m_ProjectAuditor.config.displayOnlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
-                    m_ProjectAuditor.config.displayOnlyCriticalIssues, GUILayout.Width(160));
+                bool wasShowingCritical = m_ProjectAuditor.config.DisplayOnlyCriticalIssues;
+                m_ProjectAuditor.config.DisplayOnlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
+                    m_ProjectAuditor.config.DisplayOnlyCriticalIssues, GUILayout.Width(160));
                 GUI.enabled = true;
 
-                if (wasShowingCritical != m_ProjectAuditor.config.displayOnlyCriticalIssues)
+                if (wasShowingCritical != m_ProjectAuditor.config.DisplayOnlyCriticalIssues)
                 {
                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                     var payload = new Dictionary<string, string>();
@@ -653,15 +653,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                     ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues, analytic);
                 }
 
-                bool wasDisplayingMuted = m_ProjectAuditor.config.displayMutedIssues;
-                m_ProjectAuditor.config.displayMutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
-                    m_ProjectAuditor.config.displayMutedIssues, GUILayout.Width(127));
+                bool wasDisplayingMuted = m_ProjectAuditor.config.DisplayMutedIssues;
+                m_ProjectAuditor.config.DisplayMutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
+                    m_ProjectAuditor.config.DisplayMutedIssues, GUILayout.Width(127));
 
-                if (wasDisplayingMuted != m_ProjectAuditor.config.displayMutedIssues)
+                if (wasDisplayingMuted != m_ProjectAuditor.config.DisplayMutedIssues)
                 {
                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                     var payload = new Dictionary<string, string>();
-                    payload["selected"] = m_ProjectAuditor.config.displayMutedIssues ? "true" : "false";
+                    payload["selected"] = m_ProjectAuditor.config.DisplayMutedIssues ? "true" : "false";
                     ProjectAuditorAnalytics.SendUIButtonEventWithKeyValues(ProjectAuditorAnalytics.UIButton.ShowMuted, analytic, payload);
                 }
 
@@ -853,10 +853,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Build :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                m_ProjectAuditor.config.enableAnalyzeOnBuild = EditorGUILayout.ToggleLeft("Auto Analyze",
-                    m_ProjectAuditor.config.enableAnalyzeOnBuild, GUILayout.Width(100));
-                m_ProjectAuditor.config.enableFailBuildOnIssues = EditorGUILayout.ToggleLeft("Fail on Issues",
-                    m_ProjectAuditor.config.enableFailBuildOnIssues, GUILayout.Width(100));
+                m_ProjectAuditor.config.AnalyzeOnBuild = EditorGUILayout.ToggleLeft("Auto Analyze",
+                    m_ProjectAuditor.config.AnalyzeOnBuild, GUILayout.Width(100));
+                m_ProjectAuditor.config.FailBuildOnIssues = EditorGUILayout.ToggleLeft("Fail on Issues",
+                    m_ProjectAuditor.config.FailBuildOnIssues, GUILayout.Width(100));
                 EditorGUILayout.EndHorizontal();
             }
         }
