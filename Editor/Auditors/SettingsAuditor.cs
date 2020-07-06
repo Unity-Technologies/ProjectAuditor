@@ -126,7 +126,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
                         if (value.ToString() == descriptor.value)
                         {
-                            AddIssue(descriptor, string.Format("{0}: {1}", descriptor.description, value), onIssueFound);
+                            AddIssue(descriptor, descriptor.description, onIssueFound);
                         }
 
                         // Eval did not throw exception so we can stop iterating assemblies

@@ -13,10 +13,15 @@ namespace Unity.ProjectAuditor.Editor
             var descriptors = JsonHelper.FromJson<ProblemDescriptor>(json);
 
             foreach (var desc in descriptors)
-                if (string.IsNullOrEmpty(desc.type) || string.IsNullOrEmpty(desc.method))
-                    desc.description = string.Empty;
-                else
-                    desc.description = desc.type + "." + desc.method;
+            {
+                if (string.IsNullOrEmpty(desc.description))
+                {
+                    if (string.IsNullOrEmpty(desc.type) || string.IsNullOrEmpty(desc.method))
+                        desc.description = string.Empty;
+                    else
+                        desc.description = desc.type + "." + desc.method;
+                }
+            }
 
             return new List<ProblemDescriptor>(descriptors);
         }
