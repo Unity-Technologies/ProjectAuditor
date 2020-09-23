@@ -23,7 +23,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
             var fixedDeltaTimeIssue = issues.FirstOrDefault(i => i.descriptor.method.Equals("fixedDeltaTime"));
             Assert.NotNull(fixedDeltaTimeIssue);
-            Assert.True(fixedDeltaTimeIssue.description.Equals("UnityEngine.Time.fixedDeltaTime: 0.02"));
+            Assert.True(fixedDeltaTimeIssue.description.Equals("Time: Fixed Timestep"));
             Assert.True(fixedDeltaTimeIssue.location.Path.Equals("Project/Time"));
 
             // "fix" fixedDeltaTime so it's not reported anymore
@@ -36,7 +36,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var playerSettingIssue =
                 issues.FirstOrDefault(i => i.descriptor.method.Equals("stripEngineCode"));
             Assert.NotNull(playerSettingIssue);
-            Assert.True(playerSettingIssue.description.Equals("UnityEditor.PlayerSettings.stripEngineCode: False"));
+            Assert.True(playerSettingIssue.description.Equals("Player: Engine Code Stripping"));
             Assert.True(playerSettingIssue.location.Path.Equals("Project/Player"));
         }
     }
