@@ -72,10 +72,7 @@ namespace Unity.ProjectAuditor.Editor
                     if (category != IssueCategory.ProjectSettings)
                         path += ":" + issue.line;
                     writer.WriteLine(
-                        issue.descriptor.description + "," +
-                        issue.description + "," +
-                        issue.descriptor.area + "," +
-                        path
+                        string.Format("\"{0}\",\"{1}\",{2},{3}", issue.descriptor.description, issue.description, issue.descriptor.area, path)
                     );
                 }
             }

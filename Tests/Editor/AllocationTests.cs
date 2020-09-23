@@ -6,8 +6,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     internal class AllocationTests
     {
-        private ScriptResource m_ScriptResourceArrayAllocation;
         private ScriptResource m_ScriptResourceObjectAllocation;
+        private ScriptResource m_ScriptResourceArrayAllocation;
+        private ScriptResource m_ScriptResourceMultidimensionalArrayAllocation;
         private ScriptResource m_ScriptResourceParamsArrayAllocation;
 
         [OneTimeSetUp]
@@ -32,6 +33,18 @@ class ArrayAllocation
     {
         // explicit array allocation
         array = new int[1];
+    }
+}
+");
+
+            m_ScriptResourceMultidimensionalArrayAllocation = new ScriptResource("MultidimensionalArrayAllocation.cs", @"
+class MultidimensionalArrayAllocation
+{
+    int[,] array;
+    void Dummy()
+    {
+        // explicit array allocation
+        array = new int[1,1];
     }
 }
 ");
@@ -83,6 +96,19 @@ class ParamsArrayAllocation
 
             Assert.NotNull(allocationIssue);
             Assert.True(allocationIssue.description.Equals("'Int32' array allocation"));
+            Assert.AreEqual(IssueCategory.ApiCalls, allocationIssue.category);
+        }
+
+        [Test]
+        public void MultidimensionalArrayAllocationIsFound()
+        {
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceMultidimensionalArrayAllocation);
+            Assert.AreEqual(1, issues.Count());
+
+            var allocationIssue = issues.FirstOrDefault();
+
+            Assert.NotNull(allocationIssue);
+            Assert.True(allocationIssue.description.Equals("'Int32[0...,0...]' object allocation"));
             Assert.AreEqual(IssueCategory.ApiCalls, allocationIssue.category);
         }
 

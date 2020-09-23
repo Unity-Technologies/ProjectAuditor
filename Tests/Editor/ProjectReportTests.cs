@@ -92,10 +92,10 @@ class MyClass
                 var line = file.ReadLine();
                 Assert.True(line.Equals("Issue,Message,Area,Path"));
 
-                var expectedSettingsIssueLine = string.Format("{0},{1},{2},{3}", settingsIssue.descriptor.description,
+                var expectedSettingsIssueLine = string.Format("\"{0}\",\"{1}\",{2},{3}", settingsIssue.descriptor.description,
                     settingsIssue.description,
                     settingsIssue.descriptor.area, settingsIssue.relativePath);
-                var expectedScriptIssueLine = string.Format("{0},{1},{2},{3}:{4}", scriptIssue.descriptor.description,
+                var expectedScriptIssueLine = string.Format("\"{0}\",\"{1}\",{2},{3}:{4}", scriptIssue.descriptor.description,
                     scriptIssue.description,
                     scriptIssue.descriptor.area, scriptIssue.relativePath, scriptIssue.line);
                 while (file.Peek() >= 0)
