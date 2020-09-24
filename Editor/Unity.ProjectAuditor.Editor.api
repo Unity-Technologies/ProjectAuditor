@@ -74,11 +74,11 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectAuditorConfig : UnityEngine.ScriptableObject
     {
+        public bool AnalyzeInBackground;
+        public bool AnalyzeOnBuild;
         public bool DisplayMutedIssues;
         public bool DisplayOnlyCriticalIssues;
-        public bool EnableAnalyzeOnBuild;
-        public bool EnableBackgroundAnalysis;
-        public bool EnableFailBuildOnIssues;
+        public bool FailBuildOnIssues;
         public bool LogTimingsInfo;
         public int NumRules { get; }
         public ProjectAuditorConfig() {}
@@ -111,7 +111,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         public int NumTotalIssues { get; }
         public ProjectReport() {}
-        public void Export(string reportPath);
+        public void ExportToCSV(string reportPath, System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool> match = default(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool>));
         public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
         public int GetNumIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
     }

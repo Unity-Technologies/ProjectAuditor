@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
@@ -55,30 +56,43 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Export report to json format
+        /// Export report to CSV format
         /// </summary>
-        public void Export(string reportPath)
+        public void ExportToCSV(string reportPath, Func<ProjectIssue, bool> match = null)
         {
             var writer = new StreamWriter(reportPath);
-            writer.WriteLine("Issue,Message,Area,Path");
+            writer.WriteLine(HeaderForCSV());
 
             for (IssueCategory category = 0; category < IssueCategory.NumCategories; category++)
             {
-                var issues = GetIssues(category);
+                var issues = GetIssues(category).Where(i => match == null || match(i));
 
                 foreach (var issue in issues)
                 {
-                    var path = issue.relativePath;
-                    if (category != IssueCategory.ProjectSettings)
-                        path += ":" + issue.line;
-                    writer.WriteLine(
-                        string.Format("\"{0}\",\"{1}\",{2},{3}", issue.descriptor.description, issue.description, issue.descriptor.area, path)
-                    );
+                    writer.WriteLine(FormatIssueForCSV(issue));
                 }
             }
 
             writer.Flush();
             writer.Close();
+
+            EditorUtility.RevealInFinder(reportPath);
+        }
+
+        internal static string FormatIssueForCSV(ProjectIssue issue)
+        {
+            if (issue.category != IssueCategory.ProjectSettings)
+                return string.Format("{0},\"{1}\",\"{2}\",{3},{4}:{5}", issue.category, issue.descriptor.description,
+                    issue.description,
+                    issue.descriptor.area, issue.relativePath, issue.line);
+            return string.Format("{0},\"{1}\",\"{2}\",{3},{4}", issue.category, issue.descriptor.description,
+                issue.description,
+                issue.descriptor.area, issue.relativePath);
+        }
+
+        internal static string HeaderForCSV()
+        {
+            return "Category,Issue,Description,Area,Path";
         }
     }
 }

@@ -77,7 +77,7 @@ class MyClass
             var projectReport = projectAuditor.Audit();
 
             const string path = "ProjectAuditor_Report.csv";
-            projectReport.Export(path);
+            projectReport.ExportToCSV(path);
             Assert.True(File.Exists(path));
 
             var settingsIssue = projectReport.GetIssues(IssueCategory.ProjectSettings)
@@ -90,14 +90,10 @@ class MyClass
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.True(line.Equals("Issue,Message,Area,Path"));
+                Assert.True(line.Equals(ProjectReport.HeaderForCSV()));
 
-                var expectedSettingsIssueLine = string.Format("\"{0}\",\"{1}\",{2},{3}", settingsIssue.descriptor.description,
-                    settingsIssue.description,
-                    settingsIssue.descriptor.area, settingsIssue.relativePath);
-                var expectedScriptIssueLine = string.Format("\"{0}\",\"{1}\",{2},{3}:{4}", scriptIssue.descriptor.description,
-                    scriptIssue.description,
-                    scriptIssue.descriptor.area, scriptIssue.relativePath, scriptIssue.line);
+                var expectedSettingsIssueLine = ProjectReport.FormatIssueForCSV(settingsIssue);
+                var expectedScriptIssueLine = ProjectReport.FormatIssueForCSV(scriptIssue);
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();
@@ -108,6 +104,34 @@ class MyClass
 
             Assert.True(settingsIssueFound);
             Assert.True(scriptIssueFound);
+        }
+
+        [Test]
+        public void FilteredReportIsExported()
+        {
+            // disabling stripEngineCode will be reported as a ProjectSettings issue
+            PlayerSettings.stripEngineCode = false;
+
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var projectReport = projectAuditor.Audit();
+
+            const string path = "ProjectAuditor_Report.csv";
+
+            // let's assume we are only interested in exporting project settings
+            projectReport.ExportToCSV(path, issue => issue.category == IssueCategory.ProjectSettings);
+            Assert.True(File.Exists(path));
+
+            using (var file = new StreamReader(path))
+            {
+                var line = file.ReadLine();
+                Assert.True(line.Equals(ProjectReport.HeaderForCSV()));
+
+                while (file.Peek() >= 0)
+                {
+                    line = file.ReadLine();
+                    Assert.True(line.StartsWith(IssueCategory.ProjectSettings.ToString()));
+                }
+            }
         }
     }
 }

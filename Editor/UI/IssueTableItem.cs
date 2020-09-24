@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor.IMGUI.Controls;
 
 namespace Unity.ProjectAuditor.Editor.UI
@@ -17,6 +18,13 @@ namespace Unity.ProjectAuditor.Editor.UI
         public IssueTableItem(int id, int depth, ProblemDescriptor problemDescriptor) : base(id, depth)
         {
             ProblemDescriptor = problemDescriptor;
+        }
+
+        public bool Find(ProjectIssue issue)
+        {
+            if (ProjectIssue == issue)
+                return true;
+            return children != null && children.FirstOrDefault(child => (child as IssueTableItem).ProjectIssue == issue) != null;
         }
     }
 }
