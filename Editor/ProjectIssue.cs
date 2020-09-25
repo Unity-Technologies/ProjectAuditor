@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor
 
     public enum IssueCategory
     {
-        ApiCalls,
+        Code,
         ProjectSettings,
         NumCategories
     }

@@ -52,7 +52,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.True(issue.description.Equals("System.Void MonoBehaviourWithEmptyMagicMethod::Update()"));
             Assert.True(issue.callingMethod.Equals("System.Void MonoBehaviourWithEmptyMagicMethod::Update()"));
             Assert.AreEqual(1, issue.line);
-            Assert.AreEqual(IssueCategory.ApiCalls, issue.category);
+            Assert.AreEqual(IssueCategory.Code, issue.category);
         }
 
         [Test]

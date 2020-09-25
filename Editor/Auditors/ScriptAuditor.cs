@@ -243,7 +243,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         internal static IEnumerable<ProjectIssue> FindScriptIssues(ProjectReport projectReport, string relativePath)
         {
-            return projectReport.GetIssues(IssueCategory.ApiCalls).Where(i => i.relativePath.Equals(relativePath));
+            return projectReport.GetIssues(IssueCategory.Code).Where(i => i.relativePath.Equals(relativePath));
         }
 
         private static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)

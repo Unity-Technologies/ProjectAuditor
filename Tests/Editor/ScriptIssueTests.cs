@@ -195,7 +195,7 @@ class ClassWithDelegate
             Assert.True(myIssue.description.Equals("UnityEngine.Camera.main"));
             Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Dummy()"));
             Assert.AreEqual(8, myIssue.line);
-            Assert.AreEqual(IssueCategory.ApiCalls, myIssue.category);
+            Assert.AreEqual(IssueCategory.Code, myIssue.category);
         }
 
         [Test]

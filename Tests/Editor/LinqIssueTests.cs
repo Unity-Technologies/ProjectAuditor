@@ -55,7 +55,7 @@ class MyClass
                 myIssue.callingMethod.Equals(
                     "System.Int32 MyClass::Dummy(System.Collections.Generic.List`1<System.Int32>)"));
             Assert.AreEqual(9, myIssue.line);
-            Assert.AreEqual(IssueCategory.ApiCalls, myIssue.category);
+            Assert.AreEqual(IssueCategory.Code, myIssue.category);
         }
     }
 }

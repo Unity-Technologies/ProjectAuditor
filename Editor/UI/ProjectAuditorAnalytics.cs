@@ -252,7 +252,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             var statsDict = new Dictionary<int, IssueStats>();
 
-            var scriptIssues = projectReport.GetIssues(IssueCategory.ApiCalls);
+            var scriptIssues = projectReport.GetIssues(IssueCategory.Code);
             var numScriptIssues = scriptIssues.Length;
             for (var i = 0; i < numScriptIssues; ++i)
             {

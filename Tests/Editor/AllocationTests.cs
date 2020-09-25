@@ -83,7 +83,7 @@ class ParamsArrayAllocation
 
             Assert.NotNull(allocationIssue);
             Assert.True(allocationIssue.description.Equals("'ObjectAllocation' object allocation"));
-            Assert.AreEqual(IssueCategory.ApiCalls, allocationIssue.category);
+            Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
         }
 
         [Test]
@@ -96,7 +96,7 @@ class ParamsArrayAllocation
 
             Assert.NotNull(allocationIssue);
             Assert.True(allocationIssue.description.Equals("'Int32' array allocation"));
-            Assert.AreEqual(IssueCategory.ApiCalls, allocationIssue.category);
+            Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
         }
 
         [Test]
@@ -109,7 +109,7 @@ class ParamsArrayAllocation
 
             Assert.NotNull(allocationIssue);
             Assert.True(allocationIssue.description.Equals("'Int32[0...,0...]' object allocation"));
-            Assert.AreEqual(IssueCategory.ApiCalls, allocationIssue.category);
+            Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
         }
 
         [Test]
@@ -122,7 +122,7 @@ class ParamsArrayAllocation
 
             Assert.NotNull(allocationIssue);
             Assert.True(allocationIssue.description.Equals("'Object' array allocation"));
-            Assert.AreEqual(IssueCategory.ApiCalls, allocationIssue.category);
+            Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
         }
     }
 }

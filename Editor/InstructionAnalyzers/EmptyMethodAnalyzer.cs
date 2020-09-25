@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
                 s_Descriptor,
                 methodDefinition.FullName,
-                IssueCategory.ApiCalls,
+                IssueCategory.Code,
                 new CallTreeNode(methodDefinition)
             );
         }

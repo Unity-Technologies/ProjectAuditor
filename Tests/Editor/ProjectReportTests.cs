@@ -36,7 +36,7 @@ class MyClass
         {
             var projectReport = new ProjectReport();
             Assert.Zero(projectReport.NumTotalIssues);
-            Assert.Zero(projectReport.GetNumIssues(IssueCategory.ApiCalls));
+            Assert.Zero(projectReport.GetNumIssues(IssueCategory.Code));
             Assert.Zero(projectReport.GetNumIssues(IssueCategory.ProjectSettings));
         }
 
@@ -57,12 +57,12 @@ class MyClass
                 (
                     p,
                     "dummy issue",
-                    IssueCategory.ApiCalls
+                    IssueCategory.Code
                 )
             );
 
             Assert.AreEqual(1, projectReport.NumTotalIssues);
-            Assert.AreEqual(1, projectReport.GetNumIssues(IssueCategory.ApiCalls));
+            Assert.AreEqual(1, projectReport.GetNumIssues(IssueCategory.Code));
             Assert.AreEqual(0, projectReport.GetNumIssues(IssueCategory.ProjectSettings));
         }
 
@@ -82,7 +82,7 @@ class MyClass
 
             var settingsIssue = projectReport.GetIssues(IssueCategory.ProjectSettings)
                 .First(i => i.descriptor.method.Equals("stripEngineCode"));
-            var scriptIssue = projectReport.GetIssues(IssueCategory.ApiCalls)
+            var scriptIssue = projectReport.GetIssues(IssueCategory.Code)
                 .First(i => i.relativePath.Equals(m_ScriptResource.relativePath));
 
             var settingsIssueFound = false;

@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 (
                     descriptor,
                     description,
-                    IssueCategory.ApiCalls,
+                    IssueCategory.Code,
                     calleeNode
                 );
             }
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 (
                     descriptor,
                     description,
-                    IssueCategory.ApiCalls,
+                    IssueCategory.Code,
                     calleeNode
                 );
             }

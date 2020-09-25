@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor
 
     public enum IssueCategory
     {
-        public const Unity.ProjectAuditor.Editor.IssueCategory ApiCalls = 0;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Code = 0;
         public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 2;
         public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 1;
         public int value__;

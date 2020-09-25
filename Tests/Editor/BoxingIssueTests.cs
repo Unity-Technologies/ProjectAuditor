@@ -49,7 +49,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.True(boxingInt.description.Equals("Conversion from value type 'Int32' to ref type"));
             Assert.True(boxingInt.callingMethod.Equals("System.Object BoxingIntTest::Dummy()"));
             Assert.AreEqual(1, boxingInt.line);
-            Assert.AreEqual(IssueCategory.ApiCalls, boxingInt.category);
+            Assert.AreEqual(IssueCategory.Code, boxingInt.category);
 
             // check descriptor
             Assert.NotNull(boxingInt.descriptor);
@@ -77,7 +77,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.True(boxingFloat.description.Equals("Conversion from value type 'float' to ref type"));
             Assert.True(boxingFloat.callingMethod.Equals("System.Object BoxingFloatTest::Dummy()"));
             Assert.AreEqual(1, boxingFloat.line);
-            Assert.AreEqual(IssueCategory.ApiCalls, boxingFloat.category);
+            Assert.AreEqual(IssueCategory.Code, boxingFloat.category);
 
             // check descriptor
             Assert.NotNull(boxingFloat.descriptor);

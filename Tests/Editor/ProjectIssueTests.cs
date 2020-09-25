@@ -16,7 +16,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
                 "this is not actually a problem",
                 "do nothing"
                 );
-            var uninitialised = new ProjectIssue(p, "dummy issue", IssueCategory.ApiCalls);
+            var uninitialised = new ProjectIssue(p, "dummy issue", IssueCategory.Code);
             Assert.AreEqual(string.Empty, uninitialised.filename);
             Assert.AreEqual(string.Empty, uninitialised.relativePath);
             Assert.AreEqual(string.Empty, uninitialised.callingMethod);
