@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -900,6 +901,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     GUILayout.Label(Styles.AnalysisInProgressLabel, GUILayout.ExpandWidth(true));
                 }
+                DrawHelpButton();
             }
             EditorGUILayout.EndHorizontal();
         }
@@ -916,6 +918,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField(Styles.HelpText, helpStyle);
 
                 EditorGUILayout.EndVertical();
+            }
+        }
+
+        private void DrawHelpButton()
+        {
+            if (GUILayout.Button(Styles.HelpButton, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
+            {
+                Application.OpenURL("https://github.com/mtrive/ProjectAuditor/blob/master/Documentation~/index.md");
             }
         }
 
@@ -999,6 +1009,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent CallTreeFoldout =
                 new GUIContent("Inverted Call Hierarchy", "Inverted Call Hierarchy");
+
+            public static readonly GUIContent HelpButton = EditorGUIUtility.TrIconContent("_Help", "Open Manual (in a web browser)");
 
             public static readonly string[] ExportModeStrings =
             {

@@ -243,8 +243,22 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             var rows = FindRows(new[] {id});
             var item = rows.FirstOrDefault();
-            if (item == null || item.hasChildren)
+
+            if (item == null)
                 return;
+
+            if (item.hasChildren)
+            {
+                var group = item as IssueTableItem;
+                if (group != null && group.ProblemDescriptor.type.StartsWith("UnityEngine."))
+                {
+                    var type = group.ProblemDescriptor.type.Substring("UnityEngine.".Length);
+                    var method = group.ProblemDescriptor.method;
+
+                    Application.OpenURL(string.Format("https://docs.unity3d.com/ScriptReference/{0}{1}{2}.html", type, Char.IsUpper(method[0]) ? "." : "-", method));
+                }
+                return;
+            }
 
             var issueTableItem = item as IssueTableItem;
             if (issueTableItem == null)
