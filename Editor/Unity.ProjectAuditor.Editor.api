@@ -37,9 +37,10 @@ namespace Unity.ProjectAuditor.Editor
 
     public enum IssueCategory
     {
-        public const Unity.ProjectAuditor.Editor.IssueCategory Code = 0;
-        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 2;
-        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 1;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Assets = 0;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Code = 1;
+        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 3;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 2;
         public int value__;
     }
 
@@ -137,6 +138,19 @@ namespace Unity.ProjectAuditor.Editor
             public int value__;
             public const Unity.ProjectAuditor.Editor.Rule.Action Warning = 2;
         }
+    }
+}
+
+namespace Unity.ProjectAuditor.Editor.Auditors
+{
+    public class AssetsAuditor : Unity.ProjectAuditor.Editor.IAuditor
+    {
+        public AssetsAuditor() {}
+        public virtual void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
+        public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
+        public virtual void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
+        public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+        public virtual void Reload(string path);
     }
 }
 

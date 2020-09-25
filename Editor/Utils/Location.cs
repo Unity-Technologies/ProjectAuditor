@@ -75,7 +75,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
             else if (File.Exists(m_Path))
             {
-                var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(m_Path);
+                UnityEngine.Object obj = AssetDatabase.LoadAssetAtPath<TextAsset>(m_Path);
+                if (obj == null)
+                    obj = AssetDatabase.LoadMainAssetAtPath(m_Path);
                 AssetDatabase.OpenAsset(obj, m_Line);
             }
         }

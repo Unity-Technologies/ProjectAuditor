@@ -24,15 +24,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             Completed,
             Valid
         }
-        // strings
-        private static readonly string[] m_AreaNames =
-        {
-            "CPU",
-            "GPU",
-            "Memory",
-            "Build Size",
-            "Load Times"
-        };
+
+        private static readonly string[] m_AreaNames = Enum.GetNames(typeof(Area));
 
         enum ExportMode
         {
@@ -45,6 +38,17 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         private readonly AnalysisViewDescriptor[] m_AnalysisViewDescriptors =
         {
+            new AnalysisViewDescriptor
+            {
+                category = IssueCategory.Assets,
+                name = "Assets",
+                groupByDescription = true,
+                showAssemblySelection = false,
+                showCritical = false,
+                showInvertedCallTree = false,
+                showFilenameColumn = false,
+                showAssemblyColumn = false
+            },
             new AnalysisViewDescriptor
             {
                 category = IssueCategory.Code,
