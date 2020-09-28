@@ -429,6 +429,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     ? secondTree.m_Item.ProjectIssue.assembly
                                     : string.Empty;
                                 break;
+                            case Column.Priority:
+                                firstString = firstTree.m_Item.ProjectIssue != null ? firstTree.m_Item.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
+                                secondString = secondTree.m_Item.ProjectIssue != null ? secondTree.m_Item.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
+                                break;
                             default:
                                 continue;
                         }
