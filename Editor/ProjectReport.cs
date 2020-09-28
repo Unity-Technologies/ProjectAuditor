@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor
 
         internal static string FormatIssueForCSV(ProjectIssue issue)
         {
-            if (issue.category != IssueCategory.ProjectSettings)
+            if (issue.category == IssueCategory.Code)
                 return string.Format("{0},\"{1}\",\"{2}\",{3},{4}:{5}", issue.category, issue.descriptor.description,
                     issue.description,
                     issue.descriptor.area, issue.relativePath, issue.line);
