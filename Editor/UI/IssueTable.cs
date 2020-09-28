@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         private static readonly string PerfCriticalIconName = "console.warnicon";
 
         private readonly ProjectAuditorConfig m_Config;
-        private readonly bool m_GroupByDescription;
+        private readonly AnalysisViewDescriptor m_Desc;
         private readonly IIssuesFilter m_IssuesFilter;
         private readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
 
@@ -35,19 +35,19 @@ namespace Unity.ProjectAuditor.Editor.UI
         private int m_NumMatchingIssues;
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
-                          bool groupByDescription, ProjectAuditorConfig config, IIssuesFilter issuesFilter) : base(state,
-                                                                                                                   multicolumnHeader)
+                          AnalysisViewDescriptor desc, ProjectAuditorConfig config, IIssuesFilter issuesFilter) : base(state,
+                                                                                                                       multicolumnHeader)
         {
             m_Config = config;
             m_IssuesFilter = issuesFilter;
-            m_GroupByDescription = groupByDescription;
+            m_Desc = desc;
             m_NextId = 1;
             multicolumnHeader.sortingChanged += OnSortingChanged;
         }
 
         public void AddIssues(ProjectIssue[] issues)
         {
-            if (m_GroupByDescription)
+            if (m_Desc.groupByDescription)
             {
                 var descriptors = issues.Select(i => i.descriptor).Distinct();
                 if (m_TreeViewItemGroups == null)
@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 itemsList.AddRange(m_TreeViewItemIssues);
             foreach (var issue in issues)
             {
-                var depth = m_GroupByDescription ? 1 : 0;
+                var depth = m_Desc.groupByDescription ? 1 : 0;
                 var item = new IssueTableItem(m_NextId++, depth, issue.name, issue.descriptor, issue);
                 itemsList.Add(item);
             }
@@ -109,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             Profiler.BeginSample("IssueTable.BuildRows");
-            if (m_GroupByDescription && !this.hasSearch)
+            if (m_Desc.groupByDescription && !this.hasSearch)
             {
                 var descriptors = filteredItems.Select(i => i.ProblemDescriptor).Distinct();
                 foreach (var descriptor in descriptors)
@@ -203,14 +203,23 @@ namespace Unity.ProjectAuditor.Editor.UI
 #endif
                         break;
                     case Column.Area:
-                        if (!m_GroupByDescription)
+                        if (!m_Desc.groupByDescription)
                             EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
                         break;
                     case Column.Description:
-                        if (m_GroupByDescription)
+                        if (m_Desc.groupByDescription)
                         {
-                            EditorGUI.LabelField(cellRect,
-                                new GUIContent(item.GetDisplayName(), issue.callingMethod));
+                            var text = item.GetDisplayName();
+                            var tooltip = issue.callingMethod;
+                            if (m_Desc.descriptionWithIcon)
+                            {
+                                var icon = AssetDatabase.GetCachedIcon(issue.location.Path);
+                                EditorGUI.LabelField(cellRect,
+                                    EditorGUIUtility.TrTextContentWithIcon(text, tooltip, icon));
+                            }
+                            else
+                                EditorGUI.LabelField(cellRect,
+                                    new GUIContent(text, tooltip));
                         }
                         else
                         {

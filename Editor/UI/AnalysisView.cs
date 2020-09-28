@@ -12,6 +12,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public IssueCategory category;
         public string name;
         public bool groupByDescription;
+        public bool descriptionWithIcon;
         public bool showAssemblySelection;
         public bool showCritical;
         public bool showInvertedCallTree;
@@ -98,7 +99,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_Table = new IssueTable(state,
                 new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())),
-                m_Desc.groupByDescription,
+                m_Desc,
                 m_Config,
                 m_Filter);
         }
