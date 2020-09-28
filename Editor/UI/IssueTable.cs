@@ -386,18 +386,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                     var rtn = 0;
                     for (var i = 0; i < columnSortOrder.Length; i++)
                     {
-                        ItemTree firstTree;
-                        ItemTree secondTree;
+                        IssueTableItem firstItem;
+                        IssueTableItem secondItem;
 
                         if (isColumnAscending[i])
                         {
-                            firstTree = a;
-                            secondTree = b;
+                            firstItem = a.m_Item;
+                            secondItem = b.m_Item;
                         }
                         else
                         {
-                            firstTree = b;
-                            secondTree = a;
+                            firstItem = b.m_Item;
+                            secondItem = a.m_Item;
                         }
 
                         string firstString;
@@ -406,32 +406,32 @@ namespace Unity.ProjectAuditor.Editor.UI
                         switch ((Column)columnSortOrder[i])
                         {
                             case Column.Description:
-                                firstString = firstTree.m_Item.GetDisplayName();
-                                secondString = secondTree.m_Item.GetDisplayName();
+                                firstString = firstItem.GetDisplayName();
+                                secondString = secondItem.GetDisplayName();
                                 break;
                             case Column.Area:
-                                firstString = firstTree.m_Item.ProblemDescriptor.area;
-                                secondString = secondTree.m_Item.ProblemDescriptor.area;
+                                firstString = firstItem.ProblemDescriptor.area;
+                                secondString = secondItem.ProblemDescriptor.area;
                                 break;
                             case Column.Filename:
-                                firstString = firstTree.m_Item.ProjectIssue != null
-                                    ? firstTree.m_Item.ProjectIssue.filename
+                                firstString = firstItem.ProjectIssue != null
+                                    ? firstItem.ProjectIssue.filename
                                     : string.Empty;
-                                secondString = secondTree.m_Item.ProjectIssue != null
-                                    ? secondTree.m_Item.ProjectIssue.filename
+                                secondString = secondItem.ProjectIssue != null
+                                    ? secondItem.ProjectIssue.filename
                                     : string.Empty;
                                 break;
                             case Column.Assembly:
-                                firstString = firstTree.m_Item.ProjectIssue != null
-                                    ? firstTree.m_Item.ProjectIssue.assembly
+                                firstString = firstItem.ProjectIssue != null
+                                    ? firstItem.ProjectIssue.assembly
                                     : string.Empty;
-                                secondString = secondTree.m_Item.ProjectIssue != null
-                                    ? secondTree.m_Item.ProjectIssue.assembly
+                                secondString = secondItem.ProjectIssue != null
+                                    ? secondItem.ProjectIssue.assembly
                                     : string.Empty;
                                 break;
                             case Column.Priority:
-                                firstString = firstTree.m_Item.ProjectIssue != null ? firstTree.m_Item.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
-                                secondString = secondTree.m_Item.ProjectIssue != null ? secondTree.m_Item.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
+                                firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
+                                secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
                                 break;
                             default:
                                 continue;
