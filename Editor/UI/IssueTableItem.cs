@@ -20,6 +20,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             ProblemDescriptor = problemDescriptor;
         }
 
+        public string GetDisplayName()
+        {
+            if (hasChildren)
+                return displayName;
+            return ProjectIssue.description;
+        }
+
         public bool Find(ProjectIssue issue)
         {
             if (ProjectIssue == issue)

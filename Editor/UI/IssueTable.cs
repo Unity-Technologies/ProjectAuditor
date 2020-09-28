@@ -184,7 +184,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 switch ((Column)column)
                 {
                     case Column.Description:
-                        EditorGUI.LabelField(cellRect, new GUIContent(item.displayName, item.displayName));
+                        EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()));
                         break;
                     case Column.Area:
                         EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
@@ -210,12 +210,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                         if (m_GroupByDescription)
                         {
                             EditorGUI.LabelField(cellRect,
-                                new GUIContent(issue.description, issue.callingMethod));
+                                new GUIContent(item.GetDisplayName(), issue.callingMethod));
                         }
                         else
                         {
                             var tooltip = descriptor.problem + " \n\n" + descriptor.solution;
-                            EditorGUI.LabelField(cellRect, new GUIContent(issue.description, tooltip));
+                            EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), tooltip));
                         }
 
                         break;
@@ -406,8 +406,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                         switch ((Column)columnSortOrder[i])
                         {
                             case Column.Description:
-                                firstString = firstTree.m_Item.displayName;
-                                secondString = secondTree.m_Item.displayName;
+                                firstString = firstTree.m_Item.GetDisplayName();
+                                secondString = secondTree.m_Item.GetDisplayName();
                                 break;
                             case Column.Area:
                                 firstString = firstTree.m_Item.ProblemDescriptor.area;
