@@ -97,7 +97,9 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] private bool m_DeveloperMode;
         [SerializeField] private ProjectReport m_ProjectReport;
         [SerializeField] private string m_SearchText;
-        [SerializeField] private bool m_ShowCallTree;
+        [SerializeField] private bool m_ShowFilters = true;
+        [SerializeField] private bool m_ShowActions = true;
+        [SerializeField] private bool m_ShowCallTree = true;
         [SerializeField] private bool m_ShowDetails = true;
         [SerializeField] private bool m_ShowRecommendation = true;
         [SerializeField] AnalysisState m_AnalysisState = AnalysisState.NotStarted;
@@ -212,8 +214,16 @@ namespace Unity.ProjectAuditor.Editor.UI
             DrawSettings();
             DrawToolbar();
             DrawHelpbox();
+            DrawMode();
             DrawFilters();
+            DrawActions();
             DrawIssues(); // and right-end panels
+
+            if (m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed)
+            {
+                RefreshDisplay();
+                m_ShouldRefresh = false;
+            }
         }
 
         private void OnToggleDeveloperMode()
@@ -646,16 +656,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!IsAnalysisValid())
                 return;
 
-            EditorGUILayout.BeginVertical(
-                GUI.skin.box /*, GUILayout.Width(LayoutSize.ToolbarWidth), GUILayout.ExpandWidth(true)*/);
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
 
+            m_ShowFilters = BoldFoldout(m_ShowFilters, Styles.FiltersFoldout);
+            if (m_ShowFilters)
             {
-                EditorGUILayout.BeginHorizontal();
-
-                var activeModeIndex = GUILayout.Toolbar(m_ActiveModeIndex, m_ModeNames,
-                    GUILayout.MaxWidth(LayoutSize.ModeTabWidth) /*, GUILayout.ExpandWidth(true)*/);
-
-                EditorGUILayout.EndHorizontal();
+                EditorGUI.indentLevel++;
 
                 DrawAssemblyFilter();
                 DrawAreaFilter();
@@ -671,44 +677,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_SearchText = m_SearchField.OnGUI(searchRect, m_SearchText);
 
                 m_ActiveIssueTable.searchString = m_SearchText;
-
-                EditorGUILayout.EndHorizontal();
-
-                var shouldRefresh = false;
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-
-                if (GUILayout.Button(Styles.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                {
-                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                    var selectedItems = m_ActiveIssueTable.GetSelectedItems();
-                    foreach (var item in selectedItems)
-                    {
-                        SetRuleForItem(item, Rule.Action.None);
-                    }
-
-                    if (!m_ProjectAuditor.config.DisplayMutedIssues)
-                    {
-                        m_ActiveIssueTable.SetSelection(new List<int>());
-                    }
-
-                    ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
-                        analytic, m_ActiveIssueTable.GetSelectedItems());
-                }
-
-                if (GUILayout.Button(Styles.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                {
-                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                    var selectedItems = m_ActiveIssueTable.GetSelectedItems();
-                    foreach (var item in selectedItems)
-                    {
-                        ClearRulesForItem(item);
-                    }
-
-                    ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(
-                        ProjectAuditorAnalytics.UIButton.Unmute, analytic, m_ActiveIssueTable.GetSelectedItems());
-                }
 
                 EditorGUILayout.EndHorizontal();
 
@@ -745,35 +713,58 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.EndHorizontal();
 
-                if (EditorGUI.EndChangeCheck()) shouldRefresh = true;
+                if (EditorGUI.EndChangeCheck()) m_ShouldRefresh = true;
 
-                bool activeModeChanged = (m_ActiveModeIndex != activeModeIndex);
-                if (activeModeChanged)
+                EditorGUI.indentLevel--;
+            }
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawActions()
+        {
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
+
+            m_ShowActions = BoldFoldout(m_ShowActions, Styles.ActionsFoldout);
+            if (m_ShowActions)
+            {
+                EditorGUI.indentLevel++;
+
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+
+                if (GUILayout.Button(Styles.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                 {
                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                    m_ActiveModeIndex = activeModeIndex;
+                    var selectedItems = m_ActiveIssueTable.GetSelectedItems();
+                    foreach (var item in selectedItems)
+                    {
+                        SetRuleForItem(item, Rule.Action.None);
+                    }
 
-                    RefreshDisplay();
+                    if (!m_ProjectAuditor.config.DisplayMutedIssues)
+                    {
+                        m_ActiveIssueTable.SetSelection(new List<int>());
+                    }
 
-                    if (m_ActiveModeIndex == (int)IssueCategory.Code)
-                    {
-                        ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.ApiCalls, analytic);
-                    }
-                    else if (m_ActiveModeIndex == (int)IssueCategory.ProjectSettings)
-                    {
-                        ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.ProjectSettings,
-                            analytic);
-                    }
-                    else
-                    {
-                        Debug.LogWarning("Unrecognised active mode: couldn't sent analytics event");
-                    }
+                    ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
+                        analytic, m_ActiveIssueTable.GetSelectedItems());
                 }
-                else if (shouldRefresh || m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed)
+
+                if (GUILayout.Button(Styles.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                 {
-                    RefreshDisplay();
-                    m_ShouldRefresh = false;
+                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                    var selectedItems = m_ActiveIssueTable.GetSelectedItems();
+                    foreach (var item in selectedItems)
+                    {
+                        ClearRulesForItem(item);
+                    }
+
+                    ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(
+                        ProjectAuditorAnalytics.UIButton.Unmute, analytic, m_ActiveIssueTable.GetSelectedItems());
                 }
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUI.indentLevel--;
             }
             EditorGUILayout.EndVertical();
         }
@@ -913,6 +904,42 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndHorizontal();
         }
 
+        private void DrawMode()
+        {
+            if (IsAnalysisValid())
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                var activeModeIndex = GUILayout.Toolbar(m_ActiveModeIndex, m_ModeNames,
+                    GUILayout.MaxWidth(LayoutSize.ModeTabWidth), GUILayout.Height(LayoutSize.ToolbarHeight));
+
+                EditorGUILayout.EndHorizontal();
+
+                bool activeModeChanged = (m_ActiveModeIndex != activeModeIndex);
+                if (activeModeChanged)
+                {
+                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                    m_ActiveModeIndex = activeModeIndex;
+
+                    RefreshDisplay();
+
+                    if (m_ActiveModeIndex == (int)IssueCategory.Code)
+                    {
+                        ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.ApiCalls, analytic);
+                    }
+                    else if (m_ActiveModeIndex == (int)IssueCategory.ProjectSettings)
+                    {
+                        ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.ProjectSettings,
+                            analytic);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Unrecognised active mode: couldn't sent analytics event");
+                    }
+                }
+            }
+        }
+
         private void DrawHelpbox()
         {
             if (!IsAnalysisValid())
@@ -966,6 +993,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         private static class LayoutSize
         {
             public static readonly int ToolbarWidth = 600;
+            public static readonly int ToolbarHeight = 30;
             public static readonly int FoldoutWidth = 300;
             public static readonly int FoldoutMinHeight = 100;
             public static readonly int FoldoutMaxHeight = 220;
@@ -1009,6 +1037,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore selected issues.");
             public static readonly GUIContent UnmuteButton = new GUIContent("Unmute", "Always show selected issues.");
 
+            public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filtering Criteria");
+            public static readonly GUIContent ActionsFoldout = new GUIContent("Actions", "Actions on selected issues");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
 
             public static readonly GUIContent RecommendationFoldout =
