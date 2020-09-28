@@ -895,11 +895,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                 }
 
+                DrawHelpButton();
+
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
                     GUILayout.Label(Styles.AnalysisInProgressLabel, GUILayout.ExpandWidth(true));
                 }
-                DrawHelpButton();
             }
             EditorGUILayout.EndHorizontal();
         }
