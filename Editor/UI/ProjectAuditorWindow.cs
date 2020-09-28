@@ -213,16 +213,22 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             DrawSettings();
             DrawToolbar();
-            DrawHelpbox();
-            DrawMode();
-            DrawFilters();
-            DrawActions();
-            DrawIssues(); // and right-end panels
-
-            if (m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed)
+            if (IsAnalysisValid())
             {
-                RefreshDisplay();
-                m_ShouldRefresh = false;
+                DrawMode();
+                DrawFilters();
+                DrawActions();
+                DrawIssues(); // and right-end panels
+
+                if (m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed)
+                {
+                    RefreshDisplay();
+                    m_ShouldRefresh = false;
+                }
+            }
+            else
+            {
+                DrawHelpbox();
             }
         }
 
@@ -378,9 +384,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         private void DrawIssues()
         {
-            if (!IsAnalysisValid())
-                return;
-
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.BeginVertical();
 
@@ -653,9 +656,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         private void DrawFilters()
         {
-            if (!IsAnalysisValid())
-                return;
-
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
 
             m_ShowFilters = BoldFoldout(m_ShowFilters, Styles.FiltersFoldout);
@@ -906,53 +906,47 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         private void DrawMode()
         {
-            if (IsAnalysisValid())
+            EditorGUILayout.BeginHorizontal();
+
+            var activeModeIndex = GUILayout.Toolbar(m_ActiveModeIndex, m_ModeNames,
+                GUILayout.MaxWidth(LayoutSize.ModeTabWidth), GUILayout.Height(LayoutSize.ToolbarHeight));
+
+            EditorGUILayout.EndHorizontal();
+
+            bool activeModeChanged = (m_ActiveModeIndex != activeModeIndex);
+            if (activeModeChanged)
             {
-                EditorGUILayout.BeginHorizontal();
+                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                m_ActiveModeIndex = activeModeIndex;
 
-                var activeModeIndex = GUILayout.Toolbar(m_ActiveModeIndex, m_ModeNames,
-                    GUILayout.MaxWidth(LayoutSize.ModeTabWidth), GUILayout.Height(LayoutSize.ToolbarHeight));
+                RefreshDisplay();
 
-                EditorGUILayout.EndHorizontal();
-
-                bool activeModeChanged = (m_ActiveModeIndex != activeModeIndex);
-                if (activeModeChanged)
+                if (m_ActiveModeIndex == (int)IssueCategory.Code)
                 {
-                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                    m_ActiveModeIndex = activeModeIndex;
-
-                    RefreshDisplay();
-
-                    if (m_ActiveModeIndex == (int)IssueCategory.Code)
-                    {
-                        ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.ApiCalls, analytic);
-                    }
-                    else if (m_ActiveModeIndex == (int)IssueCategory.ProjectSettings)
-                    {
-                        ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.ProjectSettings,
-                            analytic);
-                    }
-                    else
-                    {
-                        Debug.LogWarning("Unrecognised active mode: couldn't sent analytics event");
-                    }
+                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.ApiCalls, analytic);
+                }
+                else if (m_ActiveModeIndex == (int)IssueCategory.ProjectSettings)
+                {
+                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.ProjectSettings,
+                        analytic);
+                }
+                else
+                {
+                    Debug.LogWarning("Unrecognised active mode: couldn't sent analytics event");
                 }
             }
         }
 
         private void DrawHelpbox()
         {
-            if (!IsAnalysisValid())
-            {
-                EditorGUILayout.BeginVertical(GUI.skin.box);
+            EditorGUILayout.BeginVertical(GUI.skin.box);
 
-                var helpStyle = new GUIStyle(EditorStyles.textField);
-                helpStyle.wordWrap = true;
+            var helpStyle = new GUIStyle(EditorStyles.textField);
+            helpStyle.wordWrap = true;
 
-                EditorGUILayout.LabelField(Styles.HelpText, helpStyle);
+            EditorGUILayout.LabelField(Styles.HelpText, helpStyle);
 
-                EditorGUILayout.EndVertical();
-            }
+            EditorGUILayout.EndVertical();
         }
 
         private void DrawHelpButton()
