@@ -218,13 +218,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 DrawMode();
                 DrawFilters();
                 DrawActions();
-                DrawIssues(); // and right-end panels
 
                 if (m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed)
                 {
                     RefreshDisplay();
                     m_ShouldRefresh = false;
                 }
+
+                DrawIssues(); // and right-end panels
             }
             else
             {
