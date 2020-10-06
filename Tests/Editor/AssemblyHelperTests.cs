@@ -43,7 +43,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
                 var assemblyInfos = compilationHelper.Compile();
 
                 Assert.Positive(assemblyInfos.Count());
-                Assert.NotNull(assemblyInfos.FirstOrDefault(info => info.name.Contains(AssemblyHelper.DefaultAssemblyFileName)));
+                Assert.NotNull(assemblyInfos.FirstOrDefault(info => info.name.Contains(AssemblyHelper.DefaultAssemblyName)));
             }
         }
 
