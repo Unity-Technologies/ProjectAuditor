@@ -16,11 +16,12 @@ namespace Unity.ProjectAuditor.Editor
 
         // TODO: remove auditor-specific fields: method, type and customevaluator
         public int id;
+        public string type;
         public string method;
+        public string value;
+        public bool critical;
         public string problem;
         public string solution;
-        public string type;
-        public string value;
 
         public ProblemDescriptor(int id, string description, Area area, string problem, string solution)
         {
@@ -32,6 +33,7 @@ namespace Unity.ProjectAuditor.Editor
 
             this.type = String.Empty;
             this.method = String.Empty;
+            this.critical = false;
         }
 
         public bool Equals(ProblemDescriptor other)

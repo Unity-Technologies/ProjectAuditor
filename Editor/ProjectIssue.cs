@@ -132,7 +132,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                return callTree != null && callTree.IsPerfCriticalContext();
+                return descriptor.critical || (callTree != null && callTree.IsPerfCriticalContext());
             }
         }
 

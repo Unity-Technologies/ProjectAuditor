@@ -9,6 +9,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         private ScriptResource m_ScriptResourceIssueInClassMethodCalledFromMonoBehaviourUpdate;
         private ScriptResource m_ScriptResourceIssueInMonoBehaviourUpdate;
         private ScriptResource m_ScriptResourceIssueInSimpleClass;
+        private ScriptResource m_ScriptResourceShaderWarmupIssueIsCritical;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -74,6 +75,17 @@ class B : A
     }
 }
 ");
+
+            m_ScriptResourceShaderWarmupIssueIsCritical = new ScriptResource("ShaderWarmUpIssueIsCritical.cs", @"
+using UnityEngine;
+class ShaderWarmUpIssueIsCritical
+{
+    void Start()
+    {
+        Shader.WarmupAllShaders();
+    }
+}
+");
         }
 
         [OneTimeTearDown]
@@ -83,6 +95,7 @@ class B : A
             m_ScriptResourceIssueInMonoBehaviourUpdate.Delete();
             m_ScriptResourceIssueInClassMethodCalledFromMonoBehaviourUpdate.Delete();
             m_ScriptResourceIssueInClassInheritedFromMonoBehaviour.Delete();
+            m_ScriptResourceShaderWarmupIssueIsCritical.Delete();
         }
 
         [Test]
@@ -117,6 +130,16 @@ class B : A
             var issues =
                 ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(
                     m_ScriptResourceIssueInClassInheritedFromMonoBehaviour);
+            var issue = issues.First();
+            Assert.True(issue.isPerfCriticalContext);
+        }
+
+        [Test]
+        public void ShaderWarmupIssueIsCritical()
+        {
+            var issues =
+                ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(
+                    m_ScriptResourceShaderWarmupIssueIsCritical);
             var issue = issues.First();
             Assert.True(issue.isPerfCriticalContext);
         }

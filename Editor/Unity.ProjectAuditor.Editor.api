@@ -48,6 +48,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         public Unity.ProjectAuditor.Editor.Rule.Action action;
         public string area;
+        public bool critical;
         public string customevaluator;
         public string description;
         public int id;
