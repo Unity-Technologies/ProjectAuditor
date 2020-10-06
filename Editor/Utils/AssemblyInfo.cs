@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    internal struct AssemblyInfo
+    internal class AssemblyInfo
     {
         public string name;            // assembly name without extension
         public string path;            // absolute path
