@@ -32,17 +32,20 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// ProjectAuditor constructor
         /// </summary>
-        public ProjectAuditor()
+        public ProjectAuditor(string assetPath = "Assets/Editor/ProjectAuditorConfig.asset")
         {
-            const string path = "Assets/Editor";
-            const string assetFilename = "ProjectAuditorConfig.asset";
-            var assetPath = Path.Combine(path, assetFilename);
             config = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
             if (config == null)
             {
-                if (!File.Exists(path)) Directory.CreateDirectory(path);
+                Debug.LogWarningFormat("Project Auditor: {0} not found.", assetPath);
+
+                var path = Path.GetDirectoryName(assetPath);
+                if (!File.Exists(path))
+                    Directory.CreateDirectory(path);
                 config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
                 AssetDatabase.CreateAsset(config, assetPath);
+
+                Debug.LogFormat("Project Auditor: {0} has been created.", assetPath);
             }
 
             foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<IAuditor>())

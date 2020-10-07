@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         public virtual int callbackOrder { get; }
         public Unity.ProjectAuditor.Editor.ProjectAuditorConfig config { get; set; }
-        public ProjectAuditor() {}
+        public ProjectAuditor(string assetPath = Assets/Editor/ProjectAuditorConfig.asset) {}
         public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<bool> onUpdate, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public virtual void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
