@@ -52,12 +52,27 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var allResources = allAssetPaths.Where(path => path.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) >= 0);
             var allPlayerResources = allResources.Where(path => path.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) == -1);
 
-            foreach (var filename in allPlayerResources)
+            var resourceAssetPathsHashSet = new HashSet<string>();
+            foreach (var assetPath in allPlayerResources)
             {
-                if ((File.GetAttributes(filename) & FileAttributes.Directory) == FileAttributes.Directory)
+                if ((File.GetAttributes(assetPath) & FileAttributes.Directory) == FileAttributes.Directory)
                     continue;
 
-                var location = new Location(filename, LocationType.Asset);
+                // get all dependencies, including 'assetPath'
+                var dependencies = AssetDatabase.GetDependencies(assetPath, true);
+                foreach (var dep in dependencies)
+                {
+                    // skip C# scripts
+                    if (Path.GetExtension(dep).Equals(".cs"))
+                        continue;
+
+                    resourceAssetPathsHashSet.Add(dep);
+                }
+            }
+
+            foreach (var assetPath in resourceAssetPathsHashSet)
+            {
+                var location = new Location(assetPath, LocationType.Asset);
                 onIssueFound(new ProjectIssue
                     (
                         s_Descriptor,
