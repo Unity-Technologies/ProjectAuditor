@@ -14,9 +14,11 @@ namespace Unity.ProjectAuditor.Editor.UI
         public enum Column
         {
             Description = 0,
+            AssetType,
             Priority,
             Area,
             Filename,
+            Path,
             Assembly,
 
             Count
@@ -231,16 +233,39 @@ namespace Unity.ProjectAuditor.Editor.UI
                     case Column.Filename:
                         if (issue.filename != string.Empty)
                         {
-                            var filename = string.Format("{0}:{1}", issue.filename, issue.line);
+                            var filename = string.Format("{0}", issue.filename);
+                            if (issue.category == IssueCategory.Code)
+                                filename += string.Format(":{0}", issue.line);
 
                             // display fullpath as tooltip
                             EditorGUI.LabelField(cellRect, new GUIContent(filename, issue.relativePath));
                         }
-
                         break;
+
+                    case Column.Path:
+                        if (issue.location != null)
+                        {
+                            var path = string.Format("{0}", issue.location.Path);
+                            if (issue.category == IssueCategory.Code)
+                                path += string.Format(":{0}", issue.line);
+
+                            EditorGUI.LabelField(cellRect, new GUIContent(path, path));
+                        }
+                        break;
+
                     case Column.Assembly:
                         if (issue.assembly != string.Empty)
                             EditorGUI.LabelField(cellRect, new GUIContent(issue.assembly, issue.assembly));
+
+                        break;
+                    case Column.AssetType:
+                        if (issue.location.Path != string.Empty)
+                        {
+                            var ext = Path.GetExtension(issue.location.Path);
+                            if (issue.category == IssueCategory.Assets)
+                                ext = ext.Substring(1);
+                            EditorGUI.LabelField(cellRect, new GUIContent(ext, ext));
+                        }
 
                         break;
                 }
@@ -430,6 +455,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     ? secondItem.ProjectIssue.filename
                                     : string.Empty;
                                 break;
+                            case Column.Path:
+                                firstString = firstItem.ProjectIssue != null
+                                    ? firstItem.ProjectIssue.location.Path
+                                    : string.Empty;
+                                secondString = secondItem.ProjectIssue != null
+                                    ? secondItem.ProjectIssue.location.Path
+                                    : string.Empty;
+                                break;
                             case Column.Assembly:
                                 firstString = firstItem.ProjectIssue != null
                                     ? firstItem.ProjectIssue.assembly
@@ -437,6 +470,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 secondString = secondItem.ProjectIssue != null
                                     ? secondItem.ProjectIssue.assembly
                                     : string.Empty;
+                                break;
+                            case Column.AssetType:
+                                firstString = firstItem.ProjectIssue != null ? Path.GetExtension(firstItem.ProjectIssue.location.Path) : string.Empty;
+                                secondString = secondItem.ProjectIssue != null ? Path.GetExtension(secondItem.ProjectIssue.location.Path) : string.Empty;
                                 break;
                             case Column.Priority:
                                 firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;

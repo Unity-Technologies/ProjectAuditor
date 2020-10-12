@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 onIssueFound(new ProjectIssue
                     (
                         s_Descriptor,
-                        location.Path,
+                        Path.GetFileNameWithoutExtension(location.Path),
                         IssueCategory.Assets,
                         location
                     )

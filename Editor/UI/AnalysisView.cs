@@ -16,8 +16,11 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showAssemblySelection;
         public bool showCritical;
         public bool showInvertedCallTree;
+        public bool showAreaColumn;
         public bool showFilenameColumn;
+        public bool showPathColumn;
         public bool showAssemblyColumn;
+        public bool showAssetTypeColumn;
     }
 
     internal class AnalysisView
@@ -67,8 +70,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                         }
                         break;
                     case IssueTable.Column.Area:
-                        width = 60;
-                        minWidth = 50;
+                        if (m_Desc.showAreaColumn)
+                        {
+                            width = 60;
+                            minWidth = 50;
+                        }
                         break;
                     case IssueTable.Column.Filename:
                         if (m_Desc.showFilenameColumn)
@@ -76,7 +82,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                             width = 180;
                             minWidth = 100;
                         }
-
+                        break;
+                    case IssueTable.Column.Path:
+                        if (m_Desc.showPathColumn)
+                        {
+                            width = 400;
+                            minWidth = 100;
+                        }
                         break;
                     case IssueTable.Column.Assembly:
                         if (m_Desc.showAssemblyColumn)
@@ -84,7 +96,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                             width = 180;
                             minWidth = 100;
                         }
-
+                        break;
+                    case IssueTable.Column.AssetType:
+                        if (m_Desc.showAssetTypeColumn)
+                        {
+                            width = 80;
+                            minWidth = 80;
+                        }
                         break;
                 }
 
@@ -128,10 +146,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent[] ColumnHeaders =
             {
                 new GUIContent("Issue", "Issue description"),
+                new GUIContent("Asset Type", "Asset file extension"),
                 new GUIContent(" ! ", "Issue priority"),
                 new GUIContent("Area", "The area the issue might have an impact on"),
                 new GUIContent("Filename", "Filename and line number"),
-                new GUIContent("Assembly", "Managed Assembly name")
+                new GUIContent("Path", "Path and line number"),
+                new GUIContent("Assembly", "Managed Assembly name"),
             };
         }
     }

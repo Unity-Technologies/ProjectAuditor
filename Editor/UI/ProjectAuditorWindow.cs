@@ -47,8 +47,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAssemblySelection = false,
                 showCritical = false,
                 showInvertedCallTree = false,
+                showAreaColumn = false,
                 showFilenameColumn = false,
-                showAssemblyColumn = false
+                showPathColumn = true,
+                showAssemblyColumn = false,
+                showAssetTypeColumn = true
             },
             new AnalysisViewDescriptor
             {
@@ -59,8 +62,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAssemblySelection = true,
                 showCritical = true,
                 showInvertedCallTree = true,
+                showAreaColumn = true,
                 showFilenameColumn = true,
-                showAssemblyColumn = true
+                showPathColumn = false,
+                showAssemblyColumn = true,
+                showAssetTypeColumn = false
             },
             new AnalysisViewDescriptor
             {
@@ -71,8 +77,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAssemblySelection = false,
                 showCritical = false,
                 showInvertedCallTree = false,
+                showAreaColumn = true,
                 showFilenameColumn = false,
-                showAssemblyColumn = false
+                showPathColumn = false,
+                showAssemblyColumn = false,
+                showAssetTypeColumn = false
             }
         };
 
