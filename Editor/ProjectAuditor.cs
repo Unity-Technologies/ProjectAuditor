@@ -29,10 +29,22 @@ namespace Unity.ProjectAuditor.Editor
 
         private readonly List<IAuditor> m_Auditors = new List<IAuditor>();
 
+        public static readonly string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
+
+        public ProjectAuditor()
+        {
+            Init(DefaultAssetPath);
+        }
+
         /// <summary>
         /// ProjectAuditor constructor
         /// </summary>
-        public ProjectAuditor(string assetPath = "Assets/Editor/ProjectAuditorConfig.asset")
+        public ProjectAuditor(string assetPath)
+        {
+            Init(assetPath);
+        }
+
+        private void Init(string assetPath)
         {
             config = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
             if (config == null)

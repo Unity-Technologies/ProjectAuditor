@@ -65,9 +65,11 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport
     {
+        public static readonly string DefaultAssetPath;
         public virtual int callbackOrder { get; }
         public Unity.ProjectAuditor.Editor.ProjectAuditorConfig config { get; set; }
-        public ProjectAuditor(string assetPath = Assets/Editor/ProjectAuditorConfig.asset) {}
+        public ProjectAuditor() {}
+        public ProjectAuditor(string assetPath) {}
         public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<bool> onUpdate, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public virtual void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
