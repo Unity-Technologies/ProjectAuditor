@@ -202,6 +202,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 {
     public class Location
     {
+        public string Extension { get; }
         public string Filename { get; }
         public int Line { get; }
         public string Path { get; }

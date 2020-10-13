@@ -14,11 +14,11 @@ namespace Unity.ProjectAuditor.Editor.UI
         public enum Column
         {
             Description = 0,
-            AssetType,
             Priority,
             Area,
-            Filename,
             Path,
+            Filename,
+            FileType,
             Assembly,
 
             Count
@@ -154,8 +154,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 CellGUI(args.GetCellRect(i), args.item, args.GetColumn(i), ref args);
         }
 
-        private void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int column, ref RowGUIArgs args)
+        private void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int columnIndex, ref RowGUIArgs args)
         {
+            var column = m_Desc.columnDescriptors[columnIndex];
+
             // only indent first column
             if ((int)Column.Description == column)
             {
@@ -167,7 +169,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var item = treeViewItem as IssueTableItem;
             if (item == null)
             {
-                if ((Column)column == Column.Description)
+                if (column == Column.Description)
                     EditorGUI.LabelField(cellRect, new GUIContent(treeViewItem.displayName, treeViewItem.displayName));
                 return;
             }
@@ -183,7 +185,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (rule != null && rule.action == Rule.Action.None) GUI.enabled = false;
 
             if (item.hasChildren)
-                switch ((Column)column)
+                switch (column)
                 {
                     case Column.Description:
                         EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()));
@@ -193,7 +195,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         break;
                 }
             else
-                switch ((Column)column)
+                switch (column)
                 {
                     case Column.Priority:
                         if (issue.isPerfCriticalContext)
@@ -258,10 +260,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                             EditorGUI.LabelField(cellRect, new GUIContent(issue.assembly, issue.assembly));
 
                         break;
-                    case Column.AssetType:
+                    case Column.FileType:
                         if (issue.location.Path != string.Empty)
                         {
-                            var ext = Path.GetExtension(issue.location.Path);
+                            var ext = issue.location.Extension;
                             if (issue.category == IssueCategory.Assets)
                                 ext = ext.Substring(1);
                             EditorGUI.LabelField(cellRect, new GUIContent(ext, ext));
@@ -357,7 +359,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             for (var i = 0; i < sortedColumns.Length; i++)
                 columnAscending[i] = multiColumnHeader.IsSortedAscending(sortedColumns[i]);
 
-            var root = new ItemTree(null);
+            var root = new ItemTree(null, m_Desc);
             var stack = new Stack<ItemTree>();
             stack.Push(root);
             foreach (var row in rows)
@@ -376,7 +378,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (row.depth > activeParentDepth)
                 {
-                    var t = new ItemTree(r);
+                    var t = new ItemTree(r, m_Desc);
                     stack.Peek().AddChild(t);
                     stack.Push(t);
                 }
@@ -396,11 +398,13 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             private readonly List<ItemTree> m_Children;
             private readonly IssueTableItem m_Item;
+            private readonly AnalysisViewDescriptor m_ViewDescriptor;
 
-            public ItemTree(IssueTableItem i)
+            public ItemTree(IssueTableItem i, AnalysisViewDescriptor viewDescriptor)
             {
                 m_Item = i;
                 m_Children = new List<ItemTree>();
+                m_ViewDescriptor = viewDescriptor;
             }
 
             public int Depth
@@ -436,8 +440,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                         string firstString;
                         string secondString;
-
-                        switch ((Column)columnSortOrder[i])
+                        var columnEnum = m_ViewDescriptor.columnDescriptors[columnSortOrder[i]];
+                        switch (columnEnum)
                         {
                             case Column.Description:
                                 firstString = firstItem.GetDisplayName();
@@ -471,9 +475,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     ? secondItem.ProjectIssue.assembly
                                     : string.Empty;
                                 break;
-                            case Column.AssetType:
-                                firstString = firstItem.ProjectIssue != null ? Path.GetExtension(firstItem.ProjectIssue.location.Path) : string.Empty;
-                                secondString = secondItem.ProjectIssue != null ? Path.GetExtension(secondItem.ProjectIssue.location.Path) : string.Empty;
+                            case Column.FileType:
+                                firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.location.Extension : string.Empty;
+                                secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.location.Extension : string.Empty;
                                 break;
                             case Column.Priority:
                                 firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;

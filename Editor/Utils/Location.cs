@@ -28,6 +28,16 @@ namespace Unity.ProjectAuditor.Editor.Utils
             get { return m_Line; }
         }
 
+        public string Extension
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.m_Path))
+                    return string.Empty;
+                return System.IO.Path.GetExtension(this.m_Path);
+            }
+        }
+
         public string Path
         {
             get

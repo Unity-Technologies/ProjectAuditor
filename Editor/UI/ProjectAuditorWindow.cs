@@ -47,11 +47,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAssemblySelection = false,
                 showCritical = false,
                 showInvertedCallTree = false,
-                showAreaColumn = false,
-                showFilenameColumn = false,
-                showPathColumn = true,
-                showAssemblyColumn = false,
-                showAssetTypeColumn = true
+                columnDescriptors = new[]
+                {
+                    IssueTable.Column.Description,
+                    IssueTable.Column.FileType,
+                    IssueTable.Column.Path
+                }
             },
             new AnalysisViewDescriptor
             {
@@ -62,11 +63,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAssemblySelection = true,
                 showCritical = true,
                 showInvertedCallTree = true,
-                showAreaColumn = true,
-                showFilenameColumn = true,
-                showPathColumn = false,
-                showAssemblyColumn = true,
-                showAssetTypeColumn = false
+                columnDescriptors = new[]
+                {
+                    IssueTable.Column.Description,
+                    IssueTable.Column.Priority,
+                    IssueTable.Column.Area,
+                    IssueTable.Column.Filename,
+                    IssueTable.Column.Assembly
+                }
             },
             new AnalysisViewDescriptor
             {
@@ -77,11 +81,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAssemblySelection = false,
                 showCritical = false,
                 showInvertedCallTree = false,
-                showAreaColumn = true,
-                showFilenameColumn = false,
-                showPathColumn = false,
-                showAssemblyColumn = false,
-                showAssetTypeColumn = false
+                columnDescriptors = new[]
+                {
+                    IssueTable.Column.Description,
+                    IssueTable.Column.Area,
+                }
             }
         };
 
@@ -1019,7 +1023,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent AnalysisInProgressLabel =
                 new GUIContent("Analysis in progress...", "Analysis in progress...please wait.");
-
 
             public static readonly GUIContent ReloadButton =
                 new GUIContent("Reload DB", "Reload Issue Definition files.");

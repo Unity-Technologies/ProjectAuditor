@@ -16,11 +16,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showAssemblySelection;
         public bool showCritical;
         public bool showInvertedCallTree;
-        public bool showAreaColumn;
-        public bool showFilenameColumn;
-        public bool showPathColumn;
-        public bool showAssemblyColumn;
-        public bool showAssetTypeColumn;
+        public IssueTable.Column[] columnDescriptors;
     }
 
     internal class AnalysisView
@@ -50,73 +46,23 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return;
 
             var state = new TreeViewState();
-            var columnsList = new List<MultiColumnHeaderState.Column>();
-            var numColumns = (int)IssueTable.Column.Count;
-            for (var i = 0; i < numColumns; i++)
+            var columns = new MultiColumnHeaderState.Column[m_Desc.columnDescriptors.Length];
+            for (var i = 0; i < columns.Length; i++)
             {
-                var width = 0;
-                var minWidth = 0;
-                switch ((IssueTable.Column)i)
-                {
-                    case IssueTable.Column.Description:
-                        width = 300;
-                        minWidth = 100;
-                        break;
-                    case IssueTable.Column.Priority:
-                        if (m_Desc.showCritical)
-                        {
-                            width = 22;
-                            minWidth = 22;
-                        }
-                        break;
-                    case IssueTable.Column.Area:
-                        if (m_Desc.showAreaColumn)
-                        {
-                            width = 60;
-                            minWidth = 50;
-                        }
-                        break;
-                    case IssueTable.Column.Filename:
-                        if (m_Desc.showFilenameColumn)
-                        {
-                            width = 180;
-                            minWidth = 100;
-                        }
-                        break;
-                    case IssueTable.Column.Path:
-                        if (m_Desc.showPathColumn)
-                        {
-                            width = 400;
-                            minWidth = 100;
-                        }
-                        break;
-                    case IssueTable.Column.Assembly:
-                        if (m_Desc.showAssemblyColumn)
-                        {
-                            width = 180;
-                            minWidth = 100;
-                        }
-                        break;
-                    case IssueTable.Column.AssetType:
-                        if (m_Desc.showAssetTypeColumn)
-                        {
-                            width = 80;
-                            minWidth = 80;
-                        }
-                        break;
-                }
+                var columnEnum = m_Desc.columnDescriptors[i];
+                var style = Styles.Columns[(int)columnEnum];
 
-                columnsList.Add(new MultiColumnHeaderState.Column
+                columns[i] = new MultiColumnHeaderState.Column
                 {
-                    headerContent = Styles.ColumnHeaders[i],
-                    width = width,
-                    minWidth = minWidth,
+                    headerContent = style.Content,
+                    width = style.Width,
+                    minWidth = style.MinWidth,
                     autoResize = true
-                });
+                };
             }
 
             m_Table = new IssueTable(state,
-                new MultiColumnHeader(new MultiColumnHeaderState(columnsList.ToArray())),
+                new MultiColumnHeader(new MultiColumnHeaderState(columns)),
                 m_Desc,
                 m_Config,
                 m_Filter);
@@ -141,17 +87,59 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
         }
 
+        struct ColumnStyle
+        {
+            public GUIContent Content;
+            public int Width;
+            public int MinWidth;
+        }
+
         private static class Styles
         {
-            public static readonly GUIContent[] ColumnHeaders =
+            public static readonly ColumnStyle[] Columns =
             {
-                new GUIContent("Issue", "Issue description"),
-                new GUIContent("Asset Type", "Asset file extension"),
-                new GUIContent(" ! ", "Issue priority"),
-                new GUIContent("Area", "The area the issue might have an impact on"),
-                new GUIContent("Filename", "Filename and line number"),
-                new GUIContent("Path", "Path and line number"),
-                new GUIContent("Assembly", "Managed Assembly name"),
+                new ColumnStyle
+                {
+                    Content = new GUIContent("Issue", "Issue description"),
+                    Width = 300,
+                    MinWidth = 100,
+                },
+                new ColumnStyle
+                {
+                    Content = new GUIContent(" ! ", "Issue priority"),
+                    Width = 22,
+                    MinWidth = 22
+                },
+                new ColumnStyle
+                {
+                    Content = new GUIContent("Area", "The area the issue might have an impact on"),
+                    Width = 60,
+                    MinWidth = 50
+                },
+                new ColumnStyle
+                {
+                    Content = new GUIContent("Path", "Path and line number"),
+                    Width = 300,
+                    MinWidth = 100,
+                },
+                new ColumnStyle
+                {
+                    Content = new GUIContent("Filename", "Managed Assembly name"),
+                    Width = 180,
+                    MinWidth = 100,
+                },
+                new ColumnStyle
+                {
+                    Content = new GUIContent("File Type", "File extension"),
+                    Width = 80,
+                    MinWidth = 80,
+                },
+                new ColumnStyle
+                {
+                    Content = new GUIContent("Assembly", "Managed Assembly name"),
+                    Width = 300,
+                    MinWidth = 100,
+                },
             };
         }
     }
