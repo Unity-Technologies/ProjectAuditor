@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             get { return Path.GetFileNameWithoutExtension(DefaultAssemblyFileName); }
         }
 
-        public static IEnumerable<Type> GetAllTypes()
+        private static IEnumerable<Type> GetAllTypes()
         {
             return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes());
         }

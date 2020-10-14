@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -29,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor
 
         private readonly List<IAuditor> m_Auditors = new List<IAuditor>();
 
-        public static readonly string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
+        public const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
 
         public ProjectAuditor()
         {

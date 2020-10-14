@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Unity.ProjectAuditor.Editor.Utils
 {
     internal class AssemblyInfo

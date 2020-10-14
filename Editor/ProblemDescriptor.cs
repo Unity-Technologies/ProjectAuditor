@@ -31,8 +31,8 @@ namespace Unity.ProjectAuditor.Editor
             this.problem = problem;
             this.solution = solution;
 
-            this.type = String.Empty;
-            this.method = String.Empty;
+            this.type = string.Empty;
+            this.method = string.Empty;
             this.critical = false;
         }
 

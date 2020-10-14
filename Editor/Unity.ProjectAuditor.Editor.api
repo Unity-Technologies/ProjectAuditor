@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport
     {
-        public static readonly string DefaultAssetPath;
+        public const string DefaultAssetPath = Assets/Editor/ProjectAuditorConfig.asset;
         public virtual int callbackOrder { get; }
         public Unity.ProjectAuditor.Editor.ProjectAuditorConfig config { get; set; }
         public ProjectAuditor() {}

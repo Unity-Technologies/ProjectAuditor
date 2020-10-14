@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectReport
     {
         [SerializeField] private List<ProjectIssue> m_Issues = new List<ProjectIssue>();
-        private static Mutex mutex = new Mutex();
+        private static Mutex s_Mutex = new Mutex();
 
         public int NumTotalIssues
         {
@@ -29,9 +29,9 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns> Number of project issues</returns>
         public int GetNumIssues(IssueCategory category)
         {
-            mutex.WaitOne();
+            s_Mutex.WaitOne();
             var result = m_Issues.Count(i => i.category == category);
-            mutex.ReleaseMutex();
+            s_Mutex.ReleaseMutex();
             return result;
         }
 
@@ -42,17 +42,17 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns> Array of project issues</returns>
         public ProjectIssue[] GetIssues(IssueCategory category)
         {
-            mutex.WaitOne();
+            s_Mutex.WaitOne();
             var result = m_Issues.Where(i => i.category == category).ToArray();
-            mutex.ReleaseMutex();
+            s_Mutex.ReleaseMutex();
             return result;
         }
 
         internal void AddIssue(ProjectIssue projectIssue)
         {
-            mutex.WaitOne();
+            s_Mutex.WaitOne();
             m_Issues.Add(projectIssue);
-            mutex.ReleaseMutex();
+            s_Mutex.ReleaseMutex();
         }
 
         /// <summary>

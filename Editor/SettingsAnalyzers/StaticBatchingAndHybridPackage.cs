@@ -45,8 +45,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
                 BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
             if (method == null) throw new NotSupportedException("Getting batching per platform is not supported");
 
-            var staticBatching = 0;
-            var dynamicBatching = 0;
+            const int staticBatching = 0;
+            const int dynamicBatching = 0;
             var args = new object[]
             {
                 platform,

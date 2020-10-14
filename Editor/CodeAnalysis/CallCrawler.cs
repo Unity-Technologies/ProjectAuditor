@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                     if (progressBar != null)
                         progressBar.AdvanceProgressBar();
 
-                    var depth = 0;
+                    const int depth = 0;
                     var callTree = issue.callTree;
                     BuildHierarchy(callTree.GetChild(), depth);
 

@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Compilation;
-using UnityEngine;
 #if UNITY_2018_2_OR_NEWER
 using UnityEditor.Build.Player;
 
@@ -14,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 {
     internal class AssemblyCompilationHelper : IDisposable
     {
-        private string m_OutputFolder = String.Empty;
+        private string m_OutputFolder = string.Empty;
         private bool m_Success = true;
 
         private Action<string> m_OnAssemblyCompilationStarted;
