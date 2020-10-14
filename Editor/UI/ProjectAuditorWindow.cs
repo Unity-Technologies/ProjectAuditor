@@ -35,6 +35,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         private static readonly string NoIssueSelectedText = "No issue selected";
+        private static readonly string AnalysisIsRequiredText = "Missing Data: Please Analyze";
 
         private readonly AnalysisViewDescriptor[] m_AnalysisViewDescriptors =
         {
@@ -431,13 +432,17 @@ namespace Unity.ProjectAuditor.Editor.UI
             DrawRecommendationFoldout(problemDescriptor);
             if (m_ActiveAnalysisView.desc.showInvertedCallTree)
             {
-                CallTreeNode callTree = null;
+                ProjectIssue issue = null;
                 if (selectedIssues.Count() == 1)
                 {
-                    var issue = selectedIssues.First();
-                    if (issue != null)
-                        // get caller sub-tree
-                        callTree = issue.callTree.GetChild();
+                    issue = selectedIssues.First();
+                }
+
+                CallTreeNode callTree = null;
+                if (issue != null && issue.callTree != null)
+                {
+                    // get caller sub-tree
+                    callTree = issue.callTree.GetChild();
                 }
 
                 if (m_CurrentCallTree != callTree)
@@ -447,7 +452,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_CurrentCallTree = callTree;
                 }
 
-                DrawCallHierarchy(callTree);
+                DrawCallHierarchy(issue, callTree);
             }
         }
 
@@ -502,7 +507,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndVertical();
         }
 
-        private void DrawCallHierarchy(CallTreeNode callTree)
+        private void DrawCallHierarchy(ProjectIssue issue, CallTreeNode callTree)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth),
                 GUILayout.MinHeight(LayoutSize.FoldoutMinHeight * 2));
@@ -515,6 +520,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                     var r = EditorGUILayout.GetControlRect(GUILayout.Height(400));
 
                     m_CallHierarchyView.OnGUI(r);
+                }
+                else if (issue != null)
+                {
+                    GUIStyle s = new GUIStyle(EditorStyles.textField);
+                    s.normal.textColor = Color.yellow;
+                    EditorGUILayout.LabelField(AnalysisIsRequiredText, s, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 }
                 else
                 {

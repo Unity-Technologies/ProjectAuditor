@@ -7,10 +7,9 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
-    [Serializable]
     public class CallTreeNode
     {
-        [SerializeField] private List<CallTreeNode> m_Children = new List<CallTreeNode>();
+        private List<CallTreeNode> m_Children = new List<CallTreeNode>();
 
         public string assemblyName;
         public Location location;
