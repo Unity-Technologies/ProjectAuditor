@@ -42,6 +42,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             ApiCalls = 100,
             ProjectSettings,
+            Assets,
         };
 
         // -------------------------------------------------------------------------------------------------------------
@@ -146,6 +147,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "export_button_click";
                 case UIButton.ApiCalls:
                     return "api_tab";
+                case UIButton.Assets:
+                    return "assets_tab";
                 case UIButton.ProjectSettings:
                     return "settings_tab";
                 case UIButton.AssemblySelect:

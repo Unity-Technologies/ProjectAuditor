@@ -52,7 +52,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.Description,
                     IssueTable.Column.FileType,
                     IssueTable.Column.Path
-                }
+                },
+                analyticsEvent = ProjectAuditorAnalytics.UIButton.Assets
             },
             new AnalysisViewDescriptor
             {
@@ -70,7 +71,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.Area,
                     IssueTable.Column.Filename,
                     IssueTable.Column.Assembly
-                }
+                },
+                analyticsEvent = ProjectAuditorAnalytics.UIButton.ApiCalls
             },
             new AnalysisViewDescriptor
             {
@@ -85,7 +87,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     IssueTable.Column.Description,
                     IssueTable.Column.Area,
-                }
+                },
+                analyticsEvent = ProjectAuditorAnalytics.UIButton.ProjectSettings
             }
         };
 
@@ -936,19 +939,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 RefreshDisplay();
 
-                if (m_ActiveModeIndex == (int)IssueCategory.Code)
-                {
-                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.ApiCalls, analytic);
-                }
-                else if (m_ActiveModeIndex == (int)IssueCategory.ProjectSettings)
-                {
-                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.ProjectSettings,
-                        analytic);
-                }
-                else
-                {
-                    Debug.LogWarning("Unrecognised active mode: couldn't sent analytics event");
-                }
+                ProjectAuditorAnalytics.SendUIButtonEvent(m_ActiveAnalysisView.desc.analyticsEvent, analytic);
             }
         }
 
