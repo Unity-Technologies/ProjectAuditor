@@ -927,7 +927,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
-                    GUILayout.Label(Styles.AnalysisInProgressLabel, GUILayout.ExpandWidth(true));
+                    GUIStyle s = new GUIStyle(EditorStyles.textField);
+                    s.normal.textColor = Color.yellow;
+
+                    GUILayout.Label(Styles.AnalysisInProgressLabel, s, GUILayout.ExpandWidth(true));
                 }
             }
             EditorGUILayout.EndHorizontal();
