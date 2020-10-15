@@ -188,7 +188,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 rule = m_Config.GetRule(descriptor);
             if (rule != null && rule.action == Rule.Action.None) GUI.enabled = false;
 
-            if (item.hasChildren)
+            if (item.IsGroup())
                 switch (column)
                 {
                     case Column.Description:
