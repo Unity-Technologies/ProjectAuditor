@@ -10,16 +10,6 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectAuditorConfig : ScriptableObject
     {
         /// <summary>
-        /// If enabled, non-critical issues will not be shown in the report.
-        /// </summary>
-        public bool DisplayOnlyCriticalIssues;
-
-        /// <summary>
-        /// If enabled, muted issues will also be displayed in the report.
-        /// </summary>
-        public bool DisplayMutedIssues;
-
-        /// <summary>
         /// If enabled, ProjectAuditor will run every time the project is built.
         /// </summary>
         public bool AnalyzeOnBuild;

@@ -25,8 +25,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             Valid
         }
 
-        private static readonly string[] m_AreaNames = Enum.GetNames(typeof(Area));
-
         enum ExportMode
         {
             All = 0,
@@ -34,8 +32,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             Selected
         }
 
-        private static readonly string NoIssueSelectedText = "No issue selected";
-        private static readonly string AnalysisIsRequiredText = "Missing Data: Please Analyze";
+        private const string NoIssueSelectedText = "No issue selected";
+        private const string AnalysisIsRequiredText = "Missing Data: Please Analyze";
+
+        private static readonly string[] m_AreaNames = Enum.GetNames(typeof(Area));
 
         private readonly AnalysisViewDescriptor[] m_AnalysisViewDescriptors =
         {
@@ -114,12 +114,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] private bool m_DeveloperMode;
         [SerializeField] private ProjectReport m_ProjectReport;
         [SerializeField] private string m_SearchText;
-        [SerializeField] private bool m_ShowFilters = true;
-        [SerializeField] private bool m_ShowActions = true;
-        [SerializeField] private bool m_ShowCallTree = true;
-        [SerializeField] private bool m_ShowDetails = true;
-        [SerializeField] private bool m_ShowRecommendation = true;
         [SerializeField] AnalysisState m_AnalysisState = AnalysisState.NotStarted;
+        [SerializeField] private Preferences m_Preferences = new Preferences();
 
         private AnalysisView m_ActiveAnalysisView
         {
@@ -155,7 +151,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!matchArea)
                 return false;
 
-            if (!m_ProjectAuditor.config.DisplayMutedIssues)
+            if (!m_Preferences.mutedIssues)
             {
                 UnityEngine.Profiling.Profiler.BeginSample("IsMuted");
                 var muted = m_ProjectAuditor.config.GetAction(issue.descriptor, issue.callingMethod) ==
@@ -166,7 +162,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             if (m_ActiveAnalysisView.desc.showCritical &&
-                m_ProjectAuditor.config.DisplayOnlyCriticalIssues &&
+                m_Preferences.onlyCriticalIssues &&
                 !issue.isPerfCriticalContext)
                 return false;
 
@@ -213,7 +209,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             foreach (var desc in m_AnalysisViewDescriptors)
             {
                 var view = new AnalysisView(desc, m_ProjectAuditor.config, this);
-                view.CreateTable();
+                view.CreateTable(m_Preferences);
 
                 if (m_AnalysisState == AnalysisState.Valid)
                     view.AddIssues(m_ProjectReport.GetIssues(view.desc.category));
@@ -468,8 +464,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth),
                 GUILayout.MinHeight(LayoutSize.FoldoutMinHeight));
 
-            m_ShowDetails = BoldFoldout(m_ShowDetails, Styles.DetailsFoldout);
-            if (m_ShowDetails)
+            m_Preferences.details = BoldFoldout(m_Preferences.details, Styles.DetailsFoldout);
+            if (m_Preferences.details)
             {
                 if (problemDescriptor != null)
                 {
@@ -490,8 +486,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth),
                 GUILayout.MinHeight(LayoutSize.FoldoutMinHeight));
 
-            m_ShowRecommendation = BoldFoldout(m_ShowRecommendation, Styles.RecommendationFoldout);
-            if (m_ShowRecommendation)
+            m_Preferences.recommendation = BoldFoldout(m_Preferences.recommendation, Styles.RecommendationFoldout);
+            if (m_Preferences.recommendation)
             {
                 if (problemDescriptor != null)
                 {
@@ -512,8 +508,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth),
                 GUILayout.MinHeight(LayoutSize.FoldoutMinHeight * 2));
 
-            m_ShowCallTree = BoldFoldout(m_ShowCallTree, Styles.CallTreeFoldout);
-            if (m_ShowCallTree)
+            m_Preferences.callTree = BoldFoldout(m_Preferences.callTree, Styles.CallTreeFoldout);
+            if (m_Preferences.callTree)
             {
                 if (callTree != null)
                 {
@@ -686,8 +682,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
 
-            m_ShowFilters = BoldFoldout(m_ShowFilters, Styles.FiltersFoldout);
-            if (m_ShowFilters)
+            m_Preferences.filters = BoldFoldout(m_Preferences.filters, Styles.FiltersFoldout);
+            if (m_Preferences.filters)
             {
                 EditorGUI.indentLevel++;
 
@@ -712,12 +708,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
                 GUI.enabled = m_ActiveAnalysisView.desc.showCritical;
 
-                bool wasShowingCritical = m_ProjectAuditor.config.DisplayOnlyCriticalIssues;
-                m_ProjectAuditor.config.DisplayOnlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
-                    m_ProjectAuditor.config.DisplayOnlyCriticalIssues, GUILayout.Width(160));
+                bool wasShowingCritical = m_Preferences.onlyCriticalIssues;
+                m_Preferences.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
+                    m_Preferences.onlyCriticalIssues, GUILayout.Width(160));
                 GUI.enabled = true;
 
-                if (wasShowingCritical != m_ProjectAuditor.config.DisplayOnlyCriticalIssues)
+                if (wasShowingCritical != m_Preferences.onlyCriticalIssues)
                 {
                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                     var payload = new Dictionary<string, string>();
@@ -726,15 +722,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                         analytic);
                 }
 
-                bool wasDisplayingMuted = m_ProjectAuditor.config.DisplayMutedIssues;
-                m_ProjectAuditor.config.DisplayMutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
-                    m_ProjectAuditor.config.DisplayMutedIssues, GUILayout.Width(127));
+                bool wasDisplayingMuted = m_Preferences.mutedIssues;
+                m_Preferences.mutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
+                    m_Preferences.mutedIssues, GUILayout.Width(127));
 
-                if (wasDisplayingMuted != m_ProjectAuditor.config.DisplayMutedIssues)
+                if (wasDisplayingMuted != m_Preferences.mutedIssues)
                 {
                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                     var payload = new Dictionary<string, string>();
-                    payload["selected"] = m_ProjectAuditor.config.DisplayMutedIssues ? "true" : "false";
+                    payload["selected"] = m_Preferences.mutedIssues ? "true" : "false";
                     ProjectAuditorAnalytics.SendUIButtonEventWithKeyValues(ProjectAuditorAnalytics.UIButton.ShowMuted,
                         analytic, payload);
                 }
@@ -752,8 +748,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
 
-            m_ShowActions = BoldFoldout(m_ShowActions, Styles.ActionsFoldout);
-            if (m_ShowActions)
+            m_Preferences.actions = BoldFoldout(m_Preferences.actions, Styles.ActionsFoldout);
+            if (m_Preferences.actions)
             {
                 EditorGUI.indentLevel++;
 
@@ -769,7 +765,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         SetRuleForItem(item, Rule.Action.None);
                     }
 
-                    if (!m_ProjectAuditor.config.DisplayMutedIssues)
+                    if (!m_Preferences.mutedIssues)
                     {
                         m_ActiveIssueTable.SetSelection(new List<int>());
                     }
@@ -987,6 +983,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ProjectAuditor.config.AnalyzeOnBuild, GUILayout.Width(100));
                 m_ProjectAuditor.config.FailBuildOnIssues = EditorGUILayout.ToggleLeft("Fail on Issues",
                     m_ProjectAuditor.config.FailBuildOnIssues, GUILayout.Width(100));
+                m_Preferences.emptyGroups = EditorGUILayout.ToggleLeft("Show Empty Groups",
+                    m_Preferences.emptyGroups, GUILayout.Width(100));
                 EditorGUILayout.EndHorizontal();
             }
         }

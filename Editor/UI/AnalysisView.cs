@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             get { return m_Desc; }
         }
 
-        public void CreateTable()
+        public void CreateTable(Preferences prefs)
         {
             if (m_Table != null)
                 return;
@@ -66,6 +66,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new MultiColumnHeader(new MultiColumnHeaderState(columns)),
                 m_Desc,
                 m_Config,
+                prefs,
                 m_Filter);
         }
 

@@ -80,8 +80,6 @@ namespace Unity.ProjectAuditor.Editor
     {
         public bool AnalyzeInBackground;
         public bool AnalyzeOnBuild;
-        public bool DisplayMutedIssues;
-        public bool DisplayOnlyCriticalIssues;
         public bool FailBuildOnIssues;
         public bool LogTimingsInfo;
         public int NumRules { get; }
