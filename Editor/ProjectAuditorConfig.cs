@@ -51,7 +51,13 @@ namespace Unity.ProjectAuditor.Editor
 
         public Rule GetRule(ProblemDescriptor descriptor, string filter = "")
         {
-            return m_Rules.FirstOrDefault(r => r.id == descriptor.id && r.filter.Equals(filter));
+            // do not use Linq to avoid managed allocations
+            foreach (var r in m_Rules)
+            {
+                if (r.id == descriptor.id && r.filter.Equals(filter))
+                    return r;
+            }
+            return null;
         }
 
         public void ClearAllRules()

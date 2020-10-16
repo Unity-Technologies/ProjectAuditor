@@ -104,6 +104,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         private TreeViewSelection m_AssemblySelection;
         private CallHierarchyView m_CallHierarchyView;
         private CallTreeNode m_CurrentCallTree;
+        private bool m_SearchCallTree = false;
+        private bool m_SearchMatchCase = false;
 
         // Serialized fields
         [SerializeField] private int m_ActiveModeIndex;
@@ -134,6 +136,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public bool Match(ProjectIssue issue)
         {
+            // return false if the issue does not match one of these criteria:
+            // - assembly name, if applicable
+            // - area
+            // - is not muted, if enabled
+            // - critical context, if enabled/applicable
+
             UnityEngine.Profiling.Profiler.BeginSample("MatchAssembly");
             var matchAssembly = !m_ActiveAnalysisView.desc.showAssemblySelection ||
                 m_AssemblySelection != null &&
@@ -165,12 +173,33 @@ namespace Unity.ProjectAuditor.Editor.UI
                 !issue.isPerfCriticalContext)
                 return false;
 
-            if (!string.IsNullOrEmpty(m_SearchText))
-                if (!MatchesSearch(issue.description) &&
-                    !MatchesSearch(issue.filename) &&
-                    !MatchesSearch(issue.name))
-                    return false;
-            return true;
+            if (string.IsNullOrEmpty(m_SearchText))
+                return true;
+
+            // return true if the issue matches the any of the following string search criteria
+            if (MatchesSearch(issue.description))
+                return true;
+
+            if (MatchesSearch(issue.filename))
+                return true;
+
+            var caller = issue.callTree;
+            if (caller != null)
+            {
+                // first search entire call tree if option is enabled, otherwise only search caller name
+                if (m_SearchCallTree)
+                {
+                    if (MatchesSearch(caller))
+                        return true;
+                }
+                else if (MatchesSearch(caller.typeName) || MatchesSearch(caller.methodName))
+                {
+                    return true;
+                }
+            }
+
+            // no string match
+            return false;
         }
 
         private void OnEnable()
@@ -255,10 +284,25 @@ namespace Unity.ProjectAuditor.Editor.UI
             return m_AnalysisState != AnalysisState.NotStarted;
         }
 
-        private bool MatchesSearch(string field)
+        private bool MatchesSearch(string text)
         {
-            return !string.IsNullOrEmpty(field) &&
-                field.IndexOf(m_SearchText, StringComparison.CurrentCultureIgnoreCase) >= 0;
+            return !string.IsNullOrEmpty(text) &&
+                text.IndexOf(m_SearchText, m_SearchMatchCase ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase) >= 0;
+        }
+
+        private bool MatchesSearch(CallTreeNode callTreeNode)
+        {
+            if (callTreeNode == null)
+                return false;
+            if (MatchesSearch(callTreeNode.typeName) || MatchesSearch(callTreeNode.methodName))
+                return true;
+            for (int i = 0; i < callTreeNode.GetNumChildren(); i++)
+            {
+                if (MatchesSearch(callTreeNode.GetChild(i)))
+                    return true;
+            }
+
+            return false;
         }
 
         private void Analyze()
@@ -694,8 +738,21 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.BeginHorizontal();
 
                 EditorGUILayout.LabelField("Search :", GUILayout.Width(80));
+
                 m_SearchText = EditorGUILayout.DelayedTextField(m_SearchText, GUILayout.Width(180));
                 m_ActiveIssueTable.searchString = m_SearchText;
+
+                m_SearchMatchCase = EditorGUILayout.ToggleLeft("Match Case",
+                    m_SearchMatchCase, GUILayout.Width(160));
+
+                if (m_DeveloperMode)
+                {
+                    // this is only available in developer mode because it is still too slow at the moment
+                    GUI.enabled = m_ActiveAnalysisView.desc.showInvertedCallTree;
+                    m_SearchCallTree = EditorGUILayout.ToggleLeft("Call Tree (slow)",
+                        m_SearchCallTree, GUILayout.Width(160));
+                    GUI.enabled = true;
+                }
 
                 EditorGUILayout.EndHorizontal();
 

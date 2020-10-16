@@ -142,10 +142,11 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (callTree == null)
                     return string.Empty;
-                if (callTree.prettyName.Equals(descriptor.description))
+                var prettyName = callTree.prettyName;
+                if (prettyName.Equals(descriptor.description))
                     // if name matches the descriptor's name, use caller's name instead
                     return string.IsNullOrEmpty(callingMethod) ? string.Empty : callTree.GetChild().prettyName;
-                return callTree.prettyName;
+                return prettyName;
             }
         }
     }
