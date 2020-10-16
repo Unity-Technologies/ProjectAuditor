@@ -64,17 +64,46 @@ The mute/unmute buttons can be used to silence specific issues, or groups of iss
 
 <img src="images/mute.png">
 
+## Running from command line
+Project Auditor analysis can be executed from command line by launching the editor in batch mode. This requires an editor script that:
+
+* Creates a ProjectAuditor object
+* Runs the analysis
+* Exports the report
+
+Here is an example:
+
+```
+using Unity.ProjectAuditor.Editor;
+using UnityEngine;
+
+public static class ProjectAuditorCI
+{
+    public static void AuditAndExport()
+    {
+        var configFilename = "Assets/Editor/ProjectAuditorConfig.asset";
+        var outputFilename = "project-auditor-report.csv";
+
+        var projectAuditor = new ProjectAuditor(configFilename);
+        var projectReport = projectAuditor.Audit();
+        projectReport.ExportToCSV(outputFilename);
+    }
+}
+```
+For more information on how to run Unity via command line, please see the [manual](https://docs.unity3d.com/Manual/CommandLineArguments.html).
+
 # Technical details
 ## Requirements
 This version of Project Auditor is compatible with the following versions of the Unity Editor:
 
-* 5.6 and later. However, to use it as a package 2018.1 is required.
+* 5.6 and later. However, Unity 2018 is required to install Project Auditor as a package.
 
 ## Known limitations
-Project Auditor version 0.1.x includes the following known limitations:
+Here are several Project Auditor's known limitations:
 
 * It reports issues in code that might be stripped by the build process.
 * It is unable to distinguish between cold and hot-paths.
+* The call tree analysis does not support virtual methods.
 
 ## Package contents
 The following table indicates the package directory structure:
@@ -90,5 +119,6 @@ The following table indicates the package directory structure:
 ## Document revision history 
 |Date|Reason|
 |---|---|
-|May 21, 2019|Expanded *Using Project Auditor* section|
+|Oct 16, 2020|Added information about command line execution|
+|May 21, 2020 |Expanded *Using Project Auditor* section|
 |Dec 4, 2019|First draft.|
