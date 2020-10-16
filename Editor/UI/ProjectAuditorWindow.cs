@@ -104,7 +104,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         private TreeViewSelection m_AssemblySelection;
         private CallHierarchyView m_CallHierarchyView;
         private CallTreeNode m_CurrentCallTree;
-        private SearchField m_SearchField;
 
         // Serialized fields
         [SerializeField] private int m_ActiveModeIndex;
@@ -692,14 +691,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUI.BeginChangeCheck();
 
-                var searchRect =
-                    GUILayoutUtility.GetRect(1, 1, 18, 18, GUILayout.ExpandWidth(true), GUILayout.Width(200));
                 EditorGUILayout.BeginHorizontal();
 
-                if (m_SearchField == null) m_SearchField = new SearchField();
-
-                m_SearchText = m_SearchField.OnGUI(searchRect, m_SearchText);
-
+                EditorGUILayout.LabelField("Search :", GUILayout.Width(80));
+                m_SearchText = EditorGUILayout.DelayedTextField(m_SearchText, GUILayout.Width(180));
                 m_ActiveIssueTable.searchString = m_SearchText;
 
                 EditorGUILayout.EndHorizontal();
