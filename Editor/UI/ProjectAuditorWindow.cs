@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         private const string NoIssueSelectedText = "No issue selected";
         private const string AnalysisIsRequiredText = "Missing Data: Please Analyze";
 
-        private static readonly string[] m_AreaNames = Enum.GetNames(typeof(Area));
+        private static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
 
         private readonly AnalysisViewDescriptor[] m_AnalysisViewDescriptors =
         {
@@ -217,7 +217,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     if (m_AreaSelectionSummary == "All")
                     {
-                        m_AreaSelection.SetAll(m_AreaNames);
+                        m_AreaSelection.SetAll(AreaNames);
                     }
                     else if (m_AreaSelectionSummary != "None")
                     {
@@ -227,7 +227,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
                 else
                 {
-                    m_AreaSelection.SetAll(m_AreaNames);
+                    m_AreaSelection.SetAll(AreaNames);
                 }
             }
 
@@ -584,7 +584,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         internal string GetSelectedAreasSummary()
         {
-            return GetSelectedSummary(m_AreaSelection, m_AreaNames);
+            return GetSelectedSummary(m_AreaSelection, AreaNames);
         }
 
         private string GetSelectedSummary(TreeViewSelection selection, string[] names)
@@ -680,7 +680,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(Styles.AreaFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
 
-            if (m_AreaNames.Length > 0)
+            if (AreaNames.Length > 0)
             {
                 var lastEnabled = GUI.enabled;
                 // stephenm TODO - We don't currently have any sense of when the Auditor is busy and should disallow user input
@@ -704,7 +704,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var screenPosition = GUIUtility.GUIToScreenPoint(windowPosition);
 
                         AreaSelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AreaSelection,
-                            m_AreaNames);
+                            AreaNames);
                     }
 
                     ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.AreaSelect, analytic);
