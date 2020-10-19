@@ -16,6 +16,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showAssemblySelection;
         public bool showCritical;
         public bool showInvertedCallTree;
+        public bool showRightPanels;
         public IssueTable.Column[] columnDescriptors;
         public ProjectAuditorAnalytics.UIButton analyticsEvent;
     }

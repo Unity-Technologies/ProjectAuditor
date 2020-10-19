@@ -48,6 +48,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAssemblySelection = false,
                 showCritical = false,
                 showInvertedCallTree = false,
+                showRightPanels = true,
                 columnDescriptors = new[]
                 {
                     IssueTable.Column.Description,
@@ -65,6 +66,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAssemblySelection = true,
                 showCritical = true,
                 showInvertedCallTree = true,
+                showRightPanels = true,
                 columnDescriptors = new[]
                 {
                     IssueTable.Column.Description,
@@ -84,6 +86,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAssemblySelection = false,
                 showCritical = false,
                 showInvertedCallTree = false,
+                showRightPanels = true,
                 columnDescriptors = new[]
                 {
                     IssueTable.Column.Description,
@@ -448,11 +451,13 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.EndVertical();
 
-            EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
+            if (m_ActiveAnalysisView.desc.showRightPanels)
+            {
+                EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
+                DrawFoldouts();
+                EditorGUILayout.EndVertical();
+            }
 
-            DrawFoldouts();
-
-            EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
         }
 
