@@ -91,5 +91,14 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
 #endif
+
+#if UNITY_2019_1_OR_NEWER
+        [Test]
+        public void RegistryPackageAssemblyIsReadOnly()
+        {
+            Assert.IsTrue(AssemblyHelper.IsAssemblyReadOnly("UnityEngine.TestRunner"));
+        }
+
+#endif
     }
 }
