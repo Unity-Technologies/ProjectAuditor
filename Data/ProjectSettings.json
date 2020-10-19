@@ -36,7 +36,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "GetArchitecture",
             "customevaluator": "PlayerSettingsArchitecture_iOS",
-            "area": "Build Size",
+            "area": "BuildSize",
             "problem": "In the iOS Player Settings, \"Architecture\" is set to Universal. This means that the application will be compiled for both 32-bit ARMv7 iOS devices (i.e. up to the iPhone 5 or 5c) and 64-bit ARM64 devices (iPhone 5s onwards), resulting in increased build times and binary size.",
             "solution": "If your application isn't intended to support 32-bit iOS devices, change \"Architecture\" to ARM64."
         },
@@ -46,7 +46,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "Android.targetArchitectures",
             "customevaluator": "PlayerSettingsArchitecture_Android",
-            "area": "Build Size",
+            "area": "BuildSize",
             "problem": "In the Android Player Settings, in the \"Target Architecture\" section, both the \"ARMv7\" and \"ARM64\" options are selected. This means that the application will be compiled for both 32-bit ARMv7 Android devices and 64-bit ARM64 devices, resulting in increased build times and binary size.",
             "solution": "If your application isn't intended to support 32-bit Android devices, disable the \"ARMv7\" option."
         },
@@ -56,7 +56,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "GetGraphicsAPIs",
             "customevaluator": "PlayerSettingsGraphicsAPIs_iOS_OpenGLESAndMetal",
-            "area": "Build Size",
+            "area": "BuildSize",
             "problem": "In the iOS Player Settings, both Metal and OpenGLES graphics APIs are enabled.",
             "solution": "To reduce build size, remove OpenGLES graphics API if the minimum spec target device supports Metal."
         },
@@ -76,7 +76,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "bakeCollisionMeshes",
             "value": "False",
-            "area": "Build Size|Load Times",
+            "area": "BuildSize|LoadTimes",
             "problem": "The \"Prebake Collision Meshes\" option in Player Settings is disabled.",
             "solution": "If you are using physics in your application, consider enabling this option. Prebaked collision meshes can result in an increase in build times and sizes, but reduce loading/initialization times in your application, because serializing prebaked meshes is faster than baking them at runtime."
         },
@@ -86,7 +86,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "stripUnusedMeshComponents",
             "value": "False",
-            "area": "Build Size|Load Times|GPU",
+            "area": "BuildSize|LoadTimes|GPU",
             "problem": "The \"Optimize Mesh Data\" option in Player Settings is disabled.",
             "solution": "Consider enabling it. This option strips out vertex channels on meshes which are not used by the materials which are applied to them. This can reduce the file size of your meshes and the time to load them, and increase GPU rendering performance. It can, however, cause problems if mesh materials are changed at runtime, since the new materials might rely on vertex channels which have been removed, and it may contribute to longer build times."
         },
@@ -96,7 +96,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "stripEngineCode",
             "value": "False",
-            "area": "Build Size",
+            "area": "BuildSize",
             "problem": "Engine code stripping is disabled. The generated build will be larger than necessary.",
             "solution": "Enable stripEngineCode in PlayerSettings"
         },
@@ -106,7 +106,7 @@
             "type": "UnityEditor.PlayerSettings+WebGL",
             "method": "dataCaching",
             "value": "False",
-            "area": "Load Times",
+            "area": "LoadTimes",
             "problem": "Build file needs to be downloaded every time the content is loaded.",
             "solution": "Enable dataCaching to cache build files in Browser cache"
         },
@@ -186,7 +186,7 @@
             "type": "UnityEngine.QualitySettings",
             "method": "GetQualityLevel",
             "customevaluator": "QualityUsingDefaultSettings",
-            "area": "CPU|GPU|Build Size|Load Times",
+            "area": "CPU|GPU|BuildSize|LoadTimes",
             "problem": "This project is using the default set of quality levels defined in Quality Settings.",
             "solution": "Check the quality setting for each platform the project supports in the grid - it's the level with the green tick. Remove quality levels you are not using, to make the Quality Settings simpler to see and edit. Adjust the setting for each platform if necessary, then select the appropriate levels to examine their settings in the panel below."
         },
@@ -196,7 +196,7 @@
             "type": "UnityEngine.QualitySettings",
             "method": "masterTextureLimit",
             "customevaluator": "QualityUsingLowQualityTextures",
-            "area": "Build Size|GPU",
+            "area": "BuildSize|GPU",
             "problem": "One or more of the quality levels in the project's Quality Settings has \"Texture Quality\" set to something other than Full Res. This option can save memory on lower-spec devices and platforms by discarding higher-resolution mip levels on mipmapped textures before uploading them to the GPU. However, this option has no effect on textures which don't have mipmaps enabled (as is frequently the case with UI textures, for instance), does nothing to reduce download or install size, and gives you no control over the texture resize algorithm.",
             "solution": "For devices which must use lower-resolution versions of textures, consider creating these lower resolution textures separately, and choosing the appropriate content to load at runtime using AssetBundle variants."
         },
@@ -206,7 +206,7 @@
             "type": "UnityEngine.QualitySettings",
             "method": "asyncUploadTimeSlice",
             "customevaluator": "QualityDefaultAsyncUploadTimeSlice",
-            "area": "Load Times",
+            "area": "LoadTimes",
             "problem": "The \"Async Upload Time Slice\" option for one or more quality levels in the project's Quality Settings is set to the default value of 2ms.",
             "solution": "If the project encounters long loading times when loading large amount of texture and/or mesh data, experiment with increasing this value to see if it allows content to be uploaded to the GPU more quickly."
         },
@@ -216,7 +216,7 @@
             "type": "UnityEngine.QualitySettings",
             "method": "asyncUploadBufferSize",
             "customevaluator": "QualityDefaultAsyncUploadBufferSize",
-            "area": "Load Times",
+            "area": "LoadTimes",
             "problem": "The \"Async Upload Buffer Size\" option for one or more quality levels in the project's Quality Settings is set to the default value.",
             "solution": "If the project encounters long loading times when loading large amount of texture and/or mesh data, experiment with increasing this value to see if it allows content to be uploaded to the GPU more quickly. This is most likely to help if you are loading large textures. Note that this setting controls a buffer size in megabytes, so exercise caution if memory is limited in your application."
         },
@@ -226,7 +226,7 @@
             "type": "UnityEditor.Rendering.EditorGraphicsSettings",
             "method": "GetTierSettings",
             "customevaluator": "GraphicsMixedStandardShaderQuality",
-            "area": "Build Size",
+            "area": "BuildSize",
             "problem": "One or more platforms in in Graphics Settings uses a mixture of different values (Low/Medium/High) for the \"Standard Shader Quality\" setting. This will result in a larger number of shader variants being compiled, which will increase build times and your application's download/install size.",
             "solution": "Unless you support devices with a very wide range of capabilities for a particular platform, consider editing the platform in Graphics Settings to use the same shader quality setting across all Graphics Tiers."
         },
@@ -256,7 +256,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "GetManagedStrippingLevel",
             "customevaluator": "PlayerSettingsManagedCodeStripping_Android",
-            "area": "Build Size",
+            "area": "BuildSize",
             "problem": "Managed code stripping on Android is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",
             "solution": "Set managed stripping level to Medium or High."
         },
@@ -266,7 +266,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "GetManagedStrippingLevel",
             "customevaluator": "PlayerSettingsManagedCodeStripping_iOS",
-            "area": "Build Size",
+            "area": "BuildSize",
             "problem": "Managed code stripping on iOS is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",
             "solution": "Set managed stripping level to Medium or High."
         }
