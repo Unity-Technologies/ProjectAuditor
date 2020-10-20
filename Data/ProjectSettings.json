@@ -269,6 +269,16 @@
             "area": "BuildSize",
             "problem": "Managed code stripping on iOS is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",
             "solution": "Set managed stripping level to Medium or High."
+        },
+        {
+          "id": 201027,
+          "description": "Player: Mipmap Stripping",
+          "type": "UnityEditor.PlayerSettings",
+          "method": "mipStripping",
+          "value": "False",
+          "area": "BuildSize",
+          "problem": "The \"Texture MipMap Stripping\" option in Player Settings is disabled. The generated build might be larger than necessary. ",
+          "solution": "Enable Texture MipMap stripping. Note that this feature will only reduce the build size if no quality levels on the platform use highest mip(s). Furthermore, if code drives the \"masterTextureLevel\" to a value higher than those in the quality level settings the mip will no longer be available if this is enabled."
         }
     ]
 }
