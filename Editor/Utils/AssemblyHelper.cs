@@ -78,15 +78,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
                      .Distinct()) yield return dir;
         }
 
-        public static bool IsPackageInfoAvailable()
-        {
-#if UNITY_2019_3_OR_NEWER
-            return true;
-#else
-            return false;
-#endif
-        }
-
         public static bool IsModuleAssembly(string assemblyName)
         {
             return GetPrecompiledEngineAssemblyPaths().FirstOrDefault(a => a.Contains(assemblyName)) != null;

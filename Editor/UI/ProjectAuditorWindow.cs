@@ -888,9 +888,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 // - all generated assemblies
 
                 var compiledAssemblies = m_AssemblyNames.Where(a => !AssemblyHelper.IsModuleAssembly(a));
-                if (AssemblyHelper.IsPackageInfoAvailable())
-                    compiledAssemblies = compiledAssemblies.Where(a =>
-                        !AssemblyHelper.IsAssemblyReadOnly(a));
+                compiledAssemblies = compiledAssemblies.Where(a =>
+                    !AssemblyHelper.IsAssemblyReadOnly(a));
                 m_AssemblySelection.selection.AddRange(compiledAssemblies);
 
                 if (!m_AssemblySelection.selection.Any())
