@@ -95,6 +95,21 @@ namespace Unity.ProjectAuditor.Editor.UI
             var depthForHiddenRoot = -1;
             var root = new TreeViewItem(idForHiddenRoot, depthForHiddenRoot, "root");
 
+            if (m_Desc.groupByDescription)
+            {
+                foreach (var item in m_TreeViewItemGroups)
+                {
+                    root.AddChild(item);
+                }
+            }
+            else
+            {
+                foreach (var item in m_TreeViewItemIssues)
+                {
+                    root.AddChild(item);
+                }
+            }
+
             return root;
         }
 

@@ -509,8 +509,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         private void DrawDetailsFoldout(ProblemDescriptor problemDescriptor)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth),
-                GUILayout.MinHeight(LayoutSize.FoldoutMinHeight));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
 
             m_Preferences.details = BoldFoldout(m_Preferences.details, Styles.DetailsFoldout);
             if (m_Preferences.details)
@@ -531,8 +530,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         private void DrawRecommendationFoldout(ProblemDescriptor problemDescriptor)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth),
-                GUILayout.MinHeight(LayoutSize.FoldoutMinHeight));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
 
             m_Preferences.recommendation = BoldFoldout(m_Preferences.recommendation, Styles.RecommendationFoldout);
             if (m_Preferences.recommendation)
@@ -553,8 +551,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         private void DrawCallHierarchy(ProjectIssue issue, CallTreeNode callTree)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth),
-                GUILayout.MinHeight(LayoutSize.FoldoutMinHeight * 2));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
 
             m_Preferences.callTree = BoldFoldout(m_Preferences.callTree, Styles.CallTreeFoldout);
             if (m_Preferences.callTree)
