@@ -203,7 +203,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ModeNames = m_AnalysisViewDescriptors.Select(m => m.name).ToArray();
 
-            m_TextFilter = new TextFilter();
+            if (m_TextFilter == null)
+                m_TextFilter = new TextFilter();
 
             m_AnalysisViews.Clear();
             foreach (var desc in m_AnalysisViewDescriptors)
