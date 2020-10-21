@@ -10,12 +10,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    internal interface IIssuesFilter
-    {
-        bool Match(ProjectIssue issue);
-    }
-
-    internal class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IIssuesFilter
+    internal class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IProjectIssueFilter
     {
         enum AnalysisState
         {
@@ -107,8 +102,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         private TreeViewSelection m_AssemblySelection;
         private CallHierarchyView m_CallHierarchyView;
         private CallTreeNode m_CurrentCallTree;
-        private bool m_SearchCallTree = false;
-        private bool m_SearchMatchCase = false;
 
         // Serialized fields
         [SerializeField] private int m_ActiveModeIndex;
@@ -117,7 +110,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] private string m_AssemblySelectionSummary;
         [SerializeField] private bool m_DeveloperMode;
         [SerializeField] private ProjectReport m_ProjectReport;
-        [SerializeField] private string m_SearchText;
+        [SerializeField] private TextFilter m_TextFilter;
         [SerializeField] AnalysisState m_AnalysisState = AnalysisState.NotStarted;
         [SerializeField] private Preferences m_Preferences = new Preferences();
 
@@ -176,25 +169,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 !issue.isPerfCriticalContext)
                 return false;
 
-            if (string.IsNullOrEmpty(m_SearchText))
-                return true;
-
-            // return true if the issue matches the any of the following string search criteria
-            if (MatchesSearch(issue.description))
-                return true;
-
-            if (MatchesSearch(issue.filename))
-                return true;
-
-            var caller = issue.callTree;
-            if (caller != null)
-            {
-                if (MatchesSearch(caller, m_SearchCallTree))
-                    return true;
-            }
-
-            // no string match
-            return false;
+            return m_TextFilter.Match(issue);
         }
 
         private void OnEnable()
@@ -228,10 +203,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ModeNames = m_AnalysisViewDescriptors.Select(m => m.name).ToArray();
 
+            m_TextFilter = new TextFilter();
+
             m_AnalysisViews.Clear();
             foreach (var desc in m_AnalysisViewDescriptors)
             {
-                var view = new AnalysisView(desc, m_ProjectAuditor.config, this);
+                var view = new AnalysisView(desc, m_ProjectAuditor.config, m_TextFilter);
                 view.CreateTable(m_Preferences);
 
                 if (m_AnalysisState == AnalysisState.Valid)
@@ -277,28 +254,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         private bool IsAnalysisValid()
         {
             return m_AnalysisState != AnalysisState.NotStarted;
-        }
-
-        private bool MatchesSearch(string text)
-        {
-            return !string.IsNullOrEmpty(text) &&
-                text.IndexOf(m_SearchText, m_SearchMatchCase ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase) >= 0;
-        }
-
-        private bool MatchesSearch(CallTreeNode callTreeNode, bool recursive)
-        {
-            if (callTreeNode == null)
-                return false;
-            if (MatchesSearch(callTreeNode.typeName) || MatchesSearch(callTreeNode.methodName))
-                return true;
-            if (recursive)
-                for (int i = 0; i < callTreeNode.GetNumChildren(); i++)
-                {
-                    if (MatchesSearch(callTreeNode.GetChild(i), true))
-                        return true;
-                }
-
-            return false;
         }
 
         private void Analyze()
@@ -734,18 +689,18 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.LabelField("Search :", GUILayout.Width(80));
 
-                m_SearchText = EditorGUILayout.DelayedTextField(m_SearchText, GUILayout.Width(180));
-                m_ActiveIssueTable.searchString = m_SearchText;
+                m_TextFilter.searchText = EditorGUILayout.DelayedTextField(m_TextFilter.searchText, GUILayout.Width(180));
+                m_ActiveIssueTable.searchString = m_TextFilter.searchText;
 
-                m_SearchMatchCase = EditorGUILayout.ToggleLeft("Match Case",
-                    m_SearchMatchCase, GUILayout.Width(160));
+                m_TextFilter.matchCase = EditorGUILayout.ToggleLeft("Match Case",
+                    m_TextFilter.matchCase, GUILayout.Width(160));
 
                 if (m_DeveloperMode)
                 {
                     // this is only available in developer mode because it is still too slow at the moment
                     GUI.enabled = m_ActiveAnalysisView.desc.showInvertedCallTree;
-                    m_SearchCallTree = EditorGUILayout.ToggleLeft("Call Tree (slow)",
-                        m_SearchCallTree, GUILayout.Width(160));
+                    m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Call Tree (slow)",
+                        m_TextFilter.searchDependencies, GUILayout.Width(160));
                     GUI.enabled = true;
                 }
 
