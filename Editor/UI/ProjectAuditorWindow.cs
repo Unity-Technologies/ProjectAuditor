@@ -189,16 +189,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             var caller = issue.callTree;
             if (caller != null)
             {
-                // first search entire call tree if option is enabled, otherwise only search caller name
-                if (m_SearchCallTree)
-                {
-                    if (MatchesSearch(caller))
-                        return true;
-                }
-                else if (MatchesSearch(caller.typeName) || MatchesSearch(caller.methodName))
-                {
+                if (MatchesSearch(caller, m_SearchCallTree))
                     return true;
-                }
             }
 
             // no string match
@@ -293,17 +285,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                 text.IndexOf(m_SearchText, m_SearchMatchCase ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
-        private bool MatchesSearch(CallTreeNode callTreeNode)
+        private bool MatchesSearch(CallTreeNode callTreeNode, bool recursive)
         {
             if (callTreeNode == null)
                 return false;
             if (MatchesSearch(callTreeNode.typeName) || MatchesSearch(callTreeNode.methodName))
                 return true;
-            for (int i = 0; i < callTreeNode.GetNumChildren(); i++)
-            {
-                if (MatchesSearch(callTreeNode.GetChild(i)))
-                    return true;
-            }
+            if (recursive)
+                for (int i = 0; i < callTreeNode.GetNumChildren(); i++)
+                {
+                    if (MatchesSearch(callTreeNode.GetChild(i), true))
+                        return true;
+                }
 
             return false;
         }
