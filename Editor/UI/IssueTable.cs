@@ -238,15 +238,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                         {
                             var text = item.GetDisplayName();
                             var tooltip = issue.callingMethod;
+                            var guiContent = new GUIContent(text, tooltip);
+
+#if UNITY_2018_3_OR_NEWER
                             if (m_Desc.descriptionWithIcon)
                             {
                                 var icon = AssetDatabase.GetCachedIcon(issue.location.Path);
-                                EditorGUI.LabelField(cellRect,
-                                    EditorGUIUtility.TrTextContentWithIcon(text, tooltip, icon));
+                                guiContent = EditorGUIUtility.TrTextContentWithIcon(text, tooltip, icon);
                             }
-                            else
-                                EditorGUI.LabelField(cellRect,
-                                    new GUIContent(text, tooltip));
+#endif
+
+                            EditorGUI.LabelField(cellRect, guiContent);
                         }
                         else
                         {
