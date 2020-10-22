@@ -11,11 +11,13 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void AssetLocationIsValid()
         {
-            var location = new Location("some/path/file.cs", 0);
+            const int lineNumber = 6;
+            var location = new Location("some/path/file.cs", lineNumber);
             Assert.IsTrue(location.IsValid());
             Assert.IsTrue(location.Filename.Equals("file.cs"));
             Assert.IsTrue(location.Path.Equals("some/path/file.cs"));
-            Assert.IsTrue(location.Type == LocationType.Asset);
+            Assert.IsTrue(location.Extension.Equals(".cs"));
+            Assert.AreEqual(lineNumber, location.Line);
         }
 
         [Test]
@@ -24,7 +26,6 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var location = new Location("Project/Player");
             Assert.IsTrue(location.IsValid());
             Assert.IsTrue(location.Path.Equals("Project/Player"));
-            Assert.IsTrue(location.Type == LocationType.Setting);
         }
     }
 }

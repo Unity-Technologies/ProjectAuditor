@@ -71,7 +71,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             foreach (var assetPath in resourceAssetPathsHashSet)
             {
-                var location = new Location(assetPath, LocationType.Asset);
+                var location = new Location(assetPath);
                 onIssueFound(new ProjectIssue
                     (
                         s_Descriptor,

@@ -328,7 +328,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var issue = issueTableItem.ProjectIssue;
             if (issue.location != null && issue.location.IsValid())
             {
-                issue.location.Open();
+                m_Desc.onDoubleClick(issue.location);
             }
         }
 

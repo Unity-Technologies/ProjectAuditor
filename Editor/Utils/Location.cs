@@ -5,18 +5,11 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    public enum LocationType
-    {
-        Asset,
-        Setting
-    }
-
     [Serializable]
     public class Location
     {
         [SerializeField] private int m_Line;
         [SerializeField] private string m_Path; // path relative to the project folder
-        [SerializeField] private LocationType m_Type;
 
         public string Filename
         {
@@ -48,48 +41,20 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
         }
 
-        public LocationType Type
-        {
-            get
-            {
-                return m_Type;
-            }
-        }
-
-        internal Location(string path, LocationType type = LocationType.Setting)
+        internal Location(string path)
         {
             m_Path = path;
-            m_Type = type;
         }
 
-        internal Location(string path, int line, LocationType type = LocationType.Asset)
+        internal Location(string path, int line)
         {
             m_Path = path;
             m_Line = line;
-            m_Type = type;
         }
 
         public bool IsValid()
         {
             return !string.IsNullOrEmpty(m_Path);
-        }
-
-        public void Open()
-        {
-            if (m_Type == LocationType.Setting)
-            {
-#if UNITY_2018_3_OR_NEWER
-                var window = SettingsService.OpenProjectSettings(m_Path);
-                window.Repaint();
-#endif
-            }
-            else if (File.Exists(m_Path))
-            {
-                UnityEngine.Object obj = AssetDatabase.LoadAssetAtPath<TextAsset>(m_Path);
-                if (obj == null)
-                    obj = AssetDatabase.LoadMainAssetAtPath(m_Path);
-                AssetDatabase.OpenAsset(obj, m_Line);
-            }
         }
     }
 }

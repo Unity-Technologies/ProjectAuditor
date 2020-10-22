@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.IMGUI.Controls;
 
 namespace Unity.ProjectAuditor.Editor.UI
@@ -8,10 +10,12 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         private readonly Dictionary<int, CallTreeNode> m_CallTreeDictionary = new Dictionary<int, CallTreeNode>();
         private CallTreeNode m_CallTree;
+        private Action<Location> m_OnDoubleClick;
 
-        public CallHierarchyView(TreeViewState treeViewState)
+        public CallHierarchyView(TreeViewState treeViewState, Action<Location> onDoubleClick)
             : base(treeViewState)
         {
+            m_OnDoubleClick = onDoubleClick;
             Reload();
         }
 
@@ -61,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var node = m_CallTreeDictionary[id];
                 if (node.location != null)
-                    node.location.Open();
+                    m_OnDoubleClick(node.location);
             }
         }
     }
