@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -18,6 +20,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showInvertedCallTree;
         public bool showRightPanels;
         public IssueTable.Column[] columnDescriptors;
+        public Action<Location> onDoubleClick;
         public ProjectAuditorAnalytics.UIButton analyticsEvent;
     }
 

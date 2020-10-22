@@ -204,15 +204,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public string Filename { get; }
         public int Line { get; }
         public string Path { get; }
-        public Unity.ProjectAuditor.Editor.Utils.LocationType Type { get; }
         public bool IsValid();
-        public void Open();
-    }
-
-    public enum LocationType
-    {
-        public const Unity.ProjectAuditor.Editor.Utils.LocationType Asset = 0;
-        public const Unity.ProjectAuditor.Editor.Utils.LocationType Setting = 1;
-        public int value__;
     }
 }

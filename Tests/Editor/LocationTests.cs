@@ -15,7 +15,6 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.IsTrue(location.IsValid());
             Assert.IsTrue(location.Filename.Equals("file.cs"));
             Assert.IsTrue(location.Path.Equals("some/path/file.cs"));
-            Assert.IsTrue(location.Type == LocationType.Asset);
         }
 
         [Test]
@@ -24,7 +23,6 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var location = new Location("Project/Player");
             Assert.IsTrue(location.IsValid());
             Assert.IsTrue(location.Path.Equals("Project/Player"));
-            Assert.IsTrue(location.Type == LocationType.Setting);
         }
     }
 }

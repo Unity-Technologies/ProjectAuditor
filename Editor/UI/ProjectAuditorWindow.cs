@@ -55,6 +55,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.FileType,
                     IssueTable.Column.Path
                 },
+                onDoubleClick = FocusOnAsset,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.Assets
             },
             new AnalysisViewDescriptor
@@ -75,6 +76,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.Filename,
                     IssueTable.Column.Assembly
                 },
+                onDoubleClick = OpenTextFile,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.ApiCalls
             },
             new AnalysisViewDescriptor
@@ -92,6 +94,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.Description,
                     IssueTable.Column.Area,
                 },
+                onDoubleClick = OpenProjectSettings,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.ProjectSettings
             }
         };
@@ -240,7 +243,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisViews.Add(view);
             }
 
-            m_CallHierarchyView = new CallHierarchyView(new TreeViewState());
+            m_CallHierarchyView = new CallHierarchyView(new TreeViewState(), OpenTextFile);
 
             RefreshDisplay();
         }
@@ -1032,6 +1035,34 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Preferences.emptyGroups = EditorGUILayout.ToggleLeft("Show Empty Groups",
                     m_Preferences.emptyGroups, GUILayout.Width(100));
                 EditorGUILayout.EndHorizontal();
+            }
+        }
+
+        static void OpenTextFile(Location location)
+        {
+            var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(location.Path);
+            if (obj != null)
+            {
+                // open text file in the text editor
+                AssetDatabase.OpenAsset(obj, location.Line);
+            }
+        }
+
+        static void OpenProjectSettings(Location location)
+        {
+#if UNITY_2018_3_OR_NEWER
+            var window = SettingsService.OpenProjectSettings(location.Path);
+            window.Repaint();
+#endif
+        }
+
+        static void FocusOnAsset(Location location)
+        {
+            // focus asset in the project window
+            var obj = AssetDatabase.LoadMainAssetAtPath(location.Path);
+            if (obj != null)
+            {
+                ProjectWindowUtil.ShowCreatedAsset(obj);
             }
         }
 
