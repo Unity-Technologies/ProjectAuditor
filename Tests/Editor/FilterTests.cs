@@ -8,6 +8,40 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class FilterTests
     {
+        private ScriptResource m_ScriptResource;
+
+        [OneTimeSetUp]
+        public void SetUp()
+        {
+            m_ScriptResource = new ScriptResource("FilterTests.cs", @"
+using UnityEngine;
+
+class WrapperClass
+{
+    InternalClass impl;
+    void DoSomething()
+    {
+        impl.DoSomething();
+    }
+}
+
+class InternalClass
+{
+    public void DoSomething()
+    {
+        // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
+        Debug.Log(Camera.main.name);
+    }
+}
+");
+        }
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            m_ScriptResource.Delete();
+        }
+
         [Test]
         public void EmptyStringMatchesAllIssues()
         {
@@ -75,6 +109,46 @@ namespace UnityEditor.ProjectAuditor.EditorTests
                 searchText = "engine code stripping"
             };
             var filteredIssues = issues.Where(i => stringFilter.Match(i));
+            Assert.AreEqual(1, filteredIssues.Count());
+        }
+
+        [Test]
+        public void FilenameMatch()
+        {
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+
+            var projectReport = projectAuditor.Audit();
+            var issues = projectReport.GetIssues(IssueCategory.Code);
+            var stringFilter = new TextFilter
+            {
+                matchCase = false,
+                searchDependencies = false,
+                searchText = "FilterTests.cs"
+            };
+            var filteredIssues = issues.Where(i => stringFilter.Match(i));
+            Assert.AreEqual(1, filteredIssues.Count());
+        }
+
+        [Test]
+        public void RecursiveSearchMatch()
+        {
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+
+            var projectReport = projectAuditor.Audit();
+            var issues = projectReport.GetIssues(IssueCategory.Code);
+            var stringFilter = new TextFilter
+            {
+                matchCase = true,
+                searchDependencies = false,
+                searchText = "WrapperClass"
+            };
+            var filteredIssues = issues.Where(i => stringFilter.Match(i));
+            Assert.AreEqual(0, filteredIssues.Count());
+
+            // try again looking into dependencies too
+            stringFilter.searchDependencies = true;
+
+            filteredIssues = issues.Where(i => stringFilter.Match(i));
             Assert.AreEqual(1, filteredIssues.Count());
         }
     }
