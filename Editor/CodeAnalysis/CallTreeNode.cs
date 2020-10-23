@@ -7,15 +7,11 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
-    public class CallTreeNode
+    public class CallTreeNode : DependencyNode
     {
-        private List<CallTreeNode> m_Children = new List<CallTreeNode>();
-
         public string assemblyName;
-        public Location location;
         public string methodName;
         public string name;
-        public bool perfCriticalContext;
         public string typeName;
 
         internal CallTreeNode(MethodReference methodReference, CallTreeNode caller = null)
@@ -65,48 +61,17 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             perfCriticalContext = false;
         }
 
-        public string prettyName
-        {
-            get { return GetPrettyName(); }
-        }
-
-        public bool HasChildren()
-        {
-            return m_Children != null && m_Children.Count > 0;
-        }
-
-        public void AddChild(CallTreeNode child)
-        {
-            m_Children.Add(child);
-        }
-
-        public CallTreeNode GetChild(int index = 0)
-        {
-            return m_Children[index];
-        }
-
-        public int GetNumChildren()
-        {
-            return m_Children.Count;
-        }
-
-        public bool HasValidChildren()
-        {
-            return m_Children != null;
-        }
-
-        public string GetPrettyName(bool withAssembly = false)
+        // string GetPrettyName(bool withAssembly = false)
+        public override string GetPrettyName()
         {
             if (string.IsNullOrEmpty(typeName))
                 return name;
-            if (string.IsNullOrEmpty(assemblyName) || !withAssembly)
-                return string.Format("{0}.{1}", typeName, methodName);
-            return string.Format("{0}.{1} [{2}]", typeName, methodName, assemblyName);
+            return string.Format("{0}.{1}", typeName, methodName);
         }
 
-        public bool IsPerfCriticalContext()
+        public override bool IsPerfCritical()
         {
-            return perfCriticalContext || (HasChildren() && m_Children.Any(child => child.IsPerfCriticalContext()));
+            return perfCriticalContext || (HasChildren() && m_Children.Any(child => child.IsPerfCritical()));
         }
     }
 }

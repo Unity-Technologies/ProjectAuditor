@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -47,8 +46,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 descriptionWithIcon = true,
                 showAssemblySelection = false,
                 showCritical = false,
-                showDependencyView = false,
+                showDependencyView = true,
                 showRightPanels = true,
+                dependencyViewGuiContent = new GUIContent("Asset Dependencies", "Asset Dependencies"),
                 columnDescriptors = new[]
                 {
                     IssueTable.Column.Description,
@@ -68,6 +68,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showCritical = true,
                 showDependencyView = true,
                 showRightPanels = true,
+                dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy", "Inverted Call Hierarchy"),
                 columnDescriptors = new[]
                 {
                     IssueTable.Column.Description,
@@ -108,8 +109,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         private readonly List<AnalysisView> m_AnalysisViews = new List<AnalysisView>();
         private TreeViewSelection m_AreaSelection;
         private TreeViewSelection m_AssemblySelection;
-        private CallHierarchyView m_CallHierarchyView;
-        private CallTreeNode m_CurrentCallTree;
         private bool m_SearchCallTree = false;
         private bool m_SearchMatchCase = false;
 
@@ -189,10 +188,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (MatchesSearch(issue.filename))
                 return true;
 
-            var caller = issue.dependencies;
-            if (caller != null)
+            var dependencies = issue.dependencies;
+            if (dependencies != null)
             {
-                if (MatchesSearch(caller, m_SearchCallTree))
+                if (MatchesSearch(dependencies, m_SearchCallTree))
                     return true;
             }
 
@@ -243,8 +242,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisViews.Add(view);
             }
 
-            m_CallHierarchyView = new CallHierarchyView(new TreeViewState(), OpenTextFile);
-
             RefreshDisplay();
         }
 
@@ -288,12 +285,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                 text.IndexOf(m_SearchText, m_SearchMatchCase ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
-        private bool MatchesSearch(CallTreeNode callTreeNode, bool recursive)
+        private bool MatchesSearch(DependencyNode node, bool recursive)
         {
-            if (callTreeNode == null)
+            if (node == null)
                 return false;
-            if (MatchesSearch(callTreeNode.typeName) || MatchesSearch(callTreeNode.methodName))
-                return true;
+
+            var callTreeNode = node as CallTreeNode;
+            if (callTreeNode != null)
+            {
+                if (MatchesSearch(callTreeNode.typeName) || MatchesSearch(callTreeNode.methodName))
+                    return true;
+            }
             if (recursive)
                 for (int i = 0; i < callTreeNode.GetNumChildren(); i++)
                 {
@@ -473,21 +475,21 @@ namespace Unity.ProjectAuditor.Editor.UI
                     issue = selectedIssues.First();
                 }
 
-                CallTreeNode callTree = null;
+                DependencyNode dependencies = null;
                 if (issue != null && issue.dependencies != null)
                 {
-                    // get caller sub-tree
-                    callTree = issue.dependencies.GetChild();
+                    // skip self
+                    //if (issue.dependencies.HasChildren())
+
+                    if (issue.dependencies as CallTreeNode != null)
+                        dependencies =  issue.dependencies.GetChild();
+                    else
+                        dependencies = issue.dependencies;
                 }
 
-                if (m_CurrentCallTree != callTree)
-                {
-                    m_CallHierarchyView.SetCallTree(callTree);
-                    m_CallHierarchyView.Reload();
-                    m_CurrentCallTree = callTree;
-                }
+                m_ActiveAnalysisView.dependencyView.SetRoot(dependencies);
 
-                DrawCallHierarchy(issue, callTree);
+                DrawDependencyView(issue, dependencies);
             }
         }
 
@@ -546,18 +548,18 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndVertical();
         }
 
-        private void DrawCallHierarchy(ProjectIssue issue, CallTreeNode root)
+        private void DrawDependencyView(ProjectIssue issue, DependencyNode root)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Height(LayoutSize.DependencyViewHeight));
 
-            m_Preferences.dependencies = BoldFoldout(m_Preferences.dependencies, Styles.CallTreeFoldout);
+            m_Preferences.dependencies = BoldFoldout(m_Preferences.dependencies, m_ActiveAnalysisView.desc.dependencyViewGuiContent);
             if (m_Preferences.dependencies)
             {
                 if (root != null)
                 {
                     var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
 
-                    m_CallHierarchyView.OnGUI(r);
+                    m_ActiveAnalysisView.dependencyView.OnGUI(r);
                 }
                 else if (issue != null)
                 {

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
@@ -12,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         private static readonly ProblemDescriptor s_Descriptor = new ProblemDescriptor
             (
             302000,
-            "Resources folder asset",
+            "Resources folder asset & dependencies",
             Area.BuildSize,
             "The Resources folder is a common source of many problems in Unity projects. Improper use of the Resources folder can bloat the size of a project’s build, lead to uncontrollable excessive memory utilization, and significantly increase application startup times.",
             "Use AssetBundles when possible"
@@ -51,36 +52,63 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var allResources = allAssetPaths.Where(path => path.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) >= 0);
             var allPlayerResources = allResources.Where(path => path.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) == -1);
 
-            var resourceAssetPathsHashSet = new HashSet<string>();
+            var assetPathsDict = new Dictionary<string, DependencyNode>();
             foreach (var assetPath in allPlayerResources)
             {
                 if ((File.GetAttributes(assetPath) & FileAttributes.Directory) == FileAttributes.Directory)
                     continue;
 
-                // get all dependencies, including 'assetPath'
+                var root = AddResourceAsset(assetPath, assetPathsDict, onIssueFound, null);
                 var dependencies = AssetDatabase.GetDependencies(assetPath, true);
-                foreach (var dep in dependencies)
+                foreach (var depAssetPath in dependencies)
                 {
-                    // skip C# scripts
-                    if (Path.GetExtension(dep).Equals(".cs"))
+                    // skip self
+                    if (depAssetPath.Equals(assetPath))
                         continue;
 
-                    resourceAssetPathsHashSet.Add(dep);
+                    AddResourceAsset(depAssetPath, assetPathsDict, onIssueFound, root);
                 }
             }
+        }
 
-            foreach (var assetPath in resourceAssetPathsHashSet)
+        private static DependencyNode AddResourceAsset(
+            string assetPath, Dictionary<string, DependencyNode> assetPathsDict, Action<ProjectIssue> onIssueFound, DependencyNode parent)
+        {
+            // skip C# scripts
+            if (Path.GetExtension(assetPath).Equals(".cs"))
+                return null;
+
+            if (assetPathsDict.ContainsKey(assetPath))
             {
-                var location = new Location(assetPath);
-                onIssueFound(new ProjectIssue
-                    (
-                        s_Descriptor,
-                        Path.GetFileNameWithoutExtension(location.Path),
-                        IssueCategory.Assets,
-                        location
-                    )
-                );
+                var dep = assetPathsDict[assetPath];
+                if (parent != null)
+                    dep.AddChild(parent);
+                return dep;
             }
+
+            var location = new Location(assetPath);
+            var dependencyNode = new AssetDependencyNode
+            {
+                location = new Location(assetPath)
+            };
+            if (parent != null)
+                dependencyNode.AddChild(parent);
+
+            onIssueFound(new ProjectIssue
+                (
+                    s_Descriptor,
+                    Path.GetFileNameWithoutExtension(location.Path),
+                    IssueCategory.Assets,
+                    location
+                )
+                {
+                    dependencies = dependencyNode
+                }
+            );
+
+            assetPathsDict.Add(assetPath, dependencyNode);
+
+            return dependencyNode;
         }
     }
 }

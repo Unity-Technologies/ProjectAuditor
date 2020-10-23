@@ -19,8 +19,10 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showCritical;
         public bool showDependencyView;
         public bool showRightPanels;
+        public GUIContent dependencyViewGuiContent;
         public IssueTable.Column[] columnDescriptors;
         public Action<Location> onDoubleClick;
+        public Action<ProjectIssue, DependencyNode> onDrawDependencies;
         public ProjectAuditorAnalytics.UIButton analyticsEvent;
     }
 
@@ -30,11 +32,17 @@ namespace Unity.ProjectAuditor.Editor.UI
         private readonly AnalysisViewDescriptor m_Desc;
         private readonly IIssuesFilter m_Filter;
 
+        private DependencyView m_DependencyView;
         private IssueTable m_Table;
 
         public AnalysisViewDescriptor desc
         {
             get { return m_Desc; }
+        }
+
+        public DependencyView dependencyView
+        {
+            get { return m_DependencyView; }
         }
 
         public IssueTable table
@@ -77,6 +85,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Config,
                 prefs,
                 m_Filter);
+
+            if (m_Desc.showDependencyView)
+                m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onDoubleClick);
         }
 
         public void AddIssues(IEnumerable<ProjectIssue> issues)

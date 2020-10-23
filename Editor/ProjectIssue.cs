@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectIssue
     {
         public string assembly;
-        public CallTreeNode dependencies;
+        public DependencyNode dependencies;
         public IssueCategory category;
 
         public string description;
@@ -124,7 +124,10 @@ namespace Unity.ProjectAuditor.Editor
                 if (!dependencies.HasChildren())
                     return string.Empty;
 
-                return dependencies.GetChild().name;
+                var callTree = dependencies.GetChild() as CallTreeNode;
+                if (callTree == null)
+                    return string.Empty;
+                return callTree.name;
             }
         }
 
@@ -132,7 +135,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                return descriptor.critical || (dependencies != null && dependencies.IsPerfCriticalContext());
+                return descriptor.critical || (dependencies != null && dependencies.IsPerfCritical());
             }
         }
 

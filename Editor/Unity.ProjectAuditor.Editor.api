@@ -19,6 +19,29 @@ namespace Unity.ProjectAuditor.Editor
         public AssemblyCompilationException() {}
     }
 
+    public class AssetDependencyNode : Unity.ProjectAuditor.Editor.DependencyNode
+    {
+        public AssetDependencyNode() {}
+        public virtual string GetPrettyName();
+        public virtual bool IsPerfCritical();
+    }
+
+    public abstract class DependencyNode
+    {
+        public Unity.ProjectAuditor.Editor.Utils.Location location;
+        protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.DependencyNode> m_Children;
+        public bool perfCriticalContext;
+        public string prettyName { get; }
+        protected DependencyNode() {}
+        public void AddChild(Unity.ProjectAuditor.Editor.DependencyNode child);
+        public Unity.ProjectAuditor.Editor.DependencyNode GetChild(int index = 0);
+        public int GetNumChildren();
+        public abstract string GetPrettyName();
+        public bool HasChildren();
+        public bool HasValidChildren();
+        public abstract bool IsPerfCritical();
+    }
+
     public interface IAuditor
     {
         public abstract void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
@@ -95,7 +118,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         public string assembly;
         public Unity.ProjectAuditor.Editor.IssueCategory category;
-        public Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode dependencies;
+        public Unity.ProjectAuditor.Editor.DependencyNode dependencies;
         public string description;
         public Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor;
         public Unity.ProjectAuditor.Editor.Utils.Location location;
@@ -157,22 +180,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
-    public class CallTreeNode
+    public class CallTreeNode : Unity.ProjectAuditor.Editor.DependencyNode
     {
         public string assemblyName;
-        public Unity.ProjectAuditor.Editor.Utils.Location location;
         public string methodName;
         public string name;
-        public bool perfCriticalContext;
         public string typeName;
-        public string prettyName { get; }
-        public void AddChild(Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode child);
-        public Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode GetChild(int index = 0);
-        public int GetNumChildren();
-        public string GetPrettyName(bool withAssembly = False);
-        public bool HasChildren();
-        public bool HasValidChildren();
-        public bool IsPerfCriticalContext();
+        public virtual string GetPrettyName();
+        public virtual bool IsPerfCritical();
     }
 }
 
