@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool descriptionWithIcon;
         public bool showAssemblySelection;
         public bool showCritical;
-        public bool showInvertedCallTree;
+        public bool showDependencyView;
         public bool showRightPanels;
         public IssueTable.Column[] columnDescriptors;
         public Action<Location> onDoubleClick;
@@ -30,7 +30,17 @@ namespace Unity.ProjectAuditor.Editor.UI
         private readonly AnalysisViewDescriptor m_Desc;
         private readonly IIssuesFilter m_Filter;
 
-        public IssueTable m_Table;
+        private IssueTable m_Table;
+
+        public AnalysisViewDescriptor desc
+        {
+            get { return m_Desc; }
+        }
+
+        public IssueTable table
+        {
+            get { return m_Table; }
+        }
 
         public AnalysisView(AnalysisViewDescriptor desc, ProjectAuditorConfig config, IIssuesFilter filter)
         {
@@ -38,11 +48,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Config = config;
             m_Filter = filter;
             m_Table = null;
-        }
-
-        public AnalysisViewDescriptor desc
-        {
-            get { return m_Desc; }
         }
 
         public void CreateTable(Preferences prefs)

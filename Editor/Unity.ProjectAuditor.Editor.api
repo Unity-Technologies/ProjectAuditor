@@ -94,8 +94,8 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectIssue
     {
         public string assembly;
-        public Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode callTree;
         public Unity.ProjectAuditor.Editor.IssueCategory category;
+        public Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode dependencies;
         public string description;
         public Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor;
         public Unity.ProjectAuditor.Editor.Utils.Location location;
@@ -105,7 +105,7 @@ namespace Unity.ProjectAuditor.Editor
         public int line { get; }
         public string name { get; }
         public string relativePath { get; }
-        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode callTreeNode) {}
+        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode dependenciesNode) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location = default(Unity.ProjectAuditor.Editor.Utils.Location)) {}
     }
 

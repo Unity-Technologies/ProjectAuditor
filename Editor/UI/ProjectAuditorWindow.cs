@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 descriptionWithIcon = true,
                 showAssemblySelection = false,
                 showCritical = false,
-                showInvertedCallTree = false,
+                showDependencyView = false,
                 showRightPanels = true,
                 columnDescriptors = new[]
                 {
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 descriptionWithIcon = false,
                 showAssemblySelection = true,
                 showCritical = true,
-                showInvertedCallTree = true,
+                showDependencyView = true,
                 showRightPanels = true,
                 columnDescriptors = new[]
                 {
@@ -87,7 +87,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 descriptionWithIcon = false,
                 showAssemblySelection = false,
                 showCritical = false,
-                showInvertedCallTree = false,
+                showDependencyView = false,
                 showRightPanels = true,
                 columnDescriptors = new[]
                 {
@@ -131,7 +131,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         private IssueTable m_ActiveIssueTable
         {
-            get { return m_ActiveAnalysisView.m_Table; }
+            get { return m_ActiveAnalysisView.table; }
         }
 
         public void AddItemsToMenu(GenericMenu menu)
@@ -189,7 +189,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (MatchesSearch(issue.filename))
                 return true;
 
-            var caller = issue.callTree;
+            var caller = issue.dependencies;
             if (caller != null)
             {
                 if (MatchesSearch(caller, m_SearchCallTree))
@@ -313,7 +313,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ProjectReport = new ProjectReport();
             foreach (var view in m_AnalysisViews)
             {
-                view.m_Table.Reset();
+                view.table.Reset();
             }
 
             var newIssues = new List<ProjectIssue>();
@@ -465,7 +465,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.EndHorizontal();
 
-            if (m_ActiveAnalysisView.desc.showInvertedCallTree)
+            if (m_ActiveAnalysisView.desc.showDependencyView)
             {
                 ProjectIssue issue = null;
                 if (selectedIssues.Count() == 1)
@@ -474,10 +474,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
 
                 CallTreeNode callTree = null;
-                if (issue != null && issue.callTree != null)
+                if (issue != null && issue.dependencies != null)
                 {
                     // get caller sub-tree
-                    callTree = issue.callTree.GetChild();
+                    callTree = issue.dependencies.GetChild();
                 }
 
                 if (m_CurrentCallTree != callTree)
@@ -546,14 +546,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndVertical();
         }
 
-        private void DrawCallHierarchy(ProjectIssue issue, CallTreeNode callTree)
+        private void DrawCallHierarchy(ProjectIssue issue, CallTreeNode root)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Height(LayoutSize.CallTreeHeight));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Height(LayoutSize.DependencyViewHeight));
 
-            m_Preferences.callTree = BoldFoldout(m_Preferences.callTree, Styles.CallTreeFoldout);
-            if (m_Preferences.callTree)
+            m_Preferences.dependencies = BoldFoldout(m_Preferences.dependencies, Styles.CallTreeFoldout);
+            if (m_Preferences.dependencies)
             {
-                if (callTree != null)
+                if (root != null)
                 {
                     var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
 
@@ -747,7 +747,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (m_DeveloperMode)
                 {
                     // this is only available in developer mode because it is still too slow at the moment
-                    GUI.enabled = m_ActiveAnalysisView.desc.showInvertedCallTree;
+                    GUI.enabled = m_ActiveAnalysisView.desc.showDependencyView;
                     m_SearchCallTree = EditorGUILayout.ToggleLeft("Call Tree (slow)",
                         m_SearchCallTree, GUILayout.Width(160));
                     GUI.enabled = true;
@@ -1095,7 +1095,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly int FilterOptionsLeftLabelWidth = 100;
             public static readonly int FilterOptionsEnumWidth = 50;
             public static readonly int ModeTabWidth = 300;
-            public static readonly int CallTreeHeight = 200;
+            public static readonly int DependencyViewHeight = 200;
         }
 
         private static class Styles

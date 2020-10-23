@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         // foldout preferences
         public bool filters = true;
         public bool actions = true;
-        public bool callTree = true;
+        public bool dependencies = true;
         public bool details = true;
         public bool recommendation = true;
 

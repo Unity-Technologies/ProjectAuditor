@@ -221,8 +221,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         var projectIssue = analyzer.Analyze(caller, inst);
                         if (projectIssue != null)
                         {
-                            projectIssue.callTree.perfCriticalContext = perfCriticalContext;
-                            projectIssue.callTree.AddChild(callerNode);
+                            projectIssue.dependencies.perfCriticalContext = perfCriticalContext;
+                            projectIssue.dependencies.AddChild(callerNode);
                             projectIssue.location = location;
                             projectIssue.assembly = assemblyInfo.name;
 

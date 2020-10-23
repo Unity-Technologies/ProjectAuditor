@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectIssue
     {
         public string assembly;
-        public CallTreeNode callTree;
+        public CallTreeNode dependencies;
         public IssueCategory category;
 
         public string description;
@@ -83,12 +83,12 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectIssue(ProblemDescriptor descriptor,
                             string description,
                             IssueCategory category,
-                            CallTreeNode callTreeNode)
+                            CallTreeNode dependenciesNode)
         {
             this.descriptor = descriptor;
             this.description = description;
             this.category = category;
-            callTree = callTreeNode;
+            dependencies = dependenciesNode;
         }
 
         public string filename
@@ -119,12 +119,12 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                if (callTree == null)
+                if (dependencies == null)
                     return string.Empty;
-                if (!callTree.HasChildren())
+                if (!dependencies.HasChildren())
                     return string.Empty;
 
-                return callTree.GetChild().name;
+                return dependencies.GetChild().name;
             }
         }
 
@@ -132,7 +132,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                return descriptor.critical || (callTree != null && callTree.IsPerfCriticalContext());
+                return descriptor.critical || (dependencies != null && dependencies.IsPerfCriticalContext());
             }
         }
 
@@ -140,12 +140,12 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                if (callTree == null)
+                if (dependencies == null)
                     return string.Empty;
-                var prettyName = callTree.prettyName;
+                var prettyName = dependencies.prettyName;
                 if (prettyName.Equals(descriptor.description))
                     // if name matches the descriptor's name, use caller's name instead
-                    return string.IsNullOrEmpty(callingMethod) ? string.Empty : callTree.GetChild().prettyName;
+                    return string.IsNullOrEmpty(callingMethod) ? string.Empty : dependencies.GetChild().prettyName;
                 return prettyName;
             }
         }
