@@ -4,7 +4,20 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2020-10-23
+* Page up/down key bug fixes
+* Added dependencies view to Assets tab
+* Move call tree to the bottom of the window
+* Double-click on an asset selects it in the Project Window 
+* Fixed Unity 2017 compatibility
+* Fixed default selected assemblies
+* Fixed Area names filtering
+* Changed case-sensitive string search to be optional
+* Added CI information to documentation
+* Fixed call-tree serialization
+
 ## [0.3.0] - 2020-10-07
+* Added auditing of assets in Resources folders
 * Added shader warmup issues
 * Reorganized UI filters and mute/unmute buttons in separate foldouts
 * Fixed issues sorting within a group
