@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.FileType,
                     IssueTable.Column.Path
                 },
-                onDoubleClick = FocusOnAsset,
+                onDoubleClick = FocusOnAssetInProjectWindow,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.Assets
             },
             new AnalysisViewDescriptor
@@ -1057,9 +1057,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 #endif
         }
 
-        static void FocusOnAsset(Location location)
+        static void FocusOnAssetInProjectWindow(Location location)
         {
-            // focus asset in the project window
+            // Note that LoadMainAssetAtPath might fails, for example if there is a compile error in the script associated with the asset.
+            //
+            // Instead, we should use GetMainAssetInstanceID and FrameObjectInProjectWindow internal methods:
+            //    var instanceId = AssetDatabase.GetMainAssetInstanceID(location.Path);
+            //    ProjectWindowUtil.FrameObjectInProjectWindow(instanceId);
+
             var obj = AssetDatabase.LoadMainAssetAtPath(location.Path);
             if (obj != null)
             {
