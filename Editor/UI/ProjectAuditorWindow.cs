@@ -101,6 +101,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                 },
                 onDoubleClick = OpenTextFile,
+                onOpenDescriptor = OpenDescriptor,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.ApiCalls
             },
             new AnalysisViewDescriptor
@@ -1061,6 +1062,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Preferences.emptyGroups = EditorGUILayout.ToggleLeft("Show Empty Groups",
                     m_Preferences.emptyGroups, GUILayout.Width(100));
                 EditorGUILayout.EndHorizontal();
+            }
+        }
+
+        static void OpenDescriptor(ProblemDescriptor descriptor)
+        {
+            if (descriptor.type.StartsWith("UnityEngine."))
+            {
+                var type = descriptor.type.Substring("UnityEngine.".Length);
+                var method = descriptor.method;
+
+                Application.OpenURL(string.Format("https://docs.unity3d.com/ScriptReference/{0}{1}{2}.html", type, Char.IsUpper(method[0]) ? "." : "-", method));
             }
         }
 

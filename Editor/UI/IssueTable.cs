@@ -311,13 +311,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (item.hasChildren)
             {
-                var group = item as IssueTableItem;
-                if (group != null && group.ProblemDescriptor.type.StartsWith("UnityEngine."))
+                if (m_Desc.onOpenDescriptor != null)
                 {
-                    var type = group.ProblemDescriptor.type.Substring("UnityEngine.".Length);
-                    var method = group.ProblemDescriptor.method;
-
-                    Application.OpenURL(string.Format("https://docs.unity3d.com/ScriptReference/{0}{1}{2}.html", type, Char.IsUpper(method[0]) ? "." : "-", method));
+                    var group = item as IssueTableItem;
+                    m_Desc.onOpenDescriptor(group.ProblemDescriptor);
                 }
                 return;
             }
