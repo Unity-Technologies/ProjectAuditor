@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Path,
             Filename,
             FileType,
-            Assembly,
+            Custom,
 
             Count
         }
@@ -280,11 +280,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                         }
                         break;
 
-                    case Column.Assembly:
-                        if (issue.assembly != string.Empty)
-                            EditorGUI.LabelField(cellRect, new GUIContent(issue.assembly, issue.assembly));
-
-                        break;
                     case Column.FileType:
                         if (issue.location.Path != string.Empty)
                         {
@@ -294,6 +289,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                             EditorGUI.LabelField(cellRect, new GUIContent(ext, ext));
                         }
 
+                        break;
+                    default:
+                        var propertyIndex = column - Column.Custom;
+                        var property = issue.GetCustomProperty(propertyIndex);
+                        if (property != string.Empty)
+                            EditorGUI.LabelField(cellRect, new GUIContent(property, property));
                         break;
                 }
 
@@ -492,14 +493,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     ? secondItem.ProjectIssue.location.Path
                                     : string.Empty;
                                 break;
-                            case Column.Assembly:
-                                firstString = firstItem.ProjectIssue != null
-                                    ? firstItem.ProjectIssue.assembly
-                                    : string.Empty;
-                                secondString = secondItem.ProjectIssue != null
-                                    ? secondItem.ProjectIssue.assembly
-                                    : string.Empty;
-                                break;
                             case Column.FileType:
                                 firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.location.Extension : string.Empty;
                                 secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.location.Extension : string.Empty;
@@ -509,7 +502,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
                                 break;
                             default:
-                                continue;
+                                var propertyIndex = columnEnum - Column.Custom;
+                                firstString = firstItem.ProjectIssue != null
+                                    ? firstItem.ProjectIssue.GetCustomProperty(propertyIndex)
+                                    : string.Empty;
+                                secondString = secondItem.ProjectIssue != null
+                                    ? secondItem.ProjectIssue.GetCustomProperty(propertyIndex)
+                                    : string.Empty;
+                                break;
                         }
 
                         rtn = string.Compare(firstString, secondString, StringComparison.Ordinal);

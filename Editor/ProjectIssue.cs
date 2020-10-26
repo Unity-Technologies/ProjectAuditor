@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public class ProjectIssue
     {
-        public string assembly;
+        public string[] customProperties;
         public DependencyNode dependencies;
         public IssueCategory category;
 
@@ -151,6 +151,19 @@ namespace Unity.ProjectAuditor.Editor
                     return string.IsNullOrEmpty(callingMethod) ? string.Empty : dependencies.GetChild().prettyName;
                 return prettyName;
             }
+        }
+
+        public string GetCustomProperty(int index)
+        {
+            return customProperties != null ? customProperties[index] : string.Empty;
+        }
+
+        public void SetCustomProperty(int index, string property)
+        {
+            if (customProperties == null)
+                customProperties = new[] {property};
+            else
+                customProperties[index] = property;
         }
     }
 }

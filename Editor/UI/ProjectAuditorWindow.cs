@@ -31,6 +31,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             Selected
         }
 
+        public enum CustomProperty
+        {
+            Assembly = 0,
+        }
+
         private const string NoIssueSelectedText = "No issue selected";
         private const string AnalysisIsRequiredText = "Missing Data: Please Analyze";
 
@@ -75,7 +80,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.Priority,
                     IssueTable.Column.Area,
                     IssueTable.Column.Filename,
-                    IssueTable.Column.Assembly
+                    IssueTable.Column.Custom
                 },
                 onDoubleClick = OpenTextFile,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.ApiCalls
@@ -150,7 +155,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             UnityEngine.Profiling.Profiler.BeginSample("MatchAssembly");
             var matchAssembly = !m_ActiveAnalysisView.desc.showAssemblySelection ||
                 m_AssemblySelection != null &&
-                (m_AssemblySelection.Contains(issue.assembly) ||
+                (m_AssemblySelection.Contains(issue.GetCustomProperty((int)CustomProperty.Assembly)) ||
                     m_AssemblySelection.ContainsGroup("All"));
             UnityEngine.Profiling.Profiler.EndSample();
             if (!matchAssembly)
@@ -362,7 +367,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 // update list of assembly names
                 var scriptIssues = m_ProjectReport.GetIssues(IssueCategory.Code);
-                m_AssemblyNames = scriptIssues.Select(i => i.assembly).Distinct().OrderBy(str => str).ToArray();
+                m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty((int)CustomProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
                 UpdateAssemblySelection();
 
                 m_AnalysisState = AnalysisState.Valid;
