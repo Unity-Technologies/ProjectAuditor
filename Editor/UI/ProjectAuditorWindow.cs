@@ -235,7 +235,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_AnalysisViews.Clear();
             foreach (var desc in m_AnalysisViewDescriptors)
             {
-                var view = new AnalysisView(desc, m_ProjectAuditor.config, m_TextFilter);
+                var view = new AnalysisView(desc, m_ProjectAuditor.config, this);
                 view.CreateTable(m_Preferences);
 
                 if (m_AnalysisState == AnalysisState.Valid)
