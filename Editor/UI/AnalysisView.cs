@@ -9,6 +9,13 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
+    internal struct ColumnStyle
+    {
+        public GUIContent Content;
+        public int Width;
+        public int MinWidth;
+    }
+
     internal struct AnalysisViewDescriptor
     {
         public IssueCategory category;
@@ -21,6 +28,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
         public IssueTable.Column[] columnDescriptors;
+        public ColumnStyle[] costumColumnStyles;
         public Action<Location> onDoubleClick;
         public Action<ProjectIssue, DependencyNode> onDrawDependencies;
         public ProjectAuditorAnalytics.UIButton analyticsEvent;
@@ -68,7 +76,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             for (var i = 0; i < columns.Length; i++)
             {
                 var columnEnum = m_Desc.columnDescriptors[i];
-                var style = Styles.Columns[(int)columnEnum];
+
+                ColumnStyle style;
+                if (columnEnum < IssueTable.Column.Custom)
+                    style = Styles.Columns[(int)columnEnum];
+                else
+                {
+                    style = m_Desc.costumColumnStyles[columnEnum - IssueTable.Column.Custom];
+                }
 
                 columns[i] = new MultiColumnHeaderState.Column
                 {
@@ -107,13 +122,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             var info = selectedIssues.Length + " / " + m_Table.GetNumMatchingIssues() + " issues";
 
             EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
-        }
-
-        struct ColumnStyle
-        {
-            public GUIContent Content;
-            public int Width;
-            public int MinWidth;
         }
 
         private static class Styles
@@ -155,12 +163,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     Content = new GUIContent("File Type", "File extension"),
                     Width = 80,
                     MinWidth = 80,
-                },
-                new ColumnStyle
-                {
-                    Content = new GUIContent("Assembly", "Managed Assembly name"),
-                    Width = 300,
-                    MinWidth = 100,
                 },
             };
         }

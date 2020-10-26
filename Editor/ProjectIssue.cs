@@ -1,6 +1,7 @@
 using System;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -54,13 +55,14 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public class ProjectIssue
     {
-        public string[] customProperties;
         public DependencyNode dependencies;
         public IssueCategory category;
 
         public string description;
         public ProblemDescriptor descriptor;
         public Location location;
+
+        [SerializeField] private string[] customProperties;
 
         /// <summary>
         /// ProjectIssue constructor
@@ -158,12 +160,9 @@ namespace Unity.ProjectAuditor.Editor
             return customProperties != null ? customProperties[index] : string.Empty;
         }
 
-        public void SetCustomProperty(int index, string property)
+        public void SetCustomProperties(string[] properties)
         {
-            if (customProperties == null)
-                customProperties = new[] {property};
-            else
-                customProperties[index] = property;
+            customProperties = properties;
         }
     }
 }

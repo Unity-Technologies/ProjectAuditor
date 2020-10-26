@@ -60,6 +60,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.FileType,
                     IssueTable.Column.Path
                 },
+                costumColumnStyles = new[]
+                {
+                    new ColumnStyle
+                    {
+                        Content = new GUIContent("Assembly", "Managed Assembly name"),
+                        Width = 300,
+                        MinWidth = 100,
+                    }
+                },
                 onDoubleClick = FocusOnAssetInProjectWindow,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.Assets
             },
@@ -81,6 +90,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.Area,
                     IssueTable.Column.Filename,
                     IssueTable.Column.Custom
+                },
+                costumColumnStyles = new[]
+                {
+                    new ColumnStyle
+                    {
+                        Content = new GUIContent("Assembly", "Managed Assembly name"),
+                        Width = 300,
+                        MinWidth = 100,
+                    }
                 },
                 onDoubleClick = OpenTextFile,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.ApiCalls

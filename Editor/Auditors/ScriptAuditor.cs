@@ -224,7 +224,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                             projectIssue.dependencies.perfCriticalContext = perfCriticalContext;
                             projectIssue.dependencies.AddChild(callerNode);
                             projectIssue.location = location;
-                            projectIssue.SetCustomProperty(0, assemblyInfo.name);
+                            projectIssue.SetCustomProperties(new[] {assemblyInfo.name});
 
                             onIssueFound(projectIssue);
                         }
