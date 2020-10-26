@@ -58,6 +58,11 @@ namespace Unity.ProjectAuditor.Editor
         public abstract void Initialize(string title, string description, int total);
     }
 
+    public interface IProjectIssueFilter
+    {
+        public abstract bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
+    }
+
     public enum IssueCategory
     {
         public const Unity.ProjectAuditor.Editor.IssueCategory Assets = 0;
@@ -163,6 +168,15 @@ namespace Unity.ProjectAuditor.Editor
             public int value__;
             public const Unity.ProjectAuditor.Editor.Rule.Action Warning = 2;
         }
+    }
+
+    public class TextFilter : Unity.ProjectAuditor.Editor.IProjectIssueFilter
+    {
+        public bool matchCase;
+        public bool searchDependencies;
+        public string searchText;
+        public TextFilter() {}
+        public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
     }
 }
 

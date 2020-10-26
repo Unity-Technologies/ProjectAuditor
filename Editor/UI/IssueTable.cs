@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         private readonly ProjectAuditorConfig m_Config;
         private readonly Preferences m_Preferences;
         private readonly AnalysisViewDescriptor m_Desc;
-        private readonly IIssuesFilter m_IssuesFilter;
+        private readonly IProjectIssueFilter m_Filter;
         private readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
 
         private List<IssueTableItem> m_TreeViewItemGroups;
@@ -40,12 +40,12 @@ namespace Unity.ProjectAuditor.Editor.UI
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
                           AnalysisViewDescriptor desc, ProjectAuditorConfig config,
                           Preferences preferences,
-                          IIssuesFilter issuesFilter) : base(state,
+                          IProjectIssueFilter filter) : base(state,
                                                              multicolumnHeader)
         {
             m_Config = config;
             m_Preferences = preferences;
-            m_IssuesFilter = issuesFilter;
+            m_Filter = filter;
             m_Desc = desc;
             m_NextId = 1;
             multicolumnHeader.sortingChanged += OnSortingChanged;
@@ -121,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Profiler.BeginSample("IssueTable.Match");
             var filteredItems = m_TreeViewItemIssues.Where(item =>
             {
-                return m_IssuesFilter.Match(item.ProjectIssue);
+                return m_Filter.Match(item.ProjectIssue);
             }).ToArray();
 
             Profiler.EndSample();

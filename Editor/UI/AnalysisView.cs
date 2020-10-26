@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         private readonly ProjectAuditorConfig m_Config;
         private readonly AnalysisViewDescriptor m_Desc;
-        private readonly IIssuesFilter m_Filter;
+        private readonly IProjectIssueFilter m_Filter;
 
         private DependencyView m_DependencyView;
         private IssueTable m_Table;
@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             get { return m_Table; }
         }
 
-        public AnalysisView(AnalysisViewDescriptor desc, ProjectAuditorConfig config, IIssuesFilter filter)
+        public AnalysisView(AnalysisViewDescriptor desc, ProjectAuditorConfig config, IProjectIssueFilter filter)
         {
             m_Desc = desc;
             m_Config = config;
