@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using Packages.Editor.Serialize;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
@@ -9,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
             var fullPath = Path.GetFullPath(Path.Combine(path, name + ".json"));
             var json = File.ReadAllText(fullPath);
-            var descriptors = JsonHelper.FromJson<ProblemDescriptor>(json);
+            var descriptors = Json.From<ProblemDescriptor>(json);
 
             foreach (var desc in descriptors)
             {

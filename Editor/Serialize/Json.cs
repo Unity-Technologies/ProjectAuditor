@@ -1,24 +1,24 @@
 using System;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.Utils
+namespace Packages.Editor.Serialize
 {
-    internal static class JsonHelper
+    internal static class Json
     {
-        public static T[] FromJson<T>(string json)
+        public static T[] From<T>(string json)
         {
             var wrapper = JsonUtility.FromJson<Wrapper<T>>(json);
             return wrapper.Items;
         }
 
-        public static string ToJson<T>(T[] array)
+        public static string To<T>(T[] array)
         {
             var wrapper = new Wrapper<T>();
             wrapper.Items = array;
             return JsonUtility.ToJson(wrapper);
         }
 
-        public static string ToJson<T>(T[] array, bool prettyPrint)
+        public static string To<T>(T[] array, bool prettyPrint)
         {
             var wrapper = new Wrapper<T>();
             wrapper.Items = array;
