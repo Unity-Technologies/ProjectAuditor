@@ -23,10 +23,10 @@ namespace Unity.ProjectAuditor.Editor
             if (MatchesSearch(issue.filename))
                 return true;
 
-            var caller = issue.callTree;
-            if (caller != null)
+            var dependencies = issue.dependencies;
+            if (dependencies != null)
             {
-                if (MatchesSearch(caller, searchDependencies))
+                if (MatchesSearch(dependencies, searchDependencies))
                     return true;
             }
 
@@ -40,12 +40,17 @@ namespace Unity.ProjectAuditor.Editor
                 text.IndexOf(searchText, matchCase ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
-        private bool MatchesSearch(CallTreeNode callTreeNode, bool recursive)
+        private bool MatchesSearch(DependencyNode node, bool recursive)
         {
-            if (callTreeNode == null)
+            if (node == null)
                 return false;
-            if (MatchesSearch(callTreeNode.typeName) || MatchesSearch(callTreeNode.methodName))
-                return true;
+
+            var callTreeNode = node as CallTreeNode;
+            if (callTreeNode != null)
+            {
+                if (MatchesSearch(callTreeNode.typeName) || MatchesSearch(callTreeNode.methodName))
+                    return true;
+            }
             if (recursive)
                 for (int i = 0; i < callTreeNode.GetNumChildren(); i++)
                 {
