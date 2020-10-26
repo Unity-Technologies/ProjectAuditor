@@ -309,21 +309,20 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (item == null)
                 return;
 
+            var tableItem = item as IssueTableItem;
+
+            if (tableItem == null)
+                return;
             if (item.hasChildren)
             {
                 if (m_Desc.onOpenDescriptor != null)
                 {
-                    var group = item as IssueTableItem;
-                    m_Desc.onOpenDescriptor(group.ProblemDescriptor);
+                    m_Desc.onOpenDescriptor(tableItem.ProblemDescriptor);
                 }
                 return;
             }
 
-            var issueTableItem = item as IssueTableItem;
-            if (issueTableItem == null)
-                return;
-
-            var issue = issueTableItem.ProjectIssue;
+            var issue = tableItem.ProjectIssue;
             if (issue.location != null && issue.location.IsValid())
             {
                 m_Desc.onDoubleClick(issue.location);
