@@ -150,7 +150,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new ColumnStyle
                 {
                     Content = new GUIContent("Path", "Path and line number"),
-                    Width = 300,
+                    Width = 700,
                     MinWidth = 100,
                 },
                 new ColumnStyle
