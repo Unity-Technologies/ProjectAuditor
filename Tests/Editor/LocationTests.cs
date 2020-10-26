@@ -9,6 +9,13 @@ namespace UnityEditor.ProjectAuditor.EditorTests
     public class LocationTests
     {
         [Test]
+        public void NoExtensionIsValid()
+        {
+            var location = new Location("some/path/file");
+            Assert.True(location.Extension.Equals(String.Empty));
+        }
+
+        [Test]
         public void AssetLocationIsValid()
         {
             const int lineNumber = 6;
