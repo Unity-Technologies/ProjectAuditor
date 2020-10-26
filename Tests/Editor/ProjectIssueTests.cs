@@ -5,23 +5,39 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     internal class ProjectIssueTests
     {
+        ProblemDescriptor s_Descriptor = new ProblemDescriptor
+            (
+            102001,
+            "test",
+            Area.CPU,
+            "this is not actually a problem",
+            "do nothing"
+            );
+
         [Test]
         public void UninitializedIssueTestPasses()
         {
-            var p = new ProblemDescriptor
-                (
-                102001,
-                "test",
-                Area.CPU,
-                "this is not actually a problem",
-                "do nothing"
-                );
-            var uninitialised = new ProjectIssue(p, "dummy issue", IssueCategory.Code);
+            var uninitialised = new ProjectIssue(s_Descriptor, "dummy issue", IssueCategory.Code);
             Assert.AreEqual(string.Empty, uninitialised.filename);
             Assert.AreEqual(string.Empty, uninitialised.relativePath);
             Assert.AreEqual(string.Empty, uninitialised.callingMethod);
             Assert.AreEqual(string.Empty, uninitialised.name);
             Assert.False(uninitialised.isPerfCriticalContext);
+        }
+
+        [Test]
+        public void CustomPropertiesAreSet()
+        {
+            string[] properties = new[]
+            {
+                "property #0",
+                "property #1",
+            };
+            var issue = new ProjectIssue(s_Descriptor, "dummy issue", IssueCategory.Code);
+            issue.SetCustomProperties(properties);
+
+            Assert.True(issue.GetCustomProperty(0).Equals(properties[0]));
+            Assert.True(issue.GetCustomProperty(1).Equals(properties[1]));
         }
     }
 }
