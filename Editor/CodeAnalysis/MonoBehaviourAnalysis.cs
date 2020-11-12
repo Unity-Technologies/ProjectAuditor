@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
-    internal static class MonoBehaviourAnalysis
+    static class MonoBehaviourAnalysis
     {
-        private static readonly int ClassNameHashCode = "UnityEngine.MonoBehaviour".GetHashCode();
+        static readonly int ClassNameHashCode = "UnityEngine.MonoBehaviour".GetHashCode();
 
-        private static readonly string[] MagicMethodNames =
+        static readonly string[] MagicMethodNames =
         {"Awake", "Start", "OnEnable", "OnDisable", "Update", "LateUpdate", "OnEnable", "FixedUpdate"};
 
-        private static readonly string[] UpdateMethodNames = {"Update", "LateUpdate", "FixedUpdate"};
+        static readonly string[] UpdateMethodNames = {"Update", "LateUpdate", "FixedUpdate"};
 
         public static bool IsMonoBehaviour(TypeReference typeReference)
         {

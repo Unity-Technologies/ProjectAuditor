@@ -14,15 +14,15 @@ using ThreadPriority = System.Threading.ThreadPriority;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
-    internal class ScriptAuditor : IAuditor
+    class ScriptAuditor : IAuditor
     {
-        private readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
-        private readonly List<OpCode> m_OpCodes = new List<OpCode>();
+        readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
+        readonly List<OpCode> m_OpCodes = new List<OpCode>();
 
-        private ProjectAuditorConfig m_Config;
-        private List<ProblemDescriptor> m_ProblemDescriptors;
+        ProjectAuditorConfig m_Config;
+        List<ProblemDescriptor> m_ProblemDescriptors;
 
-        private Thread m_AssemblyAnalysisThread;
+        Thread m_AssemblyAnalysisThread;
 
         public void Initialize(ProjectAuditorConfig config)
         {
@@ -107,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Profiler.EndSample();
         }
 
-        private void AnalyzeAssemblies(IEnumerable<AssemblyInfo> assemblyInfos, List<string> assemblyDirectories, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound, Action<IProgressBar> onComplete, IProgressBar progressBar = null)
+        void AnalyzeAssemblies(IEnumerable<AssemblyInfo> assemblyInfos, List<string> assemblyDirectories, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound, Action<IProgressBar> onComplete, IProgressBar progressBar = null)
         {
             using (var assemblyResolver = new DefaultAssemblyResolver())
             {
@@ -153,7 +153,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_ProblemDescriptors.Add(descriptor);
         }
 
-        private void AnalyzeAssembly(AssemblyInfo assemblyInfo, IAssemblyResolver assemblyResolver, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)
+        void AnalyzeAssembly(AssemblyInfo assemblyInfo, IAssemblyResolver assemblyResolver, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)
         {
             Profiler.BeginSample("ScriptAuditor.AnalyzeAssembly " + assemblyInfo.name);
 
@@ -173,7 +173,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Profiler.EndSample();
         }
 
-        private void AnalyzeMethodBody(AssemblyInfo assemblyInfo, MethodDefinition caller, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)
+        void AnalyzeMethodBody(AssemblyInfo assemblyInfo, MethodDefinition caller, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)
         {
             if (!caller.DebugInformation.HasSequencePoints)
                 return;
@@ -233,7 +233,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Profiler.EndSample();
         }
 
-        private void AddAnalyzer(IInstructionAnalyzer analyzer)
+        void AddAnalyzer(IInstructionAnalyzer analyzer)
         {
             analyzer.Initialize(this);
             m_InstructionAnalyzers.Add(analyzer);
@@ -245,7 +245,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             return projectReport.GetIssues(IssueCategory.Code).Where(i => i.relativePath.Equals(relativePath));
         }
 
-        private static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)
+        static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)
         {
             if (MonoBehaviourAnalysis.IsMonoBehaviour(methodDefinition.DeclaringType) &&
                 MonoBehaviourAnalysis.IsMonoBehaviourUpdateMethod(methodDefinition))

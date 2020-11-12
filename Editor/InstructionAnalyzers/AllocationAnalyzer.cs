@@ -5,9 +5,9 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    internal class AllocationAnalyzer : IInstructionAnalyzer
+    class AllocationAnalyzer : IInstructionAnalyzer
     {
-        private static readonly ProblemDescriptor s_ObjectAllocationDescriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor s_ObjectAllocationDescriptor = new ProblemDescriptor
             (
             102002,
             "Object Allocation (experimental)",
@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Try to avoid allocating objects in frequently-updated code."
             );
 
-        private static readonly ProblemDescriptor s_ArrayAllocationDescriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor s_ArrayAllocationDescriptor = new ProblemDescriptor
             (
             102003,
             "Array Allocation (experimental)",

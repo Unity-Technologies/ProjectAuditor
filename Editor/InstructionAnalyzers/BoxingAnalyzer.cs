@@ -5,9 +5,9 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    internal class BoxingAnalyzer : IInstructionAnalyzer
+    class BoxingAnalyzer : IInstructionAnalyzer
     {
-        private static readonly ProblemDescriptor s_Descriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor s_Descriptor = new ProblemDescriptor
             (
             102000,
             "Boxing Allocation",

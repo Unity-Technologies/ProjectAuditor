@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor
         public ProblemDescriptor descriptor;
         public Location location;
 
-        [SerializeField] private string[] customProperties;
+        [SerializeField] string[] customProperties;
 
         /// <summary>
         /// ProjectIssue constructor

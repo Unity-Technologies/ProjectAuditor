@@ -14,8 +14,8 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public class ProjectReport
     {
-        [SerializeField] private List<ProjectIssue> m_Issues = new List<ProjectIssue>();
-        private static Mutex s_Mutex = new Mutex();
+        [SerializeField] List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+        static Mutex s_Mutex = new Mutex();
 
         public int NumTotalIssues
         {

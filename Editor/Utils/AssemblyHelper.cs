@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    internal static class AssemblyHelper
+    static class AssemblyHelper
     {
         const string BuiltInPackagesFolder = "BuiltInPackages";
 
@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             get { return Path.GetFileNameWithoutExtension(DefaultAssemblyFileName); }
         }
 
-        private static IEnumerable<Type> GetAllTypes()
+        static IEnumerable<Type> GetAllTypes()
         {
             return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes());
         }
@@ -96,7 +96,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return info;
         }
 
-        private static AssemblyInfo GetAssemblyInfoFromAssemblyName(string assemblyName)
+        static AssemblyInfo GetAssemblyInfoFromAssemblyName(string assemblyName)
         {
             // by default let's assume it's not a package
             var assemblyInfo = new AssemblyInfo

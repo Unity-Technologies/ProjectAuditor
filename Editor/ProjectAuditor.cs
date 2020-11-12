@@ -24,9 +24,9 @@ namespace Unity.ProjectAuditor.Editor
         : IPreprocessBuildWithReport
 #endif
     {
-        private static string m_DataPath;
+        static string m_DataPath;
 
-        private readonly List<IAuditor> m_Auditors = new List<IAuditor>();
+        readonly List<IAuditor> m_Auditors = new List<IAuditor>();
 
         public const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
 
@@ -43,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor
             Init(assetPath);
         }
 
-        private void Init(string assetPath)
+        void Init(string assetPath)
         {
             config = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
             if (config == null)
@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public ProjectAuditorConfig config { get; set; }
 
-        private static string dataPath
+        static string dataPath
         {
             get
             {

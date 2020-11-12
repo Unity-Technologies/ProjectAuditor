@@ -1,6 +1,6 @@
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    internal class AssemblyInfo
+    class AssemblyInfo
     {
         public string name;            // assembly name without extension
         public string path;            // absolute path

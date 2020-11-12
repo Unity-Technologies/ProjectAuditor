@@ -34,13 +34,13 @@ namespace Unity.ProjectAuditor.Editor
             return false;
         }
 
-        private bool MatchesSearch(string text)
+        bool MatchesSearch(string text)
         {
             return !string.IsNullOrEmpty(text) &&
                 text.IndexOf(searchText, matchCase ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
-        private bool MatchesSearch(DependencyNode node, bool recursive)
+        bool MatchesSearch(DependencyNode node, bool recursive)
         {
             if (node == null)
                 return false;

@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public class AssetsAuditor : IAuditor
     {
-        private static readonly ProblemDescriptor s_Descriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor s_Descriptor = new ProblemDescriptor
             (
             302000,
             "Resources folder asset & dependencies",
@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             "Use AssetBundles when possible"
             );
 
-        private readonly List<ProblemDescriptor> m_ProblemDescriptors = new List<ProblemDescriptor>();
+        readonly List<ProblemDescriptor> m_ProblemDescriptors = new List<ProblemDescriptor>();
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             onComplete();
         }
 
-        private static void AnalyzeResources(Action<ProjectIssue> onIssueFound)
+        static void AnalyzeResources(Action<ProjectIssue> onIssueFound)
         {
             var allAssetPaths = AssetDatabase.GetAllAssetPaths();
             var allResources = allAssetPaths.Where(path => path.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) >= 0);
@@ -71,7 +71,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
-        private static DependencyNode AddResourceAsset(
+        static DependencyNode AddResourceAsset(
             string assetPath, Dictionary<string, DependencyNode> assetPathsDict, Action<ProjectIssue> onIssueFound, DependencyNode parent)
         {
             // skip C# scripts

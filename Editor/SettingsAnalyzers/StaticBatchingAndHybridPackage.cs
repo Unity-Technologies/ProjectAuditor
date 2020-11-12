@@ -8,9 +8,9 @@ using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
-    internal class StaticBatchingAndHybridPackage : ISettingsAnalyzer
+    class StaticBatchingAndHybridPackage : ISettingsAnalyzer
     {
-        private static readonly ProblemDescriptor s_Descriptor = new ProblemDescriptor(
+        static readonly ProblemDescriptor s_Descriptor = new ProblemDescriptor(
             202000,
             "Player Settings: Static batching is enabled",
             Area.CPU,
@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return null;
         }
 
-        private static bool IsStaticBatchingEnabled(BuildTarget platform)
+        static bool IsStaticBatchingEnabled(BuildTarget platform)
         {
             var method = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
                 BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);

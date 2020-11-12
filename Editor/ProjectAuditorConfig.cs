@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public bool LogTimingsInfo = false;
 
-        private readonly List<Rule> m_Rules = new List<Rule>();
+        readonly List<Rule> m_Rules = new List<Rule>();
 
         public int NumRules
         {

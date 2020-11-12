@@ -5,9 +5,9 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    internal class EmptyMethodAnalyzer : IInstructionAnalyzer
+    class EmptyMethodAnalyzer : IInstructionAnalyzer
     {
-        private static readonly ProblemDescriptor s_Descriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor s_Descriptor = new ProblemDescriptor
             (
             102001,
             "Empty MonoBehaviour Method",

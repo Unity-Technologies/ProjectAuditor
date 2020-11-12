@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Packages.Editor.Serialize
 {
-    internal static class Json
+    static class Json
     {
         public static T[] From<T>(string json)
         {
@@ -26,7 +26,7 @@ namespace Packages.Editor.Serialize
         }
 
         [Serializable]
-        private class Wrapper<T>
+        class Wrapper<T>
         {
             public T[] Items;
         }

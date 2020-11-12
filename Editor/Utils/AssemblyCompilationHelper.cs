@@ -11,12 +11,12 @@ using UnityEditor.Build.Player;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    internal class AssemblyCompilationHelper : IDisposable
+    class AssemblyCompilationHelper : IDisposable
     {
-        private string m_OutputFolder = string.Empty;
-        private bool m_Success = true;
+        string m_OutputFolder = string.Empty;
+        bool m_Success = true;
 
-        private Action<string> m_OnAssemblyCompilationStarted;
+        Action<string> m_OnAssemblyCompilationStarted;
 
         public void Dispose()
         {
@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #endif
         }
 
-        private void OnAssemblyCompilationFinished(string outputAssemblyPath, CompilerMessage[] messages)
+        void OnAssemblyCompilationFinished(string outputAssemblyPath, CompilerMessage[] messages)
         {
             m_Success = m_Success && messages.Count(message => message.type == CompilerMessageType.Error) == 0;
         }

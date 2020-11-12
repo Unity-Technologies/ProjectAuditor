@@ -6,10 +6,10 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    internal class BuiltinInstructionAnalyzer : IInstructionAnalyzer
+    class BuiltinInstructionAnalyzer : IInstructionAnalyzer
     {
-        private Dictionary<string, ProblemDescriptor> m_Descriptors; // type+method name as key
-        private Dictionary<string, ProblemDescriptor> m_WholeNamespaceDescriptors; // namespace as key
+        Dictionary<string, ProblemDescriptor> m_Descriptors; // type+method name as key
+        Dictionary<string, ProblemDescriptor> m_WholeNamespaceDescriptors; // namespace as key
 
         public void Initialize(IAuditor auditor)
         {

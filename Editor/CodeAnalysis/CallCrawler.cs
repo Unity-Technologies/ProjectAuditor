@@ -5,7 +5,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
-    internal class CallInfo
+    class CallInfo
     {
         public MethodReference callee;
         public MethodReference caller;
@@ -13,14 +13,14 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         public bool perfCriticalContext;
     }
 
-    internal class CallCrawler
+    class CallCrawler
     {
-        private const int m_MaxDepth = 10;
+        const int m_MaxDepth = 10;
 
-        private readonly Dictionary<string, List<CallInfo>> m_BucketedCallPairs =
+        readonly Dictionary<string, List<CallInfo>> m_BucketedCallPairs =
             new Dictionary<string, List<CallInfo>>();
 
-        private readonly Dictionary<string, CallInfo> m_CallPairs = new Dictionary<string, CallInfo>();
+        readonly Dictionary<string, CallInfo> m_CallPairs = new Dictionary<string, CallInfo>();
 
         public void Add(CallInfo callInfo)
         {
@@ -69,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             }
         }
 
-        private void BuildHierarchy(CallTreeNode callee, int depth)
+        void BuildHierarchy(CallTreeNode callee, int depth)
         {
             if (depth++ == m_MaxDepth)
                 return;

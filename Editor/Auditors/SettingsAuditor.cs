@@ -9,17 +9,17 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
-    internal class SettingsAuditor : IAuditor
+    class SettingsAuditor : IAuditor
     {
-        private readonly List<Assembly> m_Assemblies = new List<Assembly>();
-        private readonly Evaluators m_Helpers = new Evaluators();
+        readonly List<Assembly> m_Assemblies = new List<Assembly>();
+        readonly Evaluators m_Helpers = new Evaluators();
 
-        private readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping =
+        readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping =
             new List<KeyValuePair<string, string>>();
 
-        private readonly Dictionary<int, ISettingsAnalyzer> m_SettingsAnalyzers =
+        readonly Dictionary<int, ISettingsAnalyzer> m_SettingsAnalyzers =
             new Dictionary<int, ISettingsAnalyzer>();
-        private List<ProblemDescriptor> m_ProblemDescriptors;
+        List<ProblemDescriptor> m_ProblemDescriptors;
 
         public void Initialize(ProjectAuditorConfig config)
         {
@@ -88,13 +88,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             onComplete();
         }
 
-        private void AddAnalyzer(ISettingsAnalyzer analyzer)
+        void AddAnalyzer(ISettingsAnalyzer analyzer)
         {
             analyzer.Initialize(this);
             m_SettingsAnalyzers.Add(analyzer.GetDescriptorId(), analyzer);
         }
 
-        private void AddIssue(ProblemDescriptor descriptor, string description, Action<ProjectIssue> onIssueFound)
+        void AddIssue(ProblemDescriptor descriptor, string description, Action<ProjectIssue> onIssueFound)
         {
             var projectWindowPath = "";
             var mappings = m_ProjectSettingsMapping.Where(p => p.Key.Contains(descriptor.type));
@@ -110,7 +110,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             );
         }
 
-        private void SearchAndEval(ProblemDescriptor descriptor, Action<ProjectIssue> onIssueFound)
+        void SearchAndEval(ProblemDescriptor descriptor, Action<ProjectIssue> onIssueFound)
         {
             if (string.IsNullOrEmpty(descriptor.customevaluator))
             {

@@ -4,7 +4,7 @@ using Mono.Cecil;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
-    internal static class MonoCecilHelper
+    static class MonoCecilHelper
     {
         public static IEnumerable<TypeDefinition> AggregateAllTypeDefinitions(IEnumerable<TypeDefinition> types)
         {

@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
-    internal static class ComponentSystemAnalysis
+    static class ComponentSystemAnalysis
     {
-        private static readonly int[] ClassNameHashCodes = {"Unity.Entities.ComponentSystem".GetHashCode(), "Unity.Entities.JobComponentSystem".GetHashCode()};
+        static readonly int[] ClassNameHashCodes = {"Unity.Entities.ComponentSystem".GetHashCode(), "Unity.Entities.JobComponentSystem".GetHashCode()};
 
-        private static readonly string[] UpdateMethodNames = {"OnUpdate"};
+        static readonly string[] UpdateMethodNames = {"OnUpdate"};
 
         public static bool IsComponentSystem(TypeReference typeReference)
         {

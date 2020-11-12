@@ -6,14 +6,14 @@ using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
-    internal class Evaluators
+    class Evaluators
     {
         // Edit this to reflect the target platforms for your project
         // TODO - Provide an interface for this, or something
-        private readonly BuildTargetGroup[] _buildTargets =
+        readonly BuildTargetGroup[] _buildTargets =
         {BuildTargetGroup.iOS, BuildTargetGroup.Android, BuildTargetGroup.Standalone};
 
-        private readonly GraphicsTier[] _graphicsTiers = {GraphicsTier.Tier1, GraphicsTier.Tier2, GraphicsTier.Tier3};
+        readonly GraphicsTier[] _graphicsTiers = {GraphicsTier.Tier1, GraphicsTier.Tier2, GraphicsTier.Tier3};
 
         public bool PlayerSettingsAccelerometerFrequency()
         {
