@@ -1,9 +1,10 @@
+using System;
 using System.Linq;
 using UnityEditor.IMGUI.Controls;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    internal class IssueTableItem : TreeViewItem
+    class IssueTableItem : TreeViewItem
     {
         public readonly ProblemDescriptor ProblemDescriptor;
         public readonly ProjectIssue ProjectIssue;

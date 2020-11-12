@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -5,9 +6,9 @@ using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    internal class ProjectReportTests
+    class ProjectReportTests
     {
-        private ScriptResource m_ScriptResource;
+        ScriptResource m_ScriptResource;
 
         [OneTimeSetUp]
         public void SetUp()

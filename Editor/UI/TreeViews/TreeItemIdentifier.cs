@@ -1,8 +1,9 @@
+using System;
 using UnityEditor.IMGUI.Controls;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    internal struct TreeItemIdentifier
+    struct TreeItemIdentifier
     {
         public string nameWithIndex { get; private set; }
 
@@ -63,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        private void UpdateAssemblyNameWithIndex()
+        void UpdateAssemblyNameWithIndex()
         {
             if (index == kAll)
                 nameWithIndex = string.Format("All:{1}", index, name);
@@ -89,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
     }
 
-    internal class SelectionWindowTreeViewItem : TreeViewItem
+    class SelectionWindowTreeViewItem : TreeViewItem
     {
         public readonly TreeItemIdentifier TreeItemIdentifier;
 

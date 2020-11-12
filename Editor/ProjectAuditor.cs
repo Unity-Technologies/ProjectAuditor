@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor
         : IPreprocessBuildWithReport
 #endif
     {
-        static string m_DataPath;
+        static string s_DataPath;
 
         readonly List<IAuditor> m_Auditors = new List<IAuditor>();
 
@@ -63,18 +63,18 @@ namespace Unity.ProjectAuditor.Editor
             {
                 var instance = Activator.CreateInstance(type) as IAuditor;
                 instance.Initialize(config);
-                instance.Reload(dataPath);
+                instance.Reload(DataPath);
                 m_Auditors.Add(instance);
             }
         }
 
         public ProjectAuditorConfig config { get; set; }
 
-        static string dataPath
+        static string DataPath
         {
             get
             {
-                if (string.IsNullOrEmpty(m_DataPath))
+                if (string.IsNullOrEmpty(s_DataPath))
                 {
                     const string path = "Packages/com.unity.project-auditor/Data";
                     if (!File.Exists(Path.GetFullPath(path)))
@@ -85,11 +85,11 @@ namespace Unity.ProjectAuditor.Editor
 
                         if (string.IsNullOrEmpty(apiDatabasePath))
                             throw new Exception("Could not find ApiDatabase.json");
-                        m_DataPath = apiDatabasePath.Substring(0, apiDatabasePath.IndexOf("/ApiDatabase.json"));
+                        s_DataPath = apiDatabasePath.Substring(0, apiDatabasePath.IndexOf("/ApiDatabase.json"));
                     }
                 }
 
-                return m_DataPath;
+                return s_DataPath;
             }
         }
 
@@ -103,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor
             var projectReport = new ProjectReport();
             var completed = false;
 
-            Audit(projectReport.AddIssue, (_completed) => { completed = _completed; }, progressBar);
+            Audit(projectReport.AddIssue, _completed => { completed = _completed; }, progressBar);
 
             while (!completed)
                 Thread.Sleep(50);
@@ -131,6 +131,7 @@ namespace Unity.ProjectAuditor.Editor
                     onUpdate(false);
 
                     numAuditors--;
+
                     // check if all auditors completed
                     if (numAuditors == 0)
                     {
@@ -142,6 +143,7 @@ namespace Unity.ProjectAuditor.Editor
                     }
                 }, progressBar);
             }
+
             Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
         }
 
@@ -163,7 +165,10 @@ namespace Unity.ProjectAuditor.Editor
         }
 
 #if UNITY_2018_1_OR_NEWER
-        public int callbackOrder { get { return 0; } }
+        public int callbackOrder
+        {
+            get { return 0; }
+        }
 
         public void OnPreprocessBuild(BuildReport report)
         {

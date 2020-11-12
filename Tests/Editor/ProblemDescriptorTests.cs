@@ -1,9 +1,10 @@
+using System;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    internal class ProblemDescriptorTests
+    class ProblemDescriptorTests
     {
         [Test]
         public void ProblemDescriptorsAreEqual()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// If enabled, ProjectAuditor will log statistics about analysis time.
         /// </summary>
-        public bool LogTimingsInfo = false;
+        public bool LogTimingsInfo;
 
         readonly List<Rule> m_Rules = new List<Rule>();
 

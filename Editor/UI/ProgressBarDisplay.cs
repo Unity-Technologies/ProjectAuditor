@@ -1,14 +1,15 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    internal class ProgressBarDisplay : IProgressBar
+    class ProgressBarDisplay : IProgressBar
     {
-        private int m_Current;
-        private string m_Description;
-        private string m_Title;
-        private int m_Total;
+        int m_Current;
+        string m_Description;
+        string m_Title;
+        int m_Total;
 
         public void AdvanceProgressBar(string description = "")
         {

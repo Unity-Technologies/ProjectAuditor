@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -7,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     class AllocationAnalyzer : IInstructionAnalyzer
     {
-        static readonly ProblemDescriptor s_ObjectAllocationDescriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor k_ObjectAllocationDescriptor = new ProblemDescriptor
             (
             102002,
             "Object Allocation (experimental)",
@@ -16,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Try to avoid allocating objects in frequently-updated code."
             );
 
-        static readonly ProblemDescriptor s_ArrayAllocationDescriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor k_ArrayAllocationDescriptor = new ProblemDescriptor
             (
             102003,
             "Array Allocation (experimental)",
@@ -27,8 +28,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public void Initialize(IAuditor auditor)
         {
-            auditor.RegisterDescriptor(s_ObjectAllocationDescriptor);
-            auditor.RegisterDescriptor(s_ArrayAllocationDescriptor);
+            auditor.RegisterDescriptor(k_ObjectAllocationDescriptor);
+            auditor.RegisterDescriptor(k_ArrayAllocationDescriptor);
         }
 
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
@@ -40,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 if (typeReference.IsValueType)
                     return null;
 
-                var descriptor = s_ObjectAllocationDescriptor;
+                var descriptor = k_ObjectAllocationDescriptor;
                 var description = string.Format("'{0}' object allocation", typeReference.Name);
 
                 var calleeNode = new CallTreeNode(methodDefinition);
@@ -56,7 +57,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             else // OpCodes.Newarr
             {
                 var typeReference = (TypeReference)inst.Operand;
-                var descriptor = s_ArrayAllocationDescriptor;
+                var descriptor = k_ArrayAllocationDescriptor;
                 var description = string.Format("'{0}' array allocation", typeReference.Name);
 
                 var calleeNode = new CallTreeNode(methodDefinition);

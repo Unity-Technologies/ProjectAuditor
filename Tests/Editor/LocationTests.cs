@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;

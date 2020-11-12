@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -9,7 +8,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    internal class IssueTable : TreeView
+    class IssueTable : TreeView
     {
         public enum Column
         {
@@ -24,18 +23,18 @@ namespace Unity.ProjectAuditor.Editor.UI
             Count
         }
 
-        private static readonly string PerfCriticalIconName = "console.warnicon";
+        static readonly string PerfCriticalIconName = "console.warnicon";
 
-        private readonly ProjectAuditorConfig m_Config;
-        private readonly Preferences m_Preferences;
-        private readonly AnalysisViewDescriptor m_Desc;
-        private readonly IProjectIssueFilter m_Filter;
-        private readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
+        readonly ProjectAuditorConfig m_Config;
+        readonly Preferences m_Preferences;
+        readonly AnalysisViewDescriptor m_Desc;
+        readonly IProjectIssueFilter m_Filter;
+        readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
 
-        private List<IssueTableItem> m_TreeViewItemGroups;
-        private IssueTableItem[] m_TreeViewItemIssues;
-        private int m_NextId;
-        private int m_NumMatchingIssues;
+        List<IssueTableItem> m_TreeViewItemGroups;
+        IssueTableItem[] m_TreeViewItemIssues;
+        int m_NextId;
+        int m_NumMatchingIssues;
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
                           AnalysisViewDescriptor desc, ProjectAuditorConfig config,
@@ -134,7 +133,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             Profiler.BeginSample("IssueTable.BuildRows");
-            if (m_Desc.groupByDescription && !this.hasSearch)
+            if (m_Desc.groupByDescription && !hasSearch)
             {
                 var descriptors = filteredItems.Select(i => i.ProblemDescriptor).Distinct();
                 foreach (var descriptor in descriptors)
@@ -177,7 +176,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 CellGUI(args.GetCellRect(i), args.item, args.GetColumn(i), ref args);
         }
 
-        private void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int columnIndex, ref RowGUIArgs args)
+        void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int columnIndex, ref RowGUIArgs args)
         {
             var column = m_Desc.columnDescriptors[columnIndex];
 
@@ -332,12 +331,12 @@ namespace Unity.ProjectAuditor.Editor.UI
         protected override void SearchChanged(string newSearch)
         {
             // auto-expand groups containing selected items
-            foreach (var id in this.state.selectedIDs)
+            foreach (var id in state.selectedIDs)
             {
                 var item = m_TreeViewItemIssues.FirstOrDefault(issue => issue.id == id && issue.parent != null);
-                if (item != null && !this.state.expandedIDs.Contains(item.parent.id))
+                if (item != null && !state.expandedIDs.Contains(item.parent.id))
                 {
-                    this.state.expandedIDs.Add(item.parent.id);
+                    state.expandedIDs.Add(item.parent.id);
                 }
             }
         }
@@ -355,12 +354,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             return new IssueTableItem[0];
         }
 
-        private void OnSortingChanged(MultiColumnHeader _multiColumnHeader)
+        void OnSortingChanged(MultiColumnHeader _multiColumnHeader)
         {
             SortIfNeeded(GetRows());
         }
 
-        private void SortIfNeeded(IList<TreeViewItem> rows)
+        void SortIfNeeded(IList<TreeViewItem> rows)
         {
             if (rows.Count <= 1) return;
 
@@ -371,7 +370,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Repaint();
         }
 
-        private void SortByMultipleColumns(IList<TreeViewItem> rows)
+        void SortByMultipleColumns(IList<TreeViewItem> rows)
         {
             var sortedColumns = multiColumnHeader.state.sortedColumns;
             if (sortedColumns.Length == 0)
@@ -418,9 +417,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         internal class ItemTree
         {
-            private readonly List<ItemTree> m_Children;
-            private readonly IssueTableItem m_Item;
-            private readonly AnalysisViewDescriptor m_ViewDescriptor;
+            readonly List<ItemTree> m_Children;
+            readonly IssueTableItem m_Item;
+            readonly AnalysisViewDescriptor m_ViewDescriptor;
 
             public ItemTree(IssueTableItem i, AnalysisViewDescriptor viewDescriptor)
             {

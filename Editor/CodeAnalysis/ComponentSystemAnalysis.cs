@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Mono.Cecil;
 using UnityEngine;
@@ -6,9 +7,9 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     static class ComponentSystemAnalysis
     {
-        static readonly int[] ClassNameHashCodes = {"Unity.Entities.ComponentSystem".GetHashCode(), "Unity.Entities.JobComponentSystem".GetHashCode()};
+        static readonly int[] k_ClassNameHashCodes = {"Unity.Entities.ComponentSystem".GetHashCode(), "Unity.Entities.JobComponentSystem".GetHashCode()};
 
-        static readonly string[] UpdateMethodNames = {"OnUpdate"};
+        static readonly string[] k_UpdateMethodNames = {"OnUpdate"};
 
         public static bool IsComponentSystem(TypeReference typeReference)
         {
@@ -16,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             {
                 var typeDefinition = typeReference.Resolve();
 
-                if (ClassNameHashCodes.FirstOrDefault(i => i == typeDefinition.FullName.GetHashCode()) != 0 &&
+                if (k_ClassNameHashCodes.FirstOrDefault(i => i == typeDefinition.FullName.GetHashCode()) != 0 &&
                     typeDefinition.Module.Name.Equals("Unity.Entities.dll"))
                     return true;
 
@@ -33,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         public static bool IsOnUpdateMethod(MethodDefinition methodDefinition)
         {
-            return UpdateMethodNames.Contains(methodDefinition.Name);
+            return k_UpdateMethodNames.Contains(methodDefinition.Name);
         }
     }
 }

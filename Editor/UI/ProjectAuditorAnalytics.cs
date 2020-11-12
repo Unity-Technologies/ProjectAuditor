@@ -7,7 +7,7 @@ using UnityEngine.Analytics;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    internal class ProjectAuditorAnalytics
+    class ProjectAuditorAnalytics
     {
         const int k_MaxEventsPerHour = 100;
         const int k_MaxEventItems = 1000;
@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         const string k_VendorKey = "unity.projectauditor";
         const string k_EventTopicName = "projectAuditorUsage";
 
-        static bool s_EnableAnalytics = false;
+        static bool s_EnableAnalytics;
 
         public static void EnableAnalytics()
         {
@@ -42,8 +42,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             ApiCalls = 100,
             ProjectSettings,
-            Assets,
-        };
+            Assets
+        }
 
         // -------------------------------------------------------------------------------------------------------------
 
@@ -283,7 +283,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         // -------------------------------------------------------------------------------------------------------------
 
-        static public bool SendUIButtonEvent(UIButton uiButton, Analytic analytic)
+        public static bool SendUIButtonEvent(UIButton uiButton, Analytic analytic)
         {
             analytic.End();
 
@@ -299,7 +299,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             return false;
         }
 
-        static public bool SendUIButtonEventWithKeyValues(UIButton uiButton, Analytic analytic, Dictionary<string, string> payload)
+        public static bool SendUIButtonEventWithKeyValues(UIButton uiButton, Analytic analytic, Dictionary<string, string> payload)
         {
             analytic.End();
 
@@ -315,7 +315,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             return false;
         }
 
-        static public bool SendUIButtonEventWithSelectionSummary(UIButton uiButton, Analytic analytic, IssueTableItem[] selectedItems)
+        public static bool SendUIButtonEventWithSelectionSummary(UIButton uiButton, Analytic analytic, IssueTableItem[] selectedItems)
         {
             analytic.End();
 
@@ -333,7 +333,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             return false;
         }
 
-        static public bool SendUIButtonEventWithAnalyzeSummary(UIButton uiButton, Analytic analytic, ProjectReport projectReport)
+        public static bool SendUIButtonEventWithAnalyzeSummary(UIButton uiButton, Analytic analytic, ProjectReport projectReport)
         {
             analytic.End();
 
@@ -354,10 +354,10 @@ namespace Unity.ProjectAuditor.Editor.UI
         // -------------------------------------------------------------------------------------------------------------
         public class Analytic
         {
-            private double m_StartTime;
-            private float m_DurationInSeconds;
-            private Int64 m_Timestamp;
-            private bool m_Blocking;
+            double m_StartTime;
+            float m_DurationInSeconds;
+            Int64 m_Timestamp;
+            bool m_Blocking;
 
             public Analytic()
             {
@@ -393,7 +393,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        static public Analytic BeginAnalytic()
+        public static Analytic BeginAnalytic()
         {
             return new Analytic();
         }

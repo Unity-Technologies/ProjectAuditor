@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using NUnit.Framework;
 
@@ -5,7 +6,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class StringConcatTests
     {
-        private ScriptResource m_ScriptResourceStringConcat;
+        ScriptResource m_ScriptResourceStringConcat;
 
         [OneTimeSetUp]
         public void SetUp()

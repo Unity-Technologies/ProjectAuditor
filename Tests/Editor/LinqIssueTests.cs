@@ -1,12 +1,13 @@
+using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    internal class LinqIssueTests
+    class LinqIssueTests
     {
-        private ScriptResource m_ScriptResource;
+        ScriptResource m_ScriptResource;
 
         [SetUp]
         public void SetUp()

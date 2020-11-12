@@ -8,7 +8,7 @@ using UnityEngine.Assertions;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    internal class MultiSelectionTable : TreeView
+    class MultiSelectionTable : TreeView
     {
         // All columns
         public enum MyColumns
@@ -26,24 +26,24 @@ namespace Unity.ProjectAuditor.Editor.UI
             GroupName
         }
 
-        private const float kRowHeights = 20f;
-        private readonly TreeItemIdentifier m_AllIdentifier;
+        const float kRowHeights = 20f;
+        readonly TreeItemIdentifier m_AllIdentifier;
 
-        private readonly string[] m_Names;
-        private readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
-        private readonly TreeViewSelection m_Selection;
+        readonly string[] m_Names;
+        readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
+        readonly TreeViewSelection m_Selection;
 
         // stephenm TODO - Sorting doesn't work in this window (or in the Thread Selection Window in Profile Analyzer that
         // this is based on). So maybe rip this all out?
         // Sort options per column
-        private readonly SortOption[] m_SortOptions =
+        readonly SortOption[] m_SortOptions =
         {
             SortOption.ItemName,
             SortOption.ItemName,
             SortOption.GroupName
         };
 
-        private GUIStyle m_ActiveLineStyle;
+        GUIStyle m_ActiveLineStyle;
 
         public MultiSelectionTable(TreeViewState state, MultiColumnHeader multicolumnHeader, string[] names,
                                    TreeViewSelection selection) : base(state, multicolumnHeader)
@@ -170,7 +170,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             return root;
         }
 
-        private void BuildRowRecursive(IList<TreeViewItem> rows, TreeViewItem item)
+        void BuildRowRecursive(IList<TreeViewItem> rows, TreeViewItem item)
         {
             if (!IsExpanded(item.id))
                 return;
@@ -184,7 +184,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        private void BuildAllRows(IList<TreeViewItem> rows, TreeViewItem rootItem)
+        void BuildAllRows(IList<TreeViewItem> rows, TreeViewItem rootItem)
         {
             rows.Clear();
             if (rootItem == null)
@@ -211,12 +211,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             return m_Rows;
         }
 
-        private void OnSortingChanged(MultiColumnHeader _multiColumnHeader)
+        void OnSortingChanged(MultiColumnHeader _multiColumnHeader)
         {
             SortIfNeeded(GetRows());
         }
 
-        private void SortIfNeeded(IList<TreeViewItem> rows)
+        void SortIfNeeded(IList<TreeViewItem> rows)
         {
             if (rows.Count <= 1) return;
 
@@ -231,7 +231,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Repaint();
         }
 
-        private string GetItemGroupName(SelectionWindowTreeViewItem item)
+        string GetItemGroupName(SelectionWindowTreeViewItem item)
         {
             var tokens = item.TreeItemIdentifier.name.Split('.');
             if (tokens.Length <= 1) return "";
@@ -239,7 +239,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             return tokens[0];
         }
 
-        private void SortByMultipleColumns()
+        void SortByMultipleColumns()
         {
             var sortedColumns = multiColumnHeader.state.sortedColumns;
 
@@ -266,7 +266,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             rootItem.children = orderedQuery.Cast<TreeViewItem>().ToList();
         }
 
-        private IOrderedEnumerable<SelectionWindowTreeViewItem> InitialOrder(
+        IOrderedEnumerable<SelectionWindowTreeViewItem> InitialOrder(
             IEnumerable<SelectionWindowTreeViewItem> myTypes, int[] history)
         {
             var sortOption = m_SortOptions[history[0]];
@@ -294,7 +294,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 CellGUI(args.GetCellRect(i), item, (MyColumns)args.GetColumn(i), ref args);
         }
 
-        private bool TreeItemSelected(TreeItemIdentifier selectedIdentifier)
+        bool TreeItemSelected(TreeItemIdentifier selectedIdentifier)
         {
             if (m_Selection.selection != null &&
                 m_Selection.selection.Count > 0 &&
@@ -356,7 +356,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             return false;
         }
 
-        private void CellGUI(Rect cellRect, SelectionWindowTreeViewItem item, MyColumns column, ref RowGUIArgs args)
+        void CellGUI(Rect cellRect, SelectionWindowTreeViewItem item, MyColumns column, ref RowGUIArgs args)
         {
             // Center cell rect vertically (makes it easier to place controls, icons etc in the cells)
             CenterRectUsingSingleLineHeight(ref cellRect);
@@ -599,7 +599,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
 
     // stephenm TODO - Can ditch this if we ditch sorting.
-    internal static class MyExtensionMethods
+    static class MyExtensionMethods
     {
         public static IOrderedEnumerable<T> Order<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector,
             bool ascending)

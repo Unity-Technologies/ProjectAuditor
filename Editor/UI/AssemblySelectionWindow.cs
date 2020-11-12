@@ -1,18 +1,19 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
-using System.Linq;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    internal class AssemblySelectionWindow : EditorWindow
+    class AssemblySelectionWindow : EditorWindow
     {
-        private MultiColumnHeaderState m_MultiColumnHeaderState;
-        private MultiSelectionTable m_MultiSelectionTable;
-        private ProjectAuditorWindow m_ProjectAuditorWindow;
-        private TreeViewState m_TreeViewState;
-        private string[] m_Names;
+        MultiColumnHeaderState m_MultiColumnHeaderState;
+        MultiSelectionTable m_MultiSelectionTable;
+        ProjectAuditorWindow m_ProjectAuditorWindow;
+        TreeViewState m_TreeViewState;
+        string[] m_Names;
 
         public static AssemblySelectionWindow Open(float screenX, float screenY,
             ProjectAuditorWindow projectAuditorWindow, TreeViewSelection selection, string[] names)
@@ -31,12 +32,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             window.Close();
         }
 
-        private void OnLostFocus()
+        void OnLostFocus()
         {
             Close();
         }
 
-        private void OnDestroy()
+        void OnDestroy()
         {
             ApplySelection();
         }
@@ -50,14 +51,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             return false;
         }
 
-        private void SetData(ProjectAuditorWindow projectAuditorWindow, TreeViewSelection selection, string[] names)
+        void SetData(ProjectAuditorWindow projectAuditorWindow, TreeViewSelection selection, string[] names)
         {
             m_Names = names;
             m_ProjectAuditorWindow = projectAuditorWindow;
             CreateTable(projectAuditorWindow, selection);
         }
 
-        private void CreateTable(ProjectAuditorWindow projectAuditorWindow, TreeViewSelection selection)
+        void CreateTable(ProjectAuditorWindow projectAuditorWindow, TreeViewSelection selection)
         {
             if (m_TreeViewState == null)
                 m_TreeViewState = new TreeViewState();
@@ -77,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_MultiSelectionTable = new MultiSelectionTable(m_TreeViewState, multiColumnHeader, m_Names, selection);
         }
 
-        private void ApplySelection()
+        void ApplySelection()
         {
             var analytic = ProjectAuditorAnalytics.BeginAnalytic();
             var selection = m_MultiSelectionTable.GetTreeViewSelection();
@@ -100,7 +101,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ProjectAuditorAnalytics.SendUIButtonEventWithKeyValues(ProjectAuditorAnalytics.UIButton.AssemblySelectApply, analytic, payload);
         }
 
-        private void OnGUI()
+        void OnGUI()
         {
             EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));
             var style = new GUIStyle(GUI.skin.label);

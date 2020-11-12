@@ -1,15 +1,16 @@
+using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    internal class AllocationTests
+    class AllocationTests
     {
-        private ScriptResource m_ScriptResourceObjectAllocation;
-        private ScriptResource m_ScriptResourceArrayAllocation;
-        private ScriptResource m_ScriptResourceMultidimensionalArrayAllocation;
-        private ScriptResource m_ScriptResourceParamsArrayAllocation;
+        ScriptResource m_ScriptResourceObjectAllocation;
+        ScriptResource m_ScriptResourceArrayAllocation;
+        ScriptResource m_ScriptResourceMultidimensionalArrayAllocation;
+        ScriptResource m_ScriptResourceParamsArrayAllocation;
 
         [OneTimeSetUp]
         public void SetUp()

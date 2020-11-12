@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -8,7 +9,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class AssemblyCompilationExceptionTests
     {
-        private ScriptResource m_ScriptResource;
+        ScriptResource m_ScriptResource;
 
         [OneTimeSetUp]
         public void SetUp()

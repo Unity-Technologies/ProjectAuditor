@@ -1,21 +1,22 @@
+using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    internal class ScriptIssueTests
+    class ScriptIssueTests
     {
-        private ScriptResource m_ScriptResource;
-        private ScriptResource m_ScriptResourceInEditorCode;
-        private ScriptResource m_ScriptResourceInPlayerCode;
-        private ScriptResource m_ScriptResourceIssueInCoroutine;
-        private ScriptResource m_ScriptResourceIssueInDelegate;
-        private ScriptResource m_ScriptResourceIssueInGenericClass;
-        private ScriptResource m_ScriptResourceIssueInMonoBehaviour;
-        private ScriptResource m_ScriptResourceIssueInNestedClass;
-        private ScriptResource m_ScriptResourceIssueInOverrideMethod;
-        private ScriptResource m_ScriptResourceIssueInVirtualMethod;
+        ScriptResource m_ScriptResource;
+        ScriptResource m_ScriptResourceInEditorCode;
+        ScriptResource m_ScriptResourceInPlayerCode;
+        ScriptResource m_ScriptResourceIssueInCoroutine;
+        ScriptResource m_ScriptResourceIssueInDelegate;
+        ScriptResource m_ScriptResourceIssueInGenericClass;
+        ScriptResource m_ScriptResourceIssueInMonoBehaviour;
+        ScriptResource m_ScriptResourceIssueInNestedClass;
+        ScriptResource m_ScriptResourceIssueInOverrideMethod;
+        ScriptResource m_ScriptResourceIssueInVirtualMethod;
 
         [OneTimeSetUp]
         public void SetUp()

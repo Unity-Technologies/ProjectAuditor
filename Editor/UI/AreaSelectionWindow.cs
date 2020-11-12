@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -5,12 +6,12 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    internal class AreaSelectionWindow : EditorWindow
+    class AreaSelectionWindow : EditorWindow
     {
-        private MultiSelectionTable m_AreaTable;
-        private MultiColumnHeaderState m_MultiColumnHeaderState;
-        private ProjectAuditorWindow m_ProjectAuditorWindow;
-        private TreeViewState m_TreeViewState;
+        MultiSelectionTable m_AreaTable;
+        MultiColumnHeaderState m_MultiColumnHeaderState;
+        ProjectAuditorWindow m_ProjectAuditorWindow;
+        TreeViewState m_TreeViewState;
 
         public static AreaSelectionWindow Open(float screenX, float screenY, ProjectAuditorWindow projectAuditorWindow,
             TreeViewSelection selection, string[] names)
@@ -29,12 +30,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             window.Close();
         }
 
-        private void OnLostFocus()
+        void OnLostFocus()
         {
             Close();
         }
 
-        private void OnDestroy()
+        void OnDestroy()
         {
             ApplySelection();
         }
@@ -48,13 +49,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             return false;
         }
 
-        private void SetData(ProjectAuditorWindow projectAuditorWindow, TreeViewSelection selection, string[] names)
+        void SetData(ProjectAuditorWindow projectAuditorWindow, TreeViewSelection selection, string[] names)
         {
             m_ProjectAuditorWindow = projectAuditorWindow;
             CreateTable(projectAuditorWindow, selection, names);
         }
 
-        private void CreateTable(ProjectAuditorWindow projectAuditorWindow, TreeViewSelection selection, string[] names)
+        void CreateTable(ProjectAuditorWindow projectAuditorWindow, TreeViewSelection selection, string[] names)
         {
             if (m_TreeViewState == null)
                 m_TreeViewState = new TreeViewState();
@@ -74,7 +75,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_AreaTable = new MultiSelectionTable(m_TreeViewState, multiColumnHeader, names, selection);
         }
 
-        private void ApplySelection()
+        void ApplySelection()
         {
             var analytic = ProjectAuditorAnalytics.BeginAnalytic();
             m_ProjectAuditorWindow.SetAreaSelection(m_AreaTable.GetTreeViewSelection());
@@ -84,7 +85,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ProjectAuditorAnalytics.SendUIButtonEventWithKeyValues(ProjectAuditorAnalytics.UIButton.AreaSelectApply, analytic, payload);
         }
 
-        private void OnGUI()
+        void OnGUI()
         {
             EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));
             var style = new GUIStyle(GUI.skin.label);

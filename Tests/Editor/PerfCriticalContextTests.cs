@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using NUnit.Framework;
 
@@ -5,11 +6,11 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class PerfCriticalContextTests
     {
-        private ScriptResource m_ScriptResourceIssueInClassInheritedFromMonoBehaviour;
-        private ScriptResource m_ScriptResourceIssueInClassMethodCalledFromMonoBehaviourUpdate;
-        private ScriptResource m_ScriptResourceIssueInMonoBehaviourUpdate;
-        private ScriptResource m_ScriptResourceIssueInSimpleClass;
-        private ScriptResource m_ScriptResourceShaderWarmupIssueIsCritical;
+        ScriptResource m_ScriptResourceIssueInClassInheritedFromMonoBehaviour;
+        ScriptResource m_ScriptResourceIssueInClassMethodCalledFromMonoBehaviourUpdate;
+        ScriptResource m_ScriptResourceIssueInMonoBehaviourUpdate;
+        ScriptResource m_ScriptResourceIssueInSimpleClass;
+        ScriptResource m_ScriptResourceShaderWarmupIssueIsCritical;
 
         [OneTimeSetUp]
         public void SetUp()

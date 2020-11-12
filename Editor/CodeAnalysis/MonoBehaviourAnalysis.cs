@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Mono.Cecil;
 using UnityEngine;
@@ -6,12 +7,12 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     static class MonoBehaviourAnalysis
     {
-        static readonly int ClassNameHashCode = "UnityEngine.MonoBehaviour".GetHashCode();
+        static readonly int k_ClassNameHashCode = "UnityEngine.MonoBehaviour".GetHashCode();
 
-        static readonly string[] MagicMethodNames =
+        static readonly string[] k_MagicMethodNames =
         {"Awake", "Start", "OnEnable", "OnDisable", "Update", "LateUpdate", "OnEnable", "FixedUpdate"};
 
-        static readonly string[] UpdateMethodNames = {"Update", "LateUpdate", "FixedUpdate"};
+        static readonly string[] k_UpdateMethodNames = {"Update", "LateUpdate", "FixedUpdate"};
 
         public static bool IsMonoBehaviour(TypeReference typeReference)
         {
@@ -19,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             {
                 var typeDefinition = typeReference.Resolve();
 
-                if (typeDefinition.FullName.GetHashCode() == ClassNameHashCode &&
+                if (typeDefinition.FullName.GetHashCode() == k_ClassNameHashCode &&
                     typeDefinition.Module.Name.Equals("UnityEngine.CoreModule.dll"))
                     return true;
 
@@ -36,12 +37,12 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         public static bool IsMonoBehaviourMagicMethod(MethodDefinition methodDefinition)
         {
-            return MagicMethodNames.Contains(methodDefinition.Name);
+            return k_MagicMethodNames.Contains(methodDefinition.Name);
         }
 
         public static bool IsMonoBehaviourUpdateMethod(MethodDefinition methodDefinition)
         {
-            return UpdateMethodNames.Contains(methodDefinition.Name);
+            return k_UpdateMethodNames.Contains(methodDefinition.Name);
         }
     }
 }

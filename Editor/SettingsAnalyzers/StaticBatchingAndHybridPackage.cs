@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using Unity.ProjectAuditor.Editor.Auditors;
 using UnityEditor;
 #if UNITY_2019_3_OR_NEWER
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
@@ -10,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
     class StaticBatchingAndHybridPackage : ISettingsAnalyzer
     {
-        static readonly ProblemDescriptor s_Descriptor = new ProblemDescriptor(
+        static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor(
             202000,
             "Player Settings: Static batching is enabled",
             Area.CPU,
@@ -20,12 +19,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
         public void Initialize(IAuditor auditor)
         {
-            auditor.RegisterDescriptor(s_Descriptor);
+            auditor.RegisterDescriptor(k_Descriptor);
         }
 
         public int GetDescriptorId()
         {
-            return s_Descriptor.id;
+            return k_Descriptor.id;
         }
 
         public ProjectIssue Analyze()
@@ -33,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 #if UNITY_2019_3_OR_NEWER
             if (PackageInfo.FindForAssetPath("Packages/com.unity.rendering.hybrid") != null && IsStaticBatchingEnabled(EditorUserBuildSettings.activeBuildTarget))
             {
-                return new ProjectIssue(s_Descriptor, s_Descriptor.description, IssueCategory.ProjectSettings);
+                return new ProjectIssue(k_Descriptor, k_Descriptor.description, IssueCategory.ProjectSettings);
             }
 #endif
             return null;

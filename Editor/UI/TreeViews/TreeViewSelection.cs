@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    internal class TreeViewSelection
+    class TreeViewSelection
     {
         public List<string> groups;
         public List<string> selection;
@@ -81,12 +82,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 if (summarize)
                 {
-                    return new string[] { "None" };
+                    return new[] { "None" };
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
 
             // Count all items in a group
@@ -133,7 +132,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             // If we've just added all the item names we have everything selected
             // Note we don't compare against the names array directly as this contains the 'all' versions
             if (summarize && selectedCount == dict.Keys.Count)
-                return new string[] { "All" };
+                return new[] { "All" };
 
             // Add all the individual items were we haven't already added the group
             var individualItems = new List<string>();
@@ -157,7 +156,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             return individualItems.ToArray();
         }
 
-        private int CompareUINames(string a, string b)
+        int CompareUINames(string a, string b)
         {
             var aTokens = a.Split(':');
             var bTokens = b.Split(':');

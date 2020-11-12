@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
@@ -6,9 +7,9 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    internal class RuleTests
+    class RuleTests
     {
-        private ScriptResource m_ScriptResource;
+        ScriptResource m_ScriptResource;
 
         [SetUp]
         public void SetUp()

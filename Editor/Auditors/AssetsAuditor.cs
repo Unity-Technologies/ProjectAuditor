@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public class AssetsAuditor : IAuditor
     {
-        static readonly ProblemDescriptor s_Descriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
             (
             302000,
             "Resources folder asset & dependencies",
@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Initialize(ProjectAuditorConfig config)
         {
-            RegisterDescriptor(s_Descriptor);
+            RegisterDescriptor(k_Descriptor);
         }
 
         public void Reload(string path)
@@ -96,7 +96,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             onIssueFound(new ProjectIssue
                 (
-                    s_Descriptor,
+                    k_Descriptor,
                     Path.GetFileNameWithoutExtension(location.Path),
                     IssueCategory.Assets,
                     location

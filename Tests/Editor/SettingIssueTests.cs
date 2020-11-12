@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
@@ -5,7 +6,7 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    internal class SettingIssueTests
+    class SettingIssueTests
     {
         [Test]
         public void SettingIssuesAreReported()

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Rendering;
@@ -10,10 +11,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
     {
         // Edit this to reflect the target platforms for your project
         // TODO - Provide an interface for this, or something
-        readonly BuildTargetGroup[] _buildTargets =
+        readonly BuildTargetGroup[] m_BuildTargets =
         {BuildTargetGroup.iOS, BuildTargetGroup.Android, BuildTargetGroup.Standalone};
 
-        readonly GraphicsTier[] _graphicsTiers = {GraphicsTier.Tier1, GraphicsTier.Tier2, GraphicsTier.Tier3};
+        readonly GraphicsTier[] m_GraphicsTiers = {GraphicsTier.Tier1, GraphicsTier.Tier2, GraphicsTier.Tier3};
 
         public bool PlayerSettingsAccelerometerFrequency()
         {
@@ -73,8 +74,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
         public bool PhysicsLayerCollisionMatrix()
         {
-            const int NUM_LAYERS = 32;
-            for (var i = 0; i < NUM_LAYERS; ++i)
+            const int numLayers = 32;
+            for (var i = 0; i < numLayers; ++i)
                 for (var j = 0; j < i; ++j)
                     if (Physics.GetIgnoreLayerCollision(i, j))
                         return false;
@@ -83,8 +84,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
         public bool Physics2DLayerCollisionMatrix()
         {
-            const int NUM_LAYERS = 32;
-            for (var i = 0; i < NUM_LAYERS; ++i)
+            const int numLayers = 32;
+            for (var i = 0; i < numLayers; ++i)
                 for (var j = 0; j < i; ++j)
                     if (Physics2D.GetIgnoreLayerCollision(i, j))
                         return false;
@@ -164,14 +165,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
         public bool GraphicsMixedStandardShaderQuality()
         {
-            for (var btIdx = 0; btIdx < _buildTargets.Length; ++btIdx)
+            for (var btIdx = 0; btIdx < m_BuildTargets.Length; ++btIdx)
             {
-                var ssq = EditorGraphicsSettings.GetTierSettings(_buildTargets[btIdx], _graphicsTiers[0])
+                var ssq = EditorGraphicsSettings.GetTierSettings(m_BuildTargets[btIdx], m_GraphicsTiers[0])
                     .standardShaderQuality;
-                for (var tierIdx = 0; tierIdx < _graphicsTiers.Length; ++tierIdx)
+                for (var tierIdx = 0; tierIdx < m_GraphicsTiers.Length; ++tierIdx)
                 {
                     var tierSettings =
-                        EditorGraphicsSettings.GetTierSettings(_buildTargets[btIdx], _graphicsTiers[tierIdx]);
+                        EditorGraphicsSettings.GetTierSettings(m_BuildTargets[btIdx], m_GraphicsTiers[tierIdx]);
 
                     if (tierSettings.standardShaderQuality != ssq)
                         return true;
@@ -183,11 +184,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
         public bool GraphicsUsingForwardRendering()
         {
-            for (var btIdx = 0; btIdx < _buildTargets.Length; ++btIdx)
-                for (var tierIdx = 0; tierIdx < _graphicsTiers.Length; ++tierIdx)
+            for (var btIdx = 0; btIdx < m_BuildTargets.Length; ++btIdx)
+                for (var tierIdx = 0; tierIdx < m_GraphicsTiers.Length; ++tierIdx)
                 {
                     var tierSettings =
-                        EditorGraphicsSettings.GetTierSettings(_buildTargets[btIdx], _graphicsTiers[tierIdx]);
+                        EditorGraphicsSettings.GetTierSettings(m_BuildTargets[btIdx], m_GraphicsTiers[tierIdx]);
 
                     if (tierSettings.renderingPath == RenderingPath.Forward)
                         return true;
@@ -198,11 +199,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
         public bool GraphicsUsingDeferredRendering()
         {
-            for (var btIdx = 0; btIdx < _buildTargets.Length; ++btIdx)
-                for (var tierIdx = 0; tierIdx < _graphicsTiers.Length; ++tierIdx)
+            for (var btIdx = 0; btIdx < m_BuildTargets.Length; ++btIdx)
+                for (var tierIdx = 0; tierIdx < m_GraphicsTiers.Length; ++tierIdx)
                 {
                     var tierSettings =
-                        EditorGraphicsSettings.GetTierSettings(_buildTargets[btIdx], _graphicsTiers[tierIdx]);
+                        EditorGraphicsSettings.GetTierSettings(m_BuildTargets[btIdx], m_GraphicsTiers[tierIdx]);
 
                     if (tierSettings.renderingPath == RenderingPath.DeferredShading)
                         return true;

@@ -1,15 +1,16 @@
+using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    internal class BoxingIssueTests
+    class BoxingIssueTests
     {
-        private ScriptResource m_ScriptResourceBoxingFloat;
-        private ScriptResource m_ScriptResourceBoxingGeneric;
-        private ScriptResource m_ScriptResourceBoxingGenericRefType;
-        private ScriptResource m_ScriptResourceBoxingInt;
+        ScriptResource m_ScriptResourceBoxingFloat;
+        ScriptResource m_ScriptResourceBoxingGeneric;
+        ScriptResource m_ScriptResourceBoxingGenericRefType;
+        ScriptResource m_ScriptResourceBoxingInt;
 
         [OneTimeSetUp]
         public void SetUp()

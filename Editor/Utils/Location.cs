@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
@@ -25,9 +23,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
             get
             {
-                if (string.IsNullOrEmpty(this.m_Path))
+                if (string.IsNullOrEmpty(m_Path))
                     return string.Empty;
-                return System.IO.Path.GetExtension(this.m_Path);
+                return System.IO.Path.GetExtension(m_Path);
             }
         }
 
@@ -35,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
             get
             {
-                if (string.IsNullOrEmpty(this.m_Path))
+                if (string.IsNullOrEmpty(m_Path))
                     return string.Empty;
                 return m_Path;
             }

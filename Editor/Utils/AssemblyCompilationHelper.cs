@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 var numAssemblies = assemblies.Length;
                 progressBar.Initialize("Assembly Compilation", "Compiling project scripts",
                     numAssemblies);
-                m_OnAssemblyCompilationStarted = (s) =>
+                m_OnAssemblyCompilationStarted = s =>
                 {
                     progressBar.AdvanceProgressBar(Path.GetFileName(s));
                 };

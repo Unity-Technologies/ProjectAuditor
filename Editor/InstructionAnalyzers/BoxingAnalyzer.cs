@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -7,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     class BoxingAnalyzer : IInstructionAnalyzer
     {
-        static readonly ProblemDescriptor s_Descriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
             (
             102000,
             "Boxing Allocation",
@@ -18,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public void Initialize(IAuditor auditor)
         {
-            auditor.RegisterDescriptor(s_Descriptor);
+            auditor.RegisterDescriptor(k_Descriptor);
         }
 
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
@@ -51,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
             return new ProjectIssue
             (
-                s_Descriptor,
+                k_Descriptor,
                 description,
                 IssueCategory.Code,
                 calleeNode

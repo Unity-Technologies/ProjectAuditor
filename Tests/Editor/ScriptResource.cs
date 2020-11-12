@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using NUnit.Framework;
 using UnityEngine;
@@ -6,7 +7,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class ScriptResource
     {
-        private const string TempFolder = "ProjectAuditor-Temp";
+        const string TempFolder = "ProjectAuditor-Temp";
 
         public ScriptResource(string scriptName, string content)
         {

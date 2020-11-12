@@ -1,9 +1,10 @@
+using System;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    internal class ProjectIssueTests
+    class ProjectIssueTests
     {
         ProblemDescriptor s_Descriptor = new ProblemDescriptor
             (
@@ -28,10 +29,10 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void CustomPropertiesAreSet()
         {
-            string[] properties = new[]
+            string[] properties =
             {
                 "property #0",
-                "property #1",
+                "property #1"
             };
             var issue = new ProjectIssue(s_Descriptor, "dummy issue", IssueCategory.Code);
             issue.SetCustomProperties(properties);

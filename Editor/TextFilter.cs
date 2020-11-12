@@ -7,8 +7,8 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public class TextFilter : IProjectIssueFilter
     {
-        public bool matchCase = false;
-        public bool searchDependencies = false;
+        public bool matchCase;
+        public bool searchDependencies;
         public string searchText = string.Empty;
 
         public bool Match(ProjectIssue issue)
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor
                     return true;
             }
             if (recursive)
-                for (int i = 0; i < callTreeNode.GetNumChildren(); i++)
+                for (var i = 0; i < callTreeNode.GetNumChildren(); i++)
                 {
                     if (MatchesSearch(callTreeNode.GetChild(i), true))
                         return true;

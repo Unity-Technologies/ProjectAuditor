@@ -2,15 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
+
+#if UNITY_2019_3_OR_NEWER
+using UnityEditor.PackageManager;
+#else
+using UnityEditor;
+#endif
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
     static class AssemblyHelper
     {
-        const string BuiltInPackagesFolder = "BuiltInPackages";
+        const string k_BuiltInPackagesFolder = "BuiltInPackages";
 
         public const string DefaultAssemblyFileName = "Assembly-CSharp.dll";
         public static string DefaultAssemblyName
@@ -115,10 +120,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 {
                     assemblyInfo.relativePath = Path.Combine(folders[0], folders[1]).Replace("\\", "/");
 #if UNITY_2019_3_OR_NEWER
-                    var info =  UnityEditor.PackageManager.PackageInfo.FindForAssetPath(asmDefPath);
+                    var info =  PackageInfo.FindForAssetPath(asmDefPath);
                     if (info != null)
                     {
-                        assemblyInfo.readOnly = info.source != UnityEditor.PackageManager.PackageSource.Embedded && info.source != UnityEditor.PackageManager.PackageSource.Local;
+                        assemblyInfo.readOnly = info.source != PackageSource.Embedded && info.source != PackageSource.Local;
                     }
 #else
                     assemblyInfo.readOnly = true;
@@ -152,9 +157,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 }
                 return Path.Combine(assemblyInfo.relativePath, path.Substring(path.IndexOf(asmDefFolder)));
             }
-            if (path.Contains(BuiltInPackagesFolder))
+            if (path.Contains(k_BuiltInPackagesFolder))
             {
-                return path.Remove(0, path.IndexOf(BuiltInPackagesFolder) + BuiltInPackagesFolder.Length);
+                return path.Remove(0, path.IndexOf(k_BuiltInPackagesFolder) + k_BuiltInPackagesFolder.Length);
             }
 
             // remove Assets folder

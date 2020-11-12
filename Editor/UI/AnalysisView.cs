@@ -9,14 +9,14 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    internal struct ColumnStyle
+    struct ColumnStyle
     {
         public GUIContent Content;
         public int Width;
         public int MinWidth;
     }
 
-    internal struct AnalysisViewDescriptor
+    struct AnalysisViewDescriptor
     {
         public IssueCategory category;
         public string name;
@@ -35,14 +35,14 @@ namespace Unity.ProjectAuditor.Editor.UI
         public ProjectAuditorAnalytics.UIButton analyticsEvent;
     }
 
-    internal class AnalysisView
+    class AnalysisView
     {
-        private readonly ProjectAuditorConfig m_Config;
-        private readonly AnalysisViewDescriptor m_Desc;
-        private readonly IProjectIssueFilter m_Filter;
+        readonly ProjectAuditorConfig m_Config;
+        readonly AnalysisViewDescriptor m_Desc;
+        readonly IProjectIssueFilter m_Filter;
 
-        private DependencyView m_DependencyView;
-        private IssueTable m_Table;
+        DependencyView m_DependencyView;
+        IssueTable m_Table;
 
         public AnalysisViewDescriptor desc
         {
@@ -125,7 +125,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
         }
 
-        private static class Styles
+        static class Styles
         {
             public static readonly ColumnStyle[] Columns =
             {
@@ -133,7 +133,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     Content = new GUIContent("Issue", "Issue description"),
                     Width = 300,
-                    MinWidth = 100,
+                    MinWidth = 100
                 },
                 new ColumnStyle
                 {
@@ -151,20 +151,20 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     Content = new GUIContent("Path", "Path and line number"),
                     Width = 700,
-                    MinWidth = 100,
+                    MinWidth = 100
                 },
                 new ColumnStyle
                 {
                     Content = new GUIContent("Filename", "Managed Assembly name"),
                     Width = 180,
-                    MinWidth = 100,
+                    MinWidth = 100
                 },
                 new ColumnStyle
                 {
                     Content = new GUIContent("File Type", "File extension"),
                     Width = 80,
-                    MinWidth = 80,
-                },
+                    MinWidth = 80
+                }
             };
         }
     }

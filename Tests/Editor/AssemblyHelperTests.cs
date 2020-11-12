@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -11,7 +12,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class AssemblyHelperTests
     {
-        private ScriptResource m_ScriptResource;
+        ScriptResource m_ScriptResource;
 
         [OneTimeSetUp]
         public void SetUp()

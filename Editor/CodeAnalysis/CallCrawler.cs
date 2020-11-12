@@ -1,7 +1,8 @@
+using System;
 using System.Collections.Generic;
 using Mono.Cecil;
-using UnityEngine.Profiling;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
@@ -15,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
     class CallCrawler
     {
-        const int m_MaxDepth = 10;
+        const int k_MaxDepth = 10;
 
         readonly Dictionary<string, List<CallInfo>> m_BucketedCallPairs =
             new Dictionary<string, List<CallInfo>>();
@@ -71,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         void BuildHierarchy(CallTreeNode callee, int depth)
         {
-            if (depth++ == m_MaxDepth)
+            if (depth++ == k_MaxDepth)
                 return;
 
             // let's find all callers with matching callee

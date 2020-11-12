@@ -5,11 +5,11 @@ using UnityEditor.IMGUI.Controls;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    internal class DependencyView : TreeView
+    class DependencyView : TreeView
     {
-        private readonly Dictionary<int, DependencyNode> m_NodeDictionary = new Dictionary<int, DependencyNode>();
-        private readonly Action<Location> m_OnDoubleClick;
-        private DependencyNode m_Root;
+        readonly Dictionary<int, DependencyNode> m_NodeDictionary = new Dictionary<int, DependencyNode>();
+        readonly Action<Location> m_OnDoubleClick;
+        DependencyNode m_Root;
 
         public DependencyView(TreeViewState treeViewState, Action<Location> onDoubleClick)
             : base(treeViewState)
@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        private void AddNode(List<TreeViewItem> items, Stack<string> namesStack, DependencyNode node, int depth)
+        void AddNode(List<TreeViewItem> items, Stack<string> namesStack, DependencyNode node, int depth)
         {
             var name = node.GetPrettyName();
             if (namesStack.Contains(name))

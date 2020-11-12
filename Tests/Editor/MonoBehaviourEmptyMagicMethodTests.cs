@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
@@ -5,11 +6,11 @@ using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    internal class MonoBehaviourEmptyMagicMethodTests
+    class MonoBehaviourEmptyMagicMethodTests
     {
-        private ScriptResource m_MonoBehaviourWithEmptyMagicMethod;
-        private ScriptResource m_MonoBehaviourWithEmptyMethod;
-        private ScriptResource m_NotMonoBehaviourWithEmptyMethod;
+        ScriptResource m_MonoBehaviourWithEmptyMagicMethod;
+        ScriptResource m_MonoBehaviourWithEmptyMethod;
+        ScriptResource m_NotMonoBehaviourWithEmptyMethod;
 
         [OneTimeSetUp]
         public void SetUp()

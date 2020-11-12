@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using NUnit.Framework;
 
@@ -5,8 +6,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class InstantiateAddComponentTests
     {
-        private ScriptResource m_ScriptResourceAddComponent;
-        private ScriptResource m_ScriptResourceInstantiate;
+        ScriptResource m_ScriptResourceAddComponent;
+        ScriptResource m_ScriptResourceInstantiate;
 
         [OneTimeSetUp]
         public void SetUp()

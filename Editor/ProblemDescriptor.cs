@@ -31,9 +31,9 @@ namespace Unity.ProjectAuditor.Editor
             this.problem = problem;
             this.solution = solution;
 
-            this.type = string.Empty;
-            this.method = string.Empty;
-            this.critical = false;
+            type = string.Empty;
+            method = string.Empty;
+            critical = false;
         }
 
         public bool Equals(ProblemDescriptor other)
@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == this.GetType() && Equals((ProblemDescriptor)obj);
+            return obj.GetType() == GetType() && Equals((ProblemDescriptor)obj);
         }
 
         public override int GetHashCode()

@@ -3,7 +3,7 @@ using System;
 namespace Unity.ProjectAuditor.Editor.UI
 {
     [Serializable]
-    internal class Preferences
+    class Preferences
     {
         // foldout preferences
         public bool filters = true;
@@ -13,8 +13,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool recommendation = true;
 
         // issues preferences
-        public bool onlyCriticalIssues = false;
-        public bool mutedIssues = false;
-        public bool emptyGroups = false;
+        public bool onlyCriticalIssues;
+        public bool mutedIssues;
+        public bool emptyGroups;
     }
 }
