@@ -713,13 +713,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.BeginHorizontal();
 
-                EditorGUILayout.LabelField("Search :", GUILayout.Width(80));
+                EditorGUILayout.LabelField(Styles.TextSearchLabel, GUILayout.Width(80));
 
                 m_TextFilter.searchText = EditorGUILayout.DelayedTextField(m_TextFilter.searchText, GUILayout.Width(180));
                 m_ActiveIssueTable.searchString = m_TextFilter.searchText;
 
-                m_TextFilter.matchCase = EditorGUILayout.ToggleLeft("Match Case",
-                    m_TextFilter.matchCase, GUILayout.Width(160));
+                m_TextFilter.matchCase = EditorGUILayout.ToggleLeft(Styles.TextSearchCaseSensitive, m_TextFilter.matchCase, GUILayout.Width(160));
 
                 if (m_DeveloperMode)
                 {
@@ -1117,6 +1116,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent AreaFilterSelect =
                 new GUIContent("Select", "Select performance areas to display");
 
+            public static readonly GUIContent TextSearchLabel =
+                new GUIContent("Search : ", "Text search options");
+
+            public static readonly GUIContent TextSearchCaseSensitive =
+                new GUIContent("Match Case", "Case-sensitive search");
+
             public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore selected issues.");
             public static readonly GUIContent UnmuteButton = new GUIContent("Unmute", "Always show selected issues.");
 
@@ -1126,9 +1131,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent RecommendationFoldout =
                 new GUIContent("Recommendation", "Recommendation on how to solve the issue");
-
-            public static readonly GUIContent CallTreeFoldout =
-                new GUIContent("Inverted Call Hierarchy", "Inverted Call Hierarchy");
 
 #if UNITY_2018_1_OR_NEWER
             public static readonly GUIContent HelpButton = EditorGUIUtility.TrIconContent("_Help", "Open Manual (in a web browser)");
