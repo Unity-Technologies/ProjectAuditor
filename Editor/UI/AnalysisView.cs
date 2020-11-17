@@ -176,12 +176,15 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Table.OnGUI(r);
             Profiler.EndSample();
 
-            EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button(Styles.CollapseAllButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                SetRowsExpanded(false);
-            if (GUILayout.Button(Styles.ExpandAllButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                SetRowsExpanded(true);
-            EditorGUILayout.EndHorizontal();
+            if (m_Desc.groupByDescription)
+            {
+                EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button(Styles.CollapseAllButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    SetRowsExpanded(false);
+                if (GUILayout.Button(Styles.ExpandAllButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    SetRowsExpanded(true);
+                EditorGUILayout.EndHorizontal();
+            }
 
             var info = selectedIssues.Length + " / " + m_Table.GetNumMatchingIssues() + " issues";
             EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
