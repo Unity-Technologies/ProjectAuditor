@@ -130,23 +130,15 @@ namespace Unity.ProjectAuditor.Editor.UI
         TreeViewSelection m_AssemblySelection;
 
         // Serialized fields
-        [SerializeField]
-        int m_ActiveModeIndex;
-        [SerializeField]
-        string m_AreaSelectionSummary;
-        [SerializeField]
-        string[] m_AssemblyNames;
-        [SerializeField]
-        string m_AssemblySelectionSummary;
-        [SerializeField]
-        bool m_DeveloperMode;
-        [SerializeField]
-        ProjectReport m_ProjectReport;
-        [SerializeField]
-        TextFilter m_TextFilter;
+        [SerializeField] int m_ActiveModeIndex;
+        [SerializeField] string m_AreaSelectionSummary;
+        [SerializeField] string[] m_AssemblyNames;
+        [SerializeField] string m_AssemblySelectionSummary;
+        [SerializeField] bool m_DeveloperMode;
+        [SerializeField] ProjectReport m_ProjectReport;
+        [SerializeField] TextFilter m_TextFilter;
         [SerializeField] AnalysisState m_AnalysisState = AnalysisState.NotStarted;
-        [SerializeField]
-        Preferences m_Preferences = new Preferences();
+        [SerializeField] Preferences m_Preferences = new Preferences();
 
         AnalysisView m_ActiveAnalysisView
         {
