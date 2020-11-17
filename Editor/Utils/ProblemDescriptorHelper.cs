@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Packages.Editor.Serialize;
+using Unity.ProjectAuditor.Editor.Serialize;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {

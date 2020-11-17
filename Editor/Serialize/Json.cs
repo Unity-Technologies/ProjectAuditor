@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Packages.Editor.Serialize
+namespace Unity.ProjectAuditor.Editor.Serialize
 {
     static class Json
     {
