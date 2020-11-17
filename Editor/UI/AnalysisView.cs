@@ -122,11 +122,28 @@ namespace Unity.ProjectAuditor.Editor.UI
             var selectedIssues = selectedItems.Select(i => i.ProjectIssue).ToArray();
             var info = selectedIssues.Length + " / " + m_Table.GetNumMatchingIssues() + " issues";
 
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button(Styles.CollapseAllButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                SetRowsExpanded(false);
+            if (GUILayout.Button(Styles.ExpandAllButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                SetRowsExpanded(true);
+            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
+        }
+
+        void SetRowsExpanded(bool expanded)
+        {
+            var rows = m_Table.GetRows();
+            foreach (var row in rows)
+                m_Table.SetExpanded(row.id, expanded);
         }
 
         static class Styles
         {
+            public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All", "");
+            public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All", "");
+
             public static readonly ColumnStyle[] Columns =
             {
                 new ColumnStyle
