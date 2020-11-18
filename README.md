@@ -10,6 +10,9 @@ All versions of Unity should be compatible, however, check the Installation inst
 ### Disclaimer
 Although this project is developed by Unity employees, it is not officially supported by Unity and it is not on Unity's roadmap. Feedback and requests are more than welcome, please enter them as issues.
 
+### License
+Project Auditor is licensed under the [Unity Package Distribution License](license.md) as of November 18th 2020. Before then, the MIT license was in play.
+
 ## Installation
 Project Auditor can be installed as a package in Unity 2018+, or added to the `Assets` folder in previous versions of Unity.
 ### Unity 2018 or newer
