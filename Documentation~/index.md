@@ -15,7 +15,7 @@ Add `com.unity.project-auditor` as a dependency to the project `Packages/manifes
 ```
 {
   "dependencies": {
-    "com.unity.project-auditor": "https://git@github.com/mtrive/ProjectAuditor.git",
+    "com.unity.project-auditor": "https://github.com/Unity-Technologies/ProjectAuditor.git",
   }
 }
 ```
@@ -27,7 +27,7 @@ Clone this repository to your Unity project as follows:
 
 ```
 cd Assets
-git clone https://github.com/mtrive/ProjectAuditor.git
+git clone https://github.com/Unity-Technologies/ProjectAuditor.git
 ```
 
 <a name="UsingProjectAuditor"></a>
