@@ -57,11 +57,48 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         Content = new GUIContent("Assembly", "Managed Assembly name"),
                         Width = 300,
-                        MinWidth = 100
+                        MinWidth = 100,
+                        Format = PropertyFormat.String
                     }
                 },
                 onDoubleClick = FocusOnAssetInProjectWindow,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.Assets
+            },
+            new AnalysisViewDescriptor
+            {
+                category = IssueCategory.Shaders,
+                name = "Shaders",
+                groupByDescription = true,
+                descriptionWithIcon = true,
+                showAssemblySelection = false,
+                showCritical = false,
+                showDependencyView = false,
+                showRightPanels = false,
+                columnDescriptors = new[]
+                {
+                    IssueTable.Column.Description,
+                    IssueTable.Column.Custom,
+                    IssueTable.Column.Custom + 1,
+                },
+                costumColumnStyles = new[]
+                {
+                    new ColumnStyle
+                    {
+                        Content = new GUIContent("Platform", "Shader Compiler Platform"),
+                        Width = 80,
+                        MinWidth = 80,
+                        Format = PropertyFormat.String
+                    },
+                    new ColumnStyle
+                    {
+                        Content = new GUIContent("Keywords", "Compiled Variants Keywords"),
+                        Width = 80,
+                        MinWidth = 80,
+                        Format = PropertyFormat.String
+                    },
+                },
+                onDoubleClick = FocusOnAssetInProjectWindow,
+                analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
             },
             new AnalysisViewDescriptor
             {
@@ -88,7 +125,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         Content = new GUIContent("Assembly", "Managed Assembly name"),
                         Width = 300,
-                        MinWidth = 100
+                        MinWidth = 100,
+                        Format = PropertyFormat.String
                     }
                 },
                 onDoubleClick = OpenTextFile,
@@ -830,9 +868,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         void DrawMode()
         {
             EditorGUILayout.BeginHorizontal();
-
             var activeModeIndex = GUILayout.Toolbar(m_ActiveModeIndex, m_ModeNames,
-                GUILayout.MaxWidth(LayoutSize.ModeTabWidth), GUILayout.Height(LayoutSize.ToolbarHeight));
+                "LargeButton", GUILayout.Height(LayoutSize.ToolbarHeight));
 
             EditorGUILayout.EndHorizontal();
 
