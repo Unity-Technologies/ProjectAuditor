@@ -51,15 +51,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.FileType,
                     IssueTable.Column.Path
                 },
-                customColumnStyles = new[]
-                {
-                    new ColumnStyle
-                    {
-                        Content = new GUIContent("Assembly", "Managed Assembly name"),
-                        Width = 300,
-                        MinWidth = 100
-                    }
-                },
                 onDoubleClick = FocusOnAssetInProjectWindow,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.Assets
             },
