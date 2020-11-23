@@ -499,7 +499,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 break;
                             default:
                                 var propertyIndex = columnEnum - Column.Custom;
-                                var format = m_ViewDescriptor.costumColumnStyles[propertyIndex].Format;
+                                var format = m_ViewDescriptor.customColumnStyles[propertyIndex].Format;
                                 if (format == PropertyFormat.Integer)
                                 {
                                     int first = -999999;
