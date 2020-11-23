@@ -51,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.FileType,
                     IssueTable.Column.Path
                 },
-                costumColumnStyles = new[]
+                customColumnStyles = new[]
                 {
                     new ColumnStyle
                     {
@@ -82,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.Filename,
                     IssueTable.Column.Custom
                 },
-                costumColumnStyles = new[]
+                customColumnStyles = new[]
                 {
                     new ColumnStyle
                     {

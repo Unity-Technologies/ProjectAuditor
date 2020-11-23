@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
         public IssueTable.Column[] columnDescriptors;
-        public ColumnStyle[] costumColumnStyles;
+        public ColumnStyle[] customColumnStyles;
         public Action<Location> onDoubleClick;
         public Action<ProblemDescriptor> onOpenDescriptor;
         public ProjectAuditorAnalytics.UIButton analyticsEvent;
@@ -85,7 +85,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     style = Styles.Columns[(int)columnEnum];
                 else
                 {
-                    style = m_Desc.costumColumnStyles[columnEnum - IssueTable.Column.Custom];
+                    style = m_Desc.customColumnStyles[columnEnum - IssueTable.Column.Custom];
                 }
 
                 columns[i] = new MultiColumnHeaderState.Column
