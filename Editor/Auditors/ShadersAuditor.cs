@@ -7,6 +7,7 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
@@ -82,7 +83,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     foreach (var shaderCompilerData in shaderCompilerDataContainer.Item2)
                     {
                         var shaderKeywordSet = shaderCompilerData.shaderKeywordSet.GetShaderKeywords().ToArray();
-                        var keywords = shaderKeywordSet.Select(keyword => keyword.GetKeywordName()).ToArray();
+
+                        var keywords = shaderKeywordSet.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ?  ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword)).ToArray();
                         var keywordString = String.Join(", ", keywords);
                         if (string.IsNullOrEmpty(keywordString))
                             keywordString = "<no keywords>";
