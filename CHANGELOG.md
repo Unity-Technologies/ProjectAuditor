@@ -4,7 +4,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.3.1] - 2020-10-23
+## [0.4.0-preview] - 2020-11-24
+* Added Shader variants auditing
+* Added "Collapse/Expand All" buttons
+* Refactoring and code quality improvements 
+
+## [0.3.1-preview] - 2020-10-23
 * Page up/down key bug fixes
 * Added dependencies view to Assets tab
 * Move call tree to the bottom of the window
@@ -16,7 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added CI information to documentation
 * Fixed call-tree serialization
 
-## [0.3.0] - 2020-10-07
+## [0.3.0-preview] - 2020-10-07
 * Added auditing of assets in Resources folders
 * Added shader warmup issues
 * Reorganized UI filters and mute/unmute buttons in separate foldouts
@@ -24,7 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * ExportToCSV improvements
 * Better names for project settings issues
 
-## [0.2.1] - 2020-05-22
+## [0.2.1-preview] - 2020-05-22
 * Improved text search UX
 * Improved test coverage
 * Fixed background assembly analysis
@@ -33,7 +38,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Fixed Yamato configuration
 * Updated documentation
 
-## [0.2.0] - 2020-04-27
+## [0.2.0-preview] - 2020-04-27
 * Added Boxing allocation analyzer
 * Added Empty *MonoBehaviour* method analyzer
 * Added *GameObject.tag* issue type to built-in analyzer
@@ -49,31 +54,31 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added profiler markers
 * Added background analysis support
 
-## [0.1.0] - 2019-11-20
+## [0.1.0-preview] - 2019-11-20
 * Added Config asset support
 * Added Mute/Unmute buttons
 * Replaced Filters checkboxes with Popups
 * Added Assembly column
 
-## [0.0.4] - 2019-10-11
+## [0.0.4-preview] - 2019-10-11
 * Added Calling Method information
 * Added Grouped view to Script issues
 * Removed "Resolved" checkboxes
 * Lots of bug fixes
 
-## [0.0.3] - 2019-09-04
+## [0.0.3-preview] - 2019-09-04
 * Fixed Unity 2017.x backwards compatibility
 * Added Progress bar
 * Added Package whitelist
 * Added Tooltips
 
-## [0.0.2] - 2019-08-22
+## [0.0.2-preview] - 2019-08-22
 
 ### First usable version
 
 *Replaced placeholder database with real issues to look for*. This version also allows the user to Resolve issues.
 
-## [0.0.1] - 2019-07-23
+## [0.0.1-preview] - 2019-07-23
 
 ### This is the first release of *Project Auditor*
 
