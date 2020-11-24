@@ -39,7 +39,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         public ColumnStyle[] customColumnStyles;
         public Action<Location> onDoubleClick;
         public Action<ProblemDescriptor> onOpenDescriptor;
-        public Action<ProjectIssue, DependencyNode> onDrawDependencies;
         public ProjectAuditorAnalytics.UIButton analyticsEvent;
     }
 
