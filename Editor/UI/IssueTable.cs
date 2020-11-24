@@ -502,10 +502,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 var format = m_ViewDescriptor.customColumnStyles[propertyIndex].Format;
                                 if (format == PropertyFormat.Integer)
                                 {
-                                    int first = -999999;
-                                    int second = -999999;
-                                    int.TryParse(firstItem.ProjectIssue.GetCustomProperty(propertyIndex), out first);
-                                    int.TryParse(secondItem.ProjectIssue.GetCustomProperty(propertyIndex), out second);
+                                    int first;
+                                    int second;
+                                    if (!int.TryParse(firstItem.ProjectIssue.GetCustomProperty(propertyIndex), out first))
+                                        first = -999999;
+                                    if (int.TryParse(secondItem.ProjectIssue.GetCustomProperty(propertyIndex), out second))
+                                        second = -999999;
                                     return first - second;
                                 }
 

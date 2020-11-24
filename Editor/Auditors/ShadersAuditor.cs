@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.Rendering;
-using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
@@ -19,6 +16,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         , IPreprocessBuildWithReport
 #endif
     {
+        const int k_ShaderVariantFirstId = 400000;
         static List<Tuple<string, IList<ShaderCompilerData>>> s_ShaderCompilerData;
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
@@ -40,13 +38,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
-            var id = 400000;
+            var id = k_ShaderVariantFirstId;
             if (s_ShaderCompilerData == null)
             {
                 var descriptor = new ProblemDescriptor
                     (
                     id,
-                    "Analysis incomplete",
+                    "Shader analysis incomplete",
                     Area.BuildSize,
                     string.Empty,
                     string.Empty
@@ -54,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
                 var message = "Build the project and run Project Auditor analysis";
 #if !UNITY_2018_1_OR_NEWER
-                message = "Shader Auditing requires Unity 2018";
+                message = "This feature requires Unity 2018";
 #endif
                 var issue = new ProjectIssue(descriptor, message, IssueCategory.Shaders);
                 issue.SetCustomProperties(new[] { string.Empty, string.Empty});
@@ -77,15 +75,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         id++,
                         shader.name,
                         Area.BuildSize,
-                        "",
-                        ""
+                        string.Empty,
+                        string.Empty
                         );
 
                     foreach (var shaderCompilerData in shaderCompilerDataContainer.Item2)
                     {
                         var shaderKeywordSet = shaderCompilerData.shaderKeywordSet.GetShaderKeywords().ToArray();
                         var keywords = shaderKeywordSet.Select(keyword => keyword.GetKeywordName()).ToArray();
-//                        var names = shaderKeywordSet.Select(keyword => keyword.GetName());
                         var keywordString = String.Join(", ", keywords);
                         if (string.IsNullOrEmpty(keywordString))
                             keywordString = "<no keywords>";
