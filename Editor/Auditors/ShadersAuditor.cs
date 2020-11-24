@@ -12,13 +12,14 @@ using UnityEngine.Rendering;
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public class ShadersAuditor : IAuditor
-#if UNITY_2018_1_OR_NEWER
+#if UNITY_2018_2_OR_NEWER
         , IPreprocessShaders
         , IPreprocessBuildWithReport
 #endif
     {
         const int k_ShaderVariantFirstId = 400000;
-        static List<Tuple<string, IList<ShaderCompilerData>>> s_ShaderCompilerData;
+
+        static Dictionary<string, List<ShaderCompilerData>> s_ShaderCompilerData;
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -52,7 +53,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     );
 
                 var message = "Build the project and run Project Auditor analysis";
-#if !UNITY_2018_1_OR_NEWER
+#if !UNITY_2018_2_OR_NEWER
                 message = "This feature requires Unity 2018";
 #endif
                 var issue = new ProjectIssue(descriptor, message, IssueCategory.Shaders);
@@ -68,7 +69,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 var shader = AssetDatabase.LoadMainAssetAtPath(assetPath) as Shader;
 
-                var shaderCompilerDataContainer = s_ShaderCompilerData.FirstOrDefault(entry => entry.Item1.Equals(shader.name));
+                List<ShaderCompilerData> shaderCompilerDataContainer;
+                s_ShaderCompilerData.TryGetValue(shader.name, out shaderCompilerDataContainer);
                 if (shaderCompilerDataContainer != null)
                 {
                     var descriptor = new ProblemDescriptor
@@ -80,11 +82,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         string.Empty
                         );
 
-                    foreach (var shaderCompilerData in shaderCompilerDataContainer.Item2)
+                    foreach (var shaderCompilerData in shaderCompilerDataContainer)
                     {
                         var shaderKeywordSet = shaderCompilerData.shaderKeywordSet.GetShaderKeywords().ToArray();
 
+#if UNITY_2019_3_OR_NEWER
                         var keywords = shaderKeywordSet.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ?  ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword)).ToArray();
+#else
+                        var keywords = shaderKeywordSet.Select(keyword => keyword.GetKeywordName()).ToArray();
+#endif
                         var keywordString = String.Join(", ", keywords);
                         if (string.IsNullOrEmpty(keywordString))
                             keywordString = "<no keywords>";
@@ -109,7 +115,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public int callbackOrder { get { return 0; } }
         public void OnPreprocessBuild(BuildReport report)
         {
-            s_ShaderCompilerData = new List<Tuple<string, IList<ShaderCompilerData>>>();
+            s_ShaderCompilerData = new Dictionary<string, List<ShaderCompilerData>>();
         }
 
         public void OnProcessShader(Shader shader, ShaderSnippetData snippet, IList<ShaderCompilerData> data)
@@ -117,7 +123,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (snippet.shaderType != ShaderType.Fragment)
                 return;
 
-            s_ShaderCompilerData.Add(new Tuple<string, IList<ShaderCompilerData>>(shader.name, data));
+            var shaderName = shader.name;
+
+            if (!s_ShaderCompilerData.ContainsKey(shaderName))
+            {
+                s_ShaderCompilerData.Add(shaderName, new List<ShaderCompilerData>());
+            }
+            s_ShaderCompilerData[shaderName].AddRange(data);
         }
 
 #endif
