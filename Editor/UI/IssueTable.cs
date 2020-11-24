@@ -240,7 +240,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             var guiContent = new GUIContent(text, tooltip);
 
 #if UNITY_2018_3_OR_NEWER
-                            if (m_Desc.descriptionWithIcon)
+                            if (m_Desc.descriptionWithIcon && issue.location != null)
                             {
                                 var icon = AssetDatabase.GetCachedIcon(issue.location.Path);
                                 guiContent = EditorGUIUtility.TrTextContentWithIcon(text, tooltip, icon);
@@ -459,8 +459,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                             secondItem = a.m_Item;
                         }
 
-                        string firstString;
-                        string secondString;
+                        var firstString = String.Empty;
+                        var secondString = String.Empty;
+
                         var columnEnum = m_ViewDescriptor.columnDescriptors[columnSortOrder[i]];
                         switch (columnEnum)
                         {
@@ -498,12 +499,25 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 break;
                             default:
                                 var propertyIndex = columnEnum - Column.Custom;
+                                var format = m_ViewDescriptor.customColumnStyles[propertyIndex].Format;
+                                if (format == PropertyFormat.Integer)
+                                {
+                                    int first;
+                                    int second;
+                                    if (!int.TryParse(firstItem.ProjectIssue.GetCustomProperty(propertyIndex), out first))
+                                        first = -999999;
+                                    if (int.TryParse(secondItem.ProjectIssue.GetCustomProperty(propertyIndex), out second))
+                                        second = -999999;
+                                    return first - second;
+                                }
+
                                 firstString = firstItem.ProjectIssue != null
                                     ? firstItem.ProjectIssue.GetCustomProperty(propertyIndex)
                                     : string.Empty;
                                 secondString = secondItem.ProjectIssue != null
                                     ? secondItem.ProjectIssue.GetCustomProperty(propertyIndex)
                                     : string.Empty;
+
                                 break;
                         }
 

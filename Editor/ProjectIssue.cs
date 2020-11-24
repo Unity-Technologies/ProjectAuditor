@@ -44,6 +44,7 @@ namespace Unity.ProjectAuditor.Editor
     public enum IssueCategory
     {
         Assets,
+        Shaders,
         Code,
         ProjectSettings,
         NumCategories

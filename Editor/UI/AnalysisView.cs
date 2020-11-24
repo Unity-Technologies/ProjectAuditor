@@ -10,11 +10,18 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
+    enum PropertyFormat
+    {
+        String = 0,
+        Integer
+    }
+
     struct ColumnStyle
     {
         public GUIContent Content;
         public int Width;
         public int MinWidth;
+        public PropertyFormat Format;
     }
 
     struct AnalysisViewDescriptor
@@ -305,37 +312,43 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     Content = new GUIContent("Issue", "Issue description"),
                     Width = 300,
-                    MinWidth = 100
+                    MinWidth = 100,
+                    Format = PropertyFormat.String
                 },
                 new ColumnStyle
                 {
                     Content = new GUIContent(" ! ", "Issue priority"),
                     Width = 22,
-                    MinWidth = 22
+                    MinWidth = 22,
+                    Format = PropertyFormat.String
                 },
                 new ColumnStyle
                 {
                     Content = new GUIContent("Area", "The area the issue might have an impact on"),
                     Width = 60,
-                    MinWidth = 50
+                    MinWidth = 50,
+                    Format = PropertyFormat.String
                 },
                 new ColumnStyle
                 {
                     Content = new GUIContent("Path", "Path and line number"),
                     Width = 700,
-                    MinWidth = 100
+                    MinWidth = 100,
+                    Format = PropertyFormat.String
                 },
                 new ColumnStyle
                 {
                     Content = new GUIContent("Filename", "Managed Assembly name"),
                     Width = 180,
-                    MinWidth = 100
+                    MinWidth = 100,
+                    Format = PropertyFormat.String
                 },
                 new ColumnStyle
                 {
                     Content = new GUIContent("File Type", "File extension"),
                     Width = 80,
-                    MinWidth = 80
+                    MinWidth = 80,
+                    Format = PropertyFormat.String
                 }
             };
         }

@@ -42,7 +42,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             ApiCalls = 100,
             ProjectSettings,
-            Assets
+            Assets,
+            Shaders
         }
 
         // -------------------------------------------------------------------------------------------------------------
