@@ -82,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     new ColumnStyle
                     {
                         Content = new GUIContent("Keywords", "Compiled Variants Keywords"),
-                        Width = 80,
+                        Width = 800,
                         MinWidth = 80,
                         Format = PropertyFormat.String
                     },
