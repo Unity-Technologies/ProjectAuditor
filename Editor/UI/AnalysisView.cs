@@ -144,7 +144,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.BeginHorizontal();
 
-            DrawTable(selectedItems, selectedIssues.ToArray());
+            DrawTable(selectedIssues.ToArray());
 
             if (m_Desc.showRightPanels)
             {
@@ -172,7 +172,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        void DrawTable(IssueTableItem[] selectedItems, ProjectIssue[] selectedIssues)
+        void DrawTable(ProjectIssue[] selectedIssues)
         {
             EditorGUILayout.BeginVertical();
 
