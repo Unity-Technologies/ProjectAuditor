@@ -66,10 +66,11 @@ namespace Unity.ProjectAuditor.Editor
     public enum IssueCategory
     {
         public const Unity.ProjectAuditor.Editor.IssueCategory Assets = 0;
-        public const Unity.ProjectAuditor.Editor.IssueCategory Code = 2;
-        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 4;
-        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 3;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Code = 3;
+        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 5;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 4;
         public const Unity.ProjectAuditor.Editor.IssueCategory Shaders = 1;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariants = 2;
         public int value__;
     }
 
