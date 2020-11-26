@@ -80,7 +80,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_TreeViewItemIssues = itemsList.ToArray();
         }
 
-        public void Reset()
+        public void Clear()
         {
             m_NextId = 1;
             if (m_TreeViewItemGroups != null)

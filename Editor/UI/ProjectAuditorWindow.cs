@@ -254,8 +254,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_AnalysisViews.Clear();
             foreach (var desc in m_AnalysisViewDescriptors)
             {
-                var view = new AnalysisView(desc, m_ProjectAuditor.config, m_Preferences, this);
-                view.CreateTable(m_Preferences);
+                var view = new AnalysisView();
+                view.CreateTable(desc, m_ProjectAuditor.config, m_Preferences, this);
 
                 if (m_AnalysisState == AnalysisState.Valid)
                     view.AddIssues(m_ProjectReport.GetIssues(view.desc.category));
@@ -309,7 +309,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ProjectReport = new ProjectReport();
             foreach (var view in m_AnalysisViews)
             {
-                view.table.Reset();
+                view.Clear();
             }
 
             var newIssues = new List<ProjectIssue>();

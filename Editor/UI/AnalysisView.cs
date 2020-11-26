@@ -44,10 +44,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
     class AnalysisView
     {
-        readonly ProjectAuditorConfig m_Config;
-        readonly Preferences m_Preferences;
-        readonly AnalysisViewDescriptor m_Desc;
-        readonly IProjectIssueFilter m_Filter;
+        ProjectAuditorConfig m_Config;
+        Preferences m_Preferences;
+        AnalysisViewDescriptor m_Desc;
+        IProjectIssueFilter m_Filter;
 
         DependencyView m_DependencyView;
         IssueTable m_Table;
@@ -67,17 +67,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             get { return m_Table; }
         }
 
-        public AnalysisView(AnalysisViewDescriptor desc, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public void CreateTable(AnalysisViewDescriptor desc, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
             m_Desc = desc;
             m_Config = config;
             m_Preferences = prefs;
             m_Filter = filter;
-            m_Table = null;
-        }
 
-        public void CreateTable(Preferences prefs)
-        {
             if (m_Table != null)
                 return;
 
@@ -118,6 +114,11 @@ namespace Unity.ProjectAuditor.Editor.UI
         public void AddIssues(IEnumerable<ProjectIssue> issues)
         {
             m_Table.AddIssues(issues.Where(i => i.category == m_Desc.category).ToArray());
+        }
+
+        public void Clear()
+        {
+            m_Table.Clear();
         }
 
         public void Refresh()
