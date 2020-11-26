@@ -326,7 +326,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisViews.Add(view);
             }
 
-            if (m_AnalysisState == AnalysisState.Valid)
+            if (m_AnalysisState == AnalysisState.Valid && EditorWindow.HasOpenInstances<AnalysisWindow>())
             {
                 m_ShaderVariantsWindow = EditorWindow.GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name);
                 m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
