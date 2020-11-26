@@ -66,19 +66,19 @@ Shader ""Custom/MyTestShader""
         }
 
         [Test]
-        public void BuildIsRequired()
+        public void ShaderVariantsRequireBuild()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
             var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            var issues = projectReport.GetIssues(IssueCategory.ShaderVariants);
             issues = issues;
             Assert.Positive(issues.Length);
             Assert.True(issues.First().description.Equals("Build the project and run Project Auditor analysis"));
         }
 
         [Test]
-        public void ShaderVariantsAreReported()
+        public void ShaderAreReported()
         {
             var targetPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(targetPath);
@@ -95,6 +95,10 @@ Shader ""Custom/MyTestShader""
 
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            issues = issues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
+            Assert.AreEqual(1, issues.Length);
+
+            issues = projectReport.GetIssues(IssueCategory.ShaderVariants);
             issues = issues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
             Assert.AreEqual(42, issues.Length);
 
