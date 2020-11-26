@@ -506,7 +506,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     int second;
                                     if (!int.TryParse(firstItem.ProjectIssue.GetCustomProperty(propertyIndex), out first))
                                         first = -999999;
-                                    if (int.TryParse(secondItem.ProjectIssue.GetCustomProperty(propertyIndex), out second))
+                                    if (!int.TryParse(secondItem.ProjectIssue.GetCustomProperty(propertyIndex), out second))
                                         second = -999999;
                                     return first - second;
                                 }
