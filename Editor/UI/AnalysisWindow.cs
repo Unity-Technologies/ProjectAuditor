@@ -29,6 +29,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_AnalysisView.Refresh();
         }
 
+        public void Clear()
+        {
+            m_AnalysisView.Clear();
+        }
+
         public void OnGUI()
         {
             m_AnalysisView.OnGUI();

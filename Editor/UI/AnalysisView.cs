@@ -121,9 +121,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Table.Reload();
         }
 
-        public void Reset()
+        public void Clear()
         {
-            m_Table.Reset();
+            m_Table.Clear();
         }
 
         public void OnGUI()

@@ -386,12 +386,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ProjectReport = new ProjectReport();
             foreach (var view in m_AnalysisViews)
             {
-                view.Reset();
+                view.Clear();
             }
 
             if (m_ShaderVariantsWindow != null)
             {
-                m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                m_ShaderVariantsWindow.Clear();
             }
 
             var newIssues = new List<ProjectIssue>();
@@ -413,7 +413,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                         if (m_ShaderVariantsWindow != null)
                         {
-                            m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
+                            m_ShaderVariantsWindow.AddIssues(newIssues);
                         }
 
                         newIssues.Clear();
