@@ -72,7 +72,6 @@ Shader ""Custom/MyTestShader""
 
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.ShaderVariants);
-            issues = issues;
             Assert.Positive(issues.Length);
             Assert.True(issues.First().description.Equals("Build the project and run Project Auditor analysis"));
         }
