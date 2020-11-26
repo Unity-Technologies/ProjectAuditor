@@ -116,14 +116,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Table.AddIssues(issues.Where(i => i.category == m_Desc.category).ToArray());
         }
 
-        public void Refresh()
-        {
-            m_Table.Reload();
-        }
-
         public void Clear()
         {
             m_Table.Clear();
+        }
+
+        public void Refresh()
+        {
+            m_Table.Reload();
         }
 
         public void OnGUI()
@@ -145,7 +145,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.BeginHorizontal();
 
-            DrawTable(selectedItems, selectedIssues.ToArray());
+            DrawTable(selectedIssues.ToArray());
 
             if (m_Desc.showRightPanels)
             {
@@ -173,7 +173,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        void DrawTable(IssueTableItem[] selectedItems, ProjectIssue[] selectedIssues)
+        void DrawTable(ProjectIssue[] selectedIssues)
         {
             EditorGUILayout.BeginVertical();
 
