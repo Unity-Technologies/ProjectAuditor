@@ -51,6 +51,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.FileType,
                     IssueTable.Column.Path
                 },
+                descriptionColumnStyle = new ColumnStyle
+                {
+                    Content = new GUIContent("Asset Name", "Asset Name"),
+                    Width = 300,
+                    MinWidth = 100,
+                    Format = PropertyFormat.String
+                },
                 onDoubleClick = FocusOnAssetInProjectWindow,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.Assets
             },
@@ -72,6 +79,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.Custom + 2,
                     IssueTable.Column.Custom + 3,
                     IssueTable.Column.Custom + 4,
+                },
+                descriptionColumnStyle = new ColumnStyle
+                {
+                    Content = new GUIContent("Shader Name", "Shader Name"),
+                    Width = 300,
+                    MinWidth = 100,
+                    Format = PropertyFormat.String
                 },
                 customColumnStyles = new[]
                 {
@@ -183,6 +197,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                 IssueTable.Column.Custom,
                 IssueTable.Column.Custom + 1,
             },
+            descriptionColumnStyle = new ColumnStyle
+            {
+                Content = new GUIContent("Shader Name", "Shader Name"),
+                Width = 300,
+                MinWidth = 100,
+                Format = PropertyFormat.String
+            },
             customColumnStyles = new[]
             {
                 new ColumnStyle
@@ -203,7 +224,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             onDoubleClick = FocusOnAssetInProjectWindow,
             analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
         };
-
 
         string[] m_ModeNames;
         ProjectAuditor m_ProjectAuditor;
