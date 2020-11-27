@@ -66,8 +66,9 @@ namespace Unity.ProjectAuditor.Editor
     public enum IssueCategory
     {
         public const Unity.ProjectAuditor.Editor.IssueCategory Assets = 0;
+        public const Unity.ProjectAuditor.Editor.IssueCategory BuildFile = 5;
         public const Unity.ProjectAuditor.Editor.IssueCategory Code = 3;
-        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 5;
+        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 6;
         public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 4;
         public const Unity.ProjectAuditor.Editor.IssueCategory Shaders = 1;
         public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariants = 2;
@@ -190,6 +191,18 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public virtual void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
         public virtual void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
+        public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+        public virtual void Reload(string path);
+    }
+
+    public class BuildAuditor : Unity.ProjectAuditor.Editor.IAuditor, UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPostprocessBuildWithReport
+    {
+        public virtual int callbackOrder { get; }
+        public BuildAuditor() {}
+        public virtual void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.BuildAuditor.<GetDescriptors>d__1))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
+        public virtual void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
+        public virtual void OnPostprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
         public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
         public virtual void Reload(string path);
     }

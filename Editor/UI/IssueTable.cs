@@ -283,7 +283,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         if (issue.location.Path != string.Empty)
                         {
                             var ext = issue.location.Extension;
-                            if (issue.category == IssueCategory.Assets && ext.StartsWith("."))
+                            if (ext.StartsWith("."))
                                 ext = ext.Substring(1);
                             EditorGUI.LabelField(cellRect, new GUIContent(ext, ext));
                         }
@@ -504,9 +504,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 {
                                     int first;
                                     int second;
-                                    if (!int.TryParse(firstItem.ProjectIssue.GetCustomProperty(propertyIndex), out first))
+                                    if (firstItem.ProjectIssue == null || !int.TryParse(firstItem.ProjectIssue.GetCustomProperty(propertyIndex), out first))
                                         first = -999999;
-                                    if (!int.TryParse(secondItem.ProjectIssue.GetCustomProperty(propertyIndex), out second))
+                                    if (secondItem.ProjectIssue == null || !int.TryParse(secondItem.ProjectIssue.GetCustomProperty(propertyIndex), out second))
                                         second = -999999;
                                     return first - second;
                                 }

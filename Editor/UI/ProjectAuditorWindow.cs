@@ -164,6 +164,36 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 onDoubleClick = OpenProjectSettings,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.ProjectSettings
+            },
+            new AnalysisViewDescriptor
+            {
+                category = IssueCategory.BuildFile,
+                name = "Build",
+                groupByDescription = true,
+                descriptionWithIcon = true,
+                showAssemblySelection = false,
+                showCritical = false,
+                showDependencyView = false,
+                showRightPanels = false,
+                columnDescriptors = new[]
+                {
+                    IssueTable.Column.Description,
+                    IssueTable.Column.FileType,
+                    IssueTable.Column.Custom,
+                    IssueTable.Column.Path
+                },
+                customColumnStyles = new[]
+                {
+                    new ColumnStyle
+                    {
+                        Content = new GUIContent("Size (bytes)", "Size (bytes) in the Build"),
+                        Width = 100,
+                        MinWidth = 100,
+                        Format = PropertyFormat.Integer
+                    }
+                },
+                onDoubleClick = FocusOnAssetInProjectWindow,
+                analyticsEvent = ProjectAuditorAnalytics.UIButton.ProjectSettings
             }
         };
 

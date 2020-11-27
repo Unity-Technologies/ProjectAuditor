@@ -48,6 +48,7 @@ namespace Unity.ProjectAuditor.Editor
         ShaderVariants,
         Code,
         ProjectSettings,
+        BuildFile,
         NumCategories
     }
 
