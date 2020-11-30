@@ -134,9 +134,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     // non-package user-defined assembly
                 }
             }
-            else if (!assemblyInfo.name.Equals(DefaultAssemblyName))
+            else if (!assemblyInfo.name.StartsWith(DefaultAssemblyName))
             {
-                Debug.LogErrorFormat("AsmDef cannot be found for " + assemblyInfo.name);
+                Debug.LogErrorFormat("Assembly Definition cannot be found for " + assemblyInfo.name);
             }
 
             return assemblyInfo;
