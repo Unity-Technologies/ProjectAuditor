@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -73,7 +74,25 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             foreach (var guid in shaderGuids)
             {
                 var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+
+                // skip editor shaders
+                if (assetPath.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) != -1)
+                {
+                    continue;
+                }
+
+                // vfx shaders are not currently supported
+                if (Path.HasExtension(assetPath) && Path.GetExtension(assetPath).Equals(".vfx"))
+                {
+                    continue;
+                }
+
                 var shader = AssetDatabase.LoadMainAssetAtPath(assetPath) as Shader;
+                if (shader == null)
+                {
+                    Debug.LogWarning("Could not load " + assetPath);
+                    continue;
+                }
 
                 var descriptor = new ProblemDescriptor
                     (
