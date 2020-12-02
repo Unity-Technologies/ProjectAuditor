@@ -96,9 +96,10 @@ namespace Unity.ProjectAuditor.Editor
     {
         public const string DefaultAssetPath = Assets/Editor/ProjectAuditorConfig.asset;
         public virtual int callbackOrder { get; }
-        public Unity.ProjectAuditor.Editor.ProjectAuditorConfig config { get; set; }
+        public Unity.ProjectAuditor.Editor.ProjectAuditorConfig config { get; }
         public ProjectAuditor() {}
         public ProjectAuditor(string assetPath) {}
+        public ProjectAuditor(Unity.ProjectAuditor.Editor.ProjectAuditorConfig projectAuditorConfig) {}
         public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<bool> onUpdate, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public virtual void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
@@ -107,6 +108,7 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectAuditorConfig : UnityEngine.ScriptableObject
     {
+        public bool AnalyzeEditorCode;
         public bool AnalyzeInBackground;
         public bool AnalyzeOnBuild;
         public bool FailBuildOnIssues;

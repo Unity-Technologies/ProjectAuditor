@@ -27,17 +27,29 @@ namespace Unity.ProjectAuditor.Editor
         static string s_DataPath;
 
         readonly List<IAuditor> m_Auditors = new List<IAuditor>();
+        ProjectAuditorConfig m_Config;
 
         public const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
+
+        public ProjectAuditorConfig config
+        {
+            get { return m_Config; }
+        }
 
         public ProjectAuditor()
         {
             Init(DefaultAssetPath);
         }
 
+        public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
+        {
+            m_Config = projectAuditorConfig;
+        }
+
         /// <summary>
         /// ProjectAuditor constructor
         /// </summary>
+        /// <param name="assetPath"> Path to the ProjectAuditorConfig asset</param>
         public ProjectAuditor(string assetPath)
         {
             Init(assetPath);
@@ -45,16 +57,16 @@ namespace Unity.ProjectAuditor.Editor
 
         void Init(string assetPath)
         {
-            config = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
-            if (config == null)
+            m_Config = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
+            if (m_Config == null)
             {
                 Debug.LogWarningFormat("Project Auditor: {0} not found.", assetPath);
 
                 var path = Path.GetDirectoryName(assetPath);
                 if (!File.Exists(path))
                     Directory.CreateDirectory(path);
-                config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-                AssetDatabase.CreateAsset(config, assetPath);
+                m_Config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+                AssetDatabase.CreateAsset(m_Config, assetPath);
 
                 Debug.LogFormat("Project Auditor: {0} has been created.", assetPath);
             }
@@ -62,13 +74,11 @@ namespace Unity.ProjectAuditor.Editor
             foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<IAuditor>())
             {
                 var instance = Activator.CreateInstance(type) as IAuditor;
-                instance.Initialize(config);
+                instance.Initialize(m_Config);
                 instance.Reload(DataPath);
                 m_Auditors.Add(instance);
             }
         }
-
-        public ProjectAuditorConfig config { get; set; }
 
         static string DataPath
         {
@@ -126,7 +136,7 @@ namespace Unity.ProjectAuditor.Editor
                 var startTime = stopwatch.ElapsedMilliseconds;
                 auditor.Audit(onIssueFound, () =>
                 {
-                    if (config.LogTimingsInfo) Debug.Log(auditor.GetType().Name + " took: " + (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
+                    if (m_Config.LogTimingsInfo) Debug.Log(auditor.GetType().Name + " took: " + (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
 
                     onUpdate(false);
 
@@ -136,7 +146,7 @@ namespace Unity.ProjectAuditor.Editor
                     if (numAuditors == 0)
                     {
                         stopwatch.Stop();
-                        if (config.LogTimingsInfo)
+                        if (m_Config.LogTimingsInfo)
                             Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
 
                         onUpdate(true);
@@ -172,14 +182,14 @@ namespace Unity.ProjectAuditor.Editor
 
         public void OnPreprocessBuild(BuildReport report)
         {
-            if (config.AnalyzeOnBuild)
+            if (m_Config.AnalyzeOnBuild)
             {
                 var projectReport = Audit();
 
                 var numIssues = projectReport.NumTotalIssues;
                 if (numIssues > 0)
                 {
-                    if (config.FailBuildOnIssues)
+                    if (m_Config.FailBuildOnIssues)
                         Debug.LogError("Project Auditor found " + numIssues + " issues");
                     else
                         Debug.Log("Project Auditor found " + numIssues + " issues");
