@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class AssermblyCompilationTests
+    public class AssemblyCompilationTests
     {
         ScriptResource m_ScriptResource;
 
@@ -56,8 +56,8 @@ class MyClass
             var projectReport = projectAuditor.Audit();
 
             var issues = projectReport.GetIssues(IssueCategory.Code);
-
             var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_ScriptResource.relativePath));
+
             Assert.NotNull(codeIssue);
         }
     }
