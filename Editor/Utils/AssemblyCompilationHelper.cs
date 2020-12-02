@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public IEnumerable<AssemblyInfo> Compile(IProgressBar progressBar = null)
         {
 #if UNITY_2018_1_OR_NEWER
-            var assemblies = CompilationPipeline.GetAssemblies(AssembliesType.Player);
+            var assemblies = CompilationPipeline.GetAssemblies(AssembliesType.PlayerWithoutTestAssemblies);
 #else
             var assemblies = CompilationPipeline.GetAssemblies();
 #endif
