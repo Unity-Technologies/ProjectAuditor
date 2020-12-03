@@ -37,8 +37,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
 #if UNITY_2019_3_OR_NEWER
             var assemblies = CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.PlayerWithoutTestAssemblies);
-#elif UNITY_2018_1_OR_NEWER
+#if UNITY_2018_1_OR_NEWER
             var assemblies = CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.Player);
+#elif UNITY_2018_1_OR_NEWER
+            var assemblies = CompilationPipeline.GetAssemblies(AssembliesType.Player);
 #else
             var assemblies = CompilationPipeline.GetAssemblies();
 #endif
