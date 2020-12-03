@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #if UNITY_2018_2_OR_NEWER
             if (editorAssemblies)
             {
-                compiledAssemblyPaths = CompileEditorAssemblies(assemblies);
+                compiledAssemblyPaths = CompileEditorAssemblies(assemblies, false);
             }
             else
             {
@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
 #else
             // fallback to CompilationPipeline assemblies
-            compiledAssemblyPaths = CompileEditorAssemblies(assemblies);
+            compiledAssemblyPaths = CompileEditorAssemblies(assemblies, !editorAssemblies);
 #endif
 
             var assemblyInfos = new List<AssemblyInfo>();
@@ -72,9 +72,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return assemblyInfos;
         }
 
-        IEnumerable<string> CompileEditorAssemblies(Assembly[] assemblies)
+        IEnumerable<string> CompileEditorAssemblies(IEnumerable<Assembly> assemblies, bool excludeEditorOnlyAssemblies)
         {
-            return assemblies.Where(a => a.flags != AssemblyFlags.EditorAssembly).Select(assembly => assembly.outputPath);
+            if (excludeEditorOnlyAssemblies)
+            {
+                assemblies = assemblies.Where(a => a.flags != AssemblyFlags.EditorAssembly);
+            }
+            return assemblies.Select(assembly => assembly.outputPath);
         }
 
         IEnumerable<string> CompilePlayerAssemblies(Assembly[] assemblies, IProgressBar progressBar = null)
