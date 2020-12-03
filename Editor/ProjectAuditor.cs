@@ -38,12 +38,14 @@ namespace Unity.ProjectAuditor.Editor
 
         public ProjectAuditor()
         {
-            Init(DefaultAssetPath);
+            InitAsset(DefaultAssetPath);
+            InitAuditors();
         }
 
         public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
         {
             m_Config = projectAuditorConfig;
+            InitAuditors();
         }
 
         /// <summary>
@@ -52,10 +54,11 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="assetPath"> Path to the ProjectAuditorConfig asset</param>
         public ProjectAuditor(string assetPath)
         {
-            Init(assetPath);
+            InitAsset(assetPath);
+            InitAuditors();
         }
 
-        void Init(string assetPath)
+        void InitAsset(string assetPath)
         {
             m_Config = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
             if (m_Config == null)
@@ -70,7 +73,10 @@ namespace Unity.ProjectAuditor.Editor
 
                 Debug.LogFormat("Project Auditor: {0} has been created.", assetPath);
             }
+        }
 
+        void InitAuditors()
+        {
             foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<IAuditor>())
             {
                 var instance = Activator.CreateInstance(type) as IAuditor;
