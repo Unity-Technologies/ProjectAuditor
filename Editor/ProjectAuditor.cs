@@ -134,29 +134,32 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="progressBar"> Progress bar, if applicable </param>
         public void Audit(Action<ProjectIssue> onIssueFound, Action<bool> onUpdate, IProgressBar progressBar = null)
         {
-            var stopwatch = Stopwatch.StartNew();
-
             var numAuditors = m_Auditors.Count;
+            if (numAuditors == 0)
+            {
+                // early out if, for any reason, there are no registered Auditors
+                onUpdate(true);
+                return;
+            }
+
+            var stopwatch = Stopwatch.StartNew();
             foreach (var auditor in m_Auditors)
             {
                 var startTime = stopwatch.ElapsedMilliseconds;
                 auditor.Audit(onIssueFound, () =>
                 {
-                    if (m_Config.LogTimingsInfo) Debug.Log(auditor.GetType().Name + " took: " + (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
+                    if (m_Config.LogTimingsInfo)
+                        Debug.Log(auditor.GetType().Name + " took: " + (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
 
-                    onUpdate(false);
-
-                    numAuditors--;
-
-                    // check if all auditors completed
-                    if (numAuditors == 0)
+                    var finished = --numAuditors == 0;
+                    if (finished)
                     {
                         stopwatch.Stop();
                         if (m_Config.LogTimingsInfo)
                             Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
-
-                        onUpdate(true);
                     }
+
+                    onUpdate(finished);
                 }, progressBar);
             }
 
