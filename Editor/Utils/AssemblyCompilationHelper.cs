@@ -33,17 +33,56 @@ namespace Unity.ProjectAuditor.Editor.Utils
             m_OutputFolder = string.Empty;
         }
 
-        public IEnumerable<AssemblyInfo> Compile(IProgressBar progressBar = null)
+        public IEnumerable<AssemblyInfo> Compile(bool editorAssemblies = false, IProgressBar progressBar = null)
         {
 #if UNITY_2019_3_OR_NEWER
-            var assemblies = CompilationPipeline.GetAssemblies(AssembliesType.PlayerWithoutTestAssemblies);
+            var assemblies = CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.PlayerWithoutTestAssemblies);
 #elif UNITY_2018_1_OR_NEWER
-            var assemblies = CompilationPipeline.GetAssemblies(AssembliesType.Player);
+            var assemblies = CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.Player);
 #else
             var assemblies = CompilationPipeline.GetAssemblies();
 #endif
 
+            IEnumerable<string> compiledAssemblyPaths;
 #if UNITY_2018_2_OR_NEWER
+            if (editorAssemblies)
+            {
+                compiledAssemblyPaths = CompileEditorAssemblies(assemblies, false);
+            }
+            else
+            {
+                compiledAssemblyPaths = CompilePlayerAssemblies(assemblies, progressBar);
+            }
+#else
+            // fallback to CompilationPipeline assemblies
+            compiledAssemblyPaths = CompileEditorAssemblies(assemblies, !editorAssemblies);
+#endif
+
+            var assemblyInfos = new List<AssemblyInfo>();
+            foreach (var compiledAssemblyPath in compiledAssemblyPaths)
+            {
+                var assemblyInfo = AssemblyHelper.GetAssemblyInfoFromAssemblyPath(compiledAssemblyPath);
+                var assembly = assemblies.First(a => a.name.Equals(assemblyInfo.name));
+                var sourcePaths = assembly.sourceFiles.Select(file => file.Remove(0, assemblyInfo.relativePath.Length + 1));
+
+                assemblyInfo.sourcePaths = sourcePaths.ToArray();
+                assemblyInfos.Add(assemblyInfo);
+            }
+
+            return assemblyInfos;
+        }
+
+        IEnumerable<string> CompileEditorAssemblies(IEnumerable<Assembly> assemblies, bool excludeEditorOnlyAssemblies)
+        {
+            if (excludeEditorOnlyAssemblies)
+            {
+                assemblies = assemblies.Where(a => a.flags != AssemblyFlags.EditorAssembly);
+            }
+            return assemblies.Select(assembly => assembly.outputPath);
+        }
+
+        IEnumerable<string> CompilePlayerAssemblies(Assembly[] assemblies, IProgressBar progressBar = null)
+        {
             if (progressBar != null)
             {
                 var numAssemblies = assemblies.Length;
@@ -80,25 +119,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 throw new AssemblyCompilationException();
             }
 
-            var compiledAssemblyPaths = compilationResult.assemblies.Select(assembly => Path.Combine(m_OutputFolder, assembly));
-#else
-            // fallback to CompilationPipeline assemblies
-            var compiledAssemblyPaths = CompilationPipeline.GetAssemblies()
-                .Where(a => a.flags != AssemblyFlags.EditorAssembly).Select(assembly => assembly.outputPath);
-#endif
-
-            var assemblyInfos = new List<AssemblyInfo>();
-            foreach (var compiledAssemblyPath in compiledAssemblyPaths)
-            {
-                var assemblyInfo = AssemblyHelper.GetAssemblyInfoFromAssemblyPath(compiledAssemblyPath);
-                var assembly = assemblies.First(a => a.name.Equals(assemblyInfo.name));
-                var sourcePaths = assembly.sourceFiles.Select(file => file.Remove(0, assemblyInfo.relativePath.Length + 1));
-
-                assemblyInfo.sourcePaths = sourcePaths.ToArray();
-                assemblyInfos.Add(assemblyInfo);
-            }
-
-            return assemblyInfos;
+            return compilationResult.assemblies.Select(assembly => Path.Combine(m_OutputFolder, assembly));
         }
 
         public IEnumerable<string> GetCompiledAssemblyDirectories()

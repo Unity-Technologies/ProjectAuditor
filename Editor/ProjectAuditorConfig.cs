@@ -21,6 +21,11 @@ namespace Unity.ProjectAuditor.Editor
         public bool AnalyzeInBackground = true;
 
         /// <summary>
+        /// If enabled, Editor assemblies will be analyzed (as opposed to the currently selected platform assemblies)
+        /// </summary>
+        public bool AnalyzeEditorCode = false;
+
+        /// <summary>
         /// If enabled, any issue reported by ProjectAuditor will cause the build to fail.
         /// </summary>
         public bool FailBuildOnIssues;
