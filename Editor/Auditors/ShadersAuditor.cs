@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework.Constraints;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build;
@@ -25,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     {
         const int k_ShaderVariantFirstId = 400000;
 
-        static Dictionary<string, List<ShaderVariantData>> s_ShaderVariantData;
+        static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData;
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -63,56 +64,70 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 message = "This feature requires Unity 2018";
 #endif
                 var issue = new ProjectIssue(descriptor, message, IssueCategory.Shaders);
-                issue.SetCustomProperties(new[] { string.Empty, string.Empty});
+                issue.SetCustomProperties(new[] { string.Empty, string.Empty });
                 onIssueFound(issue);
                 onComplete();
                 return;
             }
 
+            var shaderPathMap = new Dictionary<string, string>();
             var shaderGuids = AssetDatabase.FindAssets("t:shader");
             foreach (var guid in shaderGuids)
             {
                 var assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 var shader = AssetDatabase.LoadMainAssetAtPath(assetPath) as Shader;
 
-                List<ShaderVariantData> shaderVariants;
-                s_ShaderVariantData.TryGetValue(shader.name, out shaderVariants);
-                if (shaderVariants != null)
-                {
-                    var descriptor = new ProblemDescriptor
-                        (
-                        id++,
-                        shader.name,
-                        Area.BuildSize,
-                        string.Empty,
-                        string.Empty
-                        );
+                shaderPathMap.Add(shader.name, assetPath);
+            }
 
-                    foreach (var shaderVariantData in shaderVariants)
-                    {
-                        var compilerData = shaderVariantData.compilerData;
-                        var shaderKeywordSet = compilerData.shaderKeywordSet.GetShaderKeywords().ToArray();
+            foreach (var keyPair in s_ShaderVariantData)
+            {
+                var shader = keyPair.Key;
+                var shaderVariants = keyPair.Value;
+
+                var shaderName = shader.name;
+                var descriptor = new ProblemDescriptor
+                    (
+                    id++,
+                    shaderName,
+                    Area.BuildSize,
+                    string.Empty,
+                    string.Empty
+                    );
+
+                var assetPath = string.Empty;
+                if (shaderPathMap.ContainsKey(shaderName))
+                {
+                    assetPath = shaderPathMap[shaderName];
+                }
+                else
+                {
+                    assetPath = AssetDatabase.GetAssetPath(shader);
+                }
+
+                foreach (var shaderVariantData in shaderVariants)
+                {
+                    var compilerData = shaderVariantData.compilerData;
+                    var shaderKeywordSet = compilerData.shaderKeywordSet.GetShaderKeywords().ToArray();
 
 #if UNITY_2019_3_OR_NEWER
-                        var keywords = shaderKeywordSet.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ?  ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword)).ToArray();
+                    var keywords = shaderKeywordSet.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ?  ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword)).ToArray();
 #else
-                        var keywords = shaderKeywordSet.Select(keyword => keyword.GetKeywordName()).ToArray();
+                    var keywords = shaderKeywordSet.Select(keyword => keyword.GetKeywordName()).ToArray();
 #endif
-                        var keywordString = String.Join(", ", keywords);
-                        if (string.IsNullOrEmpty(keywordString))
-                            keywordString = "<no keywords>";
+                    var keywordString = String.Join(", ", keywords);
+                    if (string.IsNullOrEmpty(keywordString))
+                        keywordString = "<no keywords>";
 
-                        var issue = new ProjectIssue(descriptor, shader.name, IssueCategory.Shaders, new Location(assetPath));
+                    var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.Shaders, new Location(assetPath));
+                    issue.SetCustomProperties(new[]
+                    {
+                        compilerData.shaderCompilerPlatform.ToString(),
+                        shaderVariantData.passName,
+                        keywordString,
+                    });
 
-                        issue.SetCustomProperties(new[]
-                        {
-                            compilerData.shaderCompilerPlatform.ToString(),
-                            shaderVariantData.passName,
-                            keywordString,
-                        });
-
-                        onIssueFound(issue);
-                    }
+                    onIssueFound(issue);
                 }
             }
 
@@ -123,7 +138,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public int callbackOrder { get { return 0; } }
         public void OnPreprocessBuild(BuildReport report)
         {
-            s_ShaderVariantData = new Dictionary<string, List<ShaderVariantData>>();
+            s_ShaderVariantData = new Dictionary<Shader, List<ShaderVariantData>>();
         }
 
         public void OnProcessShader(Shader shader, ShaderSnippetData snippet, IList<ShaderCompilerData> data)
@@ -131,16 +146,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (snippet.shaderType != ShaderType.Fragment)
                 return;
 
-            var shaderName = shader.name;
-
-            if (!s_ShaderVariantData.ContainsKey(shaderName))
+            if (!s_ShaderVariantData.ContainsKey(shader))
             {
-                s_ShaderVariantData.Add(shaderName, new List<ShaderVariantData>());
+                s_ShaderVariantData.Add(shader, new List<ShaderVariantData>());
             }
 
             foreach (var shaderCompilerData in data)
             {
-                s_ShaderVariantData[shaderName].Add(new ShaderVariantData
+                s_ShaderVariantData[shader].Add(new ShaderVariantData
                 {
                     passName =  snippet.passName,
                     compilerData = shaderCompilerData
