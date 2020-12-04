@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework.Constraints;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build;
@@ -95,13 +94,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     string.Empty
                     );
 
-                var assetPath = string.Empty;
+                string assetPath;
                 if (shaderPathMap.ContainsKey(shaderName))
                 {
                     assetPath = shaderPathMap[shaderName];
                 }
                 else
                 {
+                    // built-in shader
                     assetPath = AssetDatabase.GetAssetPath(shader);
                 }
 
