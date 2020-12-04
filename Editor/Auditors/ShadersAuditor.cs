@@ -11,6 +11,12 @@ using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
+    class ShaderVariantData
+    {
+        public string passName;
+        public ShaderCompilerData compilerData;
+    }
+
     public class ShadersAuditor : IAuditor
 #if UNITY_2018_2_OR_NEWER
         , IPreprocessShaders
@@ -19,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     {
         const int k_ShaderVariantFirstId = 400000;
 
-        static Dictionary<string, List<ShaderCompilerData>> s_ShaderCompilerData;
+        static Dictionary<string, List<ShaderVariantData>> s_ShaderVariantData;
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -41,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
             var id = k_ShaderVariantFirstId;
-            if (s_ShaderCompilerData == null)
+            if (s_ShaderVariantData == null)
             {
                 var descriptor = new ProblemDescriptor
                     (
@@ -69,9 +75,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 var shader = AssetDatabase.LoadMainAssetAtPath(assetPath) as Shader;
 
-                List<ShaderCompilerData> shaderCompilerDataContainer;
-                s_ShaderCompilerData.TryGetValue(shader.name, out shaderCompilerDataContainer);
-                if (shaderCompilerDataContainer != null)
+                List<ShaderVariantData> shaderVariants;
+                s_ShaderVariantData.TryGetValue(shader.name, out shaderVariants);
+                if (shaderVariants != null)
                 {
                     var descriptor = new ProblemDescriptor
                         (
@@ -82,9 +88,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         string.Empty
                         );
 
-                    foreach (var shaderCompilerData in shaderCompilerDataContainer)
+                    foreach (var shaderVariantData in shaderVariants)
                     {
-                        var shaderKeywordSet = shaderCompilerData.shaderKeywordSet.GetShaderKeywords().ToArray();
+                        var compilerData = shaderVariantData.compilerData;
+                        var shaderKeywordSet = compilerData.shaderKeywordSet.GetShaderKeywords().ToArray();
 
 #if UNITY_2019_3_OR_NEWER
                         var keywords = shaderKeywordSet.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ?  ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword)).ToArray();
@@ -99,7 +106,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
                         issue.SetCustomProperties(new[]
                         {
-                            shaderCompilerData.shaderCompilerPlatform.ToString(),
+                            compilerData.shaderCompilerPlatform.ToString(),
+                            shaderVariantData.passName,
                             keywordString,
                         });
 
@@ -115,7 +123,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public int callbackOrder { get { return 0; } }
         public void OnPreprocessBuild(BuildReport report)
         {
-            s_ShaderCompilerData = new Dictionary<string, List<ShaderCompilerData>>();
+            s_ShaderVariantData = new Dictionary<string, List<ShaderVariantData>>();
         }
 
         public void OnProcessShader(Shader shader, ShaderSnippetData snippet, IList<ShaderCompilerData> data)
@@ -125,11 +133,19 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var shaderName = shader.name;
 
-            if (!s_ShaderCompilerData.ContainsKey(shaderName))
+            if (!s_ShaderVariantData.ContainsKey(shaderName))
             {
-                s_ShaderCompilerData.Add(shaderName, new List<ShaderCompilerData>());
+                s_ShaderVariantData.Add(shaderName, new List<ShaderVariantData>());
             }
-            s_ShaderCompilerData[shaderName].AddRange(data);
+
+            foreach (var shaderCompilerData in data)
+            {
+                s_ShaderVariantData[shaderName].Add(new ShaderVariantData
+                {
+                    passName =  snippet.passName,
+                    compilerData = shaderCompilerData
+                });
+            }
         }
 
 #endif

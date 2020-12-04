@@ -69,12 +69,20 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.Description,
                     IssueTable.Column.Custom,
                     IssueTable.Column.Custom + 1,
+                    IssueTable.Column.Custom + 2,
                 },
                 customColumnStyles = new[]
                 {
                     new ColumnStyle
                     {
                         Content = new GUIContent("Platform", "Shader Compiler Platform"),
+                        Width = 80,
+                        MinWidth = 80,
+                        Format = PropertyFormat.String
+                    },
+                    new ColumnStyle
+                    {
+                        Content = new GUIContent("Pass Name", "Pass Name"),
                         Width = 80,
                         MinWidth = 80,
                         Format = PropertyFormat.String
