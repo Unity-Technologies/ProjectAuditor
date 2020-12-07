@@ -51,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var callCrawler = new CallCrawler();
 
             Profiler.BeginSample("ScriptAuditor.Audit.Compilation");
-            var assemblyInfos = compilationHelper.Compile(progressBar);
+            var assemblyInfos = compilationHelper.Compile(m_Config.AnalyzeEditorCode, progressBar);
             Profiler.EndSample();
 
             var issues = new List<ProjectIssue>();

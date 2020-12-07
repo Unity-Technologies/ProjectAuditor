@@ -8,6 +8,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
     class ScriptIssueTests
     {
         ScriptResource m_ScriptResource;
+        ScriptResource m_ScriptResourceInPlugin;
         ScriptResource m_ScriptResourceInEditorCode;
         ScriptResource m_ScriptResourceInPlayerCode;
         ScriptResource m_ScriptResourceIssueInCoroutine;
@@ -24,6 +25,18 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             m_ScriptResource = new ScriptResource("MyClass.cs", @"
 using UnityEngine;
 class MyClass
+{
+    void Dummy()
+    {
+        // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
+        Debug.Log(Camera.main.name);
+    }
+}
+");
+
+            m_ScriptResourceInPlugin = new ScriptResource("Plugins/MyPlugin.cs", @"
+using UnityEngine;
+class MyPlugin
 {
     void Dummy()
     {
@@ -163,6 +176,7 @@ class ClassWithDelegate
         public void TearDown()
         {
             m_ScriptResource.Delete();
+            m_ScriptResourceInPlugin.Delete();
             m_ScriptResourceInPlayerCode.Delete();
             m_ScriptResourceInEditorCode.Delete();
             m_ScriptResourceIssueInNestedClass.Delete();
@@ -197,6 +211,16 @@ class ClassWithDelegate
             Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Dummy()"));
             Assert.AreEqual(8, myIssue.line);
             Assert.AreEqual(IssueCategory.Code, myIssue.category);
+        }
+
+        [Test]
+        public void IssueInPluginIsFound()
+        {
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceInPlugin);
+
+            Assert.AreEqual(1, issues.Count());
+
+            Assert.True(issues.First().callingMethod.Equals("System.Void MyPlugin::Dummy()"));
         }
 
         [Test]
