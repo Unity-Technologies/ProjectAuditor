@@ -640,7 +640,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 bool wasShowingCritical = m_Preferences.onlyCriticalIssues;
                 m_Preferences.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
-                    m_Preferences.onlyCriticalIssues, GUILayout.Width(160));
+                    m_Preferences.onlyCriticalIssues, GUILayout.Width(180));
                 GUI.enabled = true;
 
                 if (wasShowingCritical != m_Preferences.onlyCriticalIssues)
