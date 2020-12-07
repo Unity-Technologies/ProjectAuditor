@@ -196,6 +196,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 IssueTable.Column.Description,
                 IssueTable.Column.Custom,
                 IssueTable.Column.Custom + 1,
+                IssueTable.Column.Custom + 2
             },
             descriptionColumnStyle = new ColumnStyle
             {

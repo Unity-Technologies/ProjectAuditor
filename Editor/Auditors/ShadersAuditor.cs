@@ -29,6 +29,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData;
 
+        Type m_ShaderUtilType;
+        MethodInfo m_GetShaderVariantCountMethod;
+        MethodInfo m_GetShaderGlobalKeywordsMethod;
+        MethodInfo m_GetShaderLocalKeywordsMethod;
+        MethodInfo m_HasInstancingMethod;
+
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             yield return null;
@@ -36,6 +42,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Initialize(ProjectAuditorConfig config)
         {
+            m_ShaderUtilType = typeof(ShaderUtil);
+            m_GetShaderVariantCountMethod = m_ShaderUtilType.GetMethod("GetVariantCount", BindingFlags.Static | BindingFlags.NonPublic);
+            m_GetShaderGlobalKeywordsMethod = m_ShaderUtilType.GetMethod("GetShaderGlobalKeywords", BindingFlags.Static | BindingFlags.NonPublic);
+            m_GetShaderLocalKeywordsMethod = m_ShaderUtilType.GetMethod("GetShaderLocalKeywords", BindingFlags.Static | BindingFlags.NonPublic);
+            m_HasInstancingMethod = m_ShaderUtilType.GetMethod("HasInstancing", BindingFlags.Static | BindingFlags.NonPublic);
         }
 
         public void Reload(string path)
@@ -48,15 +59,28 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
-            var shaderUtilType = typeof(ShaderUtil);
-            var getShaderVariantCountMethod = shaderUtilType.GetMethod("GetVariantCount", BindingFlags.Static | BindingFlags.NonPublic);
-            var getShaderGlobalKeywordsMethod = shaderUtilType.GetMethod("GetShaderGlobalKeywords", BindingFlags.Static | BindingFlags.NonPublic);
-            var getShaderLocalKeywordsMethod = shaderUtilType.GetMethod("GetShaderLocalKeywords", BindingFlags.Static | BindingFlags.NonPublic);
-            var hasInstancingMethod = shaderUtilType.GetMethod("HasInstancing", BindingFlags.Static | BindingFlags.NonPublic);
+            var shaderPathMap = new Dictionary<Shader, string>();
+            var shaderGuids = AssetDatabase.FindAssets("t:shader");
+            foreach (var guid in shaderGuids)
+            {
+                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                var shader = AssetDatabase.LoadMainAssetAtPath(assetPath) as Shader;
+
+                shaderPathMap.Add(shader, assetPath);
+            }
 
             var id = k_ShaderVariantFirstId;
             if (s_ShaderVariantData == null)
             {
+                foreach (var keyValuePair in shaderPathMap)
+                {
+                    var shader = keyValuePair.Key;
+                    var assetPath = keyValuePair.Value;
+
+                    var shaderName = shader.name;
+                    AddShader(shader, assetPath, id++, onIssueFound);
+                }
+
                 var descriptor = new ProblemDescriptor
                     (
                     id,
@@ -71,34 +95,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 message = "This feature requires Unity 2018";
 #endif
                 var issue = new ProjectIssue(descriptor, message, IssueCategory.ShaderVariants);
-                issue.SetCustomProperties(new[] { string.Empty, string.Empty });
+                issue.SetCustomProperties(new[] { string.Empty, string.Empty, string.Empty});
                 onIssueFound(issue);
+
+                onComplete();
+                return;
             }
 
-            var shaderGuids = AssetDatabase.FindAssets("t:shader");
-            foreach (var guid in shaderGuids)
+            foreach (var keyPair in s_ShaderVariantData)
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-
-                // skip editor shaders
-                if (assetPath.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) != -1)
-                {
-                    continue;
-                }
-
-                // vfx shaders are not currently supported
-                if (Path.HasExtension(assetPath) && Path.GetExtension(assetPath).Equals(".vfx"))
-                {
-                    continue;
-                }
-
-                var shader = AssetDatabase.LoadMainAssetAtPath(assetPath) as Shader;
-                if (shader == null)
-                List<ShaderCompilerData> shaderCompilerDataContainer;
-            }
-                if (shaderCompilerDataContainer != null)
-            {
-                }
+                var shader = keyPair.Key;
+                var shaderVariants = keyPair.Value;
                 var shaderName = shader.name;
                 var descriptor = new ProblemDescriptor
                     (
@@ -109,56 +116,49 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     string.Empty
                     );
 
-                var variantCount = (ulong)getShaderVariantCountMethod.Invoke(null, new object[] { shader, usedBySceneOnly});
-                var globalKeywords = (string[])getShaderGlobalKeywordsMethod.Invoke(null, new object[] { shader});
-                var localKeywords = (string[])getShaderLocalKeywordsMethod.Invoke(null, new object[] { shader});
-                var hasInstancing = (bool)hasInstancingMethod.Invoke(null, new object[] { shader});
                 string assetPath;
-                var issue = new ProjectIssue(descriptor, shader.name, IssueCategory.Shaders, new Location(assetPath));
+                if (shaderPathMap.ContainsKey(shader))
                 {
-                    shader.passCount.ToString(),
-                    (globalKeywords.Length + localKeywords.Length).ToString(),
-                    shader.renderQueue.ToString(),
-                    hasInstancing ? "Yes" : "No",
+                    assetPath = shaderPathMap[shader];
+                }
                 else
-                onIssueFound(issue);
-
-                if (s_ShaderCompilerData != null)
                 {
-                    List<ShaderCompilerData> shaderCompilerDataContainer;
-                    if (shaderCompilerDataContainer != null)
+                    // built-in shader
+                    assetPath = AssetDatabase.GetAssetPath(shader);
+                }
+
+                AddShader(shader, assetPath, id++, onIssueFound);
 
                 foreach (var shaderVariantData in shaderVariants)
-                    {
+                {
                     var compilerData = shaderVariantData.compilerData;
                     var shaderKeywordSet = compilerData.shaderKeywordSet.GetShaderKeywords().ToArray();
 
 #if UNITY_2019_3_OR_NEWER
-                        var keywords = shaderKeywordSet.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ?  ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword)).ToArray();
+                    var keywords = shaderKeywordSet.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ?  ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword)).ToArray();
 #else
-                        var keywords = shaderKeywordSet.Select(keyword => keyword.GetKeywordName()).ToArray();
+                    var keywords = shaderKeywordSet.Select(keyword => keyword.GetKeywordName()).ToArray();
 #endif
-                        var keywordString = String.Join(", ", keywords);
-                        if (string.IsNullOrEmpty(keywordString))
-                            keywordString = "<no keywords>";
+                    var keywordString = String.Join(", ", keywords);
+                    if (string.IsNullOrEmpty(keywordString))
+                        keywordString = "<no keywords>";
 
-                        var issue = new ProjectIssue(descriptor, shader.name, IssueCategory.Shaders, new Location(assetPath));
-                        issue.SetCustomProperties(new[]
-                        {
+                    var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariants, new Location(assetPath));
+                    issue.SetCustomProperties(new[]
+                    {
                         compilerData.shaderCompilerPlatform.ToString(),
                         shaderVariantData.passName,
-                            keywordString,
-                        });
+                        keywordString,
+                    });
 
-                        onIssueFound(issue);
-                        }
+                    onIssueFound(issue);
                 }
             }
 
             onComplete();
         }
 
-void AddShader(Shader shader, string assetPath, int id, Action<ProjectIssue> onIssueFound)
+        void AddShader(Shader shader, string assetPath, int id, Action<ProjectIssue> onIssueFound)
         {
             // skip editor shaders
             if (assetPath.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) != -1)
@@ -179,10 +179,10 @@ void AddShader(Shader shader, string assetPath, int id, Action<ProjectIssue> onI
                 );
 
             var usedBySceneOnly = false;
-            var variantCount = (ulong)getShaderVariantCountMethod.Invoke(null, new object[] { shader, usedBySceneOnly});
-            var globalKeywords = (string[])getShaderGlobalKeywordsMethod.Invoke(null, new object[] { shader});
-            var localKeywords = (string[])getShaderLocalKeywordsMethod.Invoke(null, new object[] { shader});
-            var hasInstancing = (bool)hasInstancingMethod.Invoke(null, new object[] { shader});
+            var variantCount = (ulong)m_GetShaderVariantCountMethod.Invoke(null, new object[] { shader, usedBySceneOnly});
+            var globalKeywords = (string[])m_GetShaderGlobalKeywordsMethod.Invoke(null, new object[] { shader});
+            var localKeywords = (string[])m_GetShaderLocalKeywordsMethod.Invoke(null, new object[] { shader});
+            var hasInstancing = (bool)m_HasInstancingMethod.Invoke(null, new object[] { shader});
 
             var issue = new ProjectIssue(descriptor, shader.name, IssueCategory.Shaders, new Location(assetPath));
             issue.SetCustomProperties(new[]
