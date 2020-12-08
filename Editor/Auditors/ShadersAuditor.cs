@@ -84,13 +84,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var descriptor = new ProblemDescriptor
                     (
                     id,
-                    "Shader analysis incomplete",
+                    "Shader Variants analysis incomplete",
                     Area.BuildSize,
                     string.Empty,
                     string.Empty
                     );
 
-                var message = "Build the project and run Project Auditor analysis";
+                var message = "Build the project to view the Shader Variants";
 #if !UNITY_2018_2_OR_NEWER
                 message = "This feature requires Unity 2018";
 #endif
