@@ -30,6 +30,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public string name;
         public bool groupByDescription;
         public bool descriptionWithIcon;
+        public bool showAreaSelection;
         public bool showAssemblySelection;
         public bool showCritical;
         public bool showDependencyView;

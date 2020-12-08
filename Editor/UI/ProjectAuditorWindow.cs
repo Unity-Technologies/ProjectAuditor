@@ -40,6 +40,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Assets",
                 groupByDescription = true,
                 descriptionWithIcon = true,
+                showAreaSelection = false,
                 showAssemblySelection = false,
                 showCritical = false,
                 showDependencyView = true,
@@ -60,6 +61,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Shaders",
                 groupByDescription = true,
                 descriptionWithIcon = true,
+                showAreaSelection = false,
                 showAssemblySelection = false,
                 showCritical = false,
                 showDependencyView = false,
@@ -104,6 +106,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Code",
                 groupByDescription = true,
                 descriptionWithIcon = false,
+                showAreaSelection = true,
                 showAssemblySelection = true,
                 showCritical = true,
                 showDependencyView = true,
@@ -137,6 +140,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Project Settings",
                 groupByDescription = false,
                 descriptionWithIcon = false,
+                showAreaSelection = true,
                 showAssemblySelection = false,
                 showCritical = false,
                 showDependencyView = false,
@@ -201,8 +205,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return false;
 
             Profiler.BeginSample("MatchArea");
-            var matchArea = m_AreaSelection.Contains(issue.descriptor.area) ||
-                m_AreaSelection.ContainsGroup("All");
+            var matchArea = !activeAnalysisView.desc.showAreaSelection ||
+                            m_AreaSelection.Contains(issue.descriptor.area) ||
+                            m_AreaSelection.ContainsGroup("All");
             Profiler.EndSample();
             if (!matchArea)
                 return false;
@@ -510,9 +515,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField(Styles.AssemblyFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
 
             var lastEnabled = GUI.enabled;
-
-            GUI.enabled = m_AnalysisState == AnalysisState.Valid && !AssemblySelectionWindow.IsOpen() &&
-                activeAnalysisView.desc.showAssemblySelection;
+            GUI.enabled = IsAnalysisValid() &&
+                          activeAnalysisView.desc.showAssemblySelection &&
+                          !AssemblySelectionWindow.IsOpen();
             if (GUILayout.Button(Styles.AssemblyFilterSelect, EditorStyles.miniButton,
                 GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
             {
@@ -562,8 +567,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (AreaNames.Length > 0)
             {
                 var lastEnabled = GUI.enabled;
-                // stephenm TODO - We don't currently have any sense of when the Auditor is busy and should disallow user input
-                var enabled = /*!IsAnalysisRunning() &&*/ !AreaSelectionWindow.IsOpen();
+                var enabled = IsAnalysisValid() &&
+                              activeAnalysisView.desc.showAreaSelection &&
+                              !AreaSelectionWindow.IsOpen();
                 GUI.enabled = enabled;
                 if (GUILayout.Button(Styles.AreaFilterSelect, EditorStyles.miniButton,
                     GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
