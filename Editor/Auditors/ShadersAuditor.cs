@@ -179,19 +179,42 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 );
 
             var usedBySceneOnly = false;
-            var variantCount = (ulong)m_GetShaderVariantCountMethod.Invoke(null, new object[] { shader, usedBySceneOnly});
-            var globalKeywords = (string[])m_GetShaderGlobalKeywordsMethod.Invoke(null, new object[] { shader});
-            var localKeywords = (string[])m_GetShaderLocalKeywordsMethod.Invoke(null, new object[] { shader});
-            var hasInstancing = (bool)m_HasInstancingMethod.Invoke(null, new object[] { shader});
+            const string NotAvailable = "N/A";
+            var variantCount = NotAvailable;
+            var passCount = NotAvailable;
+            var keywordCount = NotAvailable;
+            var hasInstancing = NotAvailable;
 
+            if (m_GetShaderVariantCountMethod != null)
+            {
+                var value = (ulong)m_GetShaderVariantCountMethod.Invoke(null, new object[] { shader, usedBySceneOnly});
+                variantCount = value.ToString();
+            }
+
+            if (m_GetShaderGlobalKeywordsMethod != null && m_GetShaderLocalKeywordsMethod != null)
+            {
+                var globalKeywords = (string[])m_GetShaderGlobalKeywordsMethod.Invoke(null, new object[] { shader});
+                var localKeywords = (string[])m_GetShaderLocalKeywordsMethod.Invoke(null, new object[] { shader});
+                keywordCount = (globalKeywords.Length + localKeywords.Length).ToString();
+            }
+
+            if (m_HasInstancingMethod != null)
+            {
+                var value = (bool)m_HasInstancingMethod.Invoke(null, new object[] { shader});
+                hasInstancing = value ? "Yes" : "No";
+            }
+
+#if UNITY_2019_1_OR_NEWER
+            passCount = shader.passCount.ToString();
+#endif
             var issue = new ProjectIssue(descriptor, shader.name, IssueCategory.Shaders, new Location(assetPath));
             issue.SetCustomProperties(new[]
             {
-                variantCount.ToString(),
-                shader.passCount.ToString(),
-                (globalKeywords.Length + localKeywords.Length).ToString(),
+                variantCount,
+                passCount,
+                keywordCount,
                 shader.renderQueue.ToString(),
-                hasInstancing ? "Yes" : "No",
+                hasInstancing,
             });
             onIssueFound(issue);
         }

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -31,6 +33,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
+        static ProjectAuditorWindow Instance;
 
         readonly AnalysisViewDescriptor[] m_AnalysisViewDescriptors =
         {
@@ -354,7 +357,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisViews.Add(view);
             }
 
-            if (m_AnalysisState == AnalysisState.Valid && EditorWindow.HasOpenInstances<AnalysisWindow>())
+            if (m_AnalysisState == AnalysisState.Valid)
             {
                 m_ShaderVariantsWindow = EditorWindow.GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name);
                 m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
@@ -362,6 +365,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             RefreshDisplay();
+
+            Instance = this;
         }
 
         void OnGUI()
@@ -459,6 +464,28 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 m_AnalysisState = AnalysisState.NotStarted;
                 Debug.LogError(e);
+            }
+        }
+
+        void AnalyzeShaderVariants()
+        {
+            if (m_AnalysisState == AnalysisState.Valid)
+            {
+                m_ShaderVariantsWindow = EditorWindow.GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name);
+                m_ShaderVariantsWindow.Clear();
+
+                var newIssues = new List<ProjectIssue>();
+                m_ProjectAuditor.GetAuditor<ShadersAuditor>().Audit(issue =>
+                {
+                    newIssues.Add(issue);
+                },
+                    () =>
+                    {
+                    },
+                    new ProgressBarDisplay()
+                );
+                m_ShaderVariantsWindow.AddIssues(newIssues);
+                m_ShaderVariantsWindow.Refresh();
             }
         }
 
@@ -1180,6 +1207,14 @@ To Analyze the project:
 Once the project is analyzed, the tool displays list of issues.
 At the moment there are two types of issues: API calls or Project Settings. The tool allows the user to switch between the two.
 In addition, it is possible to filter issues by area (CPU/Memory/etc...) or assembly name or search for a specific string.";
+        }
+
+
+        [PostProcessBuild(1)]
+        public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
+        {
+            if (Instance != null)
+                Instance.AnalyzeShaderVariants();
         }
     }
 }
