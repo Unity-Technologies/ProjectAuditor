@@ -97,6 +97,7 @@ namespace Unity.ProjectAuditor.Editor
         public const string DefaultAssetPath = Assets/Editor/ProjectAuditorConfig.asset;
         public virtual int callbackOrder { get; }
         public Unity.ProjectAuditor.Editor.ProjectAuditorConfig config { get; }
+        public static string DataPath { get; }
         public ProjectAuditor() {}
         public ProjectAuditor(string assetPath) {}
         public ProjectAuditor(Unity.ProjectAuditor.Editor.ProjectAuditorConfig projectAuditorConfig) {}

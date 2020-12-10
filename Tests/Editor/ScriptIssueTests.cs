@@ -7,22 +7,22 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class ScriptIssueTests
     {
-        ScriptResource m_ScriptResource;
-        ScriptResource m_ScriptResourceInPlugin;
-        ScriptResource m_ScriptResourceInEditorCode;
-        ScriptResource m_ScriptResourceInPlayerCode;
-        ScriptResource m_ScriptResourceIssueInCoroutine;
-        ScriptResource m_ScriptResourceIssueInDelegate;
-        ScriptResource m_ScriptResourceIssueInGenericClass;
-        ScriptResource m_ScriptResourceIssueInMonoBehaviour;
-        ScriptResource m_ScriptResourceIssueInNestedClass;
-        ScriptResource m_ScriptResourceIssueInOverrideMethod;
-        ScriptResource m_ScriptResourceIssueInVirtualMethod;
+        TempAsset m_TempAsset;
+        TempAsset m_TempAssetInPlugin;
+        TempAsset m_TempAssetInEditorCode;
+        TempAsset m_TempAssetInPlayerCode;
+        TempAsset m_TempAssetIssueInCoroutine;
+        TempAsset m_TempAssetIssueInDelegate;
+        TempAsset m_TempAssetIssueInGenericClass;
+        TempAsset m_TempAssetIssueInMonoBehaviour;
+        TempAsset m_TempAssetIssueInNestedClass;
+        TempAsset m_TempAssetIssueInOverrideMethod;
+        TempAsset m_TempAssetIssueInVirtualMethod;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptResource = new ScriptResource("MyClass.cs", @"
+            m_TempAsset = new TempAsset("MyClass.cs", @"
 using UnityEngine;
 class MyClass
 {
@@ -34,7 +34,7 @@ class MyClass
 }
 ");
 
-            m_ScriptResourceInPlugin = new ScriptResource("Plugins/MyPlugin.cs", @"
+            m_TempAssetInPlugin = new TempAsset("Plugins/MyPlugin.cs", @"
 using UnityEngine;
 class MyPlugin
 {
@@ -46,7 +46,7 @@ class MyPlugin
 }
 ");
 
-            m_ScriptResourceInPlayerCode = new ScriptResource("IssueInPlayerCode.cs", @"
+            m_TempAssetInPlayerCode = new TempAsset("IssueInPlayerCode.cs", @"
 using UnityEngine;
 class MyClassWithPlayerOnlyCode
 {
@@ -59,7 +59,7 @@ class MyClassWithPlayerOnlyCode
 }
 ");
 
-            m_ScriptResourceInEditorCode = new ScriptResource("IssueInEditorCode.cs", @"
+            m_TempAssetInEditorCode = new TempAsset("IssueInEditorCode.cs", @"
 using UnityEngine;
 class MyClassWithEditorOnlyCode
 {
@@ -72,7 +72,7 @@ class MyClassWithEditorOnlyCode
 }
 ");
 
-            m_ScriptResourceIssueInNestedClass = new ScriptResource("IssueInNestedClass.cs", @"
+            m_TempAssetIssueInNestedClass = new TempAsset("IssueInNestedClass.cs", @"
 using UnityEngine;
 class MyClassWithNested
 {
@@ -86,7 +86,7 @@ class MyClassWithNested
 }
 ");
 
-            m_ScriptResourceIssueInGenericClass = new ScriptResource("IssueInGenericClass.cs", @"
+            m_TempAssetIssueInGenericClass = new TempAsset("IssueInGenericClass.cs", @"
 using UnityEngine;
 class GenericClass<T>
 {
@@ -97,7 +97,7 @@ class GenericClass<T>
 }
 ");
 
-            m_ScriptResourceIssueInVirtualMethod = new ScriptResource("IssueInVirtualMethod.cs", @"
+            m_TempAssetIssueInVirtualMethod = new TempAsset("IssueInVirtualMethod.cs", @"
 using UnityEngine;
 abstract class AbstractClass
 {
@@ -108,7 +108,7 @@ abstract class AbstractClass
 }
 ");
 
-            m_ScriptResourceIssueInOverrideMethod = new ScriptResource("IssueInOverrideMethod.cs", @"
+            m_TempAssetIssueInOverrideMethod = new TempAsset("IssueInOverrideMethod.cs", @"
 using UnityEngine;
 class BaseClass
 {
@@ -125,7 +125,7 @@ class DerivedClass : BaseClass
 }
 ");
 
-            m_ScriptResourceIssueInMonoBehaviour = new ScriptResource("IssueInMonoBehaviour.cs", @"
+            m_TempAssetIssueInMonoBehaviour = new TempAsset("IssueInMonoBehaviour.cs", @"
 using UnityEngine;
 class MyMonoBehaviour : MonoBehaviour
 {
@@ -136,7 +136,7 @@ class MyMonoBehaviour : MonoBehaviour
 }
 ");
 
-            m_ScriptResourceIssueInCoroutine = new ScriptResource("IssueInCoroutine.cs", @"
+            m_TempAssetIssueInCoroutine = new TempAsset("IssueInCoroutine.cs", @"
 using UnityEngine;
 using System.Collections;
 class MyMonoBehaviourWithCoroutine : MonoBehaviour
@@ -153,7 +153,7 @@ class MyMonoBehaviourWithCoroutine : MonoBehaviour
 }
 ");
 
-            m_ScriptResourceIssueInDelegate = new ScriptResource("IssueInDelegate.cs", @"
+            m_TempAssetIssueInDelegate = new TempAsset("IssueInDelegate.cs", @"
 using UnityEngine;
 using System;
 class ClassWithDelegate
@@ -175,23 +175,13 @@ class ClassWithDelegate
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_ScriptResource.Delete();
-            m_ScriptResourceInPlugin.Delete();
-            m_ScriptResourceInPlayerCode.Delete();
-            m_ScriptResourceInEditorCode.Delete();
-            m_ScriptResourceIssueInNestedClass.Delete();
-            m_ScriptResourceIssueInGenericClass.Delete();
-            m_ScriptResourceIssueInVirtualMethod.Delete();
-            m_ScriptResourceIssueInOverrideMethod.Delete();
-            m_ScriptResourceIssueInMonoBehaviour.Delete();
-            m_ScriptResourceIssueInCoroutine.Delete();
-            m_ScriptResourceIssueInDelegate.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
         public void IssueIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResource);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAsset);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -206,7 +196,7 @@ class ClassWithDelegate
             Assert.True(myIssue.descriptor.method.Equals("main"));
 
             Assert.True(myIssue.name.Equals("Camera.get_main"));
-            Assert.True(myIssue.filename.Equals(m_ScriptResource.scriptName));
+            Assert.True(myIssue.filename.Equals(m_TempAsset.scriptName));
             Assert.True(myIssue.description.Equals("UnityEngine.Camera.main"));
             Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Dummy()"));
             Assert.AreEqual(8, myIssue.line);
@@ -216,7 +206,7 @@ class ClassWithDelegate
         [Test]
         public void IssueInPluginIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceInPlugin);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetInPlugin);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -226,7 +216,7 @@ class ClassWithDelegate
         [Test]
         public void IssueInPlayerCodeIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceInPlayerCode);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetInPlayerCode);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -236,7 +226,7 @@ class ClassWithDelegate
         [Test]
         public void IssueInEditorCodeIsNotFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceInEditorCode);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetInEditorCode);
 
             Assert.AreEqual(0, issues.Count());
         }
@@ -244,7 +234,7 @@ class ClassWithDelegate
         [Test]
         public void IssueInNestedClassIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInNestedClass);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInNestedClass);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -254,7 +244,7 @@ class ClassWithDelegate
         [Test]
         public void IssueInGenericClassIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInGenericClass);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInGenericClass);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -264,7 +254,7 @@ class ClassWithDelegate
         [Test]
         public void IssueInVirtualMethodIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInVirtualMethod);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInVirtualMethod);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -274,7 +264,7 @@ class ClassWithDelegate
         [Test]
         public void IssueInOverrideMethodIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInOverrideMethod);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInOverrideMethod);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -284,7 +274,7 @@ class ClassWithDelegate
         [Test]
         public void IssueInMonoBehaviourIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInMonoBehaviour);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInMonoBehaviour);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -294,7 +284,7 @@ class ClassWithDelegate
         [Test]
         public void IssueInCoroutineIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInCoroutine);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInCoroutine);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -305,7 +295,7 @@ class ClassWithDelegate
         [Test]
         public void IssueInDelegateIsFound()
         {
-            var allScriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInDelegate);
+            var allScriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInDelegate);
             var issue = allScriptIssues.FirstOrDefault(i => i.name.Equals("Camera.get_main"));
             Assert.NotNull(issue);
 

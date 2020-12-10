@@ -6,13 +6,13 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class InstantiateAddComponentTests
     {
-        ScriptResource m_ScriptResourceAddComponent;
-        ScriptResource m_ScriptResourceInstantiate;
+        TempAsset m_TempAssetAddComponent;
+        TempAsset m_TempAssetInstantiate;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptResourceInstantiate = new ScriptResource("InstantiateObject.cs", @"
+            m_TempAssetInstantiate = new TempAsset("InstantiateObject.cs", @"
 using UnityEngine;
 class InstantiateObject : MonoBehaviour
 {
@@ -25,7 +25,7 @@ class InstantiateObject : MonoBehaviour
 }
 ");
 
-            m_ScriptResourceAddComponent = new ScriptResource("AddComponentToGameObject.cs", @"
+            m_TempAssetAddComponent = new TempAsset("AddComponentToGameObject.cs", @"
 using UnityEngine;
 class AddComponentToGameObject : MonoBehaviour
 {
@@ -41,14 +41,13 @@ class AddComponentToGameObject : MonoBehaviour
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_ScriptResourceInstantiate.Delete();
-            m_ScriptResourceAddComponent.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
         public void InstantiateIssueIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceInstantiate);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetInstantiate);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -58,7 +57,7 @@ class AddComponentToGameObject : MonoBehaviour
         [Test]
         public void AddComponentIssueIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceAddComponent);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetAddComponent);
 
             Assert.AreEqual(1, issues.Count());
 

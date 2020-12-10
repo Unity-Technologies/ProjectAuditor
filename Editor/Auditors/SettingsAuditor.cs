@@ -62,6 +62,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
+            if (m_ProblemDescriptors == null)
+                throw new Exception("Issue Database not initialized.");
+
             if (progressBar != null)
                 progressBar.Initialize("Analyzing Settings", "Analyzing project settings", m_ProblemDescriptors.Count);
 

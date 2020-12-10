@@ -7,12 +7,12 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class AssemblyCompilationTests
     {
-        ScriptResource m_ScriptResource;
+        TempAsset m_TempAsset;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptResource = new ScriptResource("MyClass.cs", @"
+            m_TempAsset = new TempAsset("MyClass.cs", @"
 using UnityEngine;
 class MyClass
 {
@@ -29,7 +29,7 @@ class MyClass
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_ScriptResource.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
@@ -41,7 +41,7 @@ class MyClass
 
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Code);
-            var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_ScriptResource.relativePath));
+            var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TempAsset.relativePath));
 
             Assert.Null(codeIssue);
         }
@@ -57,7 +57,7 @@ class MyClass
             var projectReport = projectAuditor.Audit();
 
             var issues = projectReport.GetIssues(IssueCategory.Code);
-            var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_ScriptResource.relativePath));
+            var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TempAsset.relativePath));
 
             Assert.NotNull(codeIssue);
         }

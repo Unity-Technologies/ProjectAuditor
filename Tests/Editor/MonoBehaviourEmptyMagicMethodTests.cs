@@ -8,27 +8,25 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class MonoBehaviourEmptyMagicMethodTests
     {
-        ScriptResource m_MonoBehaviourWithEmptyMagicMethod;
-        ScriptResource m_MonoBehaviourWithEmptyMethod;
-        ScriptResource m_NotMonoBehaviourWithEmptyMethod;
+        TempAsset m_MonoBehaviourWithEmptyMagicMethod;
+        TempAsset m_MonoBehaviourWithEmptyMethod;
+        TempAsset m_NotMonoBehaviourWithEmptyMethod;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_MonoBehaviourWithEmptyMagicMethod = new ScriptResource("MonoBehaviourWithEmptyMagicMethod.cs",
+            m_MonoBehaviourWithEmptyMagicMethod = new TempAsset("MonoBehaviourWithEmptyMagicMethod.cs",
                 "using UnityEngine; class MyBaseClass : MonoBehaviour { } class MonoBehaviourWithEmptyMagicMethod : MyBaseClass { void Update() { } }");
-            m_MonoBehaviourWithEmptyMethod = new ScriptResource("MonoBehaviourWithEmptyMethod.cs",
+            m_MonoBehaviourWithEmptyMethod = new TempAsset("MonoBehaviourWithEmptyMethod.cs",
                 "using UnityEngine; class MonoBehaviourWithEmptyMethod : MonoBehaviour{ void NotMagicMethod() { } }");
-            m_NotMonoBehaviourWithEmptyMethod = new ScriptResource("NotMonoBehaviourWithEmptyMethod.cs",
+            m_NotMonoBehaviourWithEmptyMethod = new TempAsset("NotMonoBehaviourWithEmptyMethod.cs",
                 "class NotMonoBehaviourWithEmptyMethod { void Update() { } }");
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_MonoBehaviourWithEmptyMagicMethod.Delete();
-            m_MonoBehaviourWithEmptyMethod.Delete();
-            m_NotMonoBehaviourWithEmptyMethod.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]

@@ -7,12 +7,12 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class ShaderTests
     {
-        ScriptResource m_ShaderResource;
+        TempAsset m_ShaderResource;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ShaderResource = new ScriptResource("Resources/MyTestShader.shader", @"
+            m_ShaderResource = new TempAsset("Resources/MyTestShader.shader", @"
 Shader ""Custom/MyTestShader""
             {
                 Properties
@@ -62,7 +62,7 @@ Shader ""Custom/MyTestShader""
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_ShaderResource.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
@@ -80,25 +80,29 @@ Shader ""Custom/MyTestShader""
         [Test]
         public void ShaderVariantsAreReported()
         {
-            var targetPath = FileUtil.GetUniqueTempPathInProject();
-            Directory.CreateDirectory(targetPath);
+            var buildPath = FileUtil.GetUniqueTempPathInProject();
+            Directory.CreateDirectory(buildPath);
+
             var buildPlayerOptions = new BuildPlayerOptions
             {
                 scenes = new string[] {},
-                locationPathName = targetPath,
+                locationPathName = Path.Combine(buildPath, "test"),
                 target = EditorUserBuildSettings.activeBuildTarget,
+                targetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget),
                 options = BuildOptions.Development
             };
             var buildReport = BuildPipeline.BuildPlayer(buildPlayerOptions);
 
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            Assert.True(buildReport.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded);
 
+            Directory.Delete(buildPath, true);
+
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Shaders);
             issues = issues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
-            Assert.AreEqual(42, issues.Length);
 
-            Directory.Delete(targetPath);
+            Assert.Positive(issues.Length);
         }
     }
 }

@@ -7,15 +7,15 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class AllocationTests
     {
-        ScriptResource m_ScriptResourceObjectAllocation;
-        ScriptResource m_ScriptResourceArrayAllocation;
-        ScriptResource m_ScriptResourceMultidimensionalArrayAllocation;
-        ScriptResource m_ScriptResourceParamsArrayAllocation;
+        TempAsset m_TempAssetObjectAllocation;
+        TempAsset m_TempAssetArrayAllocation;
+        TempAsset m_TempAssetMultidimensionalArrayAllocation;
+        TempAsset m_TempAssetParamsArrayAllocation;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptResourceObjectAllocation = new ScriptResource("ObjectAllocation.cs", @"
+            m_TempAssetObjectAllocation = new TempAsset("ObjectAllocation.cs", @"
 class ObjectAllocation
 {
     static ObjectAllocation Dummy()
@@ -26,7 +26,7 @@ class ObjectAllocation
 }
 ");
 
-            m_ScriptResourceArrayAllocation = new ScriptResource("ArrayAllocation.cs", @"
+            m_TempAssetArrayAllocation = new TempAsset("ArrayAllocation.cs", @"
 class ArrayAllocation
 {
     int[] array;
@@ -38,7 +38,7 @@ class ArrayAllocation
 }
 ");
 
-            m_ScriptResourceMultidimensionalArrayAllocation = new ScriptResource("MultidimensionalArrayAllocation.cs", @"
+            m_TempAssetMultidimensionalArrayAllocation = new TempAsset("MultidimensionalArrayAllocation.cs", @"
 class MultidimensionalArrayAllocation
 {
     int[,] array;
@@ -50,7 +50,7 @@ class MultidimensionalArrayAllocation
 }
 ");
 
-            m_ScriptResourceParamsArrayAllocation = new ScriptResource("ParamsArrayAllocation.cs", @"
+            m_TempAssetParamsArrayAllocation = new TempAsset("ParamsArrayAllocation.cs", @"
 class ParamsArrayAllocation
 {
     void DummyImpl(params object[] args)
@@ -69,14 +69,13 @@ class ParamsArrayAllocation
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_ScriptResourceObjectAllocation.Delete();
-            m_ScriptResourceArrayAllocation.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
         public void ObjectAllocationIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceObjectAllocation);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetObjectAllocation);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -90,7 +89,7 @@ class ParamsArrayAllocation
         [Test]
         public void ArrayAllocationIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceArrayAllocation);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.FirstOrDefault();
@@ -103,7 +102,7 @@ class ParamsArrayAllocation
         [Test]
         public void MultidimensionalArrayAllocationIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceMultidimensionalArrayAllocation);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetMultidimensionalArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.FirstOrDefault();
@@ -116,7 +115,7 @@ class ParamsArrayAllocation
         [Test]
         public void ParamsArrayAllocationIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceParamsArrayAllocation);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetParamsArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.FirstOrDefault();

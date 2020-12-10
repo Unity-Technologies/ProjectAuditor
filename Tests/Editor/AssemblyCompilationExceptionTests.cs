@@ -9,12 +9,12 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class AssemblyCompilationExceptionTests
     {
-        ScriptResource m_ScriptResource;
+        TempAsset m_TempAsset;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptResource = new ScriptResource("MyClass.cs", @"
+            m_TempAsset = new TempAsset("MyClass.cs", @"
 class MyClass {
 #if !UNITY_EDITOR
     asd
@@ -26,7 +26,7 @@ class MyClass {
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_ScriptResource.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
