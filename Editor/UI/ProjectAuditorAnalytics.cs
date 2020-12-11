@@ -150,6 +150,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "api_tab";
                 case UIButton.Assets:
                     return "assets_tab";
+                case UIButton.Shaders:
+                    return "shaders_tab";
                 case UIButton.ProjectSettings:
                     return "settings_tab";
                 case UIButton.AssemblySelect:
