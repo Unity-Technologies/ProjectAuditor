@@ -132,6 +132,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Table.Reload();
         }
 
+        public bool IsValid()
+        {
+            return m_Table != null;
+        }
+
         public void OnGUI()
         {
             ProblemDescriptor problemDescriptor = null;

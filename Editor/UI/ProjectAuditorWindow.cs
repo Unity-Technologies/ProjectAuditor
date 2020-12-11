@@ -362,11 +362,21 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisViews.Add(view);
             }
 
-            if (m_AnalysisState == AnalysisState.Valid)
+            if (m_ShaderVariantsWindow != null)
             {
-                m_ShaderVariantsWindow = EditorWindow.GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name);
-                m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
-                m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
+                if (m_AnalysisState == AnalysisState.Valid)
+                {
+                    if (m_ShaderVariantsWindow.IsValid())
+                        m_ShaderVariantsWindow.Clear();
+                    else
+                        m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                    m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
+                }
+                else
+                {
+                    m_ShaderVariantsWindow.Close();
+                    m_ShaderVariantsWindow = null;
+                }
             }
 
             RefreshDisplay();
@@ -476,8 +486,15 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             if (m_AnalysisState == AnalysisState.Valid)
             {
-                m_ShaderVariantsWindow = EditorWindow.GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name);
-                m_ShaderVariantsWindow.Clear();
+                if (m_ShaderVariantsWindow == null)
+                {
+                    m_ShaderVariantsWindow = EditorWindow.GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
+                    m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                }
+                else
+                {
+                    m_ShaderVariantsWindow.Clear();
+                }
 
                 var newIssues = new List<ProjectIssue>();
                 m_ProjectAuditor.GetAuditor<ShadersAuditor>().Audit(issue =>
@@ -839,8 +856,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                             m_ShaderVariantsWindow = EditorWindow.GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
                             m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
                         }
+                        else
+                        {
+                            m_ShaderVariantsWindow.Clear();
+                        }
 
-                        m_ShaderVariantsWindow.Clear();
                         m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
                         m_ShaderVariantsWindow.Refresh();
                         m_ShaderVariantsWindow.Show();
