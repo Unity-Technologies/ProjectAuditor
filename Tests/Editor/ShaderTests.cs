@@ -113,6 +113,7 @@ Shader ""Custom/MyEditorShader""
             TempAsset.Cleanup();
         }
 
+#if UNITY_2018_2_OR_NEWER
         [Test]
         public void ShaderVariantsRequireBuild()
         {
@@ -151,6 +152,7 @@ Shader ""Custom/MyEditorShader""
 
             Assert.Positive(issues.Length);
         }
+#endif
 
         [Test]
         public void ShaderIsReported()
