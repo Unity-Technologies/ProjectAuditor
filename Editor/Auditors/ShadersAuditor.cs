@@ -6,7 +6,9 @@ using System.Reflection;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build;
+#if UNITY_2018_2_OR_NEWER
 using UnityEditor.Build.Reporting;
+#endif
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -16,7 +18,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     class ShaderVariantData
     {
         public string passName;
+#if UNITY_2018_2_OR_NEWER
         public ShaderCompilerData compilerData;
+#endif
     }
 
     public class ShadersAuditor : IAuditor
@@ -83,7 +87,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
                 var message = "Build the project to view the Shader Variants";
 #if !UNITY_2018_2_OR_NEWER
-                message = "This feature requires Unity 2018";
+                message = "This feature requires Unity 2018.2 or newer";
 #endif
                 var issue = new ProjectIssue(descriptor, message, IssueCategory.ShaderVariants);
                 issue.SetCustomProperties(new[] { string.Empty, string.Empty, string.Empty });
@@ -91,6 +95,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
             else
             {
+#if UNITY_2018_2_OR_NEWER
                 // find hidden shaders
                 var shadersInBuild = s_ShaderVariantData.Select(variant => variant.Key);
                 foreach (var shader in shadersInBuild)
@@ -102,6 +107,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         shaderPathMap.Add(shader, assetPath);
                     }
                 }
+#endif
             }
 
             foreach (var keyValuePair in shaderPathMap)
@@ -128,6 +134,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             const string NotAvailable = "N/A";
             var variantCount = NotAvailable;
 
+#if UNITY_2018_2_OR_NEWER
             // add variants first
             if (s_ShaderVariantData != null)
                 if (s_ShaderVariantData.ContainsKey(shader))
@@ -141,6 +148,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 {
                     variantCount = "0";
                 }
+#endif
 
             var shaderName = shader.name;
             var descriptor = new ProblemDescriptor
@@ -191,6 +199,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             onIssueFound(issue);
         }
 
+#if UNITY_2018_2_OR_NEWER
         void AddVariants(Shader shader, string assetPath, int id, List<ShaderVariantData> shaderVariants, Action<ProjectIssue> onIssueFound)
         {
             var shaderName = shader.name;
@@ -228,13 +237,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 onIssueFound(issue);
             }
         }
-
         internal static void CleanupBuildData()
         {
             s_ShaderVariantData = null;
         }
 
-#if UNITY_2018_1_OR_NEWER
         public int callbackOrder { get { return 0; } }
         public void OnPreprocessBuild(BuildReport report)
         {
