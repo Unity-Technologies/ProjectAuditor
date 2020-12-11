@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Packages.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Compilation;
+using UnityEngine;
 #if UNITY_2018_2_OR_NEWER
 using UnityEditor.Build.Player;
 
@@ -102,13 +104,16 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             m_OutputFolder = FileUtil.GetUniqueTempPathInProject();
 
-            var input = new ScriptCompilationSettings
-            {
-                target = EditorUserBuildSettings.activeBuildTarget,
-                group = EditorUserBuildSettings.selectedBuildTargetGroup
-            };
+            if (!Directory.Exists(m_OutputFolder))
+                Directory.CreateDirectory(m_OutputFolder);
 
-            var compilationResult = PlayerBuildInterface.CompilePlayerScripts(input, m_OutputFolder);
+            var assemblyBuilders = PrepareAssemblyBuilders(assemblies);
+
+            while (assemblyBuilders.Any(pair => pair.Value.status != AssemblyBuilderStatus.Finished))
+            {
+                UpdateAssemblyBuilders(assemblyBuilders);
+                System.Threading.Thread.Sleep(10);
+            }
 
             if (progressBar != null)
                 progressBar.ClearProgressBar();
@@ -119,7 +124,43 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 throw new AssemblyCompilationException();
             }
 
-            return compilationResult.assemblies.Select(assembly => Path.Combine(m_OutputFolder, assembly));
+            return assemblyBuilders.Select(pair => pair.Value.assemblyPath);
+        }
+
+        Dictionary<string, AssemblyBuilder> PrepareAssemblyBuilders(Assembly[] assemblies)
+        {
+            var assemblyBuilders = new Dictionary<string, AssemblyBuilder>();
+            foreach (var assembly in assemblies)
+            {
+                var filename = Path.GetFileName(assembly.outputPath);
+                var assemblyName = Path.GetFileNameWithoutExtension(assembly.outputPath);
+                var assemblyPath = Path.Combine(m_OutputFolder, filename);
+                var assemblyBuilder = new AssemblyBuilder(assemblyPath, assembly.sourceFiles);
+
+                assemblyBuilder.buildFinished += OnAssemblyCompilationFinished;
+                assemblyBuilder.compilerOptions = assembly.compilerOptions;
+
+                var references = assembly.assemblyReferences.Select(r => Path.Combine(m_OutputFolder, Path.GetFileName(r.outputPath))).ToList();
+                references.AddRange(assembly.compiledAssemblyReferences);
+                assemblyBuilder.additionalReferences = references.ToArray();
+
+                assemblyBuilders.Add(assemblyName, assemblyBuilder);
+            }
+
+            return assemblyBuilders;
+        }
+
+        void UpdateAssemblyBuilders(Dictionary<string, AssemblyBuilder> assemblyBuilders)
+        {
+            foreach (var pair in assemblyBuilders.Where(b => b.Value.status == AssemblyBuilderStatus.NotStarted))
+            {
+                var builder = pair.Value;
+                if (builder.additionalReferences.Select(path => Path.GetFileNameWithoutExtension(path)).All(name => !assemblyBuilders.ContainsKey(name) || assemblyBuilders[name].status == AssemblyBuilderStatus.Finished))
+                {
+                    //Debug.Log("Compiling " + builder.assemblyPath);
+                    builder.Build();
+                }
+            }
         }
 
         public IEnumerable<string> GetCompiledAssemblyDirectories()
@@ -137,6 +178,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         void OnAssemblyCompilationFinished(string outputAssemblyPath, CompilerMessage[] messages)
         {
+            foreach (var m in messages)
+            {
+                if (m.type == CompilerMessageType.Error)
+                    Debug.LogError(m.message);
+            }
             m_Success = m_Success && messages.Count(message => message.type == CompilerMessageType.Error) == 0;
         }
     }
