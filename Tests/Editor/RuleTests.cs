@@ -9,19 +9,19 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class RuleTests
     {
-        ScriptResource m_ScriptResource;
+        TempAsset m_TempAsset;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptResource = new ScriptResource("MyClass.cs",
+            m_TempAsset = new TempAsset("MyClass.cs",
                 "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.main.name); } }");
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
-            m_ScriptResource.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
@@ -29,8 +29,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectAuditorSettings = projectAuditor.config;
-            var projectReport = projectAuditor.Audit();
-            var issues = ScriptAuditor.FindScriptIssues(projectReport, m_ScriptResource.relativePath);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAsset);
 
             Assert.AreEqual(1, issues.Count());
 

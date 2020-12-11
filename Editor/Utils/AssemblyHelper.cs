@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
 
@@ -74,7 +75,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 Path.Combine("Unity", "GUISystem"))));
             assemblyPaths.AddRange(files.Where(path => Path.GetExtension(path).Equals(".dll")));
 #endif
-            return assemblyPaths;
+            return assemblyPaths.Select(path => path.Replace("\\", "/"));
         }
 
         public static IEnumerable<string> GetPrecompiledEngineAssemblyDirectories()
@@ -120,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 {
                     assemblyInfo.relativePath = Path.Combine(folders[0], folders[1]).Replace("\\", "/");
 #if UNITY_2019_3_OR_NEWER
-                    var info =  PackageInfo.FindForAssetPath(asmDefPath);
+                    var info =  UnityEditor.PackageManager.PackageInfo.FindForAssetPath(asmDefPath);
                     if (info != null)
                     {
                         assemblyInfo.readOnly = info.source != PackageSource.Embedded && info.source != PackageSource.Local;

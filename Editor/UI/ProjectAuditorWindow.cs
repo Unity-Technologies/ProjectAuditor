@@ -292,8 +292,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Profiler.BeginSample("MatchArea");
             var matchArea = !activeAnalysisView.desc.showAreaSelection ||
-                            m_AreaSelection.Contains(issue.descriptor.area) ||
-                            m_AreaSelection.ContainsGroup("All");
+                m_AreaSelection.Contains(issue.descriptor.area) ||
+                m_AreaSelection.ContainsGroup("All");
             Profiler.EndSample();
             if (!matchArea)
                 return false;
@@ -652,8 +652,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var lastEnabled = GUI.enabled;
             GUI.enabled = IsAnalysisValid() &&
-                          activeAnalysisView.desc.showAssemblySelection &&
-                          !AssemblySelectionWindow.IsOpen();
+                activeAnalysisView.desc.showAssemblySelection &&
+                !AssemblySelectionWindow.IsOpen();
             if (GUILayout.Button(Styles.AssemblyFilterSelect, EditorStyles.miniButton,
                 GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
             {
@@ -704,8 +704,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var lastEnabled = GUI.enabled;
                 var enabled = IsAnalysisValid() &&
-                              activeAnalysisView.desc.showAreaSelection &&
-                              !AreaSelectionWindow.IsOpen();
+                    activeAnalysisView.desc.showAreaSelection &&
+                    !AreaSelectionWindow.IsOpen();
                 GUI.enabled = enabled;
                 if (GUILayout.Button(Styles.AreaFilterSelect, EditorStyles.miniButton,
                     GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))

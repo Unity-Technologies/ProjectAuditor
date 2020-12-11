@@ -44,6 +44,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
+            if (m_ProblemDescriptors == null)
+                throw new Exception("Issue Database not initialized.");
+
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
@@ -238,11 +241,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             analyzer.Initialize(this);
             m_InstructionAnalyzers.Add(analyzer);
             m_OpCodes.AddRange(analyzer.GetOpCodes());
-        }
-
-        internal static IEnumerable<ProjectIssue> FindScriptIssues(ProjectReport projectReport, string relativePath)
-        {
-            return projectReport.GetIssues(IssueCategory.Code).Where(i => i.relativePath.Equals(relativePath));
         }
 
         static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)

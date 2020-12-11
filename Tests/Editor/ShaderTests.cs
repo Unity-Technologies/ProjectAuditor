@@ -7,13 +7,13 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class ShaderTests
     {
-        ScriptResource m_ShaderResource;
-        ScriptResource m_EditorShaderResource;
+        TempAsset m_ShaderResource;
+        TempAsset m_EditorShaderResource;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ShaderResource = new ScriptResource("Resources/MyTestShader.shader", @"
+            m_ShaderResource = new TempAsset("Resources/MyTestShader.shader", @"
 Shader ""Custom/MyTestShader""
             {
                 Properties
@@ -59,7 +59,7 @@ Shader ""Custom/MyTestShader""
             }
 ");
 
-            m_EditorShaderResource = new ScriptResource("Editor/MyEditorShader.shader", @"
+            m_EditorShaderResource = new TempAsset("Editor/MyEditorShader.shader", @"
 Shader ""Custom/MyEditorShader""
             {
                 Properties
@@ -109,8 +109,7 @@ Shader ""Custom/MyEditorShader""
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_ShaderResource.Delete();
-            m_EditorShaderResource.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
@@ -151,6 +150,7 @@ Shader ""Custom/MyEditorShader""
 
             Directory.Delete(targetPath);
         }
+
 
         [Test]
         public void EditorShaderIsNotReported()

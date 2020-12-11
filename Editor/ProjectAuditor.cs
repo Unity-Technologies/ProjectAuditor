@@ -86,7 +86,7 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        static string DataPath
+        public static string DataPath
         {
             get
             {

@@ -1,18 +1,18 @@
 using System;
 using System.IO;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class ScriptResource
+    public class TempAsset
     {
         const string TempFolder = "ProjectAuditor-Temp";
 
-        public ScriptResource(string scriptName, string content)
+        public TempAsset(string scriptName, string content)
         {
             relativePath = Path.Combine("Assets", Path.Combine(TempFolder, scriptName)).Replace("\\", "/");
-            if (!File.Exists(relativePath)) Directory.CreateDirectory(Path.GetDirectoryName(relativePath));
+            if (!File.Exists(relativePath))
+                Directory.CreateDirectory(Path.GetDirectoryName(relativePath));
 
             File.WriteAllText(relativePath, content);
 
@@ -28,18 +28,12 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             get { return Path.GetFileName(relativePath); }
         }
 
-        public void Delete()
+        public static void Cleanup()
         {
-            AssetDatabase.DeleteAsset(relativePath);
-            try
-            {
-                Directory.Delete(Path.GetDirectoryName(relativePath));
-            }
-            catch (IOException e)
-            {
-                // there might be a script still.
-                Debug.LogWarning(e);
-            }
+            var path = Path.Combine("Assets", TempFolder);
+            Directory.Delete(path, true);
+            File.Delete(path + ".meta");
+            AssetDatabase.Refresh();
         }
     }
 }

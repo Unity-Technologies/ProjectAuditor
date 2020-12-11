@@ -8,12 +8,12 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class ProjectReportTests
     {
-        ScriptResource m_ScriptResource;
+        TempAsset m_TempAsset;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptResource = new ScriptResource("MyClass.cs", @"
+            m_TempAsset = new TempAsset("MyClass.cs", @"
 using UnityEngine;
 class MyClass
 {
@@ -29,7 +29,7 @@ class MyClass
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_ScriptResource.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
@@ -84,7 +84,7 @@ class MyClass
             var settingsIssue = projectReport.GetIssues(IssueCategory.ProjectSettings)
                 .First(i => i.descriptor.method.Equals("stripEngineCode"));
             var scriptIssue = projectReport.GetIssues(IssueCategory.Code)
-                .First(i => i.relativePath.Equals(m_ScriptResource.relativePath));
+                .First(i => i.relativePath.Equals(m_TempAsset.relativePath));
 
             var settingsIssueFound = false;
             var scriptIssueFound = false;

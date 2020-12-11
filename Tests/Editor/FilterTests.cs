@@ -9,12 +9,12 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class FilterTests
     {
-        ScriptResource m_ScriptResource;
+        TempAsset m_TempAsset;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptResource = new ScriptResource("FilterTests.cs", @"
+            m_TempAsset = new TempAsset("FilterTests.cs", @"
 using UnityEngine;
 
 class WrapperClass
@@ -40,7 +40,7 @@ class InternalClass
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_ScriptResource.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
