@@ -839,6 +839,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                             m_ShaderVariantsWindow = EditorWindow.GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
                             m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
                         }
+
+                        m_ShaderVariantsWindow.Clear();
                         m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
                         m_ShaderVariantsWindow.Refresh();
                         m_ShaderVariantsWindow.Show();
