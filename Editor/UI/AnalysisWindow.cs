@@ -41,6 +41,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void OnGUI()
         {
+            if (!m_AnalysisView.IsValid())
+            {
+                Close();
+                return;
+            }
+
             m_AnalysisView.OnGUI();
         }
     }
