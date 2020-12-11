@@ -229,6 +229,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
+        internal static void CleanupBuildData()
+        {
+            s_ShaderVariantData = null;
+        }
+
 #if UNITY_2018_1_OR_NEWER
         public int callbackOrder { get { return 0; } }
         public void OnPreprocessBuild(BuildReport report)

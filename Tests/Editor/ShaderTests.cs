@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Auditors;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -115,16 +116,17 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderVariantsRequireBuild()
         {
+            ShadersAuditor.CleanupBuildData();
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.ShaderVariants);
             Assert.Positive(issues.Length);
-            Assert.True(issues.First().description.Equals("Build the project and run Project Auditor analysis"));
+            Assert.True(issues.First().description.Equals("Build the project to view the Shader Variants"));
         }
 
         [Test]
-        public void ShaderAreReported()
+        public void ShaderVariantsAreReported()
         {
             var buildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(buildPath);
@@ -143,15 +145,22 @@ Shader ""Custom/MyEditorShader""
             Directory.Delete(buildPath, true);
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var projectReport = projectAuditor.Audit();
+            var issues = projectReport.GetIssues(IssueCategory.ShaderVariants);
+            issues = issues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
 
+            Assert.Positive(issues.Length);
+        }
+
+        [Test]
+        public void ShaderIsReported()
+        {
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Shaders);
             var descriptions = issues.Select(i => i.description).ToArray();
-            Assert.Contains("Custom/MyTestShader", descriptions);
 
-            issues = projectReport.GetIssues(IssueCategory.ShaderVariants);
-            issues = issues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
-            Assert.Positive(issues.Length);
+            Assert.Contains("Custom/MyTestShader", descriptions);
         }
 
         [Test]
@@ -162,6 +171,7 @@ Shader ""Custom/MyEditorShader""
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Shaders);
             issues = issues.Where(i => i.description.Equals("Custom/MyEditorShader")).ToArray();
+
             Assert.Zero(issues.Length);
         }
     }
