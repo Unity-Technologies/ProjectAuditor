@@ -142,8 +142,8 @@ Shader ""Custom/MyEditorShader""
 
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Shaders);
-            issues = issues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
-            Assert.AreEqual(1, issues.Length);
+            var descriptions = issues.Select(i => i.description).ToArray();
+            Assert.Contains("Custom/MyTestShader", descriptions);
 
             issues = projectReport.GetIssues(IssueCategory.ShaderVariants);
             issues = issues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
