@@ -95,7 +95,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 message = "This feature requires Unity 2018";
 #endif
                 var issue = new ProjectIssue(descriptor, message, IssueCategory.ShaderVariants);
-                issue.SetCustomProperties(new[] { string.Empty, string.Empty, string.Empty});
+                issue.SetCustomProperties(new[] { string.Empty, string.Empty, string.Empty });
                 onIssueFound(issue);
 
                 onComplete();
