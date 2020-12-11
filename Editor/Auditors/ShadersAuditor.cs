@@ -73,13 +73,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (s_ShaderVariantData == null)
             {
                 var descriptor = new ProblemDescriptor
-                (
+                    (
                     id++,
                     "Shader Variants analysis incomplete",
                     Area.BuildSize,
                     string.Empty,
                     string.Empty
-                );
+                    );
 
                 var message = "Build the project to view the Shader Variants";
 #if !UNITY_2018_2_OR_NEWER
@@ -195,13 +195,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
             var shaderName = shader.name;
             var descriptor = new ProblemDescriptor
-            (
+                (
                 id++,
                 shaderName,
                 Area.BuildSize,
                 string.Empty,
                 string.Empty
-            );
+                );
 
             foreach (var shaderVariantData in shaderVariants)
             {
