@@ -129,13 +129,18 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var variantCount = NotAvailable;
 
             // add variants first
-            if (s_ShaderVariantData != null && s_ShaderVariantData.ContainsKey(shader))
-            {
-                var variants = s_ShaderVariantData[shader];
-                variantCount = variants.Count.ToString();
+            if (s_ShaderVariantData != null)
+                if (s_ShaderVariantData.ContainsKey(shader))
+                {
+                    var variants = s_ShaderVariantData[shader];
+                    variantCount = variants.Count.ToString();
 
-                AddVariants(shader, assetPath, id++, variants, onIssueFound);
-            }
+                    AddVariants(shader, assetPath, id++, variants, onIssueFound);
+                }
+                else
+                {
+                    variantCount = "0";
+                }
 
             var shaderName = shader.name;
             var descriptor = new ProblemDescriptor
