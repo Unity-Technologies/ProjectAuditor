@@ -126,16 +126,21 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderAreReported()
         {
-            var targetPath = FileUtil.GetUniqueTempPathInProject();
-            Directory.CreateDirectory(targetPath);
+            var buildPath = FileUtil.GetUniqueTempPathInProject();
+            Directory.CreateDirectory(buildPath);
             var buildPlayerOptions = new BuildPlayerOptions
             {
                 scenes = new string[] {},
-                locationPathName = targetPath,
+                locationPathName = Path.Combine(buildPath, "test"),
                 target = EditorUserBuildSettings.activeBuildTarget,
+                targetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget),
                 options = BuildOptions.Development
             };
             var buildReport = BuildPipeline.BuildPlayer(buildPlayerOptions);
+
+            Assert.True(buildReport.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded);
+
+            Directory.Delete(buildPath, true);
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
@@ -146,11 +151,8 @@ Shader ""Custom/MyEditorShader""
 
             issues = projectReport.GetIssues(IssueCategory.ShaderVariants);
             issues = issues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
-            Assert.AreEqual(42, issues.Length);
-
-            Directory.Delete(targetPath);
+            Assert.Positive(issues.Length);
         }
-
 
         [Test]
         public void EditorShaderIsNotReported()
