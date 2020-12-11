@@ -96,7 +96,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     new ColumnStyle
                     {
-                        Content = new GUIContent("Total Variants", "Total Variants"),
+                        Content = new GUIContent("Actual Variants", "Total Variants"),
                         Width = 80,
                         MinWidth = 80,
                         Format = PropertyFormat.Integer

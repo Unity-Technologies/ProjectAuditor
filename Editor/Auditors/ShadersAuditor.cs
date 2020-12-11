@@ -72,23 +72,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var id = k_ShaderVariantFirstId;
             if (s_ShaderVariantData == null)
             {
-                foreach (var keyValuePair in shaderPathMap)
-                {
-                    var shader = keyValuePair.Key;
-                    var assetPath = keyValuePair.Value;
-
-                    var shaderName = shader.name;
-                    AddShader(shader, assetPath, id++, onIssueFound);
-                }
-
                 var descriptor = new ProblemDescriptor
-                    (
-                    id,
+                (
+                    id++,
                     "Shader Variants analysis incomplete",
                     Area.BuildSize,
                     string.Empty,
                     string.Empty
-                    );
+                );
 
                 var message = "Build the project to view the Shader Variants";
 #if !UNITY_2018_2_OR_NEWER
@@ -97,62 +88,28 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var issue = new ProjectIssue(descriptor, message, IssueCategory.ShaderVariants);
                 issue.SetCustomProperties(new[] { string.Empty, string.Empty, string.Empty });
                 onIssueFound(issue);
+            }
+            else
+            {
+                // find hidden shaders
+                var shadersInBuild = s_ShaderVariantData.Select(variant => variant.Key);
+                foreach (var shader in shadersInBuild)
+                {
+                    if (!shaderPathMap.ContainsKey(shader))
+                    {
+                        var assetPath = AssetDatabase.GetAssetPath(shader);
 
-                onComplete();
-                return;
+                        shaderPathMap.Add(shader, assetPath);
+                    }
+                }
             }
 
-            foreach (var keyPair in s_ShaderVariantData)
+            foreach (var keyValuePair in shaderPathMap)
             {
-                var shader = keyPair.Key;
-                var shaderVariants = keyPair.Value;
-                var shaderName = shader.name;
-                var descriptor = new ProblemDescriptor
-                    (
-                    id++,
-                    shaderName,
-                    Area.BuildSize,
-                    string.Empty,
-                    string.Empty
-                    );
-
-                string assetPath;
-                if (shaderPathMap.ContainsKey(shader))
-                {
-                    assetPath = shaderPathMap[shader];
-                }
-                else
-                {
-                    // built-in shader
-                    assetPath = AssetDatabase.GetAssetPath(shader);
-                }
+                var assetPath = keyValuePair.Value;
+                var shader = keyValuePair.Key;
 
                 AddShader(shader, assetPath, id++, onIssueFound);
-
-                foreach (var shaderVariantData in shaderVariants)
-                {
-                    var compilerData = shaderVariantData.compilerData;
-                    var shaderKeywordSet = compilerData.shaderKeywordSet.GetShaderKeywords().ToArray();
-
-#if UNITY_2019_3_OR_NEWER
-                    var keywords = shaderKeywordSet.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ?  ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword)).ToArray();
-#else
-                    var keywords = shaderKeywordSet.Select(keyword => keyword.GetKeywordName()).ToArray();
-#endif
-                    var keywordString = String.Join(", ", keywords);
-                    if (string.IsNullOrEmpty(keywordString))
-                        keywordString = "<no keywords>";
-
-                    var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariants, new Location(assetPath));
-                    issue.SetCustomProperties(new[]
-                    {
-                        compilerData.shaderCompilerPlatform.ToString(),
-                        shaderVariantData.passName,
-                        keywordString,
-                    });
-
-                    onIssueFound(issue);
-                }
             }
 
             onComplete();
@@ -168,6 +125,18 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (Path.HasExtension(assetPath) && Path.GetExtension(assetPath).Equals(".vfx"))
                 return;
 
+            const string NotAvailable = "N/A";
+            var variantCount = NotAvailable;
+
+            // add variants first
+            if (s_ShaderVariantData != null && s_ShaderVariantData.ContainsKey(shader))
+            {
+                var variants = s_ShaderVariantData[shader];
+                variantCount = variants.Count.ToString();
+
+                AddVariants(shader, assetPath, id++, variants, onIssueFound);
+            }
+
             var shaderName = shader.name;
             var descriptor = new ProblemDescriptor
                 (
@@ -178,19 +147,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 string.Empty
                 );
 
-            var usedBySceneOnly = false;
-            const string NotAvailable = "N/A";
-            var variantCount = NotAvailable;
             var passCount = NotAvailable;
             var keywordCount = NotAvailable;
             var hasInstancing = NotAvailable;
-
+/*
+            var usedBySceneOnly = false;
             if (m_GetShaderVariantCountMethod != null)
             {
                 var value = (ulong)m_GetShaderVariantCountMethod.Invoke(null, new object[] { shader, usedBySceneOnly});
                 variantCount = value.ToString();
             }
-
+*/
             if (m_GetShaderGlobalKeywordsMethod != null && m_GetShaderLocalKeywordsMethod != null)
             {
                 var globalKeywords = (string[])m_GetShaderGlobalKeywordsMethod.Invoke(null, new object[] { shader});
@@ -217,6 +184,44 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 hasInstancing,
             });
             onIssueFound(issue);
+        }
+
+        void AddVariants(Shader shader, string assetPath, int id, List<ShaderVariantData> shaderVariants, Action<ProjectIssue> onIssueFound)
+        {
+            var shaderName = shader.name;
+            var descriptor = new ProblemDescriptor
+            (
+                id++,
+                shaderName,
+                Area.BuildSize,
+                string.Empty,
+                string.Empty
+            );
+
+            foreach (var shaderVariantData in shaderVariants)
+            {
+                var compilerData = shaderVariantData.compilerData;
+                var shaderKeywordSet = compilerData.shaderKeywordSet.GetShaderKeywords().ToArray();
+
+#if UNITY_2019_3_OR_NEWER
+                var keywords = shaderKeywordSet.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ?  ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword)).ToArray();
+#else
+                var keywords = shaderKeywordSet.Select(keyword => keyword.GetKeywordName()).ToArray();
+#endif
+                var keywordString = String.Join(", ", keywords);
+                if (string.IsNullOrEmpty(keywordString))
+                    keywordString = "<no keywords>";
+
+                var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariants, new Location(assetPath));
+                issue.SetCustomProperties(new[]
+                {
+                    compilerData.shaderCompilerPlatform.ToString(),
+                    shaderVariantData.passName,
+                    keywordString,
+                });
+
+                onIssueFound(issue);
+            }
         }
 
 #if UNITY_2018_1_OR_NEWER
