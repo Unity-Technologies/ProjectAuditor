@@ -110,10 +110,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
             }
 
-            foreach (var keyValuePair in shaderPathMap)
+            var sortedShaders = shaderPathMap.Keys.ToList().OrderBy(shader => shader.name);
+            foreach (var shader in sortedShaders)
             {
-                var assetPath = keyValuePair.Value;
-                var shader = keyValuePair.Key;
+                var assetPath = shaderPathMap[shader];
 
                 AddShader(shader, assetPath, id++, onIssueFound);
             }
@@ -237,6 +237,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 onIssueFound(issue);
             }
         }
+
         internal static void CleanupBuildData()
         {
             s_ShaderVariantData = null;
