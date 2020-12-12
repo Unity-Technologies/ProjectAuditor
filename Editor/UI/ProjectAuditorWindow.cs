@@ -226,7 +226,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     Content = new GUIContent("Pass Name", "Pass Name"),
                     Width = 80,
                     MinWidth = 80,
-                    Format = PropertyFormat.Integer
+                    Format = PropertyFormat.String
                 },
                 new ColumnStyle
                 {
