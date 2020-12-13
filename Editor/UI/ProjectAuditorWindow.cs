@@ -408,13 +408,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        void OnDestroy()
-        {
-            if (m_ShaderVariantsWindow != null)
-                m_ShaderVariantsWindow.Close();
-            m_ShaderVariantsWindow = null;
-        }
-
         void OnToggleDeveloperMode()
         {
             m_DeveloperMode = !m_DeveloperMode;
