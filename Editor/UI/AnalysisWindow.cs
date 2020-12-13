@@ -2,12 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
     class AnalysisWindow : EditorWindow
     {
         AnalysisView m_AnalysisView;
+
+        public static AnalysisWindow FindOpenWindow()
+        {
+            UnityEngine.Object[] windows = Resources.FindObjectsOfTypeAll(typeof(AnalysisWindow));
+            if (windows != null && windows.Length > 0)
+                return windows[0] as AnalysisWindow;
+
+            return null;
+        }
 
         AnalysisWindow()
         {

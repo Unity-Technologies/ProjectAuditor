@@ -362,7 +362,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisViews.Add(view);
             }
 
-            if (m_ShaderVariantsWindow != null)
+            m_ShaderVariantsWindow = AnalysisWindow.FindOpenWindow();
+            if ( m_ShaderVariantsWindow != null)
             {
                 if (m_AnalysisState == AnalysisState.Valid)
                 {
