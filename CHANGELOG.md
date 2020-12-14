@@ -4,6 +4,13 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.4.1-preview] - 2020-12-14
+* Improved Shaders auditing to report both shaders and variants in their respective tables
+* Added support for analyzing Editor only code-paths
+* Added *reuseCollisionCallbacks* physics API diagnostic
+* Fixed Assembly-CSharp-firstpass asmdef warning
+* Fixed backwards compatibility
+
 ## [0.4.0-preview] - 2020-11-24
 * Added Shader variants auditing
 * Added "Collapse/Expand All" buttons
