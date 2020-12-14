@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -31,6 +33,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
+        static ProjectAuditorWindow Instance;
 
         readonly AnalysisViewDescriptor[] m_AnalysisViewDescriptors =
         {
@@ -52,6 +55,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.FileType,
                     IssueTable.Column.Path
                 },
+                descriptionColumnStyle = new ColumnStyle
+                {
+                    Content = new GUIContent("Asset Name", "Asset Name"),
+                    Width = 300,
+                    MinWidth = 100,
+                    Format = PropertyFormat.String
+                },
                 onDoubleClick = FocusOnAssetInProjectWindow,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.Assets
             },
@@ -59,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.Shaders,
                 name = "Shaders",
-                groupByDescription = true,
+                groupByDescription = false,
                 descriptionWithIcon = true,
                 showAreaSelection = false,
                 showAssemblySelection = false,
@@ -72,27 +82,50 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.Custom,
                     IssueTable.Column.Custom + 1,
                     IssueTable.Column.Custom + 2,
+                    IssueTable.Column.Custom + 3,
+                    IssueTable.Column.Custom + 4,
+                },
+                descriptionColumnStyle = new ColumnStyle
+                {
+                    Content = new GUIContent("Shader Name", "Shader Name"),
+                    Width = 300,
+                    MinWidth = 100,
+                    Format = PropertyFormat.String
                 },
                 customColumnStyles = new[]
                 {
                     new ColumnStyle
                     {
-                        Content = new GUIContent("Platform", "Shader Compiler Platform"),
+                        Content = new GUIContent("Actual Variants", "Number of variants in the build"),
                         Width = 80,
                         MinWidth = 80,
-                        Format = PropertyFormat.String
+                        Format = PropertyFormat.Integer
                     },
                     new ColumnStyle
                     {
-                        Content = new GUIContent("Pass Name", "Pass Name"),
+                        Content = new GUIContent("Num Passes", "Num Passes"),
                         Width = 80,
                         MinWidth = 80,
-                        Format = PropertyFormat.String
+                        Format = PropertyFormat.Integer
                     },
                     new ColumnStyle
                     {
-                        Content = new GUIContent("Keywords", "Compiled Variants Keywords"),
-                        Width = 800,
+                        Content = new GUIContent("Num Keywords", "Num Keywords"),
+                        Width = 80,
+                        MinWidth = 80,
+                        Format = PropertyFormat.Integer
+                    },
+                    new ColumnStyle
+                    {
+                        Content = new GUIContent("Render Queue", "Render Queue"),
+                        Width = 80,
+                        MinWidth = 80,
+                        Format = PropertyFormat.Integer
+                    },
+                    new ColumnStyle
+                    {
+                        Content = new GUIContent("Instancing", "GPU Instancing Support"),
+                        Width = 80,
                         MinWidth = 80,
                         Format = PropertyFormat.String
                     },
@@ -155,6 +188,58 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         };
 
+        AnalysisViewDescriptor m_ShaderVariantsViewDescriptor = new AnalysisViewDescriptor
+        {
+            category = IssueCategory.ShaderVariants,
+            name = "Shader Variants",
+            groupByDescription = true,
+            descriptionWithIcon = false,
+            showAssemblySelection = false,
+            showCritical = false,
+            showDependencyView = false,
+            showRightPanels = false,
+            columnDescriptors = new[]
+            {
+                IssueTable.Column.Description,
+                IssueTable.Column.Custom,
+                IssueTable.Column.Custom + 1,
+                IssueTable.Column.Custom + 2
+            },
+            descriptionColumnStyle = new ColumnStyle
+            {
+                Content = new GUIContent("Shader Name", "Shader Name"),
+                Width = 300,
+                MinWidth = 100,
+                Format = PropertyFormat.String
+            },
+            customColumnStyles = new[]
+            {
+                new ColumnStyle
+                {
+                    Content = new GUIContent("Platform", "Shader Compiler Platform"),
+                    Width = 80,
+                    MinWidth = 80,
+                    Format = PropertyFormat.String
+                },
+                new ColumnStyle
+                {
+                    Content = new GUIContent("Pass Name", "Pass Name"),
+                    Width = 80,
+                    MinWidth = 80,
+                    Format = PropertyFormat.String
+                },
+                new ColumnStyle
+                {
+                    Content = new GUIContent("Keywords", "Compiled Variants Keywords"),
+                    Width = 800,
+                    MinWidth = 80,
+                    Format = PropertyFormat.String
+                },
+            },
+            onDoubleClick = FocusOnAssetInProjectWindow,
+            analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
+        };
+
         string[] m_ModeNames;
         ProjectAuditor m_ProjectAuditor;
         bool m_ShouldRefresh;
@@ -162,6 +247,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         // UI
         readonly List<AnalysisView> m_AnalysisViews = new List<AnalysisView>();
+        AnalysisWindow m_ShaderVariantsWindow;
         TreeViewSelection m_AreaSelection;
         TreeViewSelection m_AssemblySelection;
 
@@ -276,7 +362,27 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisViews.Add(view);
             }
 
+            m_ShaderVariantsWindow = AnalysisWindow.FindOpenWindow();
+            if ( m_ShaderVariantsWindow != null)
+            {
+                if (m_AnalysisState == AnalysisState.Valid)
+                {
+                    if (m_ShaderVariantsWindow.IsValid())
+                        m_ShaderVariantsWindow.Clear();
+                    else
+                        m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                    m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
+                }
+                else
+                {
+                    m_ShaderVariantsWindow.Close();
+                    m_ShaderVariantsWindow = null;
+                }
+            }
+
             RefreshDisplay();
+
+            Instance = this;
         }
 
         void OnGUI()
@@ -325,6 +431,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 view.Clear();
             }
 
+            if (m_ShaderVariantsWindow != null)
+            {
+                m_ShaderVariantsWindow.Clear();
+            }
+
             var newIssues = new List<ProjectIssue>();
 
             try
@@ -342,6 +453,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                             view.AddIssues(newIssues);
                         }
 
+                        if (m_ShaderVariantsWindow != null)
+                        {
+                            m_ShaderVariantsWindow.AddIssues(newIssues);
+                        }
+
                         newIssues.Clear();
 
                         if (completed)
@@ -357,6 +473,50 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 m_AnalysisState = AnalysisState.NotStarted;
                 Debug.LogError(e);
+            }
+        }
+
+        void AnalyzeShaderVariants()
+        {
+            if (m_AnalysisState == AnalysisState.Valid)
+            {
+                m_ProjectReport.ClearIssues(IssueCategory.Shaders);
+                m_ProjectReport.ClearIssues(IssueCategory.ShaderVariants);
+
+                if (m_ShaderVariantsWindow == null)
+                {
+                    m_ShaderVariantsWindow = EditorWindow.GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
+                    m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                }
+                else
+                {
+                    m_ShaderVariantsWindow.Clear();
+                }
+
+                var shadersView = m_AnalysisViews.FirstOrDefault(view => view.desc.category == IssueCategory.Shaders);
+                if (shadersView != null)
+                    shadersView.Clear();
+
+                var newIssues = new List<ProjectIssue>();
+                m_ProjectAuditor.GetAuditor<ShadersAuditor>().Audit(issue =>
+                {
+                    newIssues.Add(issue);
+                    m_ProjectReport.AddIssue(issue);
+                },
+                    () =>
+                    {
+                    },
+                    new ProgressBarDisplay()
+                );
+
+                if (shadersView != null)
+                {
+                    shadersView.AddIssues(newIssues);
+                    shadersView.Refresh();
+                }
+
+                m_ShaderVariantsWindow.AddIssues(newIssues);
+                m_ShaderVariantsWindow.Refresh();
             }
         }
 
@@ -379,6 +539,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             activeAnalysisView.Refresh();
+            if (m_ShaderVariantsWindow != null)
+                m_ShaderVariantsWindow.Refresh();
         }
 
         void Reload()
@@ -692,38 +854,63 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUI.indentLevel++;
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
 
-                if (GUILayout.Button(Styles.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                if (activeAnalysisView.desc.category == IssueCategory.Shaders)
                 {
-                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                    var selectedItems = table.GetSelectedItems();
-                    foreach (var item in selectedItems)
+                    if (GUILayout.Button("Inspect Shader Variants", EditorStyles.miniButton,
+                        GUILayout.Width(200)))
                     {
-                        SetRuleForItem(item, Rule.Action.None);
+                        if (m_ShaderVariantsWindow == null)
+                        {
+                            m_ShaderVariantsWindow = EditorWindow.GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
+                            m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                        }
+                        else
+                        {
+                            m_ShaderVariantsWindow.Clear();
+                        }
+
+                        m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
+                        m_ShaderVariantsWindow.Refresh();
+                        m_ShaderVariantsWindow.Show();
+                    }
+                }
+                else
+                {
+                    EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+
+                    if (GUILayout.Button(Styles.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    {
+                        var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                        var selectedItems = table.GetSelectedItems();
+                        foreach (var item in selectedItems)
+                        {
+                            SetRuleForItem(item, Rule.Action.None);
+                        }
+
+                        if (!m_Preferences.mutedIssues)
+                        {
+                            table.SetSelection(new List<int>());
+                        }
+
+                        ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
+                            analytic, table.GetSelectedItems());
                     }
 
-                    if (!m_Preferences.mutedIssues)
+                    if (GUILayout.Button(Styles.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                     {
-                        table.SetSelection(new List<int>());
-                    }
+                        var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                        var selectedItems = table.GetSelectedItems();
+                        foreach (var item in selectedItems)
+                        {
+                            ClearRulesForItem(item);
+                        }
 
-                    ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
-                        analytic, table.GetSelectedItems());
+                        ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(
+                            ProjectAuditorAnalytics.UIButton.Unmute, analytic, table.GetSelectedItems());
+                    }
                 }
 
-                if (GUILayout.Button(Styles.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                {
-                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                    var selectedItems = table.GetSelectedItems();
-                    foreach (var item in selectedItems)
-                    {
-                        ClearRulesForItem(item);
-                    }
-
-                    ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(
-                        ProjectAuditorAnalytics.UIButton.Unmute, analytic, table.GetSelectedItems());
-                }
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUI.indentLevel--;
@@ -1057,6 +1244,14 @@ To Analyze the project:
 Once the project is analyzed, the tool displays list of issues.
 At the moment there are two types of issues: API calls or Project Settings. The tool allows the user to switch between the two.
 In addition, it is possible to filter issues by area (CPU/Memory/etc...) or assembly name or search for a specific string.";
+        }
+
+
+        [PostProcessBuild(1)]
+        public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
+        {
+            if (Instance != null)
+                Instance.AnalyzeShaderVariants();
         }
     }
 }

@@ -55,6 +55,13 @@ namespace Unity.ProjectAuditor.Editor
             s_Mutex.ReleaseMutex();
         }
 
+        internal void ClearIssues(IssueCategory category)
+        {
+            s_Mutex.WaitOne();
+            m_Issues.RemoveAll(issue => issue.category == category);
+            s_Mutex.ReleaseMutex();
+        }
+
         /// <summary>
         /// Export report to CSV format
         /// </summary>

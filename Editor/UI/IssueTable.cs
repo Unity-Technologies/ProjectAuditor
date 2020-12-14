@@ -246,13 +246,21 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 guiContent = EditorGUIUtility.TrTextContentWithIcon(text, tooltip, icon);
                             }
 #endif
-
                             EditorGUI.LabelField(cellRect, guiContent);
+                        }
+                        else if (string.IsNullOrEmpty(descriptor.problem))
+                        {
+                            if (issue.location != null)
+                            {
+                                EditorGUI.LabelField(cellRect,
+                                    new GUIContent(item.GetDisplayName(), issue.location.Path));
+                            }
+                            else
+                                EditorGUI.LabelField(cellRect, item.GetDisplayName());
                         }
                         else
                         {
-                            var tooltip = descriptor.problem + " \n\n" + descriptor.solution;
-                            EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), tooltip));
+                            EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), descriptor.problem));
                         }
 
                         break;
@@ -293,7 +301,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var propertyIndex = column - Column.Custom;
                         var property = issue.GetCustomProperty(propertyIndex);
                         if (property != string.Empty)
-                            EditorGUI.LabelField(cellRect, new GUIContent(property, property));
+                            EditorGUI.LabelField(cellRect, new GUIContent(property));
                         break;
                 }
 
@@ -506,7 +514,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     int second;
                                     if (!int.TryParse(firstItem.ProjectIssue.GetCustomProperty(propertyIndex), out first))
                                         first = -999999;
-                                    if (int.TryParse(secondItem.ProjectIssue.GetCustomProperty(propertyIndex), out second))
+                                    if (!int.TryParse(secondItem.ProjectIssue.GetCustomProperty(propertyIndex), out second))
                                         second = -999999;
                                     return first - second;
                                 }
