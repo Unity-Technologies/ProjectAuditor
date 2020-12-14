@@ -163,7 +163,8 @@ namespace Unity.ProjectAuditor.Editor
                 }, progressBar);
             }
 
-            Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
+            if (m_Config.LogTimingsInfo)
+                Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
         }
 
         internal T GetAuditor<T>() where T : class
