@@ -32,6 +32,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Assembly = 0
         }
 
+        static readonly string DocumentationUrl = "https://github.com/Unity-Technologies/ProjectAuditor/blob/master/Documentation~/index.md";
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow Instance;
 
@@ -1092,7 +1093,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             if (GUILayout.Button(Styles.HelpButton, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
             {
-                Application.OpenURL("https://github.com/mtrive/ProjectAuditor/blob/master/Documentation~/index.md");
+                Application.OpenURL(DocumentationUrl);
             }
         }
 
