@@ -26,7 +26,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         static readonly string PerfCriticalIconName = "console.warnicon";
 
         readonly ProjectAuditorConfig m_Config;
-        readonly Preferences m_Preferences;
         readonly AnalysisViewDescriptor m_Desc;
         readonly IProjectIssueFilter m_Filter;
         readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
@@ -38,12 +37,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
                           AnalysisViewDescriptor desc, ProjectAuditorConfig config,
-                          Preferences preferences,
                           IProjectIssueFilter filter) : base(state,
                                                              multicolumnHeader)
         {
             m_Config = config;
-            m_Preferences = preferences;
             m_Filter = filter;
             m_Desc = desc;
             m_NextId = 1;

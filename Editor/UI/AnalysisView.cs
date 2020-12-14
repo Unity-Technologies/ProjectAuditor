@@ -110,7 +110,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new MultiColumnHeader(new MultiColumnHeaderState(columns)),
                 m_Desc,
                 m_Config,
-                prefs,
                 m_Filter);
 
             if (m_Desc.showDependencyView)
