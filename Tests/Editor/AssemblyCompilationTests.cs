@@ -35,9 +35,10 @@ class MyClass
         [Test]
         public void EditorCodeIssueIsNotReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            config.AnalyzeEditorCode = false;
 
-            Assert.False(projectAuditor.config.AnalyzeEditorCode);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Code);

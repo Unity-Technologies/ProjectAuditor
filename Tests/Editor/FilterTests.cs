@@ -116,7 +116,10 @@ class InternalClass
         [Test]
         public void FilenameMatch()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            config.AnalyzeEditorCode = false;
+
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Code);
@@ -133,7 +136,10 @@ class InternalClass
         [Test]
         public void RecursiveSearchMatch()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            config.AnalyzeEditorCode = false;
+
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Code);

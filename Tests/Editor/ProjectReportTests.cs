@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -73,7 +74,10 @@ class MyClass
             // disabling stripEngineCode will be reported as a ProjectSettings issue
             PlayerSettings.stripEngineCode = false;
 
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            config.AnalyzeEditorCode = false;
+
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 
             var projectReport = projectAuditor.Audit();
 
