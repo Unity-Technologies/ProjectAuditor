@@ -323,6 +323,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ProjectAuditor = new ProjectAuditor();
 
+            if (m_AnalysisState == AnalysisState.InProgress)
+            {
+                // recover from in-progress state after domain reload
+                m_AnalysisState = AnalysisState.NotStarted;
+            }
+
             UpdateAssemblySelection();
 
             if (m_AreaSelection == null)
