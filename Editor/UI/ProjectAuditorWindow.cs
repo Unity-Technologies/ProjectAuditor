@@ -370,7 +370,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             m_ShaderVariantsWindow = AnalysisWindow.FindOpenWindow();
-            if ( m_ShaderVariantsWindow != null)
+            if (m_ShaderVariantsWindow != null)
             {
                 if (m_AnalysisState == AnalysisState.Valid)
                 {

@@ -80,6 +80,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
             return assemblies.Select(assembly => assembly.outputPath);
         }
+
 #if UNITY_2018_2_OR_NEWER
         IEnumerable<string> CompilePlayerAssemblies(Assembly[] assemblies, IProgressBar progressBar = null)
         {
@@ -121,6 +122,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             return compilationResult.assemblies.Select(assembly => Path.Combine(m_OutputFolder, assembly));
         }
+
 #endif
         public IEnumerable<string> GetCompiledAssemblyDirectories()
         {
