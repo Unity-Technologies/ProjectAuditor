@@ -270,6 +270,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (snippet.shaderType != ShaderType.Fragment)
                 return;
 
+            // if s_ShaderVariantData is null, we might be building AssetBundles
+            if (s_ShaderVariantData == null)
+                return;
+
             if (!s_ShaderVariantData.ContainsKey(shader))
             {
                 s_ShaderVariantData.Add(shader, new List<ShaderVariantData>());
