@@ -11,7 +11,6 @@ using UnityEngine.Rendering;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-
     class ShaderTests
     {
         TempAsset m_ShaderResource;
@@ -189,7 +188,7 @@ Shader ""Custom/MyEditorShader""
             Directory.CreateDirectory(buildPath);
             var buildPlayerOptions = new BuildPlayerOptions
             {
-                scenes = new string[] { },
+                scenes = new string[] {},
                 locationPathName = Path.Combine(buildPath, "test"),
                 target = EditorUserBuildSettings.activeBuildTarget,
                 targetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget),
@@ -209,6 +208,7 @@ Shader ""Custom/MyEditorShader""
             Assert.Positive(issues.Length);
             return issues;
         }
+
 #endif
 
         [Test]
