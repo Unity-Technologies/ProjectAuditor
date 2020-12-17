@@ -84,6 +84,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             foreach (var guid in shaderGuids)
             {
                 var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+
+                // skip editor shaders
+                if (assetPath.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) != -1)
+                    continue;
+
+                // vfx shaders are not currently supported
+                if (Path.HasExtension(assetPath) && Path.GetExtension(assetPath).Equals(".vfx"))
+                    continue;
+
                 var shader = AssetDatabase.LoadMainAssetAtPath(assetPath) as Shader;
 
                 shaderPathMap.Add(shader, assetPath);
@@ -139,14 +148,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         void AddShader(Shader shader, string assetPath, int id, Action<ProjectIssue> onIssueFound)
         {
-            // skip editor shaders
-            if (assetPath.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) != -1)
-                return;
-
-            // vfx shaders are not currently supported
-            if (Path.HasExtension(assetPath) && Path.GetExtension(assetPath).Equals(".vfx"))
-                return;
-
             const string NotAvailable = "N/A";
             var variantCount = NotAvailable;
 
