@@ -204,7 +204,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.EndHorizontal();
             }
 
-            var info = selectedIssues.Length + " / " + m_Table.GetNumMatchingIssues() + " issues";
+            var info = selectedIssues.Length + " / " + m_Table.GetNumMatchingIssues() + " Items";
             EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
 
             EditorGUILayout.EndVertical();
