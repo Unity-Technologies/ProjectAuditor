@@ -168,6 +168,14 @@ Shader ""Custom/MyEditorShader""
             var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
 
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
+
+            var variants = issues.Where(i => i.description.Equals("Custom/MyTestShader"));
+            Assert.Positive(variants.Count());
+
+            // check custom property
+            var variant = variants.FirstOrDefault(v => v.GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("FORWARD") && v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("DIRECTIONAL"));
+            Assert.NotNull(variant);
+            Assert.AreEqual(ShaderVariantProperty.Num, variant.GetNumCustomProperties());
         }
 
         [Test]
@@ -182,7 +190,7 @@ Shader ""Custom/MyEditorShader""
             Assert.False(keywords.Any(key => key.Equals(s_KeywordName)));
         }
 
-        private static ProjectIssue[] BuildAndAnalyze()
+        static ProjectIssue[] BuildAndAnalyze()
         {
             var buildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(buildPath);
@@ -217,9 +225,16 @@ Shader ""Custom/MyEditorShader""
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Shaders);
-            var descriptions = issues.Select(i => i.description).ToArray();
+            var shaderIssue = issues.FirstOrDefault(i => i.description.Equals("Custom/MyTestShader"));
+            Assert.NotNull(shaderIssue);
 
-            Assert.Contains("Custom/MyTestShader", descriptions);
+            // check custom property
+            Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
+            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumVariants).Equals("N/A"));
+            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses).Equals("4"));
+            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords).Equals("22"));
+            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue).Equals("2000"));
+            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.Instancing).Equals("Yes"));
         }
 
         [Test]

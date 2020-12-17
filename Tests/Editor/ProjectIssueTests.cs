@@ -35,8 +35,12 @@ namespace UnityEditor.ProjectAuditor.EditorTests
                 "property #1"
             };
             var issue = new ProjectIssue(s_Descriptor, "dummy issue", IssueCategory.Code);
+
+            Assert.AreEqual(0, issue.GetNumCustomProperties());
+
             issue.SetCustomProperties(properties);
 
+            Assert.AreEqual(2, issue.GetNumCustomProperties());
             Assert.True(issue.GetCustomProperty(0).Equals(properties[0]));
             Assert.True(issue.GetCustomProperty(1).Equals(properties[1]));
         }

@@ -21,14 +21,16 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         NumPasses,
         NumKeywords,
         RenderQueue,
-        Instancing
+        Instancing,
+        Num
     }
 
     public enum ShaderVariantProperty
     {
         Platform = 0,
         PassName,
-        Keywords
+        Keywords,
+        Num
     }
 
     class ShaderVariantData

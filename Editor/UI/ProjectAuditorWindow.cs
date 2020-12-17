@@ -27,11 +27,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             Selected
         }
 
-        public enum CustomProperty
-        {
-            Assembly = 0
-        }
-
         static readonly string DocumentationUrl = "https://github.com/Unity-Technologies/ProjectAuditor/blob/master/Documentation~/index.md";
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow Instance;
@@ -285,7 +280,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Profiler.BeginSample("MatchAssembly");
             var matchAssembly = !activeAnalysisView.desc.showAssemblySelection ||
                 m_AssemblySelection != null &&
-                (m_AssemblySelection.Contains(issue.GetCustomProperty((int)CustomProperty.Assembly)) ||
+                (m_AssemblySelection.Contains(issue.GetCustomProperty((int)CodeProperty.Assembly)) ||
                     m_AssemblySelection.ContainsGroup("All"));
             Profiler.EndSample();
             if (!matchAssembly)
@@ -536,7 +531,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 // update list of assembly names
                 var scriptIssues = m_ProjectReport.GetIssues(IssueCategory.Code);
-                m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty((int)CustomProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
+                m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty((int)CodeProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
                 UpdateAssemblySelection();
 
                 m_AnalysisState = AnalysisState.Valid;

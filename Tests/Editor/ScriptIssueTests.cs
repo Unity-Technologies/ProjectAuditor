@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Auditors;
+using Unity.ProjectAuditor.Editor.Utils;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -201,6 +203,10 @@ class ClassWithDelegate
             Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Dummy()"));
             Assert.AreEqual(8, myIssue.line);
             Assert.AreEqual(IssueCategory.Code, myIssue.category);
+
+            // check custom property
+            Assert.AreEqual((int)CodeProperty.Num, myIssue.GetNumCustomProperties());
+            Assert.True(myIssue.GetCustomProperty((int)CodeProperty.Assembly).Equals(AssemblyHelper.DefaultAssemblyName));
         }
 
         [Test]

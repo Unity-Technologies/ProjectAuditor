@@ -14,6 +14,12 @@ using ThreadPriority = System.Threading.ThreadPriority;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
+    public enum CodeProperty
+    {
+        Assembly = 0,
+        Num
+    }
+
     class ScriptAuditor : IAuditor
     {
         readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();

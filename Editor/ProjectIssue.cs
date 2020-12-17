@@ -157,6 +157,11 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
+        public int GetNumCustomProperties()
+        {
+            return customProperties != null ? customProperties.Length : 0;
+        }
+
         public string GetCustomProperty(int index)
         {
             return customProperties != null ? customProperties[index] : string.Empty;

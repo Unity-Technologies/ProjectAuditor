@@ -140,6 +140,7 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode dependenciesNode) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location = default(Unity.ProjectAuditor.Editor.Utils.Location)) {}
         public string GetCustomProperty(int index);
+        public int GetNumCustomProperties();
         public void SetCustomProperties(string[] properties);
     }
 
@@ -197,9 +198,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public virtual void Reload(string path);
     }
 
+    public enum CodeProperty
+    {
+        public const Unity.ProjectAuditor.Editor.Auditors.CodeProperty Assembly = 0;
+        public const Unity.ProjectAuditor.Editor.Auditors.CodeProperty Num = 1;
+        public int value__;
+    }
+
     public enum ShaderProperty
     {
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty Instancing = 4;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty Num = 5;
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumKeywords = 2;
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumPasses = 1;
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumVariants = 0;
@@ -223,6 +232,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     public enum ShaderVariantProperty
     {
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Keywords = 2;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Num = 3;
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PassName = 1;
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Platform = 0;
         public int value__;

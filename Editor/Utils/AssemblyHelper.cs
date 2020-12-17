@@ -8,8 +8,6 @@ using UnityEngine;
 
 #if UNITY_2019_3_OR_NEWER
 using UnityEditor.PackageManager;
-#else
-using UnityEditor;
 #endif
 
 namespace Unity.ProjectAuditor.Editor.Utils
