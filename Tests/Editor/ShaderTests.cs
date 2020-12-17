@@ -175,7 +175,7 @@ Shader ""Custom/MyEditorShader""
             // check custom property
             var variant = variants.FirstOrDefault(v => v.GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("FORWARD") && v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("DIRECTIONAL"));
             Assert.NotNull(variant);
-            Assert.AreEqual(ShaderVariantProperty.Num, variant.GetNumCustomProperties());
+            Assert.AreEqual((int)ShaderVariantProperty.Num, variant.GetNumCustomProperties());
         }
 
         [Test]
