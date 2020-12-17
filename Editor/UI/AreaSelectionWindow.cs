@@ -12,6 +12,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         MultiColumnHeaderState m_MultiColumnHeaderState;
         ProjectAuditorWindow m_ProjectAuditorWindow;
         TreeViewState m_TreeViewState;
+        bool m_RequestClose;
 
         public static AreaSelectionWindow Open(float screenX, float screenY, ProjectAuditorWindow projectAuditorWindow,
             TreeViewSelection selection, string[] names)
@@ -30,14 +31,25 @@ namespace Unity.ProjectAuditor.Editor.UI
             window.Close();
         }
 
-        void OnLostFocus()
+        void OnEnable()
         {
-            Close();
+            m_RequestClose = false;
         }
 
         void OnDestroy()
         {
             ApplySelection();
+        }
+
+        void OnLostFocus()
+        {
+            m_RequestClose = true;
+        }
+
+        void Update()
+        {
+            if (m_RequestClose)
+                Close();
         }
 
         public static bool IsOpen()
