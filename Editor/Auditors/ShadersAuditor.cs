@@ -15,6 +15,22 @@ using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
+    public enum ShaderProperty
+    {
+        NumVariants = 0,
+        NumPasses,
+        NumKeywords,
+        RenderQueue,
+        Instancing
+    }
+
+    public enum ShaderVariantProperty
+    {
+        Platform = 0,
+        PassName,
+        Keywords
+    }
+
     class ShaderVariantData
     {
         public string passName;
@@ -243,7 +259,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             s_ShaderVariantData = null;
         }
 
-        public int callbackOrder { get { return 0; } }
+        public int callbackOrder { get { return Int32.MaxValue; } }
         public void OnPreprocessBuild(BuildReport report)
         {
             s_ShaderVariantData = new Dictionary<Shader, List<ShaderVariantData>>();
