@@ -1,8 +1,13 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Auditors;
+using UnityEditor.Build;
+using UnityEditor.Rendering;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -10,6 +15,35 @@ namespace UnityEditor.ProjectAuditor.EditorTests
     {
         TempAsset m_ShaderResource;
         TempAsset m_EditorShaderResource;
+
+#if UNITY_2018_2_OR_NEWER
+        private static string s_KeywordName = "DIRECTIONAL";
+
+        class StripVariants : IPreprocessShaders
+        {
+            static public bool Enabled = false;
+            public int callbackOrder { get { return 0; } }
+
+            public void OnProcessShader(
+                Shader shader, ShaderSnippetData snippet, IList<ShaderCompilerData> shaderCompilerData)
+            {
+                if (!Enabled)
+                    return;
+
+                var keyword = new ShaderKeyword(s_KeywordName);
+
+                for (int i = 0; i < shaderCompilerData.Count; ++i)
+                {
+                    if (shaderCompilerData[i].shaderKeywordSet.IsEnabled(keyword))
+                    {
+                        shaderCompilerData.RemoveAt(i);
+                        --i;
+                    }
+                }
+            }
+        }
+#endif
+
 
         [OneTimeSetUp]
         public void SetUp()
@@ -129,6 +163,27 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderVariantsAreReported()
         {
+            var issues = BuildAndAnalyze();
+
+            var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
+
+            Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
+        }
+
+        [Test]
+        public void StrippedVariantsAreNotReported()
+        {
+            StripVariants.Enabled = true;
+            var issues = BuildAndAnalyze();
+            StripVariants.Enabled = false;
+
+            var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
+
+            Assert.False(keywords.Any(key => key.Equals(s_KeywordName)));
+        }
+
+        private static ProjectIssue[] BuildAndAnalyze()
+        {
             var buildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(buildPath);
             var buildPlayerOptions = new BuildPlayerOptions
@@ -151,7 +206,9 @@ Shader ""Custom/MyEditorShader""
             issues = issues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
 
             Assert.Positive(issues.Length);
+            return issues;
         }
+
 #endif
 
         [Test]
