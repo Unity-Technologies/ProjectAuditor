@@ -6,10 +6,13 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Auditors;
 using UnityEditor.Build;
-using UnityEditor.Build.Reporting;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
+
+#if UNITY_2018_2_OR_NEWER
+using UnityEditor.Build.Reporting;
+#endif
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
