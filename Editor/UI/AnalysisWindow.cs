@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public static AnalysisWindow FindOpenWindow()
         {
-            UnityEngine.Object[] windows = Resources.FindObjectsOfTypeAll(typeof(AnalysisWindow));
+            Object[] windows = Resources.FindObjectsOfTypeAll(typeof(AnalysisWindow));
             if (windows != null && windows.Length > 0)
                 return windows[0] as AnalysisWindow;
 

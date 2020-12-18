@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -5,6 +6,7 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Auditors;
 using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -17,11 +19,11 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         TempAsset m_EditorShaderResource;
 
 #if UNITY_2018_2_OR_NEWER
-        private static string s_KeywordName = "DIRECTIONAL";
+        static string s_KeywordName = "DIRECTIONAL";
 
         class StripVariants : IPreprocessShaders
         {
-            static public bool Enabled = false;
+            public static bool Enabled;
             public int callbackOrder { get { return 0; } }
 
             public void OnProcessShader(
@@ -204,7 +206,7 @@ Shader ""Custom/MyEditorShader""
             };
             var buildReport = BuildPipeline.BuildPlayer(buildPlayerOptions);
 
-            Assert.True(buildReport.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded);
+            Assert.True(buildReport.summary.result == BuildResult.Succeeded);
 
             Directory.Delete(buildPath, true);
 

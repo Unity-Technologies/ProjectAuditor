@@ -89,7 +89,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 var numAssemblies = assemblies.Length;
                 progressBar.Initialize("Assembly Compilation", "Compiling project scripts",
                     numAssemblies);
-                m_OnAssemblyCompilationStarted = (s) =>
+                m_OnAssemblyCompilationStarted = s =>
                 {
                     // The compilation pipeline might compile Editor-specific assemblies
                     // let's advance the progress bar only for Player ones.

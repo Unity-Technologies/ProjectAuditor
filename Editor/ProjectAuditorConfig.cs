@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// If enabled, Editor assemblies will be analyzed (as opposed to the currently selected platform assemblies)
         /// </summary>
-        public bool AnalyzeEditorCode = false;
+        public bool AnalyzeEditorCode;
 
         /// <summary>
         /// If enabled, any issue reported by ProjectAuditor will cause the build to fail.

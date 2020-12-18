@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.Column.Custom + 1,
                     IssueTable.Column.Custom + 2,
                     IssueTable.Column.Custom + 3,
-                    IssueTable.Column.Custom + 4,
+                    IssueTable.Column.Custom + 4
                 },
                 descriptionColumnStyle = new ColumnStyle
                 {
@@ -124,7 +124,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         Width = 80,
                         MinWidth = 80,
                         Format = PropertyFormat.String
-                    },
+                    }
                 },
                 onDoubleClick = FocusOnAssetInProjectWindow,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
@@ -230,7 +230,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     Width = 800,
                     MinWidth = 80,
                     Format = PropertyFormat.String
-                },
+                }
             },
             onDoubleClick = FocusOnAssetInProjectWindow,
             analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
@@ -487,7 +487,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (m_ShaderVariantsWindow == null)
                 {
-                    m_ShaderVariantsWindow = EditorWindow.GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
+                    m_ShaderVariantsWindow = GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
                     m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
                 }
                 else
@@ -864,7 +864,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         if (m_ShaderVariantsWindow == null)
                         {
-                            m_ShaderVariantsWindow = EditorWindow.GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
+                            m_ShaderVariantsWindow = GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
                             m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
                         }
                         else
