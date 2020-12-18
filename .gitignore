@@ -36,3 +36,6 @@ ehthumbs.db
 [Tt]humbs.db
 .npmrc
 .idea*
+
+# formmatting tools generated files
+*.preformat.bak
