@@ -14,13 +14,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.4.0-preview] - 2020-11-24
 * Added Shader variants auditing
 * Added "Collapse/Expand All" buttons
-* Refactoring and code quality improvements 
+* Refactoring and code quality improvements
 
 ## [0.3.1-preview] - 2020-10-23
 * Page up/down key bug fixes
 * Added dependencies view to Assets tab
 * Move call tree to the bottom of the window
-* Double-click on an asset selects it in the Project Window 
+* Double-click on an asset selects it in the Project Window
 * Fixed Unity 2017 compatibility
 * Fixed default selected assemblies
 * Fixed Area names filtering

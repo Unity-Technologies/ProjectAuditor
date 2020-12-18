@@ -116,7 +116,7 @@ The following table indicates the package directory structure:
 |`Editor/UI`|Project Auditor Editor window.|
 |`Tests`|Contains all scripts required to test the package.|
 
-## Document revision history 
+## Document revision history
 |Date|Reason|
 |---|---|
 |Oct 16, 2020|Added information about command line execution|
