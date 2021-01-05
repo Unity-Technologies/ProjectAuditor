@@ -63,8 +63,6 @@ namespace Unity.ProjectAuditor.Editor
             m_Config = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
             if (m_Config == null)
             {
-                Debug.LogWarningFormat("Project Auditor: {0} not found.", assetPath);
-
                 var path = Path.GetDirectoryName(assetPath);
                 if (!File.Exists(path))
                     Directory.CreateDirectory(path);
