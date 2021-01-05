@@ -675,13 +675,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawAssemblyFilter()
         {
+            if (!activeAnalysisView.desc.showAssemblySelection)
+                return;
+
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(Styles.AssemblyFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
 
             var lastEnabled = GUI.enabled;
-            GUI.enabled = IsAnalysisValid() &&
-                activeAnalysisView.desc.showAssemblySelection &&
-                !AssemblySelectionWindow.IsOpen();
+            GUI.enabled = IsAnalysisValid() && !AssemblySelectionWindow.IsOpen();
             if (GUILayout.Button(Styles.AssemblyFilterSelect, EditorStyles.miniButton,
                 GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
             {
