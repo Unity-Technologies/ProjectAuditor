@@ -212,7 +212,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 new ColumnStyle
                 {
-                    Content = new GUIContent("Platform", "Shader Compiler Platform"),
+                    Content = new GUIContent("Graphics API"),
                     Width = 80,
                     MinWidth = 80,
                     Format = PropertyFormat.String
