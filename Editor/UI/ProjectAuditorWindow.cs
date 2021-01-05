@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showCritical = false,
                 showDependencyView = true,
                 showRightPanels = true,
-                dependencyViewGuiContent = new GUIContent("Asset Dependencies", "Asset Dependencies"),
+                dependencyViewGuiContent = new GUIContent("Asset Dependencies"),
                 columnDescriptors = new[]
                 {
                     IssueTable.Column.Description,
@@ -53,7 +53,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 descriptionColumnStyle = new ColumnStyle
                 {
-                    Content = new GUIContent("Asset Name", "Asset Name"),
+                    Content = new GUIContent("Asset Name"),
                     Width = 300,
                     MinWidth = 100,
                     Format = PropertyFormat.String
@@ -83,7 +83,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 descriptionColumnStyle = new ColumnStyle
                 {
-                    Content = new GUIContent("Shader Name", "Shader Name"),
+                    Content = new GUIContent("Shader Name"),
                     Width = 300,
                     MinWidth = 100,
                     Format = PropertyFormat.String
@@ -99,21 +99,21 @@ namespace Unity.ProjectAuditor.Editor.UI
                     },
                     new ColumnStyle
                     {
-                        Content = new GUIContent("Num Passes", "Num Passes"),
+                        Content = new GUIContent("Passes", "Number of Passes"),
                         Width = 80,
                         MinWidth = 80,
                         Format = PropertyFormat.Integer
                     },
                     new ColumnStyle
                     {
-                        Content = new GUIContent("Num Keywords", "Num Keywords"),
+                        Content = new GUIContent("Keywords", "Number of Keywords"),
                         Width = 80,
                         MinWidth = 80,
                         Format = PropertyFormat.Integer
                     },
                     new ColumnStyle
                     {
-                        Content = new GUIContent("Render Queue", "Render Queue"),
+                        Content = new GUIContent("Render Queue"),
                         Width = 80,
                         MinWidth = 80,
                         Format = PropertyFormat.Integer
@@ -140,7 +140,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showCritical = true,
                 showDependencyView = true,
                 showRightPanels = true,
-                dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy", "Inverted Call Hierarchy"),
+                dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 columnDescriptors = new[]
                 {
                     IssueTable.Column.Description,
@@ -203,7 +203,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             },
             descriptionColumnStyle = new ColumnStyle
             {
-                Content = new GUIContent("Shader Name", "Shader Name"),
+                Content = new GUIContent("Shader Name"),
                 Width = 300,
                 MinWidth = 100,
                 Format = PropertyFormat.String
@@ -219,7 +219,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 new ColumnStyle
                 {
-                    Content = new GUIContent("Pass Name", "Pass Name"),
+                    Content = new GUIContent("Pass Name"),
                     Width = 80,
                     MinWidth = 80,
                     Format = PropertyFormat.String

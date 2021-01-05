@@ -280,7 +280,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             if (issue.category == IssueCategory.Code)
                                 path += string.Format(":{0}", issue.line);
 
-                            EditorGUI.LabelField(cellRect, new GUIContent(path, path));
+                            EditorGUI.LabelField(cellRect, new GUIContent(path));
                         }
                         break;
 
@@ -290,7 +290,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             var ext = issue.location.Extension;
                             if (issue.category == IssueCategory.Assets && ext.StartsWith("."))
                                 ext = ext.Substring(1);
-                            EditorGUI.LabelField(cellRect, new GUIContent(ext, ext));
+                            EditorGUI.LabelField(cellRect, new GUIContent(ext));
                         }
 
                         break;
