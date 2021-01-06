@@ -199,7 +199,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 IssueTable.Column.Description,
                 IssueTable.Column.Custom,
                 IssueTable.Column.Custom + 1,
-                IssueTable.Column.Custom + 2
+                IssueTable.Column.Custom + 2,
+                IssueTable.Column.Custom + 3
             },
             descriptionColumnStyle = new ColumnStyle
             {
@@ -228,6 +229,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     Content = new GUIContent("Keywords", "Compiled Variants Keywords"),
                     Width = 800,
+                    MinWidth = 80,
+                    Format = PropertyFormat.String
+                },
+                new ColumnStyle
+                {
+                    Content = new GUIContent("Requirements"),
+                    Width = 500,
                     MinWidth = 80,
                     Format = PropertyFormat.String
                 }
