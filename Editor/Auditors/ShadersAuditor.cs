@@ -127,6 +127,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var shadersInBuild = s_ShaderVariantData.Select(variant => variant.Key);
                 foreach (var shader in shadersInBuild)
                 {
+                    // skip shader if it's been removed since the last build
+                    if (shader == null)
+                        continue;
+
                     if (!shaderPathMap.ContainsKey(shader))
                     {
                         var assetPath = AssetDatabase.GetAssetPath(shader);
