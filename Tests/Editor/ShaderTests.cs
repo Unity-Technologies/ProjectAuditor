@@ -297,13 +297,13 @@ Shader ""Custom/MyEditorShader""
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
 
             var variants = issues.Where(i => i.description.Equals("Custom/ShaderUsingBuiltInKeyword"));
-            Assert.Positive(variants.Count());
+            Assert.Positive(variants.Count(), "No shader variants found");
 
             // check custom properties
-            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("INSTANCING_ON")));
-            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("<no keywords>"))); // check for instancing-off variant
-            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Requirements).Equals("BaseShaders, Derivatives")));
-            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Requirements).Equals("BaseShaders, Derivatives, Instancing")));
+            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("<no keywords>")), "No shader variants found without INSTANCING_ON keyword");
+            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("INSTANCING_ON")), "No shader variants found with INSTANCING_ON keyword");
+            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Requirements).Equals("BaseShaders, Derivatives")), "No shader variants found without Instancing requirement");
+            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Requirements).Equals("BaseShaders, Derivatives, Instancing")), "No shader variants found with Instancing requirement");
         }
 
         [Test]
