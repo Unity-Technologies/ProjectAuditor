@@ -170,7 +170,8 @@ namespace Unity.ProjectAuditor.Editor
         internal int GetCustomPropertyAsInt(int index)
         {
             var valueAsString = GetCustomProperty(index);
-            var value = int.Parse(valueAsString);
+            if (!int.TryParse(valueAsString, out var value))
+                return 0;
             return value;
         }
 
