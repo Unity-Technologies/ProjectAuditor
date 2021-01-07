@@ -371,9 +371,9 @@ Shader ""Custom/MyEditorShader""
 
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses).Equals("1"));
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords).Equals("2"));
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue).Equals("2000"));
+            Assert.AreEqual(1, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses));
+            Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords));
+            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue));
             Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.Instancing).Equals("No"));
         }
 
@@ -388,9 +388,10 @@ Shader ""Custom/MyEditorShader""
 
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses).Equals("1"));
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords).Equals("1"));
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue).Equals("2000"));
+
+            Assert.AreEqual(1, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses));
+            Assert.AreEqual(1, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords));
+            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue));
             Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.Instancing).Equals("Yes"));
         }
 
@@ -405,9 +406,9 @@ Shader ""Custom/MyEditorShader""
 
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses).Equals("4"));
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords).Equals("22"));
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue).Equals("2000"));
+            Assert.AreEqual(4, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses));
+            Assert.AreEqual(22, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords));
+            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue));
             Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.Instancing).Equals("Yes"));
         }
 
