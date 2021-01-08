@@ -30,6 +30,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Platform = 0,
         PassName,
         Keywords,
+        Requirements,
         Num
     }
 
@@ -255,6 +256,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     compilerData.shaderCompilerPlatform.ToString(),
                     shaderVariantData.passName,
                     keywordString,
+                    compilerData.shaderRequirements.ToString()
                 });
 
                 onIssueFound(issue);

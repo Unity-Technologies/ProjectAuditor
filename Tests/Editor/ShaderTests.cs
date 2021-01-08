@@ -21,6 +21,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         TempAsset m_ShaderResource;
         TempAsset m_EditorShaderResource;
 
+        TempAsset m_ShaderUsingBuiltInKeywordResource;
+        TempAsset m_SurfShaderResource;
+
 #if UNITY_2018_2_OR_NEWER
         static string s_KeywordName = "DIRECTIONAL";
 
@@ -54,7 +57,108 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         public void SetUp()
         {
             m_ShaderResource = new TempAsset("Resources/MyTestShader.shader", @"
-Shader ""Custom/MyTestShader""
+            Shader ""Custom/MyTestShader""
+            {
+                SubShader
+                {
+                    Pass
+                    {
+                        Name ""MyTestShader/Pass""
+
+                        CGPROGRAM
+    #pragma vertex vert
+    #pragma fragment frag
+    #pragma multi_compile KEYWORD_A KEYWORD_B
+
+                        struct appdata
+                        {
+                            float4 vertex : POSITION;
+                            float2 uv : TEXCOORD0;
+                        };
+
+                        struct v2f
+                        {
+                            float2 uv : TEXCOORD0;
+                            float4 vertex : SV_POSITION;
+                        };
+
+                        sampler2D _MainTex;
+                        float4 _MainTex_ST;
+
+                        v2f vert (appdata v)
+                        {
+                            v2f o;
+                            o.vertex = UnityObjectToClipPos(v.vertex);
+                            o.uv = v.uv;
+                            return o;
+                        }
+
+                        fixed4 frag (v2f i) : SV_Target
+                        {
+                            return tex2D(_MainTex, i.uv);
+                        }
+                        ENDCG
+                    }
+                }
+            }");
+
+
+            m_ShaderUsingBuiltInKeywordResource = new TempAsset("Resources/ShaderUsingBuiltInKeyword.shader", @"
+Shader ""Custom/ShaderUsingBuiltInKeyword""
+            {
+                Properties
+                {
+                    _MainTex (""Texture"", 2D) = ""white"" {}
+                }
+                SubShader
+                {
+                    Tags { ""RenderType""=""Opaque"" }
+                    LOD 100
+
+                    Pass
+                    {
+                        CGPROGRAM
+#pragma vertex vert
+#pragma fragment frag
+#pragma multi_compile_instancing
+
+#include ""UnityCG.cginc""
+
+                        struct appdata
+                        {
+                            float4 vertex : POSITION;
+                            float2 uv : TEXCOORD0;
+                        };
+
+                        struct v2f
+                        {
+                            float2 uv : TEXCOORD0;
+                            float4 vertex : SV_POSITION;
+                        };
+
+                        sampler2D _MainTex;
+                        float4 _MainTex_ST;
+
+                        v2f vert (appdata v)
+                        {
+                            v2f o;
+                            o.vertex = UnityObjectToClipPos(v.vertex);
+                            o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                            return o;
+                        }
+
+                        fixed4 frag (v2f i) : SV_Target
+                        {
+                            return tex2D(_MainTex, i.uv);
+                        }
+                        ENDCG
+                    }
+                }
+            }
+            ");
+
+            m_SurfShaderResource = new TempAsset("Resources/MySurfShader.shader", @"
+Shader ""Custom/MySurfShader""
             {
                 Properties
                 {
@@ -178,9 +282,47 @@ Shader ""Custom/MyEditorShader""
             Assert.Positive(variants.Count());
 
             // check custom property
+            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_A")));
+            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B")));
+            Assert.AreEqual((int)ShaderVariantProperty.Num, variants.First().GetNumCustomProperties());
+        }
+
+        [Test]
+        public void ShaderVariantForBuiltInKeywordIsReported()
+        {
+            var issues = BuildAndAnalyze();
+
+            var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
+
+            Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
+
+            var variants = issues.Where(i => i.description.Equals("Custom/ShaderUsingBuiltInKeyword"));
+            Assert.Positive(variants.Count(), "No shader variants found");
+
+            // check custom properties
+            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("<no keywords>")), "No shader variants found without INSTANCING_ON keyword");
+            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Requirements).Equals("BaseShaders, Derivatives")), "No shader variants found without Instancing requirement");
+#if UNITY_2019_1_OR_NEWER
+            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("INSTANCING_ON")), "No shader variants found with INSTANCING_ON keyword");
+            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Requirements).Equals("BaseShaders, Derivatives, Instancing")), "No shader variants found with Instancing requirement");
+#endif
+        }
+
+        [Test]
+        public void SurfShaderVariantsAreReported()
+        {
+            var issues = BuildAndAnalyze();
+
+            var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
+
+            Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
+
+            var variants = issues.Where(i => i.description.Equals("Custom/MySurfShader"));
+            Assert.Positive(variants.Count());
+
+            // check custom property
             var variant = variants.FirstOrDefault(v => v.GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("FORWARD") && v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("DIRECTIONAL"));
             Assert.NotNull(variant);
-            Assert.AreEqual((int)ShaderVariantProperty.Num, variant.GetNumCustomProperties());
         }
 
         [Test]
@@ -215,11 +357,7 @@ Shader ""Custom/MyEditorShader""
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.ShaderVariants);
-            issues = issues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
-
-            Assert.Positive(issues.Length);
-            return issues;
+            return projectReport.GetIssues(IssueCategory.ShaderVariants);
         }
 
 #endif
@@ -235,10 +373,58 @@ Shader ""Custom/MyEditorShader""
 
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumVariants).Equals("N/A"));
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses).Equals("4"));
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords).Equals("22"));
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue).Equals("2000"));
+#if UNITY_2019_1_OR_NEWER
+            Assert.AreEqual(1, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
+            Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
+#else
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
+#endif
+            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue));
+            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.Instancing).Equals("No"));
+        }
+
+        [Test]
+        public void ShaderUsingBuiltInKeywordIsReported()
+        {
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var projectReport = projectAuditor.Audit();
+            var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            var shaderIssue = issues.FirstOrDefault(i => i.description.Equals("Custom/ShaderUsingBuiltInKeyword"));
+            Assert.NotNull(shaderIssue);
+
+            // check custom property
+            Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
+#if UNITY_2019_1_OR_NEWER
+            Assert.AreEqual(1, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
+            Assert.AreEqual(1, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
+#else
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
+#endif
+            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue));
+            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.Instancing).Equals("Yes"));
+        }
+
+        [Test]
+        public void SurfShaderIsReported()
+        {
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var projectReport = projectAuditor.Audit();
+            var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            var shaderIssue = issues.FirstOrDefault(i => i.description.Equals("Custom/MySurfShader"));
+            Assert.NotNull(shaderIssue);
+
+            // check custom property
+            Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
+#if UNITY_2019_1_OR_NEWER
+            Assert.AreEqual(4, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
+            Assert.AreEqual(22, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
+#else
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
+#endif
+            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue));
             Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.Instancing).Equals("Yes"));
         }
 

@@ -232,9 +232,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     public enum ShaderVariantProperty
     {
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Keywords = 2;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Num = 3;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Num = 4;
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PassName = 1;
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Platform = 0;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Requirements = 3;
         public int value__;
     }
 }
