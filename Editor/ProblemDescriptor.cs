@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public class ProblemDescriptor : IEquatable<ProblemDescriptor>
     {
-        public Rule.Action action;
+        public Rule.Severity severity;
         public string area;
         public string customevaluator;
 

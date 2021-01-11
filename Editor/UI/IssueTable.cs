@@ -203,7 +203,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (rule == null && issue != null)
                 // try to find non-specific rule
                 rule = m_Config.GetRule(descriptor);
-            if (rule != null && rule.action == Rule.Action.None) GUI.enabled = false;
+            if (rule != null && rule.severity == Rule.Severity.None) GUI.enabled = false;
 
             if (item.IsGroup())
                 switch (column)
@@ -304,7 +304,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         break;
                 }
 
-            if (rule != null && rule.action == Rule.Action.None) GUI.enabled = true;
+            if (rule != null && rule.severity == Rule.Severity.None) GUI.enabled = true;
         }
 
         protected override void DoubleClickedItem(int id)

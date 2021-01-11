@@ -78,18 +78,18 @@ namespace Unity.ProjectAuditor.Editor
             foreach (var rule in rules) m_Rules.Remove(rule);
         }
 
-        public Rule.Action GetAction(ProblemDescriptor descriptor, string filter = "")
+        public Rule.Severity GetAction(ProblemDescriptor descriptor, string filter = "")
         {
             // is there a rule that matches the filter?
             var projectRule = GetRule(descriptor, filter);
-            if (projectRule != null) return projectRule.action;
+            if (projectRule != null) return projectRule.severity;
 
             // is there a rule that matches descriptor?
             projectRule = GetRule(descriptor);
-            if (projectRule != null) return projectRule.action;
+            if (projectRule != null) return projectRule.severity;
 
             // return the default descriptor action
-            return descriptor.action;
+            return descriptor.severity;
         }
     }
 }
