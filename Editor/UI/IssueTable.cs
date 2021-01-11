@@ -23,7 +23,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             Count
         }
 
-        static readonly string PerfCriticalIconName = "console.warnicon";
+        static readonly string InfoIconName = "console.infoicon";
+        static readonly string WarnIconName = "console.warnicon";
+        static readonly string ErrorIconName = "console.erroricon";
 
         readonly ProjectAuditorConfig m_Config;
         readonly AnalysisViewDescriptor m_Desc;
@@ -220,9 +222,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                         if (issue.isPerfCriticalContext)
 #if UNITY_2018_3_OR_NEWER
                             EditorGUI.LabelField(cellRect,
-                            EditorGUIUtility.TrIconContent(PerfCriticalIconName, "Performance Critical Context"));
+                            EditorGUIUtility.TrIconContent(WarnIconName, "Performance Critical Context"));
 #else
-                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(PerfCriticalIconName), "Performance Critical Context"));
+                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(WarnIconName), "Performance Critical Context"));
 #endif
                         break;
                     case ColumnType.Area:
