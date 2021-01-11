@@ -288,7 +288,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         if (issue.location.Path != string.Empty)
                         {
                             var ext = issue.location.Extension;
-                            if (issue.category == IssueCategory.Assets && ext.StartsWith("."))
+                            if (ext.StartsWith("."))
                                 ext = ext.Substring(1);
                             EditorGUI.LabelField(cellRect, new GUIContent(ext));
                         }
