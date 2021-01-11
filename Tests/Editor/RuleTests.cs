@@ -40,20 +40,20 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var action = projectAuditorSettings.GetAction(issue.descriptor, issue.callingMethod);
 
             // expect default action specified in descriptor
-            Assert.AreEqual(issue.descriptor.action, action);
+            Assert.AreEqual(issue.descriptor.severity, action);
 
             // add rule with a filter.
             projectAuditorSettings.AddRule(new Rule
             {
                 id = issue.descriptor.id,
-                action = Rule.Action.None,
+                severity = Rule.Severity.None,
                 filter = issue.callingMethod
             });
 
             action = projectAuditorSettings.GetAction(issue.descriptor, issue.callingMethod);
 
             // issue has been muted so it should not be reported
-            Assert.AreEqual(Rule.Action.None, action);
+            Assert.AreEqual(Rule.Severity.None, action);
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             config.AddRule(new Rule
             {
                 id = firstDescriptor.id,
-                action = Rule.Action.None,
+                severity = Rule.Severity.None,
                 filter = filter
             });
 
@@ -91,7 +91,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             config.AddRule(new Rule
             {
                 id = firstDescriptor.id,
-                action = Rule.Action.None
+                severity = Rule.Severity.None
             });
 
             // search for specific rule again
@@ -119,7 +119,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             config.AddRule(new Rule
             {
                 id = firstDescriptor.id,
-                action = Rule.Action.None
+                severity = Rule.Severity.None
             });
             Assert.AreEqual(1, config.NumRules);
 

@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public enum ColumnType
         {
             Description = 0,
-            Priority,
+            Severity,
             Area,
             Path,
             Filename,
@@ -203,7 +203,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (rule == null && issue != null)
                 // try to find non-specific rule
                 rule = m_Config.GetRule(descriptor);
-            if (rule != null && rule.action == Rule.Action.None) GUI.enabled = false;
+            if (rule != null && rule.severity == Rule.Severity.None) GUI.enabled = false;
 
             if (item.IsGroup())
                 switch (column)
@@ -218,15 +218,47 @@ namespace Unity.ProjectAuditor.Editor.UI
             else
                 switch (column)
                 {
-                    case ColumnType.Priority:
-                        if (issue.isPerfCriticalContext)
+                    case ColumnType.Severity:
+                    {
+                        string iconName = string.Empty;
+                        string tooltip = string.Empty;
+                        if (issue.category == IssueCategory.Code && issue.isPerfCriticalContext)
+                        {
+                            iconName = WarnIconName;
+                            tooltip = "Performance Critical Context";
+                        }
+                        else
+                        {
+                            switch (issue.descriptor.severity)
+                            {
+                                case Rule.Severity.Info:
+                                    iconName = InfoIconName;
+                                    tooltip = "Info";
+                                    break;
+                                case Rule.Severity.Warning:
+                                    iconName = WarnIconName;
+                                    tooltip = "Warning";
+                                    break;
+                                case Rule.Severity.Error:
+                                    iconName = ErrorIconName;
+                                    tooltip = "Error";
+                                    break;
+                                default:
+                                    iconName = string.Empty;
+                                    tooltip = string.Empty;
+                                    break;
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(iconName))
+                        {
 #if UNITY_2018_3_OR_NEWER
-                            EditorGUI.LabelField(cellRect,
-                            EditorGUIUtility.TrIconContent(WarnIconName, "Performance Critical Context"));
+                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrIconContent(iconName, tooltip));
 #else
-                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(WarnIconName), "Performance Critical Context"));
+                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(iconName), tooltip));
 #endif
-                        break;
+                        }
+                    }
+                    break;
                     case ColumnType.Area:
                         if (!m_Desc.groupByDescription)
                             EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
@@ -304,7 +336,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         break;
                 }
 
-            if (rule != null && rule.action == Rule.Action.None) GUI.enabled = true;
+            if (rule != null && rule.severity == Rule.Severity.None) GUI.enabled = true;
         }
 
         protected override void DoubleClickedItem(int id)
@@ -500,9 +532,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.location.Extension : string.Empty;
                                 secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.location.Extension : string.Empty;
                                 break;
-                            case ColumnType.Priority:
-                                firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
-                                secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
+                            case ColumnType.Severity:
+                                firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.severity.ToString() : string.Empty;
+                                secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.severity.ToString() : string.Empty;
                                 break;
                             default:
                                 var propertyIndex = columnEnum - ColumnType.Custom;

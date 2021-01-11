@@ -51,7 +51,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
             // check descriptor
             Assert.NotNull(boxingInt.descriptor);
-            Assert.AreEqual(Rule.Action.Default, boxingInt.descriptor.action);
+            Assert.AreEqual(Rule.Severity.Default, boxingInt.descriptor.severity);
             Assert.AreEqual(102000, boxingInt.descriptor.id);
             Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.type));
             Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.method));
@@ -79,7 +79,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
             // check descriptor
             Assert.NotNull(boxingFloat.descriptor);
-            Assert.AreEqual(Rule.Action.Default, boxingFloat.descriptor.action);
+            Assert.AreEqual(Rule.Severity.Default, boxingFloat.descriptor.severity);
             Assert.AreEqual(102000, boxingFloat.descriptor.id);
             Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.type));
             Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.method));

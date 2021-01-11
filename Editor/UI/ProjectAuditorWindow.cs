@@ -144,7 +144,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 columnTypes = new[]
                 {
                     IssueTable.ColumnType.Description,
-                    IssueTable.ColumnType.Priority,
+                    IssueTable.ColumnType.Severity,
                     IssueTable.ColumnType.Area,
                     IssueTable.ColumnType.Filename,
                     IssueTable.ColumnType.Custom
@@ -306,7 +306,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 Profiler.BeginSample("IsMuted");
                 var muted = m_ProjectAuditor.config.GetAction(issue.descriptor, issue.callingMethod) ==
-                    Rule.Action.None;
+                    Rule.Severity.None;
                 Profiler.EndSample();
                 if (muted)
                     return false;
@@ -613,7 +613,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (path.Length != 0)
                 {
                     m_ProjectReport.ExportToCSV(path, issue => m_ProjectAuditor.config.GetAction(issue.descriptor, issue.callingMethod) !=
-                        Rule.Action.None && (match == null || match(issue)));
+                        Rule.Severity.None && (match == null || match(issue)));
                 }
             }
             ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Export, analytic);
@@ -896,7 +896,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var selectedItems = table.GetSelectedItems();
                         foreach (var item in selectedItems)
                         {
-                            SetRuleForItem(item, Rule.Action.None);
+                            SetRuleForItem(item, Rule.Severity.None);
                         }
 
                         if (!m_Preferences.mutedIssues)
@@ -990,7 +990,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             RefreshDisplay();
         }
 
-        void SetRuleForItem(IssueTableItem item, Rule.Action ruleAction)
+        void SetRuleForItem(IssueTableItem item, Rule.Severity ruleSeverity)
         {
             var descriptor = item.ProblemDescriptor;
 
@@ -1011,10 +1011,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     id = descriptor.id,
                     filter = callingMethod,
-                    action = ruleAction
+                    severity = ruleSeverity
                 });
             else
-                rule.action = ruleAction;
+                rule.severity = ruleSeverity;
         }
 
         void ClearRulesForItem(IssueTableItem item)

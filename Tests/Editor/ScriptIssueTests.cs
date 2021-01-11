@@ -192,7 +192,7 @@ class ClassWithDelegate
             Assert.NotNull(myIssue);
             Assert.NotNull(myIssue.descriptor);
 
-            Assert.AreEqual(Rule.Action.Default, myIssue.descriptor.action);
+            Assert.AreEqual(Rule.Severity.Default, myIssue.descriptor.severity);
             Assert.AreEqual(101000, myIssue.descriptor.id);
             Assert.True(myIssue.descriptor.type.Equals("UnityEngine.Camera"));
             Assert.True(myIssue.descriptor.method.Equals("main"));
