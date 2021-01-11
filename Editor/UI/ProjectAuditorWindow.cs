@@ -144,7 +144,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 columnTypes = new[]
                 {
                     IssueTable.ColumnType.Description,
-                    IssueTable.ColumnType.Priority,
+                    IssueTable.ColumnType.Severity,
                     IssueTable.ColumnType.Area,
                     IssueTable.ColumnType.Filename,
                     IssueTable.ColumnType.Custom

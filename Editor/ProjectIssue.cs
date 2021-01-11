@@ -143,6 +143,16 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
+        public Rule.Severity severity
+        {
+            get
+            {
+                if (descriptor.critical || (dependencies != null && dependencies.IsPerfCritical()))
+                    return Rule.Severity.Warning;
+                return descriptor.severity;
+            }
+        }
+
         public string name
         {
             get
