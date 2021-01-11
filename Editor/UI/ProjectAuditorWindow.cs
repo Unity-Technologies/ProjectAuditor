@@ -991,7 +991,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             RefreshDisplay();
         }
 
-        void SetRuleForItem(IssueTableItem item, Rule.Severity ruleAction)
+        void SetRuleForItem(IssueTableItem item, Rule.Severity ruleSeverity)
         {
             var descriptor = item.ProblemDescriptor;
 
@@ -1012,10 +1012,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     id = descriptor.id,
                     filter = callingMethod,
-                    severity = ruleAction
+                    severity = ruleSeverity
                 });
             else
-                rule.severity = ruleAction;
+                rule.severity = ruleSeverity;
         }
 
         void ClearRulesForItem(IssueTableItem item)
