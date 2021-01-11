@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         Integer
     }
 
-    struct ColumnStyle
+    struct ColumnDescriptor
     {
         public GUIContent Content;
         public int Width;
@@ -36,9 +36,9 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showDependencyView;
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
-        public IssueTable.Column[] columnDescriptors;
-        public ColumnStyle descriptionColumnStyle;
-        public ColumnStyle[] customColumnStyles;
+        public IssueTable.ColumnType[] columnTypes;
+        public ColumnDescriptor descriptionColumnStyle;
+        public ColumnDescriptor[] customColumnStyles;
         public Action<Location> onDoubleClick;
         public Action<ProblemDescriptor> onOpenDescriptor;
         public ProjectAuditorAnalytics.UIButton analyticsEvent;
@@ -80,21 +80,21 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return;
 
             var state = new TreeViewState();
-            var columns = new MultiColumnHeaderState.Column[m_Desc.columnDescriptors.Length];
+            var columns = new MultiColumnHeaderState.Column[m_Desc.columnTypes.Length];
             for (var i = 0; i < columns.Length; i++)
             {
-                var columnEnum = m_Desc.columnDescriptors[i];
+                var columnType = m_Desc.columnTypes[i];
 
-                ColumnStyle style;
-                if (columnEnum == IssueTable.Column.Description && m_Desc.descriptionColumnStyle.Content != null)
+                ColumnDescriptor style;
+                if (columnType == IssueTable.ColumnType.Description && m_Desc.descriptionColumnStyle.Content != null)
                 {
                     style = m_Desc.descriptionColumnStyle;
                 }
-                else if (columnEnum < IssueTable.Column.Custom)
-                    style = Styles.Columns[(int)columnEnum];
+                else if (columnType < IssueTable.ColumnType.Custom)
+                    style = Styles.Columns[(int)columnType];
                 else
                 {
-                    style = m_Desc.customColumnStyles[columnEnum - IssueTable.Column.Custom];
+                    style = m_Desc.customColumnStyles[columnType - IssueTable.ColumnType.Custom];
                 }
 
                 columns[i] = new MultiColumnHeaderState.Column
@@ -317,44 +317,44 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent RecommendationFoldout =
                 new GUIContent("Recommendation", "Recommendation on how to solve the issue");
 
-            public static readonly ColumnStyle[] Columns =
+            public static readonly ColumnDescriptor[] Columns =
             {
-                new ColumnStyle
+                new ColumnDescriptor
                 {
                     Content = new GUIContent("Issue", "Issue description"),
                     Width = 300,
                     MinWidth = 100,
                     Format = PropertyFormat.String
                 },
-                new ColumnStyle
+                new ColumnDescriptor
                 {
                     Content = new GUIContent(" ! ", "Issue priority"),
                     Width = 22,
                     MinWidth = 22,
                     Format = PropertyFormat.String
                 },
-                new ColumnStyle
+                new ColumnDescriptor
                 {
                     Content = new GUIContent("Area", "The area the issue might have an impact on"),
                     Width = 60,
                     MinWidth = 50,
                     Format = PropertyFormat.String
                 },
-                new ColumnStyle
+                new ColumnDescriptor
                 {
                     Content = new GUIContent("Path", "Path and line number"),
                     Width = 700,
                     MinWidth = 100,
                     Format = PropertyFormat.String
                 },
-                new ColumnStyle
+                new ColumnDescriptor
                 {
                     Content = new GUIContent("Filename", "Managed Assembly name"),
                     Width = 180,
                     MinWidth = 100,
                     Format = PropertyFormat.String
                 },
-                new ColumnStyle
+                new ColumnDescriptor
                 {
                     Content = new GUIContent("File Type", "File extension"),
                     Width = 80,

@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     class IssueTable : TreeView
     {
-        public enum Column
+        public enum ColumnType
         {
             Description = 0,
             Priority,
@@ -175,10 +175,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int columnIndex, ref RowGUIArgs args)
         {
-            var column = m_Desc.columnDescriptors[columnIndex];
+            var column = m_Desc.columnTypes[columnIndex];
 
             // only indent first column
-            if ((int)Column.Description == column)
+            if ((int)ColumnType.Description == column)
             {
                 var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
@@ -188,7 +188,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var item = treeViewItem as IssueTableItem;
             if (item == null)
             {
-                if (column == Column.Description)
+                if (column == ColumnType.Description)
                     EditorGUI.LabelField(cellRect, new GUIContent(treeViewItem.displayName, treeViewItem.displayName));
                 return;
             }
@@ -206,17 +206,17 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (item.IsGroup())
                 switch (column)
                 {
-                    case Column.Description:
+                    case ColumnType.Description:
                         EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()));
                         break;
-                    case Column.Area:
+                    case ColumnType.Area:
                         EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
                         break;
                 }
             else
                 switch (column)
                 {
-                    case Column.Priority:
+                    case ColumnType.Priority:
                         if (issue.isPerfCriticalContext)
 #if UNITY_2018_3_OR_NEWER
                             EditorGUI.LabelField(cellRect,
@@ -225,11 +225,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                             EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(PerfCriticalIconName), "Performance Critical Context"));
 #endif
                         break;
-                    case Column.Area:
+                    case ColumnType.Area:
                         if (!m_Desc.groupByDescription)
                             EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
                         break;
-                    case Column.Description:
+                    case ColumnType.Description:
                         if (m_Desc.groupByDescription)
                         {
                             var text = item.GetDisplayName();
@@ -261,7 +261,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         }
 
                         break;
-                    case Column.Filename:
+                    case ColumnType.Filename:
                         if (issue.filename != string.Empty)
                         {
                             var filename = string.Format("{0}", issue.filename);
@@ -273,7 +273,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         }
                         break;
 
-                    case Column.Path:
+                    case ColumnType.Path:
                         if (issue.location != null)
                         {
                             var path = string.Format("{0}", issue.location.Path);
@@ -284,7 +284,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         }
                         break;
 
-                    case Column.FileType:
+                    case ColumnType.FileType:
                         if (issue.location.Path != string.Empty)
                         {
                             var ext = issue.location.Extension;
@@ -295,7 +295,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                         break;
                     default:
-                        var propertyIndex = column - Column.Custom;
+                        var propertyIndex = column - ColumnType.Custom;
                         var property = issue.GetCustomProperty(propertyIndex);
                         if (property != string.Empty)
                             EditorGUI.LabelField(cellRect, new GUIContent(property));
@@ -467,18 +467,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var firstString = String.Empty;
                         var secondString = String.Empty;
 
-                        var columnEnum = m_ViewDescriptor.columnDescriptors[columnSortOrder[i]];
+                        var columnEnum = m_ViewDescriptor.columnTypes[columnSortOrder[i]];
                         switch (columnEnum)
                         {
-                            case Column.Description:
+                            case ColumnType.Description:
                                 firstString = firstItem.GetDisplayName();
                                 secondString = secondItem.GetDisplayName();
                                 break;
-                            case Column.Area:
+                            case ColumnType.Area:
                                 firstString = firstItem.ProblemDescriptor.area;
                                 secondString = secondItem.ProblemDescriptor.area;
                                 break;
-                            case Column.Filename:
+                            case ColumnType.Filename:
                                 firstString = firstItem.ProjectIssue != null
                                     ? firstItem.ProjectIssue.filename
                                     : string.Empty;
@@ -486,7 +486,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     ? secondItem.ProjectIssue.filename
                                     : string.Empty;
                                 break;
-                            case Column.Path:
+                            case ColumnType.Path:
                                 firstString = firstItem.ProjectIssue != null
                                     ? firstItem.ProjectIssue.location.Path
                                     : string.Empty;
@@ -494,16 +494,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     ? secondItem.ProjectIssue.location.Path
                                     : string.Empty;
                                 break;
-                            case Column.FileType:
+                            case ColumnType.FileType:
                                 firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.location.Extension : string.Empty;
                                 secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.location.Extension : string.Empty;
                                 break;
-                            case Column.Priority:
+                            case ColumnType.Priority:
                                 firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
                                 secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
                                 break;
                             default:
-                                var propertyIndex = columnEnum - Column.Custom;
+                                var propertyIndex = columnEnum - ColumnType.Custom;
                                 var format = m_ViewDescriptor.customColumnStyles[propertyIndex].Format;
                                 if (format == PropertyFormat.Integer)
                                 {

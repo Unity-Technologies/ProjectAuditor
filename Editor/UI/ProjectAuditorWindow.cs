@@ -45,13 +45,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showDependencyView = true,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Asset Dependencies"),
-                columnDescriptors = new[]
+                columnTypes = new[]
                 {
-                    IssueTable.Column.Description,
-                    IssueTable.Column.FileType,
-                    IssueTable.Column.Path
+                    IssueTable.ColumnType.Description,
+                    IssueTable.ColumnType.FileType,
+                    IssueTable.ColumnType.Path
                 },
-                descriptionColumnStyle = new ColumnStyle
+                descriptionColumnStyle = new ColumnDescriptor
                 {
                     Content = new GUIContent("Asset Name"),
                     Width = 300,
@@ -72,16 +72,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showCritical = false,
                 showDependencyView = false,
                 showRightPanels = false,
-                columnDescriptors = new[]
+                columnTypes = new[]
                 {
-                    IssueTable.Column.Description,
-                    IssueTable.Column.Custom,
-                    IssueTable.Column.Custom + 1,
-                    IssueTable.Column.Custom + 2,
-                    IssueTable.Column.Custom + 3,
-                    IssueTable.Column.Custom + 4
+                    IssueTable.ColumnType.Description,
+                    IssueTable.ColumnType.Custom,
+                    IssueTable.ColumnType.Custom + 1,
+                    IssueTable.ColumnType.Custom + 2,
+                    IssueTable.ColumnType.Custom + 3,
+                    IssueTable.ColumnType.Custom + 4
                 },
-                descriptionColumnStyle = new ColumnStyle
+                descriptionColumnStyle = new ColumnDescriptor
                 {
                     Content = new GUIContent("Shader Name"),
                     Width = 300,
@@ -90,35 +90,35 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 customColumnStyles = new[]
                 {
-                    new ColumnStyle
+                    new ColumnDescriptor
                     {
                         Content = new GUIContent("Actual Variants", "Number of variants in the build"),
                         Width = 80,
                         MinWidth = 80,
                         Format = PropertyFormat.Integer
                     },
-                    new ColumnStyle
+                    new ColumnDescriptor
                     {
                         Content = new GUIContent("Passes", "Number of Passes"),
                         Width = 80,
                         MinWidth = 80,
                         Format = PropertyFormat.Integer
                     },
-                    new ColumnStyle
+                    new ColumnDescriptor
                     {
                         Content = new GUIContent("Keywords", "Number of Keywords"),
                         Width = 80,
                         MinWidth = 80,
                         Format = PropertyFormat.Integer
                     },
-                    new ColumnStyle
+                    new ColumnDescriptor
                     {
                         Content = new GUIContent("Render Queue"),
                         Width = 80,
                         MinWidth = 80,
                         Format = PropertyFormat.Integer
                     },
-                    new ColumnStyle
+                    new ColumnDescriptor
                     {
                         Content = new GUIContent("Instancing", "GPU Instancing Support"),
                         Width = 80,
@@ -141,17 +141,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showDependencyView = true,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
-                columnDescriptors = new[]
+                columnTypes = new[]
                 {
-                    IssueTable.Column.Description,
-                    IssueTable.Column.Priority,
-                    IssueTable.Column.Area,
-                    IssueTable.Column.Filename,
-                    IssueTable.Column.Custom
+                    IssueTable.ColumnType.Description,
+                    IssueTable.ColumnType.Priority,
+                    IssueTable.ColumnType.Area,
+                    IssueTable.ColumnType.Filename,
+                    IssueTable.ColumnType.Custom
                 },
                 customColumnStyles = new[]
                 {
-                    new ColumnStyle
+                    new ColumnDescriptor
                     {
                         Content = new GUIContent("Assembly", "Managed Assembly name"),
                         Width = 300,
@@ -174,10 +174,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showCritical = false,
                 showDependencyView = false,
                 showRightPanels = true,
-                columnDescriptors = new[]
+                columnTypes = new[]
                 {
-                    IssueTable.Column.Description,
-                    IssueTable.Column.Area
+                    IssueTable.ColumnType.Description,
+                    IssueTable.ColumnType.Area
                 },
                 onDoubleClick = OpenProjectSettings,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.ProjectSettings
@@ -194,15 +194,15 @@ namespace Unity.ProjectAuditor.Editor.UI
             showCritical = false,
             showDependencyView = false,
             showRightPanels = false,
-            columnDescriptors = new[]
+            columnTypes = new[]
             {
-                IssueTable.Column.Description,
-                IssueTable.Column.Custom,
-                IssueTable.Column.Custom + 1,
-                IssueTable.Column.Custom + 2,
-                IssueTable.Column.Custom + 3
+                IssueTable.ColumnType.Description,
+                IssueTable.ColumnType.Custom,
+                IssueTable.ColumnType.Custom + 1,
+                IssueTable.ColumnType.Custom + 2,
+                IssueTable.ColumnType.Custom + 3
             },
-            descriptionColumnStyle = new ColumnStyle
+            descriptionColumnStyle = new ColumnDescriptor
             {
                 Content = new GUIContent("Shader Name"),
                 Width = 300,
@@ -211,28 +211,28 @@ namespace Unity.ProjectAuditor.Editor.UI
             },
             customColumnStyles = new[]
             {
-                new ColumnStyle
+                new ColumnDescriptor
                 {
                     Content = new GUIContent("Graphics API"),
                     Width = 80,
                     MinWidth = 80,
                     Format = PropertyFormat.String
                 },
-                new ColumnStyle
+                new ColumnDescriptor
                 {
                     Content = new GUIContent("Pass Name"),
                     Width = 80,
                     MinWidth = 80,
                     Format = PropertyFormat.String
                 },
-                new ColumnStyle
+                new ColumnDescriptor
                 {
                     Content = new GUIContent("Keywords", "Compiled Variants Keywords"),
                     Width = 800,
                     MinWidth = 80,
                     Format = PropertyFormat.String
                 },
-                new ColumnStyle
+                new ColumnDescriptor
                 {
                     Content = new GUIContent("Requirements"),
                     Width = 500,
