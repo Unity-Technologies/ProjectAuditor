@@ -328,7 +328,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 new ColumnDescriptor
                 {
-                    Content = new GUIContent(" ! ", "Issue priority"),
+                    Content = new GUIContent(" ! ", "Issue Severity"),
                     Width = 22,
                     MinWidth = 22,
                     Format = PropertyFormat.String
