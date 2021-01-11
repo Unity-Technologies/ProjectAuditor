@@ -55,7 +55,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Area.BuildSize,
             string.Empty,
             string.Empty
-            );
+            )
+        {
+            severity = Rule.Severity.Error
+        };
 
         ProblemDescriptor k_BuildRequiredDescriptor = new ProblemDescriptor
             (
@@ -64,7 +67,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Area.BuildSize,
             string.Empty,
             string.Empty
-            );
+            )
+        {
+            severity = Rule.Severity.Error
+        };
 
         const int k_ShaderVariantFirstId = 400002;
 
