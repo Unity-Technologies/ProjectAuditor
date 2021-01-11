@@ -48,7 +48,25 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         , IPreprocessBuildWithReport
 #endif
     {
-        const int k_ShaderVariantFirstId = 400000;
+        ProblemDescriptor k_ParseErrorDescriptor = new ProblemDescriptor
+            (
+            400000,
+            "Parse Error",
+            Area.BuildSize,
+            string.Empty,
+            string.Empty
+            );
+
+        ProblemDescriptor k_BuildRequiredDescriptor = new ProblemDescriptor
+            (
+            400001,
+            "Shader Variants analysis incomplete",
+            Area.BuildSize,
+            string.Empty,
+            string.Empty
+            );
+
+        const int k_ShaderVariantFirstId = 400002;
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData;
 
@@ -175,14 +193,25 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
 
             var shaderName = shader.name;
-            var descriptor = new ProblemDescriptor
-                (
-                id++,
-                shaderName,
-                Area.BuildSize,
-                string.Empty,
-                string.Empty
-                );
+            ProblemDescriptor descriptor;
+#if UNITY_2019_4_OR_NEWER
+            if (ShaderUtil.ShaderHasError(shader))
+            {
+                shaderName = Path.GetFileNameWithoutExtension(assetPath) + ": Parse Error";
+                descriptor = k_ParseErrorDescriptor;
+            }
+            else
+#endif
+            {
+                descriptor = new ProblemDescriptor
+                    (
+                    id++,
+                    shaderName,
+                    Area.BuildSize,
+                    string.Empty,
+                    string.Empty
+                    );
+            }
 
             var passCount = NotAvailable;
             var keywordCount = NotAvailable;
@@ -211,7 +240,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #if UNITY_2019_1_OR_NEWER
             passCount = shader.passCount.ToString();
 #endif
-            var issue = new ProjectIssue(descriptor, shader.name, IssueCategory.Shaders, new Location(assetPath));
+            var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.Shaders, new Location(assetPath));
             issue.SetCustomProperties(new[]
             {
                 variantCount,
