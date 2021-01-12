@@ -615,8 +615,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void ParsePlayerLog()
         {
-            //var logFilename = EditorUtility.OpenFilePanelWithFilters("Load Player Log from disk...", "", new[] { "Log", "log" });
-            var logFilename = "C:/Users/Marco/AppData/LocalLow/Unity Technologies/Spaceship Demo/Player.log";
+            var logFilename = EditorUtility.OpenFilePanelWithFilters("Load Player Log from disk...", "", new[] { "Log", "log" });
 
             if (m_AnalysisState == AnalysisState.Valid)
             {
@@ -1018,7 +1017,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         }
 
                         ParsePlayerLog();
-                        //m_ShaderCompilationWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderCompilationLog));
+
                         m_ShaderCompilationWindow.Refresh();
                         m_ShaderCompilationWindow.Show();
                     }

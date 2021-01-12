@@ -340,7 +340,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
         public void ParsePlayerLog(string logFile, Action<ProjectIssue> onIssueFound, IProgressBar progressBar = null)
         {
-            var desc = new ProblemDescriptor(666, "something", Area.CPU, "asd", "asdasd");
+            var desc = new ProblemDescriptor(666, "something", Area.CPU, string.Empty, string.Empty);
             var lines = GetAllLines(logFile);
             foreach (var line in lines)
             {
