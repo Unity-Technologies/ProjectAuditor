@@ -74,6 +74,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showRightPanels = false,
                 columnTypes = new[]
                 {
+                    IssueTable.ColumnType.Severity,
                     IssueTable.ColumnType.Description,
                     IssueTable.ColumnType.Custom,
                     IssueTable.ColumnType.Custom + 1,

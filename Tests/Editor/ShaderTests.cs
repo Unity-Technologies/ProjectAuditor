@@ -19,6 +19,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
     class ShaderTests
     {
         TempAsset m_ShaderResource;
+        TempAsset m_ShaderWithErrorResource;
         TempAsset m_EditorShaderResource;
 
         TempAsset m_ShaderUsingBuiltInKeywordResource;
@@ -102,6 +103,10 @@ namespace UnityEditor.ProjectAuditor.EditorTests
                 }
             }");
 
+            m_ShaderWithErrorResource = new TempAsset("Resources/ShaderWithError.shader", @"
+            Sader ""Custom/ShaderWithError""
+            {
+            }");
 
             m_ShaderUsingBuiltInKeywordResource = new TempAsset("Resources/ShaderUsingBuiltInKeyword.shader", @"
 Shader ""Custom/ShaderUsingBuiltInKeyword""
@@ -382,6 +387,18 @@ Shader ""Custom/MyEditorShader""
 #endif
             Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue));
             Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.Instancing).Equals("No"));
+        }
+
+        [Test]
+        public void ShaderWithErrorIsReported()
+        {
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var projectReport = projectAuditor.Audit();
+            var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            var shadersWithErrors = issues.Where(i => i.severity == Rule.Severity.Error);
+            Assert.Positive(shadersWithErrors.Count());
+            var shaderIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_ShaderWithErrorResource.relativePath));
+            Assert.NotNull(shaderIssue);
         }
 
         [Test]
