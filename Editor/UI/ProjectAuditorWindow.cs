@@ -252,7 +252,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             category = IssueCategory.ShaderCompilationLog,
             name = "Shader Compilation Log",
-            groupByDescription = true,
+            groupByDescription = false,
             descriptionWithIcon = false,
             showAssemblySelection = false,
             showCritical = false,

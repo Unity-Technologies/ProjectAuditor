@@ -72,8 +72,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             severity = Rule.Severity.Error
         };
 
+        ProblemDescriptor k_RuntimeCompiledShaderVariantDescriptor = new ProblemDescriptor
+            (
+            400002,
+            "Runtime-Compiled Shader Variant",
+            Area.CPU,
+            string.Empty,
+            string.Empty
+            );
+
         const string k_NotAvailable = "N/A";
-        const int k_ShaderVariantFirstId = 400002;
+        const int k_ShaderVariantFirstId = 400003;
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData;
 
@@ -340,7 +349,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
         public void ParsePlayerLog(string logFile, Action<ProjectIssue> onIssueFound, IProgressBar progressBar = null)
         {
-            var desc = new ProblemDescriptor(666, "something", Area.CPU, string.Empty, string.Empty);
             var lines = GetAllLines(logFile);
             foreach (var line in lines)
             {
@@ -350,7 +358,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var pass = parts[1].Substring("pass: ".Length);
                 var stage = parts[2].Substring("stage: ".Length);
                 var keywords = parts[3].Substring("keywords: ".Length);
-                var issue = new ProjectIssue(desc, shaderName, IssueCategory.ShaderCompilationLog);
+                var issue = new ProjectIssue(k_RuntimeCompiledShaderVariantDescriptor, shaderName, IssueCategory.ShaderCompilationLog);
                 issue.SetCustomProperties(new string[] { pass, stage, keywords });
                 onIssueFound(issue);
             }
