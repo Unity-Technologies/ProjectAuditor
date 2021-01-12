@@ -72,6 +72,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             severity = Rule.Severity.Error
         };
 
+        const string k_NotAvailable = "N/A";
         const int k_ShaderVariantFirstId = 400002;
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData;
@@ -179,8 +180,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         void AddShader(Shader shader, string assetPath, int id, Action<ProjectIssue> onIssueFound)
         {
-            const string NotAvailable = "N/A";
-            var variantCount = NotAvailable;
+            var variantCount = k_NotAvailable;
 
 #if UNITY_2018_2_OR_NEWER
             // add variants first
@@ -199,29 +199,42 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
 
             var shaderName = shader.name;
-            ProblemDescriptor descriptor;
+            var shaderHasError = false;
+
 #if UNITY_2019_4_OR_NEWER
-            if (ShaderUtil.ShaderHasError(shader))
+            shaderHasError = ShaderUtil.ShaderHasError(shader);
+#endif
+
+            if (shaderHasError)
             {
                 shaderName = Path.GetFileNameWithoutExtension(assetPath) + ": Parse Error";
-                descriptor = k_ParseErrorDescriptor;
-            }
-            else
-#endif
-            {
-                descriptor = new ProblemDescriptor
-                    (
-                    id++,
-                    shaderName,
-                    Area.BuildSize,
-                    string.Empty,
-                    string.Empty
-                    );
+
+                var issueWithError = new ProjectIssue(k_ParseErrorDescriptor, shaderName, IssueCategory.Shaders, new Location(assetPath));
+                issueWithError.SetCustomProperties(new[]
+                {
+                    k_NotAvailable,
+                    k_NotAvailable,
+                    k_NotAvailable,
+                    k_NotAvailable,
+                    k_NotAvailable,
+                });
+                onIssueFound(issueWithError);
+
+                return;
             }
 
-            var passCount = NotAvailable;
-            var keywordCount = NotAvailable;
-            var hasInstancing = NotAvailable;
+            var descriptor = new ProblemDescriptor
+                (
+                id++,
+                shaderName,
+                Area.BuildSize,
+                string.Empty,
+                string.Empty
+                );
+
+            var passCount = k_NotAvailable;
+            var keywordCount = k_NotAvailable;
+            var hasInstancing = k_NotAvailable;
 /*
             var usedBySceneOnly = false;
             if (m_GetShaderVariantCountMethod != null)
