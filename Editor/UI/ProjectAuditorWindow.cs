@@ -1067,6 +1067,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     GUILayout.Label(Styles.AnalysisInProgressLabel, s, GUILayout.ExpandWidth(true));
                 }
             }
+            EditorGUILayout.Separator();
+            GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
         }
 
