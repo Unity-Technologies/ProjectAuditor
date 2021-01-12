@@ -621,32 +621,35 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             var logFilename = EditorUtility.OpenFilePanelWithFilters("Load Player Log from disk...", "", new[] { "Log", "log" });
 
-            if (m_AnalysisState == AnalysisState.Valid)
+            if (string.IsNullOrEmpty(logFilename))
+                return;
+
+            if (m_AnalysisState != AnalysisState.Valid)
+                return;
+
+            m_ProjectReport.ClearIssues(IssueCategory.ShaderCompilationLog);
+
+            var newIssues = new List<ProjectIssue>();
+            var shadersAuditor = m_ProjectAuditor.GetAuditor<ShadersAuditor>();
+            shadersAuditor.ParsePlayerLog(logFilename, issue =>
             {
-                m_ProjectReport.ClearIssues(IssueCategory.ShaderCompilationLog);
+                newIssues.Add(issue);
+                m_ProjectReport.AddIssue(issue);
+            },
+                new ProgressBarDisplay());
 
-                if (m_ShaderCompilationWindow == null)
-                {
-                    m_ShaderCompilationWindow = GetWindow<ShaderCompilationLogWindow>(m_ShaderCompilationViewDescriptor.name, typeof(ProjectAuditorWindow));
-                    m_ShaderCompilationWindow.CreateTable(m_ShaderCompilationViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
-                }
-                else
-                {
-                    m_ShaderCompilationWindow.Clear();
-                }
-
-                var newIssues = new List<ProjectIssue>();
-                var shadersAuditor = m_ProjectAuditor.GetAuditor<ShadersAuditor>();
-                shadersAuditor.ParsePlayerLog(logFilename, issue =>
-                {
-                    newIssues.Add(issue);
-                    m_ProjectReport.AddIssue(issue);
-                },
-                    new ProgressBarDisplay());
-
-                m_ShaderCompilationWindow.AddIssues(newIssues);
-                m_ShaderCompilationWindow.Refresh();
+            if (m_ShaderCompilationWindow == null)
+            {
+                m_ShaderCompilationWindow = GetWindow<ShaderCompilationLogWindow>(m_ShaderCompilationViewDescriptor.name, typeof(ProjectAuditorWindow));
+                m_ShaderCompilationWindow.CreateTable(m_ShaderCompilationViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
             }
+            else
+            {
+                m_ShaderCompilationWindow.Clear();
+            }
+            m_ShaderCompilationWindow.AddIssues(newIssues);
+            m_ShaderCompilationWindow.Refresh();
+            m_ShaderCompilationWindow.Show();
         }
 
         void RefreshDisplay()
@@ -1010,20 +1013,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                     if (GUILayout.Button("Parse Player log", EditorStyles.miniButton, GUILayout.Width(200)))
                     {
-                        if (m_ShaderCompilationWindow == null)
-                        {
-                            m_ShaderCompilationWindow = GetWindow<ShaderCompilationLogWindow>(m_ShaderCompilationViewDescriptor.name, typeof(ProjectAuditorWindow));
-                            m_ShaderCompilationWindow.CreateTable(m_ShaderCompilationViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
-                        }
-                        else
-                        {
-                            m_ShaderCompilationWindow.Clear();
-                        }
-
                         ParsePlayerLog();
-
-                        m_ShaderCompilationWindow.Refresh();
-                        m_ShaderCompilationWindow.Show();
                     }
                 }
                 else
