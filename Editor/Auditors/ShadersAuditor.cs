@@ -338,5 +338,37 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         }
 
 #endif
+        public void ParsePlayerLog(string logFile, Action<ProjectIssue> onIssueFound, IProgressBar progressBar = null)
+        {
+            var desc = new ProblemDescriptor(666, "something", Area.CPU, "asd", "asdasd");
+            var lines = GetAllLines(logFile);
+            foreach (var line in lines)
+            {
+                var strippedLine = line.Substring("Compiled shader: ".Length);
+                var parts = strippedLine.Split(',');
+                var shaderName = parts[0];
+                var pass = parts[1].Substring("pass: ".Length);
+                var stage = parts[2].Substring("stage: ".Length);
+                var keywords = parts[3].Substring("keywords: ".Length);
+                var issue = new ProjectIssue(desc, shaderName, IssueCategory.ShaderCompilationLog);
+                issue.SetCustomProperties(new string[] { pass, stage, keywords });
+                onIssueFound(issue);
+            }
+        }
+
+        string[] GetAllLines(string logFile)
+        {
+            var compilationLines = new List<string>();
+            using (var file = new StreamReader(logFile))
+            {
+                string line;
+                while ((line = file.ReadLine()) != null)
+                {
+                    if (line.StartsWith("Compiled shader:"))
+                        compilationLines.Add(line);
+                }
+            }
+            return compilationLines.ToArray();
+        }
     }
 }

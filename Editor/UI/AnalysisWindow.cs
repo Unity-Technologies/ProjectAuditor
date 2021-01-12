@@ -10,16 +10,16 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         AnalysisView m_AnalysisView;
 
-        public static AnalysisWindow FindOpenWindow()
+        public static T FindOpenWindow<T>() where T : class
         {
-            Object[] windows = Resources.FindObjectsOfTypeAll(typeof(AnalysisWindow));
+            Object[] windows = Resources.FindObjectsOfTypeAll(typeof(T));
             if (windows != null && windows.Length > 0)
-                return windows[0] as AnalysisWindow;
+                return windows[0] as T;
 
             return null;
         }
 
-        AnalysisWindow()
+        public AnalysisWindow()
         {
             m_AnalysisView = new AnalysisView();
         }

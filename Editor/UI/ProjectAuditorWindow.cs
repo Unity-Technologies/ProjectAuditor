@@ -10,6 +10,10 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
+    class ShaderCompilationLogWindow : AnalysisWindow
+    {
+    }
+
     class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IProjectIssueFilter
     {
         enum AnalysisState
@@ -244,6 +248,57 @@ namespace Unity.ProjectAuditor.Editor.UI
             onDoubleClick = FocusOnAssetInProjectWindow,
             analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
         };
+        AnalysisViewDescriptor m_ShaderCompilationViewDescriptor = new AnalysisViewDescriptor
+        {
+            category = IssueCategory.ShaderCompilationLog,
+            name = "Shader Compilation Log",
+            groupByDescription = true,
+            descriptionWithIcon = false,
+            showAssemblySelection = false,
+            showCritical = false,
+            showDependencyView = false,
+            showRightPanels = false,
+            columnTypes = new[]
+            {
+                IssueTable.ColumnType.Description,
+                IssueTable.ColumnType.Custom,
+                IssueTable.ColumnType.Custom + 1,
+                IssueTable.ColumnType.Custom + 2
+            },
+            descriptionColumnStyle = new ColumnDescriptor
+            {
+                Content = new GUIContent("Shader Name"),
+                Width = 300,
+                MinWidth = 100,
+                Format = PropertyFormat.String
+            },
+            customColumnStyles = new[]
+            {
+                new ColumnDescriptor
+                {
+                    Content = new GUIContent("Pass"),
+                    Width = 80,
+                    MinWidth = 80,
+                    Format = PropertyFormat.String
+                },
+                new ColumnDescriptor
+                {
+                    Content = new GUIContent("Stage"),
+                    Width = 80,
+                    MinWidth = 80,
+                    Format = PropertyFormat.String
+                },
+                new ColumnDescriptor
+                {
+                    Content = new GUIContent("Keywords", "Compiled Variants Keywords"),
+                    Width = 800,
+                    MinWidth = 80,
+                    Format = PropertyFormat.String
+                }
+            },
+            onDoubleClick = FocusOnAssetInProjectWindow,
+            analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
+        };
 
         string[] m_ModeNames;
         ProjectAuditor m_ProjectAuditor;
@@ -253,6 +308,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         // UI
         readonly List<AnalysisView> m_AnalysisViews = new List<AnalysisView>();
         AnalysisWindow m_ShaderVariantsWindow;
+        AnalysisWindow m_ShaderCompilationWindow;
         TreeViewSelection m_AreaSelection;
         TreeViewSelection m_AssemblySelection;
 
@@ -373,7 +429,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisViews.Add(view);
             }
 
-            m_ShaderVariantsWindow = AnalysisWindow.FindOpenWindow();
+            m_ShaderVariantsWindow = AnalysisWindow.FindOpenWindow<AnalysisWindow>();
             if (m_ShaderVariantsWindow != null)
             {
                 if (m_AnalysisState == AnalysisState.Valid)
@@ -388,6 +444,24 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     m_ShaderVariantsWindow.Close();
                     m_ShaderVariantsWindow = null;
+                }
+            }
+
+            m_ShaderCompilationWindow = AnalysisWindow.FindOpenWindow<ShaderCompilationLogWindow>();
+            if (m_ShaderCompilationWindow != null)
+            {
+                if (m_AnalysisState == AnalysisState.Valid)
+                {
+                    if (m_ShaderCompilationWindow.IsValid())
+                        m_ShaderCompilationWindow.Clear();
+                    else
+                        m_ShaderCompilationWindow.CreateTable(m_ShaderCompilationViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                    m_ShaderCompilationWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderCompilationLog));
+                }
+                else
+                {
+                    m_ShaderCompilationWindow.Close();
+                    m_ShaderCompilationWindow = null;
                 }
             }
 
@@ -446,6 +520,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 m_ShaderVariantsWindow.Clear();
             }
+            if (m_ShaderCompilationWindow != null)
+            {
+                m_ShaderCompilationWindow.Clear();
+            }
 
             var newIssues = new List<ProjectIssue>();
 
@@ -467,6 +545,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                         if (m_ShaderVariantsWindow != null)
                         {
                             m_ShaderVariantsWindow.AddIssues(newIssues);
+                        }
+                        if (m_ShaderCompilationWindow != null)
+                        {
+                            m_ShaderCompilationWindow.AddIssues(newIssues);
                         }
 
                         newIssues.Clear();
@@ -531,6 +613,39 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        void ParsePlayerLog()
+        {
+            //var logFilename = EditorUtility.OpenFilePanelWithFilters("Load Player Log from disk...", "", new[] { "Log", "log" });
+            var logFilename = "C:/Users/Marco/AppData/LocalLow/Unity Technologies/Spaceship Demo/Player.log";
+
+            if (m_AnalysisState == AnalysisState.Valid)
+            {
+                m_ProjectReport.ClearIssues(IssueCategory.ShaderCompilationLog);
+
+                if (m_ShaderCompilationWindow == null)
+                {
+                    m_ShaderCompilationWindow = GetWindow<ShaderCompilationLogWindow>(m_ShaderCompilationViewDescriptor.name, typeof(ProjectAuditorWindow));
+                    m_ShaderCompilationWindow.CreateTable(m_ShaderCompilationViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                }
+                else
+                {
+                    m_ShaderCompilationWindow.Clear();
+                }
+
+                var newIssues = new List<ProjectIssue>();
+                var shadersAuditor = m_ProjectAuditor.GetAuditor<ShadersAuditor>();
+                shadersAuditor.ParsePlayerLog(logFilename, issue =>
+                {
+                    newIssues.Add(issue);
+                    m_ProjectReport.AddIssue(issue);
+                },
+                    new ProgressBarDisplay());
+
+                m_ShaderCompilationWindow.AddIssues(newIssues);
+                m_ShaderCompilationWindow.Refresh();
+            }
+        }
+
         void RefreshDisplay()
         {
             if (!IsAnalysisValid())
@@ -552,6 +667,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             activeAnalysisView.Refresh();
             if (m_ShaderVariantsWindow != null)
                 m_ShaderVariantsWindow.Refresh();
+            if (m_ShaderCompilationWindow != null)
+                m_ShaderCompilationWindow.Refresh();
         }
 
         void Reload()
@@ -887,6 +1004,23 @@ namespace Unity.ProjectAuditor.Editor.UI
                         m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
                         m_ShaderVariantsWindow.Refresh();
                         m_ShaderVariantsWindow.Show();
+                    }
+                    if (GUILayout.Button("Parse Player log", EditorStyles.miniButton, GUILayout.Width(200)))
+                    {
+                        if (m_ShaderCompilationWindow == null)
+                        {
+                            m_ShaderCompilationWindow = GetWindow<ShaderCompilationLogWindow>(m_ShaderCompilationViewDescriptor.name, typeof(ProjectAuditorWindow));
+                            m_ShaderCompilationWindow.CreateTable(m_ShaderCompilationViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                        }
+                        else
+                        {
+                            m_ShaderCompilationWindow.Clear();
+                        }
+
+                        ParsePlayerLog();
+                        //m_ShaderCompilationWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderCompilationLog));
+                        m_ShaderCompilationWindow.Refresh();
+                        m_ShaderCompilationWindow.Show();
                     }
                 }
                 else
