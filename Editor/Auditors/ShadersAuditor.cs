@@ -122,20 +122,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var id = k_ShaderVariantFirstId;
             if (s_ShaderVariantData == null)
             {
-                var descriptor = new ProblemDescriptor
-                    (
-                    id++,
-                    "Shader Variants analysis incomplete",
-                    Area.BuildSize,
-                    string.Empty,
-                    string.Empty
-                    );
-
                 var message = "Build the project to view the Shader Variants";
 #if !UNITY_2018_2_OR_NEWER
                 message = "This feature requires Unity 2018.2 or newer";
 #endif
-                var issue = new ProjectIssue(descriptor, message, IssueCategory.ShaderVariants);
+                var issue = new ProjectIssue(k_BuildRequiredDescriptor, message, IssueCategory.ShaderVariants);
                 issue.SetCustomProperties(new[] { string.Empty, string.Empty, string.Empty, string.Empty });
                 onIssueFound(issue);
             }
