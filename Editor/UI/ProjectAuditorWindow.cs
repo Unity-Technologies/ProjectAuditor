@@ -734,6 +734,9 @@ namespace Unity.ProjectAuditor.Editor.UI
         // and the type of window we want.
         void DrawAreaFilter()
         {
+            if (!activeAnalysisView.desc.showAreaSelection)
+                return;
+
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(Styles.AreaFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
 
@@ -741,7 +744,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var lastEnabled = GUI.enabled;
                 var enabled = IsAnalysisValid() &&
-                    activeAnalysisView.desc.showAreaSelection &&
                     !AreaSelectionWindow.IsOpen();
                 GUI.enabled = enabled;
                 if (GUILayout.Button(Styles.AreaFilterSelect, EditorStyles.miniButton,
