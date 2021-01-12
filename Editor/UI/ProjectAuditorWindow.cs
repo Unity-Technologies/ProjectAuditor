@@ -10,6 +10,10 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
+    class ShaderVariantsWindow : AnalysisWindow
+    {
+    }
+
     class ShaderCompilationLogWindow : AnalysisWindow
     {
     }
@@ -429,7 +433,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisViews.Add(view);
             }
 
-            m_ShaderVariantsWindow = AnalysisWindow.FindOpenWindow<AnalysisWindow>();
+            m_ShaderVariantsWindow = AnalysisWindow.FindOpenWindow<ShaderVariantsWindow>();
             if (m_ShaderVariantsWindow != null)
             {
                 if (m_AnalysisState == AnalysisState.Valid)
@@ -578,7 +582,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (m_ShaderVariantsWindow == null)
                 {
-                    m_ShaderVariantsWindow = GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
+                    m_ShaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
                     m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
                 }
                 else
@@ -992,7 +996,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         if (m_ShaderVariantsWindow == null)
                         {
-                            m_ShaderVariantsWindow = GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
+                            m_ShaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
                             m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
                         }
                         else
