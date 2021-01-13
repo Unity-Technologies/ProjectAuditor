@@ -19,6 +19,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
     class ShaderTests
     {
         TempAsset m_ShaderResource;
+        TempAsset m_PlayerLogResource;
         TempAsset m_ShaderWithErrorResource;
         TempAsset m_EditorShaderResource;
 
@@ -102,6 +103,14 @@ namespace UnityEditor.ProjectAuditor.EditorTests
                     }
                 }
             }");
+
+            m_PlayerLogResource = new TempAsset("player.log", @"
+Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: vertex, keywords <no keywords>
+Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: fragment, keywords <no keywords>
+Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: vertex, keywords KEYWORD_A
+Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: fragment, keywords KEYWORD_A
+            ");
+
 
             m_ShaderWithErrorResource = new TempAsset("Resources/ShaderWithError.shader", @"
             Sader ""Custom/ShaderWithError""
@@ -342,7 +351,7 @@ Shader ""Custom/MyEditorShader""
             Assert.False(keywords.Any(key => key.Equals(s_KeywordName)));
         }
 
-        static ProjectIssue[] BuildAndAnalyze()
+        static ProjectIssue[] BuildAndAnalyze(IssueCategory category = IssueCategory.ShaderVariants)
         {
             var buildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(buildPath);
@@ -362,7 +371,54 @@ Shader ""Custom/MyEditorShader""
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit();
-            return projectReport.GetIssues(IssueCategory.ShaderVariants);
+            return projectReport.GetIssues(category);
+        }
+
+        [Test]
+        public void UnusedVariantsAreReported()
+        {
+            var buildPath = FileUtil.GetUniqueTempPathInProject();
+            Directory.CreateDirectory(buildPath);
+            var buildPlayerOptions = new BuildPlayerOptions
+            {
+                scenes = new string[] {},
+                locationPathName = Path.Combine(buildPath, "test"),
+                target = EditorUserBuildSettings.activeBuildTarget,
+                targetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget),
+                options = BuildOptions.Development
+            };
+            var buildReport = BuildPipeline.BuildPlayer(buildPlayerOptions);
+
+            Assert.True(buildReport.summary.result == BuildResult.Succeeded);
+
+            Directory.Delete(buildPath, true);
+
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            projectAuditor.Audit();
+
+            var newIssues = new List<ProjectIssue>();
+            var shadersAuditor = projectAuditor.GetAuditor<ShadersAuditor>();
+            var completed = false;
+            shadersAuditor.Audit(newIssues.Add,
+                () =>
+                {
+                    completed = true;
+                });
+            Assert.True(completed);
+
+            newIssues.Clear();
+
+            shadersAuditor.ParsePlayerLog(m_PlayerLogResource.relativePath, issue =>
+            {
+                newIssues.Add(issue);
+            });
+
+            var unusedVariants = newIssues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
+            Assert.AreEqual(2, unusedVariants.Length);
+            Assert.True(unusedVariants[0].GetCustomProperty(0).Equals("MyTestShader/Pass"));
+            Assert.True(unusedVariants[0].GetCustomProperty(1).Equals("KEYWORD_B"));
+            Assert.True(unusedVariants[1].GetCustomProperty(0).Equals("MyTestShader/Pass"));
+            Assert.True(unusedVariants[1].GetCustomProperty(1).Equals("KEYWORD_B"));
         }
 
 #endif
