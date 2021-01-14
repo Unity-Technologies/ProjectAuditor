@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -496,6 +497,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 DrawHelpbox();
             }
+
+            if (Event.current.type == EventType.DragExited)
+            {
+                HandleDragAndDrop();
+            }
         }
 
         void OnToggleDeveloperMode()
@@ -617,10 +623,18 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        void ParsePlayerLog()
+        void HandleDragAndDrop()
         {
-            var logFilename = EditorUtility.OpenFilePanelWithFilters("Load Player Log from disk...", "", new[] { "Log", "log" });
+            var paths = DragAndDrop.paths;
+            foreach (var path in paths)
+            {
+                if (Path.HasExtension(path) && Path.GetExtension(path).Equals(".log"))
+                    ParsePlayerLog(path);
+            }
+        }
 
+        void ParsePlayerLog(string logFilename)
+        {
             if (string.IsNullOrEmpty(logFilename))
                 return;
 
@@ -1011,9 +1025,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                         m_ShaderVariantsWindow.Refresh();
                         m_ShaderVariantsWindow.Show();
                     }
-                    if (GUILayout.Button("Parse Player log", EditorStyles.miniButton, GUILayout.Width(200)))
+                    if (GUILayout.Button("Find Unused Variants", EditorStyles.miniButton, GUILayout.Width(200)))
                     {
-                        ParsePlayerLog();
+                        var logFilename = EditorUtility.OpenFilePanelWithFilters("Load Player Log from disk...", "", new[] { "Log", "log" });
+
+                        ParsePlayerLog(logFilename);
                     }
                 }
                 else
