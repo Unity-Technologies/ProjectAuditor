@@ -402,7 +402,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 {
                     var compilerData = variantData.compilerData;
                     var shaderKeywords = GetShaderKeywords(shader, compilerData.shaderKeywordSet.GetShaderKeywords());
-                    var found = shaderHasCompiledVariants && null != compiledVariants[shaderName].FirstOrDefault(cv => ShaderKeywordsMatch(cv.keywords, shaderKeywords));
+                    var found = shaderHasCompiledVariants && null != compiledVariants[shaderName].FirstOrDefault(cv => cv.pass.Equals(variantData.passName) && ShaderKeywordsMatch(cv.keywords, shaderKeywords));
                     if (!found)
                     {
                         var issue = new ProjectIssue(k_UnusedShaderVariantDescriptor, shaderName, IssueCategory.UnusedShaderVariants);

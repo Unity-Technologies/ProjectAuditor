@@ -105,10 +105,10 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             }");
 
             m_PlayerLogResource = new TempAsset("player.log", @"
-Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: vertex, keywords <no keywords>
-Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: fragment, keywords <no keywords>
-Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: vertex, keywords KEYWORD_A
-Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: fragment, keywords KEYWORD_A
+Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: vertex, keywords <no keywords>
+Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: fragment, keywords <no keywords>
+Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: vertex, keywords KEYWORD_A
+Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: fragment, keywords KEYWORD_A
             ");
 
 
