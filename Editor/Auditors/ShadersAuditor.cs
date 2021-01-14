@@ -22,6 +22,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         NumKeywords,
         RenderQueue,
         Instancing,
+        SrpBatcher,
         Num
     }
 
