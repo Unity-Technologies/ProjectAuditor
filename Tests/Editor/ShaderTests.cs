@@ -386,7 +386,7 @@ Shader ""Custom/MyEditorShader""
             Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
 #endif
             Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue));
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.Instancing).Equals("No"));
+            Assert.False(shaderIssue.GetCustomPropertyAsBool((int)ShaderProperty.Instancing));
         }
 
         [Test]
@@ -420,7 +420,7 @@ Shader ""Custom/MyEditorShader""
             Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
 #endif
             Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue));
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.Instancing).Equals(true.ToString()));
+            Assert.True(shaderIssue.GetCustomPropertyAsBool((int)ShaderProperty.Instancing));
         }
 
         [Test]
@@ -442,7 +442,7 @@ Shader ""Custom/MyEditorShader""
             Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
 #endif
             Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue));
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.Instancing).Equals(true.ToString()));
+            Assert.True(shaderIssue.GetCustomPropertyAsBool((int)ShaderProperty.Instancing));
         }
 
         [Test]

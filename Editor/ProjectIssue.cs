@@ -177,6 +177,15 @@ namespace Unity.ProjectAuditor.Editor
             return customProperties != null ? customProperties[index] : string.Empty;
         }
 
+        internal bool GetCustomPropertyAsBool(int index)
+        {
+            var valueAsString = GetCustomProperty(index);
+            var value = false;
+            if (!bool.TryParse(valueAsString, out value))
+                return false;
+            return value;
+        }
+
         internal int GetCustomPropertyAsInt(int index)
         {
             var valueAsString = GetCustomProperty(index);
