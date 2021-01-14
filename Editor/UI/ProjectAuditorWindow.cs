@@ -15,10 +15,6 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
     }
 
-    class ShaderCompilationLogWindow : AnalysisWindow
-    {
-    }
-
     class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IProjectIssueFilter
     {
         enum AnalysisState
@@ -210,7 +206,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 IssueTable.ColumnType.Custom,
                 IssueTable.ColumnType.Custom + 1,
                 IssueTable.ColumnType.Custom + 2,
-                IssueTable.ColumnType.Custom + 3
+                IssueTable.ColumnType.Custom + 3,
+                IssueTable.ColumnType.Custom + 4
             },
             descriptionColumnStyle = new ColumnDescriptor
             {
@@ -221,6 +218,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             },
             customColumnStyles = new[]
             {
+                new ColumnDescriptor
+                {
+                    Content = new GUIContent("Compiled"),
+                    Width = 80,
+                    MinWidth = 80,
+                    Format = PropertyFormat.String
+                },
                 new ColumnDescriptor
                 {
                     Content = new GUIContent("Graphics API"),
@@ -253,57 +257,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             onDoubleClick = FocusOnAssetInProjectWindow,
             analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
         };
-        AnalysisViewDescriptor m_UnusedShaderVariantsViewDescriptor = new AnalysisViewDescriptor
-        {
-            category = IssueCategory.UnusedShaderVariants,
-            name = "Unused Shader Variants",
-            groupByDescription = false,
-            descriptionWithIcon = false,
-            showAssemblySelection = false,
-            showCritical = false,
-            showDependencyView = false,
-            showRightPanels = false,
-            columnTypes = new[]
-            {
-                IssueTable.ColumnType.Description,
-                IssueTable.ColumnType.Custom,
-                IssueTable.ColumnType.Custom + 1,
-//                IssueTable.ColumnType.Custom + 2
-            },
-            descriptionColumnStyle = new ColumnDescriptor
-            {
-                Content = new GUIContent("Shader Name"),
-                Width = 300,
-                MinWidth = 100,
-                Format = PropertyFormat.String
-            },
-            customColumnStyles = new[]
-            {
-                new ColumnDescriptor
-                {
-                    Content = new GUIContent("Pass"),
-                    Width = 80,
-                    MinWidth = 80,
-                    Format = PropertyFormat.String
-                },
-//                new ColumnDescriptor
-//                {
-//                    Content = new GUIContent("Stage"),
-//                    Width = 80,
-//                    MinWidth = 80,
-//                    Format = PropertyFormat.String
-//                },
-                new ColumnDescriptor
-                {
-                    Content = new GUIContent("Keywords", "Compiled Variants Keywords"),
-                    Width = 800,
-                    MinWidth = 80,
-                    Format = PropertyFormat.String
-                }
-            },
-            onDoubleClick = FocusOnAssetInProjectWindow,
-            analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
-        };
 
         string[] m_ModeNames;
         ProjectAuditor m_ProjectAuditor;
@@ -313,7 +266,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         // UI
         readonly List<AnalysisView> m_AnalysisViews = new List<AnalysisView>();
         AnalysisWindow m_ShaderVariantsWindow;
-        AnalysisWindow m_UnusedShaderVariantsWindow;
         TreeViewSelection m_AreaSelection;
         TreeViewSelection m_AssemblySelection;
 
@@ -452,24 +404,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
             }
 
-            m_UnusedShaderVariantsWindow = AnalysisWindow.FindOpenWindow<ShaderCompilationLogWindow>();
-            if (m_UnusedShaderVariantsWindow != null)
-            {
-                if (m_AnalysisState == AnalysisState.Valid)
-                {
-                    if (m_UnusedShaderVariantsWindow.IsValid())
-                        m_UnusedShaderVariantsWindow.Clear();
-                    else
-                        m_UnusedShaderVariantsWindow.CreateTable(m_UnusedShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
-                    m_UnusedShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.UnusedShaderVariants));
-                }
-                else
-                {
-                    m_UnusedShaderVariantsWindow.Close();
-                    m_UnusedShaderVariantsWindow = null;
-                }
-            }
-
             RefreshDisplay();
 
             Instance = this;
@@ -530,10 +464,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 m_ShaderVariantsWindow.Clear();
             }
-            if (m_UnusedShaderVariantsWindow != null)
-            {
-                m_UnusedShaderVariantsWindow.Clear();
-            }
 
             var newIssues = new List<ProjectIssue>();
 
@@ -555,10 +485,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                         if (m_ShaderVariantsWindow != null)
                         {
                             m_ShaderVariantsWindow.AddIssues(newIssues);
-                        }
-                        if (m_UnusedShaderVariantsWindow != null)
-                        {
-                            m_UnusedShaderVariantsWindow.AddIssues(newIssues);
                         }
 
                         newIssues.Clear();
@@ -641,29 +567,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_AnalysisState != AnalysisState.Valid)
                 return;
 
-            m_ProjectReport.ClearIssues(IssueCategory.UnusedShaderVariants);
+            var issues = m_ProjectReport.GetIssues(IssueCategory.ShaderVariants);
 
-            var newIssues = new List<ProjectIssue>();
             var shadersAuditor = m_ProjectAuditor.GetAuditor<ShadersAuditor>();
-            shadersAuditor.ParsePlayerLog(logFilename, issue =>
-            {
-                newIssues.Add(issue);
-                m_ProjectReport.AddIssue(issue);
-            },
-                new ProgressBarDisplay());
-
-            if (m_UnusedShaderVariantsWindow == null)
-            {
-                m_UnusedShaderVariantsWindow = GetWindow<ShaderCompilationLogWindow>(m_UnusedShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
-                m_UnusedShaderVariantsWindow.CreateTable(m_UnusedShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
-            }
-            else
-            {
-                m_UnusedShaderVariantsWindow.Clear();
-            }
-            m_UnusedShaderVariantsWindow.AddIssues(newIssues);
-            m_UnusedShaderVariantsWindow.Refresh();
-            m_UnusedShaderVariantsWindow.Show();
+            shadersAuditor.ParsePlayerLog(logFilename, issues, new ProgressBarDisplay());
         }
 
         void RefreshDisplay()
@@ -687,8 +594,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             activeAnalysisView.Refresh();
             if (m_ShaderVariantsWindow != null)
                 m_ShaderVariantsWindow.Refresh();
-            if (m_UnusedShaderVariantsWindow != null)
-                m_UnusedShaderVariantsWindow.Refresh();
         }
 
         void Reload()

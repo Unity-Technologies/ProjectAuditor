@@ -27,7 +27,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
     public enum ShaderVariantProperty
     {
-        Platform = 0,
+        Compiled = 0,
+        Platform,
         PassName,
         Keywords,
         Requirements,
@@ -88,6 +89,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             string.Empty
             );
 
+        const string k_NoPassName = "<unnamed>";
         const string k_NoKeywords = "<no keywords>";
         const string k_NotAvailable = "N/A";
         const int k_ShaderVariantFirstId = 400003;
@@ -304,6 +306,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariants, new Location(assetPath));
                 issue.SetCustomProperties(new[]
                 {
+                    "?",
                     compilerData.shaderCompilerPlatform.ToString(),
                     shaderVariantData.passName,
                     KeywordsToString(keywords),
@@ -352,20 +355,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
 
 
-        public void ParsePlayerLog(string logFile, Action<ProjectIssue> onIssueFound, IProgressBar progressBar = null)
+        public void ParsePlayerLog(string logFile, ProjectIssue[] shaderVariants, IProgressBar progressBar = null)
         {
-            if (s_ShaderVariantData == null)
-            {
-                var message = "This operation requires to build the project first";
-#if !UNITY_2018_2_OR_NEWER
-                message = "This feature requires Unity 2018.2 or newer";
-#endif
-                var issue = new ProjectIssue(k_BuildRequiredDescriptor, message, IssueCategory.UnusedShaderVariants);
-                issue.SetCustomProperties(new[] { string.Empty, string.Empty});
-                onIssueFound(issue);
-                return;
-            }
-
             var compiledVariants = new Dictionary<string, List<CompiledVariantData>>();
             var lines = GetCompiledShaderLines(logFile);
             foreach (var line in lines)
@@ -393,28 +384,35 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 });
             }
 
-            foreach (var shaderVariantPair in s_ShaderVariantData)
+            var sortedVariants = shaderVariants.OrderBy(v => v.description);
+            var shader = (Shader)null;
+            foreach (var variant in sortedVariants)
             {
-                var shader = shaderVariantPair.Key;
-                var shaderName = shader.name;
-                var shaderHasCompiledVariants = compiledVariants.ContainsKey(shaderName);
-                foreach (var variantData in shaderVariantPair.Value)
+                if (shader == null || !shader.name.Equals(variant.description))
                 {
-                    var compilerData = variantData.compilerData;
-                    var shaderKeywords = GetShaderKeywords(shader, compilerData.shaderKeywordSet.GetShaderKeywords());
-                    var found = shaderHasCompiledVariants && null != compiledVariants[shaderName].FirstOrDefault(cv => cv.pass.Equals(variantData.passName) && ShaderKeywordsMatch(cv.keywords, shaderKeywords));
-                    if (!found)
-                    {
-                        var issue = new ProjectIssue(k_UnusedShaderVariantDescriptor, shaderName, IssueCategory.UnusedShaderVariants);
-                        issue.SetCustomProperties(new string[]
-                        {
-                            variantData.passName,
-//                            "fragment",
-                            KeywordsToString(shaderKeywords)
-                        });
-                        onIssueFound(issue);
-                    }
+                    shader = Shader.Find(variant.description);
                 }
+
+                if (shader == null)
+                {
+                    variant.SetCustomProperty((int)ShaderVariantProperty.Compiled, "?");
+                    continue;
+                }
+
+                var shaderName = shader.name;
+                var passName = variant.GetCustomProperty((int)ShaderVariantProperty.PassName);
+                var keywordsString = variant.GetCustomProperty((int)ShaderVariantProperty.Keywords);
+                var keywords = StringToKeywords(keywordsString);
+                var isVariantCompiled = false;
+
+                if (compiledVariants.ContainsKey(shaderName))
+                {
+                    // note that we are not checking pass name since there is an inconsistency regarding "unnamed" passes between build vs compiled
+                    var matchingVariants = compiledVariants[shaderName].Where(cv => ShaderKeywordsMatch(cv.keywords, keywords));
+                    isVariantCompiled = matchingVariants.Count() > 0;
+                }
+
+                variant.SetCustomProperty((int)ShaderVariantProperty.Compiled, isVariantCompiled.ToString());
             }
         }
 
