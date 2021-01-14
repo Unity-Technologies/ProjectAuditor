@@ -332,7 +332,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var propertyIndex = column - ColumnType.Custom;
                         var property = issue.GetCustomProperty(propertyIndex);
                         if (property != string.Empty)
-                            EditorGUI.LabelField(cellRect, new GUIContent(property));
+                        {
+                            var desc = m_Desc.customColumnStyles[propertyIndex];
+                            if (desc.Format == PropertyFormat.Bool)
+                                EditorGUI.Toggle(cellRect, property.Equals(true.ToString()));
+                            else
+                                EditorGUI.LabelField(cellRect, new GUIContent(property));
+                        }
+
                         break;
                 }
 

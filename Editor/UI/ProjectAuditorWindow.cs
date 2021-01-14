@@ -124,7 +124,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         Content = new GUIContent("Instancing", "GPU Instancing Support"),
                         Width = 80,
                         MinWidth = 80,
-                        Format = PropertyFormat.String
+                        Format = PropertyFormat.Bool
                     }
                 },
                 onDoubleClick = FocusOnAssetInProjectWindow,

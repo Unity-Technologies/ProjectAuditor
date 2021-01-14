@@ -244,7 +244,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (m_HasInstancingMethod != null)
             {
                 var value = (bool)m_HasInstancingMethod.Invoke(null, new object[] { shader});
-                hasInstancing = value ? "Yes" : "No";
+                hasInstancing = value.ToString();
             }
 
 #if UNITY_2019_1_OR_NEWER
