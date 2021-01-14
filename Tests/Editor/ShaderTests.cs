@@ -396,29 +396,26 @@ Shader ""Custom/MyEditorShader""
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             projectAuditor.Audit();
 
-            var newIssues = new List<ProjectIssue>();
+            var shaderIssues = new List<ProjectIssue>();
             var shadersAuditor = projectAuditor.GetAuditor<ShadersAuditor>();
             var completed = false;
-            shadersAuditor.Audit(newIssues.Add,
+            shadersAuditor.Audit(shaderIssues.Add,
                 () =>
                 {
                     completed = true;
                 });
             Assert.True(completed);
 
-            newIssues.Clear();
+            var variantIssues = shaderIssues.Where(i => i.description.Equals("Custom/MyTestShader") && i.category == IssueCategory.ShaderVariants).ToArray();
 
-            shadersAuditor.ParsePlayerLog(m_PlayerLogResource.relativePath, issue =>
-            {
-                newIssues.Add(issue);
-            });
+            shadersAuditor.ParsePlayerLog(m_PlayerLogResource.relativePath, variantIssues);
 
-            var unusedVariants = newIssues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
+            var unusedVariants = shaderIssues.Where(i => i.GetCustomProperty((int)ShaderVariantProperty.Compiled).Equals(false.ToString())).ToArray();
             Assert.AreEqual(2, unusedVariants.Length);
-            Assert.True(unusedVariants[0].GetCustomProperty(0).Equals("MyTestShader/Pass"));
-            Assert.True(unusedVariants[0].GetCustomProperty(1).Equals("KEYWORD_B"));
-            Assert.True(unusedVariants[1].GetCustomProperty(0).Equals("MyTestShader/Pass"));
-            Assert.True(unusedVariants[1].GetCustomProperty(1).Equals("KEYWORD_B"));
+            Assert.True(unusedVariants[0].GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("MyTestShader/Pass"));
+            Assert.True(unusedVariants[0].GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B"));
+            Assert.True(unusedVariants[1].GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("MyTestShader/Pass"));
+            Assert.True(unusedVariants[1].GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B"));
         }
 
 #endif
