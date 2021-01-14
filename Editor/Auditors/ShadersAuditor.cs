@@ -138,10 +138,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 if (Path.HasExtension(assetPath) && Path.GetExtension(assetPath).Equals(".vfx"))
                     continue;
 
-                var shader = AssetDatabase.LoadMainAssetAtPath(assetPath);
+                var shader = AssetDatabase.LoadMainAssetAtPath(assetPath) as Shader;
                 if (shader == null)
-                    shader = shader;
-                shaderPathMap.Add(shader as Shader, assetPath);
+                {
+                    Debug.LogError(assetPath + " is not a Shader.");
+                    continue;
+                }
+
+                shaderPathMap.Add(shader, assetPath);
             }
 
             var id = k_ShaderVariantFirstId;
@@ -350,9 +354,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void ParsePlayerLog(string logFile, Action<ProjectIssue> onIssueFound, IProgressBar progressBar = null)
         {
-            // TEMP
             if (s_ShaderVariantData == null)
+            {
+                var message = "This operation requires to build the project first";
+#if !UNITY_2018_2_OR_NEWER
+                message = "This feature requires Unity 2018.2 or newer";
+#endif
+                var issue = new ProjectIssue(k_BuildRequiredDescriptor, message, IssueCategory.UnusedShaderVariants);
+                issue.SetCustomProperties(new[] { string.Empty, string.Empty});
+                onIssueFound(issue);
                 return;
+            }
 
             var compiledVariants = new Dictionary<string, List<CompiledVariantData>>();
             var lines = GetCompiledShaderLines(logFile);
