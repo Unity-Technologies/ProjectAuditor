@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         , IPreprocessBuildWithReport
 #endif
     {
-        ProblemDescriptor k_ParseErrorDescriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor k_ParseErrorDescriptor = new ProblemDescriptor
             (
             400000,
             "Parse Error",
@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             severity = Rule.Severity.Error
         };
 
-        ProblemDescriptor k_BuildRequiredDescriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor k_BuildRequiredDescriptor = new ProblemDescriptor
             (
             400001,
             "Shader Variants analysis incomplete",
