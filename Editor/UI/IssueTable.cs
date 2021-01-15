@@ -179,8 +179,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             var column = m_Desc.columnTypes[columnIndex];
 
-            // only indent first column
-            if ((int)ColumnType.Description == column)
+            // indent first column, if necessary
+            if (m_Desc.groupByDescription && (int)ColumnType.Description == column)
             {
                 var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
