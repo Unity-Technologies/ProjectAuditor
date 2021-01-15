@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using Unity.ProjectAuditor.Editor.Auditors;
 using UnityEditor;
 using UnityEngine;
@@ -20,7 +21,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (string.IsNullOrEmpty(logFilename))
                 return;
 
-            m_ShadersAuditor.ParsePlayerLog(logFilename, m_Issues.ToArray(), new ProgressBarDisplay());
+            var variants = m_Issues.Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
+
+            m_ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBarDisplay());
         }
 
         public override void OnGUI()
