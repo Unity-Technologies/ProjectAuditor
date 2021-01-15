@@ -228,7 +228,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     k_NotAvailable,
                     k_NotAvailable,
                     k_NotAvailable,
-                    k_NotAvailable
+                    k_NotAvailable,
                     k_NotAvailable
                 });
                 onIssueFound(issueWithError);
@@ -291,7 +291,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 passCount,
                 keywordCount,
                 shader.renderQueue.ToString(),
-                hasInstancing
+                hasInstancing,
                 isSrpBatcherCompatible.ToString()
             });
             onIssueFound(issue);
