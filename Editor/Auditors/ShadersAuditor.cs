@@ -56,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         , IPreprocessBuildWithReport
 #endif
     {
-        ProblemDescriptor k_ParseErrorDescriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor k_ParseErrorDescriptor = new ProblemDescriptor
             (
             400000,
             "Parse Error",
@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             severity = Rule.Severity.Error
         };
 
-        ProblemDescriptor k_BuildRequiredDescriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor k_BuildRequiredDescriptor = new ProblemDescriptor
             (
             400001,
             "Shader Variants analysis incomplete",
@@ -268,7 +268,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (m_HasInstancingMethod != null)
             {
                 var value = (bool)m_HasInstancingMethod.Invoke(null, new object[] { shader});
-                hasInstancing = value ? "Yes" : "No";
+                hasInstancing = value.ToString();
             }
 
 #if UNITY_2019_1_OR_NEWER

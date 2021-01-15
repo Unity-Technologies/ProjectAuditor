@@ -12,8 +12,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     enum PropertyFormat
     {
-        String = 0,
-        Integer
+        Bool = 0,
+        Integer,
+        String,
     }
 
     struct ColumnDescriptor

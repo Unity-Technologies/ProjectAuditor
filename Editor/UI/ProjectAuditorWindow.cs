@@ -129,7 +129,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         Content = new GUIContent("Instancing", "GPU Instancing Support"),
                         Width = 80,
                         MinWidth = 80,
-                        Format = PropertyFormat.String
+                        Format = PropertyFormat.Bool
                     }
                 },
                 onDoubleClick = FocusOnAssetInProjectWindow,
@@ -258,7 +258,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
         };
 
-        string[] m_ModeNames;
+        string[] m_TabNames;
         ProjectAuditor m_ProjectAuditor;
         bool m_ShouldRefresh;
         ProjectAuditorAnalytics.Analytic m_AnalyzeButtonAnalytic;
@@ -270,7 +270,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         TreeViewSelection m_AssemblySelection;
 
         // Serialized fields
-        [SerializeField] int m_ActiveModeIndex;
+        [SerializeField] int m_ActiveTabIndex;
         [SerializeField] string m_AreaSelectionSummary;
         [SerializeField] string[] m_AssemblyNames;
         [SerializeField] string m_AssemblySelectionSummary;
@@ -282,7 +282,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         AnalysisView activeAnalysisView
         {
-            get { return m_AnalysisViews[m_ActiveModeIndex]; }
+            get { return m_AnalysisViews[m_ActiveTabIndex]; }
         }
 
         public void AddItemsToMenu(GenericMenu menu)
@@ -369,7 +369,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
             }
 
-            m_ModeNames = m_AnalysisViewDescriptors.Select(m => m.name).ToArray();
+            m_TabNames = m_AnalysisViewDescriptors.Select(m => m.name).ToArray();
 
             if (m_TextFilter == null)
                 m_TextFilter = new TextFilter();
@@ -415,7 +415,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             DrawToolbar();
             if (IsAnalysisValid())
             {
-                DrawMode();
+                DrawTab();
                 DrawFilters();
                 DrawActions();
 
@@ -1120,19 +1120,19 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndHorizontal();
         }
 
-        void DrawMode()
+        void DrawTab()
         {
             EditorGUILayout.BeginHorizontal();
-            var activeModeIndex = GUILayout.Toolbar(m_ActiveModeIndex, m_ModeNames,
+            var activeTabIndex = GUILayout.Toolbar(m_ActiveTabIndex, m_TabNames,
                 "LargeButton", GUILayout.Height(LayoutSize.ToolbarHeight));
 
             EditorGUILayout.EndHorizontal();
 
-            bool activeModeChanged = (m_ActiveModeIndex != activeModeIndex);
-            if (activeModeChanged)
+            bool activeTabChanged = (m_ActiveTabIndex != activeTabIndex);
+            if (activeTabChanged)
             {
                 var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                m_ActiveModeIndex = activeModeIndex;
+                m_ActiveTabIndex = activeTabIndex;
 
                 RefreshDisplay();
 
