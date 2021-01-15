@@ -396,21 +396,21 @@ Shader ""Custom/MyEditorShader""
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             projectAuditor.Audit();
 
-            var shaderIssues = new List<ProjectIssue>();
+            var shadersAndVariants = new List<ProjectIssue>();
             var shadersAuditor = projectAuditor.GetAuditor<ShadersAuditor>();
             var completed = false;
-            shadersAuditor.Audit(shaderIssues.Add,
+            shadersAuditor.Audit(shadersAndVariants.Add,
                 () =>
                 {
                     completed = true;
                 });
             Assert.True(completed);
 
-            var variantIssues = shaderIssues.Where(i => i.description.Equals("Custom/MyTestShader") && i.category == IssueCategory.ShaderVariants).ToArray();
+            var variants = shadersAndVariants.Where(i => i.description.Equals("Custom/MyTestShader") && i.category == IssueCategory.ShaderVariants).ToArray();
 
-            shadersAuditor.ParsePlayerLog(m_PlayerLogResource.relativePath, variantIssues);
+            shadersAuditor.ParsePlayerLog(m_PlayerLogResource.relativePath, variants);
 
-            var unusedVariants = shaderIssues.Where(i => i.GetCustomProperty((int)ShaderVariantProperty.Compiled).Equals(false.ToString())).ToArray();
+            var unusedVariants = variants.Where(i => !i.GetCustomPropertyAsBool((int)ShaderVariantProperty.Compiled)).ToArray();
             Assert.AreEqual(2, unusedVariants.Length);
             Assert.True(unusedVariants[0].GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("MyTestShader/Pass"));
             Assert.True(unusedVariants[0].GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B"));

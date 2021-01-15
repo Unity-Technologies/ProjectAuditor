@@ -220,10 +220,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 new ColumnDescriptor
                 {
-                    Content = new GUIContent("Compiled"),
+                    Content = new GUIContent("Compiled", "Compiled at runtime by the player"),
                     Width = 80,
                     MinWidth = 80,
-                    Format = PropertyFormat.String
+                    Format = PropertyFormat.Bool
                 },
                 new ColumnDescriptor
                 {
