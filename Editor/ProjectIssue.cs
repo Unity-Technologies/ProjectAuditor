@@ -46,7 +46,6 @@ namespace Unity.ProjectAuditor.Editor
         Assets,
         Shaders,
         ShaderVariants,
-        UnusedShaderVariants,
         Code,
         ProjectSettings,
         NumCategories
