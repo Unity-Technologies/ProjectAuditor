@@ -40,7 +40,13 @@ To find which shader variants are compiled at runtime, follow these steps:
 
             var numCompiledVariants = variants.Count(i => i.GetCustomPropertyAsBool((int)ShaderVariantProperty.Compiled));
             if (numCompiledVariants == 0)
+            {
                 EditorUtility.DisplayDialog("Shader Variants", k_NoCompiledVariantWarning, "Ok");
+            }
+            else
+            {
+                m_AnalysisView.Refresh();
+            }
         }
 
         public override void CreateTable(AnalysisViewDescriptor desc, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
