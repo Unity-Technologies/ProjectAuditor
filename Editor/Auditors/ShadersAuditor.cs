@@ -273,12 +273,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var isSrpBatcherCompatible = false;
             if (m_GetShaderGlobalKeywordsMethod != null && m_GetShaderLocalKeywordsMethod != null)
             {
+#if UNITY_2019_1_OR_NEWER
                 if (RenderPipelineManager.currentPipeline != null)
                 {
                     int subShader = (int)m_GetShaderActiveSubshaderIndex.Invoke(null, new object[] { shader});
                     int SRPErrCode = (int)m_GetSRPBatcherCompatibilityCode.Invoke(null, new object[] { shader, subShader});
                     isSrpBatcherCompatible = (0 == SRPErrCode);
                 }
+#endif
             }
 
 #if UNITY_2019_1_OR_NEWER
