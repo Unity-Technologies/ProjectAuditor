@@ -80,7 +80,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.ColumnType.Custom + 1,
                     IssueTable.ColumnType.Custom + 2,
                     IssueTable.ColumnType.Custom + 3,
-                    IssueTable.ColumnType.Custom + 4
+                    IssueTable.ColumnType.Custom + 4,
+                    IssueTable.ColumnType.Custom + 5
                 },
                 descriptionColumnStyle = new ColumnDescriptor
                 {
@@ -122,6 +123,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                     new ColumnDescriptor
                     {
                         Content = new GUIContent("Instancing", "GPU Instancing Support"),
+                        Width = 80,
+                        MinWidth = 80,
+                        Format = PropertyFormat.Bool
+                    },
+                    new ColumnDescriptor
+                    {
+                        Content = new GUIContent("SRP Batcher", "SRP Batcher Compatible"),
                         Width = 80,
                         MinWidth = 80,
                         Format = PropertyFormat.Bool

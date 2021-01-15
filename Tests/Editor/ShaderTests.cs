@@ -439,6 +439,7 @@ Shader ""Custom/MyEditorShader""
 #endif
             Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue));
             Assert.False(shaderIssue.GetCustomPropertyAsBool((int)ShaderProperty.Instancing));
+            Assert.False(shaderIssue.GetCustomPropertyAsBool((int)ShaderProperty.SrpBatcher));
         }
 
         [Test]

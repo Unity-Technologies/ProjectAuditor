@@ -22,6 +22,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         NumKeywords,
         RenderQueue,
         Instancing,
+        SrpBatcher,
         Num
     }
 
@@ -92,6 +93,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         MethodInfo m_GetShaderGlobalKeywordsMethod;
         MethodInfo m_GetShaderLocalKeywordsMethod;
         MethodInfo m_HasInstancingMethod;
+        MethodInfo m_GetShaderActiveSubshaderIndex;
+        MethodInfo m_GetSRPBatcherCompatibilityCode;
+
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -105,6 +109,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_GetShaderGlobalKeywordsMethod = m_ShaderUtilType.GetMethod("GetShaderGlobalKeywords", BindingFlags.Static | BindingFlags.NonPublic);
             m_GetShaderLocalKeywordsMethod = m_ShaderUtilType.GetMethod("GetShaderLocalKeywords", BindingFlags.Static | BindingFlags.NonPublic);
             m_HasInstancingMethod = m_ShaderUtilType.GetMethod("HasInstancing", BindingFlags.Static | BindingFlags.NonPublic);
+            m_GetShaderActiveSubshaderIndex = m_ShaderUtilType.GetMethod("GetShaderActiveSubshaderIndex", BindingFlags.Static | BindingFlags.NonPublic);
+            m_GetSRPBatcherCompatibilityCode = m_ShaderUtilType.GetMethod("GetSRPBatcherCompatibilityCode", BindingFlags.Static | BindingFlags.NonPublic);
         }
 
         public void Reload(string path)
@@ -223,6 +229,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     k_NotAvailable,
                     k_NotAvailable,
                     k_NotAvailable
+                    k_NotAvailable
                 });
                 onIssueFound(issueWithError);
 
@@ -262,6 +269,18 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 hasInstancing = value.ToString();
             }
 
+            // srp batcher
+            var isSrpBatcherCompatible = false;
+            if (m_GetShaderGlobalKeywordsMethod != null && m_GetShaderLocalKeywordsMethod != null)
+            {
+                if (RenderPipelineManager.currentPipeline != null)
+                {
+                    int subShader = (int)m_GetShaderActiveSubshaderIndex.Invoke(null, new object[] { shader});
+                    int SRPErrCode = (int)m_GetSRPBatcherCompatibilityCode.Invoke(null, new object[] { shader, subShader});
+                    isSrpBatcherCompatible = (0 == SRPErrCode);
+                }
+            }
+
 #if UNITY_2019_1_OR_NEWER
             passCount = shader.passCount.ToString();
 #endif
@@ -273,6 +292,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 keywordCount,
                 shader.renderQueue.ToString(),
                 hasInstancing
+                isSrpBatcherCompatible.ToString()
             });
             onIssueFound(issue);
         }
