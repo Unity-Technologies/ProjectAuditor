@@ -80,15 +80,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             severity = Rule.Severity.Error
         };
 
-        ProblemDescriptor k_UnusedShaderVariantDescriptor = new ProblemDescriptor
-            (
-            400002,
-            "Unused Shader Variant",
-            Area.BuildSize,
-            string.Empty,
-            string.Empty
-            );
-
         const string k_NoPassName = "<unnamed>";
         const string k_NoKeywords = "<no keywords>";
         const string k_NotAvailable = "N/A";
@@ -158,7 +149,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 message = "This feature requires Unity 2018.2 or newer";
 #endif
                 var issue = new ProjectIssue(k_BuildRequiredDescriptor, message, IssueCategory.ShaderVariants);
-                issue.SetCustomProperties(new[] { string.Empty, string.Empty, string.Empty, string.Empty });
+                issue.SetCustomProperties(new[] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty });
                 onIssueFound(issue);
             }
             else

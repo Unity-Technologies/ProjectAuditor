@@ -11,10 +11,6 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    class ShaderVariantsWindow : AnalysisWindow
-    {
-    }
-
     class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IProjectIssueFilter
     {
         enum AnalysisState
@@ -386,21 +382,23 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisViews.Add(view);
             }
 
-            m_ShaderVariantsWindow = AnalysisWindow.FindOpenWindow<ShaderVariantsWindow>();
-            if (m_ShaderVariantsWindow != null)
+            var shaderVariantsWindow = AnalysisWindow.FindOpenWindow<ShaderVariantsWindow>();
+            if (shaderVariantsWindow != null)
             {
                 if (m_AnalysisState == AnalysisState.Valid)
                 {
-                    if (m_ShaderVariantsWindow.IsValid())
-                        m_ShaderVariantsWindow.Clear();
+                    if (shaderVariantsWindow.IsValid())
+                        shaderVariantsWindow.Clear();
                     else
-                        m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
-                    m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
+                        shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                    shaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
+                    shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
+                    m_ShaderVariantsWindow = shaderVariantsWindow;
                 }
                 else
                 {
-                    m_ShaderVariantsWindow.Close();
-                    m_ShaderVariantsWindow = null;
+                    shaderVariantsWindow.Close();
+                    shaderVariantsWindow = null;
                 }
             }
 
@@ -430,11 +428,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             else
             {
                 DrawHelpbox();
-            }
-
-            if (Event.current.type == EventType.DragExited)
-            {
-                HandleDragAndDrop();
             }
         }
 
@@ -514,8 +507,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (m_ShaderVariantsWindow == null)
                 {
-                    m_ShaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
-                    m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                    var shaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
+                    shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                    shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
+                    m_ShaderVariantsWindow = shaderVariantsWindow;
                 }
                 else
                 {
@@ -547,30 +542,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ShaderVariantsWindow.AddIssues(newIssues);
                 m_ShaderVariantsWindow.Refresh();
             }
-        }
-
-        void HandleDragAndDrop()
-        {
-            var paths = DragAndDrop.paths;
-            foreach (var path in paths)
-            {
-                if (Path.HasExtension(path) && Path.GetExtension(path).Equals(".log"))
-                    ParsePlayerLog(path);
-            }
-        }
-
-        void ParsePlayerLog(string logFilename)
-        {
-            if (string.IsNullOrEmpty(logFilename))
-                return;
-
-            if (m_AnalysisState != AnalysisState.Valid)
-                return;
-
-            var issues = m_ProjectReport.GetIssues(IssueCategory.ShaderVariants);
-
-            var shadersAuditor = m_ProjectAuditor.GetAuditor<ShadersAuditor>();
-            shadersAuditor.ParsePlayerLog(logFilename, issues, new ProgressBarDisplay());
         }
 
         void RefreshDisplay()
@@ -918,8 +889,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         if (m_ShaderVariantsWindow == null)
                         {
-                            m_ShaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
-                            m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                            var shaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
+                            shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                            shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
+                            m_ShaderVariantsWindow = shaderVariantsWindow;
                         }
                         else
                         {
@@ -929,12 +902,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                         m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
                         m_ShaderVariantsWindow.Refresh();
                         m_ShaderVariantsWindow.Show();
-                    }
-                    if (GUILayout.Button("Find Unused Variants", EditorStyles.miniButton, GUILayout.Width(200)))
-                    {
-                        var logFilename = EditorUtility.OpenFilePanelWithFilters("Load Player Log from disk...", "", new[] { "Log", "log" });
-
-                        ParsePlayerLog(logFilename);
                     }
                 }
                 else
