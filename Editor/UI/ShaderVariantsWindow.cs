@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Auditors;
 using UnityEditor;
@@ -22,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ShadersAuditor.ParsePlayerLog(logFilename, m_Issues.ToArray(), new ProgressBarDisplay());
         }
 
-        override public void OnGUI()
+        public override void OnGUI()
         {
             EditorGUILayout.LabelField("Drag & Drop Player.log file on this window to find compiled variants");
             EditorGUILayout.Separator();

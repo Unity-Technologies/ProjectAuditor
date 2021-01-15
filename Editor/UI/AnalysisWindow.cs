@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             return m_AnalysisView.IsValid();
         }
 
-        virtual public void OnGUI()
+        public virtual void OnGUI()
         {
             if (!m_AnalysisView.IsValid())
             {

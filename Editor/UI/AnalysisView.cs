@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         Bool = 0,
         Integer,
-        String,
+        String
     }
 
     struct ColumnDescriptor

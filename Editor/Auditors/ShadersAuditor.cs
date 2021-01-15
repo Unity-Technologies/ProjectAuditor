@@ -1,3 +1,6 @@
+#if UNITY_2018_2_OR_NEWER
+using UnityEditor.Build.Reporting;
+#endif
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,9 +9,6 @@ using System.Reflection;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build;
-#if UNITY_2018_2_OR_NEWER
-using UnityEditor.Build.Reporting;
-#endif
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -222,7 +222,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     k_NotAvailable,
                     k_NotAvailable,
                     k_NotAvailable,
-                    k_NotAvailable,
+                    k_NotAvailable
                 });
                 onIssueFound(issueWithError);
 
@@ -272,7 +272,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 passCount,
                 keywordCount,
                 shader.renderQueue.ToString(),
-                hasInstancing,
+                hasInstancing
             });
             onIssueFound(issue);
         }
@@ -434,7 +434,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         bool ShaderKeywordsMatch(string[] firstSet, string[] secondSet)
         {
-            return Enumerable.SequenceEqual(firstSet.OrderBy(e => e), secondSet.OrderBy(e => e));
+            return firstSet.OrderBy(e => e).SequenceEqual(secondSet.OrderBy(e => e));
         }
 
         string[] StringToKeywords(string keywordsString)
