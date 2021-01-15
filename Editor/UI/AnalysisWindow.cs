@@ -8,8 +8,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     class AnalysisWindow : EditorWindow
     {
-        AnalysisView m_AnalysisView;
-
+        protected AnalysisView m_AnalysisView;
         protected List<ProjectIssue> m_Issues;
 
         public static T FindOpenWindow<T>() where T : class
@@ -26,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_AnalysisView = new AnalysisView();
         }
 
-        public void CreateTable(AnalysisViewDescriptor desc, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public virtual void CreateTable(AnalysisViewDescriptor desc, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
             m_AnalysisView.CreateTable(desc, config, prefs, filter);
             m_Issues = new List<ProjectIssue>();
