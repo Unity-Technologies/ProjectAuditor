@@ -137,6 +137,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             return m_Table != null;
         }
 
+        public void SetFlatView(bool value)
+        {
+            m_Table.SetFlatView(value);
+        }
+
         public void OnGUI()
         {
             ProblemDescriptor problemDescriptor = null;

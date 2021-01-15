@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         const string k_PlayerLogInfo = @"
 To find which shader variants are compiled at runtime, follow these steps:
 - Enable the Log Shader Compilation option (Project Settings => Graphics => Shader Loading)
-- Build the project
+- Make a Development build
 - Run the build on the target platform
 - Drag & Drop the Player.log file on this window
 ";
@@ -20,6 +20,7 @@ To find which shader variants are compiled at runtime, follow these steps:
         const string k_NoCompiledVariantWarning = "No compiled shader variants found in player log. Make sure to enable Log Shader Compilation before building the project.";
         const string k_PlayerLogProcessed = "Player log file successfully processed.";
 
+        bool m_FlatView = false;
         bool m_HideCompiledVariants = false;
         IProjectIssueFilter m_MainFilter;
         ShadersAuditor m_ShadersAuditor;
@@ -62,11 +63,15 @@ To find which shader variants are compiled at runtime, follow these steps:
             var helpStyle = new GUIStyle(EditorStyles.textField);
             helpStyle.wordWrap = true;
             EditorGUILayout.LabelField(k_PlayerLogInfo, helpStyle);
-            var hideCompiledVariants = EditorGUILayout.ToggleLeft("Hide Compiled Variants", m_HideCompiledVariants, GUILayout.Width(160));
-            if (hideCompiledVariants != m_HideCompiledVariants)
-            {
-                m_HideCompiledVariants = hideCompiledVariants;
 
+            EditorGUI.BeginChangeCheck();
+
+            m_FlatView = EditorGUILayout.ToggleLeft("Flat View", m_FlatView, GUILayout.Width(160));
+            m_HideCompiledVariants = EditorGUILayout.ToggleLeft("Hide Compiled Variants", m_HideCompiledVariants, GUILayout.Width(160));
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                m_AnalysisView.SetFlatView(m_FlatView);
                 m_AnalysisView.Refresh();
             }
 

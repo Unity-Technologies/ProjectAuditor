@@ -36,6 +36,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         IssueTableItem[] m_TreeViewItemIssues;
         int m_NextId;
         int m_NumMatchingIssues;
+        bool m_FlatView;
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
                           AnalysisViewDescriptor desc, ProjectAuditorConfig config,
@@ -45,6 +46,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Config = config;
             m_Filter = filter;
             m_Desc = desc;
+            m_FlatView = desc.groupByDescription;
             m_NextId = 1;
             multicolumnHeader.sortingChanged += OnSortingChanged;
         }
@@ -85,6 +87,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_TreeViewItemGroups != null)
                 m_TreeViewItemGroups.Clear();
             m_TreeViewItemIssues = null;
+        }
+
+        public void SetFlatView(bool value)
+        {
+            m_FlatView = value;
         }
 
         protected override TreeViewItem BuildRoot()
@@ -132,7 +139,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             Profiler.BeginSample("IssueTable.BuildRows");
-            if (m_Desc.groupByDescription && !hasSearch)
+            if (m_Desc.groupByDescription && !hasSearch && !m_FlatView)
             {
                 var descriptors = filteredItems.Select(i => i.ProblemDescriptor).Distinct();
                 foreach (var descriptor in descriptors)
