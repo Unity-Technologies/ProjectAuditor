@@ -134,7 +134,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_NumMatchingIssues = filteredItems.Length;
             if (m_NumMatchingIssues == 0)
             {
-                m_Rows.Add(new TreeViewItem(0, 0, "No issue found"));
+                m_Rows.Add(new TreeViewItem(0, 0, "No items"));
                 return m_Rows;
             }
 

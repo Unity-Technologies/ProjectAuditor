@@ -305,7 +305,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Table.SetExpanded(row.id, expanded);
         }
 
-        const string k_NoIssueSelectedText = "No issue selected";
+        const string k_NoIssueSelectedText = "No item selected";
         const string k_AnalysisIsRequiredText = "Missing Data: Please Analyze";
 
         static class LayoutSize

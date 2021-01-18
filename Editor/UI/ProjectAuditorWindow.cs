@@ -245,7 +245,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new ColumnDescriptor
                 {
                     Content = new GUIContent("Keywords", "Compiled Variants Keywords"),
-                    Width = 800,
+                    Width = 500,
                     MinWidth = 80,
                     Format = PropertyFormat.String
                 },
