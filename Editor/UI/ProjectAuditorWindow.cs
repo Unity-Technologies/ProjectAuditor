@@ -507,48 +507,45 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void AnalyzeShaderVariants()
         {
-            if (m_AnalysisState == AnalysisState.Valid)
+            m_ProjectReport.ClearIssues(IssueCategory.Shaders);
+            m_ProjectReport.ClearIssues(IssueCategory.ShaderVariants);
+
+            if (m_ShaderVariantsWindow == null)
             {
-                m_ProjectReport.ClearIssues(IssueCategory.Shaders);
-                m_ProjectReport.ClearIssues(IssueCategory.ShaderVariants);
-
-                if (m_ShaderVariantsWindow == null)
-                {
-                    var shaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
-                    shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
-                    shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
-                    m_ShaderVariantsWindow = shaderVariantsWindow;
-                }
-                else
-                {
-                    m_ShaderVariantsWindow.Clear();
-                }
-
-                var shadersView = m_AnalysisViews.FirstOrDefault(view => view.desc.category == IssueCategory.Shaders);
-                if (shadersView != null)
-                    shadersView.Clear();
-
-                var newIssues = new List<ProjectIssue>();
-                m_ProjectAuditor.GetAuditor<ShadersAuditor>().Audit(issue =>
-                {
-                    newIssues.Add(issue);
-                    m_ProjectReport.AddIssue(issue);
-                },
-                    () =>
-                    {
-                    },
-                    new ProgressBarDisplay()
-                );
-
-                if (shadersView != null)
-                {
-                    shadersView.AddIssues(newIssues);
-                    shadersView.Refresh();
-                }
-
-                m_ShaderVariantsWindow.AddIssues(newIssues);
-                m_ShaderVariantsWindow.Refresh();
+                var shaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
+                shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
+                m_ShaderVariantsWindow = shaderVariantsWindow;
             }
+            else
+            {
+                m_ShaderVariantsWindow.Clear();
+            }
+
+            var shadersView = m_AnalysisViews.FirstOrDefault(view => view.desc.category == IssueCategory.Shaders);
+            if (shadersView != null)
+                shadersView.Clear();
+
+            var newIssues = new List<ProjectIssue>();
+            m_ProjectAuditor.GetAuditor<ShadersAuditor>().Audit(issue =>
+            {
+                newIssues.Add(issue);
+                m_ProjectReport.AddIssue(issue);
+            },
+                () =>
+                {
+                },
+                new ProgressBarDisplay()
+            );
+
+            if (shadersView != null)
+            {
+                shadersView.AddIssues(newIssues);
+                shadersView.Refresh();
+            }
+
+            m_ShaderVariantsWindow.AddIssues(newIssues);
+            m_ShaderVariantsWindow.Refresh();
         }
 
         void RefreshDisplay()
