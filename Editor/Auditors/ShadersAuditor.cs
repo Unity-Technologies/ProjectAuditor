@@ -82,6 +82,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         };
 
         const string k_NoPassName = "<unnamed>";
+        const string k_UnamedPassPrefix = "Pass ";
         const string k_NoKeywords = "<no keywords>";
         const string k_NotAvailable = "N/A";
         const int k_ShaderVariantFirstId = 400003;
@@ -368,7 +369,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
 
 
-        public void ParsePlayerLog(string logFile, ProjectIssue[] shaderVariants, IProgressBar progressBar = null)
+        public void ParsePlayerLog(string logFile, ProjectIssue[] builtVariants, IProgressBar progressBar = null)
         {
             var compiledVariants = new Dictionary<string, List<CompiledVariantData>>();
             var lines = GetCompiledShaderLines(logFile);
@@ -397,35 +398,35 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 });
             }
 
-            var sortedVariants = shaderVariants.OrderBy(v => v.description);
+            builtVariants = builtVariants.OrderBy(v => v.description).ToArray();
             var shader = (Shader)null;
-            foreach (var variant in sortedVariants)
+            foreach (var builtVariant in builtVariants)
             {
-                if (shader == null || !shader.name.Equals(variant.description))
+                if (shader == null || !shader.name.Equals(builtVariant.description))
                 {
-                    shader = Shader.Find(variant.description);
+                    shader = Shader.Find(builtVariant.description);
                 }
 
                 if (shader == null)
                 {
-                    variant.SetCustomProperty((int)ShaderVariantProperty.Compiled, "?");
+                    builtVariant.SetCustomProperty((int)ShaderVariantProperty.Compiled, "?");
                     continue;
                 }
 
                 var shaderName = shader.name;
-                var passName = variant.GetCustomProperty((int)ShaderVariantProperty.PassName);
-                var keywordsString = variant.GetCustomProperty((int)ShaderVariantProperty.Keywords);
+                var passName = builtVariant.GetCustomProperty((int)ShaderVariantProperty.PassName);
+                var keywordsString = builtVariant.GetCustomProperty((int)ShaderVariantProperty.Keywords);
                 var keywords = StringToKeywords(keywordsString);
                 var isVariantCompiled = false;
 
                 if (compiledVariants.ContainsKey(shaderName))
                 {
                     // note that we are not checking pass name since there is an inconsistency regarding "unnamed" passes between build vs compiled
-                    var matchingVariants = compiledVariants[shaderName].Where(cv => ShaderKeywordsMatch(cv.keywords, keywords));
+                    var matchingVariants = compiledVariants[shaderName].Where(cv => ShaderVariantsMatch(cv, keywords, passName));
                     isVariantCompiled = matchingVariants.Count() > 0;
                 }
 
-                variant.SetCustomProperty((int)ShaderVariantProperty.Compiled, isVariantCompiled.ToString());
+                builtVariant.SetCustomProperty((int)ShaderVariantProperty.Compiled, isVariantCompiled.ToString());
             }
         }
 
@@ -454,9 +455,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             return keywords;
         }
 
-        bool ShaderKeywordsMatch(string[] firstSet, string[] secondSet)
+        bool ShaderVariantsMatch(CompiledVariantData cv, string[] secondSet, string passName)
         {
-            return firstSet.OrderBy(e => e).SequenceEqual(secondSet.OrderBy(e => e));
+            var passMatch = cv.pass.Equals(passName);
+            if (!passMatch)
+                passMatch = cv.pass.Equals(k_NoPassName) && passName.StartsWith(k_UnamedPassPrefix) && int.TryParse(passName.Substring(k_UnamedPassPrefix.Length), out var pass);
+            if (!passMatch)
+                return false;
+            return cv.keywords.OrderBy(e => e).SequenceEqual(secondSet.OrderBy(e => e));
         }
 
         string[] StringToKeywords(string keywordsString)

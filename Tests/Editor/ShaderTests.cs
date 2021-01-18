@@ -100,6 +100,43 @@ namespace UnityEditor.ProjectAuditor.EditorTests
                         }
                         ENDCG
                     }
+
+                    Pass
+                    {
+                        CGPROGRAM
+    #pragma vertex vert
+    #pragma fragment frag
+    #pragma multi_compile KEYWORD_A KEYWORD_B
+
+                        struct appdata
+                        {
+                            float4 vertex : POSITION;
+                            float2 uv : TEXCOORD0;
+                        };
+
+                        struct v2f
+                        {
+                            float2 uv : TEXCOORD0;
+                            float4 vertex : SV_POSITION;
+                        };
+
+                        sampler2D _MainTex;
+                        float4 _MainTex_ST;
+
+                        v2f vert (appdata v)
+                        {
+                            v2f o;
+                            o.vertex = UnityObjectToClipPos(v.vertex);
+                            o.uv = v.uv;
+                            return o;
+                        }
+
+                        fixed4 frag (v2f i) : SV_Target
+                        {
+                            return tex2D(_MainTex, i.uv);
+                        }
+                        ENDCG
+                    }
                 }
             }");
 
@@ -108,6 +145,9 @@ Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: vertex, ke
 Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: fragment, keywords <no keywords>
 Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: vertex, keywords KEYWORD_A
 Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: fragment, keywords KEYWORD_A
+
+Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: vertex, keywords KEYWORD_B
+Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: fragment, keywords KEYWORD_B
             ");
 
 
@@ -410,7 +450,7 @@ Shader ""Custom/MyEditorShader""
             shadersAuditor.ParsePlayerLog(m_PlayerLogResource.relativePath, variants);
 
             var unusedVariants = variants.Where(i => !i.GetCustomPropertyAsBool((int)ShaderVariantProperty.Compiled)).ToArray();
-            Assert.AreEqual(2, unusedVariants.Length);
+            Assert.AreEqual(4, unusedVariants.Length);
             Assert.True(unusedVariants[0].GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("MyTestShader/Pass"));
             Assert.True(unusedVariants[0].GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B"));
             Assert.True(unusedVariants[1].GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("MyTestShader/Pass"));
@@ -431,7 +471,7 @@ Shader ""Custom/MyEditorShader""
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
 #if UNITY_2019_1_OR_NEWER
-            Assert.AreEqual(1, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
+            Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
             Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
 #else
             Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
