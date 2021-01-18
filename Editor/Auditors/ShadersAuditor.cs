@@ -69,23 +69,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             severity = Rule.Severity.Error
         };
 
-        static readonly ProblemDescriptor k_BuildRequiredDescriptor = new ProblemDescriptor
-            (
-            400001,
-            "Shader Variants analysis incomplete",
-            Area.BuildSize,
-            string.Empty,
-            string.Empty
-            )
-        {
-            severity = Rule.Severity.Error
-        };
-
         const string k_NoPassName = "<unnamed>";
         const string k_UnamedPassPrefix = "Pass ";
         const string k_NoKeywords = "<no keywords>";
         const string k_NotAvailable = "N/A";
-        const int k_ShaderVariantFirstId = 400003;
+        const int k_ShaderVariantFirstId = 400001;
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData;
 
@@ -96,7 +84,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         MethodInfo m_HasInstancingMethod;
         MethodInfo m_GetShaderActiveSubshaderIndex;
         MethodInfo m_GetSRPBatcherCompatibilityCode;
-
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -149,17 +136,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
 
             var id = k_ShaderVariantFirstId;
-            if (s_ShaderVariantData == null)
-            {
-                var message = "Build the project to view the Shader Variants";
-#if !UNITY_2018_2_OR_NEWER
-                message = "This feature requires Unity 2018.2 or newer";
-#endif
-                var issue = new ProjectIssue(k_BuildRequiredDescriptor, message, IssueCategory.ShaderVariants);
-                issue.SetCustomProperties(new[] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty });
-                onIssueFound(issue);
-            }
-            else
+            if (s_ShaderVariantData != null)
             {
 #if UNITY_2018_2_OR_NEWER
                 // find hidden shaders
@@ -298,6 +275,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 isSrpBatcherCompatible.ToString()
             });
             onIssueFound(issue);
+        }
+
+        public static bool BuildDataAvailable()
+        {
+            return s_ShaderVariantData != null;
         }
 
 #if UNITY_2018_2_OR_NEWER
