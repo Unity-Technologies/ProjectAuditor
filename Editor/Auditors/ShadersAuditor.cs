@@ -351,7 +351,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
 
 
-        public void ParsePlayerLog(string logFile, ProjectIssue[] builtVariants, IProgressBar progressBar = null)
+        public bool ParsePlayerLog(string logFile, ProjectIssue[] builtVariants, IProgressBar progressBar = null)
         {
             var compiledVariants = new Dictionary<string, List<CompiledVariantData>>();
             var lines = GetCompiledShaderLines(logFile);
@@ -379,6 +379,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     keywords = keywords
                 });
             }
+
+            if (!compiledVariants.Any())
+                return false;
 
             builtVariants = builtVariants.OrderBy(v => v.description).ToArray();
             var shader = (Shader)null;
@@ -410,6 +413,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
                 builtVariant.SetCustomProperty((int)ShaderVariantProperty.Compiled, isVariantCompiled.ToString());
             }
+
+            return true;
         }
 
         string[] GetCompiledShaderLines(string logFile)

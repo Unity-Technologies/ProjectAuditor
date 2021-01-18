@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.ProjectAuditor.Editor.Auditors;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
@@ -21,7 +22,8 @@ To find which shader variants are compiled at runtime, follow these steps:
 - Drag & Drop the Player.log file on this window
 ";
         const string k_NotLogFile = "Player log file not recognized.";
-        const string k_NoCompiledVariantWarning = "No compiled shader variants found in player log. Make sure to enable Log Shader Compilation before building the project.";
+        const string k_NoCompiledVariantWarning = "No compiled shader variants found in player log. Perhaps, Log Shader Compilation was not enabled when the project was built.";
+        const string k_NoCompiledVariantWarningLogDisabled = "No compiled shader variants found in player log. Shader compilation logging is disabled. Would you like to enable it? (Shader compilation will not appear in the log until the project is rebuilt)";
         const string k_PlayerLogProcessed = "Player log file successfully processed.";
 
         bool m_FlatView = false;
@@ -41,13 +43,21 @@ To find which shader variants are compiled at runtime, follow these steps:
 
             var variants = m_Issues.Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
 
-            m_ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBarDisplay());
-
-            var numCompiledVariants = variants.Count(i => i.GetCustomPropertyAsBool((int)ShaderVariantProperty.Compiled));
-            EditorUtility.DisplayDialog("Shader Variants", (numCompiledVariants > 0) ? k_PlayerLogProcessed : k_NoCompiledVariantWarning, "Ok");
-            if (numCompiledVariants > 0)
+            if (m_ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBarDisplay()))
             {
+                EditorUtility.DisplayDialog("Shader Variants", k_PlayerLogProcessed, "Ok");
                 m_AnalysisView.Refresh();
+            }
+            else
+            {
+                if (GraphicsSettings.logWhenShaderIsCompiled)
+                {
+                    EditorUtility.DisplayDialog("Shader Variants", k_NoCompiledVariantWarning, "Ok");
+                }
+                else
+                {
+                    GraphicsSettings.logWhenShaderIsCompiled = EditorUtility.DisplayDialog("Shader Variants", k_NoCompiledVariantWarningLogDisabled, "Yes", "No");
+                }
             }
         }
 
