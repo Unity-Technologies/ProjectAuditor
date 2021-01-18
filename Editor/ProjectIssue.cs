@@ -195,6 +195,11 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
+        public void SetCustomProperty(int index, string property)
+        {
+            customProperties[index] = property;
+        }
+
         public void SetCustomProperties(string[] properties)
         {
             customProperties = properties;

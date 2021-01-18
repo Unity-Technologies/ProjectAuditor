@@ -1,3 +1,6 @@
+#if UNITY_2018_2_OR_NEWER
+using UnityEditor.Build.Reporting;
+#endif
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,9 +9,6 @@ using System.Reflection;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build;
-#if UNITY_2018_2_OR_NEWER
-using UnityEditor.Build.Reporting;
-#endif
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -28,7 +28,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
     public enum ShaderVariantProperty
     {
-        Platform = 0,
+        Compiled = 0,
+        Platform,
         PassName,
         Keywords,
         Requirements,
@@ -41,6 +42,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #if UNITY_2018_2_OR_NEWER
         public ShaderCompilerData compilerData;
 #endif
+    }
+
+    class CompiledVariantData
+    {
+        public string pass;
+        public string stage;
+        public string[] keywords;
     }
 
     public class ShadersAuditor : IAuditor
@@ -61,20 +69,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             severity = Rule.Severity.Error
         };
 
-        static readonly ProblemDescriptor k_BuildRequiredDescriptor = new ProblemDescriptor
-            (
-            400001,
-            "Shader Variants analysis incomplete",
-            Area.BuildSize,
-            string.Empty,
-            string.Empty
-            )
-        {
-            severity = Rule.Severity.Error
-        };
-
+        const string k_NoPassName = "<unnamed>";
+        const string k_UnamedPassPrefix = "Pass ";
+        const string k_NoKeywords = "<no keywords>";
         const string k_NotAvailable = "N/A";
-        const int k_ShaderVariantFirstId = 400002;
+        const int k_ShaderVariantFirstId = 400001;
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData;
 
@@ -85,7 +84,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         MethodInfo m_HasInstancingMethod;
         MethodInfo m_GetShaderActiveSubshaderIndex;
         MethodInfo m_GetSRPBatcherCompatibilityCode;
-
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -128,22 +126,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     continue;
 
                 var shader = AssetDatabase.LoadMainAssetAtPath(assetPath) as Shader;
+                if (shader == null)
+                {
+                    Debug.LogError(assetPath + " is not a Shader.");
+                    continue;
+                }
 
                 shaderPathMap.Add(shader, assetPath);
             }
 
             var id = k_ShaderVariantFirstId;
-            if (s_ShaderVariantData == null)
-            {
-                var message = "Build the project to view the Shader Variants";
-#if !UNITY_2018_2_OR_NEWER
-                message = "This feature requires Unity 2018.2 or newer";
-#endif
-                var issue = new ProjectIssue(k_BuildRequiredDescriptor, message, IssueCategory.ShaderVariants);
-                issue.SetCustomProperties(new[] { string.Empty, string.Empty, string.Empty, string.Empty });
-                onIssueFound(issue);
-            }
-            else
+            if (s_ShaderVariantData != null)
             {
 #if UNITY_2018_2_OR_NEWER
                 // find hidden shaders
@@ -284,6 +277,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             onIssueFound(issue);
         }
 
+        public static bool BuildDataAvailable()
+        {
+            return s_ShaderVariantData != null;
+        }
+
 #if UNITY_2018_2_OR_NEWER
         void AddVariants(Shader shader, string assetPath, int id, List<ShaderVariantData> shaderVariants, Action<ProjectIssue> onIssueFound)
         {
@@ -300,23 +298,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             foreach (var shaderVariantData in shaderVariants)
             {
                 var compilerData = shaderVariantData.compilerData;
-                var shaderKeywordSet = compilerData.shaderKeywordSet.GetShaderKeywords().ToArray();
-
-#if UNITY_2019_3_OR_NEWER
-                var keywords = shaderKeywordSet.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ?  ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword)).ToArray();
-#else
-                var keywords = shaderKeywordSet.Select(keyword => keyword.GetKeywordName()).ToArray();
-#endif
-                var keywordString = String.Join(", ", keywords);
-                if (string.IsNullOrEmpty(keywordString))
-                    keywordString = "<no keywords>";
-
+                var keywords = GetShaderKeywords(shader, compilerData.shaderKeywordSet.GetShaderKeywords());
                 var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariants, new Location(assetPath));
                 issue.SetCustomProperties(new[]
                 {
+                    "?",
                     compilerData.shaderCompilerPlatform.ToString(),
                     shaderVariantData.passName,
-                    keywordString,
+                    KeywordsToString(keywords),
                     compilerData.shaderRequirements.ToString()
                 });
 
@@ -360,5 +349,130 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         }
 
 #endif
+
+
+        public bool ParsePlayerLog(string logFile, ProjectIssue[] builtVariants, IProgressBar progressBar = null)
+        {
+            var compiledVariants = new Dictionary<string, List<CompiledVariantData>>();
+            var lines = GetCompiledShaderLines(logFile);
+            foreach (var line in lines)
+            {
+                var strippedLine = line.Substring("Compiled shader: ".Length);
+                var parts = strippedLine.Split(',');
+                var shaderName = parts[0];
+                var pass = parts[1].Trim(' ').Substring("pass: ".Length);
+                var stage = parts[2].Trim(' ').Substring("stage: ".Length);
+                var keywordsString = parts[3].Trim(' ').Substring("keywords ".Length); // note that the log is missing ':'
+                var keywords = StringToKeywords(keywordsString);
+
+                if (!stage.Equals("fragment") && !stage.Equals("pixel"))
+                    continue;
+
+                if (!compiledVariants.ContainsKey(shaderName))
+                {
+                    compiledVariants.Add(shaderName, new List<CompiledVariantData>());
+                }
+                compiledVariants[shaderName].Add(new CompiledVariantData
+                {
+                    pass = pass,
+                    stage = stage,
+                    keywords = keywords
+                });
+            }
+
+            if (!compiledVariants.Any())
+                return false;
+
+            builtVariants = builtVariants.OrderBy(v => v.description).ToArray();
+            var shader = (Shader)null;
+            foreach (var builtVariant in builtVariants)
+            {
+                if (shader == null || !shader.name.Equals(builtVariant.description))
+                {
+                    shader = Shader.Find(builtVariant.description);
+                }
+
+                if (shader == null)
+                {
+                    builtVariant.SetCustomProperty((int)ShaderVariantProperty.Compiled, "?");
+                    continue;
+                }
+
+                var shaderName = shader.name;
+                var passName = builtVariant.GetCustomProperty((int)ShaderVariantProperty.PassName);
+                var keywordsString = builtVariant.GetCustomProperty((int)ShaderVariantProperty.Keywords);
+                var keywords = StringToKeywords(keywordsString);
+                var isVariantCompiled = false;
+
+                if (compiledVariants.ContainsKey(shaderName))
+                {
+                    // note that we are not checking pass name since there is an inconsistency regarding "unnamed" passes between build vs compiled
+                    var matchingVariants = compiledVariants[shaderName].Where(cv => ShaderVariantsMatch(cv, keywords, passName));
+                    isVariantCompiled = matchingVariants.Count() > 0;
+                }
+
+                builtVariant.SetCustomProperty((int)ShaderVariantProperty.Compiled, isVariantCompiled.ToString());
+            }
+
+            return true;
+        }
+
+        string[] GetCompiledShaderLines(string logFile)
+        {
+            var compilationLines = new List<string>();
+            using (var file = new StreamReader(logFile))
+            {
+                string line;
+                while ((line = file.ReadLine()) != null)
+                {
+                    if (line.StartsWith("Compiled shader:"))
+                        compilationLines.Add(line);
+                }
+            }
+            return compilationLines.ToArray();
+        }
+
+        string[] GetShaderKeywords(Shader shader, ShaderKeyword[] shaderKeywords)
+        {
+#if UNITY_2019_3_OR_NEWER
+            var keywords = shaderKeywords.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ? ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword)).ToArray();
+#else
+            var keywords = shaderKeywords.Select(keyword => keyword.GetKeywordName()).ToArray();
+#endif
+            return keywords;
+        }
+
+        bool ShaderVariantsMatch(CompiledVariantData cv, string[] secondSet, string passName)
+        {
+            var passMatch = cv.pass.Equals(passName);
+            var pass = 0;
+            if (!passMatch)
+            {
+#if UNITY_2019_1_OR_NEWER
+                passMatch = cv.pass.Equals(k_NoPassName) && passName.StartsWith(k_UnamedPassPrefix) && int.TryParse(passName.Substring(k_UnamedPassPrefix.Length), out pass);
+#else
+                passMatch = cv.pass.Equals(k_NoPassName) && string.IsNullOrEmpty(passName);
+#endif
+            }
+
+            if (!passMatch)
+                return false;
+            return cv.keywords.OrderBy(e => e).SequenceEqual(secondSet.OrderBy(e => e));
+        }
+
+        string[] StringToKeywords(string keywordsString)
+        {
+            if (keywordsString.Equals(k_NoKeywords))
+                return new string[] {};
+            return keywordsString.Split(' ');
+        }
+
+        string KeywordsToString(string[] keywords)
+        {
+            var keywordString = String.Join(" ", keywords);
+            if (string.IsNullOrEmpty(keywordString))
+                keywordString = k_NoKeywords;
+            return keywordString;
+        }
     }
 }

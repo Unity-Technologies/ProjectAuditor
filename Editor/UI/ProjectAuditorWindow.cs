@@ -209,7 +209,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 IssueTable.ColumnType.Custom,
                 IssueTable.ColumnType.Custom + 1,
                 IssueTable.ColumnType.Custom + 2,
-                IssueTable.ColumnType.Custom + 3
+                IssueTable.ColumnType.Custom + 3,
+                IssueTable.ColumnType.Custom + 4
             },
             descriptionColumnStyle = new ColumnDescriptor
             {
@@ -220,6 +221,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             },
             customColumnStyles = new[]
             {
+                new ColumnDescriptor
+                {
+                    Content = new GUIContent("Compiled", "Compiled at runtime by the player"),
+                    Width = 80,
+                    MinWidth = 80,
+                    Format = PropertyFormat.Bool
+                },
                 new ColumnDescriptor
                 {
                     Content = new GUIContent("Graphics API"),
@@ -237,7 +245,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new ColumnDescriptor
                 {
                     Content = new GUIContent("Keywords", "Compiled Variants Keywords"),
-                    Width = 800,
+                    Width = 500,
                     MinWidth = 80,
                     Format = PropertyFormat.String
                 },
@@ -381,21 +389,23 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisViews.Add(view);
             }
 
-            m_ShaderVariantsWindow = AnalysisWindow.FindOpenWindow();
-            if (m_ShaderVariantsWindow != null)
+            var shaderVariantsWindow = AnalysisWindow.FindOpenWindow<ShaderVariantsWindow>();
+            if (shaderVariantsWindow != null)
             {
                 if (m_AnalysisState == AnalysisState.Valid)
                 {
-                    if (m_ShaderVariantsWindow.IsValid())
-                        m_ShaderVariantsWindow.Clear();
+                    if (shaderVariantsWindow.IsValid())
+                        shaderVariantsWindow.Clear();
                     else
-                        m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
-                    m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
+                        shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                    shaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
+                    shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
+                    m_ShaderVariantsWindow = shaderVariantsWindow;
                 }
                 else
                 {
-                    m_ShaderVariantsWindow.Close();
-                    m_ShaderVariantsWindow = null;
+                    shaderVariantsWindow.Close();
+                    shaderVariantsWindow = null;
                 }
             }
 
@@ -504,8 +514,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (m_ShaderVariantsWindow == null)
                 {
-                    m_ShaderVariantsWindow = GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
-                    m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                    var shaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
+                    shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                    shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
+                    m_ShaderVariantsWindow = shaderVariantsWindow;
                 }
                 else
                 {
@@ -884,8 +896,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         if (m_ShaderVariantsWindow == null)
                         {
-                            m_ShaderVariantsWindow = GetWindow<AnalysisWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
-                            m_ShaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                            var shaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
+                            shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                            shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
+                            m_ShaderVariantsWindow = shaderVariantsWindow;
                         }
                         else
                         {

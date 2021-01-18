@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         Bool = 0,
         Integer,
-        String,
+        String
     }
 
     struct ColumnDescriptor
@@ -135,6 +135,11 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool IsValid()
         {
             return m_Table != null;
+        }
+
+        public void SetFlatView(bool value)
+        {
+            m_Table.SetFlatView(value);
         }
 
         public void OnGUI()
@@ -300,7 +305,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Table.SetExpanded(row.id, expanded);
         }
 
-        const string k_NoIssueSelectedText = "No issue selected";
+        const string k_NoIssueSelectedText = "No item selected";
         const string k_AnalysisIsRequiredText = "Missing Data: Please Analyze";
 
         static class LayoutSize
