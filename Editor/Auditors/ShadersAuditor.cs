@@ -440,8 +440,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         bool ShaderVariantsMatch(CompiledVariantData cv, string[] secondSet, string passName)
         {
             var passMatch = cv.pass.Equals(passName);
+            var pass = 0;
             if (!passMatch)
-                passMatch = cv.pass.Equals(k_NoPassName) && passName.StartsWith(k_UnamedPassPrefix) && int.TryParse(passName.Substring(k_UnamedPassPrefix.Length), out var pass);
+                passMatch = cv.pass.Equals(k_NoPassName) && passName.StartsWith(k_UnamedPassPrefix) && int.TryParse(passName.Substring(k_UnamedPassPrefix.Length), out pass);
             if (!passMatch)
                 return false;
             return cv.keywords.OrderBy(e => e).SequenceEqual(secondSet.OrderBy(e => e));

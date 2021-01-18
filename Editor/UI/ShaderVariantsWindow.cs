@@ -44,11 +44,8 @@ To find which shader variants are compiled at runtime, follow these steps:
             m_ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBarDisplay());
 
             var numCompiledVariants = variants.Count(i => i.GetCustomPropertyAsBool((int)ShaderVariantProperty.Compiled));
-            if (numCompiledVariants == 0)
-            {
-                EditorUtility.DisplayDialog("Shader Variants", k_NoCompiledVariantWarning, "Ok");
-            }
-            else
+            EditorUtility.DisplayDialog("Shader Variants", (numCompiledVariants > 0) ? k_PlayerLogProcessed : k_NoCompiledVariantWarning, "Ok");
+            if (numCompiledVariants > 0)
             {
                 m_AnalysisView.Refresh();
             }
@@ -63,7 +60,6 @@ To find which shader variants are compiled at runtime, follow these steps:
 
         public override void OnGUI()
         {
-            var variant = m_Issues.FirstOrDefault(i => i.category == IssueCategory.ShaderVariants);
             var buildAvailable = ShadersAuditor.BuildDataAvailable();
 
             EditorGUILayout.BeginVertical(GUI.skin.box);
@@ -88,11 +84,26 @@ To find which shader variants are compiled at runtime, follow these steps:
 
             EditorGUILayout.EndVertical();
 
-            base.OnGUI();
-
-            if (Event.current.type == EventType.DragExited)
+            if (buildAvailable)
             {
-                HandleDragAndDrop();
+                var evt = Event.current;
+
+                switch (evt.type)
+                {
+                    case EventType.DragExited:
+                        break;
+                    case EventType.DragUpdated:
+                        var valid = 1 == DragAndDrop.paths.Count(path => Path.HasExtension(path) && Path.GetExtension(path).Equals(".log"));
+                        DragAndDrop.visualMode = valid ? DragAndDropVisualMode.Generic : DragAndDropVisualMode.Rejected;
+                        evt.Use();
+                        break;
+                    case EventType.DragPerform:
+                        DragAndDrop.AcceptDrag();
+                        HandleDragAndDrop();
+                        evt.Use();
+                        break;
+                }
+                base.OnGUI();
             }
         }
 
@@ -101,14 +112,7 @@ To find which shader variants are compiled at runtime, follow these steps:
             var paths = DragAndDrop.paths;
             foreach (var path in paths)
             {
-                if (Path.HasExtension(path) && Path.GetExtension(path).Equals(".log"))
-                {
-                    ParsePlayerLog(path);
-                }
-                else
-                {
-                    EditorUtility.DisplayDialog("Shader Variants", k_NotLogFile, "Ok");
-                }
+                ParsePlayerLog(path);
             }
         }
 
