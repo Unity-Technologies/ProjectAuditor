@@ -365,7 +365,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var keywordsString = parts[3].Trim(' ').Substring("keywords ".Length); // note that the log is missing ':'
                 var keywords = StringToKeywords(keywordsString);
 
-                if (!stage.Equals("fragment"))
+                if (!stage.Equals("fragment") && !stage.Equals("pixel"))
                     continue;
 
                 if (!compiledVariants.ContainsKey(shaderName))
