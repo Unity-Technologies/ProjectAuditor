@@ -447,7 +447,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var passMatch = cv.pass.Equals(passName);
             var pass = 0;
             if (!passMatch)
+            {
+#if UNITY_2019_1_OR_NEWER
                 passMatch = cv.pass.Equals(k_NoPassName) && passName.StartsWith(k_UnamedPassPrefix) && int.TryParse(passName.Substring(k_UnamedPassPrefix.Length), out pass);
+#else
+                passMatch = cv.pass.Equals(k_NoPassName) && string.IsNullOrEmpty(passName);
+#endif
+            }
+
             if (!passMatch)
                 return false;
             return cv.keywords.OrderBy(e => e).SequenceEqual(secondSet.OrderBy(e => e));
