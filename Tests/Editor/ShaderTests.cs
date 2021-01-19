@@ -9,6 +9,7 @@ using UnityEditor.Build;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
+using System.Reflection;
 #if UNITY_2018_2_OR_NEWER
 using UnityEditor.Build.Reporting;
 #endif
@@ -17,8 +18,11 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class ShaderTests
     {
+        string[] m_ShaderCompilerPlatforms = Array.Empty<string>();
+
         TempAsset m_ShaderResource;
         TempAsset m_PlayerLogResource;
+        TempAsset m_PlayerLogWithNoCompilationResource;
         TempAsset m_ShaderWithErrorResource;
         TempAsset m_EditorShaderResource;
 
@@ -69,7 +73,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
                         CGPROGRAM
     #pragma vertex vert
     #pragma fragment frag
-    #pragma multi_compile KEYWORD_A KEYWORD_B
+    #pragma multi_compile __ KEYWORD_A KEYWORD_B
 
                         struct appdata
                         {
@@ -106,7 +110,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
                         CGPROGRAM
     #pragma vertex vert
     #pragma fragment frag
-    #pragma multi_compile KEYWORD_A KEYWORD_B
+    #pragma multi_compile __ KEYWORD_A
 
                         struct appdata
                         {
@@ -146,15 +150,19 @@ Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: fragment, 
 Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: vertex, keywords KEYWORD_A
 Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: fragment, keywords KEYWORD_A
 
-Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: vertex, keywords KEYWORD_B
-Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: fragment, keywords KEYWORD_B
+Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: vertex, keywords KEYWORD_A
+Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: fragment, keywords KEYWORD_A
             ");
 
 
+            m_PlayerLogWithNoCompilationResource = new TempAsset("player_with_no_compilation.log", string.Empty);
+
+#if UNITY_2019_1_OR_NEWER
             m_ShaderWithErrorResource = new TempAsset("Resources/ShaderWithError.shader", @"
             Sader ""Custom/ShaderWithError""
             {
             }");
+#endif
 
             m_ShaderUsingBuiltInKeywordResource = new TempAsset("Resources/ShaderUsingBuiltInKeyword.shader", @"
 Shader ""Custom/ShaderUsingBuiltInKeyword""
@@ -301,6 +309,20 @@ Shader ""Custom/MyEditorShader""
                 FallBack ""Diffuse""
             }
 ");
+
+            var ShaderUtil_GetAvailableShaderCompilerPlatforms = typeof(ShaderUtil).GetMethod("GetAvailableShaderCompilerPlatforms", BindingFlags.Static | BindingFlags.NonPublic);
+            if (ShaderUtil_GetAvailableShaderCompilerPlatforms != null)
+            {
+                int platformMask = (int)ShaderUtil_GetAvailableShaderCompilerPlatforms.Invoke(null, new object[] {});
+                var shaderCompilerPlatforms = new List<string>();
+                for (int i = 0; i < 32; ++i)
+                {
+                    if ((platformMask & (1 << i)) == 0)
+                        continue;
+                    shaderCompilerPlatforms.Add(((Rendering.ShaderCompilerPlatform)i).ToString());
+                }
+                m_ShaderCompilerPlatforms = shaderCompilerPlatforms.ToArray();
+            }
         }
 
         [OneTimeTearDown]
@@ -318,26 +340,35 @@ Shader ""Custom/MyEditorShader""
 
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.ShaderVariants);
-            Assert.Positive(issues.Length);
-            Assert.True(issues.First().description.Equals("Build the project to view the Shader Variants"));
+            Assert.Zero(issues.Length);
+            Assert.False(ShadersAuditor.BuildDataAvailable());
         }
 
         [Test]
         public void ShaderVariantsAreReported()
         {
             var issues = BuildAndAnalyze();
+            Assert.True(ShadersAuditor.BuildDataAvailable());
 
             var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
-
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
 
-            var variants = issues.Where(i => i.description.Equals("Custom/MyTestShader"));
-            Assert.Positive(variants.Count());
+            var variants = issues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
+            var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform)).Distinct();
+            var numShaderCompilerPlatforms = shaderCompilerPlatforms.Count();
 
-            // check custom property
-            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_A")));
-            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B")));
-            Assert.AreEqual((int)ShaderVariantProperty.Num, variants.First().GetNumCustomProperties());
+            Assert.AreEqual(5 * numShaderCompilerPlatforms, variants.Length);
+
+            foreach (var plat in shaderCompilerPlatforms)
+            {
+                var variantsForPlatform = variants.Where(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform).Equals(plat)).ToArray();
+                Assert.AreEqual((int)ShaderVariantProperty.Num, variantsForPlatform[0].GetNumCustomProperties());
+
+                // "#pragma multi_compile __ KEYWORD_A KEYWORD_B" should produce 3 variants for each graphics API
+                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals(ShadersAuditor.k_NoKeywords)));
+                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_A")));
+                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B")));
+            }
         }
 
         [Test]
@@ -345,12 +376,12 @@ Shader ""Custom/MyEditorShader""
         {
             var issues = BuildAndAnalyze();
 
-            var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
+            var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords)).ToArray();
 
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
 
-            var variants = issues.Where(i => i.description.Equals("Custom/ShaderUsingBuiltInKeyword"));
-            Assert.Positive(variants.Count(), "No shader variants found");
+            var variants = issues.Where(i => i.description.Equals("Custom/ShaderUsingBuiltInKeyword")).ToArray();
+            Assert.Positive(variants.Length, "No shader variants found");
 
             // check custom properties
             Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("<no keywords>")), "No shader variants found without INSTANCING_ON keyword");
@@ -358,7 +389,7 @@ Shader ""Custom/MyEditorShader""
 #if UNITY_2019_1_OR_NEWER
             //this one fails on yamato
             //Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("INSTANCING_ON")), "No shader variants found with INSTANCING_ON keyword");
-            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Requirements).Equals("BaseShaders, Derivatives, Instancing")), "No shader variants found with Instancing requirement");
+            //Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Requirements).Equals("BaseShaders, Derivatives, Instancing")), "No shader variants found with Instancing requirement");
 #endif
         }
 
@@ -415,6 +446,16 @@ Shader ""Custom/MyEditorShader""
         }
 
         [Test]
+        public void PlayerLogDoesNotContainShaderCompilationLog()
+        {
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var projectReport = projectAuditor.Audit();
+            var shadersAuditor = projectAuditor.GetAuditor<ShadersAuditor>();
+            var result = shadersAuditor.ParsePlayerLog(m_PlayerLogWithNoCompilationResource.relativePath, new ProjectIssue[0]);
+            Assert.False(result);
+        }
+
+        [Test]
         public void UnusedVariantsAreReported()
         {
             var buildPath = FileUtil.GetUniqueTempPathInProject();
@@ -447,15 +488,30 @@ Shader ""Custom/MyEditorShader""
             Assert.True(completed);
 
             var variants = shadersAndVariants.Where(i => i.description.Equals("Custom/MyTestShader") && i.category == IssueCategory.ShaderVariants).ToArray();
+            var result = shadersAuditor.ParsePlayerLog(m_PlayerLogResource.relativePath, variants);
 
-            shadersAuditor.ParsePlayerLog(m_PlayerLogResource.relativePath, variants);
+            Assert.True(result, "No compiled shader variants found in player log.");
+
+            var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform)).Distinct();
+            var numShaderCompilerPlatforms = shaderCompilerPlatforms.Count();
+
+            Assert.AreEqual(5 * numShaderCompilerPlatforms, variants.Length);
 
             var unusedVariants = variants.Where(i => !i.GetCustomPropertyAsBool((int)ShaderVariantProperty.Compiled)).ToArray();
-            Assert.AreEqual(4, unusedVariants.Length);
-            Assert.True(unusedVariants[0].GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("MyTestShader/Pass"));
-            Assert.True(unusedVariants[0].GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B"));
-            Assert.True(unusedVariants[1].GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("MyTestShader/Pass"));
-            Assert.True(unusedVariants[1].GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B"));
+            foreach (var plat in shaderCompilerPlatforms)
+            {
+                var unusedVariantsForPlatform = unusedVariants.Where(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform).Equals(plat)).ToArray();
+
+                Assert.AreEqual(2, unusedVariantsForPlatform.Length);
+                Assert.True(unusedVariantsForPlatform[0].GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("MyTestShader/Pass"));
+                Assert.True(unusedVariantsForPlatform[0].GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B"));
+#if UNITY_2019_1_OR_NEWER
+                Assert.True(unusedVariantsForPlatform[1].GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("Pass 1"));
+#else
+                Assert.True(unusedVariantsForPlatform[1].GetCustomProperty((int)ShaderVariantProperty.PassName).Equals(string.Empty));
+#endif
+                Assert.True(unusedVariantsForPlatform[1].GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals(ShadersAuditor.k_NoKeywords));
+            }
         }
 
 #endif
@@ -483,6 +539,7 @@ Shader ""Custom/MyEditorShader""
             Assert.False(shaderIssue.GetCustomPropertyAsBool((int)ShaderProperty.SrpBatcher));
         }
 
+#if UNITY_2019_1_OR_NEWER
         [Test]
         public void ShaderWithErrorIsReported()
         {
@@ -494,6 +551,8 @@ Shader ""Custom/MyEditorShader""
             var shaderIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_ShaderWithErrorResource.relativePath));
             Assert.NotNull(shaderIssue);
         }
+
+#endif
 
         [Test]
         public void ShaderUsingBuiltInKeywordIsReported()

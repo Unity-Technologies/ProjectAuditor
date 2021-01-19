@@ -69,10 +69,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             severity = Rule.Severity.Error
         };
 
-        const string k_NoPassName = "<unnamed>";
-        const string k_UnamedPassPrefix = "Pass ";
-        const string k_NoKeywords = "<no keywords>";
-        const string k_NotAvailable = "N/A";
+        internal const string k_NoPassName = "<unnamed>";
+        internal const string k_UnamedPassPrefix = "Pass ";
+        internal const string k_NoKeywords = "<no keywords>";
+        internal const string k_NotAvailable = "N/A";
         const int k_ShaderVariantFirstId = 400001;
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData;
