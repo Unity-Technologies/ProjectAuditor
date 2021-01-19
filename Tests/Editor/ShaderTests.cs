@@ -18,8 +18,6 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class ShaderTests
     {
-        string[] m_ShaderCompilerPlatforms = Array.Empty<string>();
-
         TempAsset m_ShaderResource;
         TempAsset m_PlayerLogResource;
         TempAsset m_PlayerLogWithNoCompilationResource;
@@ -309,20 +307,6 @@ Shader ""Custom/MyEditorShader""
                 FallBack ""Diffuse""
             }
 ");
-
-            var ShaderUtil_GetAvailableShaderCompilerPlatforms = typeof(ShaderUtil).GetMethod("GetAvailableShaderCompilerPlatforms", BindingFlags.Static | BindingFlags.NonPublic);
-            if (ShaderUtil_GetAvailableShaderCompilerPlatforms != null)
-            {
-                int platformMask = (int)ShaderUtil_GetAvailableShaderCompilerPlatforms.Invoke(null, new object[] {});
-                var shaderCompilerPlatforms = new List<string>();
-                for (int i = 0; i < 32; ++i)
-                {
-                    if ((platformMask & (1 << i)) == 0)
-                        continue;
-                    shaderCompilerPlatforms.Add(((Rendering.ShaderCompilerPlatform)i).ToString());
-                }
-                m_ShaderCompilerPlatforms = shaderCompilerPlatforms.ToArray();
-            }
         }
 
         [OneTimeTearDown]
