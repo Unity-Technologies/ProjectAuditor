@@ -144,14 +144,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void OnGUI()
         {
-            ProblemDescriptor problemDescriptor = null;
             var selectedItems = m_Table.GetSelectedItems();
-            var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor);
             var selectedIssues = selectedItems.Select(i => i.ProjectIssue);
-            // find out if all descriptors are the same
-            var firstDescriptor = selectedDescriptors.FirstOrDefault();
-            if (selectedDescriptors.Count() == selectedDescriptors.Count(d => d.id == firstDescriptor.id))
-                problemDescriptor = firstDescriptor;
 
             ProjectIssue issue = null;
             if (selectedIssues.Count() == 1)
@@ -165,6 +159,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (m_Desc.showRightPanels)
             {
+                // get selected descriptor, only if they are all the same
+                var problemDescriptor = (ProblemDescriptor)null;
+                var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor);
+                if (selectedDescriptors.Select(d => d.id).Distinct().Count() == 1)
+                    problemDescriptor = selectedDescriptors.FirstOrDefault();
+
                 EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
                 DrawFoldouts(problemDescriptor);
                 EditorGUILayout.EndVertical();

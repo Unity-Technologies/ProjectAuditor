@@ -23,9 +23,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             Count
         }
 
-        static readonly string InfoIconName = "console.infoicon";
-        static readonly string WarnIconName = "console.warnicon";
-        static readonly string ErrorIconName = "console.erroricon";
+        static readonly int k_FirstId = 1;
+        static readonly string k_InfoIconName = "console.infoicon";
+        static readonly string k_WarnIconName = "console.warnicon";
+        static readonly string k_ErrorIconName = "console.erroricon";
 
         readonly ProjectAuditorConfig m_Config;
         readonly AnalysisViewDescriptor m_Desc;
@@ -47,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Filter = filter;
             m_Desc = desc;
             m_FlatView = desc.groupByDescription;
-            m_NextId = 1;
+            m_NextId = k_FirstId;
             multicolumnHeader.sortingChanged += OnSortingChanged;
         }
 
@@ -83,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void Clear()
         {
-            m_NextId = 1;
+            m_NextId = k_FirstId;
             if (m_TreeViewItemGroups != null)
                 m_TreeViewItemGroups.Clear();
             m_TreeViewItemIssues = null;
@@ -231,7 +232,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         string tooltip = string.Empty;
                         if (issue.category == IssueCategory.Code && issue.isPerfCriticalContext)
                         {
-                            iconName = WarnIconName;
+                            iconName = k_WarnIconName;
                             tooltip = "Performance Critical Context";
                         }
                         else
@@ -239,15 +240,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                             switch (issue.descriptor.severity)
                             {
                                 case Rule.Severity.Info:
-                                    iconName = InfoIconName;
+                                    iconName = k_InfoIconName;
                                     tooltip = "Info";
                                     break;
                                 case Rule.Severity.Warning:
-                                    iconName = WarnIconName;
+                                    iconName = k_WarnIconName;
                                     tooltip = "Warning";
                                     break;
                                 case Rule.Severity.Error:
-                                    iconName = ErrorIconName;
+                                    iconName = k_ErrorIconName;
                                     tooltip = "Error";
                                     break;
                                 default:
@@ -402,7 +403,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         public IssueTableItem[] GetSelectedItems()
         {
             var ids = GetSelection();
-            if (ids.Count() > 0) return FindRows(ids).OfType<IssueTableItem>().ToArray();
+            if (ids.Count() > 0)
+                return FindRows(ids).OfType<IssueTableItem>().ToArray();
 
             return new IssueTableItem[0];
         }
