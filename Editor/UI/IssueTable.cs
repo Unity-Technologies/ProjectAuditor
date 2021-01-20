@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Config = config;
             m_Filter = filter;
             m_Desc = desc;
-            m_FlatView = desc.groupByDescription;
+            m_FlatView = !desc.groupByDescription;
             m_NextId = k_FirstId;
             multicolumnHeader.sortingChanged += OnSortingChanged;
         }
