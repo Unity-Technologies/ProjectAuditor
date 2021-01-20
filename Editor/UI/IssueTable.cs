@@ -177,6 +177,20 @@ namespace Unity.ProjectAuditor.Editor.UI
             return m_Rows;
         }
 
+        protected override IList<int> GetAncestors(int id)
+        {
+            if (m_TreeViewItemIssues != null || m_TreeViewItemIssues.Length == 0)
+                return new List<int>();
+            return base.GetAncestors(id);
+        }
+
+        protected override IList<int> GetDescendantsThatHaveChildren(int id)
+        {
+            if (m_TreeViewItemIssues != null || m_TreeViewItemIssues.Length == 0)
+                return new List<int>();
+            return base.GetDescendantsThatHaveChildren(id);
+        }
+
         protected override void RowGUI(RowGUIArgs args)
         {
             for (var i = 0; i < args.GetNumVisibleColumns(); ++i)
