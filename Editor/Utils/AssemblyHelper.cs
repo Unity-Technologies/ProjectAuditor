@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
@@ -22,9 +23,29 @@ namespace Unity.ProjectAuditor.Editor.Utils
             get { return Path.GetFileNameWithoutExtension(DefaultAssemblyFileName); }
         }
 
+        static List<Type> s_Types;
+
         static IEnumerable<Type> GetAllTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes());
+            if (s_Types != null)
+                return s_Types;
+
+            var types = new List<Type>();
+            foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                try
+                {
+                    types.AddRange(a.GetTypes());
+                }
+                catch (ReflectionTypeLoadException /* e */)
+                {
+                    Debug.LogWarningFormat("Project Auditor: Could not get {0} types information", a.GetName().Name);
+                }
+            }
+
+            s_Types = types;
+
+            return types;
         }
 
         public static IEnumerable<Type> GetAllTypesInheritedFromInterface<InterfaceT>()
