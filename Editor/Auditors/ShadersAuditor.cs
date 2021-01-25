@@ -120,6 +120,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 // skip editor shaders
                 if (assetPath.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) != -1)
                     continue;
+                if (assetPath.IndexOf("/editor default resources/", StringComparison.OrdinalIgnoreCase) != -1)
+                    continue;
 
                 // vfx shaders are not currently supported
                 if (Path.HasExtension(assetPath) && Path.GetExtension(assetPath).Equals(".vfx"))

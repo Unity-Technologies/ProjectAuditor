@@ -593,5 +593,14 @@ Shader ""Custom/MyEditorShader""
 
             Assert.Zero(issues.Length);
         }
+
+        [Test]
+        public void EditorDefaultResourcesShaderIsNotReported()
+        {
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var projectReport = projectAuditor.Audit();
+            var issues = projectReport.GetIssues(IssueCategory.Shaders).Where(i => i.relativePath.Contains("Editor Default Resources")).ToArray();
+            Assert.Zero(issues.Length);
+        }
     }
 }
