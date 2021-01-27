@@ -61,10 +61,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             (
             400000,
             "Parse Error",
-            Area.BuildSize,
-            string.Empty,
-            string.Empty
-            )
+            Area.BuildSize)
         {
             severity = Rule.Severity.Error
         };
@@ -220,9 +217,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 (
                 id++,
                 shaderName,
-                Area.BuildSize,
-                string.Empty,
-                string.Empty
+                Area.BuildSize
                 );
 
             var passCount = k_NotAvailable;
@@ -292,9 +287,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 (
                 id++,
                 shaderName,
-                Area.BuildSize,
-                string.Empty,
-                string.Empty
+                Area.BuildSize
                 );
 
             foreach (var shaderVariantData in shaderVariants)
