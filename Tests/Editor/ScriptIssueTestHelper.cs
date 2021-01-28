@@ -10,7 +10,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public static class ScriptIssueTestHelper
     {
-        public static IEnumerable<ProjectIssue> AnalyzeAndFindScriptIssues(TempAsset tempAsset)
+        public static ProjectIssue[] AnalyzeAndFindScriptIssues(TempAsset tempAsset)
         {
             var auditor = new ScriptAuditor();
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
@@ -30,7 +30,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
             Assert.True(completed);
 
-            return foundIssues.Where(i => i.relativePath.Equals(tempAsset.relativePath));
+            return foundIssues.Where(i => i.relativePath.Equals(tempAsset.relativePath)).ToArray();
         }
     }
 }
