@@ -87,6 +87,7 @@ namespace Unity.ProjectAuditor.Editor
         public string solution;
         public string type;
         public string value;
+        public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area area) {}
         public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area area, string problem, string solution) {}
         public virtual bool Equals(object obj);
         public virtual bool Equals(Unity.ProjectAuditor.Editor.ProblemDescriptor other);
