@@ -21,6 +21,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         TempAsset m_TempAssetIssueInNestedClass;
         TempAsset m_TempAssetIssueInOverrideMethod;
         TempAsset m_TempAssetIssueInVirtualMethod;
+        TempAsset m_TempAssetAnyApiInNamespace;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -184,6 +185,18 @@ class ClassWithDelegate
     }
 }
 ");
+
+            m_TempAssetAnyApiInNamespace = new TempAsset("AnyApiInNamespace.cs", @"
+using System.Linq;
+using System.Collections.Generic;
+class AnyApiInNamespace
+{
+    int SumAllValues(List<int> list)
+    {
+        return list.Sum();
+    }
+}
+");
         }
 
         [OneTimeTearDown]
@@ -332,6 +345,16 @@ class ClassWithDelegate
             Assert.NotNull(issue);
 
             Assert.True(issue.callingMethod.Equals("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()"));
+        }
+
+        [Test]
+        public void IssueInNamespaceIsFound()
+        {
+            var allScriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetAnyApiInNamespace);
+            var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("Enumerable.Sum"));
+            Assert.NotNull(issue);
+
+            Assert.True(issue.descriptor.description.Equals("System.Linq.*"));
         }
     }
 }
