@@ -5,6 +5,9 @@ namespace Unity.ProjectAuditor.Editor.UI
     [Serializable]
     class Preferences
     {
+        public const int k_MinFontSize = 12;
+        public const int k_MaxFontSize = 22;
+
         // foldout preferences
         public bool filters = true;
         public bool actions = true;
@@ -16,5 +19,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool onlyCriticalIssues;
         public bool mutedIssues;
         public bool emptyGroups;
+
+        public int fontSize = k_MinFontSize;
     }
 }
