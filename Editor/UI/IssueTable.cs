@@ -39,7 +39,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         int m_NumMatchingIssues;
         bool m_FlatView;
         int m_FontSize;
-        float m_SingleLineHeight;
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
                           AnalysisViewDescriptor desc, ProjectAuditorConfig config,
