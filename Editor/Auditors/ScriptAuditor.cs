@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Reload(string path)
         {
-            m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors(path, "ApiDatabase");
+            m_ProblemDescriptors = ProblemDescriptorLoader.LoadFromJson(path, "ApiDatabase");
 
             foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<IInstructionAnalyzer>())
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);

@@ -49,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Reload(string path)
         {
-            m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors(path, "ProjectSettings");
+            m_ProblemDescriptors = ProblemDescriptorLoader.LoadFromJson(path, "ProjectSettings");
 
             foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<ISettingsAnalyzer>())
                 AddAnalyzer(Activator.CreateInstance(type) as ISettingsAnalyzer);

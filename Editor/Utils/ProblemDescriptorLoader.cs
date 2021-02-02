@@ -5,9 +5,9 @@ using Unity.ProjectAuditor.Editor.Serialize;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    static class ProblemDescriptorHelper
+    static class ProblemDescriptorLoader
     {
-        public static List<ProblemDescriptor> LoadProblemDescriptors(string path, string name)
+        public static List<ProblemDescriptor> LoadFromJson(string path, string name)
         {
             var fullPath = Path.GetFullPath(Path.Combine(path, name + ".json"));
             var json = File.ReadAllText(fullPath);
