@@ -20,7 +20,7 @@ class MyClass
     void Dummy()
     {
 #if UNITY_EDITOR
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length);
 #endif
     }
 }
