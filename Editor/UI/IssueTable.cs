@@ -38,6 +38,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         int m_NextId;
         int m_NumMatchingIssues;
         bool m_FlatView;
+        int m_FontSize;
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
                           AnalysisViewDescriptor desc, ProjectAuditorConfig config,
@@ -49,6 +50,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Desc = desc;
             m_FlatView = !desc.groupByDescription;
             m_NextId = k_FirstId;
+            m_FontSize = Preferences.k_MinFontSize;
             multicolumnHeader.sortingChanged += OnSortingChanged;
         }
 
@@ -191,6 +193,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             return base.GetDescendantsThatHaveChildren(id);
         }
 
+        public void SetFontSize(int fontSize)
+        {
+            const int k_DefaultRowHeight = 18;
+
+            m_FontSize = fontSize;
+            rowHeight = k_DefaultRowHeight * fontSize / Preferences.k_MinFontSize;
+        }
+
         protected override void RowGUI(RowGUIArgs args)
         {
             for (var i = 0; i < args.GetNumVisibleColumns(); ++i)
@@ -209,11 +219,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                 CenterRectUsingSingleLineHeight(ref cellRect);
             }
 
+            var labelStyle = new GUIStyle(EditorStyles.label)
+            {
+                fontSize = m_FontSize
+            };
+
             var item = treeViewItem as IssueTableItem;
             if (item == null)
             {
                 if (column == ColumnType.Description)
-                    EditorGUI.LabelField(cellRect, new GUIContent(treeViewItem.displayName, treeViewItem.displayName));
+                    EditorGUI.LabelField(cellRect, new GUIContent(treeViewItem.displayName, treeViewItem.displayName), labelStyle);
                 return;
             }
 
@@ -227,14 +242,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                 rule = m_Config.GetRule(descriptor);
             if (rule != null && rule.severity == Rule.Severity.None) GUI.enabled = false;
 
+
             if (item.IsGroup())
                 switch (column)
                 {
                     case ColumnType.Description:
-                        EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()));
+                        EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()), labelStyle);
                         break;
                     case ColumnType.Area:
-                        EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
+                        EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription), labelStyle);
                         break;
                 }
             else
@@ -274,16 +290,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                         if (!string.IsNullOrEmpty(iconName))
                         {
 #if UNITY_2018_3_OR_NEWER
-                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrIconContent(iconName, tooltip));
+                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrIconContent(iconName, tooltip), labelStyle);
 #else
-                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(iconName), tooltip));
+                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(iconName), tooltip), labelStyle);
 #endif
                         }
                     }
                     break;
                     case ColumnType.Area:
                         if (!m_Desc.groupByDescription)
-                            EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription));
+                            EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription), labelStyle);
                         break;
                     case ColumnType.Description:
                         if (m_Desc.groupByDescription)
@@ -299,21 +315,21 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 guiContent = EditorGUIUtility.TrTextContentWithIcon(text, tooltip, icon);
                             }
 #endif
-                            EditorGUI.LabelField(cellRect, guiContent);
+                            EditorGUI.LabelField(cellRect, guiContent, labelStyle);
                         }
                         else if (string.IsNullOrEmpty(descriptor.problem))
                         {
                             if (issue.location != null)
                             {
                                 EditorGUI.LabelField(cellRect,
-                                    new GUIContent(item.GetDisplayName(), issue.location.Path));
+                                    new GUIContent(item.GetDisplayName(), issue.location.Path), labelStyle);
                             }
                             else
-                                EditorGUI.LabelField(cellRect, item.GetDisplayName());
+                                EditorGUI.LabelField(cellRect, item.GetDisplayName(), labelStyle);
                         }
                         else
                         {
-                            EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), descriptor.problem));
+                            EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), descriptor.problem), labelStyle);
                         }
 
                         break;
@@ -325,7 +341,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 filename += string.Format(":{0}", issue.line);
 
                             // display fullpath as tooltip
-                            EditorGUI.LabelField(cellRect, new GUIContent(filename, issue.relativePath));
+                            EditorGUI.LabelField(cellRect, new GUIContent(filename, issue.relativePath), labelStyle);
                         }
                         break;
 
@@ -336,7 +352,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             if (issue.category == IssueCategory.Code)
                                 path += string.Format(":{0}", issue.line);
 
-                            EditorGUI.LabelField(cellRect, new GUIContent(path));
+                            EditorGUI.LabelField(cellRect, new GUIContent(path), labelStyle);
                         }
                         break;
 
@@ -346,7 +362,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             var ext = issue.location.Extension;
                             if (ext.StartsWith("."))
                                 ext = ext.Substring(1);
-                            EditorGUI.LabelField(cellRect, new GUIContent(ext));
+                            EditorGUI.LabelField(cellRect, new GUIContent(ext), labelStyle);
                         }
 
                         break;
@@ -359,13 +375,23 @@ namespace Unity.ProjectAuditor.Editor.UI
                             if (desc.Format == PropertyFormat.Bool)
                                 EditorGUI.Toggle(cellRect, property.Equals(true.ToString()));
                             else
-                                EditorGUI.LabelField(cellRect, new GUIContent(property));
+                                EditorGUI.LabelField(cellRect, new GUIContent(property), labelStyle);
                         }
 
                         break;
                 }
 
             if (rule != null && rule.severity == Rule.Severity.None) GUI.enabled = true;
+        }
+
+        new void CenterRectUsingSingleLineHeight(ref Rect rect)
+        {
+            float singleLineHeight = rowHeight;
+            if (rect.height > singleLineHeight)
+            {
+                rect.y += (rect.height - singleLineHeight) * 0.5f;
+                rect.height = singleLineHeight;
+            }
         }
 
         protected override void DoubleClickedItem(int id)

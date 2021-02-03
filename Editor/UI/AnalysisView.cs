@@ -187,22 +187,29 @@ namespace Unity.ProjectAuditor.Editor.UI
         void DrawTable(ProjectIssue[] selectedIssues)
         {
             EditorGUILayout.BeginVertical();
+            EditorGUILayout.Space();
+
+            EditorGUILayout.BeginHorizontal();
+            if (m_Desc.groupByDescription)
+            {
+                if (GUILayout.Button(Styles.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    SetRowsExpanded(false);
+                if (GUILayout.Button(Styles.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    SetRowsExpanded(true);
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
+            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
+            m_Table.SetFontSize(m_Preferences.fontSize);
+
+            EditorGUILayout.EndHorizontal();
 
             var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
 
             Profiler.BeginSample("IssueTable.OnGUI");
             m_Table.OnGUI(r);
             Profiler.EndSample();
-
-            if (m_Desc.groupByDescription)
-            {
-                EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button(Styles.CollapseAllButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                    SetRowsExpanded(false);
-                if (GUILayout.Button(Styles.ExpandAllButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                    SetRowsExpanded(true);
-                EditorGUILayout.EndHorizontal();
-            }
 
             var info = selectedIssues.Length + " / " + m_Table.GetNumMatchingIssues() + " Items";
             EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
@@ -230,14 +237,19 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Preferences.details = BoldFoldout(m_Preferences.details, Styles.DetailsFoldout);
             if (m_Preferences.details)
             {
+                var textAreaStyle = new GUIStyle(EditorStyles.textArea)
+                {
+                    fontSize = m_Preferences.fontSize
+                };
+
                 if (problemDescriptor != null)
                 {
                     EditorStyles.textField.wordWrap = true;
-                    GUILayout.TextArea(problemDescriptor.problem, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(problemDescriptor.problem, textAreaStyle, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 }
                 else
                 {
-                    EditorGUILayout.LabelField(k_NoIssueSelectedText);
+                    EditorGUILayout.LabelField(k_NoIssueSelectedText, textAreaStyle);
                 }
             }
 
@@ -251,14 +263,18 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Preferences.recommendation = BoldFoldout(m_Preferences.recommendation, Styles.RecommendationFoldout);
             if (m_Preferences.recommendation)
             {
+                var textAreaStyle = new GUIStyle(EditorStyles.textArea)
+                {
+                    fontSize = m_Preferences.fontSize
+                };
+
                 if (problemDescriptor != null)
                 {
-                    EditorStyles.textField.wordWrap = true;
-                    GUILayout.TextArea(problemDescriptor.solution, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(problemDescriptor.solution, textAreaStyle, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 }
                 else
                 {
-                    EditorGUILayout.LabelField(k_NoIssueSelectedText);
+                    EditorGUILayout.LabelField(k_NoIssueSelectedText, textAreaStyle);
                 }
             }
 
