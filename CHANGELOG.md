@@ -4,6 +4,19 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.4.2-preview] - 2021-02-01
+* Fixed detection of API calls using a derived type
+* Fixed reporting of *Editor Default Resources* shaders
+* Fixed *ReflectionTypeLoadException*
+* Added *SRP Batcher* column to Shader tab
+* Added support for parsing *Player.log* to identify which shader variants are compiled (or not-compiled) at runtime
+* Added Shader errors/warnings reporting via Shader 'severity' icon
+* Added [Shader Requirements](https://docs.unity3d.com/ScriptReference/Rendering.ShaderRequirements.html) column to Shader tab
+* Fixed exception when switching focus from Area/Assembly window
+* Fixed null ref exception on invalid shader or vfx shader
+* Fixed null ref exception when building AssetBundles
+* Fixed shader variants reporting due to *OnPreprocessBuild* callback default order
+
 ## [0.4.1-preview] - 2020-12-14
 * Improved Shaders auditing to report both shaders and variants in their respective tables
 * Added support for analyzing Editor only code-paths

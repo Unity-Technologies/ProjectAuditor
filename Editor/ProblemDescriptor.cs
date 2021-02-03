@@ -23,6 +23,19 @@ namespace Unity.ProjectAuditor.Editor
         public string problem;
         public string solution;
 
+        public ProblemDescriptor(int id, string description, Area area)
+        {
+            this.id = id;
+            this.description = description;
+            this.area = area.ToString();
+            this.problem = string.Empty;
+            this.solution = string.Empty;
+
+            type = string.Empty;
+            method = string.Empty;
+            critical = false;
+        }
+
         public ProblemDescriptor(int id, string description, Area area, string problem, string solution)
         {
             this.id = id;
