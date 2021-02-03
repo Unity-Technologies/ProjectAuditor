@@ -384,7 +384,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (rule != null && rule.severity == Rule.Severity.None) GUI.enabled = true;
         }
 
-        void CenterRectUsingSingleLineHeight(ref Rect rect)
+        new void CenterRectUsingSingleLineHeight(ref Rect rect)
         {
             float singleLineHeight = rowHeight;
             if (rect.height > singleLineHeight)
