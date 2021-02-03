@@ -30,8 +30,7 @@ class InternalClass
 {
     public void DoSomething()
     {
-        // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length);
     }
 }
 ");

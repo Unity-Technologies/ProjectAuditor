@@ -32,8 +32,7 @@ class MyClass
 {
     void Dummy()
     {
-        // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length.ToString());
     }
 }
 ");
@@ -55,8 +54,7 @@ class MyPlugin
 {
     void Dummy()
     {
-        // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length.ToString());
     }
 }
 ");
@@ -68,7 +66,7 @@ class MyClassWithPlayerOnlyCode
     void Dummy()
     {
 #if !UNITY_EDITOR
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length.ToString());
 #endif
     }
 }
@@ -81,7 +79,7 @@ class MyClassWithEditorOnlyCode
     void Dummy()
     {
 #if UNITY_EDITOR
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length.ToString());
 #endif
     }
 }
@@ -95,7 +93,7 @@ class MyClassWithNested
     {
         void Dummy()
         {
-            Debug.Log(Camera.main.name);
+            Debug.Log(Camera.allCameras.Length.ToString());
         }
     }
 }
@@ -107,7 +105,7 @@ class GenericClass<T>
 {
     void Dummy()
     {
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length.ToString());
     }
 }
 ");
@@ -118,7 +116,7 @@ abstract class AbstractClass
 {
     public virtual void Dummy()
     {
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length.ToString());
     }
 }
 ");
@@ -135,7 +133,7 @@ class DerivedClass : BaseClass
 {
     public override void Dummy()
     {
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length.ToString());
     }
 }
 ");
@@ -146,7 +144,7 @@ class MyMonoBehaviour : MonoBehaviour
 {
     void Start()
     {
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length.ToString());
     }
 }
 ");
@@ -179,7 +177,7 @@ class ClassWithDelegate
     {
         myFunc = () =>
         {
-            Debug.Log(Camera.main.name);
+            Debug.Log(Camera.allCameras.Length.ToString());
             return 0;
         };
     }
@@ -222,9 +220,9 @@ class AnyApiInNamespace
             Assert.True(myIssue.descriptor.type.Equals("UnityEngine.Camera"));
             Assert.True(myIssue.descriptor.method.Equals("main"));
 
-            Assert.True(myIssue.name.Equals("Camera.get_main"));
+            Assert.True(myIssue.name.Equals("Camera.get_allCameras"));
             Assert.True(myIssue.filename.Equals(m_TempAsset.scriptName));
-            Assert.True(myIssue.description.Equals("UnityEngine.Camera.main"));
+            Assert.True(myIssue.description.Equals("Camera.allCameras"));
             Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Dummy()"));
             Assert.AreEqual(8, myIssue.line);
             Assert.AreEqual(IssueCategory.Code, myIssue.category);
@@ -341,7 +339,7 @@ class AnyApiInNamespace
         public void IssueInDelegateIsFound()
         {
             var allScriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInDelegate);
-            var issue = allScriptIssues.FirstOrDefault(i => i.name.Equals("Camera.get_main"));
+            var issue = allScriptIssues.FirstOrDefault(i => i.name.Equals("Camera.get_allCameras"));
             Assert.NotNull(issue);
 
             Assert.True(issue.callingMethod.Equals("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()"));

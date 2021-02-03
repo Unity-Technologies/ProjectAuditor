@@ -15,7 +15,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         public void SetUp()
         {
             m_TempAsset = new TempAsset("MyClass.cs",
-                "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.main.name); } }");
+                "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.allCameras.Length.ToString()); } }");
         }
 
         [OneTimeTearDown]

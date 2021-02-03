@@ -21,8 +21,7 @@ class IssueInSimpleClass
 {
     void Dummy()
     {
-        // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length);
     }
 }
 ");
@@ -33,7 +32,7 @@ class IssueInMonoBehaviourUpdate : MonoBehaviour
 {
     void Update()
     {
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length);
     }
 }
 ");
@@ -48,8 +47,7 @@ class IssueInClassMethodCalledFromMonoBehaviourUpdate : MonoBehaviour
     {
         public void Dummy()
         {
-            // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
-            Debug.Log(Camera.main.name);
+            Debug.Log(Camera.allCameras.Length);
         }
     }
 
@@ -72,7 +70,7 @@ class B : A
 {
     void Update()
     {
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length);
     }
 }
 ");
