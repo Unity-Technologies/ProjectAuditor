@@ -204,8 +204,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Zoom: ", EditorStyles.toolbarButton, GUILayout.ExpandWidth(false), GUILayout.Width(80));
-            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(100));
+            EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
+            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
             m_Table.SetFontSize(m_Preferences.fontSize);
 
             EditorGUILayout.EndHorizontal();
