@@ -37,12 +37,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     problem = rawDescriptor.problem,
                     solution = rawDescriptor.solution
                 };
-                if (string.IsNullOrEmpty(rawDescriptor.description))
+                if (string.IsNullOrEmpty(desc.description))
                 {
-                    if (string.IsNullOrEmpty(rawDescriptor.type) || string.IsNullOrEmpty(rawDescriptor.method))
-                        rawDescriptor.description = string.Empty;
+                    if (string.IsNullOrEmpty(desc.type) || string.IsNullOrEmpty(desc.method))
+                        desc.description = string.Empty;
                     else
-                        rawDescriptor.description = rawDescriptor.type + "." + rawDescriptor.method;
+                        desc.description = desc.type + "." + desc.method;
                 }
 
                 descriptors.Add(desc);
