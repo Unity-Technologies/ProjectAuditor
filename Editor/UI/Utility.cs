@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    public static class Utility
+    static class Utility
     {
         static class Styles
         {
