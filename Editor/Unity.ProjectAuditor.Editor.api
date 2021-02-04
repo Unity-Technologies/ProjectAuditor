@@ -81,12 +81,15 @@ namespace Unity.ProjectAuditor.Editor
         public string customevaluator;
         public string description;
         public int id;
+        public string maximumVersion;
         public string method;
+        public string minimumVersion;
         public string problem;
         public Unity.ProjectAuditor.Editor.Rule.Severity severity;
         public string solution;
         public string type;
         public string value;
+        public ProblemDescriptor(int id, string description, string area) {}
         public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area area) {}
         public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area area, string problem, string solution) {}
         public virtual bool Equals(object obj);
