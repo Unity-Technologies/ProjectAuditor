@@ -216,15 +216,15 @@ class AnyApiInNamespace
             Assert.NotNull(myIssue.descriptor);
 
             Assert.AreEqual(Rule.Severity.Default, myIssue.descriptor.severity);
-            Assert.AreEqual(101000, myIssue.descriptor.id);
+            Assert.AreEqual(101066, myIssue.descriptor.id);
             Assert.True(myIssue.descriptor.type.Equals("UnityEngine.Camera"));
-            Assert.True(myIssue.descriptor.method.Equals("main"));
+            Assert.True(myIssue.descriptor.method.Equals("allCameras"));
 
             Assert.True(myIssue.name.Equals("Camera.get_allCameras"));
             Assert.True(myIssue.filename.Equals(m_TempAsset.scriptName));
-            Assert.True(myIssue.description.Equals("Camera.allCameras"));
+            Assert.True(myIssue.description.Equals("UnityEngine.Camera.allCameras"));
             Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Dummy()"));
-            Assert.AreEqual(8, myIssue.line);
+            Assert.AreEqual(7, myIssue.line);
             Assert.AreEqual(IssueCategory.Code, myIssue.category);
 
             // check custom property
