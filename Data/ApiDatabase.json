@@ -1,13 +1,13 @@
 {
     "Items": [
         {
-          "id": 101000,
-          "type": "UnityEngine.Camera",
-          "method": "main",
-          "area": "CPU",
-          "problem": "Camera.main property uses FindGameObjectsWithTag() internally and doesn't cache the result.",
-          "solution": "It is advised to cache and use the camera component obtained from Game object instead.",
-          "maximumVersion": " 2019.4.8"
+            "id": 101000,
+            "type": "UnityEngine.Camera",
+            "method": "main",
+            "area": "CPU",
+            "problem": "Camera.main property uses FindGameObjectsWithTag() internally and doesn't cache the result.",
+            "solution": "It is advised to cache and use the camera component obtained from Game object instead.",
+            "maximumVersion": " 2019.4.8"
         },
         {
             "id": 101001,
