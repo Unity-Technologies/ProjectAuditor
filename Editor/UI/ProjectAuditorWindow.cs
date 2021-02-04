@@ -51,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.ColumnType.FileType,
                     IssueTable.ColumnType.Path
                 },
-                descriptionColumnStyle = new ColumnDescriptor
+                descriptionColumnDescriptor = new ColumnDescriptor
                 {
                     Content = new GUIContent("Asset Name"),
                     Width = 300,
@@ -83,14 +83,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.ColumnType.Custom + 4,
                     IssueTable.ColumnType.Custom + 5
                 },
-                descriptionColumnStyle = new ColumnDescriptor
+                descriptionColumnDescriptor = new ColumnDescriptor
                 {
                     Content = new GUIContent("Shader Name"),
                     Width = 300,
                     MinWidth = 100,
                     Format = PropertyFormat.String
                 },
-                customColumnStyles = new[]
+                customColumnDescriptors = new[]
                 {
                     new ColumnDescriptor
                     {
@@ -158,7 +158,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueTable.ColumnType.Filename,
                     IssueTable.ColumnType.Custom
                 },
-                customColumnStyles = new[]
+                customColumnDescriptors = new[]
                 {
                     new ColumnDescriptor
                     {
@@ -212,14 +212,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 IssueTable.ColumnType.Custom + 3,
                 IssueTable.ColumnType.Custom + 4
             },
-            descriptionColumnStyle = new ColumnDescriptor
+            descriptionColumnDescriptor = new ColumnDescriptor
             {
                 Content = new GUIContent("Shader Name"),
                 Width = 300,
                 MinWidth = 100,
                 Format = PropertyFormat.String
             },
-            customColumnStyles = new[]
+            customColumnDescriptors = new[]
             {
                 new ColumnDescriptor
                 {
@@ -576,30 +576,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             OnEnable();
         }
 
-        static bool ButtonWithDropdownList(GUIContent content, string[] buttonNames, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
-        {
-            var style = GUI.skin.FindStyle("DropDownButton");
-            var rect = GUILayoutUtility.GetRect(content, style, options);
-
-            var dropDownRect = rect;
-            const float kDropDownButtonWidth = 20f;
-            dropDownRect.xMin = dropDownRect.xMax - kDropDownButtonWidth;
-
-            if (Event.current.type == EventType.MouseDown && dropDownRect.Contains(Event.current.mousePosition))
-            {
-                var menu = new GenericMenu();
-                for (int i = 0; i != buttonNames.Length; i++)
-                    menu.AddItem(new GUIContent(buttonNames[i]), false, callback, i);
-
-                menu.DropDown(rect);
-                Event.current.Use();
-
-                return false;
-            }
-
-            return GUI.Button(rect, content, style);
-        }
-
         void ExportDropDownCallback(object data)
         {
             var mode = (ExportMode)data;
@@ -640,13 +616,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         void DrawAnalysis()
         {
             activeAnalysisView.OnGUI();
-        }
-
-        bool BoldFoldout(bool toggle, GUIContent content)
-        {
-            var foldoutStyle = new GUIStyle(EditorStyles.foldout);
-            foldoutStyle.fontStyle = FontStyle.Bold;
-            return EditorGUILayout.Foldout(toggle, content, foldoutStyle);
         }
 
         string GetSelectedAssembliesSummary()
@@ -803,7 +772,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
 
-            m_Preferences.filters = BoldFoldout(m_Preferences.filters, Styles.FiltersFoldout);
+            m_Preferences.filters = Utility.BoldFoldout(m_Preferences.filters, Styles.FiltersFoldout);
             if (m_Preferences.filters)
             {
                 EditorGUI.indentLevel++;
@@ -879,7 +848,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
 
-            m_Preferences.actions = BoldFoldout(m_Preferences.actions, Styles.ActionsFoldout);
+            m_Preferences.actions = Utility.BoldFoldout(m_Preferences.actions, Styles.ActionsFoldout);
             if (m_Preferences.actions)
             {
                 EditorGUI.indentLevel++;
@@ -1058,7 +1027,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 GUI.enabled = m_AnalysisState == AnalysisState.Valid;
 
-                if (ButtonWithDropdownList(Styles.ExportButton, Styles.ExportModeStrings,
+                if (Utility.ButtonWithDropdownList(Styles.ExportButton, Styles.ExportModeStrings,
                     ExportDropDownCallback, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
                 {
                     Export();

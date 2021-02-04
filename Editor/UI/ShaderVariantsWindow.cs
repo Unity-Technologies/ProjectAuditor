@@ -26,8 +26,8 @@ To find which shader variants are compiled at runtime, follow these steps:
         const string k_NoCompiledVariantWarningLogDisabled = "No compiled shader variants found in player log. Shader compilation logging is disabled. Would you like to enable it? (Shader compilation will not appear in the log until the project is rebuilt)";
         const string k_PlayerLogProcessed = "Player log file successfully processed.";
 
-        bool m_FlatView = false;
-        bool m_HideCompiledVariants = false;
+        bool m_FlatView;
+        bool m_HideCompiledVariants;
         IProjectIssueFilter m_MainFilter;
         ShadersAuditor m_ShadersAuditor;
 

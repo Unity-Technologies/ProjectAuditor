@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 * Added zoom slider
+* Reduced UI managed allocations
 
 ## [0.4.2-preview] - 2021-02-01
 * Fixed detection of API calls using a derived type
