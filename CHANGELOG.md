@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+* Added zoom slider
+* Reduced UI managed allocations
+
 ## [0.4.2-preview] - 2021-02-01
 * Fixed detection of API calls using a derived type
 * Fixed reporting of *Editor Default Resources* shaders
