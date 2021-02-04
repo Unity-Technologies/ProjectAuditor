@@ -26,9 +26,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 if (Version.TryParse(rawDescriptor.maximumVersion, out maximumVersion) && unityVersion > maximumVersion)
                     continue;
 #endif
-                var desc = new ProblemDescriptor(rawDescriptor.id, rawDescriptor.description)
+                var desc = new ProblemDescriptor(rawDescriptor.id, rawDescriptor.description, rawDescriptor.area)
                 {
-                    area = rawDescriptor.area,
                     customevaluator = rawDescriptor.customevaluator,
                     type = rawDescriptor.type,
                     method = rawDescriptor.method,

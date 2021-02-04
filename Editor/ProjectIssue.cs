@@ -35,7 +35,10 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         LoadTimes,
 
-        NotApplicable
+        /// <summary>
+        /// All areas
+        /// </summary>
+        All
     }
 
     public enum IssueCategory

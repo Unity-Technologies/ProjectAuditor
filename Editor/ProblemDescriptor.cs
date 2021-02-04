@@ -25,11 +25,24 @@ namespace Unity.ProjectAuditor.Editor
         public string minimumVersion;
         public string maximumVersion;
 
-        public ProblemDescriptor(int id, string description, Area area = Area.NotApplicable)
+        public ProblemDescriptor(int id, string description, Area area)
         {
             this.id = id;
             this.description = description;
             this.area = area.ToString();
+            this.problem = string.Empty;
+            this.solution = string.Empty;
+
+            type = string.Empty;
+            method = string.Empty;
+            critical = false;
+        }
+
+        public ProblemDescriptor(int id, string description, string area)
+        {
+            this.id = id;
+            this.description = description;
+            this.area = area;
             this.problem = string.Empty;
             this.solution = string.Empty;
 
