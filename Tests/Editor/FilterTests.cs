@@ -30,7 +30,7 @@ class InternalClass
 {
     public void DoSomething()
     {
-        Debug.Log(Camera.allCameras.Length);
+        Debug.Log(Camera.allCameras.Length.ToString());
     }
 }
 ");
