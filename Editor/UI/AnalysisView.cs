@@ -150,13 +150,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 Styles.TextArea = new GUIStyle(EditorStyles.textArea);
 
             var selectedItems = m_Table.GetSelectedItems();
-            var selectedIssues = selectedItems.Select(i => i.ProjectIssue);
-
-            ProjectIssue issue = null;
-            if (selectedIssues.Count() == 1)
-            {
-                issue = selectedIssues.First();
-            }
+            var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue);
+            var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor).Distinct();
 
             EditorGUILayout.BeginHorizontal();
 
@@ -164,33 +159,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (m_Desc.showRightPanels)
             {
-                // get selected descriptor, only if they are all the same
-                var problemDescriptor = (ProblemDescriptor)null;
-                var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor);
-                if (selectedDescriptors.Select(d => d.id).Distinct().Count() == 1)
-                    problemDescriptor = selectedDescriptors.FirstOrDefault();
-
-                EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
-                DrawFoldouts(problemDescriptor);
-                EditorGUILayout.EndVertical();
+                DrawFoldouts(selectedDescriptors.ToArray());
             }
 
             EditorGUILayout.EndHorizontal();
 
             if (m_Desc.showDependencyView)
             {
-                DependencyNode dependencies = null;
-                if (issue != null && issue.dependencies != null)
-                {
-                    if (issue.dependencies as CallTreeNode != null)
-                        dependencies = issue.dependencies.GetChild(); // skip self
-                    else
-                        dependencies = issue.dependencies;
-                }
-
-                m_DependencyView.SetRoot(dependencies);
-
-                DrawDependencyView(issue, dependencies);
+                DrawDependencyView(selectedIssues.ToArray());
             }
         }
 
@@ -229,58 +205,87 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndVertical();
         }
 
-        void DrawFoldouts(ProblemDescriptor problemDescriptor)
+        void DrawFoldouts(ProblemDescriptor[] selectedDescriptors)
         {
-            DrawDetailsFoldout(problemDescriptor);
-            DrawRecommendationFoldout(problemDescriptor);
+            EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
+
+            DrawDetailsFoldout(selectedDescriptors);
+            DrawRecommendationFoldout(selectedDescriptors);
+
+            EditorGUILayout.EndVertical();
         }
 
-        void DrawDetailsFoldout(ProblemDescriptor problemDescriptor)
+        void DrawDetailsFoldout(ProblemDescriptor[] selectedDescriptors)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
-
             m_Preferences.details = Utility.BoldFoldout(m_Preferences.details, Contents.DetailsFoldout);
             if (m_Preferences.details)
             {
-                GUILayout.TextArea(problemDescriptor != null ? problemDescriptor.problem : k_NoIssueSelectedText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                if (selectedDescriptors.Length == 0)
+                    GUILayout.TextArea(k_NoSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                else if (selectedDescriptors.Length > 1)
+                    GUILayout.TextArea(k_MultipleSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                else // if (selectedDescriptors.Length == 1)
+                    GUILayout.TextArea(selectedDescriptors[0].problem, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
-
             EditorGUILayout.EndVertical();
         }
 
-        void DrawRecommendationFoldout(ProblemDescriptor problemDescriptor)
+        void DrawRecommendationFoldout(ProblemDescriptor[] selectedDescriptors)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
-
             m_Preferences.recommendation = Utility.BoldFoldout(m_Preferences.recommendation, Contents.RecommendationFoldout);
             if (m_Preferences.recommendation)
             {
-                GUILayout.TextArea(problemDescriptor != null ? problemDescriptor.solution : k_NoIssueSelectedText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                if (selectedDescriptors.Length == 0)
+                    GUILayout.TextArea(k_NoSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                else if (selectedDescriptors.Length > 1)
+                    GUILayout.TextArea(k_MultipleSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                else // if (selectedDescriptors.Length == 1)
+                    GUILayout.TextArea(selectedDescriptors[0].solution, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
-
             EditorGUILayout.EndVertical();
         }
 
-        void DrawDependencyView(ProjectIssue issue, DependencyNode root)
+        void DrawDependencyView(ProjectIssue[] issues)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Height(LayoutSize.DependencyViewHeight));
 
             m_Preferences.dependencies = Utility.BoldFoldout(m_Preferences.dependencies, m_Desc.dependencyViewGuiContent);
             if (m_Preferences.dependencies)
             {
-                if (root != null)
+                if (issues.Length == 0)
                 {
-                    var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
+                    EditorGUILayout.LabelField(k_NoSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                }
+                else if (issues.Length > 1)
+                {
+                    EditorGUILayout.LabelField(k_MultipleSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                }
+                else// if (issues.Length == 1)
+                {
+                    var selection = issues[0];
+                    DependencyNode dependencies = null;
+                    if (selection != null && selection.dependencies != null)
+                    {
+                        if (selection.dependencies as CallTreeNode != null)
+                            dependencies = selection.dependencies.GetChild(); // skip self
+                        else
+                            dependencies = selection.dependencies;
+                    }
 
-                    m_DependencyView.OnGUI(r);
-                }
-                else if (issue != null)
-                {
-                    EditorGUILayout.LabelField(k_AnalysisIsRequiredText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-                }
-                else
-                {
-                    EditorGUILayout.LabelField(k_NoIssueSelectedText);
+                    m_DependencyView.SetRoot(dependencies);
+
+                    if (dependencies != null)
+                    {
+                        var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
+
+                        m_DependencyView.OnGUI(r);
+                    }
+                    else
+                    {
+                        EditorGUILayout.LabelField(k_AnalysisIsRequiredText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    }
                 }
             }
 
@@ -294,8 +299,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Table.SetExpanded(row.id, expanded);
         }
 
-        const string k_NoIssueSelectedText = "No item selected";
-        const string k_AnalysisIsRequiredText = "Missing Data: Please Analyze";
+        const string k_NoSelectionText = "<No selection>";
+        const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
+        const string k_MultipleSelectionText = "<Multiple selection>";
 
         static class LayoutSize
         {
