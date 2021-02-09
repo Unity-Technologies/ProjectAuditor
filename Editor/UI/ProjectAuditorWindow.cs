@@ -43,6 +43,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAssemblySelection = false,
                 showCritical = false,
                 showDependencyView = true,
+                showMuteOptions = false,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Asset Dependencies"),
                 columnTypes = new[]
@@ -70,6 +71,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAreaSelection = false,
                 showAssemblySelection = false,
                 showCritical = false,
+                showMuteOptions = false,
                 showDependencyView = false,
                 showRightPanels = false,
                 columnTypes = new[]
@@ -148,6 +150,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAssemblySelection = true,
                 showCritical = true,
                 showDependencyView = true,
+                showMuteOptions = true,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 columnTypes = new[]
@@ -181,6 +184,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAreaSelection = true,
                 showAssemblySelection = false,
                 showCritical = false,
+                showMuteOptions = true,
                 showDependencyView = false,
                 showRightPanels = true,
                 columnTypes = new[]
@@ -202,6 +206,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             showAssemblySelection = false,
             showCritical = false,
             showDependencyView = false,
+            showMuteOptions = false,
             showRightPanels = false,
             columnTypes = new[]
             {
@@ -319,7 +324,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!matchArea)
                 return false;
 
-            if (!m_Preferences.mutedIssues)
+            if (!m_Preferences.mutedIssues && activeAnalysisView.desc.showMuteOptions)
             {
                 Profiler.BeginSample("IsMuted");
                 var muted = m_ProjectAuditor.config.GetAction(issue.descriptor, issue.callingMethod) ==
@@ -820,6 +825,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         analytic);
                 }
 
+                GUI.enabled = activeAnalysisView.desc.showMuteOptions;
                 bool wasDisplayingMuted = m_Preferences.mutedIssues;
                 m_Preferences.mutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
                     m_Preferences.mutedIssues, GUILayout.Width(127));
@@ -832,6 +838,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     ProjectAuditorAnalytics.SendUIButtonEventWithKeyValues(ProjectAuditorAnalytics.UIButton.ShowMuted,
                         analytic, payload);
                 }
+
+                GUI.enabled = true;
 
                 EditorGUILayout.EndHorizontal();
 
@@ -855,6 +863,42 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.BeginHorizontal();
 
+                GUI.enabled = activeAnalysisView.desc.showMuteOptions;
+                EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+
+                if (GUILayout.Button(Styles.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                {
+                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                    var selectedItems = table.GetSelectedItems();
+                    foreach (var item in selectedItems)
+                    {
+                        SetRuleForItem(item, Rule.Severity.None);
+                    }
+
+                    if (!m_Preferences.mutedIssues)
+                    {
+                        table.SetSelection(new List<int>());
+                    }
+
+                    ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
+                        analytic, table.GetSelectedItems());
+                }
+
+                if (GUILayout.Button(Styles.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                {
+                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                    var selectedItems = table.GetSelectedItems();
+                    foreach (var item in selectedItems)
+                    {
+                        ClearRulesForItem(item);
+                    }
+
+                    ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(
+                        ProjectAuditorAnalytics.UIButton.Unmute, analytic, table.GetSelectedItems());
+                }
+
+                GUI.enabled = true;
+
                 if (activeAnalysisView.desc.category == IssueCategory.Shaders)
                 {
                     if (GUILayout.Button("Inspect Shader Variants", EditorStyles.miniButton,
@@ -875,41 +919,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                         m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
                         m_ShaderVariantsWindow.Refresh();
                         m_ShaderVariantsWindow.Show();
-                    }
-                }
-                else
-                {
-                    EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-
-                    if (GUILayout.Button(Styles.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                    {
-                        var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                        var selectedItems = table.GetSelectedItems();
-                        foreach (var item in selectedItems)
-                        {
-                            SetRuleForItem(item, Rule.Severity.None);
-                        }
-
-                        if (!m_Preferences.mutedIssues)
-                        {
-                            table.SetSelection(new List<int>());
-                        }
-
-                        ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
-                            analytic, table.GetSelectedItems());
-                    }
-
-                    if (GUILayout.Button(Styles.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                    {
-                        var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                        var selectedItems = table.GetSelectedItems();
-                        foreach (var item in selectedItems)
-                        {
-                            ClearRulesForItem(item);
-                        }
-
-                        ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(
-                            ProjectAuditorAnalytics.UIButton.Unmute, analytic, table.GetSelectedItems());
                     }
                 }
 
