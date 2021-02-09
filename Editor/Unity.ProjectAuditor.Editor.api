@@ -5,7 +5,6 @@ namespace Unity.ProjectAuditor.Editor
 {
     public enum Area
     {
-        public const Unity.ProjectAuditor.Editor.Area All = 5;
         public const Unity.ProjectAuditor.Editor.Area BuildSize = 3;
         public const Unity.ProjectAuditor.Editor.Area CPU = 0;
         public const Unity.ProjectAuditor.Editor.Area GPU = 1;
