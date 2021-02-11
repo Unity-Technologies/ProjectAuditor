@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static GUIStyle Foldout;
         }
 
-        public static bool BoldFoldout(bool toggle, GUIContent content)
+        internal static bool BoldFoldout(bool toggle, GUIContent content)
         {
             if (Styles.Foldout == null)
             {
@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             return EditorGUILayout.Foldout(toggle, content, Styles.Foldout);
         }
 
-        public static bool ButtonWithDropdownList(GUIContent content, string[] buttonNames, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
+        internal static bool ButtonWithDropdownList(GUIContent content, string[] buttonNames, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
         {
             if (Styles.DropDownButton == null)
                 Styles.DropDownButton = GUI.skin.FindStyle("DropDownButton");
