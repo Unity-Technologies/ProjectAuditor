@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Serialize;
 using UnityEditorInternal;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
@@ -14,18 +15,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
             var json = File.ReadAllText(fullPath);
             var rawDescriptors = Json.From<ProblemDescriptor>(json);
             var descriptors = new List<ProblemDescriptor>(rawDescriptors.Length);
-            var unityVersion = InternalEditorUtility.GetUnityVersion();
 
             foreach (var rawDescriptor in rawDescriptors)
             {
-#if UNITY_2019_1_OR_NEWER
-                Version minimumVersion;
-                Version maximumVersion;
-                if (Version.TryParse(rawDescriptor.minimumVersion, out minimumVersion) && unityVersion < minimumVersion)
+                if (!IsVersionCompatible(rawDescriptor))
                     continue;
-                if (Version.TryParse(rawDescriptor.maximumVersion, out maximumVersion) && unityVersion > maximumVersion)
-                    continue;
-#endif
+
                 var desc = new ProblemDescriptor(rawDescriptor.id, rawDescriptor.description, rawDescriptor.area)
                 {
                     customevaluator = rawDescriptor.customevaluator,
@@ -48,6 +43,50 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
 
             return descriptors;
+        }
+
+        internal static bool IsVersionCompatible(ProblemDescriptor desc)
+        {
+            var unityVersion = InternalEditorUtility.GetUnityVersion();
+            var minimumVersion = (Version)null;
+            var maximumVersion = (Version)null;
+
+            if (!string.IsNullOrEmpty(desc.minimumVersion))
+            {
+                try
+                {
+                    minimumVersion = new Version(desc.minimumVersion);
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogErrorFormat("Descriptor ({0}) minimumVersion ({1}) is invalid. Exception: {2}", desc.id, desc.minimumVersion, exception.Message);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(desc.maximumVersion))
+            {
+                try
+                {
+                    maximumVersion = new Version(desc.maximumVersion);
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogErrorFormat("Descriptor ({0}) maximumVersion ({1}) is invalid. Exception: {2}", desc.id, desc.maximumVersion, exception.Message);
+                }
+            }
+
+            if (minimumVersion != null && maximumVersion != null && minimumVersion > maximumVersion)
+            {
+                Debug.LogErrorFormat("Descriptor ({0}) minimumVersion ({1}) is greater than maximumVersion ({2}).", desc.id, minimumVersion.ToString(), maximumVersion.ToString());
+                return false;
+            }
+
+            if (minimumVersion != null && unityVersion < minimumVersion)
+                return false;
+            if (maximumVersion != null && unityVersion > maximumVersion)
+                return false;
+
+            return true;
         }
     }
 }
