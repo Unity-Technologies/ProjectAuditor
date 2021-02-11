@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Auditors;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
@@ -37,7 +38,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
             projectAuditorSettings.ClearAllRules();
 
-            var action = projectAuditorSettings.GetAction(issue.descriptor, issue.callingMethod);
+            var callingMethod = issue.GetCallingMethod();
+            var action = projectAuditorSettings.GetAction(issue.descriptor, callingMethod);
 
             // expect default action specified in descriptor
             Assert.AreEqual(issue.descriptor.severity, action);
@@ -47,10 +49,10 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             {
                 id = issue.descriptor.id,
                 severity = Rule.Severity.None,
-                filter = issue.callingMethod
+                filter = callingMethod
             });
 
-            action = projectAuditorSettings.GetAction(issue.descriptor, issue.callingMethod);
+            action = projectAuditorSettings.GetAction(issue.descriptor, callingMethod);
 
             // issue has been muted so it should not be reported
             Assert.AreEqual(Rule.Severity.None, action);

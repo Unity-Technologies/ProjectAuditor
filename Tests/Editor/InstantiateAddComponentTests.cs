@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -51,7 +52,7 @@ class AddComponentToGameObject : MonoBehaviour
 
             Assert.AreEqual(1, issues.Count());
 
-            Assert.True(issues.First().callingMethod.Equals("System.Void InstantiateObject::Start()"));
+            Assert.True(issues.First().GetCallingMethod().Equals("System.Void InstantiateObject::Start()"));
         }
 
         [Test]
@@ -61,7 +62,7 @@ class AddComponentToGameObject : MonoBehaviour
 
             Assert.AreEqual(1, issues.Count());
 
-            Assert.True(issues.First().callingMethod.Equals("System.Void AddComponentToGameObject::Start()"));
+            Assert.True(issues.First().GetCallingMethod().Equals("System.Void AddComponentToGameObject::Start()"));
         }
     }
 }

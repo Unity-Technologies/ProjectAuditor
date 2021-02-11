@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -45,7 +46,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.True(boxingInt.name.Equals("BoxingIntTest.Dummy"));
             Assert.True(boxingInt.filename.Equals(m_TempAssetBoxingInt.scriptName));
             Assert.True(boxingInt.description.Equals("Conversion from value type 'Int32' to ref type"));
-            Assert.True(boxingInt.callingMethod.Equals("System.Object BoxingIntTest::Dummy()"));
+            Assert.True(boxingInt.GetCallingMethod().Equals("System.Object BoxingIntTest::Dummy()"));
             Assert.AreEqual(1, boxingInt.line);
             Assert.AreEqual(IssueCategory.Code, boxingInt.category);
 
@@ -73,7 +74,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.True(boxingFloat.name.Equals("BoxingFloatTest.Dummy"));
             Assert.True(boxingFloat.filename.Equals(m_TempAssetBoxingFloat.scriptName));
             Assert.True(boxingFloat.description.Equals("Conversion from value type 'float' to ref type"));
-            Assert.True(boxingFloat.callingMethod.Equals("System.Object BoxingFloatTest::Dummy()"));
+            Assert.True(boxingFloat.GetCallingMethod().Equals("System.Object BoxingFloatTest::Dummy()"));
             Assert.AreEqual(1, boxingFloat.line);
             Assert.AreEqual(IssueCategory.Code, boxingFloat.category);
 

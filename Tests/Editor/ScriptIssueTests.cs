@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Auditors;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
@@ -223,7 +224,7 @@ class AnyApiInNamespace
             Assert.True(myIssue.name.Equals("Camera.get_allCameras"));
             Assert.True(myIssue.filename.Equals(m_TempAsset.scriptName));
             Assert.True(myIssue.description.Equals("UnityEngine.Camera.allCameras"));
-            Assert.True(myIssue.callingMethod.Equals("System.Void MyClass::Dummy()"));
+            Assert.True(myIssue.GetCallingMethod().Equals("System.Void MyClass::Dummy()"));
             Assert.AreEqual(7, myIssue.line);
             Assert.AreEqual(IssueCategory.Code, myIssue.category);
 
@@ -253,7 +254,7 @@ class AnyApiInNamespace
 
             Assert.AreEqual(1, issues.Count());
 
-            Assert.True(issues.First().callingMethod.Equals("System.Void MyPlugin::Dummy()"));
+            Assert.True(issues.First().GetCallingMethod().Equals("System.Void MyPlugin::Dummy()"));
         }
 
         [Test]
@@ -263,7 +264,7 @@ class AnyApiInNamespace
 
             Assert.AreEqual(1, issues.Count());
 
-            Assert.True(issues.First().callingMethod.Equals("System.Void MyClassWithPlayerOnlyCode::Dummy()"));
+            Assert.True(issues.First().GetCallingMethod().Equals("System.Void MyClassWithPlayerOnlyCode::Dummy()"));
         }
 
         [Test]
@@ -281,7 +282,7 @@ class AnyApiInNamespace
 
             Assert.AreEqual(1, issues.Count());
 
-            Assert.True(issues.First().callingMethod.Equals("System.Void MyClassWithNested/NestedClass::Dummy()"));
+            Assert.True(issues.First().GetCallingMethod().Equals("System.Void MyClassWithNested/NestedClass::Dummy()"));
         }
 
         [Test]
@@ -291,7 +292,7 @@ class AnyApiInNamespace
 
             Assert.AreEqual(1, issues.Count());
 
-            Assert.True(issues.First().callingMethod.Equals("System.Void GenericClass`1::Dummy()"));
+            Assert.True(issues.First().GetCallingMethod().Equals("System.Void GenericClass`1::Dummy()"));
         }
 
         [Test]
@@ -301,7 +302,7 @@ class AnyApiInNamespace
 
             Assert.AreEqual(1, issues.Count());
 
-            Assert.True(issues.First().callingMethod.Equals("System.Void AbstractClass::Dummy()"));
+            Assert.True(issues.First().GetCallingMethod().Equals("System.Void AbstractClass::Dummy()"));
         }
 
         [Test]
@@ -311,7 +312,7 @@ class AnyApiInNamespace
 
             Assert.AreEqual(1, issues.Count());
 
-            Assert.True(issues.First().callingMethod.Equals("System.Void DerivedClass::Dummy()"));
+            Assert.True(issues.First().GetCallingMethod().Equals("System.Void DerivedClass::Dummy()"));
         }
 
         [Test]
@@ -321,7 +322,7 @@ class AnyApiInNamespace
 
             Assert.AreEqual(1, issues.Count());
 
-            Assert.True(issues.First().callingMethod.Equals("System.Void MyMonoBehaviour::Start()"));
+            Assert.True(issues.First().GetCallingMethod().Equals("System.Void MyMonoBehaviour::Start()"));
         }
 
         [Test]
@@ -331,7 +332,7 @@ class AnyApiInNamespace
 
             Assert.AreEqual(1, issues.Count());
 
-            Assert.True(issues.First().callingMethod
+            Assert.True(issues.First().GetCallingMethod()
                 .Equals("System.Boolean MyMonoBehaviourWithCoroutine/<MyCoroutine>d__1::MoveNext()"));
         }
 
@@ -342,7 +343,7 @@ class AnyApiInNamespace
             var issue = allScriptIssues.FirstOrDefault(i => i.name.Equals("Camera.get_allCameras"));
             Assert.NotNull(issue);
 
-            Assert.True(issue.callingMethod.Equals("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()"));
+            Assert.True(issue.GetCallingMethod().Equals("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()"));
         }
 
         [Test]

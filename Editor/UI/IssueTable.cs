@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -237,7 +238,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var descriptor = item.ProblemDescriptor;
             var areaLongDescription = "This issue might have an impact on " + descriptor.area;
 
-            var rule = m_Config.GetRule(descriptor, issue != null ? issue.callingMethod : string.Empty);
+            var rule = m_Config.GetRule(descriptor, issue != null ? issue.GetCallingMethod() : string.Empty);
             if (rule == null && issue != null)
                 rule = m_Config.GetRule(descriptor); // try to find non-specific rule
             if (rule != null && rule.severity == Rule.Severity.None)
@@ -305,7 +306,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         if (m_Desc.groupByDescription)
                         {
                             var text = item.GetDisplayName();
-                            var tooltip = issue.callingMethod;
+                            var tooltip = issue.GetCallingMethod();
                             var guiContent = new GUIContent(text, tooltip);
 
 #if UNITY_2018_3_OR_NEWER

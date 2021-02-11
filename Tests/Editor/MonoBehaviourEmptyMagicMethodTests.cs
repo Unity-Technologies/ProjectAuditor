@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
@@ -49,7 +50,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.True(issue.name.Equals("MonoBehaviourWithEmptyMagicMethod.Update"));
             Assert.True(issue.filename.Equals(m_MonoBehaviourWithEmptyMagicMethod.scriptName));
             Assert.True(issue.description.Equals("System.Void MonoBehaviourWithEmptyMagicMethod::Update()"));
-            Assert.True(issue.callingMethod.Equals("System.Void MonoBehaviourWithEmptyMagicMethod::Update()"));
+            Assert.True(issue.GetCallingMethod().Equals("System.Void MonoBehaviourWithEmptyMagicMethod::Update()"));
             Assert.AreEqual(1, issue.line);
             Assert.AreEqual(IssueCategory.Code, issue.category);
         }

@@ -131,7 +131,6 @@ namespace Unity.ProjectAuditor.Editor
         public string description;
         public Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor;
         public Unity.ProjectAuditor.Editor.Utils.Location location;
-        public string callingMethod { get; }
         public string filename { get; }
         public bool isPerfCriticalContext { get; }
         public int line { get; }
@@ -256,6 +255,11 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         public string typeName;
         public virtual string GetPrettyName();
         public virtual bool IsPerfCritical();
+    }
+
+    [System.Runtime.CompilerServices.Extension] public static class CodeIssueExtensions
+    {
+        [System.Runtime.CompilerServices.Extension] public static string GetCallingMethod(Unity.ProjectAuditor.Editor.ProjectIssue issue);
     }
 }
 
