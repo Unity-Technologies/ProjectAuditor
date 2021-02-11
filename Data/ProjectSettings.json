@@ -278,7 +278,8 @@
           "value": "False",
           "area": "BuildSize",
           "problem": "The \"Texture MipMap Stripping\" option in Player Settings is disabled. The generated build might be larger than necessary. ",
-          "solution": "Enable Texture MipMap stripping. Note that this feature will only reduce the build size if no quality levels on the platform use highest mip(s). Furthermore, if code drives the \"masterTextureLevel\" to a value higher than those in the quality level settings the mip will no longer be available if this is enabled."
+          "solution": "Enable Texture MipMap stripping. Note that this feature will only reduce the build size if no quality levels on the platform use highest mip(s). Furthermore, if code drives the \"masterTextureLevel\" to a value higher than those in the quality level settings the mip will no longer be available if this is enabled.",
+          "minimumVersion": "2020.2"
         },
         {
           "id": 201028,
