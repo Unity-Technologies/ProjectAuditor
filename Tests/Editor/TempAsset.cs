@@ -21,7 +21,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             AssetDatabase.ImportAsset(relativePath, ImportAssetOptions.ForceUpdate);
         }
 
-        public string relativePath { get; }
+        public readonly string relativePath;
 
         public string scriptName
         {
