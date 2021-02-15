@@ -30,11 +30,11 @@ Add `com.unity.project-auditor` as a dependency to the project `Packages/manifes
 }
 ```
 
-To install a specific version, simply add _#version_ at the end of the URL. For example:
+To install a specific version, simply add `#<tag name>` at the end of the URL. For example:
 
-```"com.unity.project-auditor": "https://github.com/Unity-Technologies/ProjectAuditor.git#shaders"```
+```"com.unity.project-auditor": "https://github.com/Unity-Technologies/ProjectAuditor.git#0.4.2-preview"```
 
-To find out why versions are available check [here](https://github.com/Unity-Technologies/ProjectAuditor/tags)
+To find out why versions are available check [here](https://github.com/Unity-Technologies/ProjectAuditor/tags).
 
 ## Installing for Development
 * In Unity 2018 (or newer), simply _clone_ the repository to the `Packages` folder of your project.
