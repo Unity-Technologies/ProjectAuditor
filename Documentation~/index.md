@@ -6,12 +6,12 @@ Use the Project Auditor package to analyse scripts and settings of your project.
 ## Installation
 At this time, Project Auditor is not discoverable via Package Manager so it has to be installed manually.
 
-It is recommended to install Project Auditor via the _Add package from git URL_ in Package Manager. For more information on this and alternative installation methods please refer to this [page](Installing).
+It is recommended to install Project Auditor via the _Add package from git URL_ in Package Manager. For more information on this and alternative installation methods please refer to this [page](Installing.md).
 
 ## How to Use
 The Project Auditor editor window can be open via *Window => Analysis => Project Auditor*. Click on Analyze, then review the list of potential issues to determine whether they are actual problems in your project.
 
-For more information, check the [Getting stated](GettingStarted) guide.
+For more information, check the [Getting started](GettingStarted.md) guide.
 
 ## Known limitations
 Here are several Project Auditor's known limitations:
