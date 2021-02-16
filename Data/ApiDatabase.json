@@ -1798,7 +1798,7 @@
             "type": "UnityEngine.Object",
             "method": "Instantiate",
             "area": "CPU",
-            "problem": "Instantiationg Objects at runtime can be a very expensive operation.",
+            "problem": "Instantiating Objects at runtime can be a very expensive operation.",
             "solution": "Try to avoid calling Object.Instantiate frequently-updated code."
         },
         {
