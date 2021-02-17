@@ -192,6 +192,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 columnTypes = new[]
                 {
                     IssueTable.ColumnType.Description,
+                    IssueTable.ColumnType.Filename,
                     IssueTable.ColumnType.Custom
                 },
                 descriptionColumnDescriptor = new ColumnDescriptor
