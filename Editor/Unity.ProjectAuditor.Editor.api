@@ -66,8 +66,9 @@ namespace Unity.ProjectAuditor.Editor
     {
         public const Unity.ProjectAuditor.Editor.IssueCategory Assets = 0;
         public const Unity.ProjectAuditor.Editor.IssueCategory Code = 3;
-        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 5;
-        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 4;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Generics = 4;
+        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 6;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 5;
         public const Unity.ProjectAuditor.Editor.IssueCategory Shaders = 1;
         public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariants = 2;
         public int value__;
@@ -88,9 +89,8 @@ namespace Unity.ProjectAuditor.Editor
         public string solution;
         public string type;
         public string value;
-        public ProblemDescriptor(int id, string description, string area) {}
-        public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area area) {}
-        public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area area, string problem, string solution) {}
+        public ProblemDescriptor(int id, string description, string area, string problem = default(string), string solution = default(string)) {}
+        public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area area, string problem = default(string), string solution = default(string)) {}
         public virtual bool Equals(object obj);
         public virtual bool Equals(Unity.ProjectAuditor.Editor.ProblemDescriptor other);
         public virtual int GetHashCode();
@@ -268,6 +268,14 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
+    public class GenericTypeInstantiationAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer
+    {
+        public GenericTypeInstantiationAnalyzer() {}
+        public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.GenericTypeInstantiationAnalyzer.<GetOpCodes>d__5))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
+        public virtual void Initialize(Unity.ProjectAuditor.Editor.IAuditor auditor);
+    }
+
     public interface IInstructionAnalyzer
     {
         public abstract Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
