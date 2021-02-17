@@ -178,6 +178,45 @@ namespace Unity.ProjectAuditor.Editor.UI
             },
             new AnalysisViewDescriptor
             {
+                category = IssueCategory.Generics,
+                name = "Generics",
+                groupByDescription = true,
+                descriptionWithIcon = false,
+                showAreaSelection = true,
+                showAssemblySelection = true,
+                showCritical = false,
+                showDependencyView = false,
+                showMuteOptions = false,
+                showRightPanels = false,
+                dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
+                columnTypes = new[]
+                {
+                    IssueTable.ColumnType.Description,
+                    IssueTable.ColumnType.Custom
+                },
+                descriptionColumnDescriptor = new ColumnDescriptor
+                {
+                    Content = new GUIContent("Generic Type"),
+                    Width = 300,
+                    MinWidth = 100,
+                    Format = PropertyFormat.String
+                },
+                customColumnDescriptors = new[]
+                {
+                    new ColumnDescriptor
+                    {
+                        Content = new GUIContent("Assembly", "Managed Assembly name"),
+                        Width = 300,
+                        MinWidth = 100,
+                        Format = PropertyFormat.String
+                    }
+                },
+                onDoubleClick = OpenTextFile,
+                onOpenDescriptor = OpenDescriptor,
+                analyticsEvent = ProjectAuditorAnalytics.UIButton.ApiCalls
+            },
+            new AnalysisViewDescriptor
+            {
                 category = IssueCategory.ProjectSettings,
                 name = "Project Settings",
                 groupByDescription = false,

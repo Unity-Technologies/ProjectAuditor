@@ -50,6 +50,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
+            //m_GenericDescriptors.Clear();
+
             if (m_ProblemDescriptors == null)
                 throw new Exception("Issue Database not initialized.");
 
@@ -85,7 +87,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var onIssueFoundInternal = new Action<ProjectIssue>(issue =>
             {
-                issues.Add(issue);
+                if (issue.category == IssueCategory.Code)
+                    issues.Add(issue);
                 onIssueFound(issue);
             });
 

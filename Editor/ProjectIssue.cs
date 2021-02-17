@@ -43,6 +43,7 @@ namespace Unity.ProjectAuditor.Editor
         Shaders,
         ShaderVariants,
         Code,
+        Generics,
         ProjectSettings,
         NumCategories
     }
