@@ -24,12 +24,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             return EditorGUILayout.Foldout(toggle, content, Styles.Foldout);
         }
 
-        internal static bool ButtonWithDropdownList(GUIContent content, string[] buttonNames, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
+        internal static bool ButtonWithDropdownList(GUIContent content, string[] buttonNames, string selection, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
         {
-            if (Styles.DropDownButton == null)
-                Styles.DropDownButton = GUI.skin.FindStyle("DropDownButton");
-
-            var rect = GUILayoutUtility.GetRect(content, Styles.DropDownButton, options);
+            var rect = GUILayoutUtility.GetRect(content, EditorStyles.toolbarDropDown, options);
             var dropDownRect = rect;
 
             const float kDropDownButtonWidth = 20f;
@@ -39,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var menu = new GenericMenu();
                 for (var i = 0; i != buttonNames.Length; i++)
-                    menu.AddItem(new GUIContent(buttonNames[i]), false, callback, i);
+                    menu.AddItem(new GUIContent(buttonNames[i]), buttonNames[i].Equals(selection), callback, i);
 
                 menu.DropDown(rect);
                 Event.current.Use();
@@ -47,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return false;
             }
 
-            return GUI.Button(rect, content, Styles.DropDownButton);
+            return GUI.Button(rect, content, EditorStyles.toolbarDropDown);
         }
 
         internal static void DrawSelectedText(string text)
