@@ -585,7 +585,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnViewChanged(object userData)
         {
-            var index = (int) userData;
+            var index = (int)userData;
             var activeTabChanged = (m_ActiveViewIndex != index);
             if (activeTabChanged)
             {
@@ -1004,7 +1004,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawToolbar()
         {
-            GUILayout.BeginHorizontal(EditorStyles.toolbar);
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
             {
                 GUI.enabled = (m_AnalysisState == AnalysisState.Valid || m_AnalysisState == AnalysisState.NotStarted);
 
@@ -1165,9 +1165,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent AnalyzeButton =
                 new GUIContent("Analyze", "Analyze Project and list all issues found.");
-
-            public static readonly GUIContent ViewDropdown =
-                new GUIContent("Active View", "Select view.");
 
             public static readonly GUIContent AnalysisInProgressLabel =
                 new GUIContent("Analysis in progress...", "Analysis in progress...please wait.");
