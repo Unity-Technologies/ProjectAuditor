@@ -175,7 +175,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.BeginVertical();
             EditorGUILayout.Space();
 
-            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
             if (m_Desc.groupByDescription)
             {
                 if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
