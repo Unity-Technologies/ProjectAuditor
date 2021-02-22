@@ -179,7 +179,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             new AnalysisViewDescriptor
             {
                 category = IssueCategory.ProjectSettings,
-                name = "Project Settings",
+                name = "Settings",
                 groupByDescription = false,
                 descriptionWithIcon = false,
                 showAreaSelection = true,
@@ -380,7 +380,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             m_ViewNames = m_AnalysisViewDescriptors.Select(m => m.name).ToArray();
-            m_ViewContents = m_AnalysisViewDescriptors.Select(m => new GUIContent(m.name)).ToArray();
+            m_ViewContents = m_AnalysisViewDescriptors.Select(m => new GUIContent("View: " + m.name)).ToArray();
 
             if (m_TextFilter == null)
                 m_TextFilter = new TextFilter();
@@ -1008,7 +1008,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 GUI.enabled = (m_AnalysisState == AnalysisState.Valid || m_AnalysisState == AnalysisState.NotStarted);
 
-                const int buttonWidth = 110;
+                const int buttonWidth = 80;
                 if (GUILayout.Button(Styles.AnalyzeButton, EditorStyles.toolbarButton, GUILayout.Width(buttonWidth)))
                 {
                     Analyze();
@@ -1016,13 +1016,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 GUI.enabled = m_AnalysisState == AnalysisState.Valid;
 
-                if (Utility.ButtonWithDropdownList(m_ViewContents[m_ActiveViewIndex], m_ViewNames, m_ViewNames[m_ActiveViewIndex],
-                    OnViewChanged, GUILayout.Width(buttonWidth)))
-                {
-                    GUIUtility.ExitGUI();
-                }
+                Utility.ToolbarDropdownList(m_ViewContents[m_ActiveViewIndex], m_ViewNames,
+                    m_ViewNames[m_ActiveViewIndex],
+                    OnViewChanged, GUILayout.Width(buttonWidth));
 
-                if (Utility.ButtonWithDropdownList(Styles.ExportButton, Styles.ExportModeStrings, string.Empty,
+                if (Utility.ToolbarButtonWithDropdownList(Styles.ExportButton, Styles.ExportModeStrings,
                     OnExport, GUILayout.Width(buttonWidth)))
                 {
                     Export();
