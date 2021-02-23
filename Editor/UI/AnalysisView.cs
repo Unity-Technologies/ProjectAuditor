@@ -29,6 +29,7 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         public IssueCategory category;
         public string name;
+        public int menuOrder;
         public bool groupByDescription;
         public bool descriptionWithIcon;
         public bool showAreaSelection;

@@ -32,12 +32,13 @@ namespace Unity.ProjectAuditor.Editor.UI
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow Instance;
 
-        readonly AnalysisViewDescriptor[] m_AnalysisViewDescriptors =
+        AnalysisViewDescriptor[] m_AnalysisViewDescriptors =
         {
             new AnalysisViewDescriptor
             {
                 category = IssueCategory.Assets,
                 name = "Assets",
+                menuOrder = 3,
                 groupByDescription = true,
                 descriptionWithIcon = true,
                 showAreaSelection = false,
@@ -67,6 +68,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.Shaders,
                 name = "Shaders",
+                menuOrder = 2,
                 groupByDescription = false,
                 descriptionWithIcon = true,
                 showAreaSelection = false,
@@ -145,6 +147,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.Code,
                 name = "Code",
+                menuOrder = 0,
                 groupByDescription = true,
                 descriptionWithIcon = false,
                 showAreaSelection = true,
@@ -180,6 +183,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.ProjectSettings,
                 name = "Settings",
+                menuOrder = 1,
                 groupByDescription = false,
                 descriptionWithIcon = false,
                 showAreaSelection = true,
@@ -378,6 +382,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_AreaSelection.SetAll(AreaNames);
                 }
             }
+
+            Array.Sort(m_AnalysisViewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
 
             m_ViewNames = m_AnalysisViewDescriptors.Select(m => m.name).ToArray();
             m_ViewContents = m_AnalysisViewDescriptors.Select(m => new GUIContent("View: " + m.name)).ToArray();
@@ -586,8 +592,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         void OnViewChanged(object userData)
         {
             var index = (int)userData;
-            var activeTabChanged = (m_ActiveViewIndex != index);
-            if (activeTabChanged)
+            var activeViewChanged = (m_ActiveViewIndex != index);
+            if (activeViewChanged)
             {
                 var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                 m_ActiveViewIndex = index;
@@ -1017,7 +1023,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 GUI.enabled = m_AnalysisState == AnalysisState.Valid;
 
                 Utility.ToolbarDropdownList(m_ViewContents[m_ActiveViewIndex], m_ViewNames,
-                    m_ViewNames[m_ActiveViewIndex],
+                    m_ActiveViewIndex,
                     OnViewChanged, GUILayout.Width(buttonWidth));
 
                 if (Utility.ToolbarButtonWithDropdownList(Styles.ExportButton, Styles.ExportModeStrings,
