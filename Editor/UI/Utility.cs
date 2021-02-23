@@ -8,21 +8,7 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         static class Styles
         {
-            public static GUIStyle ToolbarButton;
             public static GUIStyle Foldout;
-        }
-
-        static GUIStyle GetStyle(string styleName)
-        {
-            GUIStyle s = UnityEngine.GUI.skin.FindStyle(styleName);
-            if (s == null)
-                s = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector).FindStyle(styleName);
-            if (s == null)
-            {
-                Debug.LogError("Missing built-in guistyle " + styleName);
-                s = new GUIStyle();
-            }
-            return s;
         }
 
         internal static bool BoldFoldout(bool toggle, GUIContent content)
@@ -39,10 +25,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         internal static void ToolbarDropdownList(GUIContent content, string[] buttonNames, string activeSelection, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
         {
-            if (Styles.ToolbarButton == null)
-                Styles.ToolbarButton = GetStyle("ToolbarButton");
-
-            var r = GUILayoutUtility.GetRect(content, Styles.ToolbarButton, GUILayout.Width(115f));
+            var r = GUILayoutUtility.GetRect(content, EditorStyles.toolbarButton, GUILayout.Width(115f));
             if (EditorGUI.DropdownButton(r, content, FocusType.Passive, EditorStyles.toolbarDropDown))
             {
                 var menu = new GenericMenu();
