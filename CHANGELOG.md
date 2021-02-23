@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added descriptor's minimum/maximum version
 * Added zoom slider
 * Reduced UI managed allocations
+* Replaced tabs-like view selection with toolbar dropdown list
 
 ## [0.4.2-preview] - 2021-02-01
 * Fixed detection of API calls using a derived type
