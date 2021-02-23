@@ -8,7 +8,6 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         static class Styles
         {
-            public static GUIStyle DropDownButton;
             public static GUIStyle Foldout;
         }
 
@@ -24,12 +23,22 @@ namespace Unity.ProjectAuditor.Editor.UI
             return EditorGUILayout.Foldout(toggle, content, Styles.Foldout);
         }
 
-        internal static bool ButtonWithDropdownList(GUIContent content, string[] buttonNames, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
+        internal static void ToolbarDropdownList(GUIContent content, string[] buttonNames, int activeSelection, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
         {
-            if (Styles.DropDownButton == null)
-                Styles.DropDownButton = GUI.skin.FindStyle("DropDownButton");
+            var r = GUILayoutUtility.GetRect(content, EditorStyles.toolbarButton, options);
+            if (EditorGUI.DropdownButton(r, content, FocusType.Passive, EditorStyles.toolbarDropDown))
+            {
+                var menu = new GenericMenu();
 
-            var rect = GUILayoutUtility.GetRect(content, Styles.DropDownButton, options);
+                for (var i = 0; i != buttonNames.Length; i++)
+                    menu.AddItem(new GUIContent(buttonNames[i]), i == activeSelection, callback, i);
+                menu.DropDown(r);
+            }
+        }
+
+        internal static bool ToolbarButtonWithDropdownList(GUIContent content, string[] buttonNames, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
+        {
+            var rect = GUILayoutUtility.GetRect(content, EditorStyles.toolbarDropDown, options);
             var dropDownRect = rect;
 
             const float kDropDownButtonWidth = 20f;
@@ -47,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return false;
             }
 
-            return GUI.Button(rect, content, Styles.DropDownButton);
+            return GUI.Button(rect, content, EditorStyles.toolbarDropDown);
         }
 
         internal static void DrawSelectedText(string text)
