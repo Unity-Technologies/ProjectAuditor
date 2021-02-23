@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         internal static void ToolbarDropdownList(GUIContent content, string[] buttonNames, string activeSelection, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
         {
-            var r = GUILayoutUtility.GetRect(content, EditorStyles.toolbarButton, GUILayout.Width(115f));
+            var r = GUILayoutUtility.GetRect(content, EditorStyles.toolbarButton, options);
             if (EditorGUI.DropdownButton(r, content, FocusType.Passive, EditorStyles.toolbarDropDown))
             {
                 var menu = new GenericMenu();
