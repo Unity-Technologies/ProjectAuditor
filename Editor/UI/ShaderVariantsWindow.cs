@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Auditors;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
@@ -48,15 +48,15 @@ To find which shader variants are compiled at runtime, follow these steps:
                 EditorUtility.DisplayDialog("Shader Variants", k_PlayerLogProcessed, "Ok");
                 m_AnalysisView.Refresh();
             }
-            else
+            else if (GraphicsSettingsHelper.logShaderCompilationSupported)
             {
-                if (GraphicsSettings.logWhenShaderIsCompiled)
+                if (GraphicsSettingsHelper.logWhenShaderIsCompiled)
                 {
                     EditorUtility.DisplayDialog("Shader Variants", k_NoCompiledVariantWarning, "Ok");
                 }
                 else
                 {
-                    GraphicsSettings.logWhenShaderIsCompiled = EditorUtility.DisplayDialog("Shader Variants", k_NoCompiledVariantWarningLogDisabled, "Yes", "No");
+                    GraphicsSettingsHelper.logWhenShaderIsCompiled = EditorUtility.DisplayDialog("Shader Variants", k_NoCompiledVariantWarningLogDisabled, "Yes", "No");
                 }
             }
         }
