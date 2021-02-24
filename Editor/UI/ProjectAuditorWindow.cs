@@ -185,7 +185,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Generics",
                 groupByDescription = true,
                 descriptionWithIcon = false,
-                showAreaSelection = true,
+                showAreaSelection = false,
                 showAssemblySelection = true,
                 showCritical = false,
                 showDependencyView = false,
