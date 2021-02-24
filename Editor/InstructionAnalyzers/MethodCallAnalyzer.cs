@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class BuiltinInstructionAnalyzer : IInstructionAnalyzer
+    class MethodCallAnalyzer : IInstructionAnalyzer
     {
         Dictionary<string, List<ProblemDescriptor>> m_Descriptors; // method name as key, list of type names as value
         Dictionary<string, ProblemDescriptor> m_WholeNamespaceDescriptors; // namespace as key

@@ -32,12 +32,13 @@ namespace Unity.ProjectAuditor.Editor.UI
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow Instance;
 
-        readonly AnalysisViewDescriptor[] m_AnalysisViewDescriptors =
+        AnalysisViewDescriptor[] m_AnalysisViewDescriptors =
         {
             new AnalysisViewDescriptor
             {
                 category = IssueCategory.Assets,
                 name = "Assets",
+                menuOrder = 3,
                 groupByDescription = true,
                 descriptionWithIcon = true,
                 showAreaSelection = false,
@@ -67,6 +68,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.Shaders,
                 name = "Shaders",
+                menuOrder = 2,
                 groupByDescription = false,
                 descriptionWithIcon = true,
                 showAreaSelection = false,
@@ -145,6 +147,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.Code,
                 name = "Code",
+                menuOrder = 0,
                 groupByDescription = true,
                 descriptionWithIcon = false,
                 showAreaSelection = true,
@@ -179,7 +182,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             new AnalysisViewDescriptor
             {
                 category = IssueCategory.ProjectSettings,
-                name = "Project Settings",
+                name = "Settings",
+                menuOrder = 1,
                 groupByDescription = false,
                 descriptionWithIcon = false,
                 showAreaSelection = true,
@@ -267,7 +271,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
         };
 
-        string[] m_TabNames;
+        string[] m_ViewNames;
+        GUIContent[] m_ViewContents;
         ProjectAuditor m_ProjectAuditor;
         bool m_ShouldRefresh;
         ProjectAuditorAnalytics.Analytic m_AnalyzeButtonAnalytic;
@@ -279,7 +284,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         TreeViewSelection m_AssemblySelection;
 
         // Serialized fields
-        [SerializeField] int m_ActiveTabIndex;
+        [SerializeField] int m_ActiveViewIndex;
         [SerializeField] string m_AreaSelectionSummary;
         [SerializeField] string[] m_AssemblyNames;
         [SerializeField] string m_AssemblySelectionSummary;
@@ -291,7 +296,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         AnalysisView activeAnalysisView
         {
-            get { return m_AnalysisViews[m_ActiveTabIndex]; }
+            get { return m_AnalysisViews[m_ActiveViewIndex]; }
         }
 
         public void AddItemsToMenu(GenericMenu menu)
@@ -378,7 +383,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
             }
 
-            m_TabNames = m_AnalysisViewDescriptors.Select(m => m.name).ToArray();
+            Array.Sort(m_AnalysisViewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
+
+            m_ViewNames = m_AnalysisViewDescriptors.Select(m => m.name).ToArray();
+            m_ViewContents = m_AnalysisViewDescriptors.Select(m => new GUIContent("View: " + m.name)).ToArray();
 
             if (m_TextFilter == null)
                 m_TextFilter = new TextFilter();
@@ -426,7 +434,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             DrawToolbar();
             if (IsAnalysisValid())
             {
-                DrawTab();
                 DrawFilters();
                 DrawActions();
 
@@ -582,7 +589,22 @@ namespace Unity.ProjectAuditor.Editor.UI
             OnEnable();
         }
 
-        void ExportDropDownCallback(object data)
+        void OnViewChanged(object userData)
+        {
+            var index = (int)userData;
+            var activeViewChanged = (m_ActiveViewIndex != index);
+            if (activeViewChanged)
+            {
+                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                m_ActiveViewIndex = index;
+
+                RefreshDisplay();
+
+                ProjectAuditorAnalytics.SendUIButtonEvent(activeAnalysisView.desc.analyticsEvent, analytic);
+            }
+        }
+
+        void OnExport(object data)
         {
             var mode = (ExportMode)data;
             switch (mode)
@@ -627,51 +649,13 @@ namespace Unity.ProjectAuditor.Editor.UI
         string GetSelectedAssembliesSummary()
         {
             if (m_AssemblyNames != null && m_AssemblyNames.Length > 0)
-                return GetSelectedSummary(m_AssemblySelection, m_AssemblyNames);
+                return Utility.GetTreeViewSelectedSummary(m_AssemblySelection, m_AssemblyNames);
             return string.Empty;
         }
 
         internal string GetSelectedAreasSummary()
         {
-            return GetSelectedSummary(m_AreaSelection, AreaNames);
-        }
-
-        string GetSelectedSummary(TreeViewSelection selection, string[] names)
-        {
-            string[] selectedStrings = selection.GetSelectedStrings(names, true);
-            int numStrings = selectedStrings.Length;
-
-            if (numStrings == 0)
-                return "None";
-
-            if (numStrings == 1)
-                return selectedStrings[0];
-
-            return string.Join(", ", selectedStrings);
-        }
-
-        void DrawSelectedText(string text)
-        {
-#if UNITY_2019_1_OR_NEWER
-            GUIStyle treeViewSelectionStyle = "TV Selection";
-            GUIStyle backgroundStyle = new GUIStyle(treeViewSelectionStyle);
-
-            GUIStyle treeViewLineStyle = "TV Line";
-            GUIStyle textStyle = new GUIStyle(treeViewLineStyle);
-#else
-            var textStyle = GUI.skin.label;
-#endif
-
-            var content = new GUIContent(text, text);
-            var size = textStyle.CalcSize(content);
-            var rect = EditorGUILayout.GetControlRect(GUILayout.MaxWidth(size.x), GUILayout.Height(size.y));
-            if (Event.current.type == EventType.Repaint)
-            {
-#if UNITY_2019_1_OR_NEWER
-                backgroundStyle.Draw(rect, false, false, true, true);
-#endif
-                GUI.Label(rect, content, textStyle);
-            }
+            return Utility.GetTreeViewSelectedSummary(m_AreaSelection, AreaNames);
         }
 
         void DrawAssemblyFilter()
@@ -715,7 +699,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             GUI.enabled = lastEnabled;
 
             m_AssemblySelectionSummary = GetSelectedAssembliesSummary();
-            DrawSelectedText(m_AssemblySelectionSummary);
+            Utility.DrawSelectedText(m_AssemblySelectionSummary);
 
             GUILayout.FlexibleSpace();
 
@@ -766,7 +750,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 GUI.enabled = lastEnabled;
 
                 m_AreaSelectionSummary = GetSelectedAreasSummary();
-                DrawSelectedText(m_AreaSelectionSummary);
+                Utility.DrawSelectedText(m_AreaSelectionSummary);
 
                 GUILayout.FlexibleSpace();
             }
@@ -1026,19 +1010,24 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawToolbar()
         {
-            EditorGUILayout.BeginHorizontal(GUI.skin.box);
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
             {
                 GUI.enabled = (m_AnalysisState == AnalysisState.Valid || m_AnalysisState == AnalysisState.NotStarted);
 
-                if (GUILayout.Button(Styles.AnalyzeButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                const int buttonWidth = 100;
+                if (GUILayout.Button(Styles.AnalyzeButton, EditorStyles.toolbarButton, GUILayout.Width(buttonWidth)))
                 {
                     Analyze();
                 }
 
                 GUI.enabled = m_AnalysisState == AnalysisState.Valid;
 
-                if (Utility.ButtonWithDropdownList(Styles.ExportButton, Styles.ExportModeStrings,
-                    ExportDropDownCallback, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                Utility.ToolbarDropdownList(m_ViewContents[m_ActiveViewIndex], m_ViewNames,
+                    m_ActiveViewIndex,
+                    OnViewChanged, GUILayout.Width(buttonWidth));
+
+                if (Utility.ToolbarButtonWithDropdownList(Styles.ExportButton, Styles.ExportModeStrings,
+                    OnExport, GUILayout.Width(buttonWidth)))
                 {
                     Export();
 
@@ -1049,7 +1038,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (m_DeveloperMode)
                 {
-                    if (GUILayout.Button(Styles.ReloadButton, GUILayout.ExpandWidth(true), GUILayout.Width(80)))
+                    if (GUILayout.Button(Styles.ReloadButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(buttonWidth)))
                     {
                         Reload();
                     }
@@ -1068,26 +1057,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Separator();
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
-        }
-
-        void DrawTab()
-        {
-            EditorGUILayout.BeginHorizontal();
-            var activeTabIndex = GUILayout.Toolbar(m_ActiveTabIndex, m_TabNames,
-                "LargeButton", GUILayout.Height(LayoutSize.ToolbarHeight));
-
-            EditorGUILayout.EndHorizontal();
-
-            bool activeTabChanged = (m_ActiveTabIndex != activeTabIndex);
-            if (activeTabChanged)
-            {
-                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                m_ActiveTabIndex = activeTabIndex;
-
-                RefreshDisplay();
-
-                ProjectAuditorAnalytics.SendUIButtonEvent(activeAnalysisView.desc.analyticsEvent, analytic);
-            }
         }
 
         void DrawHelpbox()
