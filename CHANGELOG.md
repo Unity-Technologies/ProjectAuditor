@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 * Fixed Android player.log parsing
+* Fixed *GraphicsSettings.logWhenShaderIsCompiled* compilation error on early 2018.4.x releases 
 * Added descriptor's minimum/maximum version
 * Added zoom slider
 * Reduced UI managed allocations
