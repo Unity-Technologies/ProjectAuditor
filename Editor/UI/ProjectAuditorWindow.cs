@@ -386,7 +386,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Array.Sort(m_AnalysisViewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
 
             m_ViewNames = m_AnalysisViewDescriptors.Select(m => m.name).ToArray();
-            m_ViewContents = m_AnalysisViewDescriptors.Select(m => new GUIContent("View: " + m.name)).ToArray();
+            m_ViewContents = m_AnalysisViewDescriptors.Select(m => new GUIContent("View: " + m.name, "Change View")).ToArray();
 
             if (m_TextFilter == null)
                 m_TextFilter = new TextFilter();
