@@ -441,10 +441,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         bool ShaderVariantsMatch(CompiledVariantData cv, string[] secondSet, string passName)
         {
             var passMatch = cv.pass.Equals(passName);
-            var pass = 0;
             if (!passMatch)
             {
 #if UNITY_2019_1_OR_NEWER
+                var pass = 0;
                 passMatch = cv.pass.Equals(k_NoPassName) && passName.StartsWith(k_UnamedPassPrefix) && int.TryParse(passName.Substring(k_UnamedPassPrefix.Length), out pass);
 #else
                 passMatch = cv.pass.Equals(k_NoPassName) && string.IsNullOrEmpty(passName);
