@@ -29,6 +29,7 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         public IssueCategory category;
         public string name;
+        public int menuOrder;
         public bool groupByDescription;
         public bool descriptionWithIcon;
         public bool showAreaSelection;
@@ -175,7 +176,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.BeginVertical();
             EditorGUILayout.Space();
 
-            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
             if (m_Desc.groupByDescription)
             {
                 if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
