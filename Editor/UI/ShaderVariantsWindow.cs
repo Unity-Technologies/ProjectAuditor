@@ -84,6 +84,33 @@ To find which shader variants are compiled at runtime, follow these steps:
             GUI.enabled = buildAvailable;
             m_FlatView = EditorGUILayout.ToggleLeft("Flat View", m_FlatView, GUILayout.Width(160));
             m_HideCompiledVariants = EditorGUILayout.ToggleLeft("Hide Compiled Variants", m_HideCompiledVariants, GUILayout.Width(160));
+
+            if (GUILayout.Button("Export", GUILayout.Width(50)))
+            {
+                var path = EditorUtility.SaveFilePanel("Save variants to CSV file", "", "shader-variants.csv",
+                    "csv");
+                if (path.Length != 0)
+                {
+                    var writer = new StreamWriter(path);
+                    writer.WriteLine(HeaderForCSV());
+
+                    for (IssueCategory category = 0; category < IssueCategory.NumCategories; category++)
+                    {
+                        var issues = m_Issues.Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
+
+                        foreach (var issue in issues)
+                        {
+                            writer.WriteLine(FormatIssueForCSV(issue));
+                        }
+                    }
+
+                    writer.Flush();
+                    writer.Close();
+
+                    EditorUtility.RevealInFinder(path);
+                }
+            }
+
             GUI.enabled = lastEnabled;
 
             if (EditorGUI.EndChangeCheck())
@@ -133,6 +160,23 @@ To find which shader variants are compiled at runtime, follow these steps:
             if (m_HideCompiledVariants)
                 return !issue.GetCustomPropertyAsBool((int)ShaderVariantProperty.Compiled);
             return true;
+        }
+
+        internal static string FormatIssueForCSV(ProjectIssue issue)
+        {
+            return string.Format("{0},\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\"",
+                issue.description,
+                issue.GetCustomProperty((int)ShaderVariantProperty.Compiled),
+                issue.GetCustomProperty((int)ShaderVariantProperty.Platform),
+                issue.GetCustomProperty((int)ShaderVariantProperty.PassName),
+                issue.GetCustomProperty((int)ShaderVariantProperty.Keywords),
+                issue.GetCustomProperty((int)ShaderVariantProperty.Requirements)
+                );
+        }
+
+        internal static string HeaderForCSV()
+        {
+            return "Shader Name,Compiled,API,Pass,Keywords,Requirements";
         }
     }
 }
