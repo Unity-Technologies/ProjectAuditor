@@ -293,12 +293,12 @@
         },
         {
           "id": 201030,
-          "description": "Player: Splash Screen Enabled",
+          "description": "Player: Splash Screen",
           "type": "UnityEngine.PlayerSettings.SplashScreen.show",
           "method": "show",
           "customevaluator": "PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled",
           "area": "LoadTimes",
-          "problem": "Splash Screen is enabled and will increase the time it take to load into the first scene.",
+          "problem": "Splash Screen is enabled and will increase the time it takes to load into the first scene.",
           "solution": "Disable the Splash Screen option in Player Settings."
         }
     ]
