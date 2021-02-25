@@ -290,6 +290,16 @@
           "area": "Memory",
           "problem": "The \"Reuse Collision Callbacks\" option in Physics Settings is disabled. For each OnCollision* callback, a temporary managed object is allocated which, eventually, will need to be garbage collected.",
           "solution": "When this option is enabled, only a single instance of the Collision type is created and reused for each individual callback. This reduces waste for the garbage collector to handle and improves performance."
+        },
+        {
+          "id": 201030,
+          "description": "Player: Splash Screen Enabled",
+          "type": "UnityEngine.PlayerSettings.SplashScreen.show",
+          "method": "show",
+          "customevaluator": "PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled",
+          "area": "LoadTimes",
+          "problem": "Splash Screen is enabled and will increase the time it take to load into the first scene.",
+          "solution": "Disable the Splash Screen option in Player Settings."
         }
     ]
 }

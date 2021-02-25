@@ -37,6 +37,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.Physics", "Project/Physics"));
             m_ProjectSettingsMapping.Add(
                 new KeyValuePair<string, string>("UnityEngine.Physics2D", "Project/Physics 2D"));
+            m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.PlayerSettings",
+                "Project/Player"));
             m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.Time", "Project/Time"));
             m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.QualitySettings",
                 "Project/Quality"));
@@ -100,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         void AddIssue(ProblemDescriptor descriptor, string description, Action<ProjectIssue> onIssueFound)
         {
             var projectWindowPath = "";
-            var mappings = m_ProjectSettingsMapping.Where(p => p.Key.Contains(descriptor.type));
+            var mappings = m_ProjectSettingsMapping.Where(p => descriptor.type.StartsWith(p.Key));
             if (mappings.Count() > 0)
                 projectWindowPath = mappings.First().Value;
             onIssueFound(new ProjectIssue
@@ -148,8 +150,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 var helperType = m_Helpers.GetType();
                 var theMethod = helperType.GetMethod(descriptor.customevaluator);
-                var isIssue = (bool)theMethod.Invoke(m_Helpers, null);
-                if (isIssue) AddIssue(descriptor, descriptor.description, onIssueFound);
+                if((bool)theMethod.Invoke(m_Helpers, null))
+                    AddIssue(descriptor, descriptor.description, onIssueFound);
             }
         }
     }
