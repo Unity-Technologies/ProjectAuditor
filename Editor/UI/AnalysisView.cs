@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Editor.Utils;
 using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -203,24 +204,22 @@ namespace Unity.ProjectAuditor.Editor.UI
                     "csv");
                 if (path.Length != 0)
                 {
-                    var writer = new StreamWriter(path);
-                    writer.WriteLine(HeaderForCSV());
-//
-                    //var issues = m_Issues.Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
-
-                    foreach (var issue in m_Issues)
+                    using (var exporter = new Exporter(path, m_Desc.columnTypes))
                     {
-                        writer.WriteLine(FormatIssueForCSV(issue));
+                        var customPropertyNames = m_Desc.customColumnDescriptors != null
+                            ? m_Desc.customColumnDescriptors.Select(desc => desc.Content.text).ToArray()
+                            : new string[] { };
+                        exporter.WriteHeader(customPropertyNames);
+                        foreach (var issue in m_Issues)
+                            exporter.WriteIssue(issue);
                     }
-
-                    writer.Flush();
-                    writer.Close();
 
                     EditorUtility.RevealInFinder(path);
                 }
             }
 
             EditorGUILayout.Space();
+
             // (optional) collapse/expand buttons
             if (m_Desc.groupByDescription)
             {
@@ -336,52 +335,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             var rows = m_Table.GetRows();
             foreach (var row in rows)
                 m_Table.SetExpanded(row.id, expanded);
-        }
-
-        string ColumnIndexToName(int i)
-        {
-            var columnType = m_Desc.columnTypes[i];
-            if (columnType < PropertyType.Custom)
-                return columnType.ToString();
-            return m_Desc.customColumnDescriptors[columnType - PropertyType.Custom].Content.text;
-        }
-
-        // make extension
-
-
-        string FormatIssueForCSV(ProjectIssue issue)
-        {
-            var stringBuilder = new StringBuilder();
-            var first = true;
-            for (int i = 0; i < m_Desc.columnTypes.Length; i++)
-            {
-                var columnType = m_Desc.columnTypes[i];
-                var prop = issue.GetProperty(columnType);
-                stringBuilder.Append(prop);
-                stringBuilder.Append(",");
-            }
-            return stringBuilder.ToString();
-        }
-
-        string HeaderForCSV()
-        {
-            var stringBuilder = new StringBuilder();
-            for (int i = 0; i < m_Desc.columnTypes.Length; i++)
-            {
-                var columnType = m_Desc.columnTypes[i];
-                switch (columnType)
-                {
-                    case PropertyType.Severity:
-                    case PropertyType.Area:
-                    case PropertyType.FileType:
-                        continue;
-                }
-
-                stringBuilder.Append(ColumnIndexToName(i));
-                if (i+1 < m_Desc.columnTypes.Length)
-                    stringBuilder.Append(",");
-            }
-            return stringBuilder.ToString();
         }
 
         const string k_NoSelectionText = "<No selection>";
