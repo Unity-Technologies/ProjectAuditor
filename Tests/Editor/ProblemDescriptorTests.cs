@@ -4,6 +4,7 @@ using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -99,7 +100,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             desc.minimumVersion = "1.1";
             desc.maximumVersion = "1.0";
             var result = ProblemDescriptorLoader.IsVersionCompatible(desc);
-            UnityEngine.TestTools.LogAssert.Expect(LogType.Error, "Descriptor (102001) minimumVersion (1.1) is greater than maximumVersion (1.0).");
+            LogAssert.Expect(LogType.Error, "Descriptor (102001) minimumVersion (1.1) is greater than maximumVersion (1.0).");
             Assert.False(result);
         }
     }

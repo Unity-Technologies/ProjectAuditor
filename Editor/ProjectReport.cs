@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using Editor.Utils;
-using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor

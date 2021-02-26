@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             if (minimumVersion != null && maximumVersion != null && minimumVersion > maximumVersion)
             {
-                Debug.LogErrorFormat("Descriptor ({0}) minimumVersion ({1}) is greater than maximumVersion ({2}).", desc.id, minimumVersion.ToString(), maximumVersion.ToString());
+                Debug.LogErrorFormat("Descriptor ({0}) minimumVersion ({1}) is greater than maximumVersion ({2}).", desc.id, minimumVersion, maximumVersion);
                 return false;
             }
 
