@@ -6,37 +6,6 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    /// <summary>
-    /// Affected area
-    /// </summary>
-    public enum Area
-    {
-        /// <summary>
-        /// CPU Performance
-        /// </summary>
-        CPU,
-
-        /// <summary>
-        /// GPU Performance
-        /// </summary>
-        GPU,
-
-        /// <summary>
-        /// Memory consumption
-        /// </summary>
-        Memory,
-
-        /// <summary>
-        /// Application size
-        /// </summary>
-        BuildSize,
-
-        /// <summary>
-        /// Load times
-        /// </summary>
-        LoadTimes
-    }
-
     public enum IssueCategory
     {
         Assets,

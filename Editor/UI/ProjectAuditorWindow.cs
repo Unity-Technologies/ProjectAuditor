@@ -50,9 +50,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 dependencyViewGuiContent = new GUIContent("Asset Dependencies"),
                 columnTypes = new[]
                 {
-                    IssueTable.ColumnType.Description,
-                    IssueTable.ColumnType.FileType,
-                    IssueTable.ColumnType.Path
+                    PropertyType.Description,
+                    PropertyType.FileType,
+                    PropertyType.Path
                 },
                 descriptionColumnDescriptor = new ColumnDescriptor
                 {
@@ -79,14 +79,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showRightPanels = false,
                 columnTypes = new[]
                 {
-                    IssueTable.ColumnType.Severity,
-                    IssueTable.ColumnType.Description,
-                    IssueTable.ColumnType.Custom,
-                    IssueTable.ColumnType.Custom + 1,
-                    IssueTable.ColumnType.Custom + 2,
-                    IssueTable.ColumnType.Custom + 3,
-                    IssueTable.ColumnType.Custom + 4,
-                    IssueTable.ColumnType.Custom + 5
+                    PropertyType.Severity,
+                    PropertyType.Description,
+                    PropertyType.Custom,
+                    PropertyType.Custom + 1,
+                    PropertyType.Custom + 2,
+                    PropertyType.Custom + 3,
+                    PropertyType.Custom + 4,
+                    PropertyType.Custom + 5
                 },
                 descriptionColumnDescriptor = new ColumnDescriptor
                 {
@@ -159,11 +159,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 columnTypes = new[]
                 {
-                    IssueTable.ColumnType.Description,
-                    IssueTable.ColumnType.Severity,
-                    IssueTable.ColumnType.Area,
-                    IssueTable.ColumnType.Filename,
-                    IssueTable.ColumnType.Custom
+                    PropertyType.Description,
+                    PropertyType.Severity,
+                    PropertyType.Area,
+                    PropertyType.Filename,
+                    PropertyType.Custom
                 },
                 customColumnDescriptors = new[]
                 {
@@ -194,8 +194,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showRightPanels = true,
                 columnTypes = new[]
                 {
-                    IssueTable.ColumnType.Description,
-                    IssueTable.ColumnType.Area
+                    PropertyType.Description,
+                    PropertyType.Area
                 },
                 onDoubleClick = OpenProjectSettings,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.ProjectSettings
@@ -215,12 +215,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             showRightPanels = false,
             columnTypes = new[]
             {
-                IssueTable.ColumnType.Description,
-                IssueTable.ColumnType.Custom,
-                IssueTable.ColumnType.Custom + 1,
-                IssueTable.ColumnType.Custom + 2,
-                IssueTable.ColumnType.Custom + 3,
-                IssueTable.ColumnType.Custom + 4
+                PropertyType.Description,
+                PropertyType.Custom,
+                PropertyType.Custom + 1,
+                PropertyType.Custom + 2,
+                PropertyType.Custom + 3,
+                PropertyType.Custom + 4
             },
             descriptionColumnDescriptor = new ColumnDescriptor
             {

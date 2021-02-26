@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showMuteOptions;
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
-        public IssueTable.ColumnType[] columnTypes;
+        public PropertyType[] columnTypes;
         public ColumnDescriptor descriptionColumnDescriptor;
         public ColumnDescriptor[] customColumnDescriptors;
         public Action<Location> onDoubleClick;
@@ -84,15 +84,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                 var columnType = m_Desc.columnTypes[i];
 
                 ColumnDescriptor style;
-                if (columnType == IssueTable.ColumnType.Description && m_Desc.descriptionColumnDescriptor.Content != null)
+                if (columnType == PropertyType.Description && m_Desc.descriptionColumnDescriptor.Content != null)
                 {
                     style = m_Desc.descriptionColumnDescriptor;
                 }
-                else if (columnType < IssueTable.ColumnType.Custom)
+                else if (columnType < PropertyType.Custom)
                     style = k_DefaultColumnDescriptors[(int)columnType];
                 else
                 {
-                    style = m_Desc.customColumnDescriptors[columnType - IssueTable.ColumnType.Custom];
+                    style = m_Desc.customColumnDescriptors[columnType - PropertyType.Custom];
                 }
 
                 columns[i] = new MultiColumnHeaderState.Column
