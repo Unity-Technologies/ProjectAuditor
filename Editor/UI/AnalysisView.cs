@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -39,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showMuteOptions;
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
-        public IssueTable.ColumnType[] columnTypes;
+        public PropertyType[] columnTypes;
         public ColumnDescriptor descriptionColumnDescriptor;
         public ColumnDescriptor[] customColumnDescriptors;
         public Action<Location> onDoubleClick;
@@ -55,6 +58,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         IProjectIssueFilter m_Filter;
 
         DependencyView m_DependencyView;
+        List<ProjectIssue> m_Issues;
         IssueTable m_Table;
 
         public AnalysisViewDescriptor desc
@@ -84,15 +88,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                 var columnType = m_Desc.columnTypes[i];
 
                 ColumnDescriptor style;
-                if (columnType == IssueTable.ColumnType.Description && m_Desc.descriptionColumnDescriptor.Content != null)
+                if (columnType == PropertyType.Description && m_Desc.descriptionColumnDescriptor.Content != null)
                 {
                     style = m_Desc.descriptionColumnDescriptor;
                 }
-                else if (columnType < IssueTable.ColumnType.Custom)
+                else if (columnType < PropertyType.Custom)
                     style = k_DefaultColumnDescriptors[(int)columnType];
                 else
                 {
-                    style = m_Desc.customColumnDescriptors[columnType - IssueTable.ColumnType.Custom];
+                    style = m_Desc.customColumnDescriptors[columnType - PropertyType.Custom];
                 }
 
                 columns[i] = new MultiColumnHeaderState.Column
@@ -112,15 +116,24 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (m_Desc.showDependencyView)
                 m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onDoubleClick);
+            m_Issues = new List<ProjectIssue>();
         }
 
-        public void AddIssues(IEnumerable<ProjectIssue> issues)
+        public void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
-            m_Table.AddIssues(issues.Where(i => i.category == m_Desc.category).ToArray());
+            var issues = allIssues.Where(i => i.category == m_Desc.category).ToArray();
+            m_Issues.AddRange(issues);
+            m_Table.AddIssues(issues);
+        }
+
+        public ProjectIssue[] GetIssues()
+        {
+            return m_Issues.ToArray();
         }
 
         public void Clear()
         {
+            m_Issues.Clear();
             m_Table.Clear();
         }
 
@@ -177,6 +190,38 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Space();
 
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+
+            EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
+            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
+            m_Table.SetFontSize(m_Preferences.fontSize);
+
+            Styles.TextArea.fontSize = m_Preferences.fontSize;
+
+            if (GUILayout.Button("Export", EditorStyles.toolbarButton, GUILayout.Width(50)))
+            {
+                var path = EditorUtility.SaveFilePanel("Save to CSV file", "", m_Desc.name + ".csv",
+                    "csv");
+                if (path.Length != 0)
+                {
+                    var writer = new StreamWriter(path);
+                    writer.WriteLine(HeaderForCSV());
+//
+                    //var issues = m_Issues.Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
+
+                    foreach (var issue in m_Issues)
+                    {
+                        writer.WriteLine(FormatIssueForCSV(issue));
+                    }
+
+                    writer.Flush();
+                    writer.Close();
+
+                    EditorUtility.RevealInFinder(path);
+                }
+            }
+
+            EditorGUILayout.Space();
+            // (optional) collapse/expand buttons
             if (m_Desc.groupByDescription)
             {
                 if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
@@ -184,13 +229,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                     SetRowsExpanded(true);
             }
-
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
-            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
-            m_Table.SetFontSize(m_Preferences.fontSize);
-
-            Styles.TextArea.fontSize = m_Preferences.fontSize;
 
             EditorGUILayout.EndHorizontal();
 
@@ -298,6 +336,52 @@ namespace Unity.ProjectAuditor.Editor.UI
             var rows = m_Table.GetRows();
             foreach (var row in rows)
                 m_Table.SetExpanded(row.id, expanded);
+        }
+
+        string ColumnIndexToName(int i)
+        {
+            var columnType = m_Desc.columnTypes[i];
+            if (columnType < PropertyType.Custom)
+                return columnType.ToString();
+            return m_Desc.customColumnDescriptors[columnType - PropertyType.Custom].Content.text;
+        }
+
+        // make extension
+
+
+        string FormatIssueForCSV(ProjectIssue issue)
+        {
+            var stringBuilder = new StringBuilder();
+            var first = true;
+            for (int i = 0; i < m_Desc.columnTypes.Length; i++)
+            {
+                var columnType = m_Desc.columnTypes[i];
+                var prop = issue.GetProperty(columnType);
+                stringBuilder.Append(prop);
+                stringBuilder.Append(",");
+            }
+            return stringBuilder.ToString();
+        }
+
+        string HeaderForCSV()
+        {
+            var stringBuilder = new StringBuilder();
+            for (int i = 0; i < m_Desc.columnTypes.Length; i++)
+            {
+                var columnType = m_Desc.columnTypes[i];
+                switch (columnType)
+                {
+                    case PropertyType.Severity:
+                    case PropertyType.Area:
+                    case PropertyType.FileType:
+                        continue;
+                }
+
+                stringBuilder.Append(ColumnIndexToName(i));
+                if (i+1 < m_Desc.columnTypes.Length)
+                    stringBuilder.Append(",");
+            }
+            return stringBuilder.ToString();
         }
 
         const string k_NoSelectionText = "<No selection>";
