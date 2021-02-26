@@ -64,7 +64,7 @@ To find which shader variants are compiled at runtime, follow these steps:
         public override void CreateTable(AnalysisViewDescriptor desc, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
             m_MainFilter = filter;
-            base.CreateTable(desc, config, prefs, this);
+            base.CreateTable(desc, config, prefs, filter);
             m_AnalysisView.SetFlatView(m_FlatView);
         }
 

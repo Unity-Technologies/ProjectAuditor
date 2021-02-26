@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using Editor.Utils;
-using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -14,22 +11,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    enum PropertyFormat
-    {
-        Bool = 0,
-        Integer,
-        String
-    }
-
-    struct ColumnDescriptor
-    {
-        public GUIContent Content;
-        public int Width;
-        public int MinWidth;
-        public PropertyFormat Format;
-    }
-
-    struct AnalysisViewDescriptor
+    class AnalysisViewDescriptor
     {
         public IssueCategory category;
         public string name;
@@ -43,9 +25,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showMuteOptions;
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
-        public PropertyType[] columnTypes;
-        public ColumnDescriptor descriptionColumnDescriptor;
-        public ColumnDescriptor[] customColumnDescriptors;
+        public IssueLayout layout;
         public Action<Location> onDoubleClick;
         public Action<ProblemDescriptor> onOpenDescriptor;
         public ProjectAuditorAnalytics.UIButton analyticsEvent;
@@ -72,9 +52,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             get { return m_Table; }
         }
 
-        public void CreateTable(AnalysisViewDescriptor desc, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public void CreateTable(AnalysisViewDescriptor descriptor, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
-            m_Desc = desc;
+            m_Desc = descriptor;
             m_Config = config;
             m_Preferences = prefs;
             m_Filter = filter;
@@ -83,28 +63,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return;
 
             var state = new TreeViewState();
-            var columns = new MultiColumnHeaderState.Column[m_Desc.columnTypes.Length];
-            for (var i = 0; i < columns.Length; i++)
+            var columns = new MultiColumnHeaderState.Column[descriptor.layout.properties.Length];
+            for (var i = 0; i < descriptor.layout.properties.Length; i++)
             {
-                var columnType = m_Desc.columnTypes[i];
-
-                ColumnDescriptor style;
-                if (columnType == PropertyType.Description && m_Desc.descriptionColumnDescriptor.Content != null)
-                {
-                    style = m_Desc.descriptionColumnDescriptor;
-                }
-                else if (columnType < PropertyType.Custom)
-                    style = k_DefaultColumnDescriptors[(int)columnType];
-                else
-                {
-                    style = m_Desc.customColumnDescriptors[columnType - PropertyType.Custom];
-                }
-
+                var property = descriptor.layout.properties[i];
                 columns[i] = new MultiColumnHeaderState.Column
                 {
-                    headerContent = style.Content,
-                    width = style.Width,
-                    minWidth = style.MinWidth,
+                    headerContent = new GUIContent(property.name, descriptor.layout.properties[i].longName),
+                    width = property.type == PropertyType.Description ? 300 : 80,
+                    minWidth = 80,
                     autoResize = true
                 };
             }
@@ -198,28 +165,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Styles.TextArea.fontSize = m_Preferences.fontSize;
 
-            if (GUILayout.Button("Export", EditorStyles.toolbarButton, GUILayout.Width(50)))
-            {
-                var path = EditorUtility.SaveFilePanel("Save to CSV file", "", m_Desc.name + ".csv",
-                    "csv");
-                if (path.Length != 0)
-                {
-                    using (var exporter = new Exporter(path, m_Desc.columnTypes))
-                    {
-                        var customPropertyNames = m_Desc.customColumnDescriptors != null
-                            ? m_Desc.customColumnDescriptors.Select(desc => desc.Content.text).ToArray()
-                            : new string[] { };
-                        exporter.WriteHeader(customPropertyNames);
-                        foreach (var issue in m_Issues)
-                            exporter.WriteIssue(issue);
-                    }
-
-                    EditorUtility.RevealInFinder(path);
-                }
-            }
-
-            EditorGUILayout.Space();
-
             // (optional) collapse/expand buttons
             if (m_Desc.groupByDescription)
             {
@@ -227,6 +172,25 @@ namespace Unity.ProjectAuditor.Editor.UI
                     SetRowsExpanded(false);
                 if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                     SetRowsExpanded(true);
+            }
+
+            EditorGUILayout.Space();
+
+            if (GUILayout.Button("Export", EditorStyles.toolbarButton, GUILayout.Width(50)))
+            {
+                var path = EditorUtility.SaveFilePanel("Save to CSV file", "", string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
+                    "csv");
+                if (path.Length != 0)
+                {
+                    using (var exporter = new Exporter(path, m_Desc.layout))
+                    {
+                        exporter.WriteHeader();
+                        foreach (var issue in m_Issues)
+                            exporter.WriteIssue(issue);
+                    }
+
+                    EditorUtility.RevealInFinder(path);
+                }
             }
 
             EditorGUILayout.EndHorizontal();
@@ -362,51 +326,5 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static GUIStyle TextArea;
             public static GUIStyle TextFieldWarning;
         }
-
-        static readonly ColumnDescriptor[] k_DefaultColumnDescriptors =
-        {
-            new ColumnDescriptor
-            {
-                Content = new GUIContent("Issue", "Issue description"),
-                Width = 300,
-                MinWidth = 100,
-                Format = PropertyFormat.String
-            },
-            new ColumnDescriptor
-            {
-                Content = new GUIContent(" ! ", "Issue Severity"),
-                Width = 22,
-                MinWidth = 22,
-                Format = PropertyFormat.String
-            },
-            new ColumnDescriptor
-            {
-                Content = new GUIContent("Area", "The area the issue might have an impact on"),
-                Width = 60,
-                MinWidth = 50,
-                Format = PropertyFormat.String
-            },
-            new ColumnDescriptor
-            {
-                Content = new GUIContent("Path", "Path and line number"),
-                Width = 700,
-                MinWidth = 100,
-                Format = PropertyFormat.String
-            },
-            new ColumnDescriptor
-            {
-                Content = new GUIContent("Filename", "Managed Assembly name"),
-                Width = 180,
-                MinWidth = 100,
-                Format = PropertyFormat.String
-            },
-            new ColumnDescriptor
-            {
-                Content = new GUIContent("File Type", "File extension"),
-                Width = 80,
-                MinWidth = 80,
-                Format = PropertyFormat.String
-            }
-        };
     }
 }

@@ -199,7 +199,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int columnIndex, ref RowGUIArgs args)
         {
-            var columnType = m_Desc.columnTypes[columnIndex];
+            var property = m_Desc.layout.properties[columnIndex];
+            var columnType = property.type;
 
             // indent first column, if necessary
             if (m_Desc.groupByDescription && (int)PropertyType.Description == columnType)
@@ -356,14 +357,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                         break;
                     default:
                         var propertyIndex = columnType - PropertyType.Custom;
-                        var property = issue.GetCustomProperty(propertyIndex);
-                        if (property != string.Empty)
+                        var customProperty = issue.GetCustomProperty(propertyIndex);
+                        if (customProperty != string.Empty)
                         {
-                            var desc = m_Desc.customColumnDescriptors[propertyIndex];
-                            if (desc.Format == PropertyFormat.Bool)
-                                EditorGUI.Toggle(cellRect, property.Equals(true.ToString()));
+                            if (property.format == PropertyFormat.Bool)
+                                EditorGUI.Toggle(cellRect, customProperty.Equals(true.ToString()));
                             else
-                                EditorGUI.LabelField(cellRect, new GUIContent(property), s_LabelStyle);
+                                EditorGUI.LabelField(cellRect, new GUIContent(customProperty), s_LabelStyle);
                         }
 
                         break;
@@ -546,8 +546,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var firstString = String.Empty;
                         var secondString = String.Empty;
 
-                        var columnEnum = m_ViewDescriptor.columnTypes[columnSortOrder[i]];
-                        switch (columnEnum)
+                        var property = m_ViewDescriptor.layout.properties[columnSortOrder[i]];
+                        switch (property.type)
                         {
                             case PropertyType.Description:
                                 firstString = firstItem.GetDisplayName();
@@ -582,9 +582,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.severity.ToString() : string.Empty;
                                 break;
                             default:
-                                var propertyIndex = columnEnum - PropertyType.Custom;
-                                var format = m_ViewDescriptor.customColumnDescriptors[propertyIndex].Format;
-                                if (format == PropertyFormat.Integer)
+                                var propertyIndex = property.type - PropertyType.Custom;
+                                if (property.format == PropertyFormat.Integer)
                                 {
                                     int first;
                                     int second;

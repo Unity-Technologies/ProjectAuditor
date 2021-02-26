@@ -11,7 +11,28 @@
         Custom,
     }
 
-    public static class IssueProperty
+    public enum PropertyFormat
+    {
+        Bool = 0,
+        Integer,
+        String
+    }
+
+    public struct IssueProperty
+    {
+        public PropertyType type;
+        public PropertyFormat format;
+        public string name;
+        public string longName;
+    }
+
+    public struct IssueLayout
+    {
+        public IssueCategory category;
+        public IssueProperty[] properties;
+    }
+
+    public static class ProjectIssueExtensions
     {
         public static string GetProperty(this ProjectIssue issue, PropertyType propertyType)
         {

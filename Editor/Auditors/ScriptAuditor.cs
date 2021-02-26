@@ -22,6 +22,19 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
     class ScriptAuditor : IAuditor
     {
+        static readonly IssueLayout k_IssueLayout = new IssueLayout
+        {
+            category = IssueCategory.Code,
+            properties = new []
+            {
+                new IssueProperty { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
+                new IssueProperty { type = PropertyType.Severity, name = "!", longName = "Issue Severity"},
+                new IssueProperty { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
+                new IssueProperty { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
+                new IssueProperty { type = PropertyType.Custom, format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" }
+            },
+        };
+
         readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
         readonly List<OpCode> m_OpCodes = new List<OpCode>();
 
@@ -38,6 +51,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             return m_ProblemDescriptors;
+        }
+
+        public IEnumerable<IssueLayout> GetLayouts()
+        {
+            yield return k_IssueLayout;
         }
 
         public void Reload(string path)
@@ -234,6 +252,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                             projectIssue.dependencies.AddChild(callerNode);
                             projectIssue.location = location;
                             projectIssue.SetCustomProperties(new[] {assemblyInfo.name});
+                            projectIssue.SetLayout(k_IssueLayout);
 
                             onIssueFound(projectIssue);
                         }

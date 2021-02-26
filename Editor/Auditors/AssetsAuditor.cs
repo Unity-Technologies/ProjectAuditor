@@ -10,6 +10,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public class AssetsAuditor : IAuditor
     {
+        static readonly IssueLayout k_IssueLayout = new IssueLayout
+        {
+            category = IssueCategory.Assets,
+            properties = new []
+            {
+                new IssueProperty { type = PropertyType.Description, name = "Asset Name"},
+                new IssueProperty { type = PropertyType.FileType, name = "File Type", longName = "File extension"},
+                new IssueProperty { type = PropertyType.Path, name = "Path", longName = "Path"}
+            }
+        };
+
         static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
             (
             302000,
@@ -24,6 +35,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             return m_ProblemDescriptors;
+        }
+
+        public IEnumerable<IssueLayout> GetLayouts()
+        {
+            yield return k_IssueLayout;
         }
 
         public void Initialize(ProjectAuditorConfig config)
@@ -97,6 +113,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             onIssueFound(new ProjectIssue
                 (
                     k_Descriptor,
+                    k_IssueLayout,
                     Path.GetFileNameWithoutExtension(location.Path),
                     IssueCategory.Assets,
                     location

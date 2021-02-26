@@ -7,12 +7,12 @@ namespace Editor.Utils
 {
     public class Exporter : IDisposable
     {
-        readonly PropertyType[] m_PropertyTypes;
+        readonly IssueLayout m_Layout;
         readonly StreamWriter m_StreamWriter;
 
-        public Exporter(string path, PropertyType[] propertyTypes)
+        public Exporter(string path, IssueLayout layout)
         {
-            m_PropertyTypes = propertyTypes;
+            m_Layout = layout;
             m_StreamWriter = new StreamWriter(path);
         }
 
@@ -22,21 +22,13 @@ namespace Editor.Utils
             m_StreamWriter.Close();
         }
 
-        public string ColumnIndexToName(int i, string[] customPropertyNames)
-        {
-            var columnType = m_PropertyTypes[i];
-            if (columnType < PropertyType.Custom)
-                return columnType.ToString();
-            return customPropertyNames[columnType - PropertyType.Custom];
-        }
-
-        public void WriteHeader(string[] customPropertyNames)
+        public void WriteHeader()
         {
             var stringBuilder = new StringBuilder();
-            for (int i = 0; i < m_PropertyTypes.Length; i++)
+            for (int i = 0; i < m_Layout.properties.Length; i++)
             {
-                stringBuilder.Append(ColumnIndexToName(i, customPropertyNames));
-                if (i+1 < m_PropertyTypes.Length)
+                stringBuilder.Append(m_Layout.properties[i].name);
+                if (i+1 < m_Layout.properties.Length)
                     stringBuilder.Append(",");
             }
             m_StreamWriter.WriteLine(stringBuilder);
@@ -45,12 +37,16 @@ namespace Editor.Utils
         public void WriteIssue(ProjectIssue issue)
         {
             var stringBuilder = new StringBuilder();
-            for (int i = 0; i < m_PropertyTypes.Length; i++)
+            for (int i = 0; i < m_Layout.properties.Length; i++)
             {
-                var columnType = m_PropertyTypes[i];
+                var columnType = m_Layout.properties[i].type;
                 var prop = issue.GetProperty(columnType);
+
+                stringBuilder.Append('"');
                 stringBuilder.Append(prop);
-                if (i+1 < m_PropertyTypes.Length)
+                stringBuilder.Append('"');
+
+                if (i+1 < m_Layout.properties.Length)
                     stringBuilder.Append(",");
             }
 

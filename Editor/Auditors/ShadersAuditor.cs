@@ -57,6 +57,36 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         , IPreprocessBuildWithReport
 #endif
     {
+        static readonly IssueLayout k_ShaderLayout = new IssueLayout
+        {
+            category = IssueCategory.Shaders,
+            properties = new []
+            {
+                new IssueProperty { type = PropertyType.Severity},
+                new IssueProperty { type = PropertyType.Description, name = "Shader Name"},
+                new IssueProperty { type = PropertyType.Custom, format = PropertyFormat.Integer, name = "Actual Variants", longName = "Number of variants in the build" },
+                new IssueProperty { type = PropertyType.Custom + 1, format = PropertyFormat.Integer, name = "Passes", longName = "Number of Passes" },
+                new IssueProperty { type = PropertyType.Custom + 2, format = PropertyFormat.Integer, name = "Keywords", longName = "Number of Keywords" },
+                new IssueProperty { type = PropertyType.Custom + 3, format = PropertyFormat.Integer, name = "Render Queue" },
+                new IssueProperty { type = PropertyType.Custom + 4, format = PropertyFormat.Bool, name = "Instancing", longName = "GPU Instancing Support" },
+                new IssueProperty { type = PropertyType.Custom + 5, format = PropertyFormat.Bool, name = "SRP Batcher", longName = "SRP Batcher Compatible" }
+            },
+        };
+
+        static readonly IssueLayout k_ShaderVariant = new IssueLayout
+        {
+            category = IssueCategory.ShaderVariants,
+            properties = new []
+            {
+                new IssueProperty { type = PropertyType.Description, name = "Shader Name"},
+                new IssueProperty { type = PropertyType.Custom, format = PropertyFormat.Bool, name = "Compiled", longName = "Compiled at runtime by the player" },
+                new IssueProperty { type = PropertyType.Custom + 1, format = PropertyFormat.String, name = "Graphics API" },
+                new IssueProperty { type = PropertyType.Custom + 2, format = PropertyFormat.String, name = "Pass Name" },
+                new IssueProperty { type = PropertyType.Custom + 3, format = PropertyFormat.String, name = "Keywords" },
+                new IssueProperty { type = PropertyType.Custom + 4, format = PropertyFormat.String, name = "Requirements" }
+            },
+        };
+
         static readonly ProblemDescriptor k_ParseErrorDescriptor = new ProblemDescriptor
             (
             400000,
@@ -87,6 +117,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             yield return null;
+        }
+
+        public IEnumerable<IssueLayout> GetLayouts()
+        {
+            yield return k_ShaderLayout;
+            yield return k_ShaderVariant;
         }
 
         public void Initialize(ProjectAuditorConfig config)
