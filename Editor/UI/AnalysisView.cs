@@ -309,7 +309,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 using (var exporter = new Exporter(path, m_Desc.layout))
                 {
                     exporter.WriteHeader();
-                    foreach (var issue in m_Issues)
+
+                    var matchingIssues = m_Issues.Where(issue => m_Config.GetAction(issue.descriptor, issue.GetCallingMethod()) !=
+                        Rule.Severity.None && (match == null || match(issue)));
+                    foreach (var issue in matchingIssues)
                         exporter.WriteIssue(issue);
                 }
 
@@ -317,18 +320,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Export, analytic);
             }
-
-                  /*
-            if (IsAnalysisValid())
-            {
-                var path = EditorUtility.SaveFilePanel("Save analysis CSV data", "", "project-auditor-report.csv",
-                    "csv");
-                if (path.Length != 0)
-                {
-                    m_ProjectAuditor.ExportToCSV(m_ProjectReport, path, issue => m_ProjectAuditor.config.GetAction(issue.descriptor, issue.GetCallingMethod()) !=
-                        Rule.Severity.None && (match == null || match(issue)));
-                }
-            }*/
         }
 
         void OnExport(object data)
