@@ -292,9 +292,9 @@
           "solution": "When this option is enabled, only a single instance of the Collision type is created and reused for each individual callback. This reduces waste for the garbage collector to handle and improves performance."
         },
         {
-          "id": 201030,
+          "id": 201029,
           "description": "Player: Splash Screen",
-          "type": "UnityEngine.PlayerSettings.SplashScreen.show",
+          "type": "UnityEngine.PlayerSettings.SplashScreen",
           "method": "show",
           "customevaluator": "PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled",
           "area": "LoadTimes",
