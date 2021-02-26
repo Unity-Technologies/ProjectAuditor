@@ -169,12 +169,10 @@ namespace Unity.ProjectAuditor.Editor
         public Unity.ProjectAuditor.Editor.Rule.Severity severity { get; }
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode dependenciesNode) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location = default(Unity.ProjectAuditor.Editor.Utils.Location)) {}
-        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueLayout layout, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location = default(Unity.ProjectAuditor.Editor.Utils.Location)) {}
         public string GetCustomProperty(int index);
         public int GetNumCustomProperties();
         public void SetCustomProperties(string[] properties);
         public void SetCustomProperty(int index, string property);
-        public void SetLayout(Unity.ProjectAuditor.Editor.IssueLayout issueLayout);
     }
 
     [System.Runtime.CompilerServices.Extension] public static class ProjectIssueExtensions
