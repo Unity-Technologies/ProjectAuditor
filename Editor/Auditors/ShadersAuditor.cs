@@ -74,6 +74,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData;
 
+#pragma warning disable 0414
         Type m_ShaderUtilType;
         MethodInfo m_GetShaderVariantCountMethod;
         MethodInfo m_GetShaderGlobalKeywordsMethod;
@@ -81,6 +82,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         MethodInfo m_HasInstancingMethod;
         MethodInfo m_GetShaderActiveSubshaderIndex;
         MethodInfo m_GetSRPBatcherCompatibilityCode;
+#pragma warning restore 0414
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {

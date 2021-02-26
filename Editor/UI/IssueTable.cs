@@ -199,10 +199,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int columnIndex, ref RowGUIArgs args)
         {
-            var column = m_Desc.columnTypes[columnIndex];
+            var columnType = m_Desc.columnTypes[columnIndex];
 
             // indent first column, if necessary
-            if (m_Desc.groupByDescription && (int)PropertyType.Description == column)
+            if (m_Desc.groupByDescription && (int)PropertyType.Description == columnType)
             {
                 var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
@@ -216,7 +216,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var item = treeViewItem as IssueTableItem;
             if (item == null)
             {
-                if (column == PropertyType.Description)
+                if (columnType == PropertyType.Description)
                     EditorGUI.LabelField(cellRect, new GUIContent(treeViewItem.displayName, treeViewItem.displayName), s_LabelStyle);
                 return;
             }
@@ -232,7 +232,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 GUI.enabled = false;
 
             if (item.IsGroup())
-                switch (column)
+                switch (columnType)
                 {
                     case PropertyType.Description:
                         EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()), s_LabelStyle);
@@ -242,7 +242,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         break;
                 }
             else
-                switch (column)
+                switch (columnType)
                 {
                     case PropertyType.Severity:
                     {
@@ -355,7 +355,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                         break;
                     default:
-                        var propertyIndex = column - PropertyType.Custom;
+                        var propertyIndex = columnType - PropertyType.Custom;
                         var property = issue.GetCustomProperty(propertyIndex);
                         if (property != string.Empty)
                         {
