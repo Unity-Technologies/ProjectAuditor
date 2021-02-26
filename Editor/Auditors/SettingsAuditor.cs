@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
             category = IssueCategory.ProjectSettings,
-            properties = new []
+            properties = new[]
             {
                 new IssueProperty { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
                 new IssueProperty { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
@@ -121,7 +121,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             onIssueFound(new ProjectIssue
                 (
                     descriptor,
-                    k_IssueLayout,
                     description,
                     IssueCategory.ProjectSettings,
                     new Location(projectWindowPath)

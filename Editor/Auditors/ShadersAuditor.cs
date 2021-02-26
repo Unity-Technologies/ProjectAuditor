@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         static readonly IssueLayout k_ShaderLayout = new IssueLayout
         {
             category = IssueCategory.Shaders,
-            properties = new []
+            properties = new[]
             {
                 new IssueProperty { type = PropertyType.Severity},
                 new IssueProperty { type = PropertyType.Description, name = "Shader Name"},
@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         static readonly IssueLayout k_ShaderVariant = new IssueLayout
         {
             category = IssueCategory.ShaderVariants,
-            properties = new []
+            properties = new[]
             {
                 new IssueProperty { type = PropertyType.Description, name = "Shader Name"},
                 new IssueProperty { type = PropertyType.Custom, format = PropertyFormat.Bool, name = "Compiled", longName = "Compiled at runtime by the player" },

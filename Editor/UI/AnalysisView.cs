@@ -33,6 +33,13 @@ namespace Unity.ProjectAuditor.Editor.UI
 
     class AnalysisView
     {
+        enum ExportMode
+        {
+            All = 0,
+            Filtered = 1,
+            Selected
+        }
+
         ProjectAuditorConfig m_Config;
         Preferences m_Preferences;
         AnalysisViewDescriptor m_Desc;
@@ -176,21 +183,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.Space();
 
-            if (GUILayout.Button("Export", EditorStyles.toolbarButton, GUILayout.Width(50)))
+            if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
+                OnExport, GUILayout.Width(50)))
             {
-                var path = EditorUtility.SaveFilePanel("Save to CSV file", "", string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
-                    "csv");
-                if (path.Length != 0)
-                {
-                    using (var exporter = new Exporter(path, m_Desc.layout))
-                    {
-                        exporter.WriteHeader();
-                        foreach (var issue in m_Issues)
-                            exporter.WriteIssue(issue);
-                    }
+                Export();
 
-                    EditorUtility.RevealInFinder(path);
-                }
+                GUIUtility.ExitGUI();
             }
 
             EditorGUILayout.EndHorizontal();
@@ -301,9 +299,69 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Table.SetExpanded(row.id, expanded);
         }
 
+        void Export(Func<ProjectIssue, bool> match = null)
+        {
+            var path = EditorUtility.SaveFilePanel("Save to CSV file", "", string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
+                "csv");
+            if (path.Length != 0)
+            {
+                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                using (var exporter = new Exporter(path, m_Desc.layout))
+                {
+                    exporter.WriteHeader();
+                    foreach (var issue in m_Issues)
+                        exporter.WriteIssue(issue);
+                }
+
+                EditorUtility.RevealInFinder(path);
+
+                ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Export, analytic);
+            }
+
+                  /*
+            if (IsAnalysisValid())
+            {
+                var path = EditorUtility.SaveFilePanel("Save analysis CSV data", "", "project-auditor-report.csv",
+                    "csv");
+                if (path.Length != 0)
+                {
+                    m_ProjectAuditor.ExportToCSV(m_ProjectReport, path, issue => m_ProjectAuditor.config.GetAction(issue.descriptor, issue.GetCallingMethod()) !=
+                        Rule.Severity.None && (match == null || match(issue)));
+                }
+            }*/
+        }
+
+        void OnExport(object data)
+        {
+            var mode = (ExportMode)data;
+            switch (mode)
+            {
+                case ExportMode.All:
+                    Export();
+                    return;
+                case ExportMode.Filtered:
+                    Export(issue => { return m_Filter.Match(issue); });
+                    return;
+                case ExportMode.Selected:
+                    var selectedItems = table.GetSelectedItems();
+                    Export(issue =>
+                    {
+                        return selectedItems.Any(item => item.Find(issue));
+                    });
+                    return;
+            }
+        }
+
         const string k_NoSelectionText = "<No selection>";
         const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         const string k_MultipleSelectionText = "<Multiple selection>";
+
+        static string[] k_ExportModeStrings = new []
+        {
+            "All",
+            "Filtered",
+            "Selected"
+        };
 
         static class LayoutSize
         {
@@ -314,6 +372,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static class Contents
         {
+            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to .csv files.");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All", "");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All", "");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");

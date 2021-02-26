@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
             category = IssueCategory.Assets,
-            properties = new []
+            properties = new[]
             {
                 new IssueProperty { type = PropertyType.Description, name = "Asset Name"},
                 new IssueProperty { type = PropertyType.FileType, name = "File Type", longName = "File extension"},
@@ -113,7 +113,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             onIssueFound(new ProjectIssue
                 (
                     k_Descriptor,
-                    k_IssueLayout,
                     Path.GetFileNameWithoutExtension(location.Path),
                     IssueCategory.Assets,
                     location

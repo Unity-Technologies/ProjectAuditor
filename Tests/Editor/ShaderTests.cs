@@ -435,7 +435,7 @@ Shader ""Custom/MyEditorShader""
         public void PlayerLogDoesNotContainShaderCompilationLog()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            /*var projectReport = */projectAuditor.Audit();
+            /*var projectReport = */ projectAuditor.Audit();
             var shadersAuditor = projectAuditor.GetAuditor<ShadersAuditor>();
             var result = shadersAuditor.ParsePlayerLog(m_PlayerLogWithNoCompilationResource.relativePath, new ProjectIssue[0]);
             Assert.False(result);

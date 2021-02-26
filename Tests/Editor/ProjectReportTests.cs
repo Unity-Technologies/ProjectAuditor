@@ -66,6 +66,7 @@ class MyClass
             Assert.AreEqual(1, projectReport.GetNumIssues(IssueCategory.Code));
             Assert.AreEqual(0, projectReport.GetNumIssues(IssueCategory.ProjectSettings));
         }
+
         /*
         [Test]
         public void ReportIsExportedAndFormatted()

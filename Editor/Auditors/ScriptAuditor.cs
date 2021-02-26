@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
             category = IssueCategory.Code,
-            properties = new []
+            properties = new[]
             {
                 new IssueProperty { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
                 new IssueProperty { type = PropertyType.Severity, name = "!", longName = "Issue Severity"},
@@ -252,7 +252,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                             projectIssue.dependencies.AddChild(callerNode);
                             projectIssue.location = location;
                             projectIssue.SetCustomProperties(new[] {assemblyInfo.name});
-                            projectIssue.SetLayout(k_IssueLayout);
 
                             onIssueFound(projectIssue);
                         }

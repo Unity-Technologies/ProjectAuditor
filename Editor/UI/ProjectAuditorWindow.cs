@@ -21,13 +21,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             Valid
         }
 
-        enum ExportMode
-        {
-            All = 0,
-            Filtered = 1,
-            Selected
-        }
-
         static readonly string DocumentationUrl = "https://github.com/Unity-Technologies/ProjectAuditor/blob/master/Documentation~/index.md";
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow Instance;
@@ -452,43 +445,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        void OnExport(object data)
-        {
-            var mode = (ExportMode)data;
-            switch (mode)
-            {
-                case ExportMode.All:
-                    Export();
-                    return;
-                case ExportMode.Filtered:
-                    Export(issue => { return Match(issue); });
-                    return;
-                case ExportMode.Selected:
-                    var selectedItems = activeAnalysisView.table.GetSelectedItems();
-                    Export(issue =>
-                    {
-                        return selectedItems.Any(item => item.Find(issue));
-                    });
-                    return;
-            }
-        }
-
-        void Export(Func<ProjectIssue, bool> match = null)
-        {
-            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-            if (IsAnalysisValid())
-            {
-                var path = EditorUtility.SaveFilePanel("Save analysis CSV data", "", "project-auditor-report.csv",
-                    "csv");
-                if (path.Length != 0)
-                {
-                    m_ProjectAuditor.ExportToCSV(m_ProjectReport, path, issue => m_ProjectAuditor.config.GetAction(issue.descriptor, issue.GetCallingMethod()) !=
-                        Rule.Severity.None && (match == null || match(issue)));
-                }
-            }
-            ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Export, analytic);
-        }
-
         void DrawAnalysis()
         {
             activeAnalysisView.OnGUI();
@@ -874,14 +830,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ActiveViewIndex,
                     OnViewChanged, GUILayout.Width(buttonWidth));
 
-/*                if (Utility.ToolbarButtonWithDropdownList(Styles.ExportButton, Styles.ExportModeStrings,
-                    OnExport, GUILayout.Width(buttonWidth)))
-                {
-                    Export();
-
-                    GUIUtility.ExitGUI();
-                }
-*/
                 GUI.enabled = true;
 
                 if (m_DeveloperMode)
@@ -1024,9 +972,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent ReloadButton =
                 new GUIContent("Reload DB", "Reload Issue Definition files.");
 
-            public static readonly GUIContent ExportButton =
-                new GUIContent("Export", "Export project report to .csv files.");
-
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");
 
@@ -1056,14 +1001,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 #else
             public static readonly GUIContent HelpButton = new GUIContent("?", "Open Manual (in a web browser)");
 #endif
-
-            public static readonly string[] ExportModeStrings =
-            {
-                "All",
-                "Filtered",
-                "Selected"
-            };
-
             public static readonly string HelpText =
 @"Project Auditor is an experimental static analysis tool for Unity Projects.
 This tool will analyze scripts and project settings of any Unity project

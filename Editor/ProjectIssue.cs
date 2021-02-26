@@ -30,7 +30,6 @@ namespace Unity.ProjectAuditor.Editor
         public Location location;
 
         [SerializeField] string[] customProperties;
-        [SerializeField] IssueLayout layout;
 
         /// <summary>
         /// ProjectIssue constructor
@@ -51,20 +50,10 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         public ProjectIssue(ProblemDescriptor descriptor,
-                            IssueLayout layout,
-                            string description,
-                            IssueCategory category,
-                            Location location = null)
-        : this(descriptor, description, category, location)
-        {
-            this.layout = layout;
-        }
-
-        public ProjectIssue(ProblemDescriptor descriptor,
                             string description,
                             IssueCategory category,
                             CallTreeNode dependenciesNode)
-        : this(descriptor, description, category)
+            : this(descriptor, description, category)
         {
             dependencies = dependenciesNode;
         }
@@ -161,11 +150,6 @@ namespace Unity.ProjectAuditor.Editor
         public void SetCustomProperties(string[] properties)
         {
             customProperties = properties;
-        }
-
-        public void SetLayout(IssueLayout issueLayout)
-        {
-            layout = issueLayout;
         }
     }
 }
