@@ -184,7 +184,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Space();
 
             if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
-                OnExport, GUILayout.Width(50)))
+                OnExport, GUILayout.Width(80)))
             {
                 Export();
 
