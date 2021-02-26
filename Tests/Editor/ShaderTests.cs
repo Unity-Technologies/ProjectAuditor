@@ -18,6 +18,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class ShaderTests
     {
+#pragma warning disable 0414
         TempAsset m_ShaderResource;
         TempAsset m_PlayerLogResource;
         TempAsset m_PlayerLogWithNoCompilationResource;
@@ -26,6 +27,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
         TempAsset m_ShaderUsingBuiltInKeywordResource;
         TempAsset m_SurfShaderResource;
+#pragma warning restore 0414
 
 #if UNITY_2018_2_OR_NEWER
         static string s_KeywordName = "DIRECTIONAL";
@@ -433,7 +435,7 @@ Shader ""Custom/MyEditorShader""
         public void PlayerLogDoesNotContainShaderCompilationLog()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
+            /*var projectReport = */projectAuditor.Audit();
             var shadersAuditor = projectAuditor.GetAuditor<ShadersAuditor>();
             var result = shadersAuditor.ParsePlayerLog(m_PlayerLogWithNoCompilationResource.relativePath, new ProjectIssue[0]);
             Assert.False(result);
