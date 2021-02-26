@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new IssueProperty { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
                 new IssueProperty { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
                 new IssueProperty { type = PropertyType.Custom, format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" }
-            },
+            }
         };
 
         readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();

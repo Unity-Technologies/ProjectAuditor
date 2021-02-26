@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new IssueProperty { type = PropertyType.Custom + 3, format = PropertyFormat.Integer, name = "Render Queue" },
                 new IssueProperty { type = PropertyType.Custom + 4, format = PropertyFormat.Bool, name = "Instancing", longName = "GPU Instancing Support" },
                 new IssueProperty { type = PropertyType.Custom + 5, format = PropertyFormat.Bool, name = "SRP Batcher", longName = "SRP Batcher Compatible" }
-            },
+            }
         };
 
         static readonly IssueLayout k_ShaderVariant = new IssueLayout
@@ -84,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new IssueProperty { type = PropertyType.Custom + 2, format = PropertyFormat.String, name = "Pass Name" },
                 new IssueProperty { type = PropertyType.Custom + 3, format = PropertyFormat.String, name = "Keywords" },
                 new IssueProperty { type = PropertyType.Custom + 4, format = PropertyFormat.String, name = "Requirements" }
-            },
+            }
         };
 
         static readonly ProblemDescriptor k_ParseErrorDescriptor = new ProblemDescriptor

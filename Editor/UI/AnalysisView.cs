@@ -347,7 +347,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         const string k_MultipleSelectionText = "<Multiple selection>";
 
-        static string[] k_ExportModeStrings = new[]
+        static string[] k_ExportModeStrings =
         {
             "All",
             "Filtered",
