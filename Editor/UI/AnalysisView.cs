@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (property.type == PropertyType.Description)
                     width = 300;
                 else if (property.type == PropertyType.Severity)
-                    width = 20;
+                    width = 24;
 
                 columns[i] = new MultiColumnHeaderState.Column
                 {
