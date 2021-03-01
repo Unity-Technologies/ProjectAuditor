@@ -74,11 +74,18 @@ namespace Unity.ProjectAuditor.Editor.UI
             for (var i = 0; i < descriptor.layout.properties.Length; i++)
             {
                 var property = descriptor.layout.properties[i];
+
+                var width = 80;
+                if (property.type == PropertyType.Description)
+                    width = 300;
+                else if (property.type == PropertyType.Severity)
+                    width = 20;
+
                 columns[i] = new MultiColumnHeaderState.Column
                 {
                     headerContent = new GUIContent(property.name, descriptor.layout.properties[i].longName),
-                    width = property.type == PropertyType.Description ? 300 : 80,
-                    minWidth = 80,
+                    width = width,
+                    minWidth = 20,
                     autoResize = true
                 };
             }
