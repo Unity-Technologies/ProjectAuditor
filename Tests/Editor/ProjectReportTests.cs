@@ -96,7 +96,7 @@ class MyClass
                 var line = file.ReadLine();
                 Assert.True(line.Equals("Issue,!,Area,Filename,Assembly"));
 
-                var expectedIssueLine = "\"System.Void NewBehaviourScript::Start()\",\"Default\",\"CPU\",\"NewBehaviourScript.cs:13\",\"Assembly-CSharp\"";
+                var expectedIssueLine = "\"UnityEngine.Camera.allCameras\",\"Default\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\"";
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();
