@@ -182,17 +182,6 @@ namespace Unity.ProjectAuditor.Editor
             return m_Auditors.SelectMany(auditor => auditor.GetLayouts()).First(a => a.category == category);
         }
 
-        /// <summary>
-        /// Export report to CSV format
-        /// </summary>
-        public void ExportToCSV(ProjectReport report, string reportPath, Func<ProjectIssue, bool> match = null)
-        {
-            foreach (var layout in m_Auditors.SelectMany(auditor => auditor.GetLayouts()))
-            {
-                report.ExportToCSV(reportPath, layout, match);
-            }
-        }
-
         public void Reload(string path)
         {
             foreach (var auditor in m_Auditors)
