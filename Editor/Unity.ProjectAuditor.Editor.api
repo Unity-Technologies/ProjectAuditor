@@ -73,6 +73,11 @@ namespace Unity.ProjectAuditor.Editor
         public int value__;
     }
 
+    [System.Runtime.CompilerServices.Extension] public static class IssueProperty
+    {
+        [System.Runtime.CompilerServices.Extension] public static string GetProperty(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyType propertyType);
+    }
+
     public class ProblemDescriptor : System.IEquatable<Unity.ProjectAuditor.Editor.ProblemDescriptor>
     {
         public string area;
@@ -154,6 +159,18 @@ namespace Unity.ProjectAuditor.Editor
         public void ExportToCSV(string reportPath, System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool> match = default(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool>));
         public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
         public int GetNumIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
+    }
+
+    public enum PropertyType
+    {
+        public const Unity.ProjectAuditor.Editor.PropertyType Area = 2;
+        public const Unity.ProjectAuditor.Editor.PropertyType Custom = 6;
+        public const Unity.ProjectAuditor.Editor.PropertyType Description = 0;
+        public const Unity.ProjectAuditor.Editor.PropertyType Filename = 4;
+        public const Unity.ProjectAuditor.Editor.PropertyType FileType = 5;
+        public const Unity.ProjectAuditor.Editor.PropertyType Path = 3;
+        public const Unity.ProjectAuditor.Editor.PropertyType Severity = 1;
+        public int value__;
     }
 
     public class Rule : System.IEquatable<Unity.ProjectAuditor.Editor.Rule>
