@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -70,6 +71,20 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 #else
             return false;
 #endif
+        }
+
+        public bool PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled()
+        {
+            if (!PlayerSettings.SplashScreen.show)
+                return false;
+            var type = Type.GetType("UnityEditor.PlayerSettingsSplashScreenEditor,UnityEditor.dll");
+            if (type == null)
+                return false;
+
+            var licenseAllowsDisablingProperty = type.GetProperty("licenseAllowsDisabling", BindingFlags.Static | BindingFlags.NonPublic);
+            if (licenseAllowsDisablingProperty == null)
+                return false;
+            return (bool)licenseAllowsDisablingProperty.GetValue(null, null);
         }
 
         public bool PhysicsLayerCollisionMatrix()

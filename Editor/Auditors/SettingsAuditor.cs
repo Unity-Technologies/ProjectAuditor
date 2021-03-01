@@ -115,7 +115,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         void AddIssue(ProblemDescriptor descriptor, string description, Action<ProjectIssue> onIssueFound)
         {
             var projectWindowPath = "";
-            var mappings = m_ProjectSettingsMapping.Where(p => p.Key.Contains(descriptor.type));
+            var mappings = m_ProjectSettingsMapping.Where(p => descriptor.type.StartsWith(p.Key));
             if (mappings.Count() > 0)
                 projectWindowPath = mappings.First().Value;
             onIssueFound(new ProjectIssue
@@ -163,8 +163,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 var helperType = m_Helpers.GetType();
                 var theMethod = helperType.GetMethod(descriptor.customevaluator);
-                var isIssue = (bool)theMethod.Invoke(m_Helpers, null);
-                if (isIssue) AddIssue(descriptor, descriptor.description, onIssueFound);
+                if ((bool)theMethod.Invoke(m_Helpers, null))
+                    AddIssue(descriptor, descriptor.description, onIssueFound);
             }
         }
     }

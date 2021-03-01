@@ -9,7 +9,6 @@ using UnityEditor.Build;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
-using System.Reflection;
 #if UNITY_2018_2_OR_NEWER
 using UnityEditor.Build.Reporting;
 #endif
