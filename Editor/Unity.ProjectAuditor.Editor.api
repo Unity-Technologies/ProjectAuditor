@@ -174,11 +174,6 @@ namespace Unity.ProjectAuditor.Editor
         public void SetCustomProperty(int index, string property);
     }
 
-    [System.Runtime.CompilerServices.Extension] public static class ProjectIssueExtensions
-    {
-        [System.Runtime.CompilerServices.Extension] public static string GetProperty(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyType propertyType);
-    }
-
     public class ProjectReport
     {
         public int NumTotalIssues { get; }
@@ -347,5 +342,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public int Line { get; }
         public string Path { get; }
         public bool IsValid();
+    }
+
+    [System.Runtime.CompilerServices.Extension] public static class ProjectIssueExtensions
+    {
+        [System.Runtime.CompilerServices.Extension] public static string GetProperty(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyType propertyType);
     }
 }

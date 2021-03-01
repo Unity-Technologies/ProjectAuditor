@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Editor.Utils
 {
@@ -28,7 +29,7 @@ namespace Editor.Utils
             for (int i = 0; i < m_Layout.properties.Length; i++)
             {
                 stringBuilder.Append(m_Layout.properties[i].name);
-                if (i+1 < m_Layout.properties.Length)
+                if (i + 1 < m_Layout.properties.Length)
                     stringBuilder.Append(",");
             }
             m_StreamWriter.WriteLine(stringBuilder);
@@ -46,7 +47,7 @@ namespace Editor.Utils
                 stringBuilder.Append(prop);
                 stringBuilder.Append('"');
 
-                if (i+1 < m_Layout.properties.Length)
+                if (i + 1 < m_Layout.properties.Length)
                     stringBuilder.Append(",");
             }
 
