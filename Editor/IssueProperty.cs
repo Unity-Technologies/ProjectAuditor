@@ -1,4 +1,6 @@
-﻿namespace Unity.ProjectAuditor.Editor
+using System;
+
+namespace Unity.ProjectAuditor.Editor
 {
     public enum PropertyType
     {
@@ -8,7 +10,7 @@
         Path,
         Filename,
         FileType,
-        Custom,
+        Custom
     }
 
     public static class IssueProperty

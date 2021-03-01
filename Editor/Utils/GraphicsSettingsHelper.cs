@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    internal static class GraphicsSettingsHelper
+    static class GraphicsSettingsHelper
     {
         static PropertyInfo s_LogWhenShaderIsCompiled;
 

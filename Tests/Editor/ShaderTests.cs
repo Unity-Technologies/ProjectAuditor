@@ -9,7 +9,6 @@ using UnityEditor.Build;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
-using System.Reflection;
 #if UNITY_2018_2_OR_NEWER
 using UnityEditor.Build.Reporting;
 #endif
@@ -435,7 +434,7 @@ Shader ""Custom/MyEditorShader""
         public void PlayerLogDoesNotContainShaderCompilationLog()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            /*var projectReport = */projectAuditor.Audit();
+            /*var projectReport = */ projectAuditor.Audit();
             var shadersAuditor = projectAuditor.GetAuditor<ShadersAuditor>();
             var result = shadersAuditor.ParsePlayerLog(m_PlayerLogWithNoCompilationResource.relativePath, new ProjectIssue[0]);
             Assert.False(result);

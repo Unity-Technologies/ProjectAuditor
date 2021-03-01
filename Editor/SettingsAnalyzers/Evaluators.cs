@@ -83,8 +83,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
             var licenseAllowsDisablingProperty = type.GetProperty("licenseAllowsDisabling", BindingFlags.Static | BindingFlags.NonPublic);
             if (licenseAllowsDisablingProperty == null)
-               return false;
-            return (bool) licenseAllowsDisablingProperty.GetValue(null, null);
+                return false;
+            return (bool)licenseAllowsDisablingProperty.GetValue(null, null);
         }
 
         public bool PhysicsLayerCollisionMatrix()
@@ -226,7 +226,5 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
             return false;
         }
-
-
     }
 }

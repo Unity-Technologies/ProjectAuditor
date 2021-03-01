@@ -148,7 +148,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 var helperType = m_Helpers.GetType();
                 var theMethod = helperType.GetMethod(descriptor.customevaluator);
-                if((bool)theMethod.Invoke(m_Helpers, null))
+                if ((bool)theMethod.Invoke(m_Helpers, null))
                     AddIssue(descriptor, descriptor.description, onIssueFound);
             }
         }
