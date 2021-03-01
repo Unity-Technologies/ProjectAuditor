@@ -9,7 +9,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class ProjectReportTests
     {
+#pragma warning disable 0414
         TempAsset m_TempAsset;
+#pragma warning restore 0414
 
         [OneTimeSetUp]
         public void SetUp()
