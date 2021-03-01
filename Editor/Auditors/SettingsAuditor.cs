@@ -16,8 +16,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             category = IssueCategory.ProjectSettings,
             properties = new[]
             {
-                new IssueProperty { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
-                new IssueProperty { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"}
+                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
+                new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"}
             }
         };
 

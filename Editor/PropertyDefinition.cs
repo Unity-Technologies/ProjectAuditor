@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor
         String
     }
 
-    public struct IssueProperty
+    public struct PropertyDefinition
     {
         public PropertyType type;
         public PropertyFormat format;
@@ -31,6 +31,6 @@ namespace Unity.ProjectAuditor.Editor
     public struct IssueLayout
     {
         public IssueCategory category;
-        public IssueProperty[] properties;
+        public PropertyDefinition[] properties;
     }
 }

@@ -15,9 +15,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             category = IssueCategory.Assets,
             properties = new[]
             {
-                new IssueProperty { type = PropertyType.Description, name = "Asset Name"},
-                new IssueProperty { type = PropertyType.FileType, name = "File Type", longName = "File extension"},
-                new IssueProperty { type = PropertyType.Path, name = "Path", longName = "Path"}
+                new PropertyDefinition { type = PropertyType.Description, name = "Asset Name"},
+                new PropertyDefinition { type = PropertyType.FileType, name = "File Type", longName = "File extension"},
+                new PropertyDefinition { type = PropertyType.Path, name = "Path", longName = "Path"}
             }
         };
 

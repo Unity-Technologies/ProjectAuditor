@@ -62,14 +62,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             category = IssueCategory.Shaders,
             properties = new[]
             {
-                new IssueProperty { type = PropertyType.Severity},
-                new IssueProperty { type = PropertyType.Description, name = "Shader Name"},
-                new IssueProperty { type = PropertyType.Custom, format = PropertyFormat.Integer, name = "Actual Variants", longName = "Number of variants in the build" },
-                new IssueProperty { type = PropertyType.Custom + 1, format = PropertyFormat.Integer, name = "Passes", longName = "Number of Passes" },
-                new IssueProperty { type = PropertyType.Custom + 2, format = PropertyFormat.Integer, name = "Keywords", longName = "Number of Keywords" },
-                new IssueProperty { type = PropertyType.Custom + 3, format = PropertyFormat.Integer, name = "Render Queue" },
-                new IssueProperty { type = PropertyType.Custom + 4, format = PropertyFormat.Bool, name = "Instancing", longName = "GPU Instancing Support" },
-                new IssueProperty { type = PropertyType.Custom + 5, format = PropertyFormat.Bool, name = "SRP Batcher", longName = "SRP Batcher Compatible" }
+                new PropertyDefinition { type = PropertyType.Severity},
+                new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.Integer, name = "Actual Variants", longName = "Number of variants in the build" },
+                new PropertyDefinition { type = PropertyType.Custom + 1, format = PropertyFormat.Integer, name = "Passes", longName = "Number of Passes" },
+                new PropertyDefinition { type = PropertyType.Custom + 2, format = PropertyFormat.Integer, name = "Keywords", longName = "Number of Keywords" },
+                new PropertyDefinition { type = PropertyType.Custom + 3, format = PropertyFormat.Integer, name = "Render Queue" },
+                new PropertyDefinition { type = PropertyType.Custom + 4, format = PropertyFormat.Bool, name = "Instancing", longName = "GPU Instancing Support" },
+                new PropertyDefinition { type = PropertyType.Custom + 5, format = PropertyFormat.Bool, name = "SRP Batcher", longName = "SRP Batcher Compatible" }
             }
         };
 
@@ -78,12 +78,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             category = IssueCategory.ShaderVariants,
             properties = new[]
             {
-                new IssueProperty { type = PropertyType.Description, name = "Shader Name"},
-                new IssueProperty { type = PropertyType.Custom, format = PropertyFormat.Bool, name = "Compiled", longName = "Compiled at runtime by the player" },
-                new IssueProperty { type = PropertyType.Custom + 1, format = PropertyFormat.String, name = "Graphics API" },
-                new IssueProperty { type = PropertyType.Custom + 2, format = PropertyFormat.String, name = "Pass Name" },
-                new IssueProperty { type = PropertyType.Custom + 3, format = PropertyFormat.String, name = "Keywords" },
-                new IssueProperty { type = PropertyType.Custom + 4, format = PropertyFormat.String, name = "Requirements" }
+                new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.Bool, name = "Compiled", longName = "Compiled at runtime by the player" },
+                new PropertyDefinition { type = PropertyType.Custom + 1, format = PropertyFormat.String, name = "Graphics API" },
+                new PropertyDefinition { type = PropertyType.Custom + 2, format = PropertyFormat.String, name = "Pass Name" },
+                new PropertyDefinition { type = PropertyType.Custom + 3, format = PropertyFormat.String, name = "Keywords" },
+                new PropertyDefinition { type = PropertyType.Custom + 4, format = PropertyFormat.String, name = "Requirements" }
             }
         };
 

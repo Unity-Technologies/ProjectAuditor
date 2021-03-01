@@ -27,11 +27,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             category = IssueCategory.Code,
             properties = new[]
             {
-                new IssueProperty { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
-                new IssueProperty { type = PropertyType.Severity, name = "!", longName = "Issue Severity"},
-                new IssueProperty { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
-                new IssueProperty { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
-                new IssueProperty { type = PropertyType.Custom, format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" }
+                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
+                new PropertyDefinition { type = PropertyType.Severity, name = "!", longName = "Issue Severity"},
+                new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
+                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" }
             }
         };
 
