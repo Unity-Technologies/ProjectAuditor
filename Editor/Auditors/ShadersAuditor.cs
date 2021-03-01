@@ -73,7 +73,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         };
 
-        static readonly IssueLayout k_ShaderVariant = new IssueLayout
+        static readonly IssueLayout k_ShaderVariantLayout = new IssueLayout
         {
             category = IssueCategory.ShaderVariants,
             properties = new[]
@@ -122,7 +122,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_ShaderLayout;
-            yield return k_ShaderVariant;
+            yield return k_ShaderVariantLayout;
         }
 
         public void Initialize(ProjectAuditorConfig config)
