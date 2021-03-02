@@ -15,15 +15,15 @@ The analysis might take several seconds, depending on how large the project is. 
 
 <img src="images/overview.png">
 
-The issues are categorized based on whether they are found in code or project settings. The active category can also be changed.
+The issues are classified into several different views. The active view can be selected from the toolbar.
 
-<img src="images/category.png">
+<img src="images/view-selection.png">
 
 The filters allow the user to search through the list of potential issues by string, Assembly and other criterias.
 
 <img src="images/filters.png">
 
-The issues are displayed in a table containing some details regarding impacted area, filename, etc.
+The issues are displayed in a table containing details regarding the impacted area and other properties that depend on the type of issue (such as filename, assembly, etc.)
 
 <img src="images/issues.png">
 
