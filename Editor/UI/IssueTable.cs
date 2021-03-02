@@ -21,6 +21,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         readonly ProjectAuditorConfig m_Config;
         readonly AnalysisViewDescriptor m_Desc;
         readonly IProjectIssueFilter m_Filter;
+        readonly IssueLayout m_Layout;
         readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
 
         List<IssueTableItem> m_TreeViewItemGroups;
@@ -31,13 +32,14 @@ namespace Unity.ProjectAuditor.Editor.UI
         int m_FontSize;
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
-                          AnalysisViewDescriptor desc, ProjectAuditorConfig config,
+                          AnalysisViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config,
                           IProjectIssueFilter filter) : base(state,
                                                              multicolumnHeader)
         {
             m_Config = config;
             m_Filter = filter;
             m_Desc = desc;
+            m_Layout = layout;
             m_FlatView = !desc.groupByDescription;
             m_NextId = k_FirstId;
             m_FontSize = Preferences.k_MinFontSize;
@@ -199,7 +201,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int columnIndex, ref RowGUIArgs args)
         {
-            var property = m_Desc.layout.properties[columnIndex];
+            var property = m_Layout.properties[columnIndex];
             var columnType = property.type;
 
             // indent first column, if necessary
@@ -464,7 +466,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             for (var i = 0; i < sortedColumns.Length; i++)
                 columnAscending[i] = multiColumnHeader.IsSortedAscending(sortedColumns[i]);
 
-            var root = new ItemTree(null, m_Desc);
+            var root = new ItemTree(null, m_Layout);
             var stack = new Stack<ItemTree>();
             stack.Push(root);
             foreach (var row in rows)
@@ -483,7 +485,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (row.depth > activeParentDepth)
                 {
-                    var t = new ItemTree(r, m_Desc);
+                    var t = new ItemTree(r, m_Layout);
                     stack.Peek().AddChild(t);
                     stack.Push(t);
                 }
@@ -503,13 +505,13 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             readonly List<ItemTree> m_Children;
             readonly IssueTableItem m_Item;
-            readonly AnalysisViewDescriptor m_ViewDescriptor;
+            readonly IssueLayout m_Layout;
 
-            public ItemTree(IssueTableItem i, AnalysisViewDescriptor viewDescriptor)
+            public ItemTree(IssueTableItem i, IssueLayout layout)
             {
                 m_Item = i;
                 m_Children = new List<ItemTree>();
-                m_ViewDescriptor = viewDescriptor;
+                m_Layout = layout;
             }
 
             public int Depth
@@ -546,7 +548,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var firstString = String.Empty;
                         var secondString = String.Empty;
 
-                        var property = m_ViewDescriptor.layout.properties[columnSortOrder[i]];
+                        var property = m_Layout.properties[columnSortOrder[i]];
                         switch (property.type)
                         {
                             case PropertyType.Description:

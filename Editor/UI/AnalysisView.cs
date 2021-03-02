@@ -25,7 +25,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showMuteOptions;
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
-        public IssueLayout layout;
         public Action<Location> onDoubleClick;
         public Action<ProblemDescriptor> onOpenDescriptor;
         public ProjectAuditorAnalytics.UIButton analyticsEvent;
@@ -48,6 +47,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         DependencyView m_DependencyView;
         List<ProjectIssue> m_Issues;
         IssueTable m_Table;
+        IssueLayout m_Layout;
 
         public AnalysisViewDescriptor desc
         {
@@ -59,21 +59,22 @@ namespace Unity.ProjectAuditor.Editor.UI
             get { return m_Table; }
         }
 
-        public void CreateTable(AnalysisViewDescriptor descriptor, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public void CreateTable(AnalysisViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
             m_Desc = descriptor;
             m_Config = config;
             m_Preferences = prefs;
             m_Filter = filter;
+            m_Layout = layout;
 
             if (m_Table != null)
                 return;
 
             var state = new TreeViewState();
-            var columns = new MultiColumnHeaderState.Column[descriptor.layout.properties.Length];
-            for (var i = 0; i < descriptor.layout.properties.Length; i++)
+            var columns = new MultiColumnHeaderState.Column[layout.properties.Length];
+            for (var i = 0; i < layout.properties.Length; i++)
             {
-                var property = descriptor.layout.properties[i];
+                var property = layout.properties[i];
 
                 var width = 80;
                 if (property.type == PropertyType.Description)
@@ -83,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 columns[i] = new MultiColumnHeaderState.Column
                 {
-                    headerContent = new GUIContent(property.name, descriptor.layout.properties[i].longName),
+                    headerContent = new GUIContent(property.name, layout.properties[i].longName),
                     width = width,
                     minWidth = 20,
                     autoResize = true
@@ -93,6 +94,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Table = new IssueTable(state,
                 new MultiColumnHeader(new MultiColumnHeaderState(columns)),
                 m_Desc,
+                layout,
                 m_Config,
                 m_Filter);
 
@@ -313,7 +315,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (path.Length != 0)
             {
                 var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                using (var exporter = new Exporter(path, m_Desc.layout))
+                using (var exporter = new Exporter(path, m_Layout))
                 {
                     exporter.WriteHeader();
 
