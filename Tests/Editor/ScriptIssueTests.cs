@@ -17,6 +17,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         TempAsset m_TempAssetInPlayerCode;
         TempAsset m_TempAssetIssueInCoroutine;
         TempAsset m_TempAssetIssueInDelegate;
+        TempAsset m_TempAssetIssueInAllocatedDelegate;
         TempAsset m_TempAssetIssueInGenericClass;
         TempAsset m_TempAssetIssueInMonoBehaviour;
         TempAsset m_TempAssetIssueInNestedClass;
@@ -185,6 +186,23 @@ class ClassWithDelegate
 }
 ");
 
+            m_TempAssetIssueInAllocatedDelegate = new TempAsset("IssueInAllocatedDelegate.cs", @"
+using UnityEngine;
+using System;
+class ClassWithAllocatedDelegate
+{
+    private Func<int> myFunc;
+
+    void Dummy(int x)
+    {
+        myFunc = () =>
+        {
+            return x;
+        };
+    }
+}
+");
+
             m_TempAssetAnyApiInNamespace = new TempAsset("AnyApiInNamespace.cs", @"
 using System.Linq;
 using System.Collections.Generic;
@@ -342,9 +360,18 @@ class AnyApiInNamespace
             var allScriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInDelegate);
             var issue = allScriptIssues.FirstOrDefault(i => i.name.Equals("Camera.get_allCameras"));
             Assert.NotNull(issue);
-
             Assert.True(issue.GetCallingMethod().Equals("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()"));
         }
+
+        [Test]
+        public void IssueInAllocatedDelegateIsFound()
+        {
+            var allScriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInAllocatedDelegate);
+            var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'<>c__DisplayClass1_0' object allocation"));
+            Assert.NotNull(issue);
+            Assert.AreNotEqual(16707566, issue.line);
+        }
+
 
         [Test]
         public void IssueInNamespaceIsFound()
