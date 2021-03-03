@@ -4,14 +4,14 @@ There are several ways to install Project Auditor. Choose the most appropriare m
 ## Installing as read-only Package
 At this time, Project Auditor is not discoverable via Package Manager so it has to be installed from its Git repository. The instructions that follow are specific to Project Auditor, however, more infromation on how a package can be added to a project as a dependency from Git, you can check the Package Manager [documentation](https://docs.unity3d.com/Manual/upm-git.html).
 
-### Package Manager UI
+### Package Manager UI (Recommmended)
 The easiest way to install Project Auditor in Unity 2018 (or newer) is via Package Manager in three simple steps.
 
 * Click on _Code_ and copy the repository URL to the clipboard:
 
 <img src="images/copy-repo-url.png">
 
-* In Package Manager, click on the + button (top left) and select _Add package from git URL_:
+* In Package Manager, click on the _+ button_ (top left) and select _Add package from git URL_:
 
 <img src="images/pm-install-url.png">
 
@@ -19,8 +19,16 @@ The easiest way to install Project Auditor in Unity 2018 (or newer) is via Packa
  
 <img src="images/pm-add-url.png">
 
+Note that to install a specific version, simply add `#<version>` at the end of the URL. For example:
+
+```https://github.com/Unity-Technologies/ProjectAuditor.git#0.4.2-preview"```
+
+By doing this, you will be able to upgrade to a new version by simply changing the tag.
+
+A list of releases can be found [here](https://github.com/Unity-Technologies/ProjectAuditor/releases).
+
 ### Adding Project Auditor's URL to the project manifest
-Add `com.unity.project-auditor` as a dependency to the project `Packages/manifest.json` file:
+In alternative to the method described above, it is possible to add `com.unity.project-auditor` as a dependency in the project `Packages/manifest.json` file:
 
 ```
 {
@@ -29,12 +37,6 @@ Add `com.unity.project-auditor` as a dependency to the project `Packages/manifes
   }
 }
 ```
-
-To install a specific version, simply add `#<version>` at the end of the URL. For example:
-
-```"com.unity.project-auditor": "https://github.com/Unity-Technologies/ProjectAuditor.git#0.4.2-preview"```
-
-A list of releases can be found [here](https://github.com/Unity-Technologies/ProjectAuditor/releases).
 
 ## Installing for Development
 * In Unity 2018 (or newer), simply _clone_ the repository to the `Packages` folder of your project.
