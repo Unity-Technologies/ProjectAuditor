@@ -147,7 +147,7 @@ class ParamsArrayAllocation
 
             var allocationIssue = issues.First();
 
-            Assert.True(allocationIssue.description.Equals("'System.Object' allocation"));
+            Assert.True(allocationIssue.description.Equals("'Object' array allocation"));
             Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
         }
     }
