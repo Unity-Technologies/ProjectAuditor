@@ -52,10 +52,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 if (typeReference.IsValueType)
                     return null;
 
-                var typeName = typeReference.Name;
-                var isClosure = typeName.StartsWith("<>c__DisplayClass");
                 var calleeNode = new CallTreeNode(methodDefinition);
-
+                var isClosure = typeReference.Name.StartsWith("<>c__DisplayClass");
                 if (isClosure)
                 {
                     return new ProjectIssue
@@ -66,16 +64,14 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                         calleeNode
                     );
                 }
-                else
-                {
-                    return new ProjectIssue
-                    (
-                        k_ObjectAllocationDescriptor,
-                        string.Format("'{0}' object allocation", typeName),
-                        IssueCategory.Code,
-                        calleeNode
-                    );
-                }
+
+                return new ProjectIssue
+                (
+                    k_ObjectAllocationDescriptor,
+                    string.Format("'{0}' allocation", typeReference.FullName),
+                    IssueCategory.Code,
+                    calleeNode
+                );
             }
             else // OpCodes.Newarr
             {
