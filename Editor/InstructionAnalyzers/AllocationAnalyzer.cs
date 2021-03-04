@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         static readonly ProblemDescriptor k_ObjectAllocationDescriptor = new ProblemDescriptor
             (
             102002,
-            "Object Allocation (experimental)",
+            "Object Allocation",
             Area.Memory,
             "An object is allocated in managed memory",
             "Try to avoid allocating objects in frequently-updated code."
@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         static readonly ProblemDescriptor k_ArrayAllocationDescriptor = new ProblemDescriptor
             (
             102003,
-            "Array Allocation (experimental)",
+            "Array Allocation",
             Area.Memory,
             "An array is allocated in managed memory",
             "Try to avoid allocating arrays in frequently-updated code."

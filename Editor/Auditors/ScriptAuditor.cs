@@ -120,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (enableBackgroundAnalysis)
             {
                 m_AssemblyAnalysisThread = new Thread(() =>
-                    AnalyzeAssemblies(readOnlyAssemblyInfos, assemblyDirectories, onCallFound, onIssueFound, onCompleteInternal));
+                    AnalyzeAssemblies(readOnlyAssemblyInfos, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal));
                 m_AssemblyAnalysisThread.Name = "Assembly Analysis";
                 m_AssemblyAnalysisThread.Priority = ThreadPriority.BelowNormal;
                 m_AssemblyAnalysisThread.Start();
