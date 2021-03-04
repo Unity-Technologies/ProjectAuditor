@@ -11,16 +11,26 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         static readonly ProblemDescriptor k_ObjectAllocationDescriptor = new ProblemDescriptor
             (
             102002,
-            "Object Allocation (experimental)",
+            "Object Allocation",
             Area.Memory,
             "An object is allocated in managed memory",
             "Try to avoid allocating objects in frequently-updated code."
             );
 
+        static readonly ProblemDescriptor k_ClosureAllocationDescriptor = new ProblemDescriptor
+        (
+            102003,
+            "Closure Allocation",
+            Area.Memory,
+            "An object is allocated in managed memory",
+            "Try to avoid allocating objects in frequently-updated code."
+        );
+
+
         static readonly ProblemDescriptor k_ArrayAllocationDescriptor = new ProblemDescriptor
             (
-            102003,
-            "Array Allocation (experimental)",
+            102004,
+            "Array Allocation",
             Area.Memory,
             "An array is allocated in managed memory",
             "Try to avoid allocating arrays in frequently-updated code."
@@ -29,6 +39,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         public void Initialize(IAuditor auditor)
         {
             auditor.RegisterDescriptor(k_ObjectAllocationDescriptor);
+            auditor.RegisterDescriptor(k_ClosureAllocationDescriptor);
             auditor.RegisterDescriptor(k_ArrayAllocationDescriptor);
         }
 
@@ -41,30 +52,41 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 if (typeReference.IsValueType)
                     return null;
 
-                var descriptor = k_ObjectAllocationDescriptor;
-                var description = string.Format("'{0}' object allocation", typeReference.Name);
-
+                var typeName = typeReference.Name;
+                var isClosure = typeName.StartsWith("<>c__DisplayClass");
                 var calleeNode = new CallTreeNode(methodDefinition);
 
-                return new ProjectIssue
-                (
-                    descriptor,
-                    description,
-                    IssueCategory.Code,
-                    calleeNode
-                );
+                if (isClosure)
+                {
+                    return new ProjectIssue
+                    (
+                        k_ClosureAllocationDescriptor,
+                        string.Format("'{0}' closure allocation", typeReference.DeclaringType.FullName),
+                        IssueCategory.Code,
+                        calleeNode
+                    );
+                }
+                else
+                {
+                    return new ProjectIssue
+                    (
+                        k_ObjectAllocationDescriptor,
+                        string.Format("'{0}' object allocation", typeName),
+                        IssueCategory.Code,
+                        calleeNode
+                    );
+                }
             }
             else // OpCodes.Newarr
             {
                 var typeReference = (TypeReference)inst.Operand;
-                var descriptor = k_ArrayAllocationDescriptor;
                 var description = string.Format("'{0}' array allocation", typeReference.Name);
 
                 var calleeNode = new CallTreeNode(methodDefinition);
 
                 return new ProjectIssue
                 (
-                    descriptor,
+                    k_ArrayAllocationDescriptor,
                     description,
                     IssueCategory.Code,
                     calleeNode
