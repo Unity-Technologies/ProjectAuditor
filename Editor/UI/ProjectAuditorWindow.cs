@@ -82,6 +82,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.Generics,
                 name = "Generics",
+                menuOrder = 99,
                 menuLabel = "Experimental/Generics",
                 groupByDescription = true,
                 descriptionWithIcon = false,
@@ -244,7 +245,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Array.Sort(m_AnalysisViewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
 
             m_ViewContents = m_AnalysisViewDescriptors.Select(m => new GUIContent(string.IsNullOrEmpty(m.menuLabel) ? m.name : m.menuLabel)).ToArray();
-            m_ViewContents = m_AnalysisViewDescriptors.Select(m => new GUIContent("View: " + m.name)).ToArray();
+            m_ViewContentsWithPrefix = m_AnalysisViewDescriptors.Select(m => new GUIContent("View: " + m.name)).ToArray();
 
             if (m_TextFilter == null)
                 m_TextFilter = new TextFilter();
