@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Fixed background analysis that results in code issues with empty filenames
 * Fixed Android player.log parsing
 * Fixed *GraphicsSettings.logWhenShaderIsCompiled* compilation error on early 2018.4.x releases 
+* Added *System.DateTime.Now* usage detection
 * Added descriptor's minimum/maximum version
 * Added zoom slider
 * Reduced UI managed allocations
