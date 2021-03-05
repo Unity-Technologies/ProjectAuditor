@@ -23,15 +23,15 @@ namespace Unity.ProjectAuditor.Editor.UI
             return EditorGUILayout.Foldout(toggle, content, Styles.Foldout);
         }
 
-        internal static void ToolbarDropdownList(GUIContent content, string[] buttonNames, int activeSelection, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
+        internal static void ToolbarDropdownList(GUIContent[] contents, GUIContent activeContent, int activeSelection, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
         {
-            var r = GUILayoutUtility.GetRect(content, EditorStyles.toolbarButton, options);
-            if (EditorGUI.DropdownButton(r, content, FocusType.Passive, EditorStyles.toolbarDropDown))
+            var r = GUILayoutUtility.GetRect(activeContent, EditorStyles.toolbarButton, options);
+            if (EditorGUI.DropdownButton(r, activeContent, FocusType.Passive, EditorStyles.toolbarDropDown))
             {
                 var menu = new GenericMenu();
 
-                for (var i = 0; i != buttonNames.Length; i++)
-                    menu.AddItem(new GUIContent(buttonNames[i]), i == activeSelection, callback, i);
+                for (var i = 0; i != contents.Length; i++)
+                    menu.AddItem(contents[i], i == activeSelection, callback, i);
                 menu.DropDown(r);
             }
         }

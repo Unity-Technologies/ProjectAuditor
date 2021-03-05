@@ -271,8 +271,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
         };
 
-        string[] m_ViewNames;
         GUIContent[] m_ViewContents;
+        GUIContent[] m_ViewContentsWithPrefix;
         ProjectAuditor m_ProjectAuditor;
         bool m_ShouldRefresh;
         ProjectAuditorAnalytics.Analytic m_AnalyzeButtonAnalytic;
@@ -385,8 +385,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Array.Sort(m_AnalysisViewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
 
-            m_ViewNames = m_AnalysisViewDescriptors.Select(m => m.name).ToArray();
-            m_ViewContents = m_AnalysisViewDescriptors.Select(m => new GUIContent("View: " + m.name, "Change View")).ToArray();
+            m_ViewContents = m_AnalysisViewDescriptors.Select(m => new GUIContent(string.IsNullOrEmpty(m.menuLabel) ? m.name : m.menuLabel)).ToArray();
+            m_ViewContentsWithPrefix = m_AnalysisViewDescriptors.Select(m => new GUIContent("View: " + m.name)).ToArray();
 
             if (m_TextFilter == null)
                 m_TextFilter = new TextFilter();
@@ -1022,7 +1022,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 GUI.enabled = m_AnalysisState == AnalysisState.Valid;
 
-                Utility.ToolbarDropdownList(m_ViewContents[m_ActiveViewIndex], m_ViewNames,
+                Utility.ToolbarDropdownList(m_ViewContents,
+                    m_ViewContentsWithPrefix[m_ActiveViewIndex],
                     m_ActiveViewIndex,
                     OnViewChanged, GUILayout.Width(buttonWidth));
 
