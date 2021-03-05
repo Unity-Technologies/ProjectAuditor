@@ -35,6 +35,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         };
 
+        static readonly IssueLayout k_GenericIssueLayout = new IssueLayout
+        {
+            category = IssueCategory.Generics,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Generic Type"},
+                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" }
+            }
+        };
+
         readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
         readonly List<OpCode> m_OpCodes = new List<OpCode>();
 
@@ -56,6 +67,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_IssueLayout;
+            yield return k_GenericIssueLayout;
         }
 
         public void Reload(string path)

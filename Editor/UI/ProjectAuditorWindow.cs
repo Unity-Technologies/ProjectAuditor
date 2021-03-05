@@ -91,29 +91,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showMuteOptions = false,
                 showRightPanels = false,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
-                columnTypes = new[]
-                {
-                    IssueTable.ColumnType.Description,
-                    IssueTable.ColumnType.Filename,
-                    IssueTable.ColumnType.Custom
-                },
-                descriptionColumnDescriptor = new ColumnDescriptor
-                {
-                    Content = new GUIContent("Generic Type"),
-                    Width = 300,
-                    MinWidth = 100,
-                    Format = PropertyFormat.String
-                },
-                customColumnDescriptors = new[]
-                {
-                    new ColumnDescriptor
-                    {
-                        Content = new GUIContent("Assembly", "Managed Assembly name"),
-                        Width = 300,
-                        MinWidth = 100,
-                        Format = PropertyFormat.String
-                    }
-                },
                 onDoubleClick = OpenTextFile,
                 onOpenDescriptor = OpenDescriptor,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.ApiCalls
