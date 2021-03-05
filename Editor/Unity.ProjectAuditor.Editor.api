@@ -89,15 +89,7 @@ namespace Unity.ProjectAuditor.Editor
     public struct IssueLayout
     {
         public Unity.ProjectAuditor.Editor.IssueCategory category;
-        public Unity.ProjectAuditor.Editor.IssueProperty[] properties;
-    }
-
-    public struct IssueProperty
-    {
-        public Unity.ProjectAuditor.Editor.PropertyFormat format;
-        public string longName;
-        public string name;
-        public Unity.ProjectAuditor.Editor.PropertyType type;
+        public Unity.ProjectAuditor.Editor.PropertyDefinition[] properties;
     }
 
     public class ProblemDescriptor : System.IEquatable<Unity.ProjectAuditor.Editor.ProblemDescriptor>
@@ -181,6 +173,14 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectReport() {}
         public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
         public int GetNumIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
+    }
+
+    public struct PropertyDefinition
+    {
+        public Unity.ProjectAuditor.Editor.PropertyFormat format;
+        public string longName;
+        public string name;
+        public Unity.ProjectAuditor.Editor.PropertyType type;
     }
 
     public enum PropertyFormat
