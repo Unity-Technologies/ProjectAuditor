@@ -87,7 +87,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAreaSelection = false,
                 showAssemblySelection = true,
                 showCritical = false,
-                showDependencyView = false,
+                showDependencyView = true,
                 showMuteOptions = false,
                 showRightPanels = false,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
