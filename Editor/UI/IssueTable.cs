@@ -328,7 +328,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         if (issue.filename != string.Empty)
                         {
                             var filename = string.Format("{0}", issue.filename);
-                            if (issue.category == IssueCategory.Code)
+                            if (issue.location.Extension.Equals(".cs"))
                                 filename += string.Format(":{0}", issue.line);
 
                             // display fullpath as tooltip
@@ -340,7 +340,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         if (issue.location != null)
                         {
                             var path = string.Format("{0}", issue.location.Path);
-                            if (issue.category == IssueCategory.Code)
+                            if (issue.location.Extension.Equals(".cs"))
                                 path += string.Format(":{0}", issue.line);
 
                             EditorGUI.LabelField(cellRect, new GUIContent(path), s_LabelStyle);
