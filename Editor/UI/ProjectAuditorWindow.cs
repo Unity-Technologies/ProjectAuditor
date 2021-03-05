@@ -98,29 +98,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.BuildFile,
                 name = "Build",
+                menuOrder = 99,
                 groupByDescription = true,
                 descriptionWithIcon = true,
                 showAssemblySelection = false,
                 showCritical = false,
                 showDependencyView = false,
                 showRightPanels = false,
-                columnDescriptors = new[]
-                {
-                    IssueTable.Column.Description,
-                    IssueTable.Column.FileType,
-                    IssueTable.Column.Custom,
-                    IssueTable.Column.Path
-                },
-                customColumnStyles = new[]
-                {
-                    new ColumnStyle
-                    {
-                        Content = new GUIContent("Size (bytes)", "Size (bytes) in the Build"),
-                        Width = 100,
-                        MinWidth = 100,
-                        Format = PropertyFormat.Integer
-                    }
-                },
                 onDoubleClick = FocusOnAssetInProjectWindow,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.ProjectSettings
             }
@@ -388,11 +372,50 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        void OnPostprocessBuild(BuildTarget target)
+        {
+            AnalyzeBuildReport();
+            AnalyzeShaderVariants();
+        }
+
+        List<ProjectIssue> Audit<T>() where T : class, IAuditor
+        {
+            var auditor = m_ProjectAuditor.GetAuditor<T>();
+            var layouts = auditor.GetLayouts();
+            foreach (var layout in layouts)
+            {
+                m_ProjectReport.ClearIssues(layout.category);
+            }
+
+            var category = layouts.First().category;
+            var view = m_AnalysisViews.FirstOrDefault(v => v.desc.category == category);
+            view.Clear();
+
+            var newIssues = new List<ProjectIssue>();
+            auditor.Audit(issue =>
+                {
+                    newIssues.Add(issue);
+                    m_ProjectReport.AddIssue(issue);
+                },
+                () =>
+                {
+                },
+                new ProgressBarDisplay()
+            );
+
+            view.AddIssues(newIssues);
+            view.Refresh();
+
+            return newIssues;
+        }
+
+        void AnalyzeBuildReport()
+        {
+            Audit<BuildAuditor>();
+        }
+
         void AnalyzeShaderVariants()
         {
-            m_ProjectReport.ClearIssues(IssueCategory.Shaders);
-            m_ProjectReport.ClearIssues(IssueCategory.ShaderVariants);
-
             if (m_ShaderVariantsWindow == null)
             {
                 var shaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
@@ -405,27 +428,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ShaderVariantsWindow.Clear();
             }
 
-            var shadersView = m_AnalysisViews.FirstOrDefault(view => view.desc.category == IssueCategory.Shaders);
-            if (shadersView != null)
-                shadersView.Clear();
-
-            var newIssues = new List<ProjectIssue>();
-            m_ProjectAuditor.GetAuditor<ShadersAuditor>().Audit(issue =>
-            {
-                newIssues.Add(issue);
-                m_ProjectReport.AddIssue(issue);
-            },
-                () =>
-                {
-                },
-                new ProgressBarDisplay()
-            );
-
-            if (shadersView != null)
-            {
-                shadersView.AddIssues(newIssues);
-                shadersView.Refresh();
-            }
+            var newIssues = Audit<ShadersAuditor>();
 
             m_ShaderVariantsWindow.AddIssues(newIssues);
             m_ShaderVariantsWindow.Refresh();
@@ -1048,7 +1051,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...) or asse
         public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
         {
             if (Instance != null)
-                Instance.AnalyzeShaderVariants();
+                Instance.OnPostprocessBuild(target);
         }
     }
 }

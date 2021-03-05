@@ -11,11 +11,28 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public class BuildAuditor : IAuditor, IPostprocessBuildWithReport
     {
+        static readonly IssueLayout k_IssueLayout = new IssueLayout
+        {
+            category = IssueCategory.BuildFile,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Filename"},
+                new PropertyDefinition { type = PropertyType.FileType, name = "Type"},
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.Integer, name = "Size (bytes)", longName = "Size (bytes) in the Build"},
+                new PropertyDefinition { type = PropertyType.Path, name = "Filename", longName = "Filename and line number"}
+            }
+        };
+
         static BuildReport s_BuildReport;
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             yield return null;
+        }
+
+        public IEnumerable<IssueLayout> GetLayouts()
+        {
+            yield return k_IssueLayout;
         }
 
         public void Initialize(ProjectAuditorConfig config)
@@ -42,9 +59,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         (
                         id++,
                         packedAsset.shortPath,
-                        Area.BuildSize,
-                        string.Empty,
-                        string.Empty
+                        Area.BuildSize
                         );
 
                     var dict = new Dictionary<GUID, List<PackedAssetInfo>>();
