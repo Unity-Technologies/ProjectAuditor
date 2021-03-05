@@ -14,6 +14,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         ProjectAuditorWindow m_ProjectAuditorWindow;
         TreeViewState m_TreeViewState;
         string[] m_Names;
+        bool m_RequestClose;
 
         public static AssemblySelectionWindow Open(float screenX, float screenY,
             ProjectAuditorWindow projectAuditorWindow, TreeViewSelection selection, string[] names)
@@ -32,14 +33,25 @@ namespace Unity.ProjectAuditor.Editor.UI
             window.Close();
         }
 
-        void OnLostFocus()
+        void OnEnable()
         {
-            Close();
+            m_RequestClose = false;
         }
 
         void OnDestroy()
         {
             ApplySelection();
+        }
+
+        void OnLostFocus()
+        {
+            m_RequestClose = true;
+        }
+
+        void Update()
+        {
+            if (m_RequestClose)
+                Close();
         }
 
         public static bool IsOpen()

@@ -278,7 +278,28 @@
           "value": "False",
           "area": "BuildSize",
           "problem": "The \"Texture MipMap Stripping\" option in Player Settings is disabled. The generated build might be larger than necessary. ",
-          "solution": "Enable Texture MipMap stripping. Note that this feature will only reduce the build size if no quality levels on the platform use highest mip(s). Furthermore, if code drives the \"masterTextureLevel\" to a value higher than those in the quality level settings the mip will no longer be available if this is enabled."
+          "solution": "Enable Texture MipMap stripping. Note that this feature will only reduce the build size if no quality levels on the platform use highest mip(s). Furthermore, if code drives the \"masterTextureLevel\" to a value higher than those in the quality level settings the mip will no longer be available if this is enabled.",
+          "minimumVersion": "2020.2"
+        },
+        {
+          "id": 201028,
+          "description": "Physics: Reuse Collision Callbacks",
+          "type": "UnityEngine.Physics",
+          "method": "reuseCollisionCallbacks",
+          "value": "False",
+          "area": "Memory",
+          "problem": "The \"Reuse Collision Callbacks\" option in Physics Settings is disabled. For each OnCollision* callback, a temporary managed object is allocated which, eventually, will need to be garbage collected.",
+          "solution": "When this option is enabled, only a single instance of the Collision type is created and reused for each individual callback. This reduces waste for the garbage collector to handle and improves performance."
+        },
+        {
+          "id": 201029,
+          "description": "Player: Splash Screen",
+          "type": "UnityEditor.PlayerSettings.SplashScreen",
+          "method": "show",
+          "customevaluator": "PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled",
+          "area": "LoadTimes",
+          "problem": "Splash Screen is enabled and will increase the time it takes to load into the first scene.",
+          "solution": "Disable the Splash Screen option in Player Settings."
         }
     ]
 }

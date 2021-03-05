@@ -6,39 +6,38 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class PerfCriticalContextTests
     {
-        ScriptResource m_ScriptResourceIssueInClassInheritedFromMonoBehaviour;
-        ScriptResource m_ScriptResourceIssueInClassMethodCalledFromMonoBehaviourUpdate;
-        ScriptResource m_ScriptResourceIssueInMonoBehaviourUpdate;
-        ScriptResource m_ScriptResourceIssueInSimpleClass;
-        ScriptResource m_ScriptResourceShaderWarmupIssueIsCritical;
+        TempAsset m_TempAssetIssueInClassInheritedFromMonoBehaviour;
+        TempAsset m_TempAssetIssueInClassMethodCalledFromMonoBehaviourUpdate;
+        TempAsset m_TempAssetIssueInMonoBehaviourUpdate;
+        TempAsset m_TempAssetIssueInSimpleClass;
+        TempAsset m_TempAssetShaderWarmupIssueIsCritical;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptResourceIssueInSimpleClass = new ScriptResource("IssueInSimpleClass.cs", @"
+            m_TempAssetIssueInSimpleClass = new TempAsset("IssueInSimpleClass.cs", @"
 using UnityEngine;
 class IssueInSimpleClass
 {
     void Dummy()
     {
-        // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length);
     }
 }
 ");
 
-            m_ScriptResourceIssueInMonoBehaviourUpdate = new ScriptResource("IssueInMonoBehaviourUpdate.cs", @"
+            m_TempAssetIssueInMonoBehaviourUpdate = new TempAsset("IssueInMonoBehaviourUpdate.cs", @"
 using UnityEngine;
 class IssueInMonoBehaviourUpdate : MonoBehaviour
 {
     void Update()
     {
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length);
     }
 }
 ");
 
-            m_ScriptResourceIssueInClassMethodCalledFromMonoBehaviourUpdate = new ScriptResource(
+            m_TempAssetIssueInClassMethodCalledFromMonoBehaviourUpdate = new TempAsset(
                 "IssueInClassMethodCalledFromMonoBehaviourUpdate.cs", @"
 using UnityEngine;
 
@@ -48,8 +47,7 @@ class IssueInClassMethodCalledFromMonoBehaviourUpdate : MonoBehaviour
     {
         public void Dummy()
         {
-            // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
-            Debug.Log(Camera.main.name);
+            Debug.Log(Camera.allCameras.Length);
         }
     }
 
@@ -61,7 +59,7 @@ class IssueInClassMethodCalledFromMonoBehaviourUpdate : MonoBehaviour
 }
 ");
 
-            m_ScriptResourceIssueInClassInheritedFromMonoBehaviour = new ScriptResource(
+            m_TempAssetIssueInClassInheritedFromMonoBehaviour = new TempAsset(
                 "IssueInClassInheritedFromMonoBehaviour.cs", @"
 using UnityEngine;
 class A : MonoBehaviour
@@ -72,12 +70,12 @@ class B : A
 {
     void Update()
     {
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length);
     }
 }
 ");
 
-            m_ScriptResourceShaderWarmupIssueIsCritical = new ScriptResource("ShaderWarmUpIssueIsCritical.cs", @"
+            m_TempAssetShaderWarmupIssueIsCritical = new TempAsset("ShaderWarmUpIssueIsCritical.cs", @"
 using UnityEngine;
 class ShaderWarmUpIssueIsCritical
 {
@@ -92,17 +90,13 @@ class ShaderWarmUpIssueIsCritical
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_ScriptResourceIssueInSimpleClass.Delete();
-            m_ScriptResourceIssueInMonoBehaviourUpdate.Delete();
-            m_ScriptResourceIssueInClassMethodCalledFromMonoBehaviourUpdate.Delete();
-            m_ScriptResourceIssueInClassInheritedFromMonoBehaviour.Delete();
-            m_ScriptResourceShaderWarmupIssueIsCritical.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
         public void IssueInSimpleClass()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInSimpleClass);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInSimpleClass);
             var issue = issues.First();
             Assert.False(issue.isPerfCriticalContext);
         }
@@ -110,7 +104,7 @@ class ShaderWarmUpIssueIsCritical
         [Test]
         public void IssueInMonoBehaviourUpdate()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceIssueInMonoBehaviourUpdate);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInMonoBehaviourUpdate);
             var issue = issues.First();
             Assert.True(issue.isPerfCriticalContext);
         }
@@ -120,7 +114,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues =
                 ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(
-                    m_ScriptResourceIssueInClassMethodCalledFromMonoBehaviourUpdate);
+                    m_TempAssetIssueInClassMethodCalledFromMonoBehaviourUpdate);
             var issue = issues.First();
             Assert.True(issue.isPerfCriticalContext);
         }
@@ -130,7 +124,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues =
                 ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(
-                    m_ScriptResourceIssueInClassInheritedFromMonoBehaviour);
+                    m_TempAssetIssueInClassInheritedFromMonoBehaviour);
             var issue = issues.First();
             Assert.True(issue.isPerfCriticalContext);
         }
@@ -140,7 +134,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues =
                 ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(
-                    m_ScriptResourceShaderWarmupIssueIsCritical);
+                    m_TempAssetShaderWarmupIssueIsCritical);
             var issue = issues.First();
             Assert.True(issue.isPerfCriticalContext);
         }

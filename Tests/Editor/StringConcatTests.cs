@@ -6,15 +6,15 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class StringConcatTests
     {
-        ScriptResource m_ScriptResourceStringConcat;
+        TempAsset m_TempAssetStringConcat;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptResourceStringConcat = new ScriptResource("StringConcat.cs", @"
+            m_TempAssetStringConcat = new TempAsset("StringConcat.cs", @"
 class StringConcat
 {
-    string text;
+    string text = ""This is a test"";
     string Dummy()
     {
         return text + text;
@@ -26,13 +26,13 @@ class StringConcat
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_ScriptResourceStringConcat.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
         public void StringConcatIssueIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceStringConcat);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetStringConcat);
 
             Assert.AreEqual(1, issues.Count());
 

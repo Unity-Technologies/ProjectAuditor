@@ -1,17 +1,36 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Auditors;
+using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public static class ScriptIssueTestHelper
     {
-        public static IEnumerable<ProjectIssue> AnalyzeAndFindScriptIssues(ScriptResource scriptResource)
+        public static ProjectIssue[] AnalyzeAndFindScriptIssues(TempAsset tempAsset)
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-            return ScriptAuditor.FindScriptIssues(projectReport, scriptResource.relativePath);
+            var auditor = new ScriptAuditor();
+            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            config.AnalyzeInBackground = false;
+            auditor.Initialize(config);
+            auditor.Reload(Unity.ProjectAuditor.Editor.ProjectAuditor.DataPath);
+
+            var foundIssues = new List<ProjectIssue>();
+            var completed = false;
+            auditor.Audit(issue => {
+                foundIssues.Add(issue);
+            },
+                () =>
+                {
+                    completed = true;
+                });
+
+            Assert.True(completed);
+
+            return foundIssues.Where(i => i.relativePath.Equals(tempAsset.relativePath)).ToArray();
         }
     }
 }

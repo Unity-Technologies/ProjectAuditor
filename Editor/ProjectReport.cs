@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
-using UnityEditor;
+using Editor.Utils;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
@@ -55,44 +54,21 @@ namespace Unity.ProjectAuditor.Editor
             s_Mutex.ReleaseMutex();
         }
 
-        /// <summary>
-        /// Export report to CSV format
-        /// </summary>
-        public void ExportToCSV(string reportPath, Func<ProjectIssue, bool> match = null)
+        internal void ClearIssues(IssueCategory category)
         {
-            var writer = new StreamWriter(reportPath);
-            writer.WriteLine(HeaderForCSV());
+            s_Mutex.WaitOne();
+            m_Issues.RemoveAll(issue => issue.category == category);
+            s_Mutex.ReleaseMutex();
+        }
 
-            for (IssueCategory category = 0; category < IssueCategory.NumCategories; category++)
+        internal void ExportToCSV(string path, IssueLayout layout, Func<ProjectIssue, bool> match = null)
+        {
+            using (var exporter = new Exporter(path, layout))
             {
-                var issues = GetIssues(category).Where(i => match == null || match(i));
-
-                foreach (var issue in issues)
-                {
-                    writer.WriteLine(FormatIssueForCSV(issue));
-                }
+                exporter.WriteHeader();
+                foreach (var issue in m_Issues.Where(i => i.category == layout.category))
+                    exporter.WriteIssue(issue);
             }
-
-            writer.Flush();
-            writer.Close();
-
-            EditorUtility.RevealInFinder(reportPath);
-        }
-
-        internal static string FormatIssueForCSV(ProjectIssue issue)
-        {
-            if (issue.category == IssueCategory.Code)
-                return string.Format("{0},\"{1}\",\"{2}\",{3},{4}:{5}", issue.category, issue.descriptor.description,
-                    issue.description,
-                    issue.descriptor.area, issue.relativePath, issue.line);
-            return string.Format("{0},\"{1}\",\"{2}\",{3},{4}", issue.category, issue.descriptor.description,
-                issue.description,
-                issue.descriptor.area, issue.relativePath);
-        }
-
-        internal static string HeaderForCSV()
-        {
-            return "Category,Issue,Description,Area,Path";
         }
     }
 }

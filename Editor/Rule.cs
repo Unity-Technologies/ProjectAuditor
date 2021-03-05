@@ -5,7 +5,7 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public class Rule : IEquatable<Rule>
     {
-        public enum Action
+        public enum Severity
         {
             Default, // default to TBD
             Error, // fails on build
@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor
             Hidden // not visible to user
         }
 
-        public Action action;
+        public Severity severity;
         public string filter;
 
         public int id;
@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             if (other.GetType() != GetType()) return false;
-            return id == other.id && filter == other.filter && action == other.action;
+            return id == other.id && filter == other.filter && severity == other.severity;
         }
 
         public override bool Equals(object obj)
@@ -57,7 +57,7 @@ namespace Unity.ProjectAuditor.Editor
                 var hash = 17;
                 hash = hash * 23 + id.GetHashCode();
                 hash = hash * 23 + filter.GetHashCode();
-                hash = hash * 23 + action.GetHashCode();
+                hash = hash * 23 + severity.GetHashCode();
                 return hash;
             }
         }

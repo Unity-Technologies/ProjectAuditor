@@ -2,42 +2,40 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class BoxingIssueTests
     {
-        ScriptResource m_ScriptResourceBoxingFloat;
-        ScriptResource m_ScriptResourceBoxingGeneric;
-        ScriptResource m_ScriptResourceBoxingGenericRefType;
-        ScriptResource m_ScriptResourceBoxingInt;
+        TempAsset m_TempAssetBoxingFloat;
+        TempAsset m_TempAssetBoxingGeneric;
+        TempAsset m_TempAssetBoxingGenericRefType;
+        TempAsset m_TempAssetBoxingInt;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptResourceBoxingInt = new ScriptResource("BoxingIntTest.cs",
+            m_TempAssetBoxingInt = new TempAsset("BoxingIntTest.cs",
                 "using System; class BoxingIntTest { Object Dummy() { return 666; } }");
-            m_ScriptResourceBoxingFloat = new ScriptResource("BoxingFloatTest.cs",
+            m_TempAssetBoxingFloat = new TempAsset("BoxingFloatTest.cs",
                 "using System; class BoxingFloatTest { Object Dummy() { return 666.0f; } }");
-            m_ScriptResourceBoxingGenericRefType = new ScriptResource("BoxingGenericRefType.cs",
+            m_TempAssetBoxingGenericRefType = new TempAsset("BoxingGenericRefType.cs",
                 "class SomeClass {}; class BoxingGenericRefType<T> where T : SomeClass { T refToGenericType; void Dummy() { if (refToGenericType == null){} } }");
-            m_ScriptResourceBoxingGeneric = new ScriptResource("BoxingGeneric.cs",
+            m_TempAssetBoxingGeneric = new TempAsset("BoxingGeneric.cs",
                 "class BoxingGeneric<T> { T refToGenericType; void Dummy() { if (refToGenericType == null){} } }");
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_ScriptResourceBoxingInt.Delete();
-            m_ScriptResourceBoxingFloat.Delete();
-            m_ScriptResourceBoxingGenericRefType.Delete();
-            m_ScriptResourceBoxingGeneric.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
         public void BoxingIntValueIsReported()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceBoxingInt);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetBoxingInt);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -46,15 +44,15 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             // check issue
             Assert.NotNull(boxingInt);
             Assert.True(boxingInt.name.Equals("BoxingIntTest.Dummy"));
-            Assert.True(boxingInt.filename.Equals(m_ScriptResourceBoxingInt.scriptName));
+            Assert.True(boxingInt.filename.Equals(m_TempAssetBoxingInt.scriptName));
             Assert.True(boxingInt.description.Equals("Conversion from value type 'Int32' to ref type"));
-            Assert.True(boxingInt.callingMethod.Equals("System.Object BoxingIntTest::Dummy()"));
+            Assert.True(boxingInt.GetCallingMethod().Equals("System.Object BoxingIntTest::Dummy()"));
             Assert.AreEqual(1, boxingInt.line);
             Assert.AreEqual(IssueCategory.Code, boxingInt.category);
 
             // check descriptor
             Assert.NotNull(boxingInt.descriptor);
-            Assert.AreEqual(Rule.Action.Default, boxingInt.descriptor.action);
+            Assert.AreEqual(Rule.Severity.Default, boxingInt.descriptor.severity);
             Assert.AreEqual(102000, boxingInt.descriptor.id);
             Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.type));
             Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.method));
@@ -65,7 +63,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void BoxingFloatValueIsReported()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceBoxingFloat);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetBoxingFloat);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -74,15 +72,15 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             // check issue
             Assert.NotNull(boxingFloat);
             Assert.True(boxingFloat.name.Equals("BoxingFloatTest.Dummy"));
-            Assert.True(boxingFloat.filename.Equals(m_ScriptResourceBoxingFloat.scriptName));
+            Assert.True(boxingFloat.filename.Equals(m_TempAssetBoxingFloat.scriptName));
             Assert.True(boxingFloat.description.Equals("Conversion from value type 'float' to ref type"));
-            Assert.True(boxingFloat.callingMethod.Equals("System.Object BoxingFloatTest::Dummy()"));
+            Assert.True(boxingFloat.GetCallingMethod().Equals("System.Object BoxingFloatTest::Dummy()"));
             Assert.AreEqual(1, boxingFloat.line);
             Assert.AreEqual(IssueCategory.Code, boxingFloat.category);
 
             // check descriptor
             Assert.NotNull(boxingFloat.descriptor);
-            Assert.AreEqual(Rule.Action.Default, boxingFloat.descriptor.action);
+            Assert.AreEqual(Rule.Severity.Default, boxingFloat.descriptor.severity);
             Assert.AreEqual(102000, boxingFloat.descriptor.id);
             Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.type));
             Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.method));
@@ -93,7 +91,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void BoxingGenericIsReported()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceBoxingGeneric);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetBoxingGeneric);
 
             Assert.AreEqual(1, issues.Count());
         }
@@ -101,7 +99,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void BoxingGenericRefTypeIsNotReported()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_ScriptResourceBoxingGenericRefType);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetBoxingGenericRefType);
 
             Assert.Zero(issues.Count());
         }

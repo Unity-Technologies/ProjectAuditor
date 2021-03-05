@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using UnityEditor;
+
 #if UNITY_2019_3_OR_NEWER
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 #endif

@@ -2,33 +2,32 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class MonoBehaviourEmptyMagicMethodTests
     {
-        ScriptResource m_MonoBehaviourWithEmptyMagicMethod;
-        ScriptResource m_MonoBehaviourWithEmptyMethod;
-        ScriptResource m_NotMonoBehaviourWithEmptyMethod;
+        TempAsset m_MonoBehaviourWithEmptyMagicMethod;
+        TempAsset m_MonoBehaviourWithEmptyMethod;
+        TempAsset m_NotMonoBehaviourWithEmptyMethod;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_MonoBehaviourWithEmptyMagicMethod = new ScriptResource("MonoBehaviourWithEmptyMagicMethod.cs",
+            m_MonoBehaviourWithEmptyMagicMethod = new TempAsset("MonoBehaviourWithEmptyMagicMethod.cs",
                 "using UnityEngine; class MyBaseClass : MonoBehaviour { } class MonoBehaviourWithEmptyMagicMethod : MyBaseClass { void Update() { } }");
-            m_MonoBehaviourWithEmptyMethod = new ScriptResource("MonoBehaviourWithEmptyMethod.cs",
+            m_MonoBehaviourWithEmptyMethod = new TempAsset("MonoBehaviourWithEmptyMethod.cs",
                 "using UnityEngine; class MonoBehaviourWithEmptyMethod : MonoBehaviour{ void NotMagicMethod() { } }");
-            m_NotMonoBehaviourWithEmptyMethod = new ScriptResource("NotMonoBehaviourWithEmptyMethod.cs",
+            m_NotMonoBehaviourWithEmptyMethod = new TempAsset("NotMonoBehaviourWithEmptyMethod.cs",
                 "class NotMonoBehaviourWithEmptyMethod { void Update() { } }");
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_MonoBehaviourWithEmptyMagicMethod.Delete();
-            m_MonoBehaviourWithEmptyMethod.Delete();
-            m_NotMonoBehaviourWithEmptyMethod.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
@@ -43,7 +42,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.NotNull(issue);
             Assert.NotNull(issue.descriptor);
 
-            Assert.AreEqual(Rule.Action.Default, issue.descriptor.action);
+            Assert.AreEqual(Rule.Severity.Default, issue.descriptor.severity);
             Assert.AreEqual(EmptyMethodAnalyzer.GetDescriptor().id, issue.descriptor.id);
             Assert.True(string.IsNullOrEmpty(issue.descriptor.type));
             Assert.True(string.IsNullOrEmpty(issue.descriptor.method));
@@ -51,7 +50,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.True(issue.name.Equals("MonoBehaviourWithEmptyMagicMethod.Update"));
             Assert.True(issue.filename.Equals(m_MonoBehaviourWithEmptyMagicMethod.scriptName));
             Assert.True(issue.description.Equals("System.Void MonoBehaviourWithEmptyMagicMethod::Update()"));
-            Assert.True(issue.callingMethod.Equals("System.Void MonoBehaviourWithEmptyMagicMethod::Update()"));
+            Assert.True(issue.GetCallingMethod().Equals("System.Void MonoBehaviourWithEmptyMagicMethod::Update()"));
             Assert.AreEqual(1, issue.line);
             Assert.AreEqual(IssueCategory.Code, issue.category);
         }

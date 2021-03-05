@@ -12,19 +12,21 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class AssemblyHelperTests
     {
-        ScriptResource m_ScriptResource;
+#pragma warning disable 0414
+        TempAsset m_TempAsset;
+#pragma warning restore 0414
 
         [OneTimeSetUp]
         public void SetUp()
         {
             // this is required so the default assembly is generated
-            m_ScriptResource = new ScriptResource("MyClass.cs", "class MyClass { }");
+            m_TempAsset = new TempAsset("MyClass.cs", "class MyClass { }");
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_ScriptResource.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
@@ -54,7 +56,10 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var paths = AssemblyHelper.GetPrecompiledEngineAssemblyPaths();
 
             Assert.Positive(paths.Count());
-            Assert.NotNull(paths.FirstOrDefault(path => path.Equals(Path.Combine(EditorApplication.applicationContentsPath, "Managed/UnityEngine/UnityEngine.CoreModule.dll"))));
+
+            var expectedPath = EditorApplication.applicationContentsPath + "/Managed/UnityEngine/UnityEngine.CoreModule.dll";
+            var result = paths.FirstOrDefault(path => path.Equals(expectedPath));
+            Assert.NotNull(result);
         }
 
 #if UNITY_2018_1_OR_NEWER

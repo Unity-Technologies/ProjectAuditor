@@ -3,12 +3,43 @@ using System;
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
+    /// Affected area
+    /// </summary>
+    public enum Area
+    {
+        /// <summary>
+        /// CPU Performance
+        /// </summary>
+        CPU,
+
+        /// <summary>
+        /// GPU Performance
+        /// </summary>
+        GPU,
+
+        /// <summary>
+        /// Memory consumption
+        /// </summary>
+        Memory,
+
+        /// <summary>
+        /// Application size
+        /// </summary>
+        BuildSize,
+
+        /// <summary>
+        /// Load times
+        /// </summary>
+        LoadTimes
+    }
+
+    /// <summary>
     /// ProblemDescriptor defines the problem and a possible recommendation.
     /// </summary>
     [Serializable]
     public class ProblemDescriptor : IEquatable<ProblemDescriptor>
     {
-        public Rule.Action action;
+        public Rule.Severity severity;
         public string area;
         public string customevaluator;
 
@@ -22,18 +53,24 @@ namespace Unity.ProjectAuditor.Editor
         public bool critical;
         public string problem;
         public string solution;
+        public string minimumVersion;
+        public string maximumVersion;
 
-        public ProblemDescriptor(int id, string description, Area area, string problem, string solution)
+        public ProblemDescriptor(int id, string description, string area, string problem = null, string solution = null)
         {
             this.id = id;
             this.description = description;
-            this.area = area.ToString();
+            this.area = area;
             this.problem = problem;
             this.solution = solution;
 
             type = string.Empty;
             method = string.Empty;
             critical = false;
+        }
+
+        public ProblemDescriptor(int id, string description, Area area, string problem = null, string solution = null) : this(id, description, area.ToString(), problem, solution)
+        {
         }
 
         public bool Equals(ProblemDescriptor other)

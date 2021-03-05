@@ -11,6 +11,16 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 {
     class SettingsAuditor : IAuditor
     {
+        static readonly IssueLayout k_IssueLayout = new IssueLayout
+        {
+            category = IssueCategory.ProjectSettings,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
+                new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"}
+            }
+        };
+
         readonly List<Assembly> m_Assemblies = new List<Assembly>();
         readonly Evaluators m_Helpers = new Evaluators();
 
@@ -47,9 +57,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             return m_ProblemDescriptors;
         }
 
+        public IEnumerable<IssueLayout> GetLayouts()
+        {
+            yield return k_IssueLayout;
+        }
+
         public void Reload(string path)
         {
-            m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors(path, "ProjectSettings");
+            m_ProblemDescriptors = ProblemDescriptorLoader.LoadFromJson(path, "ProjectSettings");
 
             foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<ISettingsAnalyzer>())
                 AddAnalyzer(Activator.CreateInstance(type) as ISettingsAnalyzer);
@@ -62,6 +77,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
+            if (m_ProblemDescriptors == null)
+                throw new Exception("Issue Database not initialized.");
+
             if (progressBar != null)
                 progressBar.Initialize("Analyzing Settings", "Analyzing project settings", m_ProblemDescriptors.Count);
 
@@ -97,7 +115,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         void AddIssue(ProblemDescriptor descriptor, string description, Action<ProjectIssue> onIssueFound)
         {
             var projectWindowPath = "";
-            var mappings = m_ProjectSettingsMapping.Where(p => p.Key.Contains(descriptor.type));
+            var mappings = m_ProjectSettingsMapping.Where(p => descriptor.type.StartsWith(p.Key));
             if (mappings.Count() > 0)
                 projectWindowPath = mappings.First().Value;
             onIssueFound(new ProjectIssue
@@ -145,8 +163,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 var helperType = m_Helpers.GetType();
                 var theMethod = helperType.GetMethod(descriptor.customevaluator);
-                var isIssue = (bool)theMethod.Invoke(m_Helpers, null);
-                if (isIssue) AddIssue(descriptor, descriptor.description, onIssueFound);
+                if ((bool)theMethod.Invoke(m_Helpers, null))
+                    AddIssue(descriptor, descriptor.description, onIssueFound);
             }
         }
     }

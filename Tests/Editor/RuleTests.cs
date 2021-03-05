@@ -3,25 +3,26 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Auditors;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class RuleTests
     {
-        ScriptResource m_ScriptResource;
+        TempAsset m_TempAsset;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptResource = new ScriptResource("MyClass.cs",
-                "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.main.name); } }");
+            m_TempAsset = new TempAsset("MyClass.cs",
+                "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.allCameras.Length.ToString()); } }");
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
-            m_ScriptResource.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
@@ -29,8 +30,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectAuditorSettings = projectAuditor.config;
-            var projectReport = projectAuditor.Audit();
-            var issues = ScriptAuditor.FindScriptIssues(projectReport, m_ScriptResource.relativePath);
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAsset);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -38,23 +38,24 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
             projectAuditorSettings.ClearAllRules();
 
-            var action = projectAuditorSettings.GetAction(issue.descriptor, issue.callingMethod);
+            var callingMethod = issue.GetCallingMethod();
+            var action = projectAuditorSettings.GetAction(issue.descriptor, callingMethod);
 
             // expect default action specified in descriptor
-            Assert.AreEqual(issue.descriptor.action, action);
+            Assert.AreEqual(issue.descriptor.severity, action);
 
             // add rule with a filter.
             projectAuditorSettings.AddRule(new Rule
             {
                 id = issue.descriptor.id,
-                action = Rule.Action.None,
-                filter = issue.callingMethod
+                severity = Rule.Severity.None,
+                filter = callingMethod
             });
 
-            action = projectAuditorSettings.GetAction(issue.descriptor, issue.callingMethod);
+            action = projectAuditorSettings.GetAction(issue.descriptor, callingMethod);
 
             // issue has been muted so it should not be reported
-            Assert.AreEqual(Rule.Action.None, action);
+            Assert.AreEqual(Rule.Severity.None, action);
         }
 
         [Test]
@@ -76,7 +77,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             config.AddRule(new Rule
             {
                 id = firstDescriptor.id,
-                action = Rule.Action.None,
+                severity = Rule.Severity.None,
                 filter = filter
             });
 
@@ -92,7 +93,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             config.AddRule(new Rule
             {
                 id = firstDescriptor.id,
-                action = Rule.Action.None
+                severity = Rule.Severity.None
             });
 
             // search for specific rule again
@@ -120,7 +121,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             config.AddRule(new Rule
             {
                 id = firstDescriptor.id,
-                action = Rule.Action.None
+                severity = Rule.Severity.None
             });
             Assert.AreEqual(1, config.NumRules);
 

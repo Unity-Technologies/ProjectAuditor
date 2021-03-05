@@ -6,7 +6,8 @@
             "method": "main",
             "area": "CPU",
             "problem": "Camera.main property uses FindGameObjectsWithTag() internally and doesn't cache the result.",
-            "solution": "It is advised to cache and use the camera component obtained from Game object instead."
+            "solution": "It is advised to cache and use the camera component obtained from Game object instead.",
+            "maximumVersion": "2019.4.8"
         },
         {
             "id": 101001,
@@ -1797,7 +1798,7 @@
             "type": "UnityEngine.Object",
             "method": "Instantiate",
             "area": "CPU",
-            "problem": "Instantiationg Objects at runtime can be a very expensive operation.",
+            "problem": "Instantiating Objects at runtime can be a very expensive operation.",
             "solution": "Try to avoid calling Object.Instantiate frequently-updated code."
         },
         {
@@ -1833,6 +1834,14 @@
           "critical": true,
           "problem": "WarmUp does not work properly on Metal and Vulkan. This might result in unexpected CPU spikes due to shader compilation.",
           "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader variant used at runtime."
+        },
+        {
+          "id": 101229,
+          "type": "UnityEngine.Component",
+          "method": "tag",
+          "area": "Memory",
+          "problem": "The Component.tag property allocates managed memory.",
+          "solution": "Try to avoid getting this property in frequently-updated code. Prefer using CompareTag() instead, as this does not result in managed allocations."
         }
     ]
 }

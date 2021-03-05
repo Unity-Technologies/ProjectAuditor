@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.SettingsAnalyzers;
 using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
@@ -39,6 +40,20 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.NotNull(playerSettingIssue);
             Assert.True(playerSettingIssue.description.Equals("Player: Engine Code Stripping"));
             Assert.True(playerSettingIssue.location.Path.Equals("Project/Player"));
+        }
+
+        [Test]
+        [TestCase(false)]
+        [TestCase(true)]
+        public void  SplashScreenIsEnabledAndCanBeDisabled(bool splashScreenEnabled)
+        {
+            var prevSplashScreenEnabled = PlayerSettings.SplashScreen.show;
+            PlayerSettings.SplashScreen.show = splashScreenEnabled;
+
+            var evaluators = new Evaluators();
+            Assert.AreEqual(splashScreenEnabled, evaluators.PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled());
+
+            PlayerSettings.SplashScreen.show = prevSplashScreenEnabled;
         }
     }
 }

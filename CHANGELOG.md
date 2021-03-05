@@ -4,16 +4,47 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+* Fixed background analysis that results in code issues with empty filenames
+* Fixed Android player.log parsing
+* Fixed *GraphicsSettings.logWhenShaderIsCompiled* compilation error on early 2018.4.x releases 
+* Added descriptor's minimum/maximum version
+* Added zoom slider
+* Reduced UI managed allocations
+* Replaced tabs-like view selection with toolbar dropdown list
+* Removed *experimental* label from Allocation issues
+* Changed *Export* feature to be view-specific
+
+## [0.4.2-preview] - 2021-02-01
+* Fixed detection of API calls using a derived type
+* Fixed reporting of *Editor Default Resources* shaders
+* Fixed *ReflectionTypeLoadException*
+* Added *SRP Batcher* column to Shader tab
+* Added support for parsing *Player.log* to identify which shader variants are compiled (or not-compiled) at runtime
+* Added Shader errors/warnings reporting via Shader 'severity' icon
+* Added [Shader Requirements](https://docs.unity3d.com/ScriptReference/Rendering.ShaderRequirements.html) column to Shader tab
+* Fixed exception when switching focus from Area/Assembly window
+* Fixed null ref exception on invalid shader or vfx shader
+* Fixed null ref exception when building AssetBundles
+* Fixed shader variants reporting due to *OnPreprocessBuild* callback default order
+
+## [0.4.1-preview] - 2020-12-14
+* Improved Shaders auditing to report both shaders and variants in their respective tables
+* Added support for analyzing Editor only code-paths
+* Added *reuseCollisionCallbacks* physics API diagnostic
+* Fixed Assembly-CSharp-firstpass asmdef warning
+* Fixed backwards compatibility
+
 ## [0.4.0-preview] - 2020-11-24
 * Added Shader variants auditing
 * Added "Collapse/Expand All" buttons
-* Refactoring and code quality improvements 
+* Refactoring and code quality improvements
 
 ## [0.3.1-preview] - 2020-10-23
 * Page up/down key bug fixes
 * Added dependencies view to Assets tab
 * Move call tree to the bottom of the window
-* Double-click on an asset selects it in the Project Window 
+* Double-click on an asset selects it in the Project Window
 * Fixed Unity 2017 compatibility
 * Fixed default selected assemblies
 * Fixed Area names filtering

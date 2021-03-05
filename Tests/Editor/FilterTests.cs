@@ -9,12 +9,14 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class FilterTests
     {
-        ScriptResource m_ScriptResource;
+#pragma warning disable 0414
+        TempAsset m_TempAsset;
+#pragma warning restore 0414
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptResource = new ScriptResource("FilterTests.cs", @"
+            m_TempAsset = new TempAsset("FilterTests.cs", @"
 using UnityEngine;
 
 class WrapperClass
@@ -30,8 +32,7 @@ class InternalClass
 {
     public void DoSomething()
     {
-        // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length.ToString());
     }
 }
 ");
@@ -40,7 +41,7 @@ class InternalClass
         [OneTimeTearDown]
         public void TearDown()
         {
-            m_ScriptResource.Delete();
+            TempAsset.Cleanup();
         }
 
         [Test]
@@ -116,7 +117,10 @@ class InternalClass
         [Test]
         public void FilenameMatch()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            config.AnalyzeEditorCode = false;
+
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Code);
@@ -133,7 +137,10 @@ class InternalClass
         [Test]
         public void RecursiveSearchMatch()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            config.AnalyzeEditorCode = false;
+
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Code);

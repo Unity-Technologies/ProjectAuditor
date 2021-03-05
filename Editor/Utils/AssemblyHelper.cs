@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
 
 #if UNITY_2019_3_OR_NEWER
 using UnityEditor.PackageManager;
-#else
-using UnityEditor;
 #endif
 
 namespace Unity.ProjectAuditor.Editor.Utils
@@ -23,9 +23,29 @@ namespace Unity.ProjectAuditor.Editor.Utils
             get { return Path.GetFileNameWithoutExtension(DefaultAssemblyFileName); }
         }
 
+        static List<Type> s_Types;
+
         static IEnumerable<Type> GetAllTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes());
+            if (s_Types != null)
+                return s_Types;
+
+            var types = new List<Type>();
+            foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                try
+                {
+                    types.AddRange(a.GetTypes());
+                }
+                catch (ReflectionTypeLoadException /* e */)
+                {
+                    Debug.LogWarningFormat("Project Auditor: Could not get {0} types information", a.GetName().Name);
+                }
+            }
+
+            s_Types = types;
+
+            return types;
         }
 
         public static IEnumerable<Type> GetAllTypesInheritedFromInterface<InterfaceT>()
@@ -74,7 +94,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 Path.Combine("Unity", "GUISystem"))));
             assemblyPaths.AddRange(files.Where(path => Path.GetExtension(path).Equals(".dll")));
 #endif
-            return assemblyPaths;
+            return assemblyPaths.Select(path => path.Replace("\\", "/"));
         }
 
         public static IEnumerable<string> GetPrecompiledEngineAssemblyDirectories()
@@ -120,7 +140,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 {
                     assemblyInfo.relativePath = Path.Combine(folders[0], folders[1]).Replace("\\", "/");
 #if UNITY_2019_3_OR_NEWER
-                    var info =  PackageInfo.FindForAssetPath(asmDefPath);
+                    var info =  UnityEditor.PackageManager.PackageInfo.FindForAssetPath(asmDefPath);
                     if (info != null)
                     {
                         assemblyInfo.readOnly = info.source != PackageSource.Embedded && info.source != PackageSource.Local;
@@ -134,9 +154,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     // non-package user-defined assembly
                 }
             }
-            else if (!assemblyInfo.name.Equals(DefaultAssemblyName))
+            else if (!assemblyInfo.name.StartsWith(DefaultAssemblyName))
             {
-                Debug.LogErrorFormat("AsmDef cannot be found for " + assemblyInfo.name);
+                Debug.LogErrorFormat("Assembly Definition cannot be found for " + assemblyInfo.name);
             }
 
             return assemblyInfo;
