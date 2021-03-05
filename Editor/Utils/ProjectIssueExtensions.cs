@@ -19,12 +19,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     return issue.description;
                 case PropertyType.Filename:
                     var filename = string.Format("{0}", issue.filename);
-                    if (issue.category == IssueCategory.Code)
+                    if (issue.location.Extension.Equals(".cs"))
                         filename += string.Format(":{0}", issue.line);
                     return filename;
                 case PropertyType.Path:
                     var path = string.Format("{0}", issue.location.Path);
-                    if (issue.category == IssueCategory.Code)
+                    if (issue.location.Extension.Equals(".cs"))
                         path += string.Format(":{0}", issue.line);
                     return path;
                 case PropertyType.CriticalContext:
