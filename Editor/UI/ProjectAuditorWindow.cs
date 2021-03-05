@@ -834,7 +834,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 GUI.enabled = (m_AnalysisState == AnalysisState.Valid || m_AnalysisState == AnalysisState.NotStarted);
 
-                const int buttonWidth = 100;
+                const int buttonWidth = 130;
                 if (GUILayout.Button(Styles.AnalyzeButton, EditorStyles.toolbarButton, GUILayout.Width(buttonWidth)))
                 {
                     Analyze();
