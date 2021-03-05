@@ -41,7 +41,7 @@ To find which shader variants are compiled at runtime, follow these steps:
             if (string.IsNullOrEmpty(logFilename))
                 return;
 
-            var variants = m_Issues.Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
+            var variants = m_AnalysisView.GetIssues().Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
 
             if (m_ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBarDisplay()))
             {
@@ -61,10 +61,10 @@ To find which shader variants are compiled at runtime, follow these steps:
             }
         }
 
-        public override void CreateTable(AnalysisViewDescriptor desc, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public override void CreateTable(AnalysisViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
             m_MainFilter = filter;
-            base.CreateTable(desc, config, prefs, this);
+            base.CreateTable(desc, layout, config, prefs, filter);
             m_AnalysisView.SetFlatView(m_FlatView);
         }
 
@@ -84,6 +84,7 @@ To find which shader variants are compiled at runtime, follow these steps:
             GUI.enabled = buildAvailable;
             m_FlatView = EditorGUILayout.ToggleLeft("Flat View", m_FlatView, GUILayout.Width(160));
             m_HideCompiledVariants = EditorGUILayout.ToggleLeft("Hide Compiled Variants", m_HideCompiledVariants, GUILayout.Width(160));
+
             GUI.enabled = lastEnabled;
 
             if (EditorGUI.EndChangeCheck())

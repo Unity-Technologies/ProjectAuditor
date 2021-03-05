@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Editor.Utils;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -10,22 +11,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    enum PropertyFormat
-    {
-        Bool = 0,
-        Integer,
-        String
-    }
-
-    struct ColumnDescriptor
-    {
-        public GUIContent Content;
-        public int Width;
-        public int MinWidth;
-        public PropertyFormat Format;
-    }
-
-    struct AnalysisViewDescriptor
+    class AnalysisViewDescriptor
     {
         public IssueCategory category;
         public string name;
@@ -39,9 +25,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showMuteOptions;
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
-        public IssueTable.ColumnType[] columnTypes;
-        public ColumnDescriptor descriptionColumnDescriptor;
-        public ColumnDescriptor[] customColumnDescriptors;
         public Action<Location> onDoubleClick;
         public Action<ProblemDescriptor> onOpenDescriptor;
         public ProjectAuditorAnalytics.UIButton analyticsEvent;
@@ -49,13 +32,22 @@ namespace Unity.ProjectAuditor.Editor.UI
 
     class AnalysisView
     {
+        enum ExportMode
+        {
+            All = 0,
+            Filtered = 1,
+            Selected
+        }
+
         ProjectAuditorConfig m_Config;
         Preferences m_Preferences;
         AnalysisViewDescriptor m_Desc;
         IProjectIssueFilter m_Filter;
 
         DependencyView m_DependencyView;
+        List<ProjectIssue> m_Issues;
         IssueTable m_Table;
+        IssueLayout m_Layout;
 
         public AnalysisViewDescriptor desc
         {
@@ -67,39 +59,34 @@ namespace Unity.ProjectAuditor.Editor.UI
             get { return m_Table; }
         }
 
-        public void CreateTable(AnalysisViewDescriptor desc, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public void CreateTable(AnalysisViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
-            m_Desc = desc;
+            m_Desc = descriptor;
             m_Config = config;
             m_Preferences = prefs;
             m_Filter = filter;
+            m_Layout = layout;
 
             if (m_Table != null)
                 return;
 
             var state = new TreeViewState();
-            var columns = new MultiColumnHeaderState.Column[m_Desc.columnTypes.Length];
-            for (var i = 0; i < columns.Length; i++)
+            var columns = new MultiColumnHeaderState.Column[layout.properties.Length];
+            for (var i = 0; i < layout.properties.Length; i++)
             {
-                var columnType = m_Desc.columnTypes[i];
+                var property = layout.properties[i];
 
-                ColumnDescriptor style;
-                if (columnType == IssueTable.ColumnType.Description && m_Desc.descriptionColumnDescriptor.Content != null)
-                {
-                    style = m_Desc.descriptionColumnDescriptor;
-                }
-                else if (columnType < IssueTable.ColumnType.Custom)
-                    style = k_DefaultColumnDescriptors[(int)columnType];
-                else
-                {
-                    style = m_Desc.customColumnDescriptors[columnType - IssueTable.ColumnType.Custom];
-                }
+                var width = 80;
+                if (property.type == PropertyType.Description)
+                    width = 300;
+                else if (property.type == PropertyType.Severity)
+                    width = 24;
 
                 columns[i] = new MultiColumnHeaderState.Column
                 {
-                    headerContent = style.Content,
-                    width = style.Width,
-                    minWidth = style.MinWidth,
+                    headerContent = new GUIContent(property.name, layout.properties[i].longName),
+                    width = width,
+                    minWidth = 20,
                     autoResize = true
                 };
             }
@@ -107,20 +94,30 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Table = new IssueTable(state,
                 new MultiColumnHeader(new MultiColumnHeaderState(columns)),
                 m_Desc,
+                layout,
                 m_Config,
                 m_Filter);
 
             if (m_Desc.showDependencyView)
                 m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onDoubleClick);
+            m_Issues = new List<ProjectIssue>();
         }
 
-        public void AddIssues(IEnumerable<ProjectIssue> issues)
+        public void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
-            m_Table.AddIssues(issues.Where(i => i.category == m_Desc.category).ToArray());
+            var issues = allIssues.Where(i => i.category == m_Desc.category).ToArray();
+            m_Issues.AddRange(issues);
+            m_Table.AddIssues(issues);
+        }
+
+        public ProjectIssue[] GetIssues()
+        {
+            return m_Issues.ToArray();
         }
 
         public void Clear()
         {
+            m_Issues.Clear();
             m_Table.Clear();
         }
 
@@ -177,6 +174,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Space();
 
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+
+            EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
+            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
+            m_Table.SetFontSize(m_Preferences.fontSize);
+
+            Styles.TextArea.fontSize = m_Preferences.fontSize;
+
+            // (optional) collapse/expand buttons
             if (m_Desc.groupByDescription)
             {
                 if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
@@ -186,11 +191,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
-            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
-            m_Table.SetFontSize(m_Preferences.fontSize);
 
-            Styles.TextArea.fontSize = m_Preferences.fontSize;
+            if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
+                OnExport, GUILayout.Width(80)))
+            {
+                Export();
+
+                GUIUtility.ExitGUI();
+            }
 
             EditorGUILayout.EndHorizontal();
 
@@ -300,9 +308,60 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Table.SetExpanded(row.id, expanded);
         }
 
+        void Export(Func<ProjectIssue, bool> match = null)
+        {
+            var path = EditorUtility.SaveFilePanel("Save to CSV file", "", string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
+                "csv");
+            if (path.Length != 0)
+            {
+                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                using (var exporter = new Exporter(path, m_Layout))
+                {
+                    exporter.WriteHeader();
+
+                    var matchingIssues = m_Issues.Where(issue => m_Config.GetAction(issue.descriptor, issue.GetCallingMethod()) !=
+                        Rule.Severity.None && (match == null || match(issue)));
+                    foreach (var issue in matchingIssues)
+                        exporter.WriteIssue(issue);
+                }
+
+                EditorUtility.RevealInFinder(path);
+
+                ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Export, analytic);
+            }
+        }
+
+        void OnExport(object data)
+        {
+            var mode = (ExportMode)data;
+            switch (mode)
+            {
+                case ExportMode.All:
+                    Export();
+                    return;
+                case ExportMode.Filtered:
+                    Export(issue => { return m_Filter.Match(issue); });
+                    return;
+                case ExportMode.Selected:
+                    var selectedItems = table.GetSelectedItems();
+                    Export(issue =>
+                    {
+                        return selectedItems.Any(item => item.Find(issue));
+                    });
+                    return;
+            }
+        }
+
         const string k_NoSelectionText = "<No selection>";
         const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         const string k_MultipleSelectionText = "<Multiple selection>";
+
+        static string[] k_ExportModeStrings =
+        {
+            "All",
+            "Filtered",
+            "Selected"
+        };
 
         static class LayoutSize
         {
@@ -313,6 +372,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static class Contents
         {
+            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to .csv files.");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All", "");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All", "");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
@@ -325,51 +385,5 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static GUIStyle TextArea;
             public static GUIStyle TextFieldWarning;
         }
-
-        static readonly ColumnDescriptor[] k_DefaultColumnDescriptors =
-        {
-            new ColumnDescriptor
-            {
-                Content = new GUIContent("Issue", "Issue description"),
-                Width = 300,
-                MinWidth = 100,
-                Format = PropertyFormat.String
-            },
-            new ColumnDescriptor
-            {
-                Content = new GUIContent(" ! ", "Issue Severity"),
-                Width = 22,
-                MinWidth = 22,
-                Format = PropertyFormat.String
-            },
-            new ColumnDescriptor
-            {
-                Content = new GUIContent("Area", "The area the issue might have an impact on"),
-                Width = 60,
-                MinWidth = 50,
-                Format = PropertyFormat.String
-            },
-            new ColumnDescriptor
-            {
-                Content = new GUIContent("Path", "Path and line number"),
-                Width = 700,
-                MinWidth = 100,
-                Format = PropertyFormat.String
-            },
-            new ColumnDescriptor
-            {
-                Content = new GUIContent("Filename", "Managed Assembly name"),
-                Width = 180,
-                MinWidth = 100,
-                Format = PropertyFormat.String
-            },
-            new ColumnDescriptor
-            {
-                Content = new GUIContent("File Type", "File extension"),
-                Width = 80,
-                MinWidth = 80,
-                Format = PropertyFormat.String
-            }
-        };
     }
 }

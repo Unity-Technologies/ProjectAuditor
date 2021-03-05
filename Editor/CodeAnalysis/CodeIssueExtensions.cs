@@ -1,3 +1,5 @@
+using System;
+
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     public static class CodeIssueExtensions

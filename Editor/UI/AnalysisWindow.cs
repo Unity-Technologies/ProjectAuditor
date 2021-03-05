@@ -9,7 +9,6 @@ namespace Unity.ProjectAuditor.Editor.UI
     class AnalysisWindow : EditorWindow
     {
         protected AnalysisView m_AnalysisView;
-        protected List<ProjectIssue> m_Issues;
 
         public static T FindOpenWindow<T>() where T : class
         {
@@ -25,16 +24,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_AnalysisView = new AnalysisView();
         }
 
-        public virtual void CreateTable(AnalysisViewDescriptor desc, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public virtual void CreateTable(AnalysisViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
-            m_AnalysisView.CreateTable(desc, config, prefs, filter);
-            m_Issues = new List<ProjectIssue>();
+            m_AnalysisView.CreateTable(desc, layout, config, prefs, filter);
         }
 
         public void AddIssues(IEnumerable<ProjectIssue> issues)
         {
             m_AnalysisView.AddIssues(issues);
-            m_Issues.AddRange(issues);
         }
 
         public void Refresh()
@@ -45,7 +42,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         public void Clear()
         {
             m_AnalysisView.Clear();
-            m_Issues.Clear();
         }
 
         public bool IsValid()

@@ -1,42 +1,10 @@
 using System;
-using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    /// <summary>
-    /// Affected area
-    /// </summary>
-    public enum Area
-    {
-        /// <summary>
-        /// CPU Performance
-        /// </summary>
-        CPU,
-
-        /// <summary>
-        /// GPU Performance
-        /// </summary>
-        GPU,
-
-        /// <summary>
-        /// Memory consumption
-        /// </summary>
-        Memory,
-
-        /// <summary>
-        /// Application size
-        /// </summary>
-        BuildSize,
-
-        /// <summary>
-        /// Load times
-        /// </summary>
-        LoadTimes
-    }
-
     public enum IssueCategory
     {
         Assets,
@@ -85,10 +53,8 @@ namespace Unity.ProjectAuditor.Editor
                             string description,
                             IssueCategory category,
                             CallTreeNode dependenciesNode)
+            : this(descriptor, description, category)
         {
-            this.descriptor = descriptor;
-            this.description = description;
-            this.category = category;
             dependencies = dependenciesNode;
         }
 

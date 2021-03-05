@@ -11,19 +11,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     class IssueTable : TreeView
     {
-        public enum ColumnType
-        {
-            Description = 0,
-            Severity,
-            Area,
-            Path,
-            Filename,
-            FileType,
-            Custom,
-
-            Count
-        }
-
         static readonly int k_FirstId = 1;
         static readonly string k_InfoIconName = "console.infoicon";
         static readonly string k_WarnIconName = "console.warnicon";
@@ -34,6 +21,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         readonly ProjectAuditorConfig m_Config;
         readonly AnalysisViewDescriptor m_Desc;
         readonly IProjectIssueFilter m_Filter;
+        readonly IssueLayout m_Layout;
         readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
 
         List<IssueTableItem> m_TreeViewItemGroups;
@@ -44,13 +32,14 @@ namespace Unity.ProjectAuditor.Editor.UI
         int m_FontSize;
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
-                          AnalysisViewDescriptor desc, ProjectAuditorConfig config,
+                          AnalysisViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config,
                           IProjectIssueFilter filter) : base(state,
                                                              multicolumnHeader)
         {
             m_Config = config;
             m_Filter = filter;
             m_Desc = desc;
+            m_Layout = layout;
             m_FlatView = !desc.groupByDescription;
             m_NextId = k_FirstId;
             m_FontSize = Preferences.k_MinFontSize;
@@ -212,10 +201,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int columnIndex, ref RowGUIArgs args)
         {
-            var column = m_Desc.columnTypes[columnIndex];
+            var property = m_Layout.properties[columnIndex];
+            var columnType = property.type;
 
             // indent first column, if necessary
-            if (m_Desc.groupByDescription && (int)ColumnType.Description == column)
+            if (m_Desc.groupByDescription && (int)PropertyType.Description == columnType)
             {
                 var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
@@ -229,7 +219,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var item = treeViewItem as IssueTableItem;
             if (item == null)
             {
-                if (column == ColumnType.Description)
+                if (columnType == PropertyType.Description)
                     EditorGUI.LabelField(cellRect, new GUIContent(treeViewItem.displayName, treeViewItem.displayName), s_LabelStyle);
                 return;
             }
@@ -245,19 +235,19 @@ namespace Unity.ProjectAuditor.Editor.UI
                 GUI.enabled = false;
 
             if (item.IsGroup())
-                switch (column)
+                switch (columnType)
                 {
-                    case ColumnType.Description:
+                    case PropertyType.Description:
                         EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()), s_LabelStyle);
                         break;
-                    case ColumnType.Area:
+                    case PropertyType.Area:
                         EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription), s_LabelStyle);
                         break;
                 }
             else
-                switch (column)
+                switch (columnType)
                 {
-                    case ColumnType.Severity:
+                    case PropertyType.Severity:
                     {
                         string iconName = string.Empty;
                         string tooltip = string.Empty;
@@ -298,11 +288,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                         }
                     }
                     break;
-                    case ColumnType.Area:
+                    case PropertyType.Area:
                         if (!m_Desc.groupByDescription)
                             EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription), s_LabelStyle);
                         break;
-                    case ColumnType.Description:
+                    case PropertyType.Description:
                         if (m_Desc.groupByDescription)
                         {
                             var text = item.GetDisplayName();
@@ -334,7 +324,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         }
 
                         break;
-                    case ColumnType.Filename:
+                    case PropertyType.Filename:
                         if (issue.filename != string.Empty)
                         {
                             var filename = string.Format("{0}", issue.filename);
@@ -346,7 +336,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         }
                         break;
 
-                    case ColumnType.Path:
+                    case PropertyType.Path:
                         if (issue.location != null)
                         {
                             var path = string.Format("{0}", issue.location.Path);
@@ -357,7 +347,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         }
                         break;
 
-                    case ColumnType.FileType:
+                    case PropertyType.FileType:
                         if (issue.location.Path != string.Empty)
                         {
                             var ext = issue.location.Extension;
@@ -368,15 +358,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                         break;
                     default:
-                        var propertyIndex = column - ColumnType.Custom;
-                        var property = issue.GetCustomProperty(propertyIndex);
-                        if (property != string.Empty)
+                        var propertyIndex = columnType - PropertyType.Custom;
+                        var customProperty = issue.GetCustomProperty(propertyIndex);
+                        if (customProperty != string.Empty)
                         {
-                            var desc = m_Desc.customColumnDescriptors[propertyIndex];
-                            if (desc.Format == PropertyFormat.Bool)
-                                EditorGUI.Toggle(cellRect, property.Equals(true.ToString()));
+                            if (property.format == PropertyFormat.Bool)
+                                EditorGUI.Toggle(cellRect, customProperty.Equals(true.ToString()));
                             else
-                                EditorGUI.LabelField(cellRect, new GUIContent(property), s_LabelStyle);
+                                EditorGUI.LabelField(cellRect, new GUIContent(customProperty), s_LabelStyle);
                         }
 
                         break;
@@ -477,7 +466,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             for (var i = 0; i < sortedColumns.Length; i++)
                 columnAscending[i] = multiColumnHeader.IsSortedAscending(sortedColumns[i]);
 
-            var root = new ItemTree(null, m_Desc);
+            var root = new ItemTree(null, m_Layout);
             var stack = new Stack<ItemTree>();
             stack.Push(root);
             foreach (var row in rows)
@@ -496,7 +485,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (row.depth > activeParentDepth)
                 {
-                    var t = new ItemTree(r, m_Desc);
+                    var t = new ItemTree(r, m_Layout);
                     stack.Peek().AddChild(t);
                     stack.Push(t);
                 }
@@ -516,13 +505,13 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             readonly List<ItemTree> m_Children;
             readonly IssueTableItem m_Item;
-            readonly AnalysisViewDescriptor m_ViewDescriptor;
+            readonly IssueLayout m_Layout;
 
-            public ItemTree(IssueTableItem i, AnalysisViewDescriptor viewDescriptor)
+            public ItemTree(IssueTableItem i, IssueLayout layout)
             {
                 m_Item = i;
                 m_Children = new List<ItemTree>();
-                m_ViewDescriptor = viewDescriptor;
+                m_Layout = layout;
             }
 
             public int Depth
@@ -559,18 +548,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var firstString = String.Empty;
                         var secondString = String.Empty;
 
-                        var columnEnum = m_ViewDescriptor.columnTypes[columnSortOrder[i]];
-                        switch (columnEnum)
+                        var property = m_Layout.properties[columnSortOrder[i]];
+                        switch (property.type)
                         {
-                            case ColumnType.Description:
+                            case PropertyType.Description:
                                 firstString = firstItem.GetDisplayName();
                                 secondString = secondItem.GetDisplayName();
                                 break;
-                            case ColumnType.Area:
+                            case PropertyType.Area:
                                 firstString = firstItem.ProblemDescriptor.area;
                                 secondString = secondItem.ProblemDescriptor.area;
                                 break;
-                            case ColumnType.Filename:
+                            case PropertyType.Filename:
                                 firstString = firstItem.ProjectIssue != null
                                     ? firstItem.ProjectIssue.filename
                                     : string.Empty;
@@ -578,7 +567,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     ? secondItem.ProjectIssue.filename
                                     : string.Empty;
                                 break;
-                            case ColumnType.Path:
+                            case PropertyType.Path:
                                 firstString = firstItem.ProjectIssue != null
                                     ? firstItem.ProjectIssue.location.Path
                                     : string.Empty;
@@ -586,18 +575,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     ? secondItem.ProjectIssue.location.Path
                                     : string.Empty;
                                 break;
-                            case ColumnType.FileType:
+                            case PropertyType.FileType:
                                 firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.location.Extension : string.Empty;
                                 secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.location.Extension : string.Empty;
                                 break;
-                            case ColumnType.Severity:
+                            case PropertyType.Severity:
                                 firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.severity.ToString() : string.Empty;
                                 secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.severity.ToString() : string.Empty;
                                 break;
                             default:
-                                var propertyIndex = columnEnum - ColumnType.Custom;
-                                var format = m_ViewDescriptor.customColumnDescriptors[propertyIndex].Format;
-                                if (format == PropertyFormat.Integer)
+                                var propertyIndex = property.type - PropertyType.Custom;
+                                if (property.format == PropertyFormat.Integer)
                                 {
                                     int first;
                                     int second;

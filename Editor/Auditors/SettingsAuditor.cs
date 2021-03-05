@@ -11,6 +11,16 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 {
     class SettingsAuditor : IAuditor
     {
+        static readonly IssueLayout k_IssueLayout = new IssueLayout
+        {
+            category = IssueCategory.ProjectSettings,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
+                new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"}
+            }
+        };
+
         readonly List<Assembly> m_Assemblies = new List<Assembly>();
         readonly Evaluators m_Helpers = new Evaluators();
 
@@ -45,6 +55,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             return m_ProblemDescriptors;
+        }
+
+        public IEnumerable<IssueLayout> GetLayouts()
+        {
+            yield return k_IssueLayout;
         }
 
         public void Reload(string path)
@@ -100,7 +115,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         void AddIssue(ProblemDescriptor descriptor, string description, Action<ProjectIssue> onIssueFound)
         {
             var projectWindowPath = "";
-            var mappings = m_ProjectSettingsMapping.Where(p => p.Key.Contains(descriptor.type));
+            var mappings = m_ProjectSettingsMapping.Where(p => descriptor.type.StartsWith(p.Key));
             if (mappings.Count() > 0)
                 projectWindowPath = mappings.First().Value;
             onIssueFound(new ProjectIssue
@@ -148,8 +163,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 var helperType = m_Helpers.GetType();
                 var theMethod = helperType.GetMethod(descriptor.customevaluator);
-                var isIssue = (bool)theMethod.Invoke(m_Helpers, null);
-                if (isIssue) AddIssue(descriptor, descriptor.description, onIssueFound);
+                if ((bool)theMethod.Invoke(m_Helpers, null))
+                    AddIssue(descriptor, descriptor.description, onIssueFound);
             }
         }
     }

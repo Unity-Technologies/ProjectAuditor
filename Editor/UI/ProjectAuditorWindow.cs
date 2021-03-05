@@ -21,13 +21,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             Valid
         }
 
-        enum ExportMode
-        {
-            All = 0,
-            Filtered = 1,
-            Selected
-        }
-
         static readonly string DocumentationUrl = "https://github.com/Unity-Technologies/ProjectAuditor/blob/master/Documentation~/index.md";
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow Instance;
@@ -48,19 +41,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showMuteOptions = false,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Asset Dependencies"),
-                columnTypes = new[]
-                {
-                    IssueTable.ColumnType.Description,
-                    IssueTable.ColumnType.FileType,
-                    IssueTable.ColumnType.Path
-                },
-                descriptionColumnDescriptor = new ColumnDescriptor
-                {
-                    Content = new GUIContent("Asset Name"),
-                    Width = 300,
-                    MinWidth = 100,
-                    Format = PropertyFormat.String
-                },
                 onDoubleClick = FocusOnAssetInProjectWindow,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.Assets
             },
@@ -77,69 +57,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showMuteOptions = false,
                 showDependencyView = false,
                 showRightPanels = false,
-                columnTypes = new[]
-                {
-                    IssueTable.ColumnType.Severity,
-                    IssueTable.ColumnType.Description,
-                    IssueTable.ColumnType.Custom,
-                    IssueTable.ColumnType.Custom + 1,
-                    IssueTable.ColumnType.Custom + 2,
-                    IssueTable.ColumnType.Custom + 3,
-                    IssueTable.ColumnType.Custom + 4,
-                    IssueTable.ColumnType.Custom + 5
-                },
-                descriptionColumnDescriptor = new ColumnDescriptor
-                {
-                    Content = new GUIContent("Shader Name"),
-                    Width = 300,
-                    MinWidth = 100,
-                    Format = PropertyFormat.String
-                },
-                customColumnDescriptors = new[]
-                {
-                    new ColumnDescriptor
-                    {
-                        Content = new GUIContent("Actual Variants", "Number of variants in the build"),
-                        Width = 80,
-                        MinWidth = 80,
-                        Format = PropertyFormat.Integer
-                    },
-                    new ColumnDescriptor
-                    {
-                        Content = new GUIContent("Passes", "Number of Passes"),
-                        Width = 80,
-                        MinWidth = 80,
-                        Format = PropertyFormat.Integer
-                    },
-                    new ColumnDescriptor
-                    {
-                        Content = new GUIContent("Keywords", "Number of Keywords"),
-                        Width = 80,
-                        MinWidth = 80,
-                        Format = PropertyFormat.Integer
-                    },
-                    new ColumnDescriptor
-                    {
-                        Content = new GUIContent("Render Queue"),
-                        Width = 80,
-                        MinWidth = 80,
-                        Format = PropertyFormat.Integer
-                    },
-                    new ColumnDescriptor
-                    {
-                        Content = new GUIContent("Instancing", "GPU Instancing Support"),
-                        Width = 80,
-                        MinWidth = 80,
-                        Format = PropertyFormat.Bool
-                    },
-                    new ColumnDescriptor
-                    {
-                        Content = new GUIContent("SRP Batcher", "SRP Batcher Compatible"),
-                        Width = 80,
-                        MinWidth = 80,
-                        Format = PropertyFormat.Bool
-                    }
-                },
                 onDoubleClick = FocusOnAssetInProjectWindow,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
             },
@@ -157,24 +74,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showMuteOptions = true,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
-                columnTypes = new[]
-                {
-                    IssueTable.ColumnType.Description,
-                    IssueTable.ColumnType.Severity,
-                    IssueTable.ColumnType.Area,
-                    IssueTable.ColumnType.Filename,
-                    IssueTable.ColumnType.Custom
-                },
-                customColumnDescriptors = new[]
-                {
-                    new ColumnDescriptor
-                    {
-                        Content = new GUIContent("Assembly", "Managed Assembly name"),
-                        Width = 300,
-                        MinWidth = 100,
-                        Format = PropertyFormat.String
-                    }
-                },
                 onDoubleClick = OpenTextFile,
                 onOpenDescriptor = OpenDescriptor,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.ApiCalls
@@ -232,11 +131,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showMuteOptions = true,
                 showDependencyView = false,
                 showRightPanels = true,
-                columnTypes = new[]
-                {
-                    IssueTable.ColumnType.Description,
-                    IssueTable.ColumnType.Area
-                },
                 onDoubleClick = OpenProjectSettings,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.ProjectSettings
             }
@@ -253,60 +147,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             showDependencyView = false,
             showMuteOptions = false,
             showRightPanels = false,
-            columnTypes = new[]
-            {
-                IssueTable.ColumnType.Description,
-                IssueTable.ColumnType.Custom,
-                IssueTable.ColumnType.Custom + 1,
-                IssueTable.ColumnType.Custom + 2,
-                IssueTable.ColumnType.Custom + 3,
-                IssueTable.ColumnType.Custom + 4
-            },
-            descriptionColumnDescriptor = new ColumnDescriptor
-            {
-                Content = new GUIContent("Shader Name"),
-                Width = 300,
-                MinWidth = 100,
-                Format = PropertyFormat.String
-            },
-            customColumnDescriptors = new[]
-            {
-                new ColumnDescriptor
-                {
-                    Content = new GUIContent("Compiled", "Compiled at runtime by the player"),
-                    Width = 80,
-                    MinWidth = 80,
-                    Format = PropertyFormat.Bool
-                },
-                new ColumnDescriptor
-                {
-                    Content = new GUIContent("Graphics API"),
-                    Width = 80,
-                    MinWidth = 80,
-                    Format = PropertyFormat.String
-                },
-                new ColumnDescriptor
-                {
-                    Content = new GUIContent("Pass Name"),
-                    Width = 80,
-                    MinWidth = 80,
-                    Format = PropertyFormat.String
-                },
-                new ColumnDescriptor
-                {
-                    Content = new GUIContent("Keywords", "Compiled Variants Keywords"),
-                    Width = 500,
-                    MinWidth = 80,
-                    Format = PropertyFormat.String
-                },
-                new ColumnDescriptor
-                {
-                    Content = new GUIContent("Requirements"),
-                    Width = 500,
-                    MinWidth = 80,
-                    Format = PropertyFormat.String
-                }
-            },
             onDoubleClick = FocusOnAssetInProjectWindow,
             analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
         };
@@ -426,7 +266,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Array.Sort(m_AnalysisViewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
 
             m_ViewNames = m_AnalysisViewDescriptors.Select(m => m.name).ToArray();
-            m_ViewContents = m_AnalysisViewDescriptors.Select(m => new GUIContent("View: " + m.name)).ToArray();
+            m_ViewContents = m_AnalysisViewDescriptors.Select(m => new GUIContent("View: " + m.name, "Change View")).ToArray();
 
             if (m_TextFilter == null)
                 m_TextFilter = new TextFilter();
@@ -435,10 +275,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             foreach (var desc in m_AnalysisViewDescriptors)
             {
                 var view = new AnalysisView();
-                view.CreateTable(desc, m_ProjectAuditor.config, m_Preferences, this);
+                view.CreateTable(desc, m_ProjectAuditor.GetLayout(desc.category), m_ProjectAuditor.config, m_Preferences, this);
 
                 if (m_AnalysisState == AnalysisState.Valid)
-                    view.AddIssues(m_ProjectReport.GetIssues(view.desc.category));
+                    view.AddIssues(m_ProjectReport.GetIssues(desc.category));
 
                 m_AnalysisViews.Add(view);
             }
@@ -451,7 +291,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     if (shaderVariantsWindow.IsValid())
                         shaderVariantsWindow.Clear();
                     else
-                        shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                        shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.GetLayout(IssueCategory.ShaderVariants), m_ProjectAuditor.config, m_Preferences, m_TextFilter);
                     shaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
                     shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
                     m_ShaderVariantsWindow = shaderVariantsWindow;
@@ -566,7 +406,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_ShaderVariantsWindow == null)
             {
                 var shaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
-                shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.GetLayout(IssueCategory.ShaderVariants), m_ProjectAuditor.config, m_Preferences, m_TextFilter);
                 shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
                 m_ShaderVariantsWindow = shaderVariantsWindow;
             }
@@ -642,43 +482,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 ProjectAuditorAnalytics.SendUIButtonEvent(activeAnalysisView.desc.analyticsEvent, analytic);
             }
-        }
-
-        void OnExport(object data)
-        {
-            var mode = (ExportMode)data;
-            switch (mode)
-            {
-                case ExportMode.All:
-                    Export();
-                    return;
-                case ExportMode.Filtered:
-                    Export(issue => { return Match(issue); });
-                    return;
-                case ExportMode.Selected:
-                    var selectedItems = activeAnalysisView.table.GetSelectedItems();
-                    Export(issue =>
-                    {
-                        return selectedItems.Any(item => item.Find(issue));
-                    });
-                    return;
-            }
-        }
-
-        void Export(Func<ProjectIssue, bool> match = null)
-        {
-            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-            if (IsAnalysisValid())
-            {
-                var path = EditorUtility.SaveFilePanel("Save analysis CSV data", "", "project-auditor-report.csv",
-                    "csv");
-                if (path.Length != 0)
-                {
-                    m_ProjectReport.ExportToCSV(path, issue => m_ProjectAuditor.config.GetAction(issue.descriptor, issue.GetCallingMethod()) !=
-                        Rule.Severity.None && (match == null || match(issue)));
-                }
-            }
-            ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Export, analytic);
         }
 
         void DrawAnalysis()
@@ -932,7 +735,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         if (m_ShaderVariantsWindow == null)
                         {
                             var shaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
-                            shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                            shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.GetLayout(IssueCategory.ShaderVariants), m_ProjectAuditor.config, m_Preferences, m_TextFilter);
                             shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
                             m_ShaderVariantsWindow = shaderVariantsWindow;
                         }
@@ -1065,14 +868,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 Utility.ToolbarDropdownList(m_ViewContents[m_ActiveViewIndex], m_ViewNames,
                     m_ActiveViewIndex,
                     OnViewChanged, GUILayout.Width(buttonWidth));
-
-                if (Utility.ToolbarButtonWithDropdownList(Styles.ExportButton, Styles.ExportModeStrings,
-                    OnExport, GUILayout.Width(buttonWidth)))
-                {
-                    Export();
-
-                    GUIUtility.ExitGUI();
-                }
 
                 GUI.enabled = true;
 
@@ -1216,9 +1011,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent ReloadButton =
                 new GUIContent("Reload DB", "Reload Issue Definition files.");
 
-            public static readonly GUIContent ExportButton =
-                new GUIContent("Export", "Export project report to .csv files.");
-
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");
 
@@ -1248,14 +1040,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 #else
             public static readonly GUIContent HelpButton = new GUIContent("?", "Open Manual (in a web browser)");
 #endif
-
-            public static readonly string[] ExportModeStrings =
-            {
-                "All",
-                "Filtered",
-                "Selected"
-            };
-
             public static readonly string HelpText =
 @"Project Auditor is an experimental static analysis tool for Unity Projects.
 This tool will analyze scripts and project settings of any Unity project
