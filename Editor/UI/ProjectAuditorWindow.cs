@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             new AnalysisViewDescriptor
             {
                 category = IssueCategory.Generics,
-                name = "Generics",
+                name = "Generics (Experimental)",
                 groupByDescription = true,
                 descriptionWithIcon = false,
                 showAreaSelection = false,
