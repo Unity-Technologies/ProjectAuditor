@@ -93,8 +93,6 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                if (descriptor.critical || (dependencies != null && dependencies.IsPerfCritical()))
-                    return Rule.Severity.Warning;
                 return descriptor.severity;
             }
         }

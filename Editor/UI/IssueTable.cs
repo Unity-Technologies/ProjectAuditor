@@ -248,36 +248,41 @@ namespace Unity.ProjectAuditor.Editor.UI
             else
                 switch (columnType)
                 {
+                    case PropertyType.CriticalContext:
+                    {
+                        if (issue.isPerfCriticalContext)
+                        {
+                            var tooltip = property.longName;
+#if UNITY_2018_3_OR_NEWER
+                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrIconContent(k_WarnIconName, tooltip), s_LabelStyle);
+#else
+                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(k_WarnIconName), tooltip), s_LabelStyle);
+#endif
+                        }
+                    }
+                    break;
                     case PropertyType.Severity:
                     {
-                        string iconName = string.Empty;
-                        string tooltip = string.Empty;
-                        if (issue.category == IssueCategory.Code && issue.isPerfCriticalContext)
+                        var iconName = string.Empty;
+                        var tooltip = string.Empty;
+                        switch (issue.descriptor.severity)
                         {
-                            iconName = k_WarnIconName;
-                            tooltip = "Performance Critical Context";
-                        }
-                        else
-                        {
-                            switch (issue.descriptor.severity)
-                            {
-                                case Rule.Severity.Info:
-                                    iconName = k_InfoIconName;
-                                    tooltip = "Info";
-                                    break;
-                                case Rule.Severity.Warning:
-                                    iconName = k_WarnIconName;
-                                    tooltip = "Warning";
-                                    break;
-                                case Rule.Severity.Error:
-                                    iconName = k_ErrorIconName;
-                                    tooltip = "Error";
-                                    break;
-                                default:
-                                    iconName = string.Empty;
-                                    tooltip = string.Empty;
-                                    break;
-                            }
+                            case Rule.Severity.Info:
+                                iconName = k_InfoIconName;
+                                tooltip = "Info";
+                                break;
+                            case Rule.Severity.Warning:
+                                iconName = k_WarnIconName;
+                                tooltip = "Warning";
+                                break;
+                            case Rule.Severity.Error:
+                                iconName = k_ErrorIconName;
+                                tooltip = "Error";
+                                break;
+                            default:
+                                iconName = string.Empty;
+                                tooltip = string.Empty;
+                                break;
                         }
                         if (!string.IsNullOrEmpty(iconName))
                         {
@@ -325,8 +330,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                         {
                             EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), descriptor.problem), s_LabelStyle);
                         }
-
                         break;
+
                     case PropertyType.Filename:
                         if (issue.filename != string.Empty)
                         {
