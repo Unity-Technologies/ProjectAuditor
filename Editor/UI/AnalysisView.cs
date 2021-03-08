@@ -77,10 +77,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                 var property = layout.properties[i];
 
                 var width = 80;
-                if (property.type == PropertyType.Description)
-                    width = 300;
-                else if (property.type == PropertyType.Severity)
-                    width = 24;
+                switch (property.type)
+                {
+                    case PropertyType.Description:
+                        width = 300;
+                        break;
+                    case PropertyType.Path:
+                        width = 500;
+                        break;
+                    case PropertyType.Severity:
+                        width = 24;
+                        break;
+                }
 
                 columns[i] = new MultiColumnHeaderState.Column
                 {
