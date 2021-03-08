@@ -18,10 +18,11 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.ProjectSettings);
-
             var playerSettingIssue =
-                issues.FirstOrDefault(i => i.descriptor.method.Equals("Player: Prebake Collision Meshes"));
+                issues.FirstOrDefault(i => i.descriptor.method.Equals("bakeCollisionMeshes"));
+
             Assert.NotNull(playerSettingIssue);
+            Assert.True(playerSettingIssue.description.Equals("Player: Prebake Collision Meshes"));
             Assert.True(playerSettingIssue.location.Path.Equals("Project/Player"));
 
             PlayerSettings.bakeCollisionMeshes = savedSetting;

@@ -221,7 +221,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 }
 
                 Location location = null;
-                if (s != null)
+                if (s != null && !s.IsHidden)
                 {
                     location = new Location(AssemblyHelper.ResolveAssetPath(assemblyInfo, s.Document.Url), s.StartLine);
                     callerNode.location = location;

@@ -1842,6 +1842,14 @@
           "area": "Memory",
           "problem": "The Component.tag property allocates managed memory.",
           "solution": "Try to avoid getting this property in frequently-updated code. Prefer using CompareTag() instead, as this does not result in managed allocations."
+        },
+        {
+          "id": 101230,
+          "type": "System.DateTime",
+          "method": "Now",
+          "area": "CPU",
+          "problem": "System.DateTime.Now is expensive because it needs to figure out the current timezone and daylight saving time information.",
+          "solution": "Try to avoid using this method in frequently-updated code. Prefer UnityEngine.Time.time or, if precise time is needed, use DateTime.UtcNow."
         }
     ]
 }
