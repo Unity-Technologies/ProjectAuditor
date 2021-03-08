@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             category = IssueCategory.Shaders,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Severity},
+//                new PropertyDefinition { type = PropertyType.Severity},
                 new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
                 new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.Integer, name = "Actual Variants", longName = "Number of variants in the build" },
                 new PropertyDefinition { type = PropertyType.Custom + 1, format = PropertyFormat.Integer, name = "Passes", longName = "Number of Passes" },
