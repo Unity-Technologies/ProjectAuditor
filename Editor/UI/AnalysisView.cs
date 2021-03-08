@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Editor.Utils;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
@@ -32,6 +33,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
     class AnalysisView
     {
+        private static string s_ExportDirectory = string.Empty;
+
         enum ExportMode
         {
             All = 0,
@@ -318,7 +321,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void Export(Func<ProjectIssue, bool> match = null)
         {
-            var path = EditorUtility.SaveFilePanel("Save to CSV file", "", string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
+            var path = EditorUtility.SaveFilePanel("Save to CSV file", s_ExportDirectory, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
                 "csv");
             if (path.Length != 0)
             {
@@ -336,6 +339,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorUtility.RevealInFinder(path);
 
                 ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Export, analytic);
+
+                s_ExportDirectory = Path.GetDirectoryName(path);
             }
         }
 
