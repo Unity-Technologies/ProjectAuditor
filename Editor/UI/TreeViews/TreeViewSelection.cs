@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
@@ -67,6 +68,16 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool Contains(string name)
         {
             return selection.Contains(name);
+        }
+
+        public bool ContainsAny(string[] names)
+        {
+            foreach (string name in names)
+            {
+                if (selection.Contains(name))
+                    return true;
+            }
+            return false;
         }
 
         public bool ContainsGroup(string groupName)

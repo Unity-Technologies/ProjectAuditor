@@ -226,6 +226,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var issue = item.ProjectIssue;
             var descriptor = item.ProblemDescriptor;
+            var areaName = descriptor.area.Replace('|', ',');
             var areaLongDescription = "This issue might have an impact on " + descriptor.area;
 
             var rule = m_Config.GetRule(descriptor, issue != null ? issue.GetCallingMethod() : string.Empty);
@@ -241,7 +242,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()), s_LabelStyle);
                         break;
                     case PropertyType.Area:
-                        EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription), s_LabelStyle);
+                        EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), s_LabelStyle);
                         break;
                 }
             else
@@ -288,10 +289,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                         }
                     }
                     break;
+
                     case PropertyType.Area:
                         if (!m_Desc.groupByDescription)
-                            EditorGUI.LabelField(cellRect, new GUIContent(descriptor.area, areaLongDescription), s_LabelStyle);
+                            EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), s_LabelStyle);
                         break;
+
                     case PropertyType.Description:
                         if (m_Desc.groupByDescription)
                         {
