@@ -1003,15 +1003,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 #endif
             public static readonly string HelpText =
 @"Project Auditor is an experimental static analysis tool for Unity Projects.
-This tool will analyze scripts and project settings of any Unity project
-and report a list a possible problems that might affect performance, memory and other areas.
+This tool will analyze assets, scripts and project settings of a Unity project
+and report a list of possible problems that might affect performance, memory and other areas.
 
-To Analyze the project:
-* Click on Analyze.
+To Analyze the project, click on Analyze.
 
-Once the project is analyzed, the tool displays list of issues.
-At the moment there are two types of issues: API calls or Project Settings. The tool allows the user to switch between the two.
-In addition, it is possible to filter issues by area (CPU/Memory/etc...) or assembly name or search for a specific string.";
+Once the project is analyzed, the tool displays a list of issues of a specific kind. Initially, code-related issues will be shown.
+To switch type of issues, for example from code to settings-related issues, use the 'View' dropdown and select Settings.
+In addition, it is possible to filter issues by area (CPU/Memory/etc...), by string or by other search criteria.";
         }
 
 
