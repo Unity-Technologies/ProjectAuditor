@@ -30,6 +30,7 @@ namespace Unity.ProjectAuditor.Editor
         ProjectAuditorConfig m_Config;
 
         public const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
+        public const string PackagePath = "Packages/com.unity.project-auditor";
 
         public ProjectAuditorConfig config
         {
@@ -90,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (string.IsNullOrEmpty(s_DataPath))
                 {
-                    const string path = "Packages/com.unity.project-auditor/Data";
+                    const string path = PackagePath + "/Data";
                     if (!File.Exists(Path.GetFullPath(path)))
                     {
                         // if it's not a package, let's search through all assets
