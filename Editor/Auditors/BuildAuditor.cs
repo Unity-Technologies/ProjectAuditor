@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new PropertyDefinition { type = PropertyType.Description, name = "Filename"},
                 new PropertyDefinition { type = PropertyType.FileType, name = "Type"},
                 new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.Integer, name = "Size (bytes)", longName = "Size (bytes) in the Build"},
-                new PropertyDefinition { type = PropertyType.Path, name = "Filename", longName = "Filename and line number"}
+                new PropertyDefinition { type = PropertyType.Path, name = "Path"}
             }
         };
 

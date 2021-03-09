@@ -94,10 +94,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onDoubleClick = OpenProjectSettings,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.ProjectSettings
             },
-			new AnalysisViewDescriptor
+            new AnalysisViewDescriptor
             {
                 category = IssueCategory.BuildFile,
                 name = "Build",
+                menuLabel = "Experimental/Build Files",
                 menuOrder = 99,
                 groupByDescription = true,
                 descriptionWithIcon = true,
@@ -393,10 +394,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var newIssues = new List<ProjectIssue>();
             auditor.Audit(issue =>
-                {
-                    newIssues.Add(issue);
-                    m_ProjectReport.AddIssue(issue);
-                },
+            {
+                newIssues.Add(issue);
+                m_ProjectReport.AddIssue(issue);
+            },
                 () =>
                 {
                 },
