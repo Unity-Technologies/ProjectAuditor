@@ -1,19 +1,6 @@
-using System;
-
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.Utils
 {
-    public enum PropertyType
-    {
-        Description = 0,
-        Severity,
-        Area,
-        Path,
-        Filename,
-        FileType,
-        Custom
-    }
-
-    public static class IssueProperty
+    public static class ProjectIssueExtensions
     {
         public static string GetProperty(this ProjectIssue issue, PropertyType propertyType)
         {
@@ -40,10 +27,13 @@ namespace Unity.ProjectAuditor.Editor
                     if (issue.category == IssueCategory.Code)
                         path += string.Format(":{0}", issue.line);
                     return path;
+                case PropertyType.CriticalContext:
+                    return issue.isPerfCriticalContext.ToString();
                 default:
                     var propertyIndex = propertyType - PropertyType.Custom;
                     return issue.GetCustomProperty(propertyIndex);
             }
         }
     }
+
 }

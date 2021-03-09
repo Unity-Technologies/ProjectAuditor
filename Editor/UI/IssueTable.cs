@@ -21,6 +21,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         readonly ProjectAuditorConfig m_Config;
         readonly AnalysisViewDescriptor m_Desc;
         readonly IProjectIssueFilter m_Filter;
+        readonly IssueLayout m_Layout;
         readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
 
         List<IssueTableItem> m_TreeViewItemGroups;
@@ -31,13 +32,14 @@ namespace Unity.ProjectAuditor.Editor.UI
         int m_FontSize;
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
-                          AnalysisViewDescriptor desc, ProjectAuditorConfig config,
+                          AnalysisViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config,
                           IProjectIssueFilter filter) : base(state,
                                                              multicolumnHeader)
         {
             m_Config = config;
             m_Filter = filter;
             m_Desc = desc;
+            m_Layout = layout;
             m_FlatView = !desc.groupByDescription;
             m_NextId = k_FirstId;
             m_FontSize = Preferences.k_MinFontSize;
@@ -199,7 +201,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int columnIndex, ref RowGUIArgs args)
         {
-            var columnType = m_Desc.columnTypes[columnIndex];
+            var property = m_Layout.properties[columnIndex];
+            var columnType = property.type;
 
             // indent first column, if necessary
             if (m_Desc.groupByDescription && (int)PropertyType.Description == columnType)
@@ -245,36 +248,41 @@ namespace Unity.ProjectAuditor.Editor.UI
             else
                 switch (columnType)
                 {
+                    case PropertyType.CriticalContext:
+                    {
+                        if (issue.isPerfCriticalContext)
+                        {
+                            var tooltip = property.longName;
+#if UNITY_2018_3_OR_NEWER
+                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrIconContent(k_WarnIconName, tooltip), s_LabelStyle);
+#else
+                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(k_WarnIconName), tooltip), s_LabelStyle);
+#endif
+                        }
+                    }
+                    break;
                     case PropertyType.Severity:
                     {
-                        string iconName = string.Empty;
-                        string tooltip = string.Empty;
-                        if (issue.category == IssueCategory.Code && issue.isPerfCriticalContext)
+                        var iconName = string.Empty;
+                        var tooltip = string.Empty;
+                        switch (issue.descriptor.severity)
                         {
-                            iconName = k_WarnIconName;
-                            tooltip = "Performance Critical Context";
-                        }
-                        else
-                        {
-                            switch (issue.descriptor.severity)
-                            {
-                                case Rule.Severity.Info:
-                                    iconName = k_InfoIconName;
-                                    tooltip = "Info";
-                                    break;
-                                case Rule.Severity.Warning:
-                                    iconName = k_WarnIconName;
-                                    tooltip = "Warning";
-                                    break;
-                                case Rule.Severity.Error:
-                                    iconName = k_ErrorIconName;
-                                    tooltip = "Error";
-                                    break;
-                                default:
-                                    iconName = string.Empty;
-                                    tooltip = string.Empty;
-                                    break;
-                            }
+                            case Rule.Severity.Info:
+                                iconName = k_InfoIconName;
+                                tooltip = "Info";
+                                break;
+                            case Rule.Severity.Warning:
+                                iconName = k_WarnIconName;
+                                tooltip = "Warning";
+                                break;
+                            case Rule.Severity.Error:
+                                iconName = k_ErrorIconName;
+                                tooltip = "Error";
+                                break;
+                            default:
+                                iconName = string.Empty;
+                                tooltip = string.Empty;
+                                break;
                         }
                         if (!string.IsNullOrEmpty(iconName))
                         {
@@ -322,8 +330,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                         {
                             EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), descriptor.problem), s_LabelStyle);
                         }
-
                         break;
+
                     case PropertyType.Filename:
                         if (issue.filename != string.Empty)
                         {
@@ -359,14 +367,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                         break;
                     default:
                         var propertyIndex = columnType - PropertyType.Custom;
-                        var property = issue.GetCustomProperty(propertyIndex);
-                        if (property != string.Empty)
+                        var customProperty = issue.GetCustomProperty(propertyIndex);
+                        if (customProperty != string.Empty)
                         {
-                            var desc = m_Desc.customColumnDescriptors[propertyIndex];
-                            if (desc.Format == PropertyFormat.Bool)
-                                EditorGUI.Toggle(cellRect, property.Equals(true.ToString()));
+                            if (property.format == PropertyFormat.Bool)
+                                EditorGUI.Toggle(cellRect, customProperty.Equals(true.ToString()));
                             else
-                                EditorGUI.LabelField(cellRect, new GUIContent(property), s_LabelStyle);
+                                EditorGUI.LabelField(cellRect, new GUIContent(customProperty), s_LabelStyle);
                         }
 
                         break;
@@ -467,7 +474,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             for (var i = 0; i < sortedColumns.Length; i++)
                 columnAscending[i] = multiColumnHeader.IsSortedAscending(sortedColumns[i]);
 
-            var root = new ItemTree(null, m_Desc);
+            var root = new ItemTree(null, m_Layout);
             var stack = new Stack<ItemTree>();
             stack.Push(root);
             foreach (var row in rows)
@@ -486,7 +493,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (row.depth > activeParentDepth)
                 {
-                    var t = new ItemTree(r, m_Desc);
+                    var t = new ItemTree(r, m_Layout);
                     stack.Peek().AddChild(t);
                     stack.Push(t);
                 }
@@ -506,13 +513,13 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             readonly List<ItemTree> m_Children;
             readonly IssueTableItem m_Item;
-            readonly AnalysisViewDescriptor m_ViewDescriptor;
+            readonly IssueLayout m_Layout;
 
-            public ItemTree(IssueTableItem i, AnalysisViewDescriptor viewDescriptor)
+            public ItemTree(IssueTableItem i, IssueLayout layout)
             {
                 m_Item = i;
                 m_Children = new List<ItemTree>();
-                m_ViewDescriptor = viewDescriptor;
+                m_Layout = layout;
             }
 
             public int Depth
@@ -549,8 +556,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var firstString = String.Empty;
                         var secondString = String.Empty;
 
-                        var columnEnum = m_ViewDescriptor.columnTypes[columnSortOrder[i]];
-                        switch (columnEnum)
+                        var property = m_Layout.properties[columnSortOrder[i]];
+                        switch (property.type)
                         {
                             case PropertyType.Description:
                                 firstString = firstItem.GetDisplayName();
@@ -585,9 +592,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.severity.ToString() : string.Empty;
                                 break;
                             default:
-                                var propertyIndex = columnEnum - PropertyType.Custom;
-                                var format = m_ViewDescriptor.customColumnDescriptors[propertyIndex].Format;
-                                if (format == PropertyFormat.Integer)
+                                var propertyIndex = property.type - PropertyType.Custom;
+                                if (property.format == PropertyFormat.Integer)
                                 {
                                     int first;
                                     int second;

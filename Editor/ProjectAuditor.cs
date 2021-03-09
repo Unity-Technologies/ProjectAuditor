@@ -178,9 +178,15 @@ namespace Unity.ProjectAuditor.Editor
             return null;
         }
 
+        public IssueLayout GetLayout(IssueCategory category)
+        {
+            return m_Auditors.SelectMany(auditor => auditor.GetLayouts()).First(a => a.category == category);
+        }
+
         public void Reload(string path)
         {
-            foreach (var auditor in m_Auditors) auditor.Reload(path);
+            foreach (var auditor in m_Auditors)
+                auditor.Reload(path);
         }
 
 #if UNITY_2018_1_OR_NEWER

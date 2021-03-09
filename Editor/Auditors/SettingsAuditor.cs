@@ -11,6 +11,16 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 {
     class SettingsAuditor : IAuditor
     {
+        static readonly IssueLayout k_IssueLayout = new IssueLayout
+        {
+            category = IssueCategory.ProjectSettings,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
+                new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"}
+            }
+        };
+
         readonly List<Assembly> m_Assemblies = new List<Assembly>();
         readonly Evaluators m_Helpers = new Evaluators();
 
@@ -45,6 +55,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             return m_ProblemDescriptors;
+        }
+
+        public IEnumerable<IssueLayout> GetLayouts()
+        {
+            yield return k_IssueLayout;
         }
 
         public void Reload(string path)

@@ -52,10 +52,8 @@ namespace Unity.ProjectAuditor.Editor
                             string description,
                             IssueCategory category,
                             CallTreeNode dependenciesNode)
+            : this(descriptor, description, category)
         {
-            this.descriptor = descriptor;
-            this.description = description;
-            this.category = category;
             dependencies = dependenciesNode;
         }
 
@@ -95,8 +93,6 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                if (descriptor.critical || (dependencies != null && dependencies.IsPerfCritical()))
-                    return Rule.Severity.Warning;
                 return descriptor.severity;
             }
         }
