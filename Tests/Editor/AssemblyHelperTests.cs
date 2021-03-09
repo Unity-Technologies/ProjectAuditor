@@ -32,7 +32,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void CanGetBuiltinAuditorTypes()
         {
-            var types = AssemblyHelper.GetAllTypesInheritedFromInterface<IAuditor>();
+            var types = TypeInfo.GetAllTypesInheritedFromInterface<IAuditor>();
 
             Assert.NotNull(types.FirstOrDefault(type => type == typeof(ScriptAuditor)));
             Assert.NotNull(types.FirstOrDefault(type => type == typeof(SettingsAuditor)));
@@ -46,14 +46,14 @@ namespace UnityEditor.ProjectAuditor.EditorTests
                 var assemblyInfos = compilationHelper.Compile();
 
                 Assert.Positive(assemblyInfos.Count());
-                Assert.NotNull(assemblyInfos.FirstOrDefault(info => info.name.Contains(AssemblyHelper.DefaultAssemblyName)));
+                Assert.NotNull(assemblyInfos.FirstOrDefault(info => info.name.Contains(AssemblyInfoProvider.DefaultAssemblyName)));
             }
         }
 
         [Test]
         public void UnityEngineModuleAssemblyPathIsFound()
         {
-            var paths = AssemblyHelper.GetPrecompiledEngineAssemblyPaths();
+            var paths = AssemblyInfoProvider.GetPrecompiledEngineAssemblyPaths();
 
             Assert.Positive(paths.Count());
 
@@ -66,10 +66,10 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void CanResolveDefaultAssemblyAssetPath()
         {
-            var assembly = CompilationPipeline.GetAssemblies(AssembliesType.Player).FirstOrDefault(a => a.name.Equals(Path.GetFileNameWithoutExtension(AssemblyHelper.DefaultAssemblyFileName)));
-            var assemblyInfo = AssemblyHelper.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
+            var assembly = CompilationPipeline.GetAssemblies(AssembliesType.Player).FirstOrDefault(a => a.name.Equals(Path.GetFileNameWithoutExtension(AssemblyInfoProvider.DefaultAssemblyFileName)));
+            var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
-            var path = AssemblyHelper.ResolveAssetPath(assemblyInfo, Path.Combine(Application.dataPath, "somefile"));
+            var path = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, Path.Combine(Application.dataPath, "somefile"));
 
             Assert.True(path.Equals("Assets/somefile"));
         }
@@ -77,8 +77,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void DefaultAssemblyInfoIsCorrect()
         {
-            var assembly = CompilationPipeline.GetAssemblies(AssembliesType.Player).FirstOrDefault(a => a.name.Equals(Path.GetFileNameWithoutExtension(AssemblyHelper.DefaultAssemblyFileName)));
-            var assemblyInfo = AssemblyHelper.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
+            var assembly = CompilationPipeline.GetAssemblies(AssembliesType.Player).FirstOrDefault(a => a.name.Equals(Path.GetFileNameWithoutExtension(AssemblyInfoProvider.DefaultAssemblyFileName)));
+            var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
             Assert.IsTrue(assemblyInfo.path.Equals("Library/ScriptAssemblies/Assembly-CSharp.dll"));
             Assert.IsNull(assemblyInfo.asmDefPath);
@@ -89,7 +89,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         public void PackageAssemblyInfoIsCorrect()
         {
             var assembly = CompilationPipeline.GetAssemblies(AssembliesType.Editor).FirstOrDefault(a => a.name.Equals("Unity.ProjectAuditor.Editor"));
-            var assemblyInfo = AssemblyHelper.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
+            var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
             Assert.IsTrue(assemblyInfo.path.Equals("Library/ScriptAssemblies/Unity.ProjectAuditor.Editor.dll"));
             Assert.IsTrue(assemblyInfo.asmDefPath.Equals(Unity.ProjectAuditor.Editor.ProjectAuditor.PackagePath + "/Editor/Unity.ProjectAuditor.Editor.asmdef"));
@@ -102,7 +102,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void RegistryPackageAssemblyIsReadOnly()
         {
-            Assert.IsTrue(AssemblyHelper.IsAssemblyReadOnly("UnityEngine.TestRunner"));
+            Assert.IsTrue(AssemblyInfoProvider.IsAssemblyReadOnly("UnityEngine.TestRunner"));
         }
 
 #endif

@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             var assemblyInfos = new List<AssemblyInfo>();
             foreach (var compiledAssemblyPath in compiledAssemblyPaths)
             {
-                var assemblyInfo = AssemblyHelper.GetAssemblyInfoFromAssemblyPath(compiledAssemblyPath);
+                var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compiledAssemblyPath);
                 var assembly = assemblies.First(a => a.name.Equals(assemblyInfo.name));
                 var sourcePaths = assembly.sourceFiles.Select(file => file.Remove(0, assemblyInfo.relativePath.Length + 1));
 

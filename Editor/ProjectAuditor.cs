@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor
 
         void InitAuditors()
         {
-            foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<IAuditor>())
+            foreach (var type in TypeInfo.GetAllTypesInheritedFromInterface<IAuditor>())
             {
                 var instance = Activator.CreateInstance(type) as IAuditor;
                 instance.Initialize(m_Config);
