@@ -95,7 +95,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 onDoubleClick = OpenTextFile,
                 onOpenDescriptor = OpenDescriptor,
-                analyticsEvent = ProjectAuditorAnalytics.UIButton.ApiCalls
+                analyticsEvent = ProjectAuditorAnalytics.UIButton.Generics
             },
 			new AnalysisViewDescriptor
             {
