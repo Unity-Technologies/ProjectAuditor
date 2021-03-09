@@ -67,11 +67,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_IssueLayout;
-        }
-
-        public IEnumerable<IssueLayout> GetLayouts()
-        {
-            yield return k_IssueLayout;
             yield return k_GenericIssueLayout;
         }
 
@@ -85,8 +80,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
-            //m_GenericDescriptors.Clear();
-
             if (m_ProblemDescriptors == null)
                 throw new Exception("Issue Database not initialized.");
 
