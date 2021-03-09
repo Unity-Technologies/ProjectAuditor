@@ -342,7 +342,6 @@ class AnyApiInNamespace
             var allScriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInDelegate);
             var issue = allScriptIssues.FirstOrDefault(i => i.name.Equals("Camera.get_allCameras"));
             Assert.NotNull(issue);
-
             Assert.True(issue.GetCallingMethod().Equals("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()"));
         }
 

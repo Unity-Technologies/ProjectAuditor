@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
-                new PropertyDefinition { type = PropertyType.Severity, name = "!", longName = "Issue Severity"},
+                new PropertyDefinition { type = PropertyType.CriticalContext, format = PropertyFormat.Bool, name = "Critical", longName = "Critical code path"},
                 new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
                 new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" }
@@ -221,7 +221,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 }
 
                 Location location = null;
-                if (s != null)
+                if (s != null && !s.IsHidden)
                 {
                     location = new Location(AssemblyHelper.ResolveAssetPath(assemblyInfo, s.Document.Url), s.StartLine);
                     callerNode.location = location;

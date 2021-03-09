@@ -27,6 +27,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     if (issue.category == IssueCategory.Code)
                         path += string.Format(":{0}", issue.line);
                     return path;
+                case PropertyType.CriticalContext:
+                    return issue.isPerfCriticalContext.ToString();
                 default:
                     var propertyIndex = propertyType - PropertyType.Custom;
                     return issue.GetCustomProperty(propertyIndex);

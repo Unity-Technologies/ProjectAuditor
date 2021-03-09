@@ -92,8 +92,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var assemblyInfo = AssemblyHelper.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
             Assert.IsTrue(assemblyInfo.path.Equals("Library/ScriptAssemblies/Unity.ProjectAuditor.Editor.dll"));
-            Assert.IsTrue(assemblyInfo.asmDefPath.Equals("Packages/com.unity.project-auditor/Editor/Unity.ProjectAuditor.Editor.asmdef"));
-            Assert.IsTrue(assemblyInfo.relativePath.Equals("Packages/com.unity.project-auditor"));
+            Assert.IsTrue(assemblyInfo.asmDefPath.Equals(Unity.ProjectAuditor.Editor.ProjectAuditor.PackagePath + "/Editor/Unity.ProjectAuditor.Editor.asmdef"));
+            Assert.IsTrue(assemblyInfo.relativePath.Equals(Unity.ProjectAuditor.Editor.ProjectAuditor.PackagePath));
         }
 
 #endif

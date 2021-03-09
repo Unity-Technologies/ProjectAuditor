@@ -8,6 +8,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
     class AllocationTests
     {
         TempAsset m_TempAssetObjectAllocation;
+        TempAsset m_TempAssetClosureAllocation;
         TempAsset m_TempAssetArrayAllocation;
         TempAsset m_TempAssetMultidimensionalArrayAllocation;
         TempAsset m_TempAssetParamsArrayAllocation;
@@ -25,6 +26,20 @@ class ObjectAllocation
     }
 }
 ");
+
+            m_TempAssetClosureAllocation = new TempAsset("ClosureAllocation.cs", @"
+using UnityEngine;
+using System;
+class ClosureAllocation
+{
+    void Dummy()
+    {
+        int x = 1;
+        Func<int, int> f = y => y * x;
+    }
+}
+");
+
 
             m_TempAssetArrayAllocation = new TempAsset("ArrayAllocation.cs", @"
 class ArrayAllocation
@@ -79,11 +94,25 @@ class ParamsArrayAllocation
 
             Assert.AreEqual(1, issues.Count());
 
-            var allocationIssue = issues.FirstOrDefault();
+            var allocationIssue = issues.First();
 
-            Assert.NotNull(allocationIssue);
-            Assert.True(allocationIssue.description.Equals("'ObjectAllocation' object allocation"));
+            Assert.True(allocationIssue.description.Equals("'ObjectAllocation' allocation"));
             Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
+        }
+
+        [Test]
+        public void ClosureAllocationIsFound()
+        {
+            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetClosureAllocation);
+
+            Assert.AreEqual(1, issues.Count());
+
+            var issue = issues.First();
+
+            Assert.AreNotEqual(16707566, issue.line);
+            Assert.True(issue.description.Equals("'ClosureAllocation' closure allocation"));
+            Assert.True(issue.name.Equals("ClosureAllocation.Dummy"));
+            Assert.AreEqual(IssueCategory.Code, issue.category);
         }
 
         [Test]
@@ -92,9 +121,8 @@ class ParamsArrayAllocation
             var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
-            var allocationIssue = issues.FirstOrDefault();
+            var allocationIssue = issues.First();
 
-            Assert.NotNull(allocationIssue);
             Assert.True(allocationIssue.description.Equals("'Int32' array allocation"));
             Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
         }
@@ -105,10 +133,9 @@ class ParamsArrayAllocation
             var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetMultidimensionalArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
-            var allocationIssue = issues.FirstOrDefault();
+            var allocationIssue = issues.First();
 
-            Assert.NotNull(allocationIssue);
-            Assert.True(allocationIssue.description.Equals("'Int32[0...,0...]' object allocation"));
+            Assert.True(allocationIssue.description.Equals("'System.Int32[0...,0...]' allocation"));
             Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
         }
 
@@ -118,9 +145,8 @@ class ParamsArrayAllocation
             var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetParamsArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
-            var allocationIssue = issues.FirstOrDefault();
+            var allocationIssue = issues.First();
 
-            Assert.NotNull(allocationIssue);
             Assert.True(allocationIssue.description.Equals("'Object' array allocation"));
             Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
         }
