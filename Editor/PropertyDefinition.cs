@@ -10,6 +10,7 @@ namespace Unity.ProjectAuditor.Editor
         Path,
         Filename,
         FileType,
+        CriticalContext,
         Custom
     }
 

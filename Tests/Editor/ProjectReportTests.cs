@@ -18,9 +18,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         {
             m_TempAsset = new TempAsset("MyClass.cs", @"
 using UnityEngine;
-class MyClass
+class MyClass : MonoBehaviour
 {
-    void Dummy()
+    void Update()
     {
         Debug.Log(Camera.allCameras.Length);
     }
@@ -86,9 +86,6 @@ class MyClass
         [Test]
         public void CodesIssuesAreExportedAndFormatted()
         {
-            // disabling stripEngineCode will be reported as a ProjectSettings issue
-            PlayerSettings.stripEngineCode = false;
-
             var category = IssueCategory.Code;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
             AnalyzeAndExport(category, path);
@@ -96,9 +93,9 @@ class MyClass
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.True(line.Equals("Issue,!,Area,Filename,Assembly"));
+                Assert.True(line.Equals("Issue,Critical,Area,Filename,Assembly"));
 
-                var expectedIssueLine = "\"UnityEngine.Camera.allCameras\",\"Default\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\"";
+                var expectedIssueLine = "\"UnityEngine.Camera.allCameras\",\"True\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\"";
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();
@@ -113,8 +110,8 @@ class MyClass
         [Test]
         public void SettingsIssuesAreExportedAndFormatted()
         {
-            // disabling stripEngineCode will be reported as a ProjectSettings issue
-            PlayerSettings.stripEngineCode = false;
+            var savedSetting = PlayerSettings.bakeCollisionMeshes;
+            PlayerSettings.bakeCollisionMeshes = false;
 
             var category = IssueCategory.ProjectSettings;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
@@ -125,7 +122,7 @@ class MyClass
                 var line = file.ReadLine();
                 Assert.True(line.Equals("Issue,Area"));
 
-                var expectedIssueLine = "\"Player: Engine Code Stripping\",\"BuildSize\"";
+                var expectedIssueLine = "\"Player: Prebake Collision Meshes\",\"BuildSize|LoadTimes\"";
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();
@@ -135,6 +132,8 @@ class MyClass
             }
 
             Assert.True(issueFound);
+
+            PlayerSettings.bakeCollisionMeshes = savedSetting;
         }
     }
 }

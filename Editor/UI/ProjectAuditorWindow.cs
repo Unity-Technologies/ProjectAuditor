@@ -97,7 +97,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenDescriptor = OpenDescriptor,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.ApiCalls
             },
-            new AnalysisViewDescriptor
+			new AnalysisViewDescriptor
             {
                 category = IssueCategory.ProjectSettings,
                 name = "Settings",
@@ -183,7 +183,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Profiler.BeginSample("MatchArea");
             var matchArea = !activeAnalysisView.desc.showAreaSelection ||
-                m_AreaSelection.Contains(issue.descriptor.area) ||
+                m_AreaSelection.ContainsAny(issue.descriptor.area.Split('|')) ||
                 m_AreaSelection.ContainsGroup("All");
             Profiler.EndSample();
             if (!matchArea)

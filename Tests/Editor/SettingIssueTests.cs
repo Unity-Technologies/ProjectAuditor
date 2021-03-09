@@ -10,19 +10,34 @@ namespace UnityEditor.ProjectAuditor.EditorTests
     class SettingIssueTests
     {
         [Test]
-        public void SettingIssuesAreReported()
+        public void SettingIssuesIsReported()
         {
+            var savedSetting = PlayerSettings.bakeCollisionMeshes;
+            PlayerSettings.bakeCollisionMeshes = false;
+
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var projectReport = projectAuditor.Audit();
+            var issues = projectReport.GetIssues(IssueCategory.ProjectSettings);
+            var playerSettingIssue =
+                issues.FirstOrDefault(i => i.descriptor.method.Equals("bakeCollisionMeshes"));
 
-            // disabling stripEngineCode will be reported as an issue
-            PlayerSettings.stripEngineCode = false;
+            Assert.NotNull(playerSettingIssue);
+            Assert.True(playerSettingIssue.description.Equals("Player: Prebake Collision Meshes"));
+            Assert.True(playerSettingIssue.location.Path.Equals("Project/Player"));
 
+            PlayerSettings.bakeCollisionMeshes = savedSetting;
+        }
+
+        [Test]
+        public void SettingIssuesIsNotReportedOnceFixed()
+        {
+            var savedFixedDeltaTime = Time.fixedDeltaTime;
             // 0.02f is the default Time.fixedDeltaTime value and will be reported as an issue
             Time.fixedDeltaTime = 0.02f;
 
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.ProjectSettings);
-
             var fixedDeltaTimeIssue = issues.FirstOrDefault(i => i.descriptor.method.Equals("fixedDeltaTime"));
             Assert.NotNull(fixedDeltaTimeIssue);
             Assert.True(fixedDeltaTimeIssue.description.Equals("Time: Fixed Timestep"));
@@ -35,11 +50,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             issues = projectReport.GetIssues(IssueCategory.ProjectSettings);
             Assert.Null(issues.FirstOrDefault(i => i.descriptor.method.Equals("fixedDeltaTime")));
 
-            var playerSettingIssue =
-                issues.FirstOrDefault(i => i.descriptor.method.Equals("stripEngineCode"));
-            Assert.NotNull(playerSettingIssue);
-            Assert.True(playerSettingIssue.description.Equals("Player: Engine Code Stripping"));
-            Assert.True(playerSettingIssue.location.Path.Equals("Project/Player"));
+            // restore Time.fixedDeltaTime
+            Time.fixedDeltaTime = savedFixedDeltaTime;
         }
 
         [Test]

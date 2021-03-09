@@ -17,9 +17,19 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Try to avoid allocating objects in frequently-updated code."
             );
 
-        static readonly ProblemDescriptor k_ArrayAllocationDescriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor k_ClosureAllocationDescriptor = new ProblemDescriptor
             (
             102003,
+            "Closure Allocation",
+            Area.Memory,
+            "An object is allocated in managed memory",
+            "Try to avoid allocating objects in frequently-updated code."
+            );
+
+
+        static readonly ProblemDescriptor k_ArrayAllocationDescriptor = new ProblemDescriptor
+            (
+            102004,
             "Array Allocation",
             Area.Memory,
             "An array is allocated in managed memory",
@@ -29,6 +39,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         public void Initialize(IAuditor auditor)
         {
             auditor.RegisterDescriptor(k_ObjectAllocationDescriptor);
+            auditor.RegisterDescriptor(k_ClosureAllocationDescriptor);
             auditor.RegisterDescriptor(k_ArrayAllocationDescriptor);
         }
 
@@ -41,15 +52,23 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 if (typeReference.IsValueType)
                     return null;
 
-                var descriptor = k_ObjectAllocationDescriptor;
-                var description = string.Format("'{0}' object allocation", typeReference.Name);
-
                 var calleeNode = new CallTreeNode(methodDefinition);
+                var isClosure = typeReference.Name.StartsWith("<>c__DisplayClass");
+                if (isClosure)
+                {
+                    return new ProjectIssue
+                    (
+                        k_ClosureAllocationDescriptor,
+                        string.Format("'{0}' closure allocation", typeReference.DeclaringType.FullName),
+                        IssueCategory.Code,
+                        calleeNode
+                    );
+                }
 
                 return new ProjectIssue
                 (
-                    descriptor,
-                    description,
+                    k_ObjectAllocationDescriptor,
+                    string.Format("'{0}' allocation", typeReference.FullName),
                     IssueCategory.Code,
                     calleeNode
                 );
@@ -57,14 +76,13 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             else // OpCodes.Newarr
             {
                 var typeReference = (TypeReference)inst.Operand;
-                var descriptor = k_ArrayAllocationDescriptor;
                 var description = string.Format("'{0}' array allocation", typeReference.Name);
 
                 var calleeNode = new CallTreeNode(methodDefinition);
 
                 return new ProjectIssue
                 (
-                    descriptor,
+                    k_ArrayAllocationDescriptor,
                     description,
                     IssueCategory.Code,
                     calleeNode
