@@ -194,7 +194,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ProjectAuditor = new ProjectAuditor();
 
-            if (m_AnalysisState == AnalysisState.InProgress)
+            if (m_AnalysisState == AnalysisState.InProgress || m_ActiveViewIndex >= m_AnalysisViewDescriptors.Length)
             {
                 // recover from in-progress state after domain reload
                 m_AnalysisState = AnalysisState.NotStarted;
