@@ -11,15 +11,23 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public class BuildAuditor : IAuditor, IPostprocessBuildWithReport
     {
+        static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
+            (
+            600000,
+            "Build file",
+            Area.BuildSize
+            );
+
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
             category = IssueCategory.BuildFile,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Filename"},
+                new PropertyDefinition { type = PropertyType.Description, name = "Source Asset"},
                 new PropertyDefinition { type = PropertyType.FileType, name = "Type"},
                 new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.Integer, name = "Size (bytes)", longName = "Size (bytes) in the Build"},
-                new PropertyDefinition { type = PropertyType.Path, name = "Path"}
+                new PropertyDefinition { type = PropertyType.Path, name = "Path"},
+                new PropertyDefinition { type = PropertyType.Custom + 1, format = PropertyFormat.String, name = "Build File"}
             }
         };
 
@@ -49,19 +57,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
-            var id = 9999;
-
+#if UNITY_2019_4_OR_NEWER
             if (s_BuildReport != null)
             {
                 foreach (var packedAsset in s_BuildReport.packedAssets)
                 {
-                    var descriptor = new ProblemDescriptor
-                        (
-                        id++,
-                        packedAsset.shortPath,
-                        Area.BuildSize
-                        );
-
                     var dict = new Dictionary<GUID, List<PackedAssetInfo>>();
                     foreach (var content in packedAsset.contents)
                     {
@@ -96,13 +96,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                             description = string.Format("{0} ({1})", assetName, entry.Value.Count);
                         else
                             description = assetName;
-                        var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
-                        issue.SetCustomProperties(new[] {sum.ToString()});
+                        var issue = new ProjectIssue(k_Descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
+                        issue.SetCustomProperties(new[]
+                        {
+                            sum.ToString(),
+                            packedAsset.shortPath
+                        });
                         onIssueFound(issue);
                     }
                 }
             }
-
+#endif
             onComplete();
         }
 
