@@ -43,7 +43,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             ApiCalls = 100,
             ProjectSettings,
             Assets,
-            Shaders
+            Shaders,
+            BuildFiles
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -154,6 +155,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "shaders_tab";
                 case UIButton.ProjectSettings:
                     return "settings_tab";
+                case UIButton.BuildFiles:
+                    return "buildfiles_tab";
                 case UIButton.AssemblySelect:
                     return "assembly_button_click";
                 case UIButton.AssemblySelectApply:

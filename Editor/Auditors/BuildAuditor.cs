@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
-            category = IssueCategory.BuildFile,
+            category = IssueCategory.BuildFiles,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Source Asset"},
@@ -96,7 +96,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                             description = string.Format("{0} ({1})", assetName, entry.Value.Count);
                         else
                             description = assetName;
-                        var issue = new ProjectIssue(k_Descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
+                        var issue = new ProjectIssue(k_Descriptor, description, IssueCategory.BuildFiles, new Location(assetPath));
                         issue.SetCustomProperties(new[]
                         {
                             sum.ToString(),

@@ -96,7 +96,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             },
             new AnalysisViewDescriptor
             {
-                category = IssueCategory.BuildFile,
+                category = IssueCategory.BuildFiles,
                 name = "Build",
                 menuLabel = "Experimental/Build Files",
                 menuOrder = 99,
@@ -107,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showDependencyView = false,
                 showRightPanels = false,
                 onDoubleClick = FocusOnAssetInProjectWindow,
-                analyticsEvent = ProjectAuditorAnalytics.UIButton.ProjectSettings
+                analyticsEvent = ProjectAuditorAnalytics.UIButton.BuildFiles
             }
         };
 
