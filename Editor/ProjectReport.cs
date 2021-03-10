@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Editor.Utils;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor

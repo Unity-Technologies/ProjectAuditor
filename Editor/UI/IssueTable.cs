@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -333,41 +334,20 @@ namespace Unity.ProjectAuditor.Editor.UI
                         break;
 
                     case PropertyType.Filename:
-                        if (issue.filename != string.Empty)
-                        {
-                            var filename = string.Format("{0}", issue.filename);
-                            if (issue.category == IssueCategory.Code)
-                                filename += string.Format(":{0}", issue.line);
-
-                            // display fullpath as tooltip
-                            EditorGUI.LabelField(cellRect, new GUIContent(filename, issue.relativePath), s_LabelStyle);
-                        }
+                        // display fullpath as tooltip
+                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(PropertyType.Filename), issue.GetProperty(PropertyType.Path)), s_LabelStyle);
                         break;
 
                     case PropertyType.Path:
-                        if (issue.location != null)
-                        {
-                            var path = string.Format("{0}", issue.location.Path);
-                            if (issue.category == IssueCategory.Code)
-                                path += string.Format(":{0}", issue.line);
-
-                            EditorGUI.LabelField(cellRect, new GUIContent(path), s_LabelStyle);
-                        }
+                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(PropertyType.Path)), s_LabelStyle);
                         break;
 
                     case PropertyType.FileType:
-                        if (issue.location.Path != string.Empty)
-                        {
-                            var ext = issue.location.Extension;
-                            if (ext.StartsWith("."))
-                                ext = ext.Substring(1);
-                            EditorGUI.LabelField(cellRect, new GUIContent(ext), s_LabelStyle);
-                        }
-
+                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(PropertyType.FileType)), s_LabelStyle);
                         break;
+
                     default:
-                        var propertyIndex = columnType - PropertyType.Custom;
-                        var customProperty = issue.GetCustomProperty(propertyIndex);
+                        var customProperty = issue.GetProperty(columnType);
                         if (customProperty != string.Empty)
                         {
                             if (property.format == PropertyFormat.Bool)
