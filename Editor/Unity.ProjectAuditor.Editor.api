@@ -195,7 +195,8 @@ namespace Unity.ProjectAuditor.Editor
     public enum PropertyType
     {
         public const Unity.ProjectAuditor.Editor.PropertyType Area = 2;
-        public const Unity.ProjectAuditor.Editor.PropertyType Custom = 6;
+        public const Unity.ProjectAuditor.Editor.PropertyType CriticalContext = 6;
+        public const Unity.ProjectAuditor.Editor.PropertyType Custom = 7;
         public const Unity.ProjectAuditor.Editor.PropertyType Description = 0;
         public const Unity.ProjectAuditor.Editor.PropertyType Filename = 4;
         public const Unity.ProjectAuditor.Editor.PropertyType FileType = 5;
