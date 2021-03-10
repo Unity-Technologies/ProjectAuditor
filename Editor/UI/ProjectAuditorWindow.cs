@@ -213,7 +213,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ProjectAuditor = new ProjectAuditor();
 
-            if (m_AnalysisState == AnalysisState.InProgress)
+            if (m_AnalysisState == AnalysisState.InProgress || m_ActiveViewIndex >= m_AnalysisViewDescriptors.Length)
             {
                 // recover from in-progress state after domain reload
                 m_AnalysisState = AnalysisState.NotStarted;
@@ -773,15 +773,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                 // - default assembly, or,
                 // - all generated assemblies
 
-                var compiledAssemblies = m_AssemblyNames.Where(a => !AssemblyHelper.IsModuleAssembly(a));
+                var compiledAssemblies = m_AssemblyNames.Where(a => !AssemblyInfoProvider.IsModuleAssembly(a));
                 compiledAssemblies = compiledAssemblies.Where(a =>
-                    !AssemblyHelper.IsAssemblyReadOnly(a));
+                    !AssemblyInfoProvider.IsAssemblyReadOnly(a));
                 m_AssemblySelection.selection.AddRange(compiledAssemblies);
 
                 if (!m_AssemblySelection.selection.Any())
                 {
-                    if (m_AssemblyNames.Contains(AssemblyHelper.DefaultAssemblyName))
-                        m_AssemblySelection.Set(AssemblyHelper.DefaultAssemblyName);
+                    if (m_AssemblyNames.Contains(AssemblyInfoProvider.DefaultAssemblyName))
+                        m_AssemblySelection.Set(AssemblyInfoProvider.DefaultAssemblyName);
                     else
                         m_AssemblySelection.SetAll(m_AssemblyNames);
                 }
@@ -1022,15 +1022,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 #endif
             public static readonly string HelpText =
 @"Project Auditor is an experimental static analysis tool for Unity Projects.
-This tool will analyze scripts and project settings of any Unity project
-and report a list a possible problems that might affect performance, memory and other areas.
+This tool will analyze assets, scripts and project settings of a Unity project
+and report a list of possible problems that might affect performance, memory and other areas.
 
-To Analyze the project:
-* Click on Analyze.
+To Analyze the project, click on Analyze.
 
-Once the project is analyzed, the tool displays list of issues.
-At the moment there are two types of issues: API calls or Project Settings. The tool allows the user to switch between the two.
-In addition, it is possible to filter issues by area (CPU/Memory/etc...) or assembly name or search for a specific string.";
+Once the project is analyzed, the tool displays a list of issues of a specific kind. Initially, code-related issues will be shown.
+To switch type of issues, for example from code to settings-related issues, use the 'View' dropdown and select Settings.
+In addition, it is possible to filter issues by area (CPU/Memory/etc...), by string or by other search criteria.";
         }
 
 

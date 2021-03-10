@@ -6,6 +6,7 @@ using Unity.ProjectAuditor.Editor.SettingsAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.Macros;
 using UnityEngine;
+using TypeInfo = Unity.ProjectAuditor.Editor.Utils.TypeInfo;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
@@ -66,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
             m_ProblemDescriptors = ProblemDescriptorLoader.LoadFromJson(path, "ProjectSettings");
 
-            foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<ISettingsAnalyzer>())
+            foreach (var type in TypeInfo.GetAllTypesInheritedFromInterface<ISettingsAnalyzer>())
                 AddAnalyzer(Activator.CreateInstance(type) as ISettingsAnalyzer);
         }
 

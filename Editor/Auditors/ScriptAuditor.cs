@@ -74,7 +74,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
             m_ProblemDescriptors = ProblemDescriptorLoader.LoadFromJson(path, "ApiDatabase");
 
-            foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<IInstructionAnalyzer>())
+            foreach (var type in TypeInfo.GetAllTypesInheritedFromInterface<IInstructionAnalyzer>())
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
         }
 
@@ -98,8 +98,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.readOnly).ToArray();
 
             var assemblyDirectories = new List<string>();
-            assemblyDirectories.AddRange(AssemblyHelper.GetPrecompiledAssemblyDirectories());
-            assemblyDirectories.AddRange(AssemblyHelper.GetPrecompiledEngineAssemblyDirectories());
+            assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories());
+            assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledEngineAssemblyDirectories());
 
             var onCallFound = new Action<CallInfo>(pair =>
             {
@@ -236,7 +236,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 Location location = null;
                 if (s != null && !s.IsHidden)
                 {
-                    location = new Location(AssemblyHelper.ResolveAssetPath(assemblyInfo, s.Document.Url), s.StartLine);
+                    location = new Location(AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, s.Document.Url), s.StartLine);
                     callerNode.location = location;
                 }
                 else
