@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Editor.Utils;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;

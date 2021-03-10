@@ -4,7 +4,7 @@ using System.Text;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Utils;
 
-namespace Editor.Utils
+namespace Unity.ProjectAuditor.Editor.Utils
 {
     public class Exporter : IDisposable
     {
