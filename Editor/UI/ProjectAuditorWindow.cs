@@ -100,7 +100,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Build",
                 menuLabel = "Experimental/Build Files",
                 menuOrder = 99,
-                groupByDescription = true,
+                groupByDescription = false,
                 descriptionWithIcon = true,
                 showAssemblySelection = false,
                 showCritical = false,
