@@ -302,35 +302,22 @@ namespace Unity.ProjectAuditor.Editor.UI
                         break;
 
                     case PropertyType.Description:
-                        if (m_Desc.groupByDescription)
+                        GUIContent guiContent = null;
+                        if (issue.location != null && m_Desc.descriptionWithIcon)
                         {
-                            var text = item.GetDisplayName();
-                            var tooltip = issue.GetCallingMethod();
-                            var guiContent = new GUIContent(text, tooltip);
-
 #if UNITY_2018_3_OR_NEWER
-                            if (m_Desc.descriptionWithIcon && issue.location != null)
-                            {
-                                var icon = AssetDatabase.GetCachedIcon(issue.location.Path);
-                                guiContent = EditorGUIUtility.TrTextContentWithIcon(text, tooltip, icon);
-                            }
+                            var icon = AssetDatabase.GetCachedIcon(issue.location.Path);
+                            guiContent = EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), issue.location.Path, icon);
+#else
+                            guiContent = new GUIContent(item.GetDisplayName(), issue.location.Path);
 #endif
-                            EditorGUI.LabelField(cellRect, guiContent, s_LabelStyle);
                         }
-                        else if (string.IsNullOrEmpty(descriptor.problem))
+
+                        if (guiContent == null)
                         {
-                            if (issue.location != null)
-                            {
-                                EditorGUI.LabelField(cellRect,
-                                    new GUIContent(item.GetDisplayName(), issue.location.Path), s_LabelStyle);
-                            }
-                            else
-                                EditorGUI.LabelField(cellRect, item.GetDisplayName(), s_LabelStyle);
+                            guiContent = new GUIContent(item.GetDisplayName(), descriptor.problem);
                         }
-                        else
-                        {
-                            EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), descriptor.problem), s_LabelStyle);
-                        }
+                        EditorGUI.LabelField(cellRect, guiContent, s_LabelStyle);
                         break;
 
                     case PropertyType.Filename:
