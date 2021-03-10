@@ -97,7 +97,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenDescriptor = OpenDescriptor,
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.Generics
             },
-			new AnalysisViewDescriptor
+            new AnalysisViewDescriptor
             {
                 category = IssueCategory.ProjectSettings,
                 name = "Settings",
