@@ -229,6 +229,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (IsAnalysisValid())
             {
+                activeAnalysisView.DrawInfo();
+
                 DrawFilters();
                 DrawActions();
 
