@@ -466,6 +466,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             return compilationLines.ToArray();
         }
 
+#if UNITY_2018_2_OR_NEWER
         string[] GetShaderKeywords(Shader shader, ShaderKeyword[] shaderKeywords)
         {
 #if UNITY_2019_3_OR_NEWER
@@ -475,6 +476,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
             return keywords;
         }
+#endif
 
         bool ShaderVariantsMatch(CompiledVariantData cv, string[] secondSet, string passName)
         {
