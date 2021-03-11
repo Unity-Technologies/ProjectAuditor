@@ -24,10 +24,12 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showAssemblySelection;
         public bool showCritical;
         public bool showDependencyView;
+        public bool showInfoPanel;
         public bool showMuteOptions;
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
         public Action<Location> onDoubleClick;
+        public string onDrawInfo;
         public Action onDrawToolbarDataOptions;
         public Action<ProblemDescriptor> onOpenDescriptor;
         public int analyticsEvent;
@@ -192,6 +194,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 DrawDependencyView(selectedIssues);
             }
+        }
+
+        public void DrawInfo()
+        {
+            if (m_Desc.onDrawInfo != null)
+                EditorGUILayout.LabelField(m_Desc.onDrawInfo);
         }
 
         void DrawTable(ProjectIssue[] selectedIssues)

@@ -214,6 +214,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (IsAnalysisValid())
             {
+                DrawInfo();
+
                 DrawFilters();
                 DrawActions();
 
@@ -615,6 +617,25 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        void DrawInfo()
+        {
+            if (!activeAnalysisView.desc.showInfoPanel)
+                return;
+
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
+
+            m_Preferences.info = Utility.BoldFoldout(m_Preferences.info, Styles.InfoFoldout);
+            if (m_Preferences.info)
+            {
+                EditorGUI.indentLevel++;
+
+                activeAnalysisView.DrawInfo();
+
+                EditorGUI.indentLevel--;
+            }
+            EditorGUILayout.EndVertical();
         }
 
         void DrawFilters()
@@ -1021,6 +1042,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore selected issues.");
             public static readonly GUIContent UnmuteButton = new GUIContent("Unmute", "Always show selected issues.");
 
+            public static readonly GUIContent InfoFoldout = new GUIContent("Information");
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filtering Criteria");
             public static readonly GUIContent ActionsFoldout = new GUIContent("Actions", "Actions on selected issues");
 
