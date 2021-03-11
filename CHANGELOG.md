@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Fixed *GraphicsSettings.logWhenShaderIsCompiled* compilation error on early 2018.4.x releases 
 * Added *System.DateTime.Now* usage detection
 * Added descriptor's minimum/maximum version
+* Added splash-screen setting detection
 * Added zoom slider
 * Reduced UI managed allocations
 * Replaced tabs-like view selection with toolbar dropdown list
