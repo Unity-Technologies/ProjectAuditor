@@ -80,6 +80,25 @@ namespace Unity.ProjectAuditor.Editor.UI
             },
             new AnalysisViewDescriptor
             {
+                category = IssueCategory.Generics,
+                name = "Generics",
+                menuOrder = 99,
+                menuLabel = "Experimental/Generics",
+                groupByDescription = true,
+                descriptionWithIcon = false,
+                showAreaSelection = false,
+                showAssemblySelection = true,
+                showCritical = false,
+                showDependencyView = true,
+                showMuteOptions = false,
+                showRightPanels = false,
+                dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
+                onDoubleClick = OpenTextFile,
+                onOpenDescriptor = OpenDescriptor,
+                analyticsEvent = ProjectAuditorAnalytics.UIButton.Generics
+            },
+            new AnalysisViewDescriptor
+            {
                 category = IssueCategory.ProjectSettings,
                 name = "Settings",
                 menuOrder = 1,
@@ -817,7 +836,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 GUI.enabled = (m_AnalysisState == AnalysisState.Valid || m_AnalysisState == AnalysisState.NotStarted);
 
-                const int buttonWidth = 100;
+                const int buttonWidth = 120;
                 if (GUILayout.Button(Styles.AnalyzeButton, EditorStyles.toolbarButton, GUILayout.Width(buttonWidth)))
                 {
                     Analyze();
