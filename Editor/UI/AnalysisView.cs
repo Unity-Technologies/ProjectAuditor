@@ -27,6 +27,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
         public Action<Location> onDoubleClick;
+        public string onDrawInfo;
         public Action<ProblemDescriptor> onOpenDescriptor;
         public ProjectAuditorAnalytics.UIButton analyticsEvent;
     }
@@ -177,6 +178,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 DrawDependencyView(selectedIssues.ToArray());
             }
+        }
+
+        public void DrawInfo()
+        {
+            if (m_Desc.onDrawInfo != null)
+                EditorGUILayout.LabelField(m_Desc.onDrawInfo);
         }
 
         void DrawTable(ProjectIssue[] selectedIssues)

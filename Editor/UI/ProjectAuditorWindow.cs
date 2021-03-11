@@ -107,6 +107,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showDependencyView = false,
                 showRightPanels = false,
                 onDoubleClick = FocusOnAssetInProjectWindow,
+                onDrawInfo = "Build the project to view build files",
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.BuildFiles
             }
         };
@@ -289,6 +290,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             DrawToolbar();
             if (IsAnalysisValid())
             {
+                activeAnalysisView.DrawInfo();
+
                 DrawFilters();
                 DrawActions();
 
