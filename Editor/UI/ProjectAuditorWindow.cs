@@ -6,6 +6,7 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Callbacks;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -912,12 +913,18 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static void OpenDescriptor(ProblemDescriptor descriptor)
         {
-            if (descriptor.type.StartsWith("UnityEngine."))
-            {
-                var type = descriptor.type.Substring("UnityEngine.".Length);
-                var method = descriptor.method;
+            var unityVersion = InternalEditorUtility.GetUnityVersion();
+            if (unityVersion.Major < 2017)
+                return;
 
-                Application.OpenURL(string.Format("https://docs.unity3d.com/ScriptReference/{0}{1}{2}.html", type, Char.IsUpper(method[0]) ? "." : "-", method));
+            const string prefix = "UnityEngine.";
+            if (descriptor.type.StartsWith(prefix))
+            {
+                var type = descriptor.type.Substring(prefix.Length);
+                var method = descriptor.method;
+                var url = string.Format("https://docs.unity3d.com/{0}.{1}/Documentation/ScriptReference/{2}{3}{4}.html",
+                    unityVersion.Major, unityVersion.Minor, type, Char.IsUpper(method[0]) ? "." : "-", method);
+                Application.OpenURL(url);
             }
         }
 
