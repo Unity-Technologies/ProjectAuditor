@@ -28,6 +28,16 @@ namespace Unity.ProjectAuditor.Editor
         BuildSize,
 
         /// <summary>
+        /// Build time
+        /// </summary>
+        BuildTime,
+
+        /// <summary>
+        /// Import time
+        /// </summary>
+        ImportTime,
+
+        /// <summary>
         /// Load times
         /// </summary>
         LoadTimes
