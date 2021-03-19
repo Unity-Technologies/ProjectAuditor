@@ -127,6 +127,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             showDependencyView = false,
             showMuteOptions = false,
             showRightPanels = false,
+            onDrawToolbarDataOptions = () =>
+            {
+                if (GUILayout.Button("Clear Build Data", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
+                GUILayout.Width(100)))
+                {
+                    ShadersAuditor.ClearBuildData();
+                }
+            },
             onDoubleClick = FocusOnAssetInProjectWindow,
             analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
         };
@@ -380,6 +388,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void AnalyzeShaderVariants()
         {
+            if (m_ProjectReport == null)
+                m_ProjectReport = new ProjectReport();
+
             m_ProjectReport.ClearIssues(IssueCategory.Shaders);
             m_ProjectReport.ClearIssues(IssueCategory.ShaderVariants);
 

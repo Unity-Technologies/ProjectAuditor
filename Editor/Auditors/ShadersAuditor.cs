@@ -54,7 +54,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     public class ShadersAuditor : IAuditor
 #if UNITY_2018_2_OR_NEWER
         , IPreprocessShaders
-        , IPreprocessBuildWithReport
 #endif
     {
         static readonly IssueLayout k_ShaderLayout = new IssueLayout
@@ -102,7 +101,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         internal const string k_NotAvailable = "N/A";
         const int k_ShaderVariantFirstId = 400001;
 
-        static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData;
+        static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData = new Dictionary<Shader, List<ShaderVariantData>>();
 
 #pragma warning disable 0414
         Type m_ShaderUtilType;
@@ -173,26 +172,23 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
 
             var id = k_ShaderVariantFirstId;
-            if (s_ShaderVariantData != null)
-            {
 #if UNITY_2018_2_OR_NEWER
-                // find hidden shaders
-                var shadersInBuild = s_ShaderVariantData.Select(variant => variant.Key);
-                foreach (var shader in shadersInBuild)
+            // find hidden shaders
+            var shadersInBuild = s_ShaderVariantData.Select(variant => variant.Key);
+            foreach (var shader in shadersInBuild)
+            {
+                // skip shader if it's been removed since the last build
+                if (shader == null)
+                    continue;
+
+                if (!shaderPathMap.ContainsKey(shader))
                 {
-                    // skip shader if it's been removed since the last build
-                    if (shader == null)
-                        continue;
+                    var assetPath = AssetDatabase.GetAssetPath(shader);
 
-                    if (!shaderPathMap.ContainsKey(shader))
-                    {
-                        var assetPath = AssetDatabase.GetAssetPath(shader);
-
-                        shaderPathMap.Add(shader, assetPath);
-                    }
+                    shaderPathMap.Add(shader, assetPath);
                 }
-#endif
             }
+#endif
 
             var sortedShaders = shaderPathMap.Keys.ToList().OrderBy(shader => shader.name);
             foreach (var shader in sortedShaders)
@@ -211,18 +207,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
 #if UNITY_2018_2_OR_NEWER
             // add variants first
-            if (s_ShaderVariantData != null)
-                if (s_ShaderVariantData.ContainsKey(shader))
-                {
-                    var variants = s_ShaderVariantData[shader];
-                    variantCount = variants.Count.ToString();
+            if (s_ShaderVariantData.ContainsKey(shader))
+            {
+                var variants = s_ShaderVariantData[shader];
+                variantCount = variants.Count.ToString();
 
-                    AddVariants(shader, assetPath, id++, variants, onIssueFound);
-                }
-                else
-                {
-                    variantCount = "0";
-                }
+                AddVariants(shader, assetPath, id++, variants, onIssueFound);
+            }
+            else
+            {
+                variantCount = "0";
+            }
 #endif
 
             var shaderName = shader.name;
@@ -314,7 +309,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public static bool BuildDataAvailable()
         {
-            return s_ShaderVariantData != null;
+            return s_ShaderVariantData.Any();
         }
 
 #if UNITY_2018_2_OR_NEWER
@@ -346,24 +341,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
-        internal static void CleanupBuildData()
+        internal static void ClearBuildData()
         {
-            s_ShaderVariantData = null;
+            s_ShaderVariantData.Clear();
         }
 
         public int callbackOrder { get { return Int32.MaxValue; } }
-        public void OnPreprocessBuild(BuildReport report)
-        {
-            s_ShaderVariantData = new Dictionary<Shader, List<ShaderVariantData>>();
-        }
-
         public void OnProcessShader(Shader shader, ShaderSnippetData snippet, IList<ShaderCompilerData> data)
         {
             if (snippet.shaderType != ShaderType.Fragment)
-                return;
-
-            // if s_ShaderVariantData is null, we might be building AssetBundles
-            if (s_ShaderVariantData == null)
                 return;
 
             if (!s_ShaderVariantData.ContainsKey(shader))
