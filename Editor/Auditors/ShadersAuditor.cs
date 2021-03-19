@@ -476,6 +476,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
             return keywords;
         }
+
 #endif
 
         bool ShaderVariantsMatch(CompiledVariantData cv, string[] secondSet, string passName)

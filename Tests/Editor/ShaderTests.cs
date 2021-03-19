@@ -449,7 +449,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void UnusedVariantsAreReported()
         {
-			EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/UntitledScene.unity");
+            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/UntitledScene.unity");
 
             var buildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(buildPath);
@@ -467,7 +467,7 @@ Shader ""Custom/MyEditorShader""
 
             Directory.Delete(buildPath, true);
 
-			AssetDatabase.DeleteAsset("Assets/UntitledScene.unity");
+            AssetDatabase.DeleteAsset("Assets/UntitledScene.unity");
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             projectAuditor.Audit();
