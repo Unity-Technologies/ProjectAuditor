@@ -380,6 +380,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void AnalyzeShaderVariants()
         {
+            if (m_ProjectReport == null)
+                m_ProjectReport = new ProjectReport();
+
             m_ProjectReport.ClearIssues(IssueCategory.Shaders);
             m_ProjectReport.ClearIssues(IssueCategory.ShaderVariants);
 
