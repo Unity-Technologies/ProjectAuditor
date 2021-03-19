@@ -129,7 +129,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             showRightPanels = false,
             onDrawToolbarDataOptions = () =>
             {
-                if (GUILayout.Button("Clear Build Data", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
+                if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
+                    GUILayout.Width(100)))
+                {
+                    Instance.AnalyzeShaderVariants();
+                }
+                if (GUILayout.Button("Clear", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
                 GUILayout.Width(100)))
                 {
                     ShadersAuditor.ClearBuildData();
@@ -219,6 +224,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         void OnEnable()
         {
             ProjectAuditorAnalytics.EnableAnalytics();
+
+            ShadersAuditor.OnClearShaderData = OnClearShaderData;
 
             m_ProjectAuditor = new ProjectAuditor();
 
@@ -384,6 +391,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisState = AnalysisState.NotStarted;
                 Debug.LogError(e);
             }
+        }
+
+        void OnClearShaderData()
+        {
+            m_ProjectReport.ClearIssues(IssueCategory.ShaderVariants);
+            if (m_ShaderVariantsWindow != null)
+                m_ShaderVariantsWindow.Clear();
         }
 
         void AnalyzeShaderVariants()
@@ -1048,14 +1062,6 @@ To Analyze the project, click on Analyze.
 Once the project is analyzed, the tool displays a list of issues of a specific kind. Initially, code-related issues will be shown.
 To switch type of issues, for example from code to settings-related issues, use the 'View' dropdown and select Settings.
 In addition, it is possible to filter issues by area (CPU/Memory/etc...), by string or by other search criteria.";
-        }
-
-
-        [PostProcessBuild(1)]
-        public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
-        {
-            if (Instance != null)
-                Instance.AnalyzeShaderVariants();
         }
     }
 }

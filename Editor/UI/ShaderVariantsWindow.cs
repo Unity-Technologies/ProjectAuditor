@@ -11,7 +11,8 @@ namespace Unity.ProjectAuditor.Editor.UI
     class ShaderVariantsWindow : AnalysisWindow, IProjectIssueFilter
     {
         const string k_BuildRequiredInfo = @"
-Build the project and/or AssetBundles to view the Shader Variants
+- To view the built Shader Variants, run your build pipeline
+- To update after building AssetBundles, use the Refresh button
 ";
 
         const string k_PlayerLogInfo = @"

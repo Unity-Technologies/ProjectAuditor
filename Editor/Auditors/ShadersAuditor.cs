@@ -113,6 +113,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         MethodInfo m_GetSRPBatcherCompatibilityCode;
 #pragma warning restore 0414
 
+        public static Action OnClearShaderData;
+
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             yield return null;
@@ -344,6 +346,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         internal static void ClearBuildData()
         {
             s_ShaderVariantData.Clear();
+            if (OnClearShaderData != null)
+                OnClearShaderData();
         }
 
         public int callbackOrder { get { return Int32.MaxValue; } }
