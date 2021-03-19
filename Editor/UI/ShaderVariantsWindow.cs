@@ -21,7 +21,6 @@ To find which shader variants are compiled at runtime, follow these steps:
 - Run the build on the target platform
 - Drag & Drop the Player.log file on this window
 ";
-        const string k_NotLogFile = "Player log file not recognized.";
         const string k_NoCompiledVariantWarning = "No compiled shader variants found in player log. Perhaps, Log Shader Compilation was not enabled when the project was built.";
         const string k_NoCompiledVariantWarningLogDisabled = "No compiled shader variants found in player log. Shader compilation logging is disabled. Would you like to enable it? (Shader compilation will not appear in the log until the project is rebuilt)";
         const string k_PlayerLogProcessed = "Player log file successfully processed.";
@@ -82,8 +81,11 @@ To find which shader variants are compiled at runtime, follow these steps:
 
             var lastEnabled = GUI.enabled;
             GUI.enabled = buildAvailable;
+
+            EditorGUILayout.BeginHorizontal();
             m_FlatView = EditorGUILayout.ToggleLeft("Flat View", m_FlatView, GUILayout.Width(160));
             m_HideCompiledVariants = EditorGUILayout.ToggleLeft("Hide Compiled Variants", m_HideCompiledVariants, GUILayout.Width(160));
+            EditorGUILayout.EndHorizontal();
 
             GUI.enabled = lastEnabled;
 
