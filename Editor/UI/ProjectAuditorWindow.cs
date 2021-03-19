@@ -135,7 +135,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     Instance.AnalyzeShaderVariants();
                 }
                 if (GUILayout.Button("Clear", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
-                GUILayout.Width(100)))
+                    GUILayout.Width(100)))
                 {
                     ShadersAuditor.ClearBuildData();
                 }
