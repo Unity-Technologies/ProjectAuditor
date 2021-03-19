@@ -321,7 +321,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderVariantsRequireBuild()
         {
-            ShadersAuditor.CleanupBuildData();
+            ShadersAuditor.ClearBuildData();
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
             var projectReport = projectAuditor.Audit();
