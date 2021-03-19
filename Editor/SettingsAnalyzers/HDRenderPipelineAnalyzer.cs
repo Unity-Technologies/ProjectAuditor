@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
@@ -17,16 +18,16 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             202001,
             "HDRP: Shader mode is set to Both",
             string.Format("{0}|{1}", Area.BuildSize, Area.BuildTime),
-            "If shader mode is set to Both, shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
+            "If HDRP 'Lit Shader Mode' is set to Both, shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
             "Change Shader mode to Forward or Deferred."
         );
 
         static readonly ProblemDescriptor k_LitShaderModeBothAndMixedCameras = new ProblemDescriptor(
             202002,
-            "HDRP: Shader mode is set to Both",
+            "HDRP: Mixed usage of 'Lit Shader Mode' Forward and Deferred",
             string.Format("{0}|{1}", Area.BuildSize, Area.BuildTime),
-            "If shader mode is set to Both, shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
-            "Change Shader mode to Forward or Deferred."
+            "If Cameras use both 'Lit Shader Mode' Forward and Deferred, shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
+            "Change HDRP asset and all Cameras 'Lit Shader Mode' to either Forward or Deferred."
         );
 
         public void Initialize(IAuditor auditor)
@@ -54,28 +55,26 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
                     {
                         var deferredCamera = false;
                         var forwardCamera = false;
+                        var allCameraData = new List<HDAdditionalCameraData>();
                         for (int n = 0; n < SceneManager.sceneCount; ++n)
                         {
                             var scene = SceneManager.GetSceneAt(n);
                             var roots = scene.GetRootGameObjects();
                             foreach (var go in roots)
                             {
-                                var renderingPath = go.GetComponent<Camera>().renderingPath;
-                                switch (renderingPath)
-                                {
-                                    case RenderingPath.DeferredLighting:
-                                        deferredCamera = true;
-                                        break;
-                                    case RenderingPath.Forward:
-                                        forwardCamera = true;
-                                        break;
-                                    default:
-                                        throw new Exception("Unexpected RenderingPath " + renderingPath);
-                                }
+                                GetCameraComponents(go, ref allCameraData);
                             }
                         }
-                        if (deferredCamera && forwardCamera)
-                            return new ProjectIssue(k_LitShaderModeBothAndMixedCameras, k_LitShaderModeBothAndMixedCameras.description, IssueCategory.ProjectSettings);
+                        foreach (var cameraData in allCameraData)
+                        {
+                            if (cameraData.renderingPathCustomFrameSettings.litShaderMode == LitShaderMode.Deferred)
+                                deferredCamera = true;
+                            else
+                                forwardCamera = true;
+
+                            if (deferredCamera && forwardCamera)
+                                return new ProjectIssue(k_LitShaderModeBothAndMixedCameras, k_LitShaderModeBothAndMixedCameras.description, IssueCategory.ProjectSettings);
+                        }
                         return new ProjectIssue(k_LitShaderModeBoth, k_LitShaderModeBoth.description, IssueCategory.ProjectSettings);
                     }
                 }
@@ -83,6 +82,17 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 #endif
 
             return null;
+        }
+
+        void GetCameraComponents(GameObject go, ref List<HDAdditionalCameraData> components)
+        {
+            var comp = go.GetComponent(typeof(HDAdditionalCameraData));
+            if (comp != null)
+                components.Add((HDAdditionalCameraData)comp);
+            for (int i = 0; i < go.transform.childCount; i++)
+            {
+                GetCameraComponents(go.transform.GetChild(i).gameObject, ref components);
+            }
         }
     }
 }
