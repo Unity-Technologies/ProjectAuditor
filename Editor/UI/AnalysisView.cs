@@ -186,30 +186,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-            EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
-            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
-            m_Table.SetFontSize(m_Preferences.fontSize);
-
-            Styles.TextArea.fontSize = m_Preferences.fontSize;
-
-            // (optional) collapse/expand buttons
-            if (m_Desc.groupByDescription)
-            {
-                if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                    SetRowsExpanded(false);
-                if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                    SetRowsExpanded(true);
-            }
+            DrawViewOptions();
 
             EditorGUILayout.Space();
 
-            if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
-                OnExport, GUILayout.Width(80)))
-            {
-                Export();
-
-                GUIUtility.ExitGUI();
-            }
+            DrawDataOptions();
 
             EditorGUILayout.EndHorizontal();
 
@@ -249,6 +230,35 @@ namespace Unity.ProjectAuditor.Editor.UI
                     GUILayout.TextArea(selectedDescriptors[0].problem, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
             EditorGUILayout.EndVertical();
+        }
+
+        void DrawViewOptions()
+        {
+            EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
+            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
+            m_Table.SetFontSize(m_Preferences.fontSize);
+
+            Styles.TextArea.fontSize = m_Preferences.fontSize;
+
+            // (optional) collapse/expand buttons
+            if (m_Desc.groupByDescription)
+            {
+                if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    SetRowsExpanded(false);
+                if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    SetRowsExpanded(true);
+            }
+        }
+
+        void DrawDataOptions()
+        {
+            if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
+                OnExport, GUILayout.Width(80)))
+            {
+                Export();
+
+                GUIUtility.ExitGUI();
+            }
         }
 
         void DrawRecommendationFoldout(ProblemDescriptor[] selectedDescriptors)

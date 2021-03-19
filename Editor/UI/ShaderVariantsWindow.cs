@@ -77,23 +77,21 @@ To find which shader variants are compiled at runtime, follow these steps:
             helpStyle.wordWrap = true;
             EditorGUILayout.LabelField(buildAvailable ? k_PlayerLogInfo : k_BuildRequiredInfo, helpStyle);
 
-            EditorGUI.BeginChangeCheck();
-
             var lastEnabled = GUI.enabled;
             GUI.enabled = buildAvailable;
 
             EditorGUILayout.BeginHorizontal();
+            EditorGUI.BeginChangeCheck();
             m_FlatView = EditorGUILayout.ToggleLeft("Flat View", m_FlatView, GUILayout.Width(160));
             m_HideCompiledVariants = EditorGUILayout.ToggleLeft("Hide Compiled Variants", m_HideCompiledVariants, GUILayout.Width(160));
-            EditorGUILayout.EndHorizontal();
-
-            GUI.enabled = lastEnabled;
-
             if (EditorGUI.EndChangeCheck())
             {
                 m_AnalysisView.SetFlatView(m_FlatView);
                 m_AnalysisView.Refresh();
             }
+            EditorGUILayout.EndHorizontal();
+
+            GUI.enabled = lastEnabled;
 
             EditorGUILayout.EndVertical();
 
