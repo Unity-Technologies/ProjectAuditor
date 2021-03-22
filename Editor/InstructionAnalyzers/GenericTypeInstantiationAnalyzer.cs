@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
@@ -25,14 +26,24 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             if (!typeReference.IsGenericInstance)
                 return null;
 
-            var typeDefinition = typeReference.Resolve();
-            var genericTypeName = typeDefinition.FullName;
-            if (!m_GenericDescriptors.ContainsKey(genericTypeName))
+            try
             {
-                var desc = new ProblemDescriptor(k_FirstDescriptorId + m_GenericDescriptors.Count, typeDefinition.FullName, Area.BuildSize);
-                m_GenericDescriptors.Add(typeDefinition.FullName, desc);
+                var typeDefinition = typeReference.Resolve();
+                var genericTypeName = typeDefinition.FullName;
+                if (!m_GenericDescriptors.ContainsKey(genericTypeName))
+                {
+                    var desc = new ProblemDescriptor(k_FirstDescriptorId + m_GenericDescriptors.Count, typeDefinition.FullName, Area.BuildSize);
+                    m_GenericDescriptors.Add(typeDefinition.FullName, desc);
+                }
+
+                return new ProjectIssue(m_GenericDescriptors[genericTypeName], typeReference.FullName, IssueCategory.Generics, new CallTreeNode(methodDefinition));
             }
-            return new ProjectIssue(m_GenericDescriptors[genericTypeName], typeReference.FullName, IssueCategory.Generics, new CallTreeNode(methodDefinition));
+            catch (AssemblyResolutionException e)
+            {
+                Debug.LogWarning(e);
+            }
+
+            return null;
         }
 
         public IEnumerable<OpCode> GetOpCodes()
