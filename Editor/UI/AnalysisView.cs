@@ -27,6 +27,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
         public Action<Location> onDoubleClick;
+        public Action onDrawToolbarDataOptions;
         public Action<ProblemDescriptor> onOpenDescriptor;
         public ProjectAuditorAnalytics.UIButton analyticsEvent;
     }
@@ -252,6 +253,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawDataOptions()
         {
+            if (m_Desc.onDrawToolbarDataOptions != null)
+                m_Desc.onDrawToolbarDataOptions();
+
             if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
                 OnExport, GUILayout.Width(80)))
             {

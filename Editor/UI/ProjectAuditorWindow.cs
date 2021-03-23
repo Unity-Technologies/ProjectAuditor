@@ -59,6 +59,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showDependencyView = false,
                 showRightPanels = false,
                 onDoubleClick = FocusOnAssetInProjectWindow,
+                onDrawToolbarDataOptions = () =>
+                {
+                    if (GUILayout.Button(Styles.ShaderVariantsButton, EditorStyles.toolbarButton,
+                        GUILayout.Width(80)))
+                    {
+                        Instance.OpenShaderVariantsWindow();
+                    }
+                },
                 analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
             },
             new AnalysisViewDescriptor
@@ -424,6 +432,25 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ShaderVariantsWindow.Refresh();
         }
 
+        void OpenShaderVariantsWindow()
+        {
+            if (m_ShaderVariantsWindow == null)
+            {
+                var shaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
+                shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.GetLayout(IssueCategory.ShaderVariants), m_ProjectAuditor.config, m_Preferences, m_TextFilter);
+                shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
+                m_ShaderVariantsWindow = shaderVariantsWindow;
+            }
+            else
+            {
+                m_ShaderVariantsWindow.Clear();
+            }
+
+            m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
+            m_ShaderVariantsWindow.Refresh();
+            m_ShaderVariantsWindow.Show();
+        }
+
         void RefreshDisplay()
         {
             if (!IsAnalysisValid())
@@ -709,29 +736,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
 
                 GUI.enabled = true;
-
-                if (activeAnalysisView.desc.category == IssueCategory.Shaders)
-                {
-                    if (GUILayout.Button("Inspect Shader Variants", EditorStyles.miniButton,
-                        GUILayout.Width(200)))
-                    {
-                        if (m_ShaderVariantsWindow == null)
-                        {
-                            var shaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
-                            shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.GetLayout(IssueCategory.ShaderVariants), m_ProjectAuditor.config, m_Preferences, m_TextFilter);
-                            shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
-                            m_ShaderVariantsWindow = shaderVariantsWindow;
-                        }
-                        else
-                        {
-                            m_ShaderVariantsWindow.Clear();
-                        }
-
-                        m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
-                        m_ShaderVariantsWindow.Refresh();
-                        m_ShaderVariantsWindow.Show();
-                    }
-                }
 
                 EditorGUILayout.EndHorizontal();
 
@@ -1040,6 +1044,8 @@ To Analyze the project, click on Analyze.
 Once the project is analyzed, the tool displays a list of issues of a specific kind. Initially, code-related issues will be shown.
 To switch type of issues, for example from code to settings-related issues, use the 'View' dropdown and select Settings.
 In addition, it is possible to filter issues by area (CPU/Memory/etc...), by string or by other search criteria.";
+
+            public static readonly GUIContent ShaderVariantsButton = new GUIContent("Variants", "Inspect Shader Variants");
         }
 
 
