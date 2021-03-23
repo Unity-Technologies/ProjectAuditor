@@ -98,8 +98,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.readOnly).ToArray();
 
             var assemblyDirectories = new List<string>();
-            assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories());
-            assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledEngineAssemblyDirectories());
+            assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UserAssembly | PrecompiledAssemblyTypes.UnityEngine));
+            if (m_Config.AnalyzeEditorCode)
+                assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UnityEditor));
 
             var onCallFound = new Action<CallInfo>(pair =>
             {

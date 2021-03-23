@@ -777,15 +777,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                 // - default assembly, or,
                 // - all generated assemblies
 
-                var compiledAssemblies = m_AssemblyNames.Where(a => !AssemblyInfoProvider.IsModuleAssembly(a));
+                var compiledAssemblies = m_AssemblyNames.Where(a => !AssemblyInfoProvider.IsUnityEngineAssembly(a));
                 compiledAssemblies = compiledAssemblies.Where(a =>
-                    !AssemblyInfoProvider.IsAssemblyReadOnly(a));
+                    !AssemblyInfoProvider.IsReadOnlyAssembly(a));
                 m_AssemblySelection.selection.AddRange(compiledAssemblies);
 
                 if (!m_AssemblySelection.selection.Any())
                 {
-                    if (m_AssemblyNames.Contains(AssemblyInfoProvider.DefaultAssemblyName))
-                        m_AssemblySelection.Set(AssemblyInfoProvider.DefaultAssemblyName);
+                    if (m_AssemblyNames.Contains(AssemblyInfo.DefaultAssemblyName))
+                        m_AssemblySelection.Set(AssemblyInfo.DefaultAssemblyName);
                     else
                         m_AssemblySelection.SetAll(m_AssemblyNames);
                 }
