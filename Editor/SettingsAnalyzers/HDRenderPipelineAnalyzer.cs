@@ -46,42 +46,63 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 #if UNITY_2019_3_OR_NEWER
             if (PackageInfo.FindForAssetPath("Packages/com.unity.render-pipelines.high-definition") != null)
             {
-                var renderPipelineAsset = GraphicsSettings.currentRenderPipeline;
-                var hdrpAsset = renderPipelineAsset as HDRenderPipelineAsset;
-                if (hdrpAsset != null)
+                if (IsLitShaderModeBoth())
                 {
-                    if (hdrpAsset.currentPlatformRenderPipelineSettings.supportedLitShaderMode ==
-                        RenderPipelineSettings.SupportedLitShaderMode.Both)
+                    var deferredCamera = false;
+                    var forwardCamera = false;
+                    var allCameraData = new List<HDAdditionalCameraData>();
+                    for (int n = 0; n < SceneManager.sceneCount; ++n)
                     {
-                        var deferredCamera = false;
-                        var forwardCamera = false;
-                        var allCameraData = new List<HDAdditionalCameraData>();
-                        for (int n = 0; n < SceneManager.sceneCount; ++n)
+                        var scene = SceneManager.GetSceneAt(n);
+                        var roots = scene.GetRootGameObjects();
+                        foreach (var go in roots)
                         {
-                            var scene = SceneManager.GetSceneAt(n);
-                            var roots = scene.GetRootGameObjects();
-                            foreach (var go in roots)
-                            {
-                                GetCameraComponents(go, ref allCameraData);
-                            }
+                            GetCameraComponents(go, ref allCameraData);
                         }
-                        foreach (var cameraData in allCameraData)
-                        {
-                            if (cameraData.renderingPathCustomFrameSettings.litShaderMode == LitShaderMode.Deferred)
-                                deferredCamera = true;
-                            else
-                                forwardCamera = true;
-
-                            if (deferredCamera && forwardCamera)
-                                return new ProjectIssue(k_LitShaderModeBothAndMixedCameras, k_LitShaderModeBothAndMixedCameras.description, IssueCategory.ProjectSettings);
-                        }
-                        return new ProjectIssue(k_LitShaderModeBoth, k_LitShaderModeBoth.description, IssueCategory.ProjectSettings);
                     }
+                    foreach (var cameraData in allCameraData)
+                    {
+                        if (cameraData.renderingPathCustomFrameSettings.litShaderMode == LitShaderMode.Deferred)
+                            deferredCamera = true;
+                        else
+                            forwardCamera = true;
+
+                        if (deferredCamera && forwardCamera)
+                            return new ProjectIssue(k_LitShaderModeBothAndMixedCameras, k_LitShaderModeBothAndMixedCameras.description, IssueCategory.ProjectSettings);
+                    }
+                    return new ProjectIssue(k_LitShaderModeBoth, k_LitShaderModeBoth.description, IssueCategory.ProjectSettings);
                 }
             }
 #endif
 
             return null;
+        }
+
+        bool IsLitShaderModeBoth()
+        {
+            var renderPipelineAsset = GraphicsSettings.currentRenderPipeline;
+            if (renderPipelineAsset is HDRenderPipelineAsset currentHdrpAsset)
+            {
+                if (currentHdrpAsset.currentPlatformRenderPipelineSettings.supportedLitShaderMode ==
+                    RenderPipelineSettings.SupportedLitShaderMode.Both)
+                {
+                    return true;
+                }
+            }
+
+            for (int i = 0, c = QualitySettings.names.Length; i < c; ++i)
+            {
+                if (QualitySettings.GetRenderPipelineAssetAt(i) is HDRenderPipelineAsset hdrpAsset)
+                {
+                    if (hdrpAsset.currentPlatformRenderPipelineSettings.supportedLitShaderMode ==
+                        RenderPipelineSettings.SupportedLitShaderMode.Both)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         void GetCameraComponents(GameObject go, ref List<HDAdditionalCameraData> components)
