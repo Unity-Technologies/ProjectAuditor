@@ -35,18 +35,23 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         };
 
-        readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
-        readonly List<OpCode> m_OpCodes = new List<OpCode>();
+        static readonly IssueLayout k_GenericIssueLayout = new IssueLayout
+        {
+            category = IssueCategory.Generics,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Generic Type"},
+                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" }
+            }
+        };
 
         ProjectAuditorConfig m_Config;
+        List<IInstructionAnalyzer> m_Analyzers;
+        List<OpCode> m_OpCodes;
         List<ProblemDescriptor> m_ProblemDescriptors;
 
         Thread m_AssemblyAnalysisThread;
-
-        public void Initialize(ProjectAuditorConfig config)
-        {
-            m_Config = config;
-        }
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -56,11 +61,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_IssueLayout;
+            yield return k_GenericIssueLayout;
         }
 
-        public void Reload(string path)
+        public void Initialize(ProjectAuditorConfig config)
         {
-            m_ProblemDescriptors = ProblemDescriptorLoader.LoadFromJson(path, "ApiDatabase");
+            m_Config = config;
+            m_Analyzers = new List<IInstructionAnalyzer>();
+            m_OpCodes = new List<OpCode>();
+            m_ProblemDescriptors = new List<ProblemDescriptor>();
 
             foreach (var type in TypeInfo.GetAllTypesInheritedFromInterface<IInstructionAnalyzer>())
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
@@ -86,8 +95,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.readOnly).ToArray();
 
             var assemblyDirectories = new List<string>();
-            assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories());
-            assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledEngineAssemblyDirectories());
+            assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UserAssembly | PrecompiledAssemblyTypes.UnityEngine));
+            if (m_Config.AnalyzeEditorCode)
+                assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UnityEditor));
 
             var onCallFound = new Action<CallInfo>(pair =>
             {
@@ -103,7 +113,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var onIssueFoundInternal = new Action<ProjectIssue>(issue =>
             {
-                issues.Add(issue);
+                if (issue.category == IssueCategory.Code)
+                    issues.Add(issue);
                 onIssueFound(issue);
             });
 
@@ -242,7 +253,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     });
                 }
 
-                foreach (var analyzer in m_InstructionAnalyzers)
+                foreach (var analyzer in m_Analyzers)
                     if (analyzer.GetOpCodes().Contains(inst.OpCode))
                     {
                         var projectIssue = analyzer.Analyze(caller, inst);
@@ -263,7 +274,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         void AddAnalyzer(IInstructionAnalyzer analyzer)
         {
             analyzer.Initialize(this);
-            m_InstructionAnalyzers.Add(analyzer);
+            m_Analyzers.Add(analyzer);
             m_OpCodes.AddRange(analyzer.GetOpCodes());
         }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,70 +12,90 @@ using UnityEditor.PackageManager;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
+    // PrecompiledAssemblyType is a 1:1 match to PrecompiledAssemblySources (https://docs.unity3d.com/2019.4/Documentation/ScriptReference/Compilation.CompilationPipeline.PrecompiledAssemblySources.html)
+    [Flags]
+    enum PrecompiledAssemblyTypes
+    {
+        /// <summary>
+        ///   <para>Matches precompiled assemblies present in the project and packages.</para>
+        /// </summary>
+        UserAssembly = 1,
+        /// <summary>
+        ///   <para>Matches UnityEngine and runtime module assemblies.</para>
+        /// </summary>
+        UnityEngine = 2,
+        /// <summary>
+        ///   <para>Matches UnityEditor and editor module assemblies.</para>
+        /// </summary>
+        UnityEditor = 4,
+        /// <summary>
+        ///   <para>Matches assemblies supplied by the target framework.</para>
+        /// </summary>
+        SystemAssembly = 8,
+        /// <summary>
+        ///   <para>Matches all assembly sources.</para>
+        /// </summary>
+        All = -1, // 0xFFFFFFFF
+    }
+
     static class AssemblyInfoProvider
     {
         const string k_BuiltInPackagesFolder = "BuiltInPackages";
 
-        public const string DefaultAssemblyFileName = "Assembly-CSharp.dll";
-        public static string DefaultAssemblyName
-        {
-            get { return Path.GetFileNameWithoutExtension(DefaultAssemblyFileName); }
-        }
-
-        static IEnumerable<string> GetPrecompiledAssemblyPaths()
+        internal static IEnumerable<string> GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes flags)
         {
             var assemblyPaths = new List<string>();
 #if UNITY_2019_1_OR_NEWER
-            assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(CompilationPipeline.PrecompiledAssemblySources
-                .UserAssembly));
-            assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(CompilationPipeline.PrecompiledAssemblySources
-                .UnityEngine));
-#elif UNITY_2018_4_OR_NEWER
-            assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyNames()
-                .Select(a => CompilationPipeline.GetPrecompiledAssemblyPathFromAssemblyName(a)));
-#endif
-            return assemblyPaths;
-        }
-
-        public static IEnumerable<string> GetPrecompiledAssemblyDirectories()
-        {
-            foreach (var dir in GetPrecompiledAssemblyPaths().Select(path => Path.GetDirectoryName(path)).Distinct())
-                yield return dir;
-        }
-
-        public static IEnumerable<string> GetPrecompiledEngineAssemblyPaths()
-        {
-            var assemblyPaths = new List<string>();
-#if UNITY_2019_1_OR_NEWER
-            assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(CompilationPipeline.PrecompiledAssemblySources
-                .UnityEngine));
+            var precompiledAssemblySources = (CompilationPipeline.PrecompiledAssemblySources)flags;
+            assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(precompiledAssemblySources));
 #else
-            assemblyPaths.AddRange(Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath,
-                Path.Combine("Managed",
-                    "UnityEngine"))).Where(path => Path.GetExtension(path).Equals(".dll")));
+            if ((flags & PrecompiledAssemblyTypes.UnityEngine) != 0)
+                assemblyPaths.AddRange(Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath,
+                    Path.Combine("Managed", "UnityEngine"))).Where(path => Path.GetExtension(path).Equals(".dll")));
+            if ((flags & PrecompiledAssemblyTypes.UnityEditor) != 0)
+                assemblyPaths.AddRange(Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath,
+                    "Managed")).Where(path => Path.GetExtension(path).Equals(".dll")));
+            if ((flags & PrecompiledAssemblyTypes.UserAssembly) != 0)
+                assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyNames().Select(name => CompilationPipeline.GetPrecompiledAssemblyPathFromAssemblyName(name)));
 #endif
 
 #if !UNITY_2019_2_OR_NEWER
-            var files = Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath, Path.Combine(
-                "UnityExtensions",
-                Path.Combine("Unity", "GUISystem"))));
-            assemblyPaths.AddRange(files.Where(path => Path.GetExtension(path).Equals(".dll")));
+            var extensions = new List<string>();
+            if ((flags & PrecompiledAssemblyTypes.UnityEngine) != 0)
+            {
+                extensions.AddRange(new[]
+                {
+                    "UnityExtensions/Unity/Networking/UnityEngine.Networking.dll",
+                    "UnityExtensions/Unity/Timeline/Runtime/UnityEngine.Timeline.dll",
+                    "UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll",
+                });
+            }
+            if ((flags & PrecompiledAssemblyTypes.UnityEditor) != 0)
+            {
+                extensions.AddRange(new[]
+                {
+                    "UnityExtensions/Unity/Networking/Editor/UnityEditor.Networking.dll",
+                    "UnityExtensions/Unity/Timeline/Editor/UnityEditor.Timeline.dll",
+                    "UnityExtensions/Unity/GUISystem/Editor/UnityEditor.UI.dll",
+                });
+            }
+            assemblyPaths.AddRange(extensions.Select(ext => Path.Combine(EditorApplication.applicationContentsPath, ext)));
 #endif
             return assemblyPaths.Select(path => path.Replace("\\", "/"));
         }
 
-        public static IEnumerable<string> GetPrecompiledEngineAssemblyDirectories()
+        public static IEnumerable<string> GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes flags)
         {
-            foreach (var dir in GetPrecompiledEngineAssemblyPaths().Select(path => Path.GetDirectoryName(path))
-                     .Distinct()) yield return dir;
+            foreach (var dir in GetPrecompiledAssemblyPaths(flags).Select(path => Path.GetDirectoryName(path)).Distinct())
+                yield return dir;
         }
 
-        public static bool IsModuleAssembly(string assemblyName)
+        public static bool IsUnityEngineAssembly(string assemblyName)
         {
-            return GetPrecompiledEngineAssemblyPaths().FirstOrDefault(a => a.Contains(assemblyName)) != null;
+            return GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.UnityEngine).FirstOrDefault(a => a.Contains(assemblyName)) != null;
         }
 
-        public static bool IsAssemblyReadOnly(string assemblyName)
+        public static bool IsReadOnlyAssembly(string assemblyName)
         {
             var info = GetAssemblyInfoFromAssemblyName(assemblyName);
             return info.readOnly;
@@ -121,7 +142,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     return assemblyInfo;
                 }
             }
-            else if (!assemblyInfo.name.StartsWith(DefaultAssemblyName))
+            else if (!assemblyInfo.name.StartsWith(AssemblyInfo.DefaultAssemblyName))
             {
                 Debug.LogErrorFormat("Assembly Definition cannot be found for " + assemblyInfo.name);
             }
