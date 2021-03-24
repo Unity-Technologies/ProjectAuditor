@@ -47,10 +47,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
         }
 
-        public void Reload(string path)
-        {
-        }
-
         public void RegisterDescriptor(ProblemDescriptor descriptor)
         {
         }
