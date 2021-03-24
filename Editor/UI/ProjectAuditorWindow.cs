@@ -474,11 +474,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ShaderVariantsWindow.Refresh();
         }
 
-        void Reload()
-        {
-            OnEnable();
-        }
-
         void OnViewChanged(object userData)
         {
             var index = (int)userData;
