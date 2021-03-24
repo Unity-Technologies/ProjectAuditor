@@ -859,14 +859,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 GUI.enabled = true;
 
-                if (m_DeveloperMode)
-                {
-                    if (GUILayout.Button(Styles.ReloadButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(buttonWidth)))
-                    {
-                        Reload();
-                    }
-                }
-
                 DrawHelpButton();
 
                 if (m_AnalysisState == AnalysisState.InProgress)
@@ -1001,9 +993,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent AnalysisInProgressLabel =
                 new GUIContent("Analysis in progress...", "Analysis in progress...please wait.");
-
-            public static readonly GUIContent ReloadButton =
-                new GUIContent("Reload DB", "Reload Issue Definition files.");
 
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");

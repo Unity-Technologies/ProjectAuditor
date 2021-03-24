@@ -48,7 +48,6 @@ namespace Unity.ProjectAuditor.Editor
         public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
         public abstract void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
         public abstract void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-        public abstract void Reload(string path);
     }
 
     public interface IProgressBar
@@ -117,7 +116,6 @@ namespace Unity.ProjectAuditor.Editor
         public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<bool> onUpdate, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public Unity.ProjectAuditor.Editor.IssueLayout GetLayout(Unity.ProjectAuditor.Editor.IssueCategory category);
         public virtual void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
-        public void Reload(string path);
     }
 
     public class ProjectAuditorConfig : UnityEngine.ScriptableObject
@@ -237,7 +235,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.AssetsAuditor.<GetLayouts>d__4))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
         public virtual void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
         public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-        public virtual void Reload(string path);
     }
 
     public enum CodeProperty
@@ -272,7 +269,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public virtual void OnProcessShader(UnityEngine.Shader shader, UnityEditor.Rendering.ShaderSnippetData snippet, System.Collections.Generic.IList<UnityEditor.Rendering.ShaderCompilerData> data);
         public bool ParsePlayerLog(string logFile, Unity.ProjectAuditor.Editor.ProjectIssue[] builtVariants, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-        public virtual void Reload(string path);
     }
 
     public enum ShaderVariantProperty
@@ -307,14 +303,6 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    public class GenericTypeInstantiationAnalyzer : Unity.ProjectAuditor.Editor.InstructionAnalyzers.IInstructionAnalyzer
-    {
-        public GenericTypeInstantiationAnalyzer() {}
-        public virtual Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
-        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.InstructionAnalyzers.GenericTypeInstantiationAnalyzer.<GetOpCodes>d__5))] public virtual System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
-        public virtual void Initialize(Unity.ProjectAuditor.Editor.IAuditor auditor);
-    }
-
     public interface IInstructionAnalyzer
     {
         public abstract Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
@@ -327,8 +315,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
     public interface ISettingsAnalyzer
     {
-        public abstract Unity.ProjectAuditor.Editor.ProjectIssue Analyze();
-        public abstract int GetDescriptorId();
+        public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> Analyze();
         public abstract void Initialize(Unity.ProjectAuditor.Editor.IAuditor auditor);
     }
 }

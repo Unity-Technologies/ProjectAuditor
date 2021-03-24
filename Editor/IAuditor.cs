@@ -14,7 +14,6 @@ namespace Unity.ProjectAuditor.Editor
 
         void Initialize(ProjectAuditorConfig config);
 
-        void Reload(string path);
         void RegisterDescriptor(ProblemDescriptor descriptor);
 
         /// <summary>

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    public class GenericTypeInstantiationAnalyzer : IInstructionAnalyzer
+    class GenericTypeInstantiationAnalyzer : IInstructionAnalyzer
     {
         const int k_FirstDescriptorId = 500000;
 
