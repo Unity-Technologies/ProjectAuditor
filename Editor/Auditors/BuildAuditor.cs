@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
-            yield return null;
+            yield return k_Descriptor;
         }
 
         public IEnumerable<IssueLayout> GetLayouts()
