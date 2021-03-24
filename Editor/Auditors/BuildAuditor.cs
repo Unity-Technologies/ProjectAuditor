@@ -33,6 +33,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static BuildReport s_BuildReport;
 
+        const string s_BuildReportDir = "Assets/BuildReports";
+        const string s_LastBuildReportPath = "Library/LastBuild.buildreport";
+
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             yield return k_Descriptor;
@@ -53,7 +56,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
-#if UNITY_2019_4_OR_NEWER
+//#if UNITY_2019_4_OR_NEWER
+            if (s_BuildReport == null)
+            {
+                s_BuildReport = GetLastBuildReport();
+            }
+
             if (s_BuildReport != null)
             {
                 foreach (var packedAsset in s_BuildReport.packedAssets)
@@ -102,8 +110,24 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     }
                 }
             }
-#endif
+//#endif
             onComplete();
+        }
+
+        static BuildReport GetLastBuildReport()
+        {
+            if (!Directory.Exists(s_BuildReportDir))
+                Directory.CreateDirectory(s_BuildReportDir);
+
+            var date = File.GetLastWriteTime(s_LastBuildReportPath);
+            var assetPath = s_BuildReportDir + "/Build_" + date.ToString("YYYY-MM-DD-hh-mm-ss") + ".buildreport";
+
+            if (!File.Exists(assetPath))
+            {
+                File.Copy("Library/LastBuild.buildreport", assetPath, true);
+                AssetDatabase.ImportAsset(assetPath);
+            }
+            return AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
         }
 
         public int callbackOrder { get; }
