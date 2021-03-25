@@ -56,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
-//#if UNITY_2019_4_OR_NEWER
+#if UNITY_2019_4_OR_NEWER
             var buildReport = GetBuildReport();
             if (buildReport != null)
             {
@@ -106,7 +106,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     }
                 }
             }
-//#endif
+#endif
             onComplete();
         }
 
