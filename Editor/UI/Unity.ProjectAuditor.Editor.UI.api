@@ -3,6 +3,20 @@
 // make sure the XML doc file is present and located next to the scraped dll
 namespace Unity.ProjectAuditor.Editor.UI
 {
+    public class AnalysisView
+    {
+        public Unity.ProjectAuditor.Editor.UI.AnalysisViewDescriptor desc { get; }
+        public AnalysisView() {}
+        public void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
+        public void Clear();
+        public virtual void DrawInfo();
+        public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
+        public bool IsValid();
+        public void OnGUI();
+        public void Refresh();
+        public void SetFlatView(bool value);
+    }
+
     public class AnalysisViewDescriptor
     {
         public int analyticsEvent;
@@ -26,5 +40,11 @@ namespace Unity.ProjectAuditor.Editor.UI
         public AnalysisViewDescriptor() {}
         public static Unity.ProjectAuditor.Editor.UI.AnalysisViewDescriptor[] GetAll();
         public static void Register(Unity.ProjectAuditor.Editor.UI.AnalysisViewDescriptor descriptor);
+    }
+
+    public class BuildReportView : Unity.ProjectAuditor.Editor.UI.AnalysisView
+    {
+        public BuildReportView() {}
+        public virtual void DrawInfo();
     }
 }
