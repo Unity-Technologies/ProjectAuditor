@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] bool m_DeveloperMode;
         [SerializeField] ProjectReport m_ProjectReport;
         [SerializeField] TextFilter m_TextFilter;
-        [SerializeField] AnalysisState m_AnalysisState = AnalysisState.Initialized;
+        [SerializeField] AnalysisState m_AnalysisState = AnalysisState.Initializing;
         [SerializeField] Preferences m_Preferences = new Preferences();
 
         AnalysisView activeAnalysisView
@@ -121,19 +121,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnEnable()
         {
+            var currentState = m_AnalysisState;
+            m_AnalysisState = AnalysisState.Initializing;
+
             ProjectAuditorAnalytics.EnableAnalytics();
 
             m_ProjectAuditor = new ProjectAuditor();
-
-            var viewDescriptors = AnalysisViewDescriptor.GetAll();
-            if (m_AnalysisState == AnalysisState.InProgress || m_ActiveViewIndex >= viewDescriptors.Length)
-            {
-                // recover from in-progress state after domain reload
-                m_AnalysisState = AnalysisState.Initialized;
-            }
-
-            var currentState = m_AnalysisState;
-            m_AnalysisState = AnalysisState.Initializing;
 
             UpdateAssemblySelection();
 
@@ -161,6 +154,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_TextFilter == null)
                 m_TextFilter = new TextFilter();
 
+            var viewDescriptors = AnalysisViewDescriptor.GetAll();
             Array.Sort(viewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
 
             m_ViewContents = viewDescriptors.Select(m => new GUIContent(string.IsNullOrEmpty(m.menuLabel) ? m.name : m.menuLabel)).ToArray();
@@ -199,10 +193,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
             }
 
+            // are we reloading from a valid state?
+            if (currentState == AnalysisState.Valid && m_ActiveViewIndex < viewDescriptors.Length)
+                m_AnalysisState = currentState;
+            else
+                m_AnalysisState = AnalysisState.Initialized;
+
             RefreshDisplay();
 
             Instance = this;
-            m_AnalysisState = currentState;
         }
 
         void OnGUI()
