@@ -57,14 +57,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
 //#if UNITY_2019_4_OR_NEWER
-            if (s_BuildReport == null)
+            var buildReport = GetBuildReport();
+            if (buildReport != null)
             {
-                s_BuildReport = GetLastBuildReport();
-            }
-
-            if (s_BuildReport != null)
-            {
-                foreach (var packedAsset in s_BuildReport.packedAssets)
+                foreach (var packedAsset in buildReport.packedAssets)
                 {
                     var dict = new Dictionary<GUID, List<PackedAssetInfo>>();
                     foreach (var content in packedAsset.contents)
@@ -114,25 +110,30 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             onComplete();
         }
 
-        static BuildReport GetLastBuildReport()
+        public static BuildReport GetBuildReport()
         {
+            if (s_BuildReport != null)
+                return s_BuildReport;
+
             if (!Directory.Exists(s_BuildReportDir))
                 Directory.CreateDirectory(s_BuildReportDir);
 
             var date = File.GetLastWriteTime(s_LastBuildReportPath);
-            var assetPath = s_BuildReportDir + "/Build_" + date.ToString("YYYY-MM-DD-hh-mm-ss") + ".buildreport";
+            var assetPath = s_BuildReportDir + "/Build_" + date.ToString("yyyy-MM-dd-HH-mm-ss") + ".buildreport";
 
             if (!File.Exists(assetPath))
             {
                 File.Copy("Library/LastBuild.buildreport", assetPath, true);
                 AssetDatabase.ImportAsset(assetPath);
             }
-            return AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
+            s_BuildReport = AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
+            return s_BuildReport;
         }
 
         public int callbackOrder { get; }
         public void OnPostprocessBuild(BuildReport report)
         {
+            // TODO: save
             s_BuildReport = report;
         }
     }
