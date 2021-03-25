@@ -11,8 +11,9 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    class AnalysisViewDescriptor
+    public class AnalysisViewDescriptor
     {
+        public Type viewType;
         public IssueCategory category;
         public string name;
         public string menuLabel;
@@ -29,7 +30,20 @@ namespace Unity.ProjectAuditor.Editor.UI
         public Action<Location> onDoubleClick;
         public Action onDrawToolbarDataOptions;
         public Action<ProblemDescriptor> onOpenDescriptor;
-        public ProjectAuditorAnalytics.UIButton analyticsEvent;
+        public int analyticsEvent;
+
+        static Dictionary<int, AnalysisViewDescriptor> s_AnalysisViewDescriptors = new Dictionary<int, AnalysisViewDescriptor>();
+
+        public static void Register(AnalysisViewDescriptor descriptor)
+        {
+            if (!s_AnalysisViewDescriptors.ContainsKey((int)descriptor.category))
+                s_AnalysisViewDescriptors.Add((int)descriptor.category, descriptor);
+        }
+
+        public static AnalysisViewDescriptor[] GetAll()
+        {
+            return s_AnalysisViewDescriptors.Select(pair => pair.Value).ToArray();
+        }
     }
 
     class AnalysisView

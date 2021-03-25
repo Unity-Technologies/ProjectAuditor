@@ -16,7 +16,8 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         enum AnalysisState
         {
-            NotStarted,
+            Initializing,
+            Initialized,
             InProgress,
             Completed,
             Valid
@@ -25,104 +26,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         static readonly string DocumentationUrl = "https://github.com/Unity-Technologies/ProjectAuditor/blob/master/Documentation~/index.md";
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow Instance;
-
-        AnalysisViewDescriptor[] m_AnalysisViewDescriptors =
-        {
-            new AnalysisViewDescriptor
-            {
-                category = IssueCategory.Assets,
-                name = "Assets",
-                menuOrder = 3,
-                groupByDescription = true,
-                descriptionWithIcon = true,
-                showAreaSelection = false,
-                showAssemblySelection = false,
-                showCritical = false,
-                showDependencyView = true,
-                showMuteOptions = false,
-                showRightPanels = true,
-                dependencyViewGuiContent = new GUIContent("Asset Dependencies"),
-                onDoubleClick = FocusOnAssetInProjectWindow,
-                analyticsEvent = ProjectAuditorAnalytics.UIButton.Assets
-            },
-            new AnalysisViewDescriptor
-            {
-                category = IssueCategory.Shaders,
-                name = "Shaders",
-                menuOrder = 2,
-                groupByDescription = false,
-                descriptionWithIcon = true,
-                showAreaSelection = false,
-                showAssemblySelection = false,
-                showCritical = false,
-                showMuteOptions = false,
-                showDependencyView = false,
-                showRightPanels = false,
-                onDoubleClick = FocusOnAssetInProjectWindow,
-                onDrawToolbarDataOptions = () =>
-                {
-                    if (GUILayout.Button(Styles.ShaderVariantsButton, EditorStyles.toolbarButton,
-                        GUILayout.Width(80)))
-                    {
-                        Instance.OpenShaderVariantsWindow();
-                    }
-                },
-                analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
-            },
-            new AnalysisViewDescriptor
-            {
-                category = IssueCategory.Code,
-                name = "Code",
-                menuOrder = 0,
-                groupByDescription = true,
-                descriptionWithIcon = false,
-                showAreaSelection = true,
-                showAssemblySelection = true,
-                showCritical = true,
-                showDependencyView = true,
-                showMuteOptions = true,
-                showRightPanels = true,
-                dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
-                onDoubleClick = OpenTextFile,
-                onOpenDescriptor = OpenDescriptor,
-                analyticsEvent = ProjectAuditorAnalytics.UIButton.ApiCalls
-            },
-            new AnalysisViewDescriptor
-            {
-                category = IssueCategory.Generics,
-                name = "Generics",
-                menuOrder = 99,
-                menuLabel = "Experimental/Generics",
-                groupByDescription = true,
-                descriptionWithIcon = false,
-                showAreaSelection = false,
-                showAssemblySelection = true,
-                showCritical = false,
-                showDependencyView = true,
-                showMuteOptions = false,
-                showRightPanels = false,
-                dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
-                onDoubleClick = OpenTextFile,
-                onOpenDescriptor = OpenDescriptor,
-                analyticsEvent = ProjectAuditorAnalytics.UIButton.Generics
-            },
-            new AnalysisViewDescriptor
-            {
-                category = IssueCategory.ProjectSettings,
-                name = "Settings",
-                menuOrder = 1,
-                groupByDescription = false,
-                descriptionWithIcon = false,
-                showAreaSelection = true,
-                showAssemblySelection = false,
-                showCritical = false,
-                showMuteOptions = true,
-                showDependencyView = false,
-                showRightPanels = true,
-                onDoubleClick = OpenProjectSettings,
-                analyticsEvent = ProjectAuditorAnalytics.UIButton.ProjectSettings
-            }
-        };
 
         AnalysisViewDescriptor m_ShaderVariantsViewDescriptor = new AnalysisViewDescriptor
         {
@@ -136,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             showMuteOptions = false,
             showRightPanels = false,
             onDoubleClick = FocusOnAssetInProjectWindow,
-            analyticsEvent = ProjectAuditorAnalytics.UIButton.Shaders
+            analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Shaders
         };
 
         GUIContent[] m_ViewContents;
@@ -159,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] bool m_DeveloperMode;
         [SerializeField] ProjectReport m_ProjectReport;
         [SerializeField] TextFilter m_TextFilter;
-        [SerializeField] AnalysisState m_AnalysisState = AnalysisState.NotStarted;
+        [SerializeField] AnalysisState m_AnalysisState = AnalysisState.Initialized;
         [SerializeField] Preferences m_Preferences = new Preferences();
 
         AnalysisView activeAnalysisView
@@ -222,11 +125,15 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ProjectAuditor = new ProjectAuditor();
 
-            if (m_AnalysisState == AnalysisState.InProgress || m_ActiveViewIndex >= m_AnalysisViewDescriptors.Length)
+            var viewDescriptors = AnalysisViewDescriptor.GetAll();
+            if (m_AnalysisState == AnalysisState.InProgress || m_ActiveViewIndex >= viewDescriptors.Length)
             {
                 // recover from in-progress state after domain reload
-                m_AnalysisState = AnalysisState.NotStarted;
+                m_AnalysisState = AnalysisState.Initialized;
             }
+
+            var currentState = m_AnalysisState;
+            m_AnalysisState = AnalysisState.Initializing;
 
             UpdateAssemblySelection();
 
@@ -251,21 +158,22 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
             }
 
-            Array.Sort(m_AnalysisViewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
-
-            m_ViewContents = m_AnalysisViewDescriptors.Select(m => new GUIContent(string.IsNullOrEmpty(m.menuLabel) ? m.name : m.menuLabel)).ToArray();
-            m_ViewContentsWithPrefix = m_AnalysisViewDescriptors.Select(m => new GUIContent("View: " + m.name)).ToArray();
-
             if (m_TextFilter == null)
                 m_TextFilter = new TextFilter();
 
-            m_AnalysisViews.Clear();
-            foreach (var desc in m_AnalysisViewDescriptors)
-            {
-                var view = new AnalysisView();
-                view.CreateTable(desc, m_ProjectAuditor.GetLayout(desc.category), m_ProjectAuditor.config, m_Preferences, this);
+            Array.Sort(viewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
 
-                if (m_AnalysisState == AnalysisState.Valid)
+            m_ViewContents = viewDescriptors.Select(m => new GUIContent(string.IsNullOrEmpty(m.menuLabel) ? m.name : m.menuLabel)).ToArray();
+            m_ViewContentsWithPrefix = viewDescriptors.Select(m => new GUIContent("View: " + m.name)).ToArray();
+
+            m_AnalysisViews.Clear();
+            foreach (var desc in viewDescriptors)
+            {
+                var view = desc.viewType != null ? (AnalysisView)Activator.CreateInstance(desc.viewType) : new AnalysisView();
+                var layout = m_ProjectAuditor.GetLayout(desc.category);
+                view.CreateTable(desc, layout, m_ProjectAuditor.config, m_Preferences, this);
+
+                if (currentState == AnalysisState.Valid)
                     view.AddIssues(m_ProjectReport.GetIssues(desc.category));
 
                 m_AnalysisViews.Add(view);
@@ -274,7 +182,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var shaderVariantsWindow = AnalysisWindow.FindOpenWindow<ShaderVariantsWindow>();
             if (shaderVariantsWindow != null)
             {
-                if (m_AnalysisState == AnalysisState.Valid)
+                if (currentState == AnalysisState.Valid)
                 {
                     if (shaderVariantsWindow.IsValid())
                         shaderVariantsWindow.Clear();
@@ -294,12 +202,17 @@ namespace Unity.ProjectAuditor.Editor.UI
             RefreshDisplay();
 
             Instance = this;
+            m_AnalysisState = currentState;
         }
 
         void OnGUI()
         {
-            DrawSettings();
-            DrawToolbar();
+            if (m_AnalysisState != AnalysisState.Initializing)
+            {
+                DrawSettings();
+                DrawToolbar();
+            }
+
             if (IsAnalysisValid())
             {
                 DrawFilters();
@@ -319,6 +232,105 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        [InitializeOnLoadMethod]
+        static void OnLoad()
+        {
+            AnalysisViewDescriptor.Register(new AnalysisViewDescriptor
+            {
+                category = IssueCategory.Assets,
+                name = "Assets",
+                menuOrder = 3,
+                groupByDescription = true,
+                descriptionWithIcon = true,
+                showAreaSelection = false,
+                showAssemblySelection = false,
+                showCritical = false,
+                showDependencyView = true,
+                showMuteOptions = false,
+                showRightPanels = true,
+                dependencyViewGuiContent = new GUIContent("Asset Dependencies"),
+                onDoubleClick = FocusOnAssetInProjectWindow,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assets
+            });
+            AnalysisViewDescriptor.Register(new AnalysisViewDescriptor
+            {
+                category = IssueCategory.Shaders,
+                name = "Shaders",
+                menuOrder = 2,
+                groupByDescription = false,
+                descriptionWithIcon = true,
+                showAreaSelection = false,
+                showAssemblySelection = false,
+                showCritical = false,
+                showMuteOptions = false,
+                showDependencyView = false,
+                showRightPanels = false,
+                onDoubleClick = FocusOnAssetInProjectWindow,
+                onDrawToolbarDataOptions = () =>
+                {
+                    if (GUILayout.Button(Styles.ShaderVariantsButton, EditorStyles.toolbarButton,
+                        GUILayout.Width(80)))
+                    {
+                        Instance.OpenShaderVariantsWindow();
+                    }
+                },
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Shaders
+            });
+            AnalysisViewDescriptor.Register(new AnalysisViewDescriptor
+            {
+                category = IssueCategory.Code,
+                name = "Code",
+                menuOrder = 0,
+                groupByDescription = true,
+                descriptionWithIcon = false,
+                showAreaSelection = true,
+                showAssemblySelection = true,
+                showCritical = true,
+                showDependencyView = true,
+                showMuteOptions = true,
+                showRightPanels = true,
+                dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
+                onDoubleClick = OpenTextFile,
+                onOpenDescriptor = OpenDescriptor,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ApiCalls
+            });
+            AnalysisViewDescriptor.Register(new AnalysisViewDescriptor
+            {
+                category = IssueCategory.Generics,
+                name = "Generics",
+                menuOrder = 99,
+                menuLabel = "Experimental/Generics",
+                groupByDescription = true,
+                descriptionWithIcon = false,
+                showAreaSelection = false,
+                showAssemblySelection = true,
+                showCritical = false,
+                showDependencyView = true,
+                showMuteOptions = false,
+                showRightPanels = false,
+                dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
+                onDoubleClick = OpenTextFile,
+                onOpenDescriptor = OpenDescriptor,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Generics
+            });
+            AnalysisViewDescriptor.Register(new AnalysisViewDescriptor
+            {
+                category = IssueCategory.ProjectSettings,
+                name = "Settings",
+                menuOrder = 1,
+                groupByDescription = false,
+                descriptionWithIcon = false,
+                showAreaSelection = true,
+                showAssemblySelection = false,
+                showCritical = false,
+                showMuteOptions = true,
+                showDependencyView = false,
+                showRightPanels = true,
+                onDoubleClick = OpenProjectSettings,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ProjectSettings
+            });
+        }
+
         void OnToggleDeveloperMode()
         {
             m_DeveloperMode = !m_DeveloperMode;
@@ -326,7 +338,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         bool IsAnalysisValid()
         {
-            return m_AnalysisState != AnalysisState.NotStarted;
+            return m_AnalysisState != AnalysisState.Initializing && m_AnalysisState != AnalysisState.Initialized;
         }
 
         void Analyze()
@@ -381,7 +393,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
             catch (AssemblyCompilationException e)
             {
-                m_AnalysisState = AnalysisState.NotStarted;
+                m_AnalysisState = AnalysisState.Initialized;
                 Debug.LogError(e);
             }
         }
@@ -485,7 +497,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 RefreshDisplay();
 
-                ProjectAuditorAnalytics.SendUIButtonEvent(activeAnalysisView.desc.analyticsEvent, analytic);
+                ProjectAuditorAnalytics.SendUIButtonEvent((ProjectAuditorAnalytics.UIButton)activeAnalysisView.desc.analyticsEvent, analytic);
             }
         }
 
@@ -539,7 +551,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             m_AssemblyNames);
                     }
 
-                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.AssemblySelect,
+                    ProjectAuditorAnalytics.SendUIButtonEvent((ProjectAuditorAnalytics.UIButton)ProjectAuditorAnalytics.UIButton.AssemblySelect,
                         analytic);
                 }
             }
@@ -837,7 +849,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
             {
-                GUI.enabled = (m_AnalysisState == AnalysisState.Valid || m_AnalysisState == AnalysisState.NotStarted);
+                GUI.enabled = (m_AnalysisState == AnalysisState.Valid || m_AnalysisState == AnalysisState.Initialized);
 
                 const int buttonWidth = 120;
                 if (GUILayout.Button(Styles.AnalyzeButton, EditorStyles.toolbarButton, GUILayout.Width(buttonWidth)))
