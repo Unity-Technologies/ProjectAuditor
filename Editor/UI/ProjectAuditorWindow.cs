@@ -330,7 +330,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onDoubleClick = OpenProjectSettings,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ProjectSettings
             });
-			AnalysisViewDescriptor.Register(new AnalysisViewDescriptor
+            AnalysisViewDescriptor.Register(new AnalysisViewDescriptor
             {
                 viewType = typeof(BuildReportView),
                 category = IssueCategory.BuildFiles,
