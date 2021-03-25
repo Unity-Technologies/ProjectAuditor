@@ -335,7 +335,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 viewType = typeof(BuildReportView),
                 category = IssueCategory.BuildFiles,
                 name = "Build",
-                menuLabel = "Experimental/Build Files",
+                menuLabel = "Experimental/Build Report",
                 menuOrder = 99,
                 groupByDescription = false,
                 descriptionWithIcon = true,
@@ -344,7 +344,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showDependencyView = false,
                 showRightPanels = false,
                 onDoubleClick = FocusOnAssetInProjectWindow,
-//                onDrawInfo = "Build the project to view build files",
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
             });
         }
