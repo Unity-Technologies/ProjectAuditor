@@ -124,6 +124,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             },
             new AnalysisViewDescriptor
             {
+                viewType = typeof(BuildReportView),
                 category = IssueCategory.BuildFiles,
                 name = "Build",
                 menuLabel = "Experimental/Build Files",
@@ -451,25 +452,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_ProjectReport == null)
                 m_ProjectReport = new ProjectReport();
 
-            if (m_ShaderVariantsWindow == null)
-            {
-                var shaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
-                shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.GetLayout(IssueCategory.ShaderVariants), m_ProjectAuditor.config, m_Preferences, m_TextFilter);
-                shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
-                m_ShaderVariantsWindow = shaderVariantsWindow;
-            }
-            else
-            {
-                m_ShaderVariantsWindow.Clear();
-            }
-
             var newIssues = Audit<ShadersAuditor>();
 
-            m_ShaderVariantsWindow.AddIssues(newIssues);
-            m_ShaderVariantsWindow.Refresh();
+            OpenShaderVariantsWindow(newIssues.ToArray());
         }
 
-        void OpenShaderVariantsWindow()
+        void OpenShaderVariantsWindow(ProjectIssue[] issues = null)
         {
             if (m_ShaderVariantsWindow == null)
             {
@@ -483,8 +471,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ShaderVariantsWindow.Clear();
             }
 
-            m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
-            m_ShaderVariantsWindow.Refresh();
+            if (issues != null)
+            {
+                m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
+                m_ShaderVariantsWindow.Refresh();
+            }
             m_ShaderVariantsWindow.Show();
         }
 
@@ -509,11 +500,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             activeAnalysisView.Refresh();
             if (m_ShaderVariantsWindow != null)
                 m_ShaderVariantsWindow.Refresh();
-        }
-
-        void Reload()
-        {
-            OnEnable();
         }
 
         void OnViewChanged(object userData)
