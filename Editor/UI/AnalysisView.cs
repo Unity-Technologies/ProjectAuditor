@@ -24,6 +24,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showAssemblySelection;
         public bool showCritical;
         public bool showDependencyView;
+        public bool showInfoPanel;
         public bool showMuteOptions;
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
