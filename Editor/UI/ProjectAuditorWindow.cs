@@ -662,7 +662,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUI.indentLevel--;
             }
             EditorGUILayout.EndVertical();
-
         }
 
         void DrawFilters()
