@@ -336,7 +336,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 category = IssueCategory.BuildFiles,
                 name = "Build",
                 menuLabel = "Experimental/Build Report",
-                menuOrder = 99,
+                menuOrder = 98,
                 groupByDescription = false,
                 descriptionWithIcon = true,
                 showAssemblySelection = false,
