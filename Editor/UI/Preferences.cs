@@ -9,6 +9,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public const int k_MaxFontSize = 22;
 
         // foldout preferences
+        public bool info = true;
         public bool filters = true;
         public bool actions = true;
         public bool dependencies = true;
