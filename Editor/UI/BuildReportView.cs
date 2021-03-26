@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    public class BuildReportView : AnalysisView
+    class BuildReportView : AnalysisView
     {
         public override void DrawInfo()
         {

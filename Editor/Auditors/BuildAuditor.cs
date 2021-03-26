@@ -133,7 +133,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public int callbackOrder { get; }
         public void OnPostprocessBuild(BuildReport report)
         {
-            // TODO: save
             s_BuildReport = report;
         }
     }
