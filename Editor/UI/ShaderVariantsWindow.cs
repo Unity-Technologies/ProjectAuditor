@@ -27,9 +27,8 @@ To find which shader variants are compiled at runtime, follow these steps:
         const string k_PlayerLogProcessed = "Player log file successfully processed.";
 
         bool m_FlatView;
-        bool m_ShowCompiledVariants;
-        bool m_ShowUncompiledVariants;
-        //bool m_HideCompiledVariants;
+        bool m_ShowCompiledVariants = true;
+        bool m_ShowUncompiledVariants = true;
         IProjectIssueFilter m_MainFilter;
         ShadersAuditor m_ShadersAuditor;
 
@@ -74,7 +73,6 @@ To find which shader variants are compiled at runtime, follow these steps:
         {
             var buildAvailable = ShadersAuditor.BuildDataAvailable();
 
-
             m_AnalysisView.desc.onDrawInfo = buildAvailable ? k_PlayerLogInfo : k_BuildRequiredInfo;
             m_AnalysisView.DrawInfo();
 
@@ -87,7 +85,7 @@ To find which shader variants are compiled at runtime, follow these steps:
             EditorGUI.BeginChangeCheck();
             m_FlatView = EditorGUILayout.ToggleLeft("Flat View", m_FlatView, GUILayout.Width(160));
             m_ShowCompiledVariants = EditorGUILayout.ToggleLeft("Compiled Variants", m_ShowCompiledVariants, GUILayout.Width(160));
-            m_ShowUncompiledVariants = EditorGUILayout.ToggleLeft("Uncompiled Variants", m_ShowCompiledVariants, GUILayout.Width(160));
+            m_ShowUncompiledVariants = EditorGUILayout.ToggleLeft("Uncompiled Variants", m_ShowUncompiledVariants, GUILayout.Width(160));
             if (EditorGUI.EndChangeCheck())
             {
                 m_AnalysisView.SetFlatView(m_FlatView);
