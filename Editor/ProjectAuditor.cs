@@ -30,6 +30,7 @@ namespace Unity.ProjectAuditor.Editor
         ProjectAuditorConfig m_Config;
 
         public const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
+        public const string PackagePath = "Packages/com.unity.project-auditor";
 
         public ProjectAuditorConfig config
         {
@@ -75,11 +76,10 @@ namespace Unity.ProjectAuditor.Editor
 
         void InitAuditors()
         {
-            foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<IAuditor>())
+            foreach (var type in TypeInfo.GetAllTypesInheritedFromInterface<IAuditor>())
             {
                 var instance = Activator.CreateInstance(type) as IAuditor;
                 instance.Initialize(m_Config);
-                instance.Reload(DataPath);
                 m_Auditors.Add(instance);
             }
         }
@@ -90,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (string.IsNullOrEmpty(s_DataPath))
                 {
-                    const string path = "Packages/com.unity.project-auditor/Data";
+                    const string path = PackagePath + "/Data";
                     if (!File.Exists(Path.GetFullPath(path)))
                     {
                         // if it's not a package, let's search through all assets
@@ -179,13 +179,10 @@ namespace Unity.ProjectAuditor.Editor
 
         public IssueLayout GetLayout(IssueCategory category)
         {
-            return m_Auditors.SelectMany(auditor => auditor.GetLayouts()).First(a => a.category == category);
-        }
-
-        public void Reload(string path)
-        {
-            foreach (var auditor in m_Auditors)
-                auditor.Reload(path);
+            var layouts = m_Auditors.SelectMany(auditor => auditor.GetLayouts()).Where(a => a.category == category);
+            if (layouts.Any())
+                return layouts.First();
+            throw new Exception("Project Auditor category " + category + " not found.");
         }
 
 #if UNITY_2018_1_OR_NEWER

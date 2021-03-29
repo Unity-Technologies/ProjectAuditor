@@ -12,8 +12,9 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    class AnalysisViewDescriptor
+    struct AnalysisViewDescriptor
     {
+        public Type viewType;
         public IssueCategory category;
         public string name;
         public string menuLabel;
@@ -24,12 +25,28 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showAssemblySelection;
         public bool showCritical;
         public bool showDependencyView;
+        public bool showInfoPanel;
         public bool showMuteOptions;
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
         public Action<Location> onDoubleClick;
+        public string onDrawInfo;
+        public Action onDrawToolbarDataOptions;
         public Action<ProblemDescriptor> onOpenDescriptor;
-        public ProjectAuditorAnalytics.UIButton analyticsEvent;
+        public int analyticsEvent;
+
+        static Dictionary<int, AnalysisViewDescriptor> s_AnalysisViewDescriptors = new Dictionary<int, AnalysisViewDescriptor>();
+
+        public static void Register(AnalysisViewDescriptor descriptor)
+        {
+            if (!s_AnalysisViewDescriptors.ContainsKey((int)descriptor.category))
+                s_AnalysisViewDescriptors.Add((int)descriptor.category, descriptor);
+        }
+
+        public static AnalysisViewDescriptor[] GetAll()
+        {
+            return s_AnalysisViewDescriptors.Select(pair => pair.Value).ToArray();
+        }
     }
 
     class AnalysisView
@@ -160,24 +177,30 @@ namespace Unity.ProjectAuditor.Editor.UI
                 Styles.TextArea = new GUIStyle(EditorStyles.textArea);
 
             var selectedItems = m_Table.GetSelectedItems();
-            var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue);
-            var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor).Distinct();
+            var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
+            var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor).Distinct().ToArray();
 
             EditorGUILayout.BeginHorizontal();
 
-            DrawTable(selectedIssues.ToArray());
+            DrawTable(selectedIssues);
 
             if (m_Desc.showRightPanels)
             {
-                DrawFoldouts(selectedDescriptors.ToArray());
+                DrawFoldouts(selectedDescriptors);
             }
 
             EditorGUILayout.EndHorizontal();
 
             if (m_Desc.showDependencyView)
             {
-                DrawDependencyView(selectedIssues.ToArray());
+                DrawDependencyView(selectedIssues);
             }
+        }
+
+        public void DrawInfo()
+        {
+            if (m_Desc.onDrawInfo != null)
+                EditorGUILayout.LabelField(m_Desc.onDrawInfo);
         }
 
         void DrawTable(ProjectIssue[] selectedIssues)
@@ -187,30 +210,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-            EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
-            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
-            m_Table.SetFontSize(m_Preferences.fontSize);
-
-            Styles.TextArea.fontSize = m_Preferences.fontSize;
-
-            // (optional) collapse/expand buttons
-            if (m_Desc.groupByDescription)
-            {
-                if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                    SetRowsExpanded(false);
-                if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                    SetRowsExpanded(true);
-            }
+            DrawViewOptions();
 
             EditorGUILayout.Space();
 
-            if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
-                OnExport, GUILayout.Width(80)))
-            {
-                Export();
-
-                GUIUtility.ExitGUI();
-            }
+            DrawDataOptions();
 
             EditorGUILayout.EndHorizontal();
 
@@ -250,6 +254,38 @@ namespace Unity.ProjectAuditor.Editor.UI
                     GUILayout.TextArea(selectedDescriptors[0].problem, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
             EditorGUILayout.EndVertical();
+        }
+
+        void DrawViewOptions()
+        {
+            EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
+            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
+            m_Table.SetFontSize(m_Preferences.fontSize);
+
+            Styles.TextArea.fontSize = m_Preferences.fontSize;
+
+            // (optional) collapse/expand buttons
+            if (m_Desc.groupByDescription)
+            {
+                if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    SetRowsExpanded(false);
+                if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    SetRowsExpanded(true);
+            }
+        }
+
+        void DrawDataOptions()
+        {
+            if (m_Desc.onDrawToolbarDataOptions != null)
+                m_Desc.onDrawToolbarDataOptions();
+
+            if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
+                OnExport, GUILayout.Width(80)))
+            {
+                Export();
+
+                GUIUtility.ExitGUI();
+            }
         }
 
         void DrawRecommendationFoldout(ProblemDescriptor[] selectedDescriptors)

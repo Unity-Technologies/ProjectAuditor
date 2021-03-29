@@ -59,7 +59,6 @@ namespace Unity.ProjectAuditor.Editor
         public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
         public abstract void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
         public abstract void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-        public abstract void Reload(string path);
     }
 
     public interface IProgressBar
@@ -78,8 +77,9 @@ namespace Unity.ProjectAuditor.Editor
     {
         public const Unity.ProjectAuditor.Editor.IssueCategory Assets = 0;
         public const Unity.ProjectAuditor.Editor.IssueCategory Code = 3;
-        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 5;
-        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 4;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Generics = 4;
+        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 6;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 5;
         public const Unity.ProjectAuditor.Editor.IssueCategory Shaders = 1;
         public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariants = 2;
         public int value__;
@@ -116,6 +116,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport
     {
         public const string DefaultAssetPath = Assets/Editor/ProjectAuditorConfig.asset;
+        public const string PackagePath = Packages/com.unity.project-auditor;
         public virtual int callbackOrder { get; }
         public Unity.ProjectAuditor.Editor.ProjectAuditorConfig config { get; }
         public static string DataPath { get; }
@@ -126,7 +127,6 @@ namespace Unity.ProjectAuditor.Editor
         public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<bool> onUpdate, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public Unity.ProjectAuditor.Editor.IssueLayout GetLayout(Unity.ProjectAuditor.Editor.IssueCategory category);
         public virtual void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
-        public void Reload(string path);
     }
 
     public class ProjectAuditorConfig : UnityEngine.ScriptableObject
@@ -193,7 +193,8 @@ namespace Unity.ProjectAuditor.Editor
     public enum PropertyType
     {
         public const Unity.ProjectAuditor.Editor.PropertyType Area = 2;
-        public const Unity.ProjectAuditor.Editor.PropertyType Custom = 6;
+        public const Unity.ProjectAuditor.Editor.PropertyType CriticalContext = 6;
+        public const Unity.ProjectAuditor.Editor.PropertyType Custom = 7;
         public const Unity.ProjectAuditor.Editor.PropertyType Description = 0;
         public const Unity.ProjectAuditor.Editor.PropertyType Filename = 4;
         public const Unity.ProjectAuditor.Editor.PropertyType FileType = 5;
@@ -245,7 +246,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.AssetsAuditor.<GetLayouts>d__4))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
         public virtual void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
         public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-        public virtual void Reload(string path);
     }
 
     public enum CodeProperty
@@ -280,7 +280,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public virtual void OnProcessShader(UnityEngine.Shader shader, UnityEditor.Rendering.ShaderSnippetData snippet, System.Collections.Generic.IList<UnityEditor.Rendering.ShaderCompilerData> data);
         public bool ParsePlayerLog(string logFile, Unity.ProjectAuditor.Editor.ProjectIssue[] builtVariants, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-        public virtual void Reload(string path);
     }
 
     public enum ShaderVariantProperty
@@ -327,14 +326,21 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
     public interface ISettingsAnalyzer
     {
-        public abstract Unity.ProjectAuditor.Editor.ProjectIssue Analyze();
-        public abstract int GetDescriptorId();
+        public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> Analyze();
         public abstract void Initialize(Unity.ProjectAuditor.Editor.IAuditor auditor);
     }
 }
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
+    public class Exporter : System.IDisposable
+    {
+        public Exporter(string path, Unity.ProjectAuditor.Editor.IssueLayout layout) {}
+        public virtual void Dispose();
+        public void WriteHeader();
+        public void WriteIssue(Unity.ProjectAuditor.Editor.ProjectIssue issue);
+    }
+
     public class Location
     {
         public string Extension { get; }

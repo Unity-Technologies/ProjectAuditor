@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Asset Name"},
                 new PropertyDefinition { type = PropertyType.FileType, name = "File Type", longName = "File extension"},
-                new PropertyDefinition { type = PropertyType.Path, name = "Path", longName = "Path"}
+                new PropertyDefinition { type = PropertyType.Path, name = "Path"}
             }
         };
 
@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             "Use AssetBundles when possible"
             );
 
-        readonly List<ProblemDescriptor> m_ProblemDescriptors = new List<ProblemDescriptor>();
+        List<ProblemDescriptor> m_ProblemDescriptors;
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -44,11 +44,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Initialize(ProjectAuditorConfig config)
         {
+            m_ProblemDescriptors = new List<ProblemDescriptor>();
             RegisterDescriptor(k_Descriptor);
-        }
-
-        public void Reload(string path)
-        {
         }
 
         public void RegisterDescriptor(ProblemDescriptor descriptor)

@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 #if UNITY_2018_2_OR_NEWER
 using UnityEditor.Build.Reporting;
+using UnityEditor.SceneManagement;
 #endif
 
 namespace UnityEditor.ProjectAuditor.EditorTests
@@ -409,6 +410,9 @@ Shader ""Custom/MyEditorShader""
 
         static ProjectIssue[] BuildAndAnalyze(IssueCategory category = IssueCategory.ShaderVariants)
         {
+            // We must save the scene or the build will fail https://unity.slack.com/archives/C3F85MBDL/p1615991512002200
+            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/UntitledScene.unity");
+
             var buildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(buildPath);
             var buildPlayerOptions = new BuildPlayerOptions
@@ -424,6 +428,8 @@ Shader ""Custom/MyEditorShader""
             Assert.True(buildReport.summary.result == BuildResult.Succeeded);
 
             Directory.Delete(buildPath, true);
+
+            AssetDatabase.DeleteAsset("Assets/UntitledScene.unity");
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit();
@@ -443,6 +449,8 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void UnusedVariantsAreReported()
         {
+            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/UntitledScene.unity");
+
             var buildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(buildPath);
             var buildPlayerOptions = new BuildPlayerOptions
@@ -458,6 +466,8 @@ Shader ""Custom/MyEditorShader""
             Assert.True(buildReport.summary.result == BuildResult.Succeeded);
 
             Directory.Delete(buildPath, true);
+
+            AssetDatabase.DeleteAsset("Assets/UntitledScene.unity");
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             projectAuditor.Audit();

@@ -18,13 +18,13 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             );
 
         static readonly ProblemDescriptor k_ClosureAllocationDescriptor = new ProblemDescriptor
-        (
+            (
             102003,
             "Closure Allocation",
             Area.Memory,
             "An object is allocated in managed memory",
             "Try to avoid allocating objects in frequently-updated code."
-        );
+            );
 
 
         static readonly ProblemDescriptor k_ArrayAllocationDescriptor = new ProblemDescriptor

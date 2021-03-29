@@ -16,7 +16,6 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             config.AnalyzeInBackground = false;
             auditor.Initialize(config);
-            auditor.Reload(Unity.ProjectAuditor.Editor.ProjectAuditor.DataPath);
 
             var foundIssues = new List<ProjectIssue>();
             var completed = false;

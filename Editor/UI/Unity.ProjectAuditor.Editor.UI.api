@@ -1,3 +1,32 @@
 // This file is generated. Do not modify by hand.
 // XML documentation file not found. To check if public methods have XML comments,
 // make sure the XML doc file is present and located next to the scraped dll
+namespace Unity.ProjectAuditor.Editor.UI
+{
+    public class AnalysisViewDescriptor
+    {
+        public int analyticsEvent;
+        public Unity.ProjectAuditor.Editor.IssueCategory category;
+        public UnityEngine.GUIContent dependencyViewGuiContent;
+        public bool descriptionWithIcon;
+        public bool groupByDescription;
+        public string menuLabel;
+        public int menuOrder;
+        public string name;
+        public System.Action<Unity.ProjectAuditor.Editor.Utils.Location> onDoubleClick;
+        public string onDrawInfo;
+        public System.Action onDrawToolbarDataOptions;
+        public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenDescriptor;
+        public bool showAreaSelection;
+        public bool showAssemblySelection;
+        public bool showCritical;
+        public bool showDependencyView;
+        public bool showInfoPanel;
+        public bool showMuteOptions;
+        public bool showRightPanels;
+        public System.Type viewType;
+        public AnalysisViewDescriptor() {}
+        public static Unity.ProjectAuditor.Editor.UI.AnalysisViewDescriptor[] GetAll();
+        public static void Register(Unity.ProjectAuditor.Editor.UI.AnalysisViewDescriptor descriptor);
+    }
+}
