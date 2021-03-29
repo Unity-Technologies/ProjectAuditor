@@ -11,8 +11,9 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    class AnalysisViewDescriptor
+    public class AnalysisViewDescriptor
     {
+        public Type viewType;
         public IssueCategory category;
         public string name;
         public string menuLabel;
@@ -29,7 +30,20 @@ namespace Unity.ProjectAuditor.Editor.UI
         public Action<Location> onDoubleClick;
         public Action onDrawToolbarDataOptions;
         public Action<ProblemDescriptor> onOpenDescriptor;
-        public ProjectAuditorAnalytics.UIButton analyticsEvent;
+        public int analyticsEvent;
+
+        static Dictionary<int, AnalysisViewDescriptor> s_AnalysisViewDescriptors = new Dictionary<int, AnalysisViewDescriptor>();
+
+        public static void Register(AnalysisViewDescriptor descriptor)
+        {
+            if (!s_AnalysisViewDescriptors.ContainsKey((int)descriptor.category))
+                s_AnalysisViewDescriptors.Add((int)descriptor.category, descriptor);
+        }
+
+        public static AnalysisViewDescriptor[] GetAll()
+        {
+            return s_AnalysisViewDescriptors.Select(pair => pair.Value).ToArray();
+        }
     }
 
     class AnalysisView
@@ -160,23 +174,23 @@ namespace Unity.ProjectAuditor.Editor.UI
                 Styles.TextArea = new GUIStyle(EditorStyles.textArea);
 
             var selectedItems = m_Table.GetSelectedItems();
-            var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue);
-            var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor).Distinct();
+            var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
+            var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor).Distinct().ToArray();
 
             EditorGUILayout.BeginHorizontal();
 
-            DrawTable(selectedIssues.ToArray());
+            DrawTable(selectedIssues);
 
             if (m_Desc.showRightPanels)
             {
-                DrawFoldouts(selectedDescriptors.ToArray());
+                DrawFoldouts(selectedDescriptors);
             }
 
             EditorGUILayout.EndHorizontal();
 
             if (m_Desc.showDependencyView)
             {
-                DrawDependencyView(selectedIssues.ToArray());
+                DrawDependencyView(selectedIssues);
             }
         }
 

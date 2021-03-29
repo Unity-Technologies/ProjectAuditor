@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
@@ -6,8 +7,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
     {
         void Initialize(IAuditor auditor);
 
-        int GetDescriptorId();
-
-        ProjectIssue Analyze();
+        IEnumerable<ProjectIssue> Analyze();
     }
 }

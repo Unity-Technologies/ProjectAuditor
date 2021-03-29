@@ -46,18 +46,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         };
 
-        readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
-        readonly List<OpCode> m_OpCodes = new List<OpCode>();
-
         ProjectAuditorConfig m_Config;
+        List<IInstructionAnalyzer> m_Analyzers;
+        List<OpCode> m_OpCodes;
         List<ProblemDescriptor> m_ProblemDescriptors;
 
         Thread m_AssemblyAnalysisThread;
-
-        public void Initialize(ProjectAuditorConfig config)
-        {
-            m_Config = config;
-        }
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -70,9 +64,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             yield return k_GenericIssueLayout;
         }
 
-        public void Reload(string path)
+        public void Initialize(ProjectAuditorConfig config)
         {
-            m_ProblemDescriptors = ProblemDescriptorLoader.LoadFromJson(path, "ApiDatabase");
+            m_Config = config;
+            m_Analyzers = new List<IInstructionAnalyzer>();
+            m_OpCodes = new List<OpCode>();
+            m_ProblemDescriptors = new List<ProblemDescriptor>();
 
             foreach (var type in TypeInfo.GetAllTypesInheritedFromInterface<IInstructionAnalyzer>())
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
@@ -98,8 +95,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.readOnly).ToArray();
 
             var assemblyDirectories = new List<string>();
-            assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories());
-            assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledEngineAssemblyDirectories());
+            assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UserAssembly | PrecompiledAssemblyTypes.UnityEngine));
+            if (m_Config.AnalyzeEditorCode)
+                assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UnityEditor));
 
             var onCallFound = new Action<CallInfo>(pair =>
             {
@@ -255,7 +253,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     });
                 }
 
-                foreach (var analyzer in m_InstructionAnalyzers)
+                foreach (var analyzer in m_Analyzers)
                     if (analyzer.GetOpCodes().Contains(inst.OpCode))
                     {
                         var projectIssue = analyzer.Analyze(caller, inst);
@@ -276,7 +274,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         void AddAnalyzer(IInstructionAnalyzer analyzer)
         {
             analyzer.Initialize(this);
-            m_InstructionAnalyzers.Add(analyzer);
+            m_Analyzers.Add(analyzer);
             m_OpCodes.AddRange(analyzer.GetOpCodes());
         }
 
