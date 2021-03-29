@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
@@ -116,6 +117,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         ProjectAuditor m_ProjectAuditor;
         bool m_ShouldRefresh;
         ProjectAuditorAnalytics.Analytic m_AnalyzeButtonAnalytic;
+        string s_SaveLoadDirectory;
 
         // UI
         readonly List<AnalysisView> m_AnalysisViews = new List<AnalysisView>();
@@ -214,7 +216,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     else if (m_AreaSelectionSummary != "None")
                     {
                         var areas = m_AreaSelectionSummary.Split(new[] {", "}, StringSplitOptions.None);
-                        foreach (var area in areas) m_AreaSelection.selection.Add(area);
+                        foreach (var area in areas)
+                            m_AreaSelection.selection.Add(area);
                     }
                 }
                 else
@@ -307,7 +310,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ShouldRefresh = true;
             m_AnalysisState = AnalysisState.InProgress;
-            m_ProjectReport = new ProjectReport();
+            m_ProjectReport = new ProjectReport(EditorUserBuildSettings.activeBuildTarget);
             foreach (var view in m_AnalysisViews)
             {
                 view.Clear();
@@ -424,8 +427,37 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ShaderVariantsWindow.Refresh();
         }
 
-        void Reload()
+        void Save()
         {
+            var path = EditorUtility.SaveFilePanel("Save report to json file", s_SaveLoadDirectory, string.Format("project-auditor-report.json"), "json");
+            if (path.Length != 0)
+            {
+                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+
+                File.WriteAllText(path, JsonUtility.ToJson(m_ProjectReport));
+
+                EditorUtility.RevealInFinder(path);
+
+                s_SaveLoadDirectory = Path.GetDirectoryName(path);
+
+                ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Save, analytic);
+            }
+        }
+        void Load()
+        {
+            var path = EditorUtility.OpenFilePanel("Load from json file", s_SaveLoadDirectory, "json");
+            if (path.Length != 0)
+            {
+                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+
+                m_ProjectReport = JsonUtility.FromJson<ProjectReport>(File.ReadAllText(path));
+                m_AnalysisState = AnalysisState.Valid;
+
+                s_SaveLoadDirectory = Path.GetDirectoryName(path);
+
+                ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Load, analytic);
+            }
+
             OnEnable();
         }
 
@@ -830,14 +862,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ActiveViewIndex,
                     OnViewChanged, GUILayout.Width(buttonWidth));
 
+                if (GUILayout.Button(Styles.SaveButton, EditorStyles.toolbarButton, GUILayout.Width(buttonWidth)))
+                {
+                    Save();
+                }
+
                 GUI.enabled = true;
 
-                if (m_DeveloperMode)
+                if (GUILayout.Button(Styles.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(buttonWidth)))
                 {
-                    if (GUILayout.Button(Styles.ReloadButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(buttonWidth)))
-                    {
-                        Reload();
-                    }
+                    Load();
                 }
 
                 DrawHelpButton();
@@ -971,6 +1005,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent ReloadButton =
                 new GUIContent("Reload DB", "Reload Issue Definition files.");
+
+            public static readonly GUIContent SaveButton =
+                new GUIContent("Save", "Save json report.");
+
+            public static readonly GUIContent LoadButton =
+                new GUIContent("Load", "Load json report.");
 
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");
