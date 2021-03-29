@@ -72,11 +72,11 @@ To find which shader variants are compiled at runtime, follow these steps:
         {
             var buildAvailable = ShadersAuditor.BuildDataAvailable();
 
-            EditorGUILayout.BeginVertical(GUI.skin.box);
 
-            var helpStyle = new GUIStyle(EditorStyles.textField);
-            helpStyle.wordWrap = true;
-            EditorGUILayout.LabelField(buildAvailable ? k_PlayerLogInfo : k_BuildRequiredInfo, helpStyle);
+            m_AnalysisView.desc.onDrawInfo = buildAvailable ? k_PlayerLogInfo : k_BuildRequiredInfo;
+            m_AnalysisView.DrawInfo();
+
+            EditorGUILayout.BeginVertical(GUI.skin.box);
 
             var lastEnabled = GUI.enabled;
             GUI.enabled = buildAvailable;

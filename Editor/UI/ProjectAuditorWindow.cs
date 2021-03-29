@@ -36,6 +36,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             showAssemblySelection = false,
             showCritical = false,
             showDependencyView = false,
+            showInfoPanel = true,
             showMuteOptions = false,
             showRightPanels = false,
             onDrawToolbarDataOptions = () =>
