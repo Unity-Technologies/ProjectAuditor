@@ -22,6 +22,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             InProgress,
             Completed,
             Valid
+        }
+
         static readonly string DocumentationUrl = "https://github.com/Unity-Technologies/ProjectAuditor/blob/master/Documentation~/index.md";
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow Instance;
@@ -504,7 +506,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Save, analytic);
             }
         }
-        void Reload()
+
+        void Load()
+        {
             var path = EditorUtility.OpenFilePanel("Load from json file", s_SaveLoadDirectory, "json");
             if (path.Length != 0)
             {
@@ -517,6 +521,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Load, analytic);
             }
+        }
 
         void OnViewChanged(object userData)
         {

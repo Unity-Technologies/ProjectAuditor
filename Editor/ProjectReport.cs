@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
