@@ -14,13 +14,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField("Started at: ", report.summary.buildStartedAt.ToString());
             EditorGUILayout.LabelField("Ended at: ", report.summary.buildEndedAt.ToString());
             EditorGUILayout.LabelField("Total Time: ", FormatTime(report.summary.totalTime));
-#if UNITY_2019_3_OR_NEWER
             EditorGUILayout.LabelField("Total Size: ", FormatSize(report.summary.totalSize));
             EditorGUILayout.LabelField("Build Result: ", report.summary.result.ToString());
-#else
-            EditorGUILayout.LabelField("Total Size: ", FormatSize(report.summary.totalSize));
-            EditorGUILayout.LabelField("Build Result: ", report.summary.result.ToString());
-#endif
         }
 
         static string FormatTime(System.TimeSpan t)
