@@ -198,8 +198,32 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void DrawInfo()
         {
+            if (!m_Desc.showInfoPanel)
+                return;
+
+            if (Styles.TextArea == null)
+                Styles.TextArea = new GUIStyle(EditorStyles.textArea);
+
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
+
+            m_Preferences.info = Utility.BoldFoldout(m_Preferences.info, Contents.InfoFoldout);
+            if (m_Preferences.info)
+            {
+                EditorGUI.indentLevel++;
+
+                OnDrawInfo();
+
+                EditorGUI.indentLevel--;
+            }
+            EditorGUILayout.EndVertical();
+        }
+
+        public virtual void OnDrawInfo()
+        {
             if (m_Desc.onDrawInfo != null)
-                EditorGUILayout.LabelField(m_Desc.onDrawInfo);
+            {
+                EditorGUILayout.LabelField(m_Desc.onDrawInfo, Styles.TextArea);
+            }
         }
 
         void DrawTable(ProjectIssue[] selectedIssues)
@@ -421,6 +445,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static class Contents
         {
+            public static readonly GUIContent InfoFoldout = new GUIContent("Information");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to .csv files.");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All", "");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All", "");
