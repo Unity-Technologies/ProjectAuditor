@@ -62,6 +62,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 foreach (var packedAsset in buildReport.packedAssets)
                 {
+                    // note that there can be several entries for each source asset (for example, a prefab can reference a Texture, a Material and a shader)
                     var dict = new Dictionary<GUID, List<PackedAssetInfo>>();
                     foreach (var content in packedAsset.contents)
                     {
@@ -81,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
                     foreach (var entry in dict)
                     {
-                        var content = entry.Value[0];
+                        var content = entry.Value[0]; // sourceAssets are the same for all entries
                         var assetPath = content.sourceAssetPath;
 
                         ulong sum = 0;
