@@ -927,7 +927,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 GUI.enabled = true;
 
-                //if (m_AnalysisState == AnalysisState.InProgress)
+                if (m_AnalysisState == AnalysisState.InProgress)
                 {
                     if (Styles.StatusText == null)
                     {
@@ -939,7 +939,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
 
                 EditorGUILayout.Space();
-
 
                 // right-end buttons
                 if (GUILayout.Button(Contents.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(buttonWidth)))
