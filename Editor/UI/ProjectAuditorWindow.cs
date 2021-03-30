@@ -890,10 +890,13 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
-                    GUIStyle s = new GUIStyle(EditorStyles.textField);
-                    s.normal.textColor = Color.yellow;
+                    if (Styles.StatusText == null)
+                    {
+                        Styles.StatusText = new GUIStyle(Utility.GetStyle("ToolbarLabel"));
+                        Styles.StatusText.normal.textColor = Color.yellow;
+                    }
 
-                    GUILayout.Label(Styles.AnalysisInProgressLabel, s, GUILayout.ExpandWidth(true));
+                    GUILayout.Label(Contents.AnalysisInProgressLabel, Styles.StatusText, GUILayout.ExpandWidth(true));
                 }
             }
             EditorGUILayout.Separator();
