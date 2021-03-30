@@ -886,8 +886,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 GUI.enabled = true;
 
-                DrawHelpButton();
-
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
                     if (Styles.StatusText == null)
@@ -898,9 +896,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     GUILayout.Label(Contents.AnalysisInProgressLabel, Styles.StatusText, GUILayout.ExpandWidth(true));
                 }
+
+                EditorGUILayout.Space();
+
+                DrawHelpButton();
             }
-            EditorGUILayout.Separator();
-            GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
         }
 
