@@ -72,8 +72,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void AddItemsToMenu(GenericMenu menu)
         {
-            menu.AddItem(Styles.DeveloperMode, m_DeveloperMode, OnToggleDeveloperMode);
-            menu.AddItem(Styles.UserMode, !m_DeveloperMode, OnToggleDeveloperMode);
+            menu.AddItem(Contents.DeveloperMode, m_DeveloperMode, OnToggleDeveloperMode);
+            menu.AddItem(Contents.UserMode, !m_DeveloperMode, OnToggleDeveloperMode);
         }
 
         public bool Match(ProjectIssue issue)
@@ -269,7 +269,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onDoubleClick = FocusOnAssetInProjectWindow,
                 onDrawToolbarDataOptions = () =>
                 {
-                    if (GUILayout.Button(Styles.ShaderVariantsButton, EditorStyles.toolbarButton,
+                    if (GUILayout.Button(Contents.ShaderVariantsButton, EditorStyles.toolbarButton,
                         GUILayout.Width(80)))
                     {
                         Instance.OpenShaderVariantsWindow();
@@ -525,11 +525,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return;
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(Styles.AssemblyFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
+            EditorGUILayout.LabelField(Contents.AssemblyFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
 
             var lastEnabled = GUI.enabled;
             GUI.enabled = IsAnalysisValid() && !AssemblySelectionWindow.IsOpen();
-            if (GUILayout.Button(Styles.AssemblyFilterSelect, EditorStyles.miniButton,
+            if (GUILayout.Button(Contents.AssemblyFilterSelect, EditorStyles.miniButton,
                 GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
             {
                 if (m_AssemblyNames != null && m_AssemblyNames.Length > 0)
@@ -576,7 +576,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return;
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(Styles.AreaFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
+            EditorGUILayout.LabelField(Contents.AreaFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
 
             if (AreaNames.Length > 0)
             {
@@ -584,7 +584,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 var enabled = IsAnalysisValid() &&
                     !AreaSelectionWindow.IsOpen();
                 GUI.enabled = enabled;
-                if (GUILayout.Button(Styles.AreaFilterSelect, EditorStyles.miniButton,
+                if (GUILayout.Button(Contents.AreaFilterSelect, EditorStyles.miniButton,
                     GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
                 {
                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
@@ -626,7 +626,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
 
-            m_Preferences.info = Utility.BoldFoldout(m_Preferences.info, Styles.InfoFoldout);
+            m_Preferences.info = Utility.BoldFoldout(m_Preferences.info, Contents.InfoFoldout);
             if (m_Preferences.info)
             {
                 EditorGUI.indentLevel++;
@@ -642,7 +642,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
 
-            m_Preferences.filters = Utility.BoldFoldout(m_Preferences.filters, Styles.FiltersFoldout);
+            m_Preferences.filters = Utility.BoldFoldout(m_Preferences.filters, Contents.FiltersFoldout);
             if (m_Preferences.filters)
             {
                 EditorGUI.indentLevel++;
@@ -654,12 +654,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.BeginHorizontal();
 
-                EditorGUILayout.LabelField(Styles.TextSearchLabel, GUILayout.Width(80));
+                EditorGUILayout.LabelField(Contents.TextSearchLabel, GUILayout.Width(80));
 
                 m_TextFilter.searchText = EditorGUILayout.DelayedTextField(m_TextFilter.searchText, GUILayout.Width(180));
                 activeAnalysisView.table.searchString = m_TextFilter.searchText;
 
-                m_TextFilter.matchCase = EditorGUILayout.ToggleLeft(Styles.TextSearchCaseSensitive, m_TextFilter.matchCase, GUILayout.Width(160));
+                m_TextFilter.matchCase = EditorGUILayout.ToggleLeft(Contents.TextSearchCaseSensitive, m_TextFilter.matchCase, GUILayout.Width(160));
 
                 if (m_DeveloperMode)
                 {
@@ -721,7 +721,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
 
-            m_Preferences.actions = Utility.BoldFoldout(m_Preferences.actions, Styles.ActionsFoldout);
+            m_Preferences.actions = Utility.BoldFoldout(m_Preferences.actions, Contents.ActionsFoldout);
             if (m_Preferences.actions)
             {
                 EditorGUI.indentLevel++;
@@ -731,7 +731,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 GUI.enabled = activeAnalysisView.desc.showMuteOptions;
                 EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
 
-                if (GUILayout.Button(Styles.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                if (GUILayout.Button(Contents.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                 {
                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                     var selectedItems = table.GetSelectedItems();
@@ -749,7 +749,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         analytic, table.GetSelectedItems());
                 }
 
-                if (GUILayout.Button(Styles.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                if (GUILayout.Button(Contents.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                 {
                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                     var selectedItems = table.GetSelectedItems();
@@ -872,7 +872,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 GUI.enabled = (m_AnalysisState == AnalysisState.Valid || m_AnalysisState == AnalysisState.Initialized);
 
                 const int buttonWidth = 120;
-                if (GUILayout.Button(Styles.AnalyzeButton, EditorStyles.toolbarButton, GUILayout.Width(buttonWidth)))
+                if (GUILayout.Button(Contents.AnalyzeButton, EditorStyles.toolbarButton, GUILayout.Width(buttonWidth)))
                 {
                     Analyze();
                 }
@@ -908,14 +908,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             var helpStyle = new GUIStyle(EditorStyles.textField);
             helpStyle.wordWrap = true;
 
-            EditorGUILayout.LabelField(Styles.HelpText, helpStyle);
+            EditorGUILayout.LabelField(Contents.HelpText, helpStyle);
 
             EditorGUILayout.EndVertical();
         }
 
         void DrawHelpButton()
         {
-            if (GUILayout.Button(Styles.HelpButton, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
+            if (GUILayout.Button(Contents.HelpButton, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
             {
                 Application.OpenURL(DocumentationUrl);
             }
@@ -995,7 +995,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public static ProjectAuditorWindow ShowWindow()
         {
             var wnd = GetWindow(typeof(ProjectAuditorWindow)) as ProjectAuditorWindow;
-            if (wnd != null) wnd.titleContent = Styles.WindowTitle;
+            if (wnd != null) wnd.titleContent = Contents.WindowTitle;
             return wnd;
         }
 
@@ -1008,7 +1008,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly int ModeTabWidth = 300;
         }
 
-        static class Styles
+        static class Contents
         {
             public static readonly GUIContent DeveloperMode = new GUIContent("Developer Mode");
             public static readonly GUIContent UserMode = new GUIContent("User Mode");
@@ -1065,6 +1065,10 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...), by str
             public static readonly GUIContent ShaderVariantsButton = new GUIContent("Variants", "Inspect Shader Variants");
         }
 
+        static class Styles
+        {
+            public static GUIStyle StatusText;
+        }
 
         [PostProcessBuild(1)]
         public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
