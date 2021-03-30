@@ -334,6 +334,23 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onDoubleClick = OpenProjectSettings,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ProjectSettings
             });
+            AnalysisViewDescriptor.Register(new AnalysisViewDescriptor
+            {
+                viewType = typeof(BuildReportView),
+                category = IssueCategory.BuildFiles,
+                name = "Build",
+                menuLabel = "Experimental/Build Report",
+                menuOrder = 98,
+                groupByDescription = false,
+                descriptionWithIcon = true,
+                showAssemblySelection = false,
+                showCritical = false,
+                showDependencyView = false,
+                showInfoPanel = true,
+                showRightPanels = false,
+                onDoubleClick = FocusOnAssetInProjectWindow,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
+            });
         }
 
         void OnToggleDeveloperMode()
@@ -403,32 +420,27 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        void AnalyzeShaderVariants()
+        void OnPostprocessBuild(BuildTarget target)
         {
-            if (m_ProjectReport == null)
-                m_ProjectReport = new ProjectReport();
+            AnalyzeBuildReport();
+            AnalyzeShaderVariants();
+        }
 
-            m_ProjectReport.ClearIssues(IssueCategory.Shaders);
-            m_ProjectReport.ClearIssues(IssueCategory.ShaderVariants);
-
-            if (m_ShaderVariantsWindow == null)
+        List<ProjectIssue> Audit<T>() where T : class, IAuditor
+        {
+            var auditor = m_ProjectAuditor.GetAuditor<T>();
+            var layouts = auditor.GetLayouts();
+            foreach (var layout in layouts)
             {
-                var shaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
-                shaderVariantsWindow.CreateTable(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.GetLayout(IssueCategory.ShaderVariants), m_ProjectAuditor.config, m_Preferences, m_TextFilter);
-                shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
-                m_ShaderVariantsWindow = shaderVariantsWindow;
-            }
-            else
-            {
-                m_ShaderVariantsWindow.Clear();
+                m_ProjectReport.ClearIssues(layout.category);
             }
 
-            var shadersView = m_AnalysisViews.FirstOrDefault(view => view.desc.category == IssueCategory.Shaders);
-            if (shadersView != null)
-                shadersView.Clear();
+            var category = layouts.First().category;
+            var view = m_AnalysisViews.FirstOrDefault(v => v.desc.category == category);
+            view.Clear();
 
             var newIssues = new List<ProjectIssue>();
-            m_ProjectAuditor.GetAuditor<ShadersAuditor>().Audit(issue =>
+            auditor.Audit(issue =>
             {
                 newIssues.Add(issue);
                 m_ProjectReport.AddIssue(issue);
@@ -439,17 +451,28 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new ProgressBarDisplay()
             );
 
-            if (shadersView != null)
-            {
-                shadersView.AddIssues(newIssues);
-                shadersView.Refresh();
-            }
+            view.AddIssues(newIssues);
+            view.Refresh();
 
-            m_ShaderVariantsWindow.AddIssues(newIssues);
-            m_ShaderVariantsWindow.Refresh();
+            return newIssues;
         }
 
-        void OpenShaderVariantsWindow()
+        void AnalyzeBuildReport()
+        {
+            Audit<BuildAuditor>();
+        }
+
+        void AnalyzeShaderVariants()
+        {
+            if (m_ProjectReport == null)
+                m_ProjectReport = new ProjectReport();
+
+            var newIssues = Audit<ShadersAuditor>();
+
+            OpenShaderVariantsWindow(newIssues.ToArray());
+        }
+
+        void OpenShaderVariantsWindow(ProjectIssue[] issues = null)
         {
             if (m_ShaderVariantsWindow == null)
             {
@@ -463,8 +486,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ShaderVariantsWindow.Clear();
             }
 
-            m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
-            m_ShaderVariantsWindow.Refresh();
+            if (issues != null)
+            {
+                m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
+                m_ShaderVariantsWindow.Refresh();
+            }
             m_ShaderVariantsWindow.Show();
         }
 
@@ -1138,7 +1164,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...), by str
         public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
         {
             if (Instance != null)
-                Instance.AnalyzeShaderVariants();
+                Instance.OnPostprocessBuild(target);
         }
     }
 }
