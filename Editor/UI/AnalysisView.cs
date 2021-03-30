@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
     }
 
-    class AnalysisView
+    public class AnalysisView
     {
         private static string s_ExportDirectory = string.Empty;
 
@@ -74,12 +74,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             get { return m_Desc; }
         }
 
-        public IssueTable table
+        internal IssueTable table
         {
             get { return m_Table; }
         }
 
-        public void CreateTable(AnalysisViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        internal void CreateTable(AnalysisViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
             m_Desc = descriptor;
             m_Config = config;
@@ -196,7 +196,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        public void DrawInfo()
+        public virtual void DrawInfo()
         {
             if (m_Desc.onDrawInfo != null)
                 EditorGUILayout.LabelField(m_Desc.onDrawInfo);

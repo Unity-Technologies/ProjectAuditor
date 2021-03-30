@@ -44,7 +44,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             ProjectSettings,
             Assets,
             Shaders,
-            Generics
+            Generics,
+            BuildFiles
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -157,6 +158,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "settings_tab";
                 case UIButton.Generics:
                     return "generics_tab";
+                case UIButton.BuildFiles:
+                    return "buildfiles_tab";
                 case UIButton.AssemblySelect:
                     return "assembly_button_click";
                 case UIButton.AssemblySelectApply:

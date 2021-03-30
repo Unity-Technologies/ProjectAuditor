@@ -13,6 +13,7 @@ namespace Unity.ProjectAuditor.Editor
         Code,
         Generics,
         ProjectSettings,
+        BuildFiles,
         NumCategories
     }
 
