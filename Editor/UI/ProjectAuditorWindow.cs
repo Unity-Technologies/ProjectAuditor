@@ -940,14 +940,15 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.Space();
 
+                const int loadSaveButtonWidth = 60;
                 // right-end buttons
-                if (GUILayout.Button(Contents.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(buttonWidth)))
+                if (GUILayout.Button(Contents.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
                 {
                     Load();
                 }
 
                 GUI.enabled = m_AnalysisState == AnalysisState.Valid;
-                if (GUILayout.Button(Contents.SaveButton, EditorStyles.toolbarButton, GUILayout.Width(buttonWidth)))
+                if (GUILayout.Button(Contents.SaveButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
                 {
                     Save();
                 }
