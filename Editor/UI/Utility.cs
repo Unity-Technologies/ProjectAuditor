@@ -11,6 +11,19 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static GUIStyle Foldout;
         }
 
+        public static GUIStyle GetStyle(string styleName)
+        {
+            var s = UnityEngine.GUI.skin.FindStyle(styleName);
+            if (s == null)
+                s = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector).FindStyle(styleName);
+            if (s == null)
+            {
+                Debug.LogError("Missing built-in guistyle " + styleName);
+                s = new GUIStyle();
+            }
+            return s;
+        }
+
         internal static bool BoldFoldout(bool toggle, GUIContent content)
         {
             if (Styles.Foldout == null)
