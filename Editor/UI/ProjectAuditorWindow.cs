@@ -48,6 +48,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         ProjectAuditor m_ProjectAuditor;
         bool m_ShouldRefresh;
         ProjectAuditorAnalytics.Analytic m_AnalyzeButtonAnalytic;
+        ProjectAuditorAnalytics.Analytic m_LoadButtonAnalytic;
         string s_SaveLoadDirectory;
 
         // UI
@@ -481,8 +482,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 m_AnalysisState = AnalysisState.Valid;
 
-                ProjectAuditorAnalytics.SendUIButtonEventWithAnalyzeSummary(ProjectAuditorAnalytics.UIButton.Analyze,
-                    m_AnalyzeButtonAnalytic, m_ProjectReport);
+                if (m_LoadButtonAnalytic != null)
+                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Load, m_LoadButtonAnalytic);
+                if (m_AnalyzeButtonAnalytic != null)
+                    ProjectAuditorAnalytics.SendUIButtonEventWithAnalyzeSummary(ProjectAuditorAnalytics.UIButton.Analyze, m_AnalyzeButtonAnalytic, m_ProjectReport);
             }
 
             activeAnalysisView.Refresh();
@@ -495,15 +498,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             var path = EditorUtility.SaveFilePanel("Save report to json file", s_SaveLoadDirectory, string.Format("project-auditor-report.json"), "json");
             if (path.Length != 0)
             {
-                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-
                 File.WriteAllText(path, JsonUtility.ToJson(m_ProjectReport));
 
                 EditorUtility.RevealInFinder(path);
 
                 s_SaveLoadDirectory = Path.GetDirectoryName(path);
 
-                ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Save, analytic);
+                ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Save, ProjectAuditorAnalytics.BeginAnalytic());
             }
         }
 
@@ -512,15 +513,19 @@ namespace Unity.ProjectAuditor.Editor.UI
             var path = EditorUtility.OpenFilePanel("Load from json file", s_SaveLoadDirectory, "json");
             if (path.Length != 0)
             {
-                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
 
                 m_ProjectReport = JsonUtility.FromJson<ProjectReport>(File.ReadAllText(path));
                 m_AnalysisState = AnalysisState.Valid;
 
                 s_SaveLoadDirectory = Path.GetDirectoryName(path);
-
-                ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Load, analytic);
             }
+            OnEnable();
+
+            // update list of assembly names
+            var scriptIssues = m_ProjectReport.GetIssues(IssueCategory.Code);
+            m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty((int)CodeProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
+            UpdateAssemblySelection();
         }
 
         void OnViewChanged(object userData)
