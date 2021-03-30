@@ -24,9 +24,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_AnalysisView = new AnalysisView();
         }
 
-        public virtual void CreateTable(AnalysisViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public virtual void Create(ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
-            m_AnalysisView.CreateTable(desc, layout, config, prefs, filter);
+            m_AnalysisView.Create(desc, layout, config, prefs, filter);
         }
 
         public void AddIssues(IEnumerable<ProjectIssue> issues)

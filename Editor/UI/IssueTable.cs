@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         static GUIStyle s_LabelStyle;
 
         readonly ProjectAuditorConfig m_Config;
-        readonly AnalysisViewDescriptor m_Desc;
+        readonly ViewDescriptor m_Desc;
         readonly IProjectIssueFilter m_Filter;
         readonly IssueLayout m_Layout;
         readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         int m_FontSize;
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
-                          AnalysisViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config,
+                          ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config,
                           IProjectIssueFilter filter) : base(state,
                                                              multicolumnHeader)
         {

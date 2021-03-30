@@ -11,43 +11,6 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    public class AnalysisViewDescriptor
-    {
-        public Type viewType;
-        public IssueCategory category;
-        public string name;
-        public string menuLabel;
-        public int menuOrder;
-        public bool groupByDescription;
-        public bool descriptionWithIcon;
-        public bool showAreaSelection;
-        public bool showAssemblySelection;
-        public bool showCritical;
-        public bool showDependencyView;
-        public bool showInfoPanel;
-        public bool showMuteOptions;
-        public bool showRightPanels;
-        public GUIContent dependencyViewGuiContent;
-        public Action<Location> onDoubleClick;
-        public string onDrawInfo;
-        public Action onDrawToolbarDataOptions;
-        public Action<ProblemDescriptor> onOpenDescriptor;
-        public int analyticsEvent;
-
-        static Dictionary<int, AnalysisViewDescriptor> s_AnalysisViewDescriptors = new Dictionary<int, AnalysisViewDescriptor>();
-
-        public static void Register(AnalysisViewDescriptor descriptor)
-        {
-            if (!s_AnalysisViewDescriptors.ContainsKey((int)descriptor.category))
-                s_AnalysisViewDescriptors.Add((int)descriptor.category, descriptor);
-        }
-
-        public static AnalysisViewDescriptor[] GetAll()
-        {
-            return s_AnalysisViewDescriptors.Select(pair => pair.Value).ToArray();
-        }
-    }
-
     public class AnalysisView
     {
         private static string s_ExportDirectory = string.Empty;
@@ -61,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         ProjectAuditorConfig m_Config;
         Preferences m_Preferences;
-        AnalysisViewDescriptor m_Desc;
+        ViewDescriptor m_Desc;
         IProjectIssueFilter m_Filter;
 
         DependencyView m_DependencyView;
@@ -69,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         IssueTable m_Table;
         IssueLayout m_Layout;
 
-        public AnalysisViewDescriptor desc
+        public ViewDescriptor desc
         {
             get { return m_Desc; }
         }
@@ -79,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             get { return m_Table; }
         }
 
-        internal void CreateTable(AnalysisViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        internal void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
             m_Desc = descriptor;
             m_Config = config;
