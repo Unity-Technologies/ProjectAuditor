@@ -934,10 +934,13 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             EditorGUILayout.BeginVertical(GUI.skin.box);
 
-            var helpStyle = new GUIStyle(EditorStyles.textField);
-            helpStyle.wordWrap = true;
+            if (Styles.WelcomeText == null)
+            {
+                Styles.WelcomeText = new GUIStyle(EditorStyles.textField);
+                Styles.WelcomeText.wordWrap = true;
+            }
 
-            EditorGUILayout.LabelField(Contents.HelpText, helpStyle);
+            EditorGUILayout.LabelField(Contents.HelpText, Styles.WelcomeText);
 
             EditorGUILayout.EndVertical();
         }
@@ -1080,7 +1083,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 #else
             public static readonly GUIContent HelpButton = new GUIContent("?", "Open Manual (in a web browser)");
 #endif
-            public static readonly string HelpText =
+            public static readonly GUIContent HelpText = new GUIContent(
 @"Project Auditor is an experimental static analysis tool for Unity Projects.
 This tool will analyze assets, scripts and project settings of a Unity project
 and report a list of possible problems that might affect performance, memory and other areas.
@@ -1089,7 +1092,8 @@ To Analyze the project, click on Analyze.
 
 Once the project is analyzed, the tool displays a list of issues of a specific kind. Initially, code-related issues will be shown.
 To switch type of issues, for example from code to settings-related issues, use the 'View' dropdown and select Settings.
-In addition, it is possible to filter issues by area (CPU/Memory/etc...), by string or by other search criteria.";
+In addition, it is possible to filter issues by area (CPU/Memory/etc...), by string or by other search criteria."
+                );
 
             public static readonly GUIContent ShaderVariantsButton = new GUIContent("Variants", "Inspect Shader Variants");
         }
@@ -1097,6 +1101,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...), by str
         static class Styles
         {
             public static GUIStyle StatusText;
+            public static GUIStyle WelcomeText;
         }
 
         [PostProcessBuild(1)]
