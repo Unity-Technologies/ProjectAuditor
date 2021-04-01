@@ -169,8 +169,8 @@ namespace Unity.ProjectAuditor.Editor
         {
             foreach (var auditor in m_Auditors)
             {
-                if (auditor is T impl)
-                    return impl;
+                if (auditor is T)
+                    return (T)auditor;
             }
 
             return null;
