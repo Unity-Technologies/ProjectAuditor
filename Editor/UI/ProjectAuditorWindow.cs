@@ -42,14 +42,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Shaders
         };
 
-        GUIContent[] m_ViewContents;
-        GUIContent[] m_ViewContentsWithPrefix;
+        Utility.DropdownItem[] m_ViewDropdownItems;
         ProjectAuditor m_ProjectAuditor;
         bool m_ShouldRefresh;
         ProjectAuditorAnalytics.Analytic m_AnalyzeButtonAnalytic;
 
         // UI
-        readonly List<AnalysisView> m_Views = new List<AnalysisView>();
+        AnalysisView[] m_Views;
         AnalysisWindow m_ShaderVariantsWindow;
         TreeViewSelection m_AreaSelection;
         TreeViewSelection m_AssemblySelection;
@@ -137,20 +136,34 @@ namespace Unity.ProjectAuditor.Editor.UI
             var viewDescriptors = ViewDescriptor.GetAll();
             Array.Sort(viewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
 
-            m_ViewContents = viewDescriptors.Select(m => new GUIContent(string.IsNullOrEmpty(m.menuLabel) ? m.name : m.menuLabel)).ToArray();
-            m_ViewContentsWithPrefix = viewDescriptors.Select(m => new GUIContent("View: " + m.name)).ToArray();
-
-            m_Views.Clear();
-            foreach (var desc in viewDescriptors)
+            m_ViewDropdownItems = new Utility.DropdownItem[viewDescriptors.Length];
+            m_Views = new AnalysisView[viewDescriptors.Length];
+            for (int i = 0; i < viewDescriptors.Length; i++)
             {
-                var view = desc.viewType != null ? (AnalysisView)Activator.CreateInstance(desc.viewType) : new AnalysisView();
+                var desc = viewDescriptors[i];
                 var layout = m_ProjectAuditor.GetLayout(desc.category);
+                var layoutSupported = layout != null;
+
+                m_ViewDropdownItems[i] = new Utility.DropdownItem
+                {
+                    Content = new GUIContent(string.IsNullOrEmpty(desc.menuLabel) ? desc.name : desc.menuLabel),
+                    SelectionContent = new GUIContent("View: " + desc.name),
+                    enabled = layoutSupported,
+                };
+
+                if (!layoutSupported)
+                {
+                    Debug.Log("Project Auditor module " + desc.category + " is not supported.");
+                    continue;
+                }
+
+                var view = desc.viewType != null ? (AnalysisView)Activator.CreateInstance(desc.viewType) : new AnalysisView();
                 view.Create(desc, layout, m_ProjectAuditor.config, m_Preferences, this);
 
                 if (currentState == AnalysisState.Valid)
                     view.AddIssues(m_ProjectReport.GetIssues(desc.category));
 
-                m_Views.Add(view);
+                m_Views[i] = view;
             }
 
             var shaderVariantsWindow = AnalysisWindow.FindOpenWindow<ShaderVariantsWindow>();
@@ -348,7 +361,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ProjectReport = new ProjectReport();
             foreach (var view in m_Views)
             {
-                view.Clear();
+                if (view != null)
+                    view.Clear();
             }
 
             if (m_ShaderVariantsWindow != null)
@@ -370,7 +384,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                         // add batch of issues
                         foreach (var view in m_Views)
                         {
-                            view.AddIssues(newIssues);
+                            if (view != null)
+                                view.AddIssues(newIssues);
                         }
 
                         if (m_ShaderVariantsWindow != null)
@@ -426,7 +441,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             // update views
             var categories = layouts.Select(l => l.category);
-            var views = m_Views.Where(v => categories.Contains(v.desc.category));
+            var views = m_Views.Where(v => v != null && categories.Contains(v.desc.category));
             foreach (var view in views)
             {
                 view.Clear();
@@ -915,8 +930,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 GUI.enabled = m_AnalysisState == AnalysisState.Valid;
 
-                Utility.ToolbarDropdownList(m_ViewContents,
-                    m_ViewContentsWithPrefix[m_ActiveViewIndex],
+                Utility.ToolbarDropdownList(m_ViewDropdownItems,
                     m_ActiveViewIndex,
                     OnViewChanged, GUILayout.Width(buttonWidth));
 

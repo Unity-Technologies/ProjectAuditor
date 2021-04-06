@@ -178,10 +178,8 @@ namespace Unity.ProjectAuditor.Editor
 
         public IssueLayout GetLayout(IssueCategory category)
         {
-            var layouts = m_Auditors.SelectMany(auditor => auditor.GetLayouts()).Where(a => a.category == category);
-            if (layouts.Any())
-                return layouts.First();
-            throw new Exception("Project Auditor category " + category + " not found.");
+            var layouts = m_Auditors.Where(a => a.IsSupported()).SelectMany(auditor => auditor.GetLayouts()).Where(l => l.category == category);
+            return layouts.FirstOrDefault();
         }
 
 #if UNITY_2018_1_OR_NEWER

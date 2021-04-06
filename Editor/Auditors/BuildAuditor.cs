@@ -50,6 +50,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
         }
 
+        public bool IsSupported()
+        {
+#if UNITY_2019_4_OR_NEWER
+            return true;
+#else
+            return false;
+#endif
+        }
+
         public void RegisterDescriptor(ProblemDescriptor descriptor)
         {
         }

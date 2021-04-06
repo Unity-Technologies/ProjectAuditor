@@ -44,6 +44,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 AddAnalyzer(Activator.CreateInstance(type) as ISettingsAnalyzer);
         }
 
+        public bool IsSupported()
+        {
+            return true;
+        }
+
         public void RegisterDescriptor(ProblemDescriptor descriptor)
         {
             m_ProblemDescriptors.Add(descriptor);

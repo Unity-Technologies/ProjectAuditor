@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor
         public string longName;
     }
 
-    public struct IssueLayout
+    public class IssueLayout
     {
         public IssueCategory category;
         public PropertyDefinition[] properties;

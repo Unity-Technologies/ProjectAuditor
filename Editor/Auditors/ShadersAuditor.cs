@@ -136,6 +136,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_GetSRPBatcherCompatibilityCode = m_ShaderUtilType.GetMethod("GetSRPBatcherCompatibilityCode", BindingFlags.Static | BindingFlags.NonPublic);
         }
 
+        public bool IsSupported()
+        {
+            return true;
+        }
+
         public void RegisterDescriptor(ProblemDescriptor descriptor)
         {
         }
