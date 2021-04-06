@@ -255,6 +255,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
     }
 
+    public enum BuildProperty
+    {
+        public const Unity.ProjectAuditor.Editor.Auditors.BuildProperty BuildFile = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.BuildProperty Num = 2;
+        public const Unity.ProjectAuditor.Editor.Auditors.BuildProperty Size = 0;
+        public int value__;
+    }
+
     public enum CodeProperty
     {
         public const Unity.ProjectAuditor.Editor.Auditors.CodeProperty Assembly = 0;

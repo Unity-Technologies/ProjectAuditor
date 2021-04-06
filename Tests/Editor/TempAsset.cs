@@ -24,7 +24,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         public TempAsset(string fileName, string content) :
-        this(fileName)
+            this(fileName)
         {
             File.WriteAllText(relativePath, content);
 

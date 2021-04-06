@@ -5,6 +5,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     public class AnalysisView
     {
+        protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.ProjectIssue> m_Issues;
         public Unity.ProjectAuditor.Editor.UI.ViewDescriptor desc { get; }
         public AnalysisView() {}
         public void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
