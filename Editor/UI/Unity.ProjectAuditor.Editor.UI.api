@@ -5,7 +5,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     public class AnalysisView
     {
-        public Unity.ProjectAuditor.Editor.UI.AnalysisViewDescriptor desc { get; }
+        public Unity.ProjectAuditor.Editor.UI.ViewDescriptor desc { get; }
         public AnalysisView() {}
         public void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
         public void Clear();
@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public void SetFlatView(bool value);
     }
 
-    public class AnalysisViewDescriptor
+    public class ViewDescriptor
     {
         public int analyticsEvent;
         public Unity.ProjectAuditor.Editor.IssueCategory category;
@@ -39,8 +39,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showMuteOptions;
         public bool showRightPanels;
         public System.Type viewType;
-        public AnalysisViewDescriptor() {}
-        public static Unity.ProjectAuditor.Editor.UI.AnalysisViewDescriptor[] GetAll();
-        public static void Register(Unity.ProjectAuditor.Editor.UI.AnalysisViewDescriptor descriptor);
+        public ViewDescriptor() {}
+        public static Unity.ProjectAuditor.Editor.UI.ViewDescriptor[] GetAll();
+        public static void Register(Unity.ProjectAuditor.Editor.UI.ViewDescriptor descriptor);
     }
 }
