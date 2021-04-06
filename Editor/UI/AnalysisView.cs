@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         IProjectIssueFilter m_Filter;
 
         DependencyView m_DependencyView;
-        List<ProjectIssue> m_Issues;
+        protected List<ProjectIssue> m_Issues;
         IssueTable m_Table;
         IssueLayout m_Layout;
 

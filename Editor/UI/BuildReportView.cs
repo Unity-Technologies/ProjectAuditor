@@ -10,13 +10,20 @@ namespace Unity.ProjectAuditor.Editor.UI
         public override void DrawInfo()
         {
             var report = BuildAuditor.GetBuildReport();
-            EditorGUILayout.LabelField("Build Name: ", Application.productName);
-            EditorGUILayout.LabelField("Platform: ", report.summary.platform.ToString());
-            EditorGUILayout.LabelField("Started at: ", report.summary.buildStartedAt.ToString());
-            EditorGUILayout.LabelField("Ended at: ", report.summary.buildEndedAt.ToString());
-            EditorGUILayout.LabelField("Total Time: ", Formatting.FormatTime(report.summary.totalTime));
-            EditorGUILayout.LabelField("Total Size: ", Formatting.FormatSize(report.summary.totalSize));
-            EditorGUILayout.LabelField("Build Result: ", report.summary.result.ToString());
+            if (report == null)
+            {
+                EditorGUILayout.LabelField("Build Report not found");
+            }
+            else
+            {
+                EditorGUILayout.LabelField("Build Name: ", Application.productName);
+                EditorGUILayout.LabelField("Platform: ", report.summary.platform.ToString());
+                EditorGUILayout.LabelField("Started at: ", report.summary.buildStartedAt.ToString());
+                EditorGUILayout.LabelField("Ended at: ", report.summary.buildEndedAt.ToString());
+                EditorGUILayout.LabelField("Total Time: ", Formatting.FormatTime(report.summary.totalTime));
+                EditorGUILayout.LabelField("Total Size: ", Formatting.FormatSize(report.summary.totalSize));
+                EditorGUILayout.LabelField("Build Result: ", report.summary.result.ToString());
+            }
         }
     }
 }
