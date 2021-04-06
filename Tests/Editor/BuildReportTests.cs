@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.Auditors;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
