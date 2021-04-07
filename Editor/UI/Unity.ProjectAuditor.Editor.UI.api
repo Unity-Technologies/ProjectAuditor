@@ -5,17 +5,39 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     public class AnalysisView
     {
-        protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.ProjectIssue> m_Issues;
+        protected Unity.ProjectAuditor.Editor.ProjectAuditorConfig m_Config;
+        protected Unity.ProjectAuditor.Editor.UI.ViewDescriptor m_Desc;
+        protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_Filter;
+        protected Unity.ProjectAuditor.Editor.UI.Preferences m_Preferences;
         public Unity.ProjectAuditor.Editor.UI.ViewDescriptor desc { get; }
         public AnalysisView() {}
         public void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
         public void Clear();
-        public virtual void DrawInfo();
+        public virtual void Create(Unity.ProjectAuditor.Editor.UI.ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueLayout layout, Unity.ProjectAuditor.Editor.ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.UI.Preferences prefs, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
+        public void DrawInfo();
+        public void DrawTableAndPanels();
         public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
         public bool IsValid();
-        public void OnGUI();
+        protected virtual void OnDrawInfo();
         public void Refresh();
         public void SetFlatView(bool value);
+    }
+
+    public class Preferences
+    {
+        public bool actions;
+        public bool dependencies;
+        public bool details;
+        public bool emptyGroups;
+        public bool filters;
+        public int fontSize;
+        public bool info;
+        public const int k_MaxFontSize = 22;
+        public const int k_MinFontSize = 12;
+        public bool mutedIssues;
+        public bool onlyCriticalIssues;
+        public bool recommendation;
+        public Preferences() {}
     }
 
     public class ViewDescriptor
@@ -32,10 +54,12 @@ namespace Unity.ProjectAuditor.Editor.UI
         public string onDrawInfo;
         public System.Action onDrawToolbarDataOptions;
         public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenDescriptor;
+        public bool showActions;
         public bool showAreaSelection;
         public bool showAssemblySelection;
         public bool showCritical;
         public bool showDependencyView;
+        public bool showFilters;
         public bool showInfoPanel;
         public bool showMuteOptions;
         public bool showRightPanels;
