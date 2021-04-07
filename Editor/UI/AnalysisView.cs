@@ -159,10 +159,34 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        public virtual void DrawInfo()
+        public void DrawInfo()
+        {
+            if (!m_Desc.showInfoPanel)
+                return;
+
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
+
+            m_Preferences.info = Utility.BoldFoldout(m_Preferences.info, Contents.InfoFoldout);
+            if (m_Preferences.info)
+            {
+                EditorGUI.indentLevel++;
+
+                OnDrawInfo();
+
+                EditorGUI.indentLevel--;
+            }
+            EditorGUILayout.EndVertical();
+        }
+
+        protected virtual void OnDrawInfo()
         {
             if (m_Desc.onDrawInfo != null)
-                EditorGUILayout.LabelField(m_Desc.onDrawInfo);
+            {
+                if (Styles.TextArea == null)
+                    Styles.TextArea = new GUIStyle(EditorStyles.textArea);
+
+                EditorGUILayout.LabelField(m_Desc.onDrawInfo, Styles.TextArea);
+            }
         }
 
         void DrawTable(ProjectIssue[] selectedIssues)
@@ -387,6 +411,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to .csv files.");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All", "");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All", "");
+
+            public static readonly GUIContent InfoFoldout = new GUIContent("Information");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout =
                 new GUIContent("Recommendation", "Recommendation on how to solve the issue");

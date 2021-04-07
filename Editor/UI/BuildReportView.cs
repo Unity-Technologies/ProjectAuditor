@@ -7,7 +7,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     class BuildReportView : AnalysisView
     {
-        public override void DrawInfo()
+        protected override void OnDrawInfo()
         {
             var report = BuildAuditor.GetBuildReport();
             if (report == null)
