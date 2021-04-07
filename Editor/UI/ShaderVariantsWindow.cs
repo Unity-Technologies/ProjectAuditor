@@ -60,10 +60,10 @@ To find which shader variants are compiled at runtime, follow these steps:
             }
         }
 
-        public override void CreateTable(AnalysisViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public override void Create(ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
             m_MainFilter = filter;
-            base.CreateTable(desc, layout, config, prefs, filter);
+            base.Create(desc, layout, config, prefs, filter);
             m_AnalysisView.SetFlatView(m_FlatView);
         }
 
@@ -73,9 +73,8 @@ To find which shader variants are compiled at runtime, follow these steps:
 
             EditorGUILayout.BeginVertical(GUI.skin.box);
 
-            var helpStyle = new GUIStyle(EditorStyles.textField);
-            helpStyle.wordWrap = true;
-            EditorGUILayout.LabelField(buildAvailable ? k_PlayerLogInfo : k_BuildRequiredInfo, helpStyle);
+            m_AnalysisView.desc.onDrawInfo = buildAvailable ? k_PlayerLogInfo : k_BuildRequiredInfo;
+            m_AnalysisView.DrawInfo();
 
             var lastEnabled = GUI.enabled;
             GUI.enabled = buildAvailable;

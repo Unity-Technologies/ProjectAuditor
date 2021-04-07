@@ -9,6 +9,13 @@ using UnityEditor.Build.Reporting;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
+    public enum BuildProperty
+    {
+        Size = 0,
+        BuildFile,
+        Num
+    }
+
     public class BuildAuditor : IAuditor, IPostprocessBuildWithReport
     {
         static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
@@ -48,6 +55,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Initialize(ProjectAuditorConfig config)
         {
+        }
+
+        public bool IsSupported()
+        {
+#if UNITY_2019_4_OR_NEWER
+            return true;
+#else
+            return false;
+#endif
         }
 
         public void RegisterDescriptor(ProblemDescriptor descriptor)
@@ -124,7 +140,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             if (!File.Exists(assetPath))
             {
-                File.Copy("Library/LastBuild.buildreport", assetPath, true);
+                if (!File.Exists(s_LastBuildReportPath))
+                    return null; // the project was never built
+                File.Copy(s_LastBuildReportPath, assetPath, true);
                 AssetDatabase.ImportAsset(assetPath);
             }
             s_BuildReport = AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);

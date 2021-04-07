@@ -48,6 +48,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             RegisterDescriptor(k_Descriptor);
         }
 
+        public bool IsSupported()
+        {
+            return true;
+        }
+
         public void RegisterDescriptor(ProblemDescriptor descriptor)
         {
             m_ProblemDescriptors.Add(descriptor);

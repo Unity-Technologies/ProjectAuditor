@@ -165,13 +165,12 @@ namespace Unity.ProjectAuditor.Editor
                 Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
         }
 
-        internal T GetAuditor<T>() where T : class
+        internal T GetAuditor<T>() where T : class, IAuditor
         {
-            foreach (var iauditor in m_Auditors)
+            foreach (var auditor in m_Auditors)
             {
-                var auditor = iauditor as T;
-                if (auditor != null)
-                    return auditor;
+                if (auditor is T)
+                    return (T)auditor;
             }
 
             return null;
@@ -179,10 +178,8 @@ namespace Unity.ProjectAuditor.Editor
 
         public IssueLayout GetLayout(IssueCategory category)
         {
-            var layouts = m_Auditors.SelectMany(auditor => auditor.GetLayouts()).Where(a => a.category == category);
-            if (layouts.Any())
-                return layouts.First();
-            throw new Exception("Project Auditor category " + category + " not found.");
+            var layouts = m_Auditors.Where(a => a.IsSupported()).SelectMany(auditor => auditor.GetLayouts()).Where(l => l.category == category);
+            return layouts.FirstOrDefault();
         }
 
 #if UNITY_2018_1_OR_NEWER

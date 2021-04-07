@@ -11,43 +11,6 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    struct AnalysisViewDescriptor
-    {
-        public Type viewType;
-        public IssueCategory category;
-        public string name;
-        public string menuLabel;
-        public int menuOrder;
-        public bool groupByDescription;
-        public bool descriptionWithIcon;
-        public bool showAreaSelection;
-        public bool showAssemblySelection;
-        public bool showCritical;
-        public bool showDependencyView;
-        public bool showInfoPanel;
-        public bool showMuteOptions;
-        public bool showRightPanels;
-        public GUIContent dependencyViewGuiContent;
-        public Action<Location> onDoubleClick;
-        public string onDrawInfo;
-        public Action onDrawToolbarDataOptions;
-        public Action<ProblemDescriptor> onOpenDescriptor;
-        public int analyticsEvent;
-
-        static Dictionary<int, AnalysisViewDescriptor> s_AnalysisViewDescriptors = new Dictionary<int, AnalysisViewDescriptor>();
-
-        public static void Register(AnalysisViewDescriptor descriptor)
-        {
-            if (!s_AnalysisViewDescriptors.ContainsKey((int)descriptor.category))
-                s_AnalysisViewDescriptors.Add((int)descriptor.category, descriptor);
-        }
-
-        public static AnalysisViewDescriptor[] GetAll()
-        {
-            return s_AnalysisViewDescriptors.Select(pair => pair.Value).ToArray();
-        }
-    }
-
     public class AnalysisView
     {
         private static string s_ExportDirectory = string.Empty;
@@ -59,17 +22,17 @@ namespace Unity.ProjectAuditor.Editor.UI
             Selected
         }
 
-        ProjectAuditorConfig m_Config;
-        Preferences m_Preferences;
-        AnalysisViewDescriptor m_Desc;
-        IProjectIssueFilter m_Filter;
+        protected ProjectAuditorConfig m_Config;
+        protected Preferences m_Preferences;
+        protected ViewDescriptor m_Desc;
+        protected IProjectIssueFilter m_Filter;
 
         DependencyView m_DependencyView;
-        List<ProjectIssue> m_Issues;
+        List<ProjectIssue> m_Issues = new List<ProjectIssue>();
         IssueTable m_Table;
         IssueLayout m_Layout;
 
-        public AnalysisViewDescriptor desc
+        public ViewDescriptor desc
         {
             get { return m_Desc; }
         }
@@ -79,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             get { return m_Table; }
         }
 
-        internal void CreateTable(AnalysisViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
             m_Desc = descriptor;
             m_Config = config;
@@ -128,7 +91,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (m_Desc.showDependencyView)
                 m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onDoubleClick);
-            m_Issues = new List<ProjectIssue>();
         }
 
         public void AddIssues(IEnumerable<ProjectIssue> allIssues)
@@ -164,8 +126,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Table.SetFlatView(value);
         }
 
-        public void OnGUI()
+        public void DrawTableAndPanels()
         {
+            if (m_Desc.category == IssueCategory.None)
+                return;
+
             if (Styles.TextFieldWarning == null)
             {
                 Styles.TextFieldWarning = new GUIStyle(EditorStyles.textField);
@@ -196,10 +161,34 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        public virtual void DrawInfo()
+        public void DrawInfo()
+        {
+            if (!m_Desc.showInfoPanel)
+                return;
+
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
+
+            m_Preferences.info = Utility.BoldFoldout(m_Preferences.info, Contents.InfoFoldout);
+            if (m_Preferences.info)
+            {
+                EditorGUI.indentLevel++;
+
+                OnDrawInfo();
+
+                EditorGUI.indentLevel--;
+            }
+            EditorGUILayout.EndVertical();
+        }
+
+        protected virtual void OnDrawInfo()
         {
             if (m_Desc.onDrawInfo != null)
-                EditorGUILayout.LabelField(m_Desc.onDrawInfo);
+            {
+                if (Styles.TextArea == null)
+                    Styles.TextArea = new GUIStyle(EditorStyles.textArea);
+
+                EditorGUILayout.LabelField(m_Desc.onDrawInfo, Styles.TextArea);
+            }
         }
 
         void DrawTable(ProjectIssue[] selectedIssues)
@@ -424,6 +413,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to .csv files.");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All", "");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All", "");
+
+            public static readonly GUIContent InfoFoldout = new GUIContent("Information");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout =
                 new GUIContent("Recommendation", "Recommendation on how to solve the issue");

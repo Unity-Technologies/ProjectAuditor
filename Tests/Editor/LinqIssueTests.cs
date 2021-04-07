@@ -36,7 +36,7 @@ class MyClass
         [Test]
         public void LinqIssueIsReported()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAsset);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAsset);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -51,7 +51,7 @@ class MyClass
             Assert.True(myIssue.descriptor.method.Equals("*"));
 
             Assert.True(myIssue.name.Equals("Enumerable.Count"));
-            Assert.True(myIssue.filename.Equals(m_TempAsset.scriptName));
+            Assert.True(myIssue.filename.Equals(m_TempAsset.fileName));
             Assert.True(myIssue.description.Equals("Enumerable.Count"));
             Assert.True(
                 myIssue.GetCallingMethod().Equals(

@@ -11,6 +11,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static GUIStyle Foldout;
         }
 
+        public class DropdownItem
+        {
+            public GUIContent Content;
+            public GUIContent SelectionContent;
+            public bool enabled;
+        }
+
         public static GUIStyle GetStyle(string styleName)
         {
             var s = UnityEngine.GUI.skin.FindStyle(styleName);
@@ -36,15 +43,19 @@ namespace Unity.ProjectAuditor.Editor.UI
             return EditorGUILayout.Foldout(toggle, content, Styles.Foldout);
         }
 
-        internal static void ToolbarDropdownList(GUIContent[] contents, GUIContent activeContent, int activeSelection, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
+        internal static void ToolbarDropdownList(DropdownItem[] items, int selectionIndex, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
         {
-            var r = GUILayoutUtility.GetRect(activeContent, EditorStyles.toolbarButton, options);
-            if (EditorGUI.DropdownButton(r, activeContent, FocusType.Passive, EditorStyles.toolbarDropDown))
+            var selectionContent = items[selectionIndex].SelectionContent;
+            var r = GUILayoutUtility.GetRect(selectionContent, EditorStyles.toolbarButton, options);
+            if (EditorGUI.DropdownButton(r, selectionContent, FocusType.Passive, EditorStyles.toolbarDropDown))
             {
                 var menu = new GenericMenu();
 
-                for (var i = 0; i != contents.Length; i++)
-                    menu.AddItem(contents[i], i == activeSelection, callback, i);
+                for (var i = 0; i != items.Length; i++)
+                    if (items[i].enabled)
+                        menu.AddItem(items[i].Content, i == selectionIndex, callback, i);
+                    else
+                        menu.AddDisabledItem(items[i].Content);
                 menu.DropDown(r);
             }
         }

@@ -75,6 +75,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
         }
 
+        public bool IsSupported()
+        {
+            return true;
+        }
+
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
             if (m_ProblemDescriptors == null)

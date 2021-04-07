@@ -333,7 +333,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderVariantsAreReported()
         {
-            var issues = BuildAndAnalyze();
+            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
             Assert.True(ShadersAuditor.BuildDataAvailable());
 
             var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
@@ -360,7 +360,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderVariantForBuiltInKeywordIsReported()
         {
-            var issues = BuildAndAnalyze();
+            var issues =  Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
 
             var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords)).ToArray();
 
@@ -382,7 +382,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void SurfShaderVariantsAreReported()
         {
-            var issues = BuildAndAnalyze();
+            var issues =  Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
 
             var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
 
@@ -400,40 +400,12 @@ Shader ""Custom/MyEditorShader""
         public void StrippedVariantsAreNotReported()
         {
             StripVariants.Enabled = true;
-            var issues = BuildAndAnalyze();
+            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
             StripVariants.Enabled = false;
 
             var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
 
             Assert.False(keywords.Any(key => key.Equals(s_KeywordName)));
-        }
-
-        static ProjectIssue[] BuildAndAnalyze(IssueCategory category = IssueCategory.ShaderVariants)
-        {
-            // We must save the scene or the build will fail https://unity.slack.com/archives/C3F85MBDL/p1615991512002200
-            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/UntitledScene.unity");
-
-            var buildPath = FileUtil.GetUniqueTempPathInProject();
-            Directory.CreateDirectory(buildPath);
-            var buildPlayerOptions = new BuildPlayerOptions
-            {
-                scenes = new string[] {},
-                locationPathName = Path.Combine(buildPath, "test"),
-                target = EditorUserBuildSettings.activeBuildTarget,
-                targetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget),
-                options = BuildOptions.Development
-            };
-            var buildReport = BuildPipeline.BuildPlayer(buildPlayerOptions);
-
-            Assert.True(buildReport.summary.result == BuildResult.Succeeded);
-
-            Directory.Delete(buildPath, true);
-
-            AssetDatabase.DeleteAsset("Assets/UntitledScene.unity");
-
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-            return projectReport.GetIssues(category);
         }
 
         [Test]

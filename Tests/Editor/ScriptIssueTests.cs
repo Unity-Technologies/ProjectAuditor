@@ -207,7 +207,7 @@ class AnyApiInNamespace
         [Test]
         public void IssueIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAsset);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAsset);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -222,7 +222,7 @@ class AnyApiInNamespace
             Assert.True(myIssue.descriptor.method.Equals("allCameras"));
 
             Assert.True(myIssue.name.Equals("Camera.get_allCameras"));
-            Assert.True(myIssue.filename.Equals(m_TempAsset.scriptName));
+            Assert.True(myIssue.filename.Equals(m_TempAsset.fileName));
             Assert.True(myIssue.description.Equals("UnityEngine.Camera.allCameras"));
             Assert.True(myIssue.GetCallingMethod().Equals("System.Void MyClass::Dummy()"));
             Assert.AreEqual(7, myIssue.line);
@@ -236,7 +236,7 @@ class AnyApiInNamespace
         [Test]
         public void DerivedClassMethodIssueIsFound()
         {
-            var filteredIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetDerivedClassMethod);
+            var filteredIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetDerivedClassMethod);
 
             Assert.AreEqual(1, filteredIssues.Count());
 
@@ -250,7 +250,7 @@ class AnyApiInNamespace
         [Test]
         public void IssueInPluginIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetInPlugin);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInPlugin);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -260,7 +260,7 @@ class AnyApiInNamespace
         [Test]
         public void IssueInPlayerCodeIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetInPlayerCode);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInPlayerCode);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -270,7 +270,7 @@ class AnyApiInNamespace
         [Test]
         public void IssueInEditorCodeIsNotFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetInEditorCode);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInEditorCode);
 
             Assert.AreEqual(0, issues.Count());
         }
@@ -278,7 +278,7 @@ class AnyApiInNamespace
         [Test]
         public void IssueInNestedClassIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInNestedClass);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInNestedClass);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -288,7 +288,7 @@ class AnyApiInNamespace
         [Test]
         public void IssueInGenericClassIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInGenericClass);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInGenericClass);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -298,7 +298,7 @@ class AnyApiInNamespace
         [Test]
         public void IssueInVirtualMethodIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInVirtualMethod);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInVirtualMethod);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -308,7 +308,7 @@ class AnyApiInNamespace
         [Test]
         public void IssueInOverrideMethodIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInOverrideMethod);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInOverrideMethod);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -318,7 +318,7 @@ class AnyApiInNamespace
         [Test]
         public void IssueInMonoBehaviourIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInMonoBehaviour);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviour);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -328,7 +328,7 @@ class AnyApiInNamespace
         [Test]
         public void IssueInCoroutineIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInCoroutine);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInCoroutine);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -339,7 +339,7 @@ class AnyApiInNamespace
         [Test]
         public void IssueInDelegateIsFound()
         {
-            var allScriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInDelegate);
+            var allScriptIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInDelegate);
             var issue = allScriptIssues.FirstOrDefault(i => i.name.Equals("Camera.get_allCameras"));
             Assert.NotNull(issue);
             Assert.True(issue.GetCallingMethod().Equals("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()"));
@@ -348,7 +348,7 @@ class AnyApiInNamespace
         [Test]
         public void IssueInNamespaceIsFound()
         {
-            var allScriptIssues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetAnyApiInNamespace);
+            var allScriptIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetAnyApiInNamespace);
             var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("Enumerable.Sum"));
             Assert.NotNull(issue);
 

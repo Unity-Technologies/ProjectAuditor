@@ -14,6 +14,8 @@ namespace Unity.ProjectAuditor.Editor
 
         void Initialize(ProjectAuditorConfig config);
 
+        bool IsSupported();
+
         void RegisterDescriptor(ProblemDescriptor descriptor);
 
         /// <summary>
