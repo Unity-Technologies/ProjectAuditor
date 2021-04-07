@@ -6,7 +6,7 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         protected override void OnDrawInfo()
         {
-            EditorGUILayout.LabelField(ProjectAuditorWindow.Instructions, EditorStyles.textArea);
+            EditorGUILayout.LabelField("Select a View from the toolbar to start browsing the report", EditorStyles.textArea);
         }
     }
 }
