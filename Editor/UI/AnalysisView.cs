@@ -128,9 +128,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void DrawTableAndPanels()
         {
-            if (m_Desc.category == IssueCategory.None)
-                return;
-
             if (Styles.TextFieldWarning == null)
             {
                 Styles.TextFieldWarning = new GUIStyle(EditorStyles.textField);
