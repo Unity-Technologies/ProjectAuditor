@@ -143,7 +143,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var desc = viewDescriptors[i];
                 var layout = m_ProjectAuditor.GetLayout(desc.category);
-                var isSupported = layout != null || desc.category == IssueCategory.None;
+                var isSupported = layout != null;
 
                 m_ViewDropdownItems[i] = new Utility.DropdownItem
                 {
