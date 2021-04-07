@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     class AnalysisWindow : EditorWindow
     {
-        protected AnalysisView m_AnalysisView;
+        protected readonly AnalysisView m_AnalysisView;
 
         public static T FindOpenWindow<T>() where T : class
         {
@@ -57,7 +57,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return;
             }
 
-            m_AnalysisView.OnGUI();
+            m_AnalysisView.DrawTableAndPanels();
         }
     }
 }

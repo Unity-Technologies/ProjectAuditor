@@ -15,10 +15,12 @@ namespace Unity.ProjectAuditor.Editor.UI
         public int menuOrder;
         public bool groupByDescription;
         public bool descriptionWithIcon;
+        public bool showActions;
         public bool showAreaSelection;
         public bool showAssemblySelection;
         public bool showCritical;
         public bool showDependencyView;
+        public bool showFilters;
         public bool showInfoPanel;
         public bool showMuteOptions;
         public bool showRightPanels;

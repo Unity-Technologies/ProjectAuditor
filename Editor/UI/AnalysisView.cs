@@ -22,13 +22,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             Selected
         }
 
-        ProjectAuditorConfig m_Config;
-        Preferences m_Preferences;
-        ViewDescriptor m_Desc;
-        IProjectIssueFilter m_Filter;
+        protected ProjectAuditorConfig m_Config;
+        protected Preferences m_Preferences;
+        protected ViewDescriptor m_Desc;
+        protected IProjectIssueFilter m_Filter;
 
         DependencyView m_DependencyView;
-        List<ProjectIssue> m_Issues;
+        List<ProjectIssue> m_Issues = new List<ProjectIssue>();
         IssueTable m_Table;
         IssueLayout m_Layout;
 
@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             get { return m_Table; }
         }
 
-        internal void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
             m_Desc = descriptor;
             m_Config = config;
@@ -91,7 +91,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (m_Desc.showDependencyView)
                 m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onDoubleClick);
-            m_Issues = new List<ProjectIssue>();
         }
 
         public void AddIssues(IEnumerable<ProjectIssue> allIssues)
@@ -127,8 +126,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Table.SetFlatView(value);
         }
 
-        public void OnGUI()
+        public void DrawTableAndPanels()
         {
+            if (m_Desc.category == IssueCategory.None)
+                return;
+
             if (Styles.TextFieldWarning == null)
             {
                 Styles.TextFieldWarning = new GUIStyle(EditorStyles.textField);

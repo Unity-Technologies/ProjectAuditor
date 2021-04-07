@@ -143,16 +143,16 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var desc = viewDescriptors[i];
                 var layout = m_ProjectAuditor.GetLayout(desc.category);
-                var layoutSupported = layout != null;
+                var isSupported = layout != null || desc.category == IssueCategory.None;
 
                 m_ViewDropdownItems[i] = new Utility.DropdownItem
                 {
                     Content = new GUIContent(string.IsNullOrEmpty(desc.menuLabel) ? desc.name : desc.menuLabel),
                     SelectionContent = new GUIContent("View: " + desc.name),
-                    enabled = layoutSupported,
+                    enabled = isSupported,
                 };
 
-                if (!layoutSupported)
+                if (!isSupported)
                 {
                     Debug.Log("Project Auditor module " + desc.category + " is not supported.");
                     continue;
@@ -219,7 +219,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ShouldRefresh = false;
                 }
 
-                DrawAnalysis();
+                activeView.DrawTableAndPanels();
             }
             else
             {
@@ -238,10 +238,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 3,
                 groupByDescription = false,
                 descriptionWithIcon = true,
+                showActions = false,
                 showAreaSelection = false,
                 showAssemblySelection = false,
                 showCritical = false,
                 showDependencyView = true,
+                showFilters = true,
                 showMuteOptions = false,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Asset Dependencies"),
@@ -255,9 +257,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 2,
                 groupByDescription = false,
                 descriptionWithIcon = true,
+                showActions = false,
                 showAreaSelection = false,
                 showAssemblySelection = false,
                 showCritical = false,
+                showFilters = true,
                 showMuteOptions = false,
                 showDependencyView = false,
                 showRightPanels = false,
@@ -279,10 +283,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 0,
                 groupByDescription = true,
                 descriptionWithIcon = false,
+                showActions = true,
                 showAreaSelection = true,
                 showAssemblySelection = true,
                 showCritical = true,
                 showDependencyView = true,
+                showFilters = true,
                 showMuteOptions = true,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
@@ -298,10 +304,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuLabel = "Experimental/Generic Types Instantiation",
                 groupByDescription = true,
                 descriptionWithIcon = false,
+                showActions = false,
                 showAreaSelection = false,
                 showAssemblySelection = true,
                 showCritical = false,
                 showDependencyView = true,
+                showFilters = true,
                 showMuteOptions = false,
                 showRightPanels = false,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
@@ -316,9 +324,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 1,
                 groupByDescription = false,
                 descriptionWithIcon = false,
+                showActions = true,
                 showAreaSelection = true,
                 showAssemblySelection = false,
                 showCritical = false,
+                showFilters = true,
                 showMuteOptions = true,
                 showDependencyView = false,
                 showRightPanels = true,
@@ -334,9 +344,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 98,
                 groupByDescription = false,
                 descriptionWithIcon = true,
+                showActions = false,
                 showAssemblySelection = false,
                 showCritical = false,
                 showDependencyView = false,
+                showFilters = true,
                 showInfoPanel = true,
                 showRightPanels = false,
                 onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
@@ -529,11 +541,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        void DrawAnalysis()
-        {
-            activeView.OnGUI();
-        }
-
         string GetSelectedAssembliesSummary()
         {
             if (m_AssemblyNames != null && m_AssemblyNames.Length > 0)
@@ -648,6 +655,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawFilters()
         {
+            if (!activeView.desc.showFilters)
+                return;
+
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
 
             m_Preferences.filters = Utility.BoldFoldout(m_Preferences.filters, Contents.FiltersFoldout);
@@ -725,6 +735,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawActions()
         {
+            if (!activeView.desc.showActions)
+                return;
+
             var table = activeView.table;
 
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
