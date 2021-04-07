@@ -232,6 +232,17 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             ViewDescriptor.Register(new ViewDescriptor
             {
+                category = IssueCategory.MetaData,
+                name = "Summary",
+                menuOrder = 0,
+                showActions = false,
+                showFilters = false,
+                showInfoPanel = true,
+                viewType = typeof(SummaryView),
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Summary
+            });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
                 category = IssueCategory.Assets,
                 name = "Assets",
                 menuLabel = "Assets/Resources",
