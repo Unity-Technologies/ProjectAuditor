@@ -234,7 +234,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.MetaData,
                 name = "Summary",
-                menuOrder = 0,
+                menuOrder = -1,
                 showActions = false,
                 showFilters = false,
                 showInfoPanel = true,
