@@ -53,9 +53,9 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         public ProjectIssue(ProblemDescriptor descriptor,
-            string description,
-            IssueCategory category,
-            string[] customProperties)
+                            string description,
+                            IssueCategory category,
+                            string[] customProperties)
             : this(descriptor, description, category)
         {
             this.customProperties = customProperties;

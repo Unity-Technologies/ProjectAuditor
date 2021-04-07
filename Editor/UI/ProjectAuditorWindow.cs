@@ -443,7 +443,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             var newIssues = new List<ProjectIssue>();
             auditor.Audit(issue =>
             {
-
                 newIssues.Add(issue);
                 m_ProjectReport.AddIssue(issue);
             },
@@ -1062,7 +1061,7 @@ To Analyze the project, click on Analyze.
 Once the project is analyzed, the tool displays a list of issues of a specific kind. Initially, code-related issues will be shown.
 To switch type of issues, for example from code to settings-related issues, use the 'View' dropdown and select Settings.
 In addition, it is possible to filter issues by area (CPU/Memory/etc...), by string or by other search criteria."
-                );
+            );
 
             public static readonly GUIContent ShaderVariantsButton = new GUIContent("Variants", "Inspect Shader Variants");
         }
