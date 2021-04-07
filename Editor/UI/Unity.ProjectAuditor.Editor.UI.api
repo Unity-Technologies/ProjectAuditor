@@ -40,6 +40,13 @@ namespace Unity.ProjectAuditor.Editor.UI
         public Preferences() {}
     }
 
+    public class SummaryView : Unity.ProjectAuditor.Editor.UI.AnalysisView
+    {
+        public SummaryView() {}
+        protected virtual void OnDrawInfo();
+        public static void SetReport(Unity.ProjectAuditor.Editor.ProjectReport report);
+    }
+
     public class ViewDescriptor
     {
         public int analyticsEvent;
