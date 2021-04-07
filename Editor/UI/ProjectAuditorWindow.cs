@@ -167,6 +167,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Views[i] = view;
             }
 
+            SummaryView.SetReport(m_ProjectReport);
+
             var shaderVariantsWindow = AnalysisWindow.FindOpenWindow<ShaderVariantsWindow>();
             if (shaderVariantsWindow != null)
             {
