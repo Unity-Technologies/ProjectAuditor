@@ -63,11 +63,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new[] {Application.productName}));
             onIssueFound(new ProjectIssue(k_Descriptor, "Build Target", IssueCategory.MetaData,
                 new[] {EditorUserBuildSettings.activeBuildTarget.ToString()}));
-
+#if UNITY_2019_3_OR_NEWER
             var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssetPath("Packages/com.unity.project-auditor/Editor/Unity.ProjectAuditor.Editor.asmdef");
             onIssueFound(new ProjectIssue(k_Descriptor, "Project Auditor Version", IssueCategory.MetaData,
                 new[] {packageInfo.version}));
-
+#endif
             onIssueFound(new ProjectIssue(k_Descriptor, "Unity Version", IssueCategory.MetaData,
                 new[] {Application.unityVersion}));
 
