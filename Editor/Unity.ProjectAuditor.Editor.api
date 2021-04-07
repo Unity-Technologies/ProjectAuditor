@@ -65,14 +65,15 @@ namespace Unity.ProjectAuditor.Editor
 
     public enum IssueCategory
     {
-        public const Unity.ProjectAuditor.Editor.IssueCategory Assets = 0;
-        public const Unity.ProjectAuditor.Editor.IssueCategory BuildFiles = 6;
-        public const Unity.ProjectAuditor.Editor.IssueCategory Code = 3;
-        public const Unity.ProjectAuditor.Editor.IssueCategory Generics = 4;
-        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 7;
-        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 5;
-        public const Unity.ProjectAuditor.Editor.IssueCategory Shaders = 1;
-        public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariants = 2;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Assets = 1;
+        public const Unity.ProjectAuditor.Editor.IssueCategory BuildFiles = 7;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Code = 4;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Generics = 5;
+        public const Unity.ProjectAuditor.Editor.IssueCategory MetaData = 0;
+        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 8;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 6;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Shaders = 2;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariants = 3;
         public int value__;
     }
 
@@ -150,6 +151,7 @@ namespace Unity.ProjectAuditor.Editor
         public string name { get; }
         public string relativePath { get; }
         public Unity.ProjectAuditor.Editor.Rule.Severity severity { get; }
+        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, string[] customProperties) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode dependenciesNode) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location = default(Unity.ProjectAuditor.Editor.Utils.Location)) {}
         public string GetCustomProperty(int index);
