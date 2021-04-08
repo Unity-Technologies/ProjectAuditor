@@ -263,6 +263,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public ShadersAuditor() {}
         public virtual void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public static bool BuildDataAvailable();
+        public static void ClearBuildData();
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.ShadersAuditor.<GetDescriptors>d__17))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.ShadersAuditor.<GetLayouts>d__18))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
         public virtual void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
