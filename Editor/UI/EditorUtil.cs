@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditorInternal;
@@ -57,6 +57,5 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ProjectWindowUtil.ShowCreatedAsset(obj);
             }
         }
-
     }
 }

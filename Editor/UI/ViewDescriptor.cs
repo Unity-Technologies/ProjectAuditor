@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -35,8 +35,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public static void Register(ViewDescriptor descriptor)
         {
-            if (!s_AnalysisViewDescriptors.ContainsKey((int) descriptor.category))
-                s_AnalysisViewDescriptors.Add((int) descriptor.category, descriptor);
+            if (!s_AnalysisViewDescriptors.ContainsKey((int)descriptor.category))
+                s_AnalysisViewDescriptors.Add((int)descriptor.category, descriptor);
         }
 
         public static ViewDescriptor[] GetAll()
