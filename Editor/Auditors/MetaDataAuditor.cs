@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -8,11 +8,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     public class MetaDataAuditor : IAuditor
     {
         static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
-        (
+            (
             700000,
             "Meta Data",
             Area.BuildSize
-        );
+            );
 
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
-            onIssueFound(new ProjectIssue(k_Descriptor, "Data and Time", IssueCategory.MetaData,
+            onIssueFound(new ProjectIssue(k_Descriptor, "Date and Time", IssueCategory.MetaData,
                 new[] {DateTime.Now.ToString()}));
             onIssueFound(new ProjectIssue(k_Descriptor, "Host Name", IssueCategory.MetaData,
                 new[] {SystemInfo.deviceName}));
@@ -75,4 +75,3 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         }
     }
 }
-
