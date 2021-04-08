@@ -167,6 +167,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Views[i] = view;
             }
 
+            SummaryView.SetReport(m_ProjectReport);
+
             var shaderVariantsWindow = AnalysisWindow.FindOpenWindow<ShaderVariantsWindow>();
             if (shaderVariantsWindow != null)
             {
@@ -230,6 +232,17 @@ namespace Unity.ProjectAuditor.Editor.UI
         [InitializeOnLoadMethod]
         static void OnLoad()
         {
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.MetaData,
+                name = "Summary",
+                menuOrder = -1,
+                showActions = false,
+                showFilters = false,
+                showInfoPanel = true,
+                viewType = typeof(SummaryView),
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Summary
+            });
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.Assets,
@@ -378,6 +391,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (view != null)
                     view.Clear();
             }
+
+            SummaryView.SetReport(m_ProjectReport);
 
             if (m_ShaderVariantsWindow != null)
             {

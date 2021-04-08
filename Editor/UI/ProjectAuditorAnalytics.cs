@@ -45,7 +45,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             Assets,
             Shaders,
             Generics,
-            BuildFiles
+            BuildFiles,
+            Summary,
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -148,6 +149,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "analyze_button_click";
                 case UIButton.Export:
                     return "export_button_click";
+                case UIButton.Summary:
+                    return "api_summary";
                 case UIButton.ApiCalls:
                     return "api_tab";
                 case UIButton.Assets:
