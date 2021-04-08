@@ -339,7 +339,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
-        internal static void ClearBuildData()
+        public static void ClearBuildData()
         {
             s_ShaderVariantData.Clear();
             if (OnClearShaderData != null)
