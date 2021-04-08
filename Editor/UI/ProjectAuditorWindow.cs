@@ -392,6 +392,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     view.Clear();
             }
 
+            SummaryView.SetReport(m_ProjectReport);
+
             if (m_ShaderVariantsWindow != null)
             {
                 m_ShaderVariantsWindow.Clear();
