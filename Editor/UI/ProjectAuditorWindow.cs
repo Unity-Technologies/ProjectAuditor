@@ -174,6 +174,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ProjectReport = new ProjectReport();
 
             SummaryView.SetReport(m_ProjectReport);
+            SummaryView.OnChangeView = SelectView;
 
             var variants = m_ProjectReport.GetIssues(IssueCategory.ShaderVariants);
             if (variants.Length > 0)
@@ -542,39 +543,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ShaderVariantsWindow.Refresh();
         }
 
-        void Save()
+        void SelectView(IssueCategory category)
         {
-            var path = EditorUtility.SaveFilePanel("Save report to json file", s_SaveLoadDirectory, string.Format("project-auditor-report.json"), "json");
-            if (path.Length != 0)
+            for (int i = 0; i < m_Views.Length; i++)
             {
-                m_ProjectReport.Save(path);
-
-                EditorUtility.RevealInFinder(path);
-
-                s_SaveLoadDirectory = Path.GetDirectoryName(path);
-
-                ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Save, ProjectAuditorAnalytics.BeginAnalytic());
+                if (m_Views[i].desc.category == category)
+                {
+                    OnViewChanged(i);
+                    return;
+                }
             }
-        }
-
-        void Load()
-        {
-            var path = EditorUtility.OpenFilePanel("Load from json file", s_SaveLoadDirectory, "json");
-            if (path.Length != 0)
-            {
-                m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
-
-                m_ProjectReport = ProjectReport.Load(path);
-                m_AnalysisState = AnalysisState.Valid;
-
-                s_SaveLoadDirectory = Path.GetDirectoryName(path);
-            }
-            OnEnable();
-
-            // update list of assembly names
-            var scriptIssues = m_ProjectReport.GetIssues(IssueCategory.Code);
-            m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty((int)CodeProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
-            UpdateAssemblySelection();
         }
 
         void OnViewChanged(object userData)
@@ -1052,6 +1030,41 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_Preferences.emptyGroups, GUILayout.Width(100));
                 EditorGUILayout.EndHorizontal();
             }
+        }
+
+        void Save()
+        {
+            var path = EditorUtility.SaveFilePanel("Save report to json file", s_SaveLoadDirectory, string.Format("project-auditor-report.json"), "json");
+            if (path.Length != 0)
+            {
+                m_ProjectReport.Save(path);
+
+                EditorUtility.RevealInFinder(path);
+
+                s_SaveLoadDirectory = Path.GetDirectoryName(path);
+
+                ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Save, ProjectAuditorAnalytics.BeginAnalytic());
+            }
+        }
+
+        void Load()
+        {
+            var path = EditorUtility.OpenFilePanel("Load from json file", s_SaveLoadDirectory, "json");
+            if (path.Length != 0)
+            {
+                m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
+
+                m_ProjectReport = ProjectReport.Load(path);
+                m_AnalysisState = AnalysisState.Valid;
+
+                s_SaveLoadDirectory = Path.GetDirectoryName(path);
+            }
+            OnEnable();
+
+            // update list of assembly names
+            var scriptIssues = m_ProjectReport.GetIssues(IssueCategory.Code);
+            m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty((int)CodeProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
+            UpdateAssemblySelection();
         }
 
 #if UNITY_2018_1_OR_NEWER

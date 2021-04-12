@@ -42,6 +42,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
     public class SummaryView : Unity.ProjectAuditor.Editor.UI.AnalysisView
     {
+        public static System.Action<Unity.ProjectAuditor.Editor.IssueCategory> OnChangeView;
         public SummaryView() {}
         protected virtual void OnDrawInfo();
         public static void SetReport(Unity.ProjectAuditor.Editor.ProjectReport report);
