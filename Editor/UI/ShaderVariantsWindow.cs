@@ -69,15 +69,15 @@ To find which shader variants are compiled at runtime, follow these steps:
 
         public override void OnGUI()
         {
-            var buildAvailable = ShadersAuditor.BuildDataAvailable();
+            var variantsAvailable = m_AnalysisView.numIssues > 0;
 
             EditorGUILayout.BeginVertical(GUI.skin.box);
 
-            m_AnalysisView.desc.onDrawInfo = buildAvailable ? k_PlayerLogInfo : k_BuildRequiredInfo;
+            m_AnalysisView.desc.onDrawInfo = variantsAvailable ? k_PlayerLogInfo : k_BuildRequiredInfo;
             m_AnalysisView.DrawInfo();
 
             var lastEnabled = GUI.enabled;
-            GUI.enabled = buildAvailable;
+            GUI.enabled = m_AnalysisView.numIssues > 0;
 
             EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
@@ -94,7 +94,7 @@ To find which shader variants are compiled at runtime, follow these steps:
 
             EditorGUILayout.EndVertical();
 
-            if (buildAvailable)
+            if (variantsAvailable)
             {
                 var evt = Event.current;
 

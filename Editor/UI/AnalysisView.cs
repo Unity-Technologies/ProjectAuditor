@@ -37,6 +37,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             get { return m_Desc; }
         }
 
+        public int numIssues
+        {
+            get
+            {
+                return m_Issues.Count();
+            }
+        }
+
         internal IssueTable table
         {
             get { return m_Table; }

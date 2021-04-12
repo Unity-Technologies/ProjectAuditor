@@ -167,27 +167,22 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Views[i] = view;
             }
 
+            if (currentState != AnalysisState.Valid)
+                m_ProjectReport = new ProjectReport();
+
             SummaryView.SetReport(m_ProjectReport);
             SummaryView.OnChangeView = SelectView;
 
-            var shaderVariantsWindow = AnalysisWindow.FindOpenWindow<ShaderVariantsWindow>();
-            if (shaderVariantsWindow != null)
+            var variants = m_ProjectReport.GetIssues(IssueCategory.ShaderVariants);
+            if (variants.Length > 0)
             {
-                if (currentState == AnalysisState.Valid)
-                {
-                    if (shaderVariantsWindow.IsValid())
-                        shaderVariantsWindow.Clear();
-                    else
-                        shaderVariantsWindow.Create(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.GetLayout(IssueCategory.ShaderVariants), m_ProjectAuditor.config, m_Preferences, m_TextFilter);
-                    shaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
-                    shaderVariantsWindow.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
-                    m_ShaderVariantsWindow = shaderVariantsWindow;
-                }
-                else
-                {
+                OpenShaderVariantsWindow(variants, false);
+            }
+            else
+            {
+                var shaderVariantsWindow = AnalysisWindow.FindOpenWindow<ShaderVariantsWindow>();
+                if (shaderVariantsWindow != null)
                     shaderVariantsWindow.Close();
-                    shaderVariantsWindow = null;
-                }
             }
 
             // are we reloading from a valid state?
@@ -493,12 +488,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var newIssues = Audit<ShadersAuditor>();
 
-            OpenShaderVariantsWindow(newIssues.ToArray());
+            OpenShaderVariantsWindow(newIssues.ToArray(), false);
         }
 
-        void OpenShaderVariantsWindow(ProjectIssue[] issues = null)
+        void OpenShaderVariantsWindow(ProjectIssue[] issues = null, bool show = true)
         {
-            if (m_ShaderVariantsWindow == null)
+            if (m_ShaderVariantsWindow == null || !m_ShaderVariantsWindow.IsValid())
             {
                 var shaderVariantsWindow = GetWindow<ShaderVariantsWindow>(m_ShaderVariantsViewDescriptor.name, typeof(ProjectAuditorWindow));
                 shaderVariantsWindow.Create(m_ShaderVariantsViewDescriptor, m_ProjectAuditor.GetLayout(IssueCategory.ShaderVariants), m_ProjectAuditor.config, m_Preferences, m_TextFilter);
@@ -515,7 +510,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ShaderVariantsWindow.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
                 m_ShaderVariantsWindow.Refresh();
             }
-            m_ShaderVariantsWindow.Show();
+
+            if (show)
+                m_ShaderVariantsWindow.Show();
         }
 
         void RefreshDisplay()
