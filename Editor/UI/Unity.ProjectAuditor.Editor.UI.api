@@ -10,6 +10,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_Filter;
         protected Unity.ProjectAuditor.Editor.UI.Preferences m_Preferences;
         public Unity.ProjectAuditor.Editor.UI.ViewDescriptor desc { get; }
+        public int numIssues { get; }
         public AnalysisView() {}
         public void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
         public void Clear();
