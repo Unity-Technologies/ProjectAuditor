@@ -388,7 +388,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ShouldRefresh = true;
             m_AnalysisState = AnalysisState.InProgress;
-            m_ProjectReport = new ProjectReport(EditorUserBuildSettings.activeBuildTarget);
+            m_ProjectReport = new ProjectReport();
             foreach (var view in m_Views)
             {
                 if (view != null)

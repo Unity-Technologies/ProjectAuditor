@@ -14,14 +14,6 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public class ProjectReport
     {
-        [SerializeField] DateTime m_DateTime;
-        [SerializeField] string m_HostName;
-        [SerializeField] string m_HostPlatform;
-        [SerializeField] string m_PackageVersion;
-        [SerializeField] BuildTarget m_Platform;
-        [SerializeField] string m_UnityVersion;
-
-        // report data
         [SerializeField] List<ProjectIssue> m_Issues = new List<ProjectIssue>();
 
         static Mutex s_Mutex = new Mutex();
@@ -29,22 +21,6 @@ namespace Unity.ProjectAuditor.Editor
         public int NumTotalIssues
         {
             get { return m_Issues.Count; }
-        }
-
-        public ProjectReport()
-        {
-        }
-
-        public ProjectReport(BuildTarget platform)
-        {
-            m_DateTime = DateTime.Now;
-            m_HostName = SystemInfo.deviceName;
-            m_HostPlatform = SystemInfo.operatingSystem;
-
-            var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssetPath("Packages/com.unity.project-auditor/Editor/Unity.ProjectAuditor.Editor.asmdef");
-            m_PackageVersion = packageInfo.version;
-            m_Platform = platform;
-            m_UnityVersion = Application.unityVersion;
         }
 
         /// <summary>
