@@ -7,7 +7,7 @@ namespace Unity.ProjectAuditor.Editor
 {
     public enum IssueCategory
     {
-        None,
+        MetaData,
         Assets,
         Shaders,
         ShaderVariants,
@@ -15,6 +15,7 @@ namespace Unity.ProjectAuditor.Editor
         Generics,
         ProjectSettings,
         BuildFiles,
+
         NumCategories
     }
 
@@ -49,6 +50,15 @@ namespace Unity.ProjectAuditor.Editor
             this.description = description;
             this.category = category;
             this.location = location;
+        }
+
+        public ProjectIssue(ProblemDescriptor descriptor,
+                            string description,
+                            IssueCategory category,
+                            string[] customProperties)
+            : this(descriptor, description, category)
+        {
+            this.customProperties = customProperties;
         }
 
         public ProjectIssue(ProblemDescriptor descriptor,
