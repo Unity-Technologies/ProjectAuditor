@@ -41,5 +41,4 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
         }
     }
-
 }

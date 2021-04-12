@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
@@ -18,7 +18,6 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var loadedReport = ProjectReport.Load(k_ReportPath);
 
             Assert.AreEqual(projectReport.NumTotalIssues, loadedReport.NumTotalIssues);
-
         }
     }
 }
