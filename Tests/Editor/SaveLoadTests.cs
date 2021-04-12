@@ -17,7 +17,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
             var loadedReport = ProjectReport.Load(k_ReportPath);
 
-            Assert.Equals(projectReport.NumTotalIssues, loadedReport.NumTotalIssues);
+            Assert.AreEqual(projectReport.NumTotalIssues, loadedReport.NumTotalIssues);
 
         }
     }
