@@ -168,6 +168,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             SummaryView.SetReport(m_ProjectReport);
+            SummaryView.OnChangeView = SelectView;
 
             var shaderVariantsWindow = AnalysisWindow.FindOpenWindow<ShaderVariantsWindow>();
             if (shaderVariantsWindow != null)
@@ -538,6 +539,18 @@ namespace Unity.ProjectAuditor.Editor.UI
             activeView.Refresh();
             if (m_ShaderVariantsWindow != null)
                 m_ShaderVariantsWindow.Refresh();
+        }
+
+        void SelectView(IssueCategory category)
+        {
+            for (int i = 0; i < m_Views.Length; i++)
+            {
+                if (m_Views[i].desc.category == category)
+                {
+                    OnViewChanged(i);
+                    return;
+                }
+            }
         }
 
         void OnViewChanged(object userData)
