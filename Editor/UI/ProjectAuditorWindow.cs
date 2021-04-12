@@ -432,7 +432,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             catch (AssemblyCompilationException e)
             {
                 m_AnalysisState = AnalysisState.Initialized;
-                Debug.LogError(e);
+                EditorUtility.DisplayDialog("Project Auditor", "Compilation Error: please see the Console Window for more details.", "Ok");
             }
         }
 
