@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -71,6 +72,16 @@ namespace Unity.ProjectAuditor.Editor
                 foreach (var issue in m_Issues.Where(i => i.category == layout.category))
                     exporter.WriteIssue(issue);
             }
+        }
+
+        public void Save(string path)
+        {
+            File.WriteAllText(path, JsonUtility.ToJson(this));
+        }
+
+        public static ProjectReport Load(string path)
+        {
+            return JsonUtility.FromJson<ProjectReport>(File.ReadAllText(path));
         }
     }
 }

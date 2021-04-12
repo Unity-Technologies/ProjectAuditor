@@ -550,7 +550,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var path = EditorUtility.SaveFilePanel("Save report to json file", s_SaveLoadDirectory, string.Format("project-auditor-report.json"), "json");
             if (path.Length != 0)
             {
-                File.WriteAllText(path, JsonUtility.ToJson(m_ProjectReport));
+                m_ProjectReport.Save(path);
 
                 EditorUtility.RevealInFinder(path);
 
@@ -567,7 +567,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
 
-                m_ProjectReport = JsonUtility.FromJson<ProjectReport>(File.ReadAllText(path));
+                m_ProjectReport = ProjectReport.Load(path);
                 m_AnalysisState = AnalysisState.Valid;
 
                 s_SaveLoadDirectory = Path.GetDirectoryName(path);

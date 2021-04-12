@@ -1,0 +1,23 @@
+﻿using NUnit.Framework;
+using Unity.ProjectAuditor.Editor;
+
+namespace UnityEditor.ProjectAuditor.EditorTests
+{
+    public class SaveLoadTests
+    {
+        private const string k_ReportPath = "report.json";
+
+        [Test]
+        public void CanSaveAndLoad()
+        {
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+
+            var projectReport = projectAuditor.Audit();
+            projectReport.Save(k_ReportPath);
+
+            projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            projectReport = ProjectReport.Load(k_ReportPath);
+
+        }
+    }
+}
