@@ -287,6 +287,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
+                viewType = typeof(CodeView),
                 category = IssueCategory.Code,
                 name = "Code",
                 menuOrder = 0,
@@ -298,6 +299,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showCritical = true,
                 showDependencyView = true,
                 showFilters = true,
+                showInfoPanel = true,
                 showMuteOptions = true,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
