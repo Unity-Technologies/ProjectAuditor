@@ -13,7 +13,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     public class AnalysisView
     {
-        private static string s_ExportDirectory = string.Empty;
+        static string s_ExportDirectory = string.Empty;
+
+        protected static ProjectReport s_Report;
 
         enum ExportMode
         {
@@ -395,6 +397,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        public static void SetReport(ProjectReport report)
+        {
+            s_Report = report;
+        }
         const string k_NoSelectionText = "<No selection>";
         const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         const string k_MultipleSelectionText = "<Multiple selection>";
