@@ -88,11 +88,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
-            var compilationHelper = new AssemblyCompilationHelper();
+            var compilationPipeline = new AssemblyCompilationPipeline();
             var callCrawler = new CallCrawler();
 
             Profiler.BeginSample("ScriptAuditor.Audit.Compilation");
-            var assemblyInfos = compilationHelper.Compile(m_Config.AnalyzeEditorCode, progressBar);
+            var assemblyInfos = compilationPipeline.Compile(m_Config.AnalyzeEditorCode, progressBar);
             Profiler.EndSample();
 
             var issues = new List<ProjectIssue>();
@@ -111,7 +111,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var onCompleteInternal = new Action<IProgressBar>(bar =>
             {
-                compilationHelper.Dispose();
+                compilationPipeline.Dispose();
                 callCrawler.BuildCallHierarchies(issues, bar);
                 onComplete();
             });
