@@ -7,23 +7,16 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     public class SummaryView : AnalysisView
     {
-        static ProjectReport m_Report;
-
         public static Action<IssueCategory> OnChangeView;
-
-        public static void SetReport(ProjectReport report)
-        {
-            m_Report = report;
-        }
 
         protected override void OnDrawInfo()
         {
-            if (m_Report != null)
+            if (s_Report != null)
             {
                 EditorGUILayout.LabelField("Analysis overview", EditorStyles.boldLabel);
 
                 EditorGUILayout.BeginHorizontal();
-                var numCompilationErrors = m_Report
+                var numCompilationErrors = s_Report
                     .GetIssues(IssueCategory.CodeCompilerMessages).Count(i => i.severity == Rule.Severity.Error);
                 if (numCompilationErrors > 0)
                 {
@@ -33,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
                 else
                 {
-                    EditorGUILayout.LabelField("Code Issues: " + m_Report.GetIssues(IssueCategory.Code).Length);
+                    EditorGUILayout.LabelField("Code Issues: " + s_Report.GetIssues(IssueCategory.Code).Length);
                     if (GUILayout.Button("View", EditorStyles.miniButton))
                         OnChangeView(IssueCategory.Code);
                 }
@@ -41,21 +34,21 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Settings Issues: " + m_Report.GetIssues(IssueCategory.ProjectSettings).Length);
+                EditorGUILayout.LabelField("Settings Issues: " + s_Report.GetIssues(IssueCategory.ProjectSettings).Length);
                 if (GUILayout.Button("View", EditorStyles.miniButton))
                     OnChangeView(IssueCategory.ProjectSettings);
                 GUILayout.FlexibleSpace();
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Assets in Resources folders: " + m_Report.GetIssues(IssueCategory.Assets).Length);
+                EditorGUILayout.LabelField("Assets in Resources folders: " + s_Report.GetIssues(IssueCategory.Assets).Length);
                 if (GUILayout.Button("View", EditorStyles.miniButton))
                     OnChangeView(IssueCategory.Assets);
                 GUILayout.FlexibleSpace();
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Shaders in the project: " + m_Report.GetIssues(IssueCategory.Shaders).Length);
+                EditorGUILayout.LabelField("Shaders in the project: " + s_Report.GetIssues(IssueCategory.Shaders).Length);
                 if (GUILayout.Button("View", EditorStyles.miniButton))
                     OnChangeView(IssueCategory.Shaders);
                 GUILayout.FlexibleSpace();
