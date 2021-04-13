@@ -307,6 +307,26 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
+                category = IssueCategory.CodeCompilerMessages,
+                name = "C# Messages",
+                menuOrder = 98,
+                menuLabel = "Experimental/C# Compiler Messages",
+                groupByDescription = false,
+                descriptionWithIcon = false,
+                showActions = false,
+                showAreaSelection = false,
+                //showAssemblySelection = true,
+                showCritical = false,
+                showDependencyView = false,
+                showFilters = true,
+                showMuteOptions = false,
+                showRightPanels = false,
+                onDoubleClick = EditorUtil.OpenTextFile,
+                onOpenDescriptor = EditorUtil.OpenDescriptor,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ApiCalls // fixme
+            });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
                 category = IssueCategory.Generics,
                 name = "Generics",
                 menuOrder = 99,

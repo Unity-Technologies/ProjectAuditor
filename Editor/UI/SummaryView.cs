@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -22,9 +23,20 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField("Analysis overview", EditorStyles.boldLabel);
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Code Issues: " + m_Report.GetIssues(IssueCategory.Code).Length);
-                if (GUILayout.Button("View", EditorStyles.miniButton))
-                    OnChangeView(IssueCategory.Code);
+                var numCompilationErrors = m_Report
+                    .GetIssues(IssueCategory.CodeCompilerMessages).Count(i => i.severity == Rule.Severity.Error);
+                if (numCompilationErrors > 0)
+                {
+                    EditorGUILayout.LabelField("Compilation Errors: " + numCompilationErrors);
+                    if (GUILayout.Button("View", EditorStyles.miniButton))
+                        OnChangeView(IssueCategory.CodeCompilerMessages);
+                }
+                else
+                {
+                    EditorGUILayout.LabelField("Code Issues: " + m_Report.GetIssues(IssueCategory.Code).Length);
+                    if (GUILayout.Button("View", EditorStyles.miniButton))
+                        OnChangeView(IssueCategory.Code);
+                }
                 GUILayout.FlexibleSpace();
                 EditorGUILayout.EndHorizontal();
 

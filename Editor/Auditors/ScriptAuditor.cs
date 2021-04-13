@@ -22,6 +22,34 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
     class ScriptAuditor : IAuditor
     {
+        static readonly ProblemDescriptor k_CompilerInfoDescriptor = new ProblemDescriptor
+        (
+            400000,
+            "Compiler info",
+            Area.CPU
+        )
+        {
+            severity = Rule.Severity.Info
+        };
+        static readonly ProblemDescriptor k_CompilerWarningDescriptor = new ProblemDescriptor
+        (
+            400001,
+            "Compiler warning",
+            Area.CPU
+        )
+        {
+            severity = Rule.Severity.Warning
+        };
+        static readonly ProblemDescriptor k_CompilerErrorDescriptor = new ProblemDescriptor
+        (
+            400002,
+            "Compiler error",
+            Area.CPU
+        )
+        {
+            severity = Rule.Severity.Error
+        };
+
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
             category = IssueCategory.Code,
@@ -32,6 +60,18 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
                 new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" }
+            }
+        };
+
+        static readonly IssueLayout k_CompilerMessageLayout = new IssueLayout
+        {
+            category = IssueCategory.CodeCompilerMessages,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Severity},
+                new PropertyDefinition { type = PropertyType.Path, name = "Source"},
+                new PropertyDefinition { type = PropertyType.Description, name = "Message", longName = "Compiler Message"},
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Target Assembly", longName = "Managed Assembly name" }
             }
         };
 
@@ -61,6 +101,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_IssueLayout;
+            yield return k_CompilerMessageLayout;
             yield return k_GenericIssueLayout;
         }
 
@@ -88,13 +129,48 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
-            var compilationPipeline = new AssemblyCompilationPipeline();
-            var callCrawler = new CallCrawler();
+            var compilationPipeline = new AssemblyCompilationPipeline
+            {
+                AssemblyCompilationFinished = (assemblyPath, compilerMessages) =>
+                {
+                    foreach (var message in compilerMessages)
+                    {
+                        var messageStartIndex = message.message.IndexOf(":");
+                        if (messageStartIndex != -1)
+                        {
+                            ProblemDescriptor descriptor = null;
+                            var messageDescription = message.message.Substring(messageStartIndex + 2);
+                            if (messageDescription.StartsWith("info "))
+                            {
+                                descriptor = k_CompilerInfoDescriptor;
+                            }
+                            else if (messageDescription.StartsWith("warning "))
+                            {
+                                descriptor = k_CompilerWarningDescriptor;
+                            }
+                            else if (messageDescription.StartsWith("error "))
+                            {
+                                descriptor = k_CompilerErrorDescriptor;
+                            }
+                            //if (descriptor != null && !messageDescription.StartsWith("warning CS") && !messageDescription.StartsWith("info CS"))
+                            {
+                                messageDescription = messageDescription.Replace(Path.GetDirectoryName(Application.dataPath), String.Empty);
+                                var issue = new ProjectIssue(descriptor, messageDescription,
+                                    IssueCategory.CodeCompilerMessages,
+                                    new Location(message.file, message.line),
+                                    new[] {Path.GetFileNameWithoutExtension(assemblyPath)});
+                                onIssueFound(issue);
+                            }
+                        }
+                    }
+                }
+            };
 
             Profiler.BeginSample("ScriptAuditor.Audit.Compilation");
             var assemblyInfos = compilationPipeline.Compile(m_Config.AnalyzeEditorCode, progressBar);
             Profiler.EndSample();
 
+            var callCrawler = new CallCrawler();
             var issues = new List<ProjectIssue>();
             var localAssemblyInfos = assemblyInfos.Where(info => !info.readOnly).ToArray();
             var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.readOnly).ToArray();
