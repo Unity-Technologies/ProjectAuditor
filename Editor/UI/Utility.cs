@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             public GUIContent Content;
             public GUIContent SelectionContent;
-            public bool enabled;
+            public bool Enabled;
         }
 
         public static GUIStyle GetStyle(string styleName)
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 var menu = new GenericMenu();
 
                 for (var i = 0; i != items.Length; i++)
-                    if (items[i].enabled)
+                    if (items[i].Enabled)
                         menu.AddItem(items[i].Content, i == selectionIndex, callback, i);
                     else
                         menu.AddDisabledItem(items[i].Content);

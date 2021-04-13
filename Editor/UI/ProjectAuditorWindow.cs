@@ -149,7 +149,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     Content = new GUIContent(string.IsNullOrEmpty(desc.menuLabel) ? desc.name : desc.menuLabel),
                     SelectionContent = new GUIContent("View: " + desc.name),
-                    enabled = isSupported,
+                    Enabled = isSupported,
                 };
 
                 if (!isSupported)
