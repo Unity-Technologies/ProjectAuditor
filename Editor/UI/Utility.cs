@@ -6,6 +6,26 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     static class Utility
     {
+        static readonly string k_InfoIconName = "console.infoicon";
+        static readonly string k_WarnIconName = "console.warnicon";
+        static readonly string k_ErrorIconName = "console.erroricon";
+
+        public static string InfoIconName
+        {
+            get { return k_InfoIconName;  }
+        }
+
+        public static string WarnIconName
+        {
+            get { return k_WarnIconName;  }
+        }
+
+        public static string ErrorIconName
+        {
+            get { return k_ErrorIconName;  }
+        }
+
+
         static class Styles
         {
             public static GUIStyle Foldout;
