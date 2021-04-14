@@ -138,13 +138,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         var messageStartIndex = message.message.IndexOf(":");
                         if (messageStartIndex != -1)
                         {
-                            ProblemDescriptor descriptor = null;
+                            var descriptor = k_CompilerInfoDescriptor;
                             var messageDescription = message.message.Substring(messageStartIndex + 2);
-                            if (messageDescription.StartsWith("info "))
-                            {
-                                descriptor = k_CompilerInfoDescriptor;
-                            }
-                            else if (messageDescription.StartsWith("warning "))
+
+                            if (messageDescription.StartsWith("warning "))
                             {
                                 descriptor = k_CompilerWarningDescriptor;
                             }
@@ -153,14 +150,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                                 descriptor = k_CompilerErrorDescriptor;
                             }
 
-                            if (descriptor != null)
-                            {
-                                var issue = new ProjectIssue(descriptor, messageDescription,
-                                    IssueCategory.CodeCompilerMessages,
-                                    new Location(message.file, message.line),
-                                    new[] {assemblyName});
-                                onIssueFound(issue);
-                            }
+                            var issue = new ProjectIssue(descriptor, messageDescription,
+                                IssueCategory.CodeCompilerMessages,
+                                new Location(message.file, message.line),
+                                new[] {assemblyName});
+                            onIssueFound(issue);
                         }
                     }
                 }
