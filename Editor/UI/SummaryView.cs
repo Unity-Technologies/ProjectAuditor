@@ -14,38 +14,27 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 EditorGUILayout.LabelField("Analysis overview", EditorStyles.boldLabel);
 
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Code Issues: " + s_Report.GetIssues(IssueCategory.Code).Length);
-                if (GUILayout.Button("View", EditorStyles.miniButton))
-                    OnChangeView(IssueCategory.Code);
-                GUILayout.FlexibleSpace();
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Settings Issues: " + s_Report.GetIssues(IssueCategory.ProjectSettings).Length);
-                if (GUILayout.Button("View", EditorStyles.miniButton))
-                    OnChangeView(IssueCategory.ProjectSettings);
-                GUILayout.FlexibleSpace();
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Assets in Resources folders: " + s_Report.GetIssues(IssueCategory.Assets).Length);
-                if (GUILayout.Button("View", EditorStyles.miniButton))
-                    OnChangeView(IssueCategory.Assets);
-                GUILayout.FlexibleSpace();
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Shaders in the project: " + s_Report.GetIssues(IssueCategory.Shaders).Length);
-                if (GUILayout.Button("View", EditorStyles.miniButton))
-                    OnChangeView(IssueCategory.Shaders);
-                GUILayout.FlexibleSpace();
-                EditorGUILayout.EndHorizontal();
+                EditorGUI.indentLevel++;
+                SummaryItem("Code Issues: " + s_Report.GetIssues(IssueCategory.Code).Length, IssueCategory.Code);
+                SummaryItem("Settings Issues: " + s_Report.GetIssues(IssueCategory.ProjectSettings).Length, IssueCategory.ProjectSettings);
+                SummaryItem("Assets in Resources folders: " + s_Report.GetIssues(IssueCategory.Assets).Length, IssueCategory.Assets);
+                SummaryItem("Shaders in the project: " + s_Report.GetIssues(IssueCategory.Shaders).Length, IssueCategory.Shaders);
+                EditorGUI.indentLevel--;
 
                 EditorGUILayout.Space();
             }
 
             EditorGUILayout.LabelField("Select a View from the toolbar to start browsing the report");
+        }
+
+        static void SummaryItem(string text, IssueCategory category)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(text);
+            if (GUILayout.Button("View", EditorStyles.miniButton))
+                OnChangeView(category);
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndHorizontal();
         }
     }
 }
