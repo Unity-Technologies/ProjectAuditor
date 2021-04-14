@@ -126,7 +126,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Table.Reload();
         }
 
-        public bool IsValid()
+        public virtual bool IsValid()
         {
             return m_Table != null;
         }

@@ -211,16 +211,19 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 activeView.DrawInfo();
 
-                DrawFilters();
-                DrawActions();
-
-                if (m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed)
+                if (activeView.IsValid())
                 {
-                    RefreshDisplay();
-                    m_ShouldRefresh = false;
-                }
+                    DrawFilters();
+                    DrawActions();
 
-                activeView.DrawTableAndPanels();
+                    if (m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed)
+                    {
+                        RefreshDisplay();
+                        m_ShouldRefresh = false;
+                    }
+
+                    activeView.DrawTableAndPanels();
+                }
             }
             else
             {
