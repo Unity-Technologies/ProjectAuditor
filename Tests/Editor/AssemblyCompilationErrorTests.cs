@@ -56,7 +56,7 @@ class MyClass {
 #if UNITY_EDITOR_WIN
             const string expectedMessage = "Assets\\ProjectAuditor-Temp\\MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration";
 #else
-            const string expectedMessage = "Assets/ProjectAuditor-Temp/MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration"#;
+            const string expectedMessage = "Assets/ProjectAuditor-Temp/MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration";
 #endif
             LogAssert.Expect(LogType.Error, expectedMessage);
             LogAssert.Expect(LogType.Error, "Failed to compile player scripts");
