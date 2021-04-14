@@ -49,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         bool m_ShouldRefresh;
         ProjectAuditorAnalytics.Analytic m_AnalyzeButtonAnalytic;
         ProjectAuditorAnalytics.Analytic m_LoadButtonAnalytic;
-        string s_SaveLoadDirectory;
+        string m_SaveLoadDirectory;
 
         // UI
         AnalysisView[] m_Views;
@@ -1034,14 +1034,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void Save()
         {
-            var path = EditorUtility.SaveFilePanel("Save report to json file", s_SaveLoadDirectory, string.Format("project-auditor-report.json"), "json");
+            var path = EditorUtility.SaveFilePanel("Save report to json file", m_SaveLoadDirectory, string.Format("project-auditor-report.json"), "json");
             if (path.Length != 0)
             {
                 m_ProjectReport.Save(path);
 
                 EditorUtility.RevealInFinder(path);
 
-                s_SaveLoadDirectory = Path.GetDirectoryName(path);
+                m_SaveLoadDirectory = Path.GetDirectoryName(path);
 
                 ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Save, ProjectAuditorAnalytics.BeginAnalytic());
             }
@@ -1049,7 +1049,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void Load()
         {
-            var path = EditorUtility.OpenFilePanel("Load from json file", s_SaveLoadDirectory, "json");
+            var path = EditorUtility.OpenFilePanel("Load from json file", m_SaveLoadDirectory, "json");
             if (path.Length != 0)
             {
                 m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
@@ -1057,7 +1057,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ProjectReport = ProjectReport.Load(path);
                 m_AnalysisState = AnalysisState.Valid;
 
-                s_SaveLoadDirectory = Path.GetDirectoryName(path);
+                m_SaveLoadDirectory = Path.GetDirectoryName(path);
             }
             OnEnable();
 
