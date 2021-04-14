@@ -105,7 +105,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             GUILayout.Label("Select Area : ", style);
 
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Clear", GUILayout.Width(50))) m_AreaTable.ClearSelection();
+            if (GUILayout.Button("Clear", GUILayout.Width(50)))
+                m_AreaTable.ClearSelection();
             if (GUILayout.Button("Apply", GUILayout.Width(50)))
             {
                 ApplySelection();
