@@ -15,50 +15,39 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 EditorGUILayout.LabelField("Analysis overview", EditorStyles.boldLabel);
 
-                EditorGUILayout.BeginHorizontal();
+                EditorGUI.indentLevel++;
+
                 var compilerMessages = s_Report.GetIssues(IssueCategory.CodeCompilerMessages);
                 var numCompilationErrors = compilerMessages.Count(i => i.severity == Rule.Severity.Error);
                 if (numCompilationErrors > 0)
                 {
-                    EditorGUILayout.LabelField("Compilation Errors: " + numCompilationErrors);
-                    if (GUILayout.Button("View", EditorStyles.miniButton))
-                        OnChangeView(IssueCategory.CodeCompilerMessages);
-                    EditorGUILayout.LabelField(EditorGUIUtility.TrIconContent(Utility.ErrorIconName));
+                    SummaryItem("Compilation Errors: " + s_Report.GetIssues(IssueCategory.CodeCompilerMessages).Length, IssueCategory.CodeCompilerMessages, EditorGUIUtility.TrIconContent(Utility.ErrorIconName));
                 }
                 else
                 {
-                    EditorGUILayout.LabelField("Code Issues: " + s_Report.GetIssues(IssueCategory.Code).Length);
-                    if (GUILayout.Button("View", EditorStyles.miniButton))
-                        OnChangeView(IssueCategory.Code);
+                    SummaryItem("Code Issues: " + s_Report.GetIssues(IssueCategory.Code).Length, IssueCategory.Code);
                 }
-                GUILayout.FlexibleSpace();
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Settings Issues: " + s_Report.GetIssues(IssueCategory.ProjectSettings).Length);
-                if (GUILayout.Button("View", EditorStyles.miniButton))
-                    OnChangeView(IssueCategory.ProjectSettings);
-                GUILayout.FlexibleSpace();
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Assets in Resources folders: " + s_Report.GetIssues(IssueCategory.Assets).Length);
-                if (GUILayout.Button("View", EditorStyles.miniButton))
-                    OnChangeView(IssueCategory.Assets);
-                GUILayout.FlexibleSpace();
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Shaders in the project: " + s_Report.GetIssues(IssueCategory.Shaders).Length);
-                if (GUILayout.Button("View", EditorStyles.miniButton))
-                    OnChangeView(IssueCategory.Shaders);
-                GUILayout.FlexibleSpace();
-                EditorGUILayout.EndHorizontal();
+                SummaryItem("Settings Issues: " + s_Report.GetIssues(IssueCategory.ProjectSettings).Length, IssueCategory.ProjectSettings);
+                SummaryItem("Assets in Resources folders: " + s_Report.GetIssues(IssueCategory.Assets).Length, IssueCategory.Assets);
+                SummaryItem("Shaders in the project: " + s_Report.GetIssues(IssueCategory.Shaders).Length, IssueCategory.Shaders);
+                EditorGUI.indentLevel--;
 
                 EditorGUILayout.Space();
             }
 
             EditorGUILayout.LabelField("Select a View from the toolbar to start browsing the report");
+        }
+
+        static void SummaryItem(string text, IssueCategory category, GUIContent icon = null)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(text);
+            if (GUILayout.Button("View", EditorStyles.miniButton))
+                OnChangeView(category);
+            if (icon != null)
+                EditorGUILayout.LabelField(icon);
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndHorizontal();
         }
     }
 }
