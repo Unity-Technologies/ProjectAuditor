@@ -9,6 +9,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         protected Unity.ProjectAuditor.Editor.UI.ViewDescriptor m_Desc;
         protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_Filter;
         protected Unity.ProjectAuditor.Editor.UI.Preferences m_Preferences;
+        protected static Unity.ProjectAuditor.Editor.ProjectReport s_Report;
         public Unity.ProjectAuditor.Editor.UI.ViewDescriptor desc { get; }
         public int numIssues { get; }
         public AnalysisView() {}
@@ -22,6 +23,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         protected virtual void OnDrawInfo();
         public void Refresh();
         public void SetFlatView(bool value);
+        public static void SetReport(Unity.ProjectAuditor.Editor.ProjectReport report);
     }
 
     public class Preferences
@@ -46,7 +48,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         public static System.Action<Unity.ProjectAuditor.Editor.IssueCategory> OnChangeView;
         public SummaryView() {}
         protected virtual void OnDrawInfo();
-        public static void SetReport(Unity.ProjectAuditor.Editor.ProjectReport report);
     }
 
     public class ViewDescriptor

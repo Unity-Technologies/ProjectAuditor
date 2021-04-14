@@ -401,6 +401,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             s_Report = report;
         }
+
         const string k_NoSelectionText = "<No selection>";
         const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         const string k_MultipleSelectionText = "<Multiple selection>";

@@ -166,6 +166,8 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectReport() {}
         public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
         public int GetNumIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public static Unity.ProjectAuditor.Editor.ProjectReport Load(string path);
+        public void Save(string path);
     }
 
     public struct PropertyDefinition
