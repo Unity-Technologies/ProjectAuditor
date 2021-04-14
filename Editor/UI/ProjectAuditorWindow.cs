@@ -425,43 +425,36 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var newIssues = new List<ProjectIssue>();
 
-            try
+            m_ProjectAuditor.Audit(projectIssue =>
             {
-                m_ProjectAuditor.Audit(projectIssue =>
+                newIssues.Add(projectIssue);
+                m_ProjectReport.AddIssue(projectIssue);
+            },
+                completed =>
                 {
-                    newIssues.Add(projectIssue);
-                    m_ProjectReport.AddIssue(projectIssue);
-                },
-                    completed =>
+                    // add batch of issues
+                    foreach (var view in m_Views)
                     {
-                        // add batch of issues
-                        foreach (var view in m_Views)
-                        {
-                            if (view != null)
-                                view.AddIssues(newIssues);
-                        }
+                        if (view != null)
+                            view.AddIssues(newIssues);
+                    }
 
-                        if (m_ShaderVariantsWindow != null)
-                        {
-                            m_ShaderVariantsWindow.AddIssues(newIssues);
-                        }
+                    if (m_ShaderVariantsWindow != null)
+                    {
+                        m_ShaderVariantsWindow.AddIssues(newIssues);
+                    }
 
-                        newIssues.Clear();
+                    newIssues.Clear();
 
-                        if (completed)
-                        {
-                            m_AnalysisState = AnalysisState.Completed;
-                        }
+                    if (completed)
+                    {
+                        m_AnalysisState = AnalysisState.Completed;
+                    }
 
-                        m_ShouldRefresh = true;
-                    },
-                    new ProgressBarDisplay());
-            }
-            catch (AssemblyCompilationException e)
-            {
-                m_AnalysisState = AnalysisState.Initialized;
-                EditorUtility.DisplayDialog("Project Auditor", "Compilation Error: please see the Console Window for more details.", "Ok");
-            }
+                    m_ShouldRefresh = true;
+                },
+                new ProgressBarDisplay()
+            );
         }
 
         void OnPostprocessBuild(BuildTarget target)
