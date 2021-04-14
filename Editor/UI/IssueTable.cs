@@ -13,9 +13,6 @@ namespace Unity.ProjectAuditor.Editor.UI
     class IssueTable : TreeView
     {
         static readonly int k_FirstId = 1;
-        static readonly string k_InfoIconName = "console.infoicon";
-        static readonly string k_WarnIconName = "console.warnicon";
-        static readonly string k_ErrorIconName = "console.erroricon";
 
         static GUIStyle s_LabelStyle;
 
@@ -255,9 +252,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                         {
                             var tooltip = property.longName;
 #if UNITY_2018_3_OR_NEWER
-                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrIconContent(k_WarnIconName, tooltip), s_LabelStyle);
+                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrIconContent(Utility.WarnIconName, tooltip), s_LabelStyle);
 #else
-                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(k_WarnIconName), tooltip), s_LabelStyle);
+                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(Utility.WarnIconName), tooltip), s_LabelStyle);
 #endif
                         }
                     }
@@ -269,15 +266,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                         switch (issue.descriptor.severity)
                         {
                             case Rule.Severity.Info:
-                                iconName = k_InfoIconName;
+                                iconName = Utility.InfoIconName;
                                 tooltip = "Info";
                                 break;
                             case Rule.Severity.Warning:
-                                iconName = k_WarnIconName;
+                                iconName = Utility.WarnIconName;
                                 tooltip = "Warning";
                                 break;
                             case Rule.Severity.Error:
-                                iconName = k_ErrorIconName;
+                                iconName = Utility.ErrorIconName;
                                 tooltip = "Error";
                                 break;
                             default:
