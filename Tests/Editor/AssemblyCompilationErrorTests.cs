@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class AssemblyCompilationExceptionTests
+    public class AssemblyCompilationErrorTests
     {
 #pragma warning disable 0414
         TempAsset m_TempAsset;
@@ -33,24 +33,20 @@ class MyClass {
 
         [Test]
         [ExplicitAttribute]
-        public void ExceptionIsThrownOnCompilationError()
+        public void CompilerMessageIsReported()
         {
             LogAssert.ignoreFailingMessages = true;
 
-            var exceptionThrown = false;
-            try
+            using (var compilationHelper = new AssemblyCompilationPipeline
             {
-                using (var compilationHelper = new AssemblyCompilationPipeline())
+                AssemblyCompilationFinished = (assemblyName, messages) =>
                 {
-                    compilationHelper.Compile();
+                    Assert.True(assemblyName.Equals(AssemblyInfo.DefaultAssemblyName));
                 }
-            }
-            catch (AssemblyCompilationException)
+            })
             {
-                exceptionThrown = true;
+                compilationHelper.Compile();
             }
-
-            Assert.True(exceptionThrown);
 
             LogAssert.Expect(LogType.Error,
                 "Assets/ProjectAuditor-Temp/MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration");
