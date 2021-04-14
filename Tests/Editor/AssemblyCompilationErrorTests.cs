@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor.Compilation;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -37,21 +38,33 @@ class MyClass {
         {
             LogAssert.ignoreFailingMessages = true;
 
+            CompilerMessage[] defaultAssemblyCompilerMessages = null;
             using (var compilationHelper = new AssemblyCompilationPipeline
             {
                 AssemblyCompilationFinished = (assemblyName, messages) =>
                 {
-                    Assert.True(assemblyName.Equals(AssemblyInfo.DefaultAssemblyName));
+                    if (assemblyName.Equals(AssemblyInfo.DefaultAssemblyName))
+                    {
+                        defaultAssemblyCompilerMessages = messages;
+                    }
                 }
             })
             {
                 compilationHelper.Compile();
             }
 
-            LogAssert.Expect(LogType.Error,
-                "Assets/ProjectAuditor-Temp/MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration");
+#if UNITY_EDITOR_WIN
+            const string expectedMessage = "Assets\\ProjectAuditor-Temp\\MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration";
+#else
+            const string expectedMessage = "Assets/ProjectAuditor-Temp/MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration"#;
+#endif
+            LogAssert.Expect(LogType.Error, expectedMessage);
             LogAssert.Expect(LogType.Error, "Failed to compile player scripts");
             LogAssert.ignoreFailingMessages = false;
+
+            Assert.NotNull(defaultAssemblyCompilerMessages);
+            Assert.AreEqual(1, defaultAssemblyCompilerMessages.Length);
+            Assert.True(defaultAssemblyCompilerMessages[0].message.Equals(expectedMessage));
         }
     }
 }

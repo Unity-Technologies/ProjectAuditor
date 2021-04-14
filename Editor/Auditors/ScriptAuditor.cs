@@ -131,7 +131,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var compilationPipeline = new AssemblyCompilationPipeline
             {
-                AssemblyCompilationFinished = (assemblyPath, compilerMessages) =>
+                AssemblyCompilationFinished = (assemblyName, compilerMessages) =>
                 {
                     foreach (var message in compilerMessages)
                     {
@@ -158,7 +158,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                                 var issue = new ProjectIssue(descriptor, messageDescription,
                                     IssueCategory.CodeCompilerMessages,
                                     new Location(message.file, message.line),
-                                    new[] {Path.GetFileNameWithoutExtension(assemblyPath)});
+                                    new[] {assemblyName});
                                 onIssueFound(issue);
                             }
                         }
