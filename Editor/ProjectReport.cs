@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
@@ -14,6 +16,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectReport
     {
         [SerializeField] List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+
         static Mutex s_Mutex = new Mutex();
 
         public int NumTotalIssues
@@ -69,6 +72,16 @@ namespace Unity.ProjectAuditor.Editor
                 foreach (var issue in m_Issues.Where(i => i.category == layout.category))
                     exporter.WriteIssue(issue);
             }
+        }
+
+        public void Save(string path)
+        {
+            File.WriteAllText(path, JsonUtility.ToJson(this));
+        }
+
+        public static ProjectReport Load(string path)
+        {
+            return JsonUtility.FromJson<ProjectReport>(File.ReadAllText(path));
         }
     }
 }

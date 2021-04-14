@@ -39,6 +39,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             Unmute,
             ShowMuted,
             OnlyCriticalIssues,
+            Load,
+            Save,
 
             ApiCalls = 100,
             ProjectSettings,
@@ -179,6 +181,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "show_muted_checkbox";
                 case UIButton.OnlyCriticalIssues:
                     return "only_hotpath_checkbox";
+                case UIButton.Save:
+                    return "save";
+                case UIButton.Load:
+                    return "load";
                 default:
                     Debug.LogFormat("SendUIButtonEvent: Unsupported button type : {0}", uiButton);
                     return "";

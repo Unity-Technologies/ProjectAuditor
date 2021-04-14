@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
@@ -47,6 +48,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         ProjectAuditor m_ProjectAuditor;
         bool m_ShouldRefresh;
         ProjectAuditorAnalytics.Analytic m_AnalyzeButtonAnalytic;
+        ProjectAuditorAnalytics.Analytic m_LoadButtonAnalytic;
+        string m_SaveLoadDirectory;
 
         // UI
         AnalysisView[] m_Views;
@@ -522,15 +525,15 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (m_AnalysisState == AnalysisState.Completed)
             {
-                // update list of assembly names
-                var scriptIssues = m_ProjectReport.GetIssues(IssueCategory.Code);
-                m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty((int)CodeProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
+                UpdateAssemblyNames();
                 UpdateAssemblySelection();
 
                 m_AnalysisState = AnalysisState.Valid;
 
-                ProjectAuditorAnalytics.SendUIButtonEventWithAnalyzeSummary(ProjectAuditorAnalytics.UIButton.Analyze,
-                    m_AnalyzeButtonAnalytic, m_ProjectReport);
+                if (m_LoadButtonAnalytic != null)
+                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Load, m_LoadButtonAnalytic);
+                if (m_AnalyzeButtonAnalytic != null)
+                    ProjectAuditorAnalytics.SendUIButtonEventWithAnalyzeSummary(ProjectAuditorAnalytics.UIButton.Analyze, m_AnalyzeButtonAnalytic, m_ProjectReport);
             }
 
             activeView.Refresh();
@@ -853,6 +856,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        void UpdateAssemblyNames()
+        {
+            // update list of assembly names
+            var scriptIssues = m_ProjectReport.GetIssues(IssueCategory.Code);
+            m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty((int)CodeProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
+        }
+
         void UpdateAssemblySelection()
         {
             if (m_AssemblyNames == null)
@@ -969,6 +979,20 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.Space();
 
+                const int loadSaveButtonWidth = 60;
+                // right-end buttons
+                if (GUILayout.Button(Contents.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
+                {
+                    Load();
+                }
+
+                GUI.enabled = m_AnalysisState == AnalysisState.Valid;
+                if (GUILayout.Button(Contents.SaveButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
+                {
+                    Save();
+                }
+                GUI.enabled = true;
+
                 DrawHelpButton();
             }
             EditorGUILayout.EndHorizontal();
@@ -1013,6 +1037,37 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        void Save()
+        {
+            var path = EditorUtility.SaveFilePanel("Save report to json file", m_SaveLoadDirectory, string.Format("project-auditor-report.json"), "json");
+            if (path.Length != 0)
+            {
+                m_ProjectReport.Save(path);
+                m_SaveLoadDirectory = Path.GetDirectoryName(path);
+
+                EditorUtility.RevealInFinder(path);
+                ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Save, ProjectAuditorAnalytics.BeginAnalytic());
+            }
+        }
+
+        void Load()
+        {
+            var path = EditorUtility.OpenFilePanel("Load from json file", m_SaveLoadDirectory, "json");
+            if (path.Length != 0)
+            {
+                m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
+
+                m_ProjectReport = ProjectReport.Load(path);
+                m_AnalysisState = AnalysisState.Valid;
+
+                m_SaveLoadDirectory = Path.GetDirectoryName(path);
+            }
+            OnEnable();
+
+            UpdateAssemblyNames();
+            UpdateAssemblySelection();
+        }
+
 #if UNITY_2018_1_OR_NEWER
         [MenuItem("Window/Analysis/Project Auditor")]
 #else
@@ -1046,6 +1101,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent AnalysisInProgressLabel =
                 new GUIContent("Analysis in progress...", "Analysis in progress...please wait.");
+
+            public static readonly GUIContent SaveButton =
+                new GUIContent("Save", "Save json report.");
+
+            public static readonly GUIContent LoadButton =
+                new GUIContent("Load", "Load json report.");
 
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");
