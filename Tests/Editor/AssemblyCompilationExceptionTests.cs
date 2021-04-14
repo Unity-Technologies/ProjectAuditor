@@ -40,7 +40,7 @@ class MyClass {
             var exceptionThrown = false;
             try
             {
-                using (var compilationHelper = new AssemblyCompilationHelper())
+                using (var compilationHelper = new AssemblyCompilationPipeline())
                 {
                     compilationHelper.Compile();
                 }

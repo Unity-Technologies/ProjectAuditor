@@ -152,7 +152,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     Content = new GUIContent(string.IsNullOrEmpty(desc.menuLabel) ? desc.name : desc.menuLabel),
                     SelectionContent = new GUIContent("View: " + desc.name),
-                    enabled = isSupported,
+                    Enabled = isSupported,
                 };
 
                 if (!isSupported)
@@ -391,7 +391,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     view.Clear();
             }
 
-            SummaryView.SetReport(m_ProjectReport);
+            AnalysisView.SetReport(m_ProjectReport);
 
             if (m_ShaderVariantsWindow != null)
             {
@@ -435,7 +435,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             catch (AssemblyCompilationException e)
             {
                 m_AnalysisState = AnalysisState.Initialized;
-                Debug.LogError(e);
+                EditorUtility.DisplayDialog("Project Auditor", "Compilation Error: please see the Console Window for more details.", "Ok");
             }
         }
 

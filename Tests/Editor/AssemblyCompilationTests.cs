@@ -37,7 +37,7 @@ class MyClass
         [Test]
         public void DefaultAssemblyIsCompiled()
         {
-            using (var compilationHelper = new AssemblyCompilationHelper())
+            using (var compilationHelper = new AssemblyCompilationPipeline())
             {
                 var assemblyInfos = compilationHelper.Compile();
 

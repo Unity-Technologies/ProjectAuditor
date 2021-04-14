@@ -11,7 +11,7 @@ using UnityEditor.Build.Player;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    class AssemblyCompilationHelper : IDisposable
+    class AssemblyCompilationPipeline : IDisposable
     {
         string m_OutputFolder = string.Empty;
         bool m_Success = true;
