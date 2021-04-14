@@ -13,6 +13,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 EditorGUILayout.LabelField("Code Analysis not available due to compilation errors");
             }
+            else
+            {
+                EditorGUILayout.LabelField("- Use the Filters to reduce the number of reported issues");
+                EditorGUILayout.LabelField("- Use the Mute button to mark an issue as false-positive");
+            }
         }
     }
 }
