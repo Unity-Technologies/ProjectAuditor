@@ -134,7 +134,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         void OnAssemblyCompilationFinished(string assemblyPath, CompilerMessage[] messages)
         {
-            AssemblyCompilationFinished(Path.GetFileName(assemblyPath), messages);
+            if (AssemblyCompilationFinished != null)
+                AssemblyCompilationFinished(Path.GetFileName(assemblyPath), messages);
         }
     }
 }

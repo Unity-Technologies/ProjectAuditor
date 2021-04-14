@@ -42,7 +42,7 @@ class MyClass
                 var assemblyInfos = compilationHelper.Compile();
 
                 Assert.Positive(assemblyInfos.Count());
-                Assert.NotNull(assemblyInfos.FirstOrDefault(info => info.name.Contains(AssemblyInfo.DefaultAssemblyName)));
+                Assert.NotNull(assemblyInfos.FirstOrDefault(info => info.name.Equals(AssemblyInfo.DefaultAssemblyName)));
             }
         }
 
