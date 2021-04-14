@@ -49,6 +49,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Generics,
             BuildFiles,
             Summary,
+            CodeCompilerMessages
         }
 
         // -------------------------------------------------------------------------------------------------------------

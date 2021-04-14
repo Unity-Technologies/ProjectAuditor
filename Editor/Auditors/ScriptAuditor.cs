@@ -152,9 +152,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                             {
                                 descriptor = k_CompilerErrorDescriptor;
                             }
-                            //if (descriptor != null && !messageDescription.StartsWith("warning CS") && !messageDescription.StartsWith("info CS"))
+
+                            if (descriptor != null)
                             {
-                                messageDescription = messageDescription.Replace(Path.GetDirectoryName(Application.dataPath), String.Empty);
                                 var issue = new ProjectIssue(descriptor, messageDescription,
                                     IssueCategory.CodeCompilerMessages,
                                     new Location(message.file, message.line),

@@ -323,7 +323,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 descriptionWithIcon = false,
                 showActions = false,
                 showAreaSelection = false,
-                //showAssemblySelection = true,
                 showCritical = false,
                 showDependencyView = false,
                 showFilters = true,
@@ -331,7 +330,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showRightPanels = false,
                 onDoubleClick = EditorUtil.OpenTextFile,
                 onOpenDescriptor = EditorUtil.OpenDescriptor,
-                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ApiCalls // fixme
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.CodeCompilerMessages
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
