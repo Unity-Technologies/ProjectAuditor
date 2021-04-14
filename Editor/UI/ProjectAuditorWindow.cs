@@ -525,9 +525,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (m_AnalysisState == AnalysisState.Completed)
             {
-                // update list of assembly names
-                var scriptIssues = m_ProjectReport.GetIssues(IssueCategory.Code);
-                m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty((int)CodeProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
+                UpdateAssemblyNames();
                 UpdateAssemblySelection();
 
                 m_AnalysisState = AnalysisState.Valid;
@@ -858,6 +856,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        void UpdateAssemblyNames()
+        {
+            // update list of assembly names
+            var scriptIssues = m_ProjectReport.GetIssues(IssueCategory.Code);
+            m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty((int)CodeProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
+        }
+
         void UpdateAssemblySelection()
         {
             if (m_AssemblyNames == null)
@@ -1059,9 +1064,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
             OnEnable();
 
-            // update list of assembly names
-            var scriptIssues = m_ProjectReport.GetIssues(IssueCategory.Code);
-            m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty((int)CodeProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
+            UpdateAssemblyNames();
             UpdateAssemblySelection();
         }
 
