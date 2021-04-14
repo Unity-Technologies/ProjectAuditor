@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     {
         static readonly ProblemDescriptor k_CompilerInfoDescriptor = new ProblemDescriptor
         (
-            400000,
+            100000,
             "Compiler info",
             Area.CPU
         )
@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         };
         static readonly ProblemDescriptor k_CompilerWarningDescriptor = new ProblemDescriptor
         (
-            400001,
+            100001,
             "Compiler warning",
             Area.CPU
         )
@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         };
         static readonly ProblemDescriptor k_CompilerErrorDescriptor = new ProblemDescriptor
         (
-            400002,
+            100002,
             "Compiler error",
             Area.CPU
         )
