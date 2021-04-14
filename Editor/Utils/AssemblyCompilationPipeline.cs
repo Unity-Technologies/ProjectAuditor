@@ -14,12 +14,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
     class AssemblyCompilationPipeline : IDisposable
     {
         string m_OutputFolder = string.Empty;
-//        bool m_Success = true;
 
         Action<string> m_OnAssemblyCompilationStarted;
 
         public Action<string, CompilerMessage[]> AssemblyCompilationFinished;
-        //public Action<AssemblyCompilationPipeline, IEnumerable<AssemblyInfo>> CompilationFinished;
 
         public void Dispose()
         {
@@ -117,12 +115,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
             if (progressBar != null)
                 progressBar.ClearProgressBar();
 
-            //if (!m_Success)
-            {
-                //Dispose();
-                //throw new AssemblyCompilationException();
-            }
-
             return compilationResult.assemblies.Select(assembly => Path.Combine(m_OutputFolder, assembly));
         }
 
@@ -143,7 +135,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
         void OnAssemblyCompilationFinished(string assemblyPath, CompilerMessage[] messages)
         {
             AssemblyCompilationFinished(Path.GetFileName(assemblyPath), messages);
-            //m_Success = m_Success && messages.Count(message => message.type == CompilerMessageType.Error) == 0;
         }
     }
 }
