@@ -1038,11 +1038,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (path.Length != 0)
             {
                 m_ProjectReport.Save(path);
-
-                EditorUtility.RevealInFinder(path);
-
                 m_SaveLoadDirectory = Path.GetDirectoryName(path);
 
+                EditorUtility.RevealInFinder(path);
                 ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Save, ProjectAuditorAnalytics.BeginAnalytic());
             }
         }
