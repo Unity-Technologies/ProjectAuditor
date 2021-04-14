@@ -16,13 +16,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField("Analysis overview", EditorStyles.boldLabel);
 
                 EditorGUILayout.BeginHorizontal();
-                var numCompilationErrors = s_Report
-                    .GetIssues(IssueCategory.CodeCompilerMessages).Count(i => i.severity == Rule.Severity.Error);
+                var compilerMessages = s_Report.GetIssues(IssueCategory.CodeCompilerMessages);
+                var numCompilationErrors = compilerMessages.Count(i => i.severity == Rule.Severity.Error);
                 if (numCompilationErrors > 0)
                 {
                     EditorGUILayout.LabelField("Compilation Errors: " + numCompilationErrors);
                     if (GUILayout.Button("View", EditorStyles.miniButton))
                         OnChangeView(IssueCategory.CodeCompilerMessages);
+                    EditorGUILayout.LabelField(EditorGUIUtility.TrIconContent(Utility.ErrorIconName));
                 }
                 else
                 {
