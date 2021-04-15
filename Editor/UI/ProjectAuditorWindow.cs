@@ -200,6 +200,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnGUI()
         {
+            if (m_AnalysisState == AnalysisState.Completed)
+            {
+                // switch to summary view after analysis
+                SelectView(IssueCategory.MetaData);
+            }
+
             if (m_AnalysisState != AnalysisState.Initializing)
             {
                 DrawSettings();
@@ -545,6 +551,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void SelectView(IssueCategory category)
         {
+            if (activeView.desc.category == category)
+                return;
+
             for (int i = 0; i < m_Views.Length; i++)
             {
                 if (m_Views[i].desc.category == category)
@@ -561,12 +570,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             var activeViewChanged = (m_ActiveViewIndex != index);
             if (activeViewChanged)
             {
-                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                 m_ActiveViewIndex = index;
 
-                RefreshDisplay();
+                activeView.Refresh();
 
-                ProjectAuditorAnalytics.SendUIButtonEvent((ProjectAuditorAnalytics.UIButton)activeView.desc.analyticsEvent, analytic);
+                ProjectAuditorAnalytics.SendUIButtonEvent((ProjectAuditorAnalytics.UIButton)activeView.desc.analyticsEvent, ProjectAuditorAnalytics.BeginAnalytic());
             }
         }
 
@@ -1068,6 +1076,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             UpdateAssemblyNames();
             UpdateAssemblySelection();
+
+            // switch to summary view after loading
+            SelectView(IssueCategory.MetaData);
         }
 
 #if UNITY_2018_1_OR_NEWER
