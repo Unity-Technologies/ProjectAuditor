@@ -267,6 +267,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 category = IssueCategory.Shaders,
                 name = "Shaders",
                 menuOrder = 2,
+                menuLabel = "Assets/Shaders",
                 groupByDescription = false,
                 descriptionWithIcon = true,
                 showActions = false,
@@ -292,6 +293,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.Code,
                 name = "Code",
+                menuLabel = "Code/Diagnostics",
                 menuOrder = 0,
                 groupByDescription = true,
                 descriptionWithIcon = false,
@@ -312,8 +314,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.Generics,
                 name = "Generics",
+                menuLabel = "Code/Generic Types Instantiation",
                 menuOrder = 99,
-                menuLabel = "Experimental/Generic Types Instantiation",
                 groupByDescription = true,
                 descriptionWithIcon = false,
                 showActions = false,
@@ -333,6 +335,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.ProjectSettings,
                 name = "Settings",
+                menuLabel = "Settings/Diagnostics",
                 menuOrder = 1,
                 groupByDescription = false,
                 descriptionWithIcon = false,
@@ -352,7 +355,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 viewType = typeof(BuildReportView),
                 category = IssueCategory.BuildFiles,
                 name = "Build",
-                menuLabel = "Experimental/Build Report",
+                menuLabel = "Build Report",
                 menuOrder = 98,
                 groupByDescription = false,
                 descriptionWithIcon = true,
