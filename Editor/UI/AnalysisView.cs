@@ -422,9 +422,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static class Contents
         {
-            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to .csv files.");
-            public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All", "");
-            public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All", "");
+            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
+            public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
+            public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
 
             public static readonly GUIContent InfoFoldout = new GUIContent("Information");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
