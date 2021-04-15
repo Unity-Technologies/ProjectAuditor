@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,8 +11,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (NumCompilationErrors() > 0)
             {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(EditorGUIUtility.TrIconContent(Utility.ErrorIconName), GUILayout.MaxWidth(36));
-                EditorGUILayout.LabelField( new GUIContent("Code Analysis is not available due to compilation errors"));
+                EditorGUILayout.LabelField(Utility.ErrorIcon, GUILayout.MaxWidth(36));
+                EditorGUILayout.LabelField(new GUIContent("Code Analysis is not available due to compilation errors"));
                 EditorGUILayout.EndHorizontal();
             }
             else

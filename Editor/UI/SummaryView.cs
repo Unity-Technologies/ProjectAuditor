@@ -16,12 +16,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField("Analysis overview", EditorStyles.boldLabel);
 
                 EditorGUI.indentLevel++;
-
                 var compilerMessages = s_Report.GetIssues(IssueCategory.CodeCompilerMessages);
                 var numCompilationErrors = compilerMessages.Count(i => i.severity == Rule.Severity.Error);
                 if (numCompilationErrors > 0)
                 {
-                    SummaryItem("Compilation Errors: ", s_Report.GetIssues(IssueCategory.CodeCompilerMessages).Length, IssueCategory.CodeCompilerMessages, EditorGUIUtility.TrIconContent(Utility.ErrorIconName));
+                    SummaryItem("Compilation Errors: ", s_Report.GetIssues(IssueCategory.CodeCompilerMessages).Length, IssueCategory.CodeCompilerMessages, Utility.ErrorIcon);
                 }
                 else
                 {
@@ -40,12 +39,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField("Select a View from the toolbar to start browsing the report");
         }
 
-        static void SummaryItem(string title, int value, IssueCategory category)
+        static void SummaryItem(string title, int value, IssueCategory category, GUIContent icon = null)
         {
-            SummaryItem(title, value.ToString(), category);
+            SummaryItem(title, value.ToString(), category, icon);
         }
 
-        static void SummaryItem(string title, string value, IssueCategory category)
+        static void SummaryItem(string title, string value, IssueCategory category, GUIContent icon = null)
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(title);
