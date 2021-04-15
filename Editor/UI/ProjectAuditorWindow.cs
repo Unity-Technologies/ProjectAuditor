@@ -981,7 +981,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.Space();
 
-                const int loadSaveButtonWidth = 60;
+                const int loadSaveButtonWidth = 40;
                 // right-end buttons
                 if (GUILayout.Button(Contents.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
                 {
@@ -1104,11 +1104,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent AnalysisInProgressLabel =
                 new GUIContent("Analysis in progress...", "Analysis in progress...please wait.");
 
-            public static readonly GUIContent SaveButton =
-                new GUIContent("Save", "Save json report.");
-
-            public static readonly GUIContent LoadButton =
-                new GUIContent("Load", "Load json report.");
+#if UNITY_2019_1_OR_NEWER
+            public static readonly GUIContent SaveButton = EditorGUIUtility.TrIconContent("SaveAs", "Save current report to json file");
+            public static readonly GUIContent LoadButton = EditorGUIUtility.TrIconContent("Profiler.Open", "Load report from json file");
+#else
+            public static readonly GUIContent SaveButton = new GUIContent("Save", "Save current report to json file");
+            public static readonly GUIContent LoadButton = new GUIContent("Load", "Load report from json file");
+#endif
 
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");
