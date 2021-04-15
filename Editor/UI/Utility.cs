@@ -10,21 +10,42 @@ namespace Unity.ProjectAuditor.Editor.UI
         static readonly string k_WarnIconName = "console.warnicon";
         static readonly string k_ErrorIconName = "console.erroricon";
 
-        public static string InfoIconName
+        public static GUIContent InfoIcon
         {
-            get { return k_InfoIconName;  }
+            get
+            {
+#if UNITY_2018_3_OR_NEWER
+                return EditorGUIUtility.TrIconContent(k_InfoIconName, "Info");
+#else
+                return new GUIContent(EditorGUIUtility.FindTexture(Utility.k_InfoIconName), "Info"), s_LabelStyle);
+#endif
+            }
         }
 
-        public static string WarnIconName
+
+        public static GUIContent WarnIcon
         {
-            get { return k_WarnIconName;  }
+            get
+            {
+#if UNITY_2018_3_OR_NEWER
+                return EditorGUIUtility.TrIconContent(k_WarnIconName, "Warning");
+#else
+                return new GUIContent(EditorGUIUtility.FindTexture(Utility.k_WarnIconName), "Warning"), s_LabelStyle);
+#endif
+            }
         }
 
-        public static string ErrorIconName
+        public static GUIContent ErrorIcon
         {
-            get { return k_ErrorIconName;  }
+            get
+            {
+#if UNITY_2018_3_OR_NEWER
+                return EditorGUIUtility.TrIconContent(k_ErrorIconName, "Error");
+#else
+                return new GUIContent(EditorGUIUtility.FindTexture(Utility.k_ErrorIconName), "Error"), s_LabelStyle);
+#endif
+            }
         }
-
 
         static class Styles
         {
@@ -40,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public static GUIStyle GetStyle(string styleName)
         {
-            var s = UnityEngine.GUI.skin.FindStyle(styleName);
+            var s = GUI.skin.FindStyle(styleName);
             if (s == null)
                 s = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector).FindStyle(styleName);
             if (s == null)

@@ -1,3 +1,4 @@
+using System;
 using Packages.Editor.Utils;
 using Unity.ProjectAuditor.Editor.Auditors;
 using UnityEditor;

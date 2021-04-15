@@ -7,7 +7,6 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Callbacks;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -152,7 +151,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     Content = new GUIContent(string.IsNullOrEmpty(desc.menuLabel) ? desc.name : desc.menuLabel),
                     SelectionContent = new GUIContent("View: " + desc.name),
-                    Enabled = isSupported,
+                    Enabled = isSupported
                 };
 
                 if (!isSupported)
@@ -173,7 +172,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (currentState != AnalysisState.Valid)
                 m_ProjectReport = new ProjectReport();
 
-            SummaryView.SetReport(m_ProjectReport);
+            AnalysisView.SetReport(m_ProjectReport);
             SummaryView.OnChangeView = SelectView;
 
             var variants = m_ProjectReport.GetIssues(IssueCategory.ShaderVariants);
@@ -270,6 +269,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 category = IssueCategory.Shaders,
                 name = "Shaders",
                 menuOrder = 2,
+                menuLabel = "Assets/Shaders",
                 groupByDescription = false,
                 descriptionWithIcon = true,
                 showActions = false,
@@ -296,6 +296,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 viewType = typeof(CodeView),
                 category = IssueCategory.Code,
                 name = "Code",
+                menuLabel = "Code/Diagnostics",
                 menuOrder = 0,
                 groupByDescription = true,
                 descriptionWithIcon = false,
@@ -336,8 +337,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.Generics,
                 name = "Generics",
+                menuLabel = "Code/Generic Types Instantiation",
                 menuOrder = 99,
-                menuLabel = "Experimental/Generic Types Instantiation",
                 groupByDescription = true,
                 descriptionWithIcon = false,
                 showActions = false,
@@ -357,6 +358,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.ProjectSettings,
                 name = "Settings",
+                menuLabel = "Settings/Diagnostics",
                 menuOrder = 1,
                 groupByDescription = false,
                 descriptionWithIcon = false,
@@ -376,7 +378,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 viewType = typeof(BuildReportView),
                 category = IssueCategory.BuildFiles,
                 name = "Build",
-                menuLabel = "Experimental/Build Report",
+                menuLabel = "Build Report",
                 menuOrder = 98,
                 groupByDescription = false,
                 descriptionWithIcon = true,
@@ -630,7 +632,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             m_AssemblyNames);
                     }
 
-                    ProjectAuditorAnalytics.SendUIButtonEvent((ProjectAuditorAnalytics.UIButton)ProjectAuditorAnalytics.UIButton.AssemblySelect,
+                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.AssemblySelect,
                         analytic);
                 }
             }
@@ -1056,7 +1058,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void Save()
         {
-            var path = EditorUtility.SaveFilePanel("Save report to json file", m_SaveLoadDirectory, string.Format("project-auditor-report.json"), "json");
+            var path = EditorUtility.SaveFilePanel("Save report to json file", m_SaveLoadDirectory, "project-auditor-report.json", "json");
             if (path.Length != 0)
             {
                 m_ProjectReport.Save(path);

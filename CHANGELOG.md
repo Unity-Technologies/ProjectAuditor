@@ -5,8 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
-* Added Build Report view (experimental)
-* Added Generic types instantiation analysis (experimental)
+* Added Build Report view
+* Added Generic types instantiation analysis
 * Added Summary view
 * Added Save&Load support
 * Fixed Shader Variants persistence in UI after Domain Reload

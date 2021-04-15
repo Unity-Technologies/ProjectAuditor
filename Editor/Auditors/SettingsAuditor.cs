@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Unity.ProjectAuditor.Editor.SettingsAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
-using UnityEditor.Macros;
 using UnityEngine;
-using TypeInfo = Unity.ProjectAuditor.Editor.Utils.TypeInfo;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
@@ -22,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         };
 
-        private List<ISettingsAnalyzer> m_Analyzers;
+        List<ISettingsAnalyzer> m_Analyzers;
         List<ProblemDescriptor> m_ProblemDescriptors;
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()

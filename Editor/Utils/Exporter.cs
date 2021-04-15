@@ -1,8 +1,6 @@
 using System;
 using System.IO;
 using System.Text;
-using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
