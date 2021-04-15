@@ -173,7 +173,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (currentState != AnalysisState.Valid)
                 m_ProjectReport = new ProjectReport();
 
-            SummaryView.SetReport(m_ProjectReport);
+            AnalysisView.SetReport(m_ProjectReport);
             SummaryView.OnChangeView = SelectView;
 
             var variants = m_ProjectReport.GetIssues(IssueCategory.ShaderVariants);
