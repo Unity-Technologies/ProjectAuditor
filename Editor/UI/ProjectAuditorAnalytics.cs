@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Shaders,
             Generics,
             BuildFiles,
-            Summary,
+            Summary
         }
 
         // -------------------------------------------------------------------------------------------------------------

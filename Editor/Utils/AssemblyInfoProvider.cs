@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// <summary>
         ///   <para>Matches all assembly sources.</para>
         /// </summary>
-        All = -1, // 0xFFFFFFFF
+        All = -1 // 0xFFFFFFFF
     }
 
     static class AssemblyInfoProvider

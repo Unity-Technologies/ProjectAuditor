@@ -7,7 +7,6 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Callbacks;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -152,7 +151,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     Content = new GUIContent(string.IsNullOrEmpty(desc.menuLabel) ? desc.name : desc.menuLabel),
                     SelectionContent = new GUIContent("View: " + desc.name),
-                    Enabled = isSupported,
+                    Enabled = isSupported
                 };
 
                 if (!isSupported)
@@ -616,7 +615,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             m_AssemblyNames);
                     }
 
-                    ProjectAuditorAnalytics.SendUIButtonEvent((ProjectAuditorAnalytics.UIButton)ProjectAuditorAnalytics.UIButton.AssemblySelect,
+                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.AssemblySelect,
                         analytic);
                 }
             }
@@ -1042,7 +1041,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void Save()
         {
-            var path = EditorUtility.SaveFilePanel("Save report to json file", m_SaveLoadDirectory, string.Format("project-auditor-report.json"), "json");
+            var path = EditorUtility.SaveFilePanel("Save report to json file", m_SaveLoadDirectory, "project-auditor-report.json", "json");
             if (path.Length != 0)
             {
                 m_ProjectReport.Save(path);

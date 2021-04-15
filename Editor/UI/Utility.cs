@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             get
             {
 #if UNITY_2018_3_OR_NEWER
-                return EditorGUIUtility.TrIconContent(Utility.k_InfoIconName, "Info");
+                return EditorGUIUtility.TrIconContent(k_InfoIconName, "Info");
 #else
                 return new GUIContent(EditorGUIUtility.FindTexture(Utility.k_InfoIconName), "Info"), s_LabelStyle);
 #endif
@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             get
             {
 #if UNITY_2018_3_OR_NEWER
-                return EditorGUIUtility.TrIconContent(Utility.k_WarnIconName, "Warning");
+                return EditorGUIUtility.TrIconContent(k_WarnIconName, "Warning");
 #else
                 return new GUIContent(EditorGUIUtility.FindTexture(Utility.k_WarnIconName), "Warning"), s_LabelStyle);
 #endif
@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             get
             {
 #if UNITY_2018_3_OR_NEWER
-                return EditorGUIUtility.TrIconContent(Utility.k_ErrorIconName, "Error");
+                return EditorGUIUtility.TrIconContent(k_ErrorIconName, "Error");
 #else
                 return new GUIContent(EditorGUIUtility.FindTexture(Utility.k_ErrorIconName), "Error"), s_LabelStyle);
 #endif
@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public static GUIStyle GetStyle(string styleName)
         {
-            var s = UnityEngine.GUI.skin.FindStyle(styleName);
+            var s = GUI.skin.FindStyle(styleName);
             if (s == null)
                 s = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector).FindStyle(styleName);
             if (s == null)

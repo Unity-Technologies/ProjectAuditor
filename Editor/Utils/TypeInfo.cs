@@ -8,9 +8,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
 {
     static class TypeInfo
     {
-        private static List<Type> s_Types;
+        static List<Type> s_Types;
 
-        private static IEnumerable<Type> GetAllTypes()
+        static IEnumerable<Type> GetAllTypes()
         {
             if (s_Types != null)
                 return s_Types;
