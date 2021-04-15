@@ -40,15 +40,15 @@ class MyClass {
 
             CompilerMessage[] defaultAssemblyCompilerMessages = null;
             using (var compilationHelper = new AssemblyCompilationPipeline
-            {
-                AssemblyCompilationFinished = (assemblyName, messages) =>
-                {
-                    if (assemblyName.Equals(AssemblyInfo.DefaultAssemblyName))
-                    {
-                        defaultAssemblyCompilerMessages = messages;
-                    }
-                }
-            })
+               {
+                   AssemblyCompilationFinished = (assemblyName, messages) =>
+                   {
+                       if (assemblyName.Equals(AssemblyInfo.DefaultAssemblyName))
+                       {
+                           defaultAssemblyCompilerMessages = messages;
+                       }
+                   }
+               })
             {
                 compilationHelper.Compile();
             }

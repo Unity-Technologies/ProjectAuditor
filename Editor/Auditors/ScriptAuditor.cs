@@ -23,29 +23,29 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     class ScriptAuditor : IAuditor
     {
         static readonly ProblemDescriptor k_CompilerInfoDescriptor = new ProblemDescriptor
-        (
+            (
             100000,
             "Compiler info",
             Area.CPU
-        )
+            )
         {
             severity = Rule.Severity.Info
         };
         static readonly ProblemDescriptor k_CompilerWarningDescriptor = new ProblemDescriptor
-        (
+            (
             100001,
             "Compiler warning",
             Area.CPU
-        )
+            )
         {
             severity = Rule.Severity.Warning
         };
         static readonly ProblemDescriptor k_CompilerErrorDescriptor = new ProblemDescriptor
-        (
+            (
             100002,
             "Compiler error",
             Area.CPU
-        )
+            )
         {
             severity = Rule.Severity.Error
         };
