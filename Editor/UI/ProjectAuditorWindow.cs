@@ -319,7 +319,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 category = IssueCategory.CodeCompilerMessages,
                 name = "C# Messages",
                 menuOrder = 98,
-                menuLabel = "Experimental/C# Compiler Messages",
+                menuLabel = "Code/C# Compiler Messages",
                 groupByDescription = false,
                 descriptionWithIcon = false,
                 showActions = false,
