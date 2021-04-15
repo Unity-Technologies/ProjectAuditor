@@ -249,46 +249,27 @@ namespace Unity.ProjectAuditor.Editor.UI
                     case PropertyType.CriticalContext:
                     {
                         if (issue.isPerfCriticalContext)
-                        {
-                            var tooltip = property.longName;
-#if UNITY_2018_3_OR_NEWER
-                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrIconContent(Utility.WarnIconName, tooltip), s_LabelStyle);
-#else
-                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(Utility.WarnIconName), tooltip), s_LabelStyle);
-#endif
-                        }
+                            EditorGUI.LabelField(cellRect, Utility.WarnIcon, s_LabelStyle);
                     }
                     break;
                     case PropertyType.Severity:
                     {
-                        var iconName = string.Empty;
-                        var tooltip = string.Empty;
+                        GUIContent icon = null;
                         switch (issue.descriptor.severity)
                         {
                             case Rule.Severity.Info:
-                                iconName = Utility.InfoIconName;
-                                tooltip = "Info";
+                                icon = Utility.InfoIcon;
                                 break;
                             case Rule.Severity.Warning:
-                                iconName = Utility.WarnIconName;
-                                tooltip = "Warning";
+                                icon = Utility.WarnIcon;
                                 break;
                             case Rule.Severity.Error:
-                                iconName = Utility.ErrorIconName;
-                                tooltip = "Error";
-                                break;
-                            default:
-                                iconName = string.Empty;
-                                tooltip = string.Empty;
+                                icon = Utility.ErrorIcon;
                                 break;
                         }
-                        if (!string.IsNullOrEmpty(iconName))
+                        if (icon != null)
                         {
-#if UNITY_2018_3_OR_NEWER
-                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrIconContent(iconName, tooltip), s_LabelStyle);
-#else
-                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(iconName), tooltip), s_LabelStyle);
-#endif
+                            EditorGUI.LabelField(cellRect, icon, s_LabelStyle);
                         }
                     }
                     break;
