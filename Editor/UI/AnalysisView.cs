@@ -364,8 +364,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     var matchingIssues = m_Issues.Where(issue => m_Config.GetAction(issue.descriptor, issue.GetCallingMethod()) !=
                         Rule.Severity.None && (match == null || match(issue)));
-                    foreach (var issue in matchingIssues)
-                        exporter.WriteIssue(issue);
+                    exporter.WriteIssues(matchingIssues.ToArray());
                 }
 
                 EditorUtility.RevealInFinder(path);

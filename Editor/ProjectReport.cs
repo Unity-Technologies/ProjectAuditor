@@ -68,8 +68,7 @@ namespace Unity.ProjectAuditor.Editor
             using (var exporter = new Exporter(path, layout))
             {
                 exporter.WriteHeader();
-                foreach (var issue in m_Issues.Where(i => i.category == layout.category))
-                    exporter.WriteIssue(issue);
+                exporter.WriteIssues(m_Issues.Where(i => i.category == layout.category).ToArray());
             }
         }
 
