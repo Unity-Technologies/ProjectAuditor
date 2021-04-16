@@ -24,6 +24,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
+            // if there is no instruction before OpCodes.Ret, then we know this method is empty
             if (inst.Previous != null)
                 return null;
 
