@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             if (!MonoBehaviourAnalysis.IsMonoBehaviour(methodDefinition.DeclaringType))
                 return null;
 
-            if (!MonoBehaviourAnalysis.IsMonoBehaviourMagicMethod(methodDefinition))
+            if (!MonoBehaviourAnalysis.IsMonoBehaviourEvent(methodDefinition))
                 return null;
 
             return new ProjectIssue
