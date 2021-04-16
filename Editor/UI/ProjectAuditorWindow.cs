@@ -1117,7 +1117,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
 #if UNITY_2019_1_OR_NEWER
             public static readonly GUIContent SaveButton = EditorGUIUtility.TrIconContent("SaveAs", "Save current report to json file");
-            public static readonly GUIContent LoadButton = EditorGUIUtility.TrIconContent("Profiler.Open", "Load report from json file");
+            public static readonly GUIContent LoadButton = EditorGUIUtility.TrIconContent("Import", "Load report from json file");
 #else
             public static readonly GUIContent SaveButton = new GUIContent("Save", "Save current report to json file");
             public static readonly GUIContent LoadButton = new GUIContent("Load", "Load report from json file");
