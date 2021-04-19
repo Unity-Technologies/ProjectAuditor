@@ -320,7 +320,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "C# Messages",
                 menuOrder = 98,
                 menuLabel = "Code/C# Compiler Messages",
-                groupByDescriptor = false,
+                groupByDescriptor = true,
                 descriptionWithIcon = false,
                 showActions = false,
                 showAreaSelection = false,
