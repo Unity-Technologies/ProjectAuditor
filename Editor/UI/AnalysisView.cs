@@ -262,7 +262,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Styles.TextArea.fontSize = m_Preferences.fontSize;
 
             // (optional) collapse/expand buttons
-            if (m_Desc.groupByDescription)
+            if (m_Desc.groupByDescriptor)
             {
                 if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                     SetRowsExpanded(false);
