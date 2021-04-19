@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Filter = filter;
             m_Desc = desc;
             m_Layout = layout;
-            m_FlatView = !desc.groupByDescription;
+            m_FlatView = !desc.groupByDescriptor;
             m_NextId = k_FirstId;
             m_FontSize = Preferences.k_MinFontSize;
             multicolumnHeader.sortingChanged += OnSortingChanged;
@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void AddIssues(ProjectIssue[] issues)
         {
-            if (m_Desc.groupByDescription)
+            if (m_Desc.groupByDescriptor)
             {
                 var descriptors = issues.Select(i => i.descriptor).Distinct();
                 if (m_TreeViewItemGroups == null)
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 itemsList.AddRange(m_TreeViewItemIssues);
             foreach (var issue in issues)
             {
-                var depth = m_Desc.groupByDescription ? 1 : 0;
+                var depth = m_Desc.groupByDescriptor ? 1 : 0;
                 var item = new IssueTableItem(m_NextId++, depth, issue.name, issue.descriptor, issue);
                 itemsList.Add(item);
             }
@@ -93,7 +93,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var depthForHiddenRoot = -1;
             var root = new TreeViewItem(idForHiddenRoot, depthForHiddenRoot, "root");
 
-            if (m_Desc.groupByDescription)
+            if (m_Desc.groupByDescriptor)
             {
                 foreach (var item in m_TreeViewItemGroups)
                 {
@@ -132,7 +132,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             Profiler.BeginSample("IssueTable.BuildRows");
-            if (m_Desc.groupByDescription && !hasSearch && !m_FlatView)
+            if (m_Desc.groupByDescriptor && !hasSearch && !m_FlatView)
             {
                 var descriptors = filteredItems.Select(i => i.ProblemDescriptor).Distinct();
                 foreach (var descriptor in descriptors)
@@ -203,7 +203,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var columnType = property.type;
 
             // indent first column, if necessary
-            if (m_Desc.groupByDescription && (int)PropertyType.Description == columnType)
+            if (m_Desc.groupByDescriptor && (int)PropertyType.Description == columnType)
             {
                 var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
@@ -275,7 +275,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     break;
 
                     case PropertyType.Area:
-                        if (!m_Desc.groupByDescription)
+                        if (!m_Desc.groupByDescriptor)
                             EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), s_LabelStyle);
                         break;
 
