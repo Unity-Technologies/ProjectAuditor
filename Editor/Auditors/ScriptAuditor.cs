@@ -68,10 +68,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             category = IssueCategory.CodeCompilerMessages,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Severity},
-                new PropertyDefinition { type = PropertyType.Path, name = "Source"},
-                new PropertyDefinition { type = PropertyType.Description, name = "Message", longName = "Compiler Message"},
-                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Target Assembly", longName = "Managed Assembly name" }
+                new PropertyDefinition { type = PropertyType.Description, name = "Code"},
+                new PropertyDefinition { type = PropertyType.Severity, name = "Type"},
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Message", longName = "Compiler Message"},
+                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
+                new PropertyDefinition { type = PropertyType.Custom+1, format = PropertyFormat.String, name = "Target Assembly", longName = "Managed Assembly name" },
+                new PropertyDefinition { type = PropertyType.Path, name = "Full path"},
             }
         };
 
@@ -138,22 +140,33 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         var messageStartIndex = message.message.IndexOf(":");
                         if (messageStartIndex != -1)
                         {
-                            var descriptor = k_CompilerInfoDescriptor;
-                            var messageDescription = message.message.Substring(messageStartIndex + 2);
+                            var messageWithCode = message.message.Substring(messageStartIndex + 2);
+                            var messageCodeStartIndex = messageWithCode.IndexOf("CS");
+                            if (messageCodeStartIndex == -1)
+                                continue; // for the time being, skip any other message
 
-                            if (messageDescription.StartsWith("warning "))
+                            var messageCode = messageWithCode.Substring(messageCodeStartIndex, 6);
+                            var messageDescription = messageWithCode.Substring(messageWithCode.IndexOf(": ") + 2);
+                            var descriptor = (ProblemDescriptor)null;
+
+                            switch (message.type)
                             {
-                                descriptor = k_CompilerWarningDescriptor;
-                            }
-                            else if (messageDescription.StartsWith("error "))
-                            {
-                                descriptor = k_CompilerErrorDescriptor;
+                                case UnityEditor.Compilation.CompilerMessageType.Warning :
+                                    descriptor = k_CompilerWarningDescriptor;
+                                    break;
+                                case UnityEditor.Compilation.CompilerMessageType.Error :
+                                    descriptor = k_CompilerErrorDescriptor;
+                                    break;
                             }
 
-                            var issue = new ProjectIssue(descriptor, messageDescription,
+                            var issue = new ProjectIssue(descriptor, messageCode,
                                 IssueCategory.CodeCompilerMessages,
                                 new Location(message.file, message.line),
-                                new[] {assemblyName});
+                                new[]
+                                {
+                                    messageDescription,
+                                    assemblyName
+                                });
                             onIssueFound(issue);
                         }
                     }
