@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 Build the project to view the Shader Variants
 ";
 
-        const string k_PlayerLogInfo = @"
+        const string k_PlayerLogInstructions = @"
 To find which shader variants are compiled at runtime, follow these steps:
 - Enable the Log Shader Compilation option (Project Settings => Graphics => Shader Loading)
 - Make a Development build
@@ -73,7 +73,7 @@ To find which shader variants are compiled at runtime, follow these steps:
 
             EditorGUILayout.BeginVertical(GUI.skin.box);
 
-            m_AnalysisView.desc.onDrawInfo = variantsAvailable ? k_PlayerLogInfo : k_BuildRequiredInfo;
+            m_AnalysisView.desc.onDrawInfo = variantsAvailable ? k_PlayerLogInstructions : k_BuildRequiredInfo;
             m_AnalysisView.DrawInfo();
 
             var lastEnabled = GUI.enabled;
