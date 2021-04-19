@@ -16,11 +16,16 @@ Build the project to view the Shader Variants
 
         const string k_PlayerLogInstructions = @"
 To find which shader variants are compiled at runtime, follow these steps:
-- Enable the Log Shader Compilation option (Project Settings => Graphics => Shader Loading)
+- Enable the Log Shader Compilation option
 - Make a Development build
 - Run the build on the target platform
 - Drag & Drop the Player.log file on this window
 ";
+
+        const string k_PlayerLogParsingUnsupported = @"
+To find which shader variants are compiled at runtime, update to 2018 LTS or newer.
+";
+
         const string k_NoCompiledVariantWarning = "No compiled shader variants found in player log. Perhaps, Log Shader Compilation was not enabled when the project was built.";
         const string k_NoCompiledVariantWarningLogDisabled = "No compiled shader variants found in player log. Shader compilation logging is disabled. Would you like to enable it? (Shader compilation will not appear in the log until the project is rebuilt)";
         const string k_PlayerLogProcessed = "Player log file successfully processed.";
@@ -73,7 +78,17 @@ To find which shader variants are compiled at runtime, follow these steps:
 
             EditorGUILayout.BeginVertical(GUI.skin.box);
 
-            m_AnalysisView.desc.onDrawInfo = variantsAvailable ? k_PlayerLogInstructions : k_BuildRequiredInfo;
+            if (variantsAvailable)
+            {
+                m_AnalysisView.desc.onDrawInfo = GraphicsSettingsHelper.logShaderCompilationSupported
+                    ? k_PlayerLogInstructions
+                    : k_PlayerLogParsingUnsupported;
+            }
+            else
+            {
+                m_AnalysisView.desc.onDrawInfo = k_BuildRequiredInfo;
+            }
+
             m_AnalysisView.DrawInfo();
 
             var lastEnabled = GUI.enabled;
@@ -88,6 +103,10 @@ To find which shader variants are compiled at runtime, follow these steps:
                 m_AnalysisView.SetFlatView(m_FlatView);
                 m_AnalysisView.Refresh();
             }
+
+            if (GraphicsSettingsHelper.logShaderCompilationSupported)
+                GraphicsSettingsHelper.logWhenShaderIsCompiled = EditorGUILayout.ToggleLeft("Log Shader Compilation (requires Build&Run)", GraphicsSettingsHelper.logWhenShaderIsCompiled, GUILayout.Width(300));
+
             EditorGUILayout.EndHorizontal();
 
             GUI.enabled = lastEnabled;
