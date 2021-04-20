@@ -10,21 +10,22 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     class ShaderVariantsWindow : AnalysisWindow, IProjectIssueFilter
     {
-        const string k_BuildRequiredInfo = @"
-Build the project to view the Shader Variants
-";
+        const string k_BuildRequiredInfo =
+@"Build the project to view the Shader Variants";
 
-        const string k_PlayerLogInstructions = @"
-To find which shader variants are compiled at runtime, follow these steps:
+        const string k_PlayerLogInstructions =
+@"This view shows the built Shader Variants.
+
+The number of Variants contributes to the build size, however, there might be Variants that are not required (compiled) at runtime on the target platform. To find out which of these variants are not compiled at runtime, follow these steps:
 - Enable the Log Shader Compilation option
 - Make a Development build
-- Run the build on the target platform
-- Drag & Drop the Player.log file on this window
-";
+- Run the build on the target platform. Make sure to go through all scenes.
+- Drag & Drop the Player.log file on this window";
 
-        const string k_PlayerLogParsingUnsupported = @"
-To find which shader variants are compiled at runtime, update to 2018 LTS or newer.
-";
+        const string k_PlayerLogParsingUnsupported =
+@"This view shows the built Shader Variants.
+
+The number of Variants contributes to the build size, however, there might be Variants that are not required (compiled) at runtime on the target platform. To find out which of these variants are not compiled at runtime, update to the latest Unity 2018+ LTS.";
 
         const string k_NoCompiledVariantWarning = "No compiled shader variants found in player log. Perhaps, Log Shader Compilation was not enabled when the project was built.";
         const string k_NoCompiledVariantWarningLogDisabled = "No compiled shader variants found in player log. Shader compilation logging is disabled. Would you like to enable it? (Shader compilation will not appear in the log until the project is rebuilt)";
