@@ -777,7 +777,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.EndHorizontal();
 
-                if (EditorGUI.EndChangeCheck()) m_ShouldRefresh = true;
+                if (EditorGUI.EndChangeCheck())
+                    m_ShouldRefresh = true;
 
                 EditorGUI.indentLevel--;
             }
