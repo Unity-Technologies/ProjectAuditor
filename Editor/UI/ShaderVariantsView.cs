@@ -94,13 +94,11 @@ The number of Variants contributes to the build size, however, there might be Va
 
             EditorGUILayout.BeginVertical(GUI.skin.box);
 
-            var textArea = new GUIStyle(EditorStyles.textArea); // TEMP
-
             if (variantsAvailable)
             {
                 EditorGUILayout.LabelField(GraphicsSettingsHelper.logShaderCompilationSupported
                     ? k_PlayerLogInstructions
-                    : k_PlayerLogParsingUnsupported, textArea);
+                    : k_PlayerLogParsingUnsupported, Styles.TextArea);
 
                 if (GraphicsSettingsHelper.logShaderCompilationSupported)
                     GraphicsSettingsHelper.logWhenShaderIsCompiled = EditorGUILayout.Toggle("Log Shader Compilation (requires Build&Run)", GraphicsSettingsHelper.logWhenShaderIsCompiled, GUILayout.Width(320));
@@ -125,7 +123,7 @@ The number of Variants contributes to the build size, however, there might be Va
             }
             else
             {
-                EditorGUILayout.LabelField(k_BuildRequiredInfo, textArea);
+                EditorGUILayout.LabelField(k_BuildRequiredInfo, Styles.TextArea);
             }
 
             EditorGUILayout.EndVertical();
