@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added *Log Shader Compilation* option to Shader Variants window
 * Fixed Shader Variants persistence in UI after Domain Reload
 * Fixed Shader Variants *Compiled* column initial state
-* Fixed Code View sorting
+* Fixed Code Diagnostics view sorting
 
 ## [0.5.0-preview] - 2021-03-11
 * Fixed reporting of issues affecting multiple areas
