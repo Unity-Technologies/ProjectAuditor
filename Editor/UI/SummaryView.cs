@@ -6,8 +6,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     public class SummaryView : AnalysisView
     {
-        public static Action<IssueCategory> OnChangeView;
-
         protected override void OnDrawInfo()
         {
             if (s_Report != null)

@@ -15,6 +15,8 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         static string s_ExportDirectory = string.Empty;
 
+        public static Action<IssueCategory> OnChangeView;
+
         protected static ProjectReport s_Report;
 
         enum ExportMode
