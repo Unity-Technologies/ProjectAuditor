@@ -15,6 +15,8 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         static string s_ExportDirectory = string.Empty;
 
+        public static Action<IssueCategory> OnChangeView;
+
         protected static ProjectReport s_Report;
 
         enum ExportMode
@@ -31,6 +33,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         DependencyView m_DependencyView;
         List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+        bool m_FlatView;
         IssueTable m_Table;
         IssueLayout m_Layout;
 
@@ -101,6 +104,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (m_Desc.showDependencyView)
                 m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onDoubleClick);
+
+            SetFlatView(m_FlatView);
         }
 
         public void AddIssues(IEnumerable<ProjectIssue> allIssues)
@@ -134,6 +139,11 @@ namespace Unity.ProjectAuditor.Editor.UI
         public void SetFlatView(bool value)
         {
             m_Table.SetFlatView(value);
+        }
+
+        virtual public void DrawFilters()
+        {
+
         }
 
         public void DrawTableAndPanels()
@@ -266,6 +276,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                     SetRowsExpanded(false);
                 if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                     SetRowsExpanded(true);
+
+                EditorGUI.BeginChangeCheck();
+                m_FlatView = GUILayout.Toggle(m_FlatView, "Flat View", EditorStyles.toolbarButton, GUILayout.Width(100));
+                if (EditorGUI.EndChangeCheck())
+                {
+                    SetFlatView(m_FlatView);
+                    Refresh();
+                }
             }
         }
 
@@ -405,7 +423,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         const string k_MultipleSelectionText = "<Multiple selection>";
 
-        static string[] k_ExportModeStrings =
+        static readonly string[] k_ExportModeStrings =
         {
             "All",
             "Filtered",
