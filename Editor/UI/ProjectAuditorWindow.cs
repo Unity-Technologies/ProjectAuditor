@@ -548,19 +548,34 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ShaderVariantsWindow.Refresh();
         }
 
+        T GetView<T>() where T : AnalysisView
+        {
+            for (int i = 0; i < m_Views.Length; i++)
+            {
+                if (m_Views[i] is T)
+                    return (T) m_Views[i];
+            }
+
+            return null;
+        }
+
+        int GetViewIndex(IssueCategory category)
+        {
+            for (int i = 0; i < m_Views.Length; i++)
+            {
+                if (m_Views[i].desc.category == category)
+                    return i;
+            }
+
+            return 0;
+        }
+
         void SelectView(IssueCategory category)
         {
             if (activeView.desc.category == category)
                 return;
 
-            for (int i = 0; i < m_Views.Length; i++)
-            {
-                if (m_Views[i].desc.category == category)
-                {
-                    OnViewChanged(i);
-                    return;
-                }
-            }
+            OnViewChanged(GetViewIndex(category));
         }
 
         void OnViewChanged(object userData)
