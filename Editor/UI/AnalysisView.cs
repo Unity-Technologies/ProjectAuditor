@@ -269,13 +269,15 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Styles.TextArea.fontSize = m_Preferences.fontSize;
 
-            // (optional) collapse/expand buttons
             if (m_Desc.groupByDescription)
             {
+                // (optional) collapse/expand buttons
+                GUI.enabled = !m_FlatView;
                 if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                     SetRowsExpanded(false);
                 if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                     SetRowsExpanded(true);
+                GUI.enabled = true;
 
                 EditorGUI.BeginChangeCheck();
                 m_FlatView = GUILayout.Toggle(m_FlatView, "Flat View", EditorStyles.toolbarButton, GUILayout.Width(100));

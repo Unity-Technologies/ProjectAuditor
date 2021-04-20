@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    public class SummaryView : AnalysisView
+    class SummaryView : AnalysisView
     {
         protected override void OnDrawInfo()
         {
