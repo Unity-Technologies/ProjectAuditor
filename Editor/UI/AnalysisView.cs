@@ -148,15 +148,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void DrawTableAndPanels()
         {
-            if (Styles.TextFieldWarning == null)
-            {
-                Styles.TextFieldWarning = new GUIStyle(EditorStyles.textField);
-                Styles.TextFieldWarning.normal.textColor = Color.yellow;
-            }
-
-            if (Styles.TextArea == null)
-                Styles.TextArea = new GUIStyle(EditorStyles.textArea);
-
             var selectedItems = m_Table.GetSelectedItems();
             var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
             var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor).Distinct().ToArray();
@@ -201,9 +192,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             if (m_Desc.onDrawInfo != null)
             {
-                if (Styles.TextArea == null)
-                    Styles.TextArea = new GUIStyle(EditorStyles.textArea);
-
                 EditorGUILayout.LabelField(m_Desc.onDrawInfo, Styles.TextArea);
             }
         }
@@ -451,10 +439,35 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new GUIContent("Recommendation", "Recommendation on how to solve the issue");
         }
 
-        static class Styles
+        internal static class Styles
         {
-            public static GUIStyle TextArea;
-            public static GUIStyle TextFieldWarning;
+            public static GUIStyle TextArea
+            {
+                get
+                {
+                    if (m_TextArea == null)
+                        m_TextArea = new GUIStyle(EditorStyles.textArea);
+                    return m_TextArea;
+                }
+            }
+
+            public static GUIStyle TextFieldWarning
+            {
+                get
+                {
+                    if (m_TextFieldWarning == null)
+                    {
+                        m_TextFieldWarning = new GUIStyle(EditorStyles.textField);
+                        m_TextFieldWarning.normal.textColor = Color.yellow;
+                    }
+
+                    return m_TextFieldWarning;
+                }
+
+            }
+
+            static GUIStyle m_TextArea;
+            static GUIStyle m_TextFieldWarning;
         }
     }
 }
