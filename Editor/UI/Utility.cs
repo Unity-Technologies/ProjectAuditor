@@ -124,6 +124,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             return GUI.Button(rect, content, EditorStyles.toolbarDropDown);
         }
 
+        internal static void DrawHelpButton(string page)
+        {
+            if (GUILayout.Button(Contents.HelpButton, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
+            {
+                Application.OpenURL(Documentation.baseURL + "master" + Documentation.subURL + page + Documentation.endURL);
+            }
+        }
+
         internal static void DrawSelectedText(string text)
         {
 #if UNITY_2019_1_OR_NEWER
@@ -161,5 +169,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             return string.Join(", ", selectedStrings);
         }
+    }
+
+    static class Contents
+    {
+#if UNITY_2018_1_OR_NEWER
+        public static readonly GUIContent HelpButton = EditorGUIUtility.TrIconContent("_Help", "Open Manual (in a web browser)");
+#else
+        public static readonly GUIContent HelpButton = new GUIContent("?", "Open Manual (in a web browser)");
+#endif
     }
 }

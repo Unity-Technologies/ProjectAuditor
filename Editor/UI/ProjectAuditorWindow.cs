@@ -23,7 +23,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             Valid
         }
 
-        static readonly string DocumentationUrl = "https://github.com/Unity-Technologies/ProjectAuditor/blob/master/Documentation~/index.md";
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow Instance;
 
@@ -1003,7 +1002,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
                 GUI.enabled = true;
 
-                DrawHelpButton();
+                Utility.DrawHelpButton("index");
             }
             EditorGUILayout.EndHorizontal();
         }
@@ -1021,14 +1020,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField(Contents.HelpText, Styles.WelcomeText);
 
             EditorGUILayout.EndVertical();
-        }
-
-        void DrawHelpButton()
-        {
-            if (GUILayout.Button(Contents.HelpButton, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
-            {
-                Application.OpenURL(DocumentationUrl);
-            }
         }
 
         void DrawSettings()
@@ -1147,11 +1138,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filtering Criteria");
             public static readonly GUIContent ActionsFoldout = new GUIContent("Actions", "Actions on selected issues");
 
-#if UNITY_2018_1_OR_NEWER
-            public static readonly GUIContent HelpButton = EditorGUIUtility.TrIconContent("_Help", "Open Manual (in a web browser)");
-#else
-            public static readonly GUIContent HelpButton = new GUIContent("?", "Open Manual (in a web browser)");
-#endif
             public static readonly GUIContent HelpText = new GUIContent(
 @"Project Auditor is an experimental static analysis tool for Unity Projects.
 This tool will analyze assets, scripts and project settings of a Unity project
