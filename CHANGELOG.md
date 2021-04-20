@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added Generic types instantiation analysis
 * Added Summary view
 * Added Save&Load support
+* Added *Log Shader Compilation* option to Shader Variants window
 * Fixed Shader Variants persistence in UI after Domain Reload
+* Fixed Shader Variants *Compiled* column initial state
 * Fixed Code Diagnostics view sorting
 
 ## [0.5.0-preview] - 2021-03-11
