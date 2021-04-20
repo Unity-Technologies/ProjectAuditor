@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 @"This view shows the built Shader Variants.
 
 The number of Variants contributes to the build size, however, there might be Variants that are not required (compiled) at runtime on the target platform. To find out which of these variants are not compiled at runtime, follow these steps:
-- Enable the Log Shader Compilation option (if not enabled)
+- Enable the Log Shader Compilation option (Project Settings => Graphics => Shader Loading)
 - Make a Development build
 - Run the build on the target platform. Make sure to go through all scenes.
 - Drag & Drop the Player.log file on this window";
@@ -84,6 +84,9 @@ The number of Variants contributes to the build size, however, there might be Va
             {
                 Refresh();
             }
+
+            if (GraphicsSettingsHelper.logShaderCompilationSupported)
+                GraphicsSettingsHelper.logWhenShaderIsCompiled = EditorGUILayout.ToggleLeft("Log Shader Compilation (requires Build&Run)", GraphicsSettingsHelper.logWhenShaderIsCompiled, GUILayout.Width(300));
 
             EditorGUILayout.EndHorizontal();
 
