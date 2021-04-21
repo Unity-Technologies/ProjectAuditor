@@ -8,6 +8,7 @@ using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor.Compilation;
 using UnityEngine;
 using UnityEngine.Profiling;
 using ThreadPriority = System.Threading.ThreadPriority;
@@ -22,33 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
     class ScriptAuditor : IAuditor
     {
-        static readonly ProblemDescriptor k_CompilerInfoDescriptor = new ProblemDescriptor
-            (
-            100000,
-            "Compiler info",
-            Area.CPU
-            )
-        {
-            severity = Rule.Severity.Info
-        };
-        static readonly ProblemDescriptor k_CompilerWarningDescriptor = new ProblemDescriptor
-            (
-            100001,
-            "Compiler warning",
-            Area.CPU
-            )
-        {
-            severity = Rule.Severity.Warning
-        };
-        static readonly ProblemDescriptor k_CompilerErrorDescriptor = new ProblemDescriptor
-            (
-            100002,
-            "Compiler error",
-            Area.CPU
-            )
-        {
-            severity = Rule.Severity.Error
-        };
+        const int k_CompilerMessageFirstId = 800000;
 
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
@@ -68,11 +43,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             category = IssueCategory.CodeCompilerMessages,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Code"},
+                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Message", longName = "Compiler Message"},
                 new PropertyDefinition { type = PropertyType.Severity, name = "Type"},
-                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Message", longName = "Compiler Message"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
-                new PropertyDefinition { type = PropertyType.Custom+1, format = PropertyFormat.String, name = "Target Assembly", longName = "Managed Assembly name" },
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Target Assembly", longName = "Managed Assembly name" },
                 new PropertyDefinition { type = PropertyType.Path, name = "Full path"},
             }
         };
@@ -131,6 +105,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
+            var compilerMessageId = k_CompilerMessageFirstId;
+            var descriptorDictionary = new Dictionary<string, ProblemDescriptor>();
             var compilationPipeline = new AssemblyCompilationPipeline
             {
                 AssemblyCompilationFinished = (assemblyName, compilerMessages) =>
@@ -149,22 +125,29 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                             var messageDescription = messageWithCode.Substring(messageWithCode.IndexOf(": ") + 2);
                             var descriptor = (ProblemDescriptor)null;
 
-                            switch (message.type)
+                            if (descriptorDictionary.ContainsKey(messageCode))
+                                descriptor = descriptorDictionary[messageCode];
+                            else
                             {
-                                case UnityEditor.Compilation.CompilerMessageType.Warning :
-                                    descriptor = k_CompilerWarningDescriptor;
-                                    break;
-                                case UnityEditor.Compilation.CompilerMessageType.Error :
-                                    descriptor = k_CompilerErrorDescriptor;
-                                    break;
+                                descriptor = new ProblemDescriptor
+                                (
+                                    compilerMessageId++,
+                                    messageCode,
+                                    Area.CPU
+                                )
+                                {
+                                    severity = message.type == CompilerMessageType.Error
+                                        ? Rule.Severity.Error
+                                        : Rule.Severity.Warning
+                                };
+                                descriptorDictionary.Add(messageCode, descriptor);
                             }
 
-                            var issue = new ProjectIssue(descriptor, messageCode,
+                            var issue = new ProjectIssue(descriptor, messageDescription,
                                 IssueCategory.CodeCompilerMessages,
                                 new Location(message.file, message.line),
                                 new[]
                                 {
-                                    messageDescription,
                                     assemblyName
                                 });
                             onIssueFound(issue);
