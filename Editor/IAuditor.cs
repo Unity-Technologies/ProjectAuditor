@@ -10,9 +10,12 @@ namespace Unity.ProjectAuditor.Editor
     {
         IEnumerable<ProblemDescriptor> GetDescriptors();
 
+        IEnumerable<IssueLayout> GetLayouts();
+
         void Initialize(ProjectAuditorConfig config);
 
-        void Reload(string path);
+        bool IsSupported();
+
         void RegisterDescriptor(ProblemDescriptor descriptor);
 
         /// <summary>

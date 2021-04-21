@@ -1,6 +1,7 @@
 using System;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -21,7 +22,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var uninitialised = new ProjectIssue(s_Descriptor, "dummy issue", IssueCategory.Code);
             Assert.AreEqual(string.Empty, uninitialised.filename);
             Assert.AreEqual(string.Empty, uninitialised.relativePath);
-            Assert.AreEqual(string.Empty, uninitialised.callingMethod);
+            Assert.AreEqual(string.Empty, uninitialised.GetCallingMethod());
             Assert.AreEqual(string.Empty, uninitialised.name);
             Assert.False(uninitialised.isPerfCriticalContext);
         }
@@ -35,8 +36,12 @@ namespace UnityEditor.ProjectAuditor.EditorTests
                 "property #1"
             };
             var issue = new ProjectIssue(s_Descriptor, "dummy issue", IssueCategory.Code);
+
+            Assert.AreEqual(0, issue.GetNumCustomProperties());
+
             issue.SetCustomProperties(properties);
 
+            Assert.AreEqual(2, issue.GetNumCustomProperties());
             Assert.True(issue.GetCustomProperty(0).Equals(properties[0]));
             Assert.True(issue.GetCustomProperty(1).Equals(properties[1]));
         }

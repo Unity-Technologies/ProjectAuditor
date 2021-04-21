@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -34,7 +35,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void BoxingIntValueIsReported()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetBoxingInt);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetBoxingInt);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -43,15 +44,15 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             // check issue
             Assert.NotNull(boxingInt);
             Assert.True(boxingInt.name.Equals("BoxingIntTest.Dummy"));
-            Assert.True(boxingInt.filename.Equals(m_TempAssetBoxingInt.scriptName));
+            Assert.True(boxingInt.filename.Equals(m_TempAssetBoxingInt.fileName));
             Assert.True(boxingInt.description.Equals("Conversion from value type 'Int32' to ref type"));
-            Assert.True(boxingInt.callingMethod.Equals("System.Object BoxingIntTest::Dummy()"));
+            Assert.True(boxingInt.GetCallingMethod().Equals("System.Object BoxingIntTest::Dummy()"));
             Assert.AreEqual(1, boxingInt.line);
             Assert.AreEqual(IssueCategory.Code, boxingInt.category);
 
             // check descriptor
             Assert.NotNull(boxingInt.descriptor);
-            Assert.AreEqual(Rule.Action.Default, boxingInt.descriptor.action);
+            Assert.AreEqual(Rule.Severity.Default, boxingInt.descriptor.severity);
             Assert.AreEqual(102000, boxingInt.descriptor.id);
             Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.type));
             Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.method));
@@ -62,7 +63,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void BoxingFloatValueIsReported()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetBoxingFloat);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetBoxingFloat);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -71,15 +72,15 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             // check issue
             Assert.NotNull(boxingFloat);
             Assert.True(boxingFloat.name.Equals("BoxingFloatTest.Dummy"));
-            Assert.True(boxingFloat.filename.Equals(m_TempAssetBoxingFloat.scriptName));
+            Assert.True(boxingFloat.filename.Equals(m_TempAssetBoxingFloat.fileName));
             Assert.True(boxingFloat.description.Equals("Conversion from value type 'float' to ref type"));
-            Assert.True(boxingFloat.callingMethod.Equals("System.Object BoxingFloatTest::Dummy()"));
+            Assert.True(boxingFloat.GetCallingMethod().Equals("System.Object BoxingFloatTest::Dummy()"));
             Assert.AreEqual(1, boxingFloat.line);
             Assert.AreEqual(IssueCategory.Code, boxingFloat.category);
 
             // check descriptor
             Assert.NotNull(boxingFloat.descriptor);
-            Assert.AreEqual(Rule.Action.Default, boxingFloat.descriptor.action);
+            Assert.AreEqual(Rule.Severity.Default, boxingFloat.descriptor.severity);
             Assert.AreEqual(102000, boxingFloat.descriptor.id);
             Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.type));
             Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.method));
@@ -90,7 +91,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void BoxingGenericIsReported()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetBoxingGeneric);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetBoxingGeneric);
 
             Assert.AreEqual(1, issues.Count());
         }
@@ -98,7 +99,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void BoxingGenericRefTypeIsNotReported()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetBoxingGenericRefType);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetBoxingGenericRefType);
 
             Assert.Zero(issues.Count());
         }

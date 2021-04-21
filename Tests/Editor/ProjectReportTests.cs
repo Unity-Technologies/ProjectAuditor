@@ -3,24 +3,26 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class ProjectReportTests
     {
+#pragma warning disable 0414
         TempAsset m_TempAsset;
+#pragma warning restore 0414
 
         [OneTimeSetUp]
         public void SetUp()
         {
             m_TempAsset = new TempAsset("MyClass.cs", @"
 using UnityEngine;
-class MyClass
+class MyClass : MonoBehaviour
 {
-    void Dummy()
+    void Update()
     {
-        // Accessing Camera.main property is not recommended and will be reported as a possible performance problem.
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length);
     }
 }
 ");
@@ -67,72 +69,71 @@ class MyClass
             Assert.AreEqual(0, projectReport.GetNumIssues(IssueCategory.ProjectSettings));
         }
 
-        [Test]
-        public void ReportIsExportedAndFormatted()
+        void AnalyzeAndExport(IssueCategory category, string path)
         {
-            // disabling stripEngineCode will be reported as a ProjectSettings issue
-            PlayerSettings.stripEngineCode = false;
+            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            config.AnalyzeEditorCode = false;
 
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var projectReport = projectAuditor.Audit();
+            var layout = projectAuditor.GetLayout(category);
 
-            const string path = "ProjectAuditor_Report.csv";
-            projectReport.ExportToCSV(path);
+            projectReport.ExportToCSV(path, layout);
+
             Assert.True(File.Exists(path));
-
-            var settingsIssue = projectReport.GetIssues(IssueCategory.ProjectSettings)
-                .First(i => i.descriptor.method.Equals("stripEngineCode"));
-            var scriptIssue = projectReport.GetIssues(IssueCategory.Code)
-                .First(i => i.relativePath.Equals(m_TempAsset.relativePath));
-
-            var settingsIssueFound = false;
-            var scriptIssueFound = false;
-            using (var file = new StreamReader(path))
-            {
-                var line = file.ReadLine();
-                Assert.True(line.Equals(ProjectReport.HeaderForCSV()));
-
-                var expectedSettingsIssueLine = ProjectReport.FormatIssueForCSV(settingsIssue);
-                var expectedScriptIssueLine = ProjectReport.FormatIssueForCSV(scriptIssue);
-                while (file.Peek() >= 0)
-                {
-                    line = file.ReadLine();
-                    if (line.Equals(expectedSettingsIssueLine)) settingsIssueFound = true;
-                    if (line.Equals(expectedScriptIssueLine)) scriptIssueFound = true;
-                }
-            }
-
-            Assert.True(settingsIssueFound);
-            Assert.True(scriptIssueFound);
         }
 
         [Test]
-        public void FilteredReportIsExported()
+        public void CodesIssuesAreExportedAndFormatted()
         {
-            // disabling stripEngineCode will be reported as a ProjectSettings issue
-            PlayerSettings.stripEngineCode = false;
-
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-
-            const string path = "ProjectAuditor_Report.csv";
-
-            // let's assume we are only interested in exporting project settings
-            projectReport.ExportToCSV(path, issue => issue.category == IssueCategory.ProjectSettings);
-            Assert.True(File.Exists(path));
-
+            var category = IssueCategory.Code;
+            var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
+            AnalyzeAndExport(category, path);
+            var issueFound = false;
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.True(line.Equals(ProjectReport.HeaderForCSV()));
+                Assert.True(line.Equals("Issue,Critical,Area,Filename,Assembly"));
 
+                var expectedIssueLine = "\"UnityEngine.Camera.allCameras\",\"True\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\"";
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();
-                    Assert.True(line.StartsWith(IssueCategory.ProjectSettings.ToString()));
+                    if (line.Equals(expectedIssueLine))
+                        issueFound = true;
                 }
             }
+
+            Assert.True(issueFound);
+        }
+
+        [Test]
+        public void SettingsIssuesAreExportedAndFormatted()
+        {
+            var savedSetting = PlayerSettings.bakeCollisionMeshes;
+            PlayerSettings.bakeCollisionMeshes = false;
+
+            var category = IssueCategory.ProjectSettings;
+            var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
+            AnalyzeAndExport(category, path);
+            var issueFound = false;
+            using (var file = new StreamReader(path))
+            {
+                var line = file.ReadLine();
+                Assert.True(line.Equals("Issue,Area"));
+
+                var expectedIssueLine = "\"Player: Prebake Collision Meshes\",\"BuildSize|LoadTimes\"";
+                while (file.Peek() >= 0)
+                {
+                    line = file.ReadLine();
+                    if (line.Equals(expectedIssueLine))
+                        issueFound = true;
+                }
+            }
+
+            Assert.True(issueFound);
+
+            PlayerSettings.bakeCollisionMeshes = savedSetting;
         }
     }
 }

@@ -5,48 +5,17 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    /// <summary>
-    /// Affected area
-    /// </summary>
-    public enum Area
-    {
-        /// <summary>
-        /// CPU Performance
-        /// </summary>
-        CPU,
-
-        /// <summary>
-        /// GPU Performance
-        /// </summary>
-        GPU,
-
-        /// <summary>
-        /// Memory consumption
-        /// </summary>
-        Memory,
-
-        /// <summary>
-        /// Application size
-        /// </summary>
-        BuildSize,
-
-        /// <summary>
-        /// Load times
-        /// </summary>
-        LoadTimes,
-
-        /// <summary>
-        /// All areas
-        /// </summary>
-        All
-    }
-
     public enum IssueCategory
     {
+        MetaData,
         Assets,
         Shaders,
+        ShaderVariants,
         Code,
+        Generics,
         ProjectSettings,
+        BuildFiles,
+
         NumCategories
     }
 
@@ -86,11 +55,18 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectIssue(ProblemDescriptor descriptor,
                             string description,
                             IssueCategory category,
-                            CallTreeNode dependenciesNode)
+                            string[] customProperties)
+            : this(descriptor, description, category)
         {
-            this.descriptor = descriptor;
-            this.description = description;
-            this.category = category;
+            this.customProperties = customProperties;
+        }
+
+        public ProjectIssue(ProblemDescriptor descriptor,
+                            string description,
+                            IssueCategory category,
+                            CallTreeNode dependenciesNode)
+            : this(descriptor, description, category)
+        {
             dependencies = dependenciesNode;
         }
 
@@ -118,27 +94,19 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        public string callingMethod
-        {
-            get
-            {
-                if (dependencies == null)
-                    return string.Empty;
-                if (!dependencies.HasChildren())
-                    return string.Empty;
-
-                var callTree = dependencies.GetChild() as CallTreeNode;
-                if (callTree == null)
-                    return string.Empty;
-                return callTree.name;
-            }
-        }
-
         public bool isPerfCriticalContext
         {
             get
             {
                 return descriptor.critical || (dependencies != null && dependencies.IsPerfCritical());
+            }
+        }
+
+        public Rule.Severity severity
+        {
+            get
+            {
+                return descriptor.severity;
             }
         }
 
@@ -151,14 +119,42 @@ namespace Unity.ProjectAuditor.Editor
                 var prettyName = dependencies.prettyName;
                 if (prettyName.Equals(descriptor.description))
                     // if name matches the descriptor's name, use caller's name instead
-                    return string.IsNullOrEmpty(callingMethod) ? string.Empty : dependencies.GetChild().prettyName;
+                    return string.IsNullOrEmpty(this.GetCallingMethod()) ? string.Empty : dependencies.GetChild().prettyName;
                 return prettyName;
             }
+        }
+
+        public int GetNumCustomProperties()
+        {
+            return customProperties != null ? customProperties.Length : 0;
         }
 
         public string GetCustomProperty(int index)
         {
             return customProperties != null ? customProperties[index] : string.Empty;
+        }
+
+        internal bool GetCustomPropertyAsBool(int index)
+        {
+            var valueAsString = GetCustomProperty(index);
+            var value = false;
+            if (!bool.TryParse(valueAsString, out value))
+                return false;
+            return value;
+        }
+
+        internal int GetCustomPropertyAsInt(int index)
+        {
+            var valueAsString = GetCustomProperty(index);
+            var value = 0;
+            if (!int.TryParse(valueAsString, out value))
+                return 0;
+            return value;
+        }
+
+        public void SetCustomProperty(int index, string property)
+        {
+            customProperties[index] = property;
         }
 
         public void SetCustomProperties(string[] properties)

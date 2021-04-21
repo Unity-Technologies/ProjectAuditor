@@ -13,7 +13,7 @@ using UnityEditor.Build.Player;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    class AssemblyCompilationHelper : IDisposable
+    class AssemblyCompilationPipeline : IDisposable
     {
         string m_OutputFolder = string.Empty;
         bool m_Success = true;
@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             var assemblyInfos = new List<AssemblyInfo>();
             foreach (var compiledAssemblyPath in compiledAssemblyPaths)
             {
-                var assemblyInfo = AssemblyHelper.GetAssemblyInfoFromAssemblyPath(compiledAssemblyPath);
+                var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compiledAssemblyPath);
                 var assembly = assemblies.First(a => a.name.Equals(assemblyInfo.name));
                 var sourcePaths = assembly.sourceFiles.Select(file => file.Remove(0, assemblyInfo.relativePath.Length + 1));
 
@@ -83,6 +83,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return assemblies.Select(assembly => assembly.outputPath);
         }
 
+#if UNITY_2018_2_OR_NEWER
         IEnumerable<string> CompilePlayerAssemblies(Assembly[] assemblies, IProgressBar progressBar = null)
         {
             if (progressBar != null)
@@ -90,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 var numAssemblies = assemblies.Length;
                 progressBar.Initialize("Assembly Compilation", "Compiling project scripts",
                     numAssemblies);
-                m_OnAssemblyCompilationStarted = (s) =>
+                m_OnAssemblyCompilationStarted = s =>
                 {
                     // The compilation pipeline might compile Editor-specific assemblies
                     // let's advance the progress bar only for Player ones.
@@ -163,6 +164,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
         }
 
+#endif
         public IEnumerable<string> GetCompiledAssemblyDirectories()
         {
 #if UNITY_2018_2_OR_NEWER

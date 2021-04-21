@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -35,7 +36,7 @@ class MyClass
         [Test]
         public void LinqIssueIsReported()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAsset);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAsset);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -44,16 +45,16 @@ class MyClass
             Assert.NotNull(myIssue);
             Assert.NotNull(myIssue.descriptor);
 
-            Assert.AreEqual(Rule.Action.Default, myIssue.descriptor.action);
+            Assert.AreEqual(Rule.Severity.Default, myIssue.descriptor.severity);
             Assert.AreEqual(101049, myIssue.descriptor.id);
             Assert.True(myIssue.descriptor.type.Equals("System.Linq"));
             Assert.True(myIssue.descriptor.method.Equals("*"));
 
             Assert.True(myIssue.name.Equals("Enumerable.Count"));
-            Assert.True(myIssue.filename.Equals(m_TempAsset.scriptName));
+            Assert.True(myIssue.filename.Equals(m_TempAsset.fileName));
             Assert.True(myIssue.description.Equals("Enumerable.Count"));
             Assert.True(
-                myIssue.callingMethod.Equals(
+                myIssue.GetCallingMethod().Equals(
                     "System.Int32 MyClass::Dummy(System.Collections.Generic.List`1<System.Int32>)"));
             Assert.AreEqual(9, myIssue.line);
             Assert.AreEqual(IssueCategory.Code, myIssue.category);

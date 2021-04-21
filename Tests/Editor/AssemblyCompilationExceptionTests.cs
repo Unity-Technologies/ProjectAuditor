@@ -9,7 +9,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class AssemblyCompilationExceptionTests
     {
+#pragma warning disable 0414
         TempAsset m_TempAsset;
+#pragma warning restore 0414
 
         [OneTimeSetUp]
         public void SetUp()
@@ -38,7 +40,7 @@ class MyClass {
             var exceptionThrown = false;
             try
             {
-                using (var compilationHelper = new AssemblyCompilationHelper())
+                using (var compilationHelper = new AssemblyCompilationPipeline())
                 {
                     compilationHelper.Compile();
                 }

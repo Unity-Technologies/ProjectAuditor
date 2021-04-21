@@ -14,32 +14,70 @@ using ThreadPriority = System.Threading.ThreadPriority;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
+    public enum CodeProperty
+    {
+        Assembly = 0,
+        Num
+    }
+
     class ScriptAuditor : IAuditor
     {
-        readonly List<IInstructionAnalyzer> m_InstructionAnalyzers = new List<IInstructionAnalyzer>();
-        readonly List<OpCode> m_OpCodes = new List<OpCode>();
+        static readonly IssueLayout k_IssueLayout = new IssueLayout
+        {
+            category = IssueCategory.Code,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
+                new PropertyDefinition { type = PropertyType.CriticalContext, format = PropertyFormat.Bool, name = "Critical", longName = "Critical code path"},
+                new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
+                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" }
+            }
+        };
+
+        static readonly IssueLayout k_GenericIssueLayout = new IssueLayout
+        {
+            category = IssueCategory.Generics,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Generic Type"},
+                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" }
+            }
+        };
 
         ProjectAuditorConfig m_Config;
+        List<IInstructionAnalyzer> m_Analyzers;
+        List<OpCode> m_OpCodes;
         List<ProblemDescriptor> m_ProblemDescriptors;
 
         Thread m_AssemblyAnalysisThread;
-
-        public void Initialize(ProjectAuditorConfig config)
-        {
-            m_Config = config;
-        }
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             return m_ProblemDescriptors;
         }
 
-        public void Reload(string path)
+        public IEnumerable<IssueLayout> GetLayouts()
         {
-            m_ProblemDescriptors = ProblemDescriptorHelper.LoadProblemDescriptors(path, "ApiDatabase");
+            yield return k_IssueLayout;
+            yield return k_GenericIssueLayout;
+        }
 
-            foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<IInstructionAnalyzer>())
+        public void Initialize(ProjectAuditorConfig config)
+        {
+            m_Config = config;
+            m_Analyzers = new List<IInstructionAnalyzer>();
+            m_OpCodes = new List<OpCode>();
+            m_ProblemDescriptors = new List<ProblemDescriptor>();
+
+            foreach (var type in TypeInfo.GetAllTypesInheritedFromInterface<IInstructionAnalyzer>())
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
+        }
+
+        public bool IsSupported()
+        {
+            return true;
         }
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
@@ -50,11 +88,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
-            var compilationHelper = new AssemblyCompilationHelper();
+            var compilationPipeline = new AssemblyCompilationPipeline();
             var callCrawler = new CallCrawler();
 
             Profiler.BeginSample("ScriptAuditor.Audit.Compilation");
-            var assemblyInfos = compilationHelper.Compile(m_Config.AnalyzeEditorCode, progressBar);
+            var assemblyInfos = compilationPipeline.Compile(m_Config.AnalyzeEditorCode, progressBar);
             Profiler.EndSample();
 
             var issues = new List<ProjectIssue>();
@@ -62,8 +100,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.readOnly).ToArray();
 
             var assemblyDirectories = new List<string>();
-            assemblyDirectories.AddRange(AssemblyHelper.GetPrecompiledAssemblyDirectories());
-            assemblyDirectories.AddRange(AssemblyHelper.GetPrecompiledEngineAssemblyDirectories());
+            assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UserAssembly | PrecompiledAssemblyTypes.UnityEngine));
+            if (m_Config.AnalyzeEditorCode)
+                assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UnityEditor));
 
             var onCallFound = new Action<CallInfo>(pair =>
             {
@@ -72,14 +111,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var onCompleteInternal = new Action<IProgressBar>(bar =>
             {
-                compilationHelper.Dispose();
+                compilationPipeline.Dispose();
                 callCrawler.BuildCallHierarchies(issues, bar);
                 onComplete();
             });
 
             var onIssueFoundInternal = new Action<ProjectIssue>(issue =>
             {
-                issues.Add(issue);
+                if (issue.category == IssueCategory.Code)
+                    issues.Add(issue);
                 onIssueFound(issue);
             });
 
@@ -96,7 +136,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (enableBackgroundAnalysis)
             {
                 m_AssemblyAnalysisThread = new Thread(() =>
-                    AnalyzeAssemblies(readOnlyAssemblyInfos, assemblyDirectories, onCallFound, onIssueFound, onCompleteInternal));
+                    AnalyzeAssemblies(readOnlyAssemblyInfos, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal));
                 m_AssemblyAnalysisThread.Name = "Assembly Analysis";
                 m_AssemblyAnalysisThread.Priority = ThreadPriority.BelowNormal;
                 m_AssemblyAnalysisThread.Start();
@@ -197,9 +237,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 }
 
                 Location location = null;
-                if (s != null)
+                if (s != null && !s.IsHidden)
                 {
-                    location = new Location(AssemblyHelper.ResolveAssetPath(assemblyInfo, s.Document.Url), s.StartLine);
+                    location = new Location(AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, s.Document.Url), s.StartLine);
                     callerNode.location = location;
                 }
                 else
@@ -218,7 +258,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     });
                 }
 
-                foreach (var analyzer in m_InstructionAnalyzers)
+                foreach (var analyzer in m_Analyzers)
                     if (analyzer.GetOpCodes().Contains(inst.OpCode))
                     {
                         var projectIssue = analyzer.Analyze(caller, inst);
@@ -239,7 +279,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         void AddAnalyzer(IInstructionAnalyzer analyzer)
         {
             analyzer.Initialize(this);
-            m_InstructionAnalyzers.Add(analyzer);
+            m_Analyzers.Add(analyzer);
             m_OpCodes.AddRange(analyzer.GetOpCodes());
         }
 

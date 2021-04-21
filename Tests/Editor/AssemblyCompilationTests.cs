@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
@@ -19,7 +21,7 @@ class MyClass
     void Dummy()
     {
 #if UNITY_EDITOR
-        Debug.Log(Camera.main.name);
+        Debug.Log(Camera.allCameras.Length);
 #endif
     }
 }
@@ -33,11 +35,24 @@ class MyClass
         }
 
         [Test]
+        public void DefaultAssemblyIsCompiled()
+        {
+            using (var compilationHelper = new AssemblyCompilationPipeline())
+            {
+                var assemblyInfos = compilationHelper.Compile();
+
+                Assert.Positive(assemblyInfos.Count());
+                Assert.NotNull(assemblyInfos.FirstOrDefault(info => info.name.Contains(AssemblyInfo.DefaultAssemblyName)));
+            }
+        }
+
+        [Test]
         public void EditorCodeIssueIsNotReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            config.AnalyzeEditorCode = false;
 
-            Assert.False(projectAuditor.config.AnalyzeEditorCode);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 
             var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Code);

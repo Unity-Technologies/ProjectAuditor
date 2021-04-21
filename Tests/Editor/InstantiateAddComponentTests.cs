@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -47,21 +48,21 @@ class AddComponentToGameObject : MonoBehaviour
         [Test]
         public void InstantiateIssueIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetInstantiate);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInstantiate);
 
             Assert.AreEqual(1, issues.Count());
 
-            Assert.True(issues.First().callingMethod.Equals("System.Void InstantiateObject::Start()"));
+            Assert.True(issues.First().GetCallingMethod().Equals("System.Void InstantiateObject::Start()"));
         }
 
         [Test]
         public void AddComponentIssueIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetAddComponent);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetAddComponent);
 
             Assert.AreEqual(1, issues.Count());
 
-            Assert.True(issues.First().callingMethod.Equals("System.Void AddComponentToGameObject::Start()"));
+            Assert.True(issues.First().GetCallingMethod().Equals("System.Void AddComponentToGameObject::Start()"));
         }
     }
 }

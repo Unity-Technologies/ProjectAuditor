@@ -30,6 +30,7 @@ namespace Unity.ProjectAuditor.Editor
         ProjectAuditorConfig m_Config;
 
         public const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
+        public const string PackagePath = "Packages/com.unity.project-auditor";
 
         public ProjectAuditorConfig config
         {
@@ -63,8 +64,6 @@ namespace Unity.ProjectAuditor.Editor
             m_Config = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
             if (m_Config == null)
             {
-                Debug.LogWarningFormat("Project Auditor: {0} not found.", assetPath);
-
                 var path = Path.GetDirectoryName(assetPath);
                 if (!File.Exists(path))
                     Directory.CreateDirectory(path);
@@ -77,11 +76,10 @@ namespace Unity.ProjectAuditor.Editor
 
         void InitAuditors()
         {
-            foreach (var type in AssemblyHelper.GetAllTypesInheritedFromInterface<IAuditor>())
+            foreach (var type in TypeInfo.GetAllTypesInheritedFromInterface<IAuditor>())
             {
                 var instance = Activator.CreateInstance(type) as IAuditor;
                 instance.Initialize(m_Config);
-                instance.Reload(DataPath);
                 m_Auditors.Add(instance);
             }
         }
@@ -92,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (string.IsNullOrEmpty(s_DataPath))
                 {
-                    const string path = "Packages/com.unity.project-auditor/Data";
+                    const string path = PackagePath + "/Data";
                     if (!File.Exists(Path.GetFullPath(path)))
                     {
                         // if it's not a package, let's search through all assets
@@ -163,24 +161,25 @@ namespace Unity.ProjectAuditor.Editor
                 }, progressBar);
             }
 
-            Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
+            if (m_Config.LogTimingsInfo)
+                Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
         }
 
-        internal T GetAuditor<T>() where T : class
+        internal T GetAuditor<T>() where T : class, IAuditor
         {
-            foreach (var iauditor in m_Auditors)
+            foreach (var auditor in m_Auditors)
             {
-                var auditor = iauditor as T;
-                if (auditor != null)
-                    return auditor;
+                if (auditor is T)
+                    return (T)auditor;
             }
 
             return null;
         }
 
-        public void Reload(string path)
+        public IssueLayout GetLayout(IssueCategory category)
         {
-            foreach (var auditor in m_Auditors) auditor.Reload(path);
+            var layouts = m_Auditors.Where(a => a.IsSupported()).SelectMany(auditor => auditor.GetLayouts()).Where(l => l.category == category);
+            return layouts.FirstOrDefault();
         }
 
 #if UNITY_2018_1_OR_NEWER

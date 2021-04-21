@@ -433,7 +433,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 case MyColumns.GroupName:
                 {
                     var groupName = GetItemGroupName(item);
-                    var content = new GUIContent(groupName, groupName);
+                    var content = new GUIContent(groupName);
                     EditorGUI.LabelField(cellRect, content);
                 }
                 break;

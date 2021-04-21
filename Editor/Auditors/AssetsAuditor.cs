@@ -10,6 +10,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public class AssetsAuditor : IAuditor
     {
+        static readonly IssueLayout k_IssueLayout = new IssueLayout
+        {
+            category = IssueCategory.Assets,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Asset Name"},
+                new PropertyDefinition { type = PropertyType.FileType, name = "File Type", longName = "File extension"},
+                new PropertyDefinition { type = PropertyType.Path, name = "Path"}
+            }
+        };
+
         static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
             (
             302000,
@@ -19,20 +30,27 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             "Use AssetBundles when possible"
             );
 
-        readonly List<ProblemDescriptor> m_ProblemDescriptors = new List<ProblemDescriptor>();
+        List<ProblemDescriptor> m_ProblemDescriptors;
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             return m_ProblemDescriptors;
         }
 
+        public IEnumerable<IssueLayout> GetLayouts()
+        {
+            yield return k_IssueLayout;
+        }
+
         public void Initialize(ProjectAuditorConfig config)
         {
+            m_ProblemDescriptors = new List<ProblemDescriptor>();
             RegisterDescriptor(k_Descriptor);
         }
 
-        public void Reload(string path)
+        public bool IsSupported()
         {
+            return true;
         }
 
         public void RegisterDescriptor(ProblemDescriptor descriptor)

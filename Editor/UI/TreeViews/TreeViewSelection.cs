@@ -69,6 +69,16 @@ namespace Unity.ProjectAuditor.Editor.UI
             return selection.Contains(name);
         }
 
+        public bool ContainsAny(string[] names)
+        {
+            foreach (string name in names)
+            {
+                if (selection.Contains(name))
+                    return true;
+            }
+            return false;
+        }
+
         public bool ContainsGroup(string groupName)
         {
             return groups.Contains(groupName);

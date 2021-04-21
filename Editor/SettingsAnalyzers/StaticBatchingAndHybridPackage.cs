@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 #if UNITY_2019_3_OR_NEWER
@@ -22,27 +23,24 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             auditor.RegisterDescriptor(k_Descriptor);
         }
 
-        public int GetDescriptorId()
-        {
-            return k_Descriptor.id;
-        }
-
-        public ProjectIssue Analyze()
+        public IEnumerable<ProjectIssue> Analyze()
         {
 #if UNITY_2019_3_OR_NEWER
             if (PackageInfo.FindForAssetPath("Packages/com.unity.rendering.hybrid") != null && IsStaticBatchingEnabled(EditorUserBuildSettings.activeBuildTarget))
             {
-                return new ProjectIssue(k_Descriptor, k_Descriptor.description, IssueCategory.ProjectSettings);
+                yield return new ProjectIssue(k_Descriptor, k_Descriptor.description, IssueCategory.ProjectSettings);
             }
+#else
+            return new ProjectIssue[0];
 #endif
-            return null;
         }
 
         static bool IsStaticBatchingEnabled(BuildTarget platform)
         {
             var method = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
                 BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
-            if (method == null) throw new NotSupportedException("Getting batching per platform is not supported");
+            if (method == null)
+                throw new NotSupportedException("Getting batching per platform is not supported");
 
             const int staticBatching = 0;
             const int dynamicBatching = 0;
