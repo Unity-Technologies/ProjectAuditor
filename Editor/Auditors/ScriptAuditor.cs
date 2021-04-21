@@ -130,11 +130,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                             else
                             {
                                 descriptor = new ProblemDescriptor
-                                (
+                                    (
                                     compilerMessageId++,
                                     messageCode,
                                     Area.CPU
-                                )
+                                    )
                                 {
                                     severity = message.type == CompilerMessageType.Error
                                         ? Rule.Severity.Error
