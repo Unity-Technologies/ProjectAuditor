@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(Utility.ErrorIcon, GUILayout.MaxWidth(36));
-                EditorGUILayout.LabelField(new GUIContent("Code Analysis is not available due to compilation errors"));
+                EditorGUILayout.LabelField(new GUIContent("Code Analysis is incomplete due to compilation errors"));
                 EditorGUILayout.EndHorizontal();
             }
             else
@@ -20,11 +20,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField("- Use the Filters to reduce the number of reported issues");
                 EditorGUILayout.LabelField("- Use the Mute button to mark an issue as false-positive");
             }
-        }
-
-        public override bool IsValid()
-        {
-            return (NumCompilationErrors() == 0) && base.IsValid();
         }
 
         static int NumCompilationErrors()
