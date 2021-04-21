@@ -553,7 +553,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             for (int i = 0; i < m_Views.Length; i++)
             {
                 if (m_Views[i] is T)
-                    return (T) m_Views[i];
+                    return (T)m_Views[i];
             }
 
             return null;

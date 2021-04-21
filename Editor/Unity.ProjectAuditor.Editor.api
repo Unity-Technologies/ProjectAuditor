@@ -369,7 +369,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public Exporter(string path, Unity.ProjectAuditor.Editor.IssueLayout layout) {}
         public virtual void Dispose();
         public void WriteHeader();
-        public void WriteIssue(Unity.ProjectAuditor.Editor.ProjectIssue issue);
+        public void WriteIssues(Unity.ProjectAuditor.Editor.ProjectIssue[] issues);
     }
 
     public class Location
