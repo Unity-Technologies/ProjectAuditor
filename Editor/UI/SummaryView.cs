@@ -14,15 +14,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField("Analysis overview", EditorStyles.boldLabel);
 
                 EditorGUI.indentLevel++;
-                var compilerMessages = s_Report.GetIssues(IssueCategory.CodeCompilerMessages);
-                var numCompilationErrors = compilerMessages.Count(i => i.severity == Rule.Severity.Error);
+                SummaryItem("Code Issues: ", s_Report.GetIssues(IssueCategory.Code).Length, IssueCategory.Code);
+                var numCompilationErrors = s_Report.GetIssues(IssueCategory.CodeCompilerMessages).Count(i => i.severity == Rule.Severity.Error);
                 if (numCompilationErrors > 0)
                 {
-                    SummaryItem("Compilation Errors: ", s_Report.GetIssues(IssueCategory.CodeCompilerMessages).Length, IssueCategory.CodeCompilerMessages, Utility.ErrorIcon);
-                }
-                else
-                {
-                    SummaryItem("Code Issues: ", s_Report.GetIssues(IssueCategory.Code).Length, IssueCategory.Code);
+                    SummaryItem("Compilation Errors: ", numCompilationErrors, IssueCategory.CodeCompilerMessages, Utility.ErrorIcon);
                 }
                 SummaryItem("Settings Issues:", s_Report.GetIssues(IssueCategory.ProjectSettings).Length, IssueCategory.ProjectSettings);
                 SummaryItem("Assets in Resources folders:", s_Report.GetIssues(IssueCategory.Assets).Length, IssueCategory.Assets);
