@@ -23,7 +23,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             Valid
         }
 
-        static readonly string DocumentationUrl = "https://github.com/Unity-Technologies/ProjectAuditor/blob/master/Documentation~/index.md";
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow Instance;
 
@@ -173,7 +172,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ProjectReport = new ProjectReport();
 
             AnalysisView.SetReport(m_ProjectReport);
-            SummaryView.OnChangeView = SelectView;
+            AnalysisView.OnChangeView = SelectView;
 
             var variants = m_ProjectReport.GetIssues(IssueCategory.ShaderVariants);
             if (variants.Length > 0)
@@ -200,6 +199,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnGUI()
         {
+            if (m_AnalysisState == AnalysisState.Completed)
+            {
+                // switch to summary view after analysis
+                SelectView(IssueCategory.MetaData);
+            }
+
             if (m_AnalysisState != AnalysisState.Initializing)
             {
                 DrawSettings();
@@ -560,16 +565,34 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ShaderVariantsWindow.Refresh();
         }
 
-        void SelectView(IssueCategory category)
+        T GetView<T>() where T : AnalysisView
+        {
+            for (int i = 0; i < m_Views.Length; i++)
+            {
+                if (m_Views[i] is T)
+                    return (T) m_Views[i];
+            }
+
+            return null;
+        }
+
+        int GetViewIndex(IssueCategory category)
         {
             for (int i = 0; i < m_Views.Length; i++)
             {
                 if (m_Views[i].desc.category == category)
-                {
-                    OnViewChanged(i);
-                    return;
-                }
+                    return i;
             }
+
+            return 0;
+        }
+
+        void SelectView(IssueCategory category)
+        {
+            if (activeView.desc.category == category)
+                return;
+
+            OnViewChanged(GetViewIndex(category));
         }
 
         void OnViewChanged(object userData)
@@ -578,12 +601,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             var activeViewChanged = (m_ActiveViewIndex != index);
             if (activeViewChanged)
             {
-                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                 m_ActiveViewIndex = index;
 
-                RefreshDisplay();
+                activeView.Refresh();
 
-                ProjectAuditorAnalytics.SendUIButtonEvent((ProjectAuditorAnalytics.UIButton)activeView.desc.analyticsEvent, analytic);
+                ProjectAuditorAnalytics.SendUIButtonEvent((ProjectAuditorAnalytics.UIButton)activeView.desc.analyticsEvent, ProjectAuditorAnalytics.BeginAnalytic());
             }
         }
 
@@ -772,7 +794,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.EndHorizontal();
 
-                if (EditorGUI.EndChangeCheck()) m_ShouldRefresh = true;
+                if (EditorGUI.EndChangeCheck())
+                    m_ShouldRefresh = true;
 
                 EditorGUI.indentLevel--;
             }
@@ -998,7 +1021,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.Space();
 
-                const int loadSaveButtonWidth = 60;
+                const int loadSaveButtonWidth = 40;
                 // right-end buttons
                 if (GUILayout.Button(Contents.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
                 {
@@ -1012,7 +1035,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
                 GUI.enabled = true;
 
-                DrawHelpButton();
+                Utility.DrawHelpButton("index");
             }
             EditorGUILayout.EndHorizontal();
         }
@@ -1030,14 +1053,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField(Contents.HelpText, Styles.WelcomeText);
 
             EditorGUILayout.EndVertical();
-        }
-
-        void DrawHelpButton()
-        {
-            if (GUILayout.Button(Contents.HelpButton, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
-            {
-                Application.OpenURL(DocumentationUrl);
-            }
         }
 
         void DrawSettings()
@@ -1085,6 +1100,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             UpdateAssemblyNames();
             UpdateAssemblySelection();
+
+            // switch to summary view after loading
+            SelectView(IssueCategory.MetaData);
         }
 
 #if UNITY_2018_1_OR_NEWER
@@ -1121,11 +1139,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent AnalysisInProgressLabel =
                 new GUIContent("Analysis in progress...", "Analysis in progress...please wait.");
 
-            public static readonly GUIContent SaveButton =
-                new GUIContent("Save", "Save json report.");
-
-            public static readonly GUIContent LoadButton =
-                new GUIContent("Load", "Load json report.");
+#if UNITY_2019_1_OR_NEWER
+            public static readonly GUIContent SaveButton = EditorGUIUtility.TrIconContent("SaveAs", "Save current report to json file");
+            public static readonly GUIContent LoadButton = EditorGUIUtility.TrIconContent("Import", "Load report from json file");
+#else
+            public static readonly GUIContent SaveButton = new GUIContent("Save", "Save current report to json file");
+            public static readonly GUIContent LoadButton = new GUIContent("Load", "Load report from json file");
+#endif
 
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");
@@ -1151,11 +1171,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filtering Criteria");
             public static readonly GUIContent ActionsFoldout = new GUIContent("Actions", "Actions on selected issues");
 
-#if UNITY_2018_1_OR_NEWER
-            public static readonly GUIContent HelpButton = EditorGUIUtility.TrIconContent("_Help", "Open Manual (in a web browser)");
-#else
-            public static readonly GUIContent HelpButton = new GUIContent("?", "Open Manual (in a web browser)");
-#endif
             public static readonly GUIContent HelpText = new GUIContent(
 @"Project Auditor is an experimental static analysis tool for Unity Projects.
 This tool will analyze assets, scripts and project settings of a Unity project

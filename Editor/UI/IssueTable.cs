@@ -315,8 +315,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var customProperty = issue.GetProperty(columnType);
                         if (customProperty != string.Empty)
                         {
-                            if (property.format == PropertyFormat.Bool)
-                                EditorGUI.Toggle(cellRect, customProperty.Equals(true.ToString()));
+                            bool boolValue;
+                            if (property.format == PropertyFormat.Bool && bool.TryParse(customProperty, out boolValue))
+                            {
+                                EditorGUI.Toggle(cellRect, boolValue);
+                            }
                             else
                                 EditorGUI.LabelField(cellRect, new GUIContent(customProperty), s_LabelStyle);
                         }

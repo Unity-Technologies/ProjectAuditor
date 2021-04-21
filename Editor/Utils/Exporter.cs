@@ -33,7 +33,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
             m_StreamWriter.WriteLine(stringBuilder);
         }
 
-        public void WriteIssue(ProjectIssue issue)
+        public void WriteIssues(ProjectIssue[] issues)
+        {
+            foreach (var issue in issues)
+                WriteIssue(issue);
+        }
+
+        void WriteIssue(ProjectIssue issue)
         {
             var stringBuilder = new StringBuilder();
             for (int i = 0; i < m_Layout.properties.Length; i++)

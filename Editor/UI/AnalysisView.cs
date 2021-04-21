@@ -15,6 +15,8 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         static string s_ExportDirectory = string.Empty;
 
+        public static Action<IssueCategory> OnChangeView;
+
         protected static ProjectReport s_Report;
 
         enum ExportMode
@@ -364,8 +366,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     var matchingIssues = m_Issues.Where(issue => m_Config.GetAction(issue.descriptor, issue.GetCallingMethod()) !=
                         Rule.Severity.None && (match == null || match(issue)));
-                    foreach (var issue in matchingIssues)
-                        exporter.WriteIssue(issue);
+                    exporter.WriteIssues(matchingIssues.ToArray());
                 }
 
                 EditorUtility.RevealInFinder(path);
@@ -406,7 +407,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         const string k_MultipleSelectionText = "<Multiple selection>";
 
-        static string[] k_ExportModeStrings =
+        static readonly string[] k_ExportModeStrings =
         {
             "All",
             "Filtered",
@@ -422,9 +423,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static class Contents
         {
-            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to .csv files.");
-            public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All", "");
-            public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All", "");
+            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
+            public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
+            public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
 
             public static readonly GUIContent InfoFoldout = new GUIContent("Information");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");

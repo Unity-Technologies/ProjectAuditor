@@ -5,10 +5,8 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    public class SummaryView : AnalysisView
+    class SummaryView : AnalysisView
     {
-        public static Action<IssueCategory> OnChangeView;
-
         protected override void OnDrawInfo()
         {
             if (s_Report != null)
@@ -47,13 +45,12 @@ namespace Unity.ProjectAuditor.Editor.UI
         static void SummaryItem(string title, string value, IssueCategory category, GUIContent icon = null)
         {
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(title);
-            EditorGUILayout.LabelField(value, GUILayout.Width(60));
-            if (GUILayout.Button("View", EditorStyles.miniButton))
+            EditorGUILayout.LabelField(title, GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(value, GUILayout.MaxWidth(90), GUILayout.ExpandWidth(false));
+            if (GUILayout.Button("View", EditorStyles.miniButton, GUILayout.Width(50)))
                 OnChangeView(category);
             if (icon != null)
                 EditorGUILayout.LabelField(icon);
-            GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
         }
     }
