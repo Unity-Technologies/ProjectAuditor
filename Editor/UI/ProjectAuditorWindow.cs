@@ -316,7 +316,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 onDoubleClick = EditorUtil.OpenTextFile,
-                onOpenDescriptor = EditorUtil.OpenDescriptor,
+                onOpenDescriptor = EditorUtil.OpenCodeDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ApiCalls
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -335,7 +335,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showMuteOptions = false,
                 showRightPanels = false,
                 onDoubleClick = EditorUtil.OpenTextFile,
-                onOpenDescriptor = EditorUtil.OpenDescriptor,
+                onOpenDescriptor = EditorUtil.OpenCompilerMessageDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.CodeCompilerMessages
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -356,7 +356,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showRightPanels = false,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 onDoubleClick = EditorUtil.OpenTextFile,
-                onOpenDescriptor = EditorUtil.OpenDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Generics
             });
             ViewDescriptor.Register(new ViewDescriptor
