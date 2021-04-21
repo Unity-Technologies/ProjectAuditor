@@ -55,18 +55,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
         string m_OutputFolder = string.Empty;
 
         Dictionary<string, AssemblyCompilationUnit> m_AssemblyCompilationUnits;
-        Action<string> m_OnAssemblyCompilationStarted;
 
         public Action<string, CompilerMessage[]> AssemblyCompilationFinished;
 
         public void Dispose()
         {
-#if UNITY_2018_2_OR_NEWER
-            if (m_OnAssemblyCompilationStarted != null)
-                CompilationPipeline.assemblyCompilationStarted -= m_OnAssemblyCompilationStarted;
-
-            CompilationPipeline.assemblyCompilationFinished -= OnAssemblyCompilationFinished;
-#endif
             if (!string.IsNullOrEmpty(m_OutputFolder) && Directory.Exists(m_OutputFolder))
             {
 //TEMP                Directory.Delete(m_OutputFolder, true);
@@ -123,24 +116,24 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 var numAssemblies = assemblies.Length;
                 progressBar.Initialize("Assembly Compilation", "Compiling project scripts",
                     numAssemblies);
-                m_OnAssemblyCompilationStarted = s =>
-                {
-                    // The compilation pipeline might compile Editor-specific assemblies
-                    // let's advance the progress bar only for Player ones.
-                    var assemblyName = Path.GetFileNameWithoutExtension(s);
-                    if (assemblies.FirstOrDefault(asm => asm.name.Equals(assemblyName)) != null)
-                        progressBar.AdvanceProgressBar(assemblyName);
-                };
-                CompilationPipeline.assemblyCompilationStarted += m_OnAssemblyCompilationStarted;
             }
-            CompilationPipeline.assemblyCompilationFinished += OnAssemblyCompilationFinished;
 
             m_OutputFolder = FileUtil.GetUniqueTempPathInProject();
 
             if (!Directory.Exists(m_OutputFolder))
                 Directory.CreateDirectory(m_OutputFolder);
 
-            PrepareAssemblyBuilders(assemblies, editorAssemblies);
+            PrepareAssemblyBuilders(assemblies, editorAssemblies, (assemblyPath, messages) =>
+            {
+                var assemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
+                m_AssemblyCompilationUnits[assemblyName].messages = messages;
+
+                if (progressBar != null)
+                    progressBar.AdvanceProgressBar(assemblyName);
+
+                if (AssemblyCompilationFinished != null)
+                    AssemblyCompilationFinished(assemblyName, messages);
+            });
             UpdateAssemblyBuilders();
 
             if (progressBar != null)
@@ -149,7 +142,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return m_AssemblyCompilationUnits.Where(pair => pair.Value.Success()).Select(unit => unit.Value.assemblyPath);
         }
 
-        void PrepareAssemblyBuilders(Assembly[] assemblies, bool editorAssemblies)
+        void PrepareAssemblyBuilders(Assembly[] assemblies, bool editorAssemblies, Action<string, CompilerMessage[]> assemblyCompilationFinished)
         {
             m_AssemblyCompilationUnits = new Dictionary<string, AssemblyCompilationUnit>();
 
@@ -161,7 +154,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 var assemblyPath = Path.Combine(m_OutputFolder, filename);
                 var assemblyBuilder = new AssemblyBuilder(assemblyPath, assembly.sourceFiles);
 
-                assemblyBuilder.buildFinished += OnAssemblyCompilationFinished;
+                assemblyBuilder.buildFinished += assemblyCompilationFinished;
                 assemblyBuilder.compilerOptions = assembly.compilerOptions;
                 assemblyBuilder.flags = editorAssemblies ? AssemblyBuilderFlags.EditorAssembly : AssemblyBuilderFlags.DevelopmentBuild;
 
@@ -222,15 +215,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 yield return dir;
             }
 #endif
-        }
-
-        void OnAssemblyCompilationFinished(string assemblyPath, CompilerMessage[] messages)
-        {
-            var assemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
-            m_AssemblyCompilationUnits[assemblyName].messages = messages;
-
-            if (AssemblyCompilationFinished != null)
-                AssemblyCompilationFinished(assemblyName, messages);
         }
     }
 }
