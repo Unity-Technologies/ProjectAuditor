@@ -13,11 +13,49 @@ using UnityEditor.Build.Player;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
+    class AssemblyCompilationUnit
+    {
+        public AssemblyBuilder builder;
+        public AssemblyBuilder[] referenceBuilders;
+        public CompilerMessage[] messages;
+
+        public string assemblyPath
+        {
+            get
+            {
+                return builder.assemblyPath;
+            }
+        }
+
+        public bool IsDone()
+        {
+            return builder.status == AssemblyBuilderStatus.Finished;
+        }
+
+        public void Update()
+        {
+            if (builder.status != AssemblyBuilderStatus.NotStarted)
+                return; // nothing to do
+
+            // if all references are finished, we can kick off this builder
+            if (referenceBuilders.All(builder => builder.status == AssemblyBuilderStatus.Finished))
+                builder.Build();
+        }
+
+        public bool Success()
+        {
+            if (messages == null)
+                return false;
+            return messages.All(message => message.type != CompilerMessageType.Error);
+        }
+    }
+
     class AssemblyCompilationPipeline : IDisposable
     {
         string m_OutputFolder = string.Empty;
         bool m_Success = true;
 
+        Dictionary<string, AssemblyCompilationUnit> m_AssemblyCompilationUnits;
         Action<string> m_OnAssemblyCompilationStarted;
 
         public void Dispose()
@@ -30,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #endif
             if (!string.IsNullOrEmpty(m_OutputFolder) && Directory.Exists(m_OutputFolder))
             {
-                Directory.Delete(m_OutputFolder, true);
+//                Directory.Delete(m_OutputFolder, true);
             }
             m_OutputFolder = string.Empty;
         }
@@ -108,13 +146,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
             if (!Directory.Exists(m_OutputFolder))
                 Directory.CreateDirectory(m_OutputFolder);
 
-            var assemblyBuilders = PrepareAssemblyBuilders(assemblies);
-
-            while (assemblyBuilders.Any(pair => pair.Value.status != AssemblyBuilderStatus.Finished))
-            {
-                UpdateAssemblyBuilders(assemblyBuilders);
-                System.Threading.Thread.Sleep(10);
-            }
+            PrepareAssemblyBuilders(assemblies);
+            UpdateAssemblyBuilders();
 
             if (progressBar != null)
                 progressBar.ClearProgressBar();
@@ -125,12 +158,14 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 throw new AssemblyCompilationException();
             }
 
-            return assemblyBuilders.Select(pair => pair.Value.assemblyPath);
+            return m_AssemblyCompilationUnits.Select(pair => pair.Value.assemblyPath);
         }
 
-        Dictionary<string, AssemblyBuilder> PrepareAssemblyBuilders(Assembly[] assemblies)
+        void PrepareAssemblyBuilders(Assembly[] assemblies)
         {
-            var assemblyBuilders = new Dictionary<string, AssemblyBuilder>();
+            m_AssemblyCompilationUnits = new Dictionary<string, AssemblyCompilationUnit>();
+
+            // first pass: create all AssemblyCompilationUnits
             foreach (var assembly in assemblies)
             {
                 var filename = Path.GetFileName(assembly.outputPath);
@@ -140,27 +175,50 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
                 assemblyBuilder.buildFinished += OnAssemblyCompilationFinished;
                 assemblyBuilder.compilerOptions = assembly.compilerOptions;
+                assemblyBuilder.flags = AssemblyBuilderFlags.DevelopmentBuild;
 
-                var references = assembly.assemblyReferences.Select(r => Path.Combine(m_OutputFolder, Path.GetFileName(r.outputPath))).ToList();
-                references.AddRange(assembly.compiledAssemblyReferences);
-                assemblyBuilder.additionalReferences = references.ToArray();
+                // add asmdef-specific defines
+                assemblyBuilder.additionalDefines = assembly.defines.Except(assemblyBuilder.defaultDefines).ToArray();
 
-                assemblyBuilders.Add(assemblyName, assemblyBuilder);
+                // add references to assemblies we need to build
+                assemblyBuilder.additionalReferences = assembly.assemblyReferences.Select(r => Path.Combine(m_OutputFolder, Path.GetFileName(r.outputPath))).ToArray();
+
+                // exclude all assemblies that we are building ourselves to a Temp folder
+                assemblyBuilder.excludeReferences =
+                    assemblyBuilder.defaultReferences.Where(r => r.StartsWith("Library")).ToArray();
+
+#if UNITY_2019_1_OR_NEWER
+                assemblyBuilder.referencesOptions = ReferencesOptions.UseEngineModules;
+#endif
+                m_AssemblyCompilationUnits.Add(assemblyName, new AssemblyCompilationUnit { builder = assemblyBuilder });
             }
 
-            return assemblyBuilders;
+            // second pass: find all assembly reference builders
+            foreach (var assembly in assemblies)
+            {
+                var referenceBuilders = new List<AssemblyBuilder>();
+                foreach (var referenceName in assembly.assemblyReferences.Select(r => Path.GetFileNameWithoutExtension(r.outputPath)))
+                {
+                    referenceBuilders.Add(m_AssemblyCompilationUnits[referenceName].builder);
+                }
+
+                m_AssemblyCompilationUnits[Path.GetFileName(assembly.name)].referenceBuilders =
+                    referenceBuilders.ToArray();
+            }
         }
 
-        void UpdateAssemblyBuilders(Dictionary<string, AssemblyBuilder> assemblyBuilders)
+        void UpdateAssemblyBuilders()
         {
-            foreach (var pair in assemblyBuilders.Where(b => b.Value.status == AssemblyBuilderStatus.NotStarted))
+            while (true)
             {
-                var builder = pair.Value;
-                if (builder.additionalReferences.Select(path => Path.GetFileNameWithoutExtension(path)).All(name => !assemblyBuilders.ContainsKey(name) || assemblyBuilders[name].status == AssemblyBuilderStatus.Finished))
+                var pendingUnits = m_AssemblyCompilationUnits.Select(pair => pair.Value).Where(unit => !unit.IsDone());
+                if (!pendingUnits.Any())
+                    break;
+                foreach (var unit in pendingUnits)
                 {
-                    //Debug.Log("Compiling " + builder.assemblyPath);
-                    builder.Build();
+                    unit.Update();
                 }
+                System.Threading.Thread.Sleep(10);
             }
         }
 
@@ -180,6 +238,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         void OnAssemblyCompilationFinished(string outputAssemblyPath, CompilerMessage[] messages)
         {
+            var assemblyName = Path.GetFileNameWithoutExtension(outputAssemblyPath);
+            m_AssemblyCompilationUnits[assemblyName].messages = messages;
+
             foreach (var m in messages)
             {
                 if (m.type == CompilerMessageType.Error)
