@@ -86,14 +86,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             IEnumerable<string> compiledAssemblyPaths;
 #if UNITY_2018_2_OR_NEWER
-            if (editorAssemblies)
-            {
-                compiledAssemblyPaths = CompileEditorAssemblies(assemblies, false);
-            }
-            else
-            {
-                compiledAssemblyPaths = CompilePlayerAssemblies(assemblies, progressBar);
-            }
+            compiledAssemblyPaths = CompileAssemblies(assemblies, editorAssemblies, progressBar);
 #else
             // fallback to CompilationPipeline assemblies
             compiledAssemblyPaths = CompileEditorAssemblies(assemblies, !editorAssemblies);
@@ -123,7 +116,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         }
 
 #if UNITY_2018_2_OR_NEWER
-        IEnumerable<string> CompilePlayerAssemblies(Assembly[] assemblies, IProgressBar progressBar = null)
+        IEnumerable<string> CompileAssemblies(Assembly[] assemblies, bool editorAssemblies, IProgressBar progressBar = null)
         {
             if (progressBar != null)
             {
@@ -147,7 +140,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             if (!Directory.Exists(m_OutputFolder))
                 Directory.CreateDirectory(m_OutputFolder);
 
-            PrepareAssemblyBuilders(assemblies);
+            PrepareAssemblyBuilders(assemblies, editorAssemblies);
             UpdateAssemblyBuilders();
 
             if (progressBar != null)
@@ -156,7 +149,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return m_AssemblyCompilationUnits.Where(pair => pair.Value.Success()).Select(unit => unit.Value.assemblyPath);
         }
 
-        void PrepareAssemblyBuilders(Assembly[] assemblies)
+        void PrepareAssemblyBuilders(Assembly[] assemblies, bool editorAssemblies)
         {
             m_AssemblyCompilationUnits = new Dictionary<string, AssemblyCompilationUnit>();
 
@@ -170,7 +163,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
                 assemblyBuilder.buildFinished += OnAssemblyCompilationFinished;
                 assemblyBuilder.compilerOptions = assembly.compilerOptions;
-                assemblyBuilder.flags = AssemblyBuilderFlags.DevelopmentBuild;
+                assemblyBuilder.flags = editorAssemblies ? AssemblyBuilderFlags.EditorAssembly : AssemblyBuilderFlags.DevelopmentBuild;
 
                 // add asmdef-specific defines
                 assemblyBuilder.additionalDefines = assembly.defines.Except(assemblyBuilder.defaultDefines).ToArray();
