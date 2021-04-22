@@ -75,7 +75,16 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
             if (!string.IsNullOrEmpty(m_OutputFolder) && Directory.Exists(m_OutputFolder))
             {
-//TEMP                Directory.Delete(m_OutputFolder, true);
+                foreach (var unit in m_AssemblyCompilationUnits.Select(pair => pair.Value).Where(u => u.Success()))
+                {
+                    File.Delete(unit.assemblyPath);
+                    File.Delete(Path.ChangeExtension(unit.assemblyPath, ".pdb"));
+                }
+
+                m_AssemblyCompilationUnits.Clear();
+
+                // We can't delete the folder because of the CompilationLog.txt created by the AssemblyBuilder compilationTask
+                //Directory.Delete(m_OutputFolder, true);
             }
             m_OutputFolder = string.Empty;
         }
