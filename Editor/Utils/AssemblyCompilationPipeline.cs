@@ -16,8 +16,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
     class AssemblyCompilationUnit
     {
         public AssemblyBuilder builder;
-        public AssemblyBuilder[] referenceBuilders;
+        public AssemblyCompilationUnit[] dependencies;
         public CompilerMessage[] messages;
+
+        bool m_Done = false;
 
         public string assemblyPath
         {
@@ -29,17 +31,28 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public bool IsDone()
         {
-            return builder.status == AssemblyBuilderStatus.Finished;
+            return m_Done;
         }
 
         public void Update()
         {
-            if (builder.status != AssemblyBuilderStatus.NotStarted)
-                return; // nothing to do
-
-            // if all references are finished, we can kick off this builder
-            if (referenceBuilders.All(builder => builder.status == AssemblyBuilderStatus.Finished))
-                builder.Build();
+            switch (builder.status)
+            {
+                case AssemblyBuilderStatus.NotStarted:
+                    if (dependencies.All(dep => dep.IsDone()))
+                    {
+                        if (dependencies.All(dep => dep.Success()))
+                            builder.Build(); // all references are built, we can kick off this builder
+                        else
+                            m_Done = true; // this assembly won't be built since it's missing dependencies
+                    }
+                    break;
+                case AssemblyBuilderStatus.IsCompiling:
+                    return; // nothing to do
+                case AssemblyBuilderStatus.Finished:
+                    m_Done = true;
+                    break;
+            }
         }
 
         public bool Success()
@@ -177,14 +190,14 @@ namespace Unity.ProjectAuditor.Editor.Utils
             // second pass: find all assembly reference builders
             foreach (var assembly in assemblies)
             {
-                var referenceBuilders = new List<AssemblyBuilder>();
+                var dependencies = new List<AssemblyCompilationUnit>();
                 foreach (var referenceName in assembly.assemblyReferences.Select(r => Path.GetFileNameWithoutExtension(r.outputPath)))
                 {
-                    referenceBuilders.Add(m_AssemblyCompilationUnits[referenceName].builder);
+                    dependencies.Add(m_AssemblyCompilationUnits[referenceName]);
                 }
 
-                m_AssemblyCompilationUnits[Path.GetFileName(assembly.name)].referenceBuilders =
-                    referenceBuilders.ToArray();
+                m_AssemblyCompilationUnits[Path.GetFileName(assembly.name)].dependencies =
+                    dependencies.ToArray();
             }
         }
 
