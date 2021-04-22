@@ -17,6 +17,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
         public void Clear();
         public virtual void Create(Unity.ProjectAuditor.Editor.UI.ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueLayout layout, Unity.ProjectAuditor.Editor.ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.UI.Preferences prefs, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
+        public virtual void DrawFilters();
         public void DrawInfo();
         public void DrawTableAndPanels();
         public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
