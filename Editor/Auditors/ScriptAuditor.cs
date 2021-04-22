@@ -114,15 +114,23 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 {
                     foreach (var message in compilerMessages)
                     {
-                        var messageStartIndex = message.message.IndexOf(":");
+                        var messageStartIndex = message.message.IndexOf("):");
                         if (messageStartIndex != -1)
                         {
                             var messageWithCode = message.message.Substring(messageStartIndex + 2);
-                            var messageCodeStartIndex = messageWithCode.IndexOf("CS");
-                            if (messageCodeStartIndex == -1)
-                                continue; // for the time being, skip any other message
+                            var messageParts = messageWithCode.Split(new [] { ' ', ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                            if (messageParts.Length < 2)
+                                continue;
 
-                            var messageCode = messageWithCode.Substring(messageCodeStartIndex, 6);
+                            var messageType = messageParts[0];
+                            if (messageParts[1].IndexOf(':') == -1)
+                                continue;
+
+                            messageParts = messageParts[1].Split(':');
+                            if (messageParts.Length < 2)
+                                continue;
+
+                            var messageCode = messageParts[0];
                             var messageDescription = messageWithCode.Substring(messageWithCode.IndexOf(": ") + 2);
                             var descriptor = (ProblemDescriptor)null;
 
@@ -130,6 +138,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                                 descriptor = descriptorDictionary[messageCode];
                             else
                             {
+                                var severity = Rule.Severity.Info;
+                                switch (messageType)
+                                {
+                                    case "warning" :
+                                        severity = Rule.Severity.Warning;
+                                        break;
+                                    case "error" :
+                                        severity = Rule.Severity.Error;
+                                        break;
+
+                                }
                                 descriptor = new ProblemDescriptor
                                     (
                                     compilerMessageId++,
@@ -137,9 +156,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                                     Area.CPU
                                     )
                                 {
-                                    severity = message.type == CompilerMessageType.Error
-                                        ? Rule.Severity.Error
-                                        : Rule.Severity.Warning
+                                    severity = severity
                                 };
                                 descriptorDictionary.Add(messageCode, descriptor);
                             }
