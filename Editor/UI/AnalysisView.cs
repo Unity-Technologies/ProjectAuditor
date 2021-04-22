@@ -143,7 +143,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         virtual public void DrawFilters()
         {
-
         }
 
         public void DrawTableAndPanels()
@@ -463,7 +462,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     return m_TextFieldWarning;
                 }
-
             }
 
             static GUIStyle m_TextArea;
