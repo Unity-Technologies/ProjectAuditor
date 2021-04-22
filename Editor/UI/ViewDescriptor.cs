@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public string name;
         public string menuLabel;
         public int menuOrder;
-        public bool groupByDescription;
+        public bool groupByDescriptor;
         public bool descriptionWithIcon;
         public bool showActions;
         public bool showAreaSelection;

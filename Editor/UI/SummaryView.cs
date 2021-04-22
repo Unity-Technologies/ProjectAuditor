@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 SummaryItem("Assets in Resources folders:", s_Report.GetIssues(IssueCategory.Assets).Length, IssueCategory.Assets);
                 SummaryItem("Shaders in the project:", s_Report.GetIssues(IssueCategory.Shaders).Length, IssueCategory.Shaders);
                 var buildAvailable = s_Report.GetIssues(IssueCategory.BuildFiles).Length > 0;
-                SummaryItem("Build Report available:", buildAvailable.ToString(), IssueCategory.BuildFiles);
+                SummaryItem("Build Report available:", buildAvailable ? "Yes" : "No", IssueCategory.BuildFiles);
                 EditorGUI.indentLevel--;
 
                 EditorGUILayout.Space();

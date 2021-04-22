@@ -257,7 +257,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Styles.TextArea.fontSize = m_Preferences.fontSize;
 
-            if (m_Desc.groupByDescription)
+            if (m_Desc.groupByDescriptor)
             {
                 // (optional) collapse/expand buttons
                 GUI.enabled = !m_FlatView;

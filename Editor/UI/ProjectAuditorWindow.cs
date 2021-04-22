@@ -225,7 +225,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Assets",
                 menuLabel = "Assets/Resources",
                 menuOrder = 1,
-                groupByDescription = false,
+                groupByDescriptor = false,
                 descriptionWithIcon = true,
                 showActions = false,
                 showAreaSelection = false,
@@ -245,7 +245,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Shaders",
                 menuOrder = 2,
                 menuLabel = "Assets/Shaders",
-                groupByDescription = false,
+                groupByDescriptor = false,
                 descriptionWithIcon = true,
                 showActions = false,
                 showAreaSelection = false,
@@ -273,7 +273,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Variants",
                 menuOrder = 3,
                 menuLabel = "Assets/Shader Variants",
-                groupByDescription = true,
+                groupByDescriptor = true,
                 descriptionWithIcon = false,
                 showAssemblySelection = false,
                 showCritical = false,
@@ -299,7 +299,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Code",
                 menuLabel = "Code/Diagnostics",
                 menuOrder = 0,
-                groupByDescription = true,
+                groupByDescriptor = true,
                 descriptionWithIcon = false,
                 showActions = true,
                 showAreaSelection = true,
@@ -320,7 +320,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Generics",
                 menuLabel = "Code/Generic Types Instantiation",
                 menuOrder = 99,
-                groupByDescription = true,
+                groupByDescriptor = true,
                 descriptionWithIcon = false,
                 showActions = false,
                 showAreaSelection = false,
@@ -341,7 +341,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Settings",
                 menuLabel = "Settings/Diagnostics",
                 menuOrder = 1,
-                groupByDescription = false,
+                groupByDescriptor = false,
                 descriptionWithIcon = false,
                 showActions = true,
                 showAreaSelection = true,
@@ -361,7 +361,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Build",
                 menuLabel = "Build Report",
                 menuOrder = 98,
-                groupByDescription = false,
+                groupByDescriptor = false,
                 descriptionWithIcon = true,
                 showActions = false,
                 showAssemblySelection = false,
@@ -531,7 +531,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             for (int i = 0; i < m_Views.Length; i++)
             {
                 if (m_Views[i] is T)
-                    return (T) m_Views[i];
+                    return (T)m_Views[i];
             }
 
             return null;
