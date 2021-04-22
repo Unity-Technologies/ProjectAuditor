@@ -236,7 +236,20 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (item.IsGroup())
             {
                 if (columnIndex == 0)
-                    EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()), s_LabelStyle);
+                {
+                    switch (descriptor.severity)
+                    {
+                        case Rule.Severity.Warning:
+                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.warnicon"), s_LabelStyle);
+                            break;
+                        case Rule.Severity.Error:
+                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.erroricon"), s_LabelStyle);
+                            break;
+                        default:
+                            EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()), s_LabelStyle);
+                            break;
+                    }
+                }
                 else if (columnType == PropertyType.Area)
                     EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), s_LabelStyle);
             }
