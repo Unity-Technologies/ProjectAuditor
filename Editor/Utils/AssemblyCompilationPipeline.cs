@@ -172,7 +172,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 assemblyBuilder.flags = editorAssemblies ? AssemblyBuilderFlags.EditorAssembly : AssemblyBuilderFlags.DevelopmentBuild;
 
                 // add asmdef-specific defines
-                assemblyBuilder.additionalDefines = assembly.defines.Except(assemblyBuilder.defaultDefines).ToArray();
+                var additionalDefines = new List<string>(assembly.defines.Except(assemblyBuilder.defaultDefines));
+                additionalDefines.Add("ENABLE_UNITY_COLLECTIONS_CHECKS");
+                assemblyBuilder.additionalDefines = additionalDefines.ToArray();
 
                 // add references to assemblies we need to build
                 assemblyBuilder.additionalReferences = assembly.assemblyReferences.Select(r => Path.Combine(m_OutputFolder, Path.GetFileName(r.outputPath))).ToArray();
