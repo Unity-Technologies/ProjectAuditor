@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    class ShaderVariantsWindow : AnalysisWindow, IProjectIssueFilter
+    class ShaderVariantsView : AnalysisView, IProjectIssueFilter
     {
         const string k_BuildRequiredInfo =
 @"Build the project to view the Shader Variants";
@@ -31,7 +31,6 @@ The number of Variants contributes to the build size, however, there might be Va
         const string k_NoCompiledVariantWarningLogDisabled = "No compiled shader variants found in player log. Shader compilation logging is disabled. Would you like to enable it? (Shader compilation will not appear in the log until the project is rebuilt)";
         const string k_PlayerLogProcessed = "Player log file successfully processed.";
 
-        bool m_FlatView;
         bool m_HideCompiledVariants;
         IProjectIssueFilter m_MainFilter;
         ShadersAuditor m_ShadersAuditor;
@@ -46,12 +45,12 @@ The number of Variants contributes to the build size, however, there might be Va
             if (string.IsNullOrEmpty(logFilename))
                 return;
 
-            var variants = m_AnalysisView.GetIssues().Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
+            var variants = GetIssues().Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
 
             if (m_ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBarDisplay()))
             {
                 EditorUtility.DisplayDialog("Shader Variants", k_PlayerLogProcessed, "Ok");
-                m_AnalysisView.Refresh();
+                Refresh();
             }
             else if (GraphicsSettingsHelper.logShaderCompilationSupported)
             {
@@ -69,53 +68,41 @@ The number of Variants contributes to the build size, however, there might be Va
         public override void Create(ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
             m_MainFilter = filter;
-            base.Create(desc, layout, config, prefs, filter);
-            m_AnalysisView.SetFlatView(m_FlatView);
+            base.Create(desc, layout, config, prefs, this);
         }
 
-        public override void OnGUI()
+        public override void DrawFilters()
         {
-            var variantsAvailable = m_AnalysisView.numIssues > 0;
+            GUI.enabled = numIssues > 0;
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Extra :", GUILayout.Width(80));
+            EditorGUI.BeginChangeCheck();
+            m_HideCompiledVariants = EditorGUILayout.ToggleLeft("Hide Compiled Variants", m_HideCompiledVariants, GUILayout.Width(180));
+            if (EditorGUI.EndChangeCheck())
+            {
+                Refresh();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            GUI.enabled = true;
+        }
+
+        protected override void OnDrawInfo()
+        {
+            var variantsAvailable = numIssues > 0;
 
             EditorGUILayout.BeginVertical(GUI.skin.box);
 
             if (variantsAvailable)
             {
-                m_AnalysisView.desc.onDrawInfo = GraphicsSettingsHelper.logShaderCompilationSupported
+                EditorGUILayout.LabelField(GraphicsSettingsHelper.logShaderCompilationSupported
                     ? k_PlayerLogInstructions
-                    : k_PlayerLogParsingUnsupported;
-            }
-            else
-            {
-                m_AnalysisView.desc.onDrawInfo = k_BuildRequiredInfo;
-            }
+                    : k_PlayerLogParsingUnsupported, Styles.TextArea);
 
-            m_AnalysisView.DrawInfo();
+                if (GraphicsSettingsHelper.logShaderCompilationSupported)
+                    GraphicsSettingsHelper.logWhenShaderIsCompiled = EditorGUILayout.Toggle("Log Shader Compilation (requires Build&Run)", GraphicsSettingsHelper.logWhenShaderIsCompiled, GUILayout.Width(320));
 
-            var lastEnabled = GUI.enabled;
-            GUI.enabled = m_AnalysisView.numIssues > 0;
-
-            EditorGUILayout.BeginHorizontal();
-            EditorGUI.BeginChangeCheck();
-            m_FlatView = EditorGUILayout.ToggleLeft("Flat View", m_FlatView, GUILayout.Width(160));
-            m_HideCompiledVariants = EditorGUILayout.ToggleLeft("Hide Compiled Variants", m_HideCompiledVariants, GUILayout.Width(160));
-            if (EditorGUI.EndChangeCheck())
-            {
-                m_AnalysisView.SetFlatView(m_FlatView);
-                m_AnalysisView.Refresh();
-            }
-
-            if (GraphicsSettingsHelper.logShaderCompilationSupported)
-                GraphicsSettingsHelper.logWhenShaderIsCompiled = EditorGUILayout.ToggleLeft("Log Shader Compilation (requires Build&Run)", GraphicsSettingsHelper.logWhenShaderIsCompiled, GUILayout.Width(300));
-
-            EditorGUILayout.EndHorizontal();
-
-            GUI.enabled = lastEnabled;
-
-            EditorGUILayout.EndVertical();
-
-            if (variantsAvailable)
-            {
                 var evt = Event.current;
 
                 switch (evt.type)
@@ -133,8 +120,13 @@ The number of Variants contributes to the build size, however, there might be Va
                         evt.Use();
                         break;
                 }
-                base.OnGUI();
             }
+            else
+            {
+                EditorGUILayout.LabelField(k_BuildRequiredInfo, Styles.TextArea);
+            }
+
+            EditorGUILayout.EndVertical();
         }
 
         void HandleDragAndDrop()

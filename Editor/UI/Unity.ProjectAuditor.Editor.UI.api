@@ -9,6 +9,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         protected Unity.ProjectAuditor.Editor.UI.ViewDescriptor m_Desc;
         protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_Filter;
         protected Unity.ProjectAuditor.Editor.UI.Preferences m_Preferences;
+        public static System.Action<Unity.ProjectAuditor.Editor.IssueCategory> OnChangeView;
         protected static Unity.ProjectAuditor.Editor.ProjectReport s_Report;
         public Unity.ProjectAuditor.Editor.UI.ViewDescriptor desc { get; }
         public int numIssues { get; }
@@ -50,20 +51,13 @@ namespace Unity.ProjectAuditor.Editor.UI
         public Preferences() {}
     }
 
-    public class SummaryView : Unity.ProjectAuditor.Editor.UI.AnalysisView
-    {
-        public static System.Action<Unity.ProjectAuditor.Editor.IssueCategory> OnChangeView;
-        public SummaryView() {}
-        protected virtual void OnDrawInfo();
-    }
-
     public class ViewDescriptor
     {
         public int analyticsEvent;
         public Unity.ProjectAuditor.Editor.IssueCategory category;
         public UnityEngine.GUIContent dependencyViewGuiContent;
         public bool descriptionWithIcon;
-        public bool groupByDescription;
+        public bool groupByDescriptor;
         public string menuLabel;
         public int menuOrder;
         public string name;
