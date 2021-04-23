@@ -188,16 +188,19 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 activeView.DrawInfo();
 
-                DrawFilters();
-                DrawActions();
-
-                if (m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed)
+                if (activeView.IsValid())
                 {
-                    RefreshDisplay();
-                    m_ShouldRefresh = false;
-                }
+                    DrawFilters();
+                    DrawActions();
 
-                activeView.DrawTableAndPanels();
+                    if (m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed)
+                    {
+                        RefreshDisplay();
+                        m_ShouldRefresh = false;
+                    }
+
+                    activeView.DrawTableAndPanels();
+                }
             }
             else
             {
@@ -295,6 +298,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
+                viewType = typeof(CodeView),
                 category = IssueCategory.Code,
                 name = "Code",
                 menuLabel = "Code/Diagnostics",
@@ -307,12 +311,34 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showCritical = true,
                 showDependencyView = true,
                 showFilters = true,
+                showInfoPanel = true,
                 showMuteOptions = true,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 onDoubleClick = EditorUtil.OpenTextFile,
-                onOpenDescriptor = EditorUtil.OpenDescriptor,
+                onOpenDescriptor = EditorUtil.OpenCodeDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ApiCalls
+            });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                viewType = typeof(CompilerMessagesView),
+                category = IssueCategory.CodeCompilerMessages,
+                name = "C# Messages",
+                menuOrder = 98,
+                menuLabel = "Code/C# Compiler Messages",
+                groupByDescriptor = true,
+                descriptionWithIcon = false,
+                showActions = false,
+                showAreaSelection = false,
+                showCritical = false,
+                showDependencyView = false,
+                showFilters = true,
+                showInfoPanel = true,
+                showMuteOptions = false,
+                showRightPanels = false,
+                onDoubleClick = EditorUtil.OpenTextFile,
+                onOpenDescriptor = EditorUtil.OpenCompilerMessageDescriptor,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.CodeCompilerMessages
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
@@ -332,7 +358,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showRightPanels = false,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 onDoubleClick = EditorUtil.OpenTextFile,
-                onOpenDescriptor = EditorUtil.OpenDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Generics
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -402,38 +427,30 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var newIssues = new List<ProjectIssue>();
 
-            try
+            m_ProjectAuditor.Audit(projectIssue =>
             {
-                m_ProjectAuditor.Audit(projectIssue =>
+                newIssues.Add(projectIssue);
+                m_ProjectReport.AddIssue(projectIssue);
+            },
+                completed =>
                 {
-                    newIssues.Add(projectIssue);
-                    m_ProjectReport.AddIssue(projectIssue);
-                },
-                    completed =>
+                    // add batch of issues
+                    foreach (var view in m_Views)
                     {
-                        // add batch of issues
-                        foreach (var view in m_Views)
-                        {
-                            if (view != null)
-                                view.AddIssues(newIssues);
-                        }
+                        if (view != null)
+                            view.AddIssues(newIssues);
+                    }
+                    newIssues.Clear();
 
-                        newIssues.Clear();
+                    if (completed)
+                    {
+                        m_AnalysisState = AnalysisState.Completed;
+                    }
 
-                        if (completed)
-                        {
-                            m_AnalysisState = AnalysisState.Completed;
-                        }
-
-                        m_ShouldRefresh = true;
-                    },
-                    new ProgressBarDisplay());
-            }
-            catch (AssemblyCompilationException e)
-            {
-                m_AnalysisState = AnalysisState.Initialized;
-                EditorUtility.DisplayDialog("Project Auditor", "Compilation Error: please see the Console Window for more details.", "Ok");
-            }
+                    m_ShouldRefresh = true;
+                },
+                new ProgressBarDisplay()
+            );
         }
 
         void OnPostprocessBuild(BuildTarget target)
@@ -957,7 +974,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 GUI.enabled = (m_AnalysisState == AnalysisState.Valid || m_AnalysisState == AnalysisState.Initialized);
 
-                const int buttonWidth = 120;
+                const int buttonWidth = 130;
                 if (GUILayout.Button(Contents.AnalyzeButton, EditorStyles.toolbarButton, GUILayout.Width(buttonWidth)))
                 {
                     Analyze();

@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     static class EditorUtil
     {
-        public static void OpenDescriptor(ProblemDescriptor descriptor)
+        public static void OpenCodeDescriptor(ProblemDescriptor descriptor)
         {
             var unityVersion = InternalEditorUtility.GetUnityVersion();
             if (unityVersion.Major < 2017)
@@ -22,6 +22,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                 var url = string.Format("https://docs.unity3d.com/{0}.{1}/Documentation/ScriptReference/{2}{3}{4}.html",
                     unityVersion.Major, unityVersion.Minor, type, Char.IsUpper(method[0]) ? "." : "-", method);
                 Application.OpenURL(url);
+            }
+        }
+
+        public static void OpenCompilerMessageDescriptor(ProblemDescriptor descriptor)
+        {
+            const string prefix = "CS";
+            const string baseURL = "https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/";
+            if (descriptor.description.StartsWith(prefix))
+            {
+                Application.OpenURL(baseURL + descriptor.description);
             }
         }
 

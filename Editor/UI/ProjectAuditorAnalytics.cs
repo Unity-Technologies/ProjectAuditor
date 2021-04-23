@@ -48,7 +48,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             Shaders,
             Generics,
             BuildFiles,
-            Summary
+            Summary,
+            CodeCompilerMessages
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -165,6 +166,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "generics_tab";
                 case UIButton.BuildFiles:
                     return "buildfiles_tab";
+                case UIButton.CodeCompilerMessages:
+                    return "compiler_messages_tab";
                 case UIButton.AssemblySelect:
                     return "assembly_button_click";
                 case UIButton.AssemblySelectApply:

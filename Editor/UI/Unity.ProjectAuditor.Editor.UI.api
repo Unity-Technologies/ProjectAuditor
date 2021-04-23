@@ -21,11 +21,18 @@ namespace Unity.ProjectAuditor.Editor.UI
         public void DrawInfo();
         public void DrawTableAndPanels();
         public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
-        public bool IsValid();
+        public virtual bool IsValid();
         protected virtual void OnDrawInfo();
         public void Refresh();
         public void SetFlatView(bool value);
         public static void SetReport(Unity.ProjectAuditor.Editor.ProjectReport report);
+    }
+
+    public class CodeView : Unity.ProjectAuditor.Editor.UI.AnalysisView
+    {
+        public CodeView() {}
+        public virtual bool IsValid();
+        protected virtual void OnDrawInfo();
     }
 
     public class Preferences
