@@ -13,6 +13,12 @@ using UnityEditor.Build.Player;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
+    public struct AssemblyCompilationOptions
+    {
+        public bool editorAssemblies;
+        public bool roslynAnalysis;
+    }
+
     class AssemblyCompilationUnit
     {
         public AssemblyBuilder builder;
@@ -68,8 +74,15 @@ namespace Unity.ProjectAuditor.Editor.Utils
         string m_OutputFolder = string.Empty;
 
         Dictionary<string, AssemblyCompilationUnit> m_AssemblyCompilationUnits;
+        string[] m_RoslynAnalyzers;
 
         public Action<string, CompilerMessage[]> AssemblyCompilationFinished;
+        public AssemblyCompilationOptions Options;
+
+        public AssemblyCompilationPipeline()
+        {
+            m_RoslynAnalyzers = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath).ToArray();
+        }
 
         public void Dispose()
         {
@@ -89,10 +102,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
             m_OutputFolder = string.Empty;
         }
 
-        public IEnumerable<AssemblyInfo> Compile(bool editorAssemblies = false, IProgressBar progressBar = null)
+        public IEnumerable<AssemblyInfo> Compile(IProgressBar progressBar = null)
         {
 #if UNITY_2019_3_OR_NEWER
-            var assemblies = CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.PlayerWithoutTestAssemblies);
+            var assemblies = CompilationPipeline.GetAssemblies(Options.editorAssemblies ? AssembliesType.Editor : AssembliesType.PlayerWithoutTestAssemblies);
 #elif UNITY_2018_1_OR_NEWER
             var assemblies = CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.Player);
 #else
@@ -101,13 +114,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             IEnumerable<string> compiledAssemblyPaths;
 #if UNITY_2018_2_OR_NEWER
-            if (editorAssemblies)
+            if (Options.editorAssemblies)
                 compiledAssemblyPaths = CompileEditorAssemblies(assemblies);
             else
-                compiledAssemblyPaths = CompileAssemblies(assemblies, progressBar);
+            	compiledAssemblyPaths = CompileAssemblies(assemblies, progressBar);
 #else
             // fallback to CompilationPipeline assemblies
-            compiledAssemblyPaths = CompileEditorAssemblies(assemblies, !editorAssemblies);
+            compiledAssemblyPaths = CompileEditorAssemblies(assemblies, !Options.editorAssemblies);
 #endif
 
             var assemblyInfos = new List<AssemblyInfo>();
@@ -169,7 +182,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
             var editorAssemblies = false; // for future use
             m_AssemblyCompilationUnits = new Dictionary<string, AssemblyCompilationUnit>();
-
             // first pass: create all AssemblyCompilationUnits
             foreach (var assembly in assemblies)
             {
@@ -179,8 +191,20 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 var assemblyBuilder = new AssemblyBuilder(assemblyPath, assembly.sourceFiles);
 
                 assemblyBuilder.buildFinished += assemblyCompilationFinished;
+#if UNITY_2020_2_OR_NEWER
+                assemblyBuilder.compilerOptions = new ScriptCompilerOptions
+                {
+                    AdditionalCompilerArguments = assembly.compilerOptions.AdditionalCompilerArguments,
+                    AllowUnsafeCode = assembly.compilerOptions.AllowUnsafeCode,
+                    ApiCompatibilityLevel = assembly.compilerOptions.ApiCompatibilityLevel,
+                    CodeOptimization = assembly.compilerOptions.CodeOptimization,
+                    EmitReferenceAssembly = assembly.compilerOptions.EmitReferenceAssembly,
+                    RoslynAnalyzerDllPaths = Options.roslynAnalysis ? m_RoslynAnalyzers : Array.Empty<string>()
+                };
+#else
                 assemblyBuilder.compilerOptions = assembly.compilerOptions;
-                assemblyBuilder.flags = editorAssemblies ? AssemblyBuilderFlags.EditorAssembly : AssemblyBuilderFlags.DevelopmentBuild;
+#endif
+                assemblyBuilder.flags = Options.editorAssemblies ? AssemblyBuilderFlags.EditorAssembly : AssemblyBuilderFlags.DevelopmentBuild;
 
                 // add asmdef-specific defines
                 var additionalDefines = new List<string>(assembly.defines.Except(assemblyBuilder.defaultDefines));

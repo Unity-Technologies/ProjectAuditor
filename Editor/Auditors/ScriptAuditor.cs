@@ -52,6 +52,20 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         };
 
+        static readonly IssueLayout k_RoslynDiagnosticLayout = new IssueLayout
+        {
+            category = IssueCategory.RoslynDiagnostics,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Severity, name = "Type"},
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Code"},
+                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Description"},
+                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
+                new PropertyDefinition { type = PropertyType.Custom + 1, format = PropertyFormat.String, name = "Target Assembly", longName = "Managed Assembly name" },
+                new PropertyDefinition { type = PropertyType.Path, name = "Full path"},
+            }
+        };
+
         static readonly IssueLayout k_GenericIssueLayout = new IssueLayout
         {
             category = IssueCategory.Generics,
@@ -80,6 +94,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
             yield return k_IssueLayout;
             yield return k_CompilerMessageLayout;
+#if UNITY_2020_2_OR_NEWER
+            yield return k_RoslynDiagnosticLayout;
+#endif
             yield return k_GenericIssueLayout;
         }
 
@@ -109,11 +126,30 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var compilationPipeline = new AssemblyCompilationPipeline
             {
-                AssemblyCompilationFinished = (assemblyPath, messages) => ProcessCompilerMessages(assemblyPath, messages, onIssueFound)
+                Options = new AssemblyCompilationOptions
+                {
+                    editorAssemblies = m_Config.AnalyzeEditorCode,
+                    roslynAnalysis = true
+                },
+                AssemblyCompilationFinished = (assemblyName, compilerMessages) =>
+                {
+                    ProcessCompilerMessages(assemblyName, compilerMessages, IssueCategory.RoslynDiagnostics,
+                        onIssueFound);
+                }
             };
 
+            Profiler.BeginSample("ScriptAuditor.Audit.RoslynAnalysis");
+            compilationPipeline.Compile(progressBar);
+            Profiler.EndSample();
+
             Profiler.BeginSample("ScriptAuditor.Audit.Compilation");
-            var assemblyInfos = compilationPipeline.Compile(m_Config.AnalyzeEditorCode, progressBar);
+            compilationPipeline.Options.roslynAnalysis = false;
+            compilationPipeline.AssemblyCompilationFinished = (assemblyName, compilerMessages) =>
+            {
+                ProcessCompilerMessages(assemblyName, compilerMessages, IssueCategory.CodeCompilerMessages,
+                    onIssueFound);
+            };
+            var assemblyInfos = compilationPipeline.Compile(progressBar);
             Profiler.EndSample();
 
             var callCrawler = new CallCrawler();
@@ -377,6 +413,70 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 ComponentSystemAnalysis.IsOnUpdateMethod(methodDefinition))
                 return true;
             return false;
+        }
+
+        void ProcessCompilerMessages(string assemblyName, CompilerMessage[] compilerMessages, IssueCategory category, Action<ProjectIssue> onIssueFound)
+        {
+            foreach (var message in compilerMessages)
+            {
+                var messageStartIndex = message.message.IndexOf("):");
+                if (messageStartIndex != -1)
+                {
+                    var messageWithCode = message.message.Substring(messageStartIndex + 2);
+                    var messageParts = messageWithCode.Split(new [] { ' ', ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                    if (messageParts.Length < 2)
+                        continue;
+
+                    var messageType = messageParts[0];
+                    if (messageParts[1].IndexOf(':') == -1)
+                        continue;
+
+                    messageParts = messageParts[1].Split(':');
+                    if (messageParts.Length < 2)
+                        continue;
+
+                    var messageCode = messageParts[0];
+                    var messageDescription = messageWithCode.Substring(messageWithCode.IndexOf(": ") + 2);
+                    var descriptor = (ProblemDescriptor)null;
+
+                    if (m_RuntimeDescriptors.ContainsKey(messageCode))
+                        descriptor = m_RuntimeDescriptors[messageCode];
+                    else
+                    {
+                        var severity = Rule.Severity.Info;
+                        switch (messageType)
+                        {
+                            case "warning" :
+                                severity = Rule.Severity.Warning;
+                                break;
+                            case "error" :
+                                severity = Rule.Severity.Error;
+                                break;
+
+                        }
+                        descriptor = new ProblemDescriptor
+                            (
+                            k_CompilerMessageFirstId + m_RuntimeDescriptors.Count(),
+                            messageCode,
+                            Area.CPU
+                            )
+                        {
+                            severity = severity
+                        };
+                        m_RuntimeDescriptors.Add(messageCode, descriptor);
+                    }
+
+                    var issue = new ProjectIssue(descriptor, messageDescription,
+                        category,
+                        new Location(message.file, message.line),
+                        new[]
+                        {
+                            messageCode,
+                            assemblyName
+                        });
+                    onIssueFound(issue);
+                }
+            }
         }
     }
 }
