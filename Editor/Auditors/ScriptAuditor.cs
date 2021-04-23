@@ -67,6 +67,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         List<IInstructionAnalyzer> m_Analyzers;
         List<OpCode> m_OpCodes;
         List<ProblemDescriptor> m_ProblemDescriptors;
+        Dictionary<string, ProblemDescriptor> m_RuntimeDescriptors = new Dictionary<string, ProblemDescriptor>();
 
         Thread m_AssemblyAnalysisThread;
 
@@ -106,72 +107,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
-            var compilerMessageId = k_CompilerMessageFirstId;
-            var descriptorDictionary = new Dictionary<string, ProblemDescriptor>();
             var compilationPipeline = new AssemblyCompilationPipeline
             {
-                AssemblyCompilationFinished = (assemblyName, compilerMessages) =>
-                {
-                    foreach (var message in compilerMessages)
-                    {
-                        var messageStartIndex = message.message.IndexOf("):");
-                        if (messageStartIndex != -1)
-                        {
-                            var messageWithCode = message.message.Substring(messageStartIndex + 2);
-                            var messageParts = messageWithCode.Split(new[] { ' ', ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
-                            if (messageParts.Length < 2)
-                                continue;
-
-                            var messageType = messageParts[0];
-                            if (messageParts[1].IndexOf(':') == -1)
-                                continue;
-
-                            messageParts = messageParts[1].Split(':');
-                            if (messageParts.Length < 2)
-                                continue;
-
-                            var messageCode = messageParts[0];
-                            var messageDescription = messageWithCode.Substring(messageWithCode.IndexOf(": ") + 2);
-                            var descriptor = (ProblemDescriptor)null;
-
-                            if (descriptorDictionary.ContainsKey(messageCode))
-                                descriptor = descriptorDictionary[messageCode];
-                            else
-                            {
-                                var severity = Rule.Severity.Info;
-                                switch (messageType)
-                                {
-                                    case "warning":
-                                        severity = Rule.Severity.Warning;
-                                        break;
-                                    case "error":
-                                        severity = Rule.Severity.Error;
-                                        break;
-                                }
-                                descriptor = new ProblemDescriptor
-                                    (
-                                    compilerMessageId++,
-                                    messageCode,
-                                    Area.CPU
-                                    )
-                                {
-                                    severity = severity
-                                };
-                                descriptorDictionary.Add(messageCode, descriptor);
-                            }
-
-                            var issue = new ProjectIssue(descriptor, messageDescription,
-                                IssueCategory.CodeCompilerMessages,
-                                new Location(message.file, message.line),
-                                new[]
-                                {
-                                    messageCode,
-                                    assemblyName
-                                });
-                            onIssueFound(issue);
-                        }
-                    }
-                }
+                AssemblyCompilationFinished = (assemblyPath, messages) => ProcessCompilerMessages(assemblyPath, messages, onIssueFound)
             };
 
             Profiler.BeginSample("ScriptAuditor.Audit.Compilation");
@@ -365,6 +303,70 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             analyzer.Initialize(this);
             m_Analyzers.Add(analyzer);
             m_OpCodes.AddRange(analyzer.GetOpCodes());
+        }
+
+        void ProcessCompilerMessages(string assemblyName, CompilerMessage[] compilerMessages, Action<ProjectIssue> onIssueFound)
+        {
+            foreach (var message in compilerMessages)
+            {
+                var messageStartIndex = message.message.IndexOf("):");
+                if (messageStartIndex != -1)
+                {
+                    var messageWithCode = message.message.Substring(messageStartIndex + 2);
+                    var messageParts = messageWithCode.Split(new [] { ' ', ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                    if (messageParts.Length < 2)
+                        continue;
+
+                    var messageType = messageParts[0];
+                    if (messageParts[1].IndexOf(':') == -1)
+                        continue;
+
+                    messageParts = messageParts[1].Split(':');
+                    if (messageParts.Length < 2)
+                        continue;
+
+                    var messageCode = messageParts[0];
+                    var messageDescription = messageWithCode.Substring(messageWithCode.IndexOf(": ") + 2);
+                    var descriptor = (ProblemDescriptor)null;
+
+                    if (m_RuntimeDescriptors.ContainsKey(messageCode))
+                        descriptor = m_RuntimeDescriptors[messageCode];
+                    else
+                    {
+                        var severity = Rule.Severity.Info;
+                        switch (messageType)
+                        {
+                            case "warning" :
+                                severity = Rule.Severity.Warning;
+                                break;
+                            case "error" :
+                                severity = Rule.Severity.Error;
+                                break;
+
+                        }
+                        descriptor = new ProblemDescriptor
+                            (
+                            k_CompilerMessageFirstId + m_RuntimeDescriptors.Count,
+                            messageCode,
+                            Area.CPU
+                            )
+                        {
+                            severity = severity
+                        };
+                        m_RuntimeDescriptors.Add(messageCode, descriptor);
+                    }
+
+                    var issue = new ProjectIssue(descriptor, messageDescription,
+                        IssueCategory.CodeCompilerMessages,
+                        new Location(message.file, message.line),
+                        new[]
+                        {
+                            messageCode,
+                            assemblyName
+                        });
+                    onIssueFound(issue);
+                }
+            }
         }
 
         static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)
