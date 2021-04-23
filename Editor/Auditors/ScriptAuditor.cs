@@ -309,7 +309,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
             foreach (var message in compilerMessages)
             {
-                var messageStartIndex = message.message.IndexOf("):");
+                var messageStartIndex = message.message.LastIndexOf("):");
                 if (messageStartIndex != -1)
                 {
                     var messageWithCode = message.message.Substring(messageStartIndex + 2);
