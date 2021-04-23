@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Packages.Editor.Utils;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -316,9 +317,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                         if (customProperty != string.Empty)
                         {
                             bool boolValue;
+                            ulong ulongValue;
                             if (property.format == PropertyFormat.Bool && bool.TryParse(customProperty, out boolValue))
                             {
                                 EditorGUI.Toggle(cellRect, boolValue);
+                            }
+                            else if (property.format == PropertyFormat.Bytes && ulong.TryParse(customProperty, out ulongValue))
+                            {
+                                EditorGUI.LabelField(cellRect, Formatting.FormatSize(ulongValue));
                             }
                             else
                                 EditorGUI.LabelField(cellRect, new GUIContent(customProperty), s_LabelStyle);
@@ -545,7 +551,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 break;
                             default:
                                 var propertyIndex = property.type - PropertyType.Custom;
-                                if (property.format == PropertyFormat.Integer)
+                                if (property.format == PropertyFormat.Integer || property.format == PropertyFormat.Bytes)
                                 {
                                     int first;
                                     int second;

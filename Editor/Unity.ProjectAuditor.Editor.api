@@ -181,6 +181,7 @@ namespace Unity.ProjectAuditor.Editor
     public enum PropertyFormat
     {
         public const Unity.ProjectAuditor.Editor.PropertyFormat Bool = 0;
+        public const Unity.ProjectAuditor.Editor.PropertyFormat Bytes = 3;
         public const Unity.ProjectAuditor.Editor.PropertyFormat Integer = 1;
         public const Unity.ProjectAuditor.Editor.PropertyFormat String = 2;
         public int value__;

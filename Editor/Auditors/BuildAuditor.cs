@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Source Asset"},
                 new PropertyDefinition { type = PropertyType.FileType, name = "Type"},
-                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.Integer, name = "Size (bytes)", longName = "Size (bytes) in the Build"},
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.Bytes, name = "Size", longName = "Size in the Build"},
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"},
                 new PropertyDefinition { type = PropertyType.Custom + 1, format = PropertyFormat.String, name = "Build File"}
             }
