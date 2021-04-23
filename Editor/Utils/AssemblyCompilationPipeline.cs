@@ -101,7 +101,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             IEnumerable<string> compiledAssemblyPaths;
 #if UNITY_2018_2_OR_NEWER
-            compiledAssemblyPaths = CompileAssemblies(assemblies, editorAssemblies, progressBar);
+            if (editorAssemblies)
+                compiledAssemblyPaths = CompileEditorAssemblies(assemblies);
+            else
+                compiledAssemblyPaths = CompileAssemblies(assemblies, progressBar);
 #else
             // fallback to CompilationPipeline assemblies
             compiledAssemblyPaths = CompileEditorAssemblies(assemblies, !editorAssemblies);
@@ -121,17 +124,15 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return assemblyInfos;
         }
 
-        IEnumerable<string> CompileEditorAssemblies(IEnumerable<Assembly> assemblies, bool excludeEditorOnlyAssemblies)
+        IEnumerable<string> CompileEditorAssemblies(IEnumerable<Assembly> assemblies)
         {
-            if (excludeEditorOnlyAssemblies)
-            {
-                assemblies = assemblies.Where(a => a.flags != AssemblyFlags.EditorAssembly);
-            }
+            // exclude Editor-Only Assemblies
+            assemblies = assemblies.Where(a => a.flags != AssemblyFlags.EditorAssembly);
             return assemblies.Select(assembly => assembly.outputPath);
         }
 
 #if UNITY_2018_2_OR_NEWER
-        IEnumerable<string> CompileAssemblies(Assembly[] assemblies, bool editorAssemblies, IProgressBar progressBar = null)
+        IEnumerable<string> CompileAssemblies(Assembly[] assemblies, IProgressBar progressBar = null)
         {
             if (progressBar != null)
             {
@@ -145,7 +146,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             if (!Directory.Exists(m_OutputFolder))
                 Directory.CreateDirectory(m_OutputFolder);
 
-            PrepareAssemblyBuilders(assemblies, editorAssemblies, (assemblyPath, messages) =>
+            PrepareAssemblyBuilders(assemblies, (assemblyPath, messages) =>
             {
                 var assemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
                 m_AssemblyCompilationUnits[assemblyName].messages = messages;
@@ -164,8 +165,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return m_AssemblyCompilationUnits.Where(pair => pair.Value.Success()).Select(unit => unit.Value.assemblyPath);
         }
 
-        void PrepareAssemblyBuilders(Assembly[] assemblies, bool editorAssemblies, Action<string, CompilerMessage[]> assemblyCompilationFinished)
+        void PrepareAssemblyBuilders(Assembly[] assemblies, Action<string, CompilerMessage[]> assemblyCompilationFinished)
         {
+            var editorAssemblies = false; // for future use
             m_AssemblyCompilationUnits = new Dictionary<string, AssemblyCompilationUnit>();
 
             // first pass: create all AssemblyCompilationUnits

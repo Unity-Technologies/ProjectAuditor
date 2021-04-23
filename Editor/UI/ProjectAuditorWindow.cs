@@ -321,6 +321,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
+                viewType = typeof(CompilerMessagesView),
                 category = IssueCategory.CodeCompilerMessages,
                 name = "C# Messages",
                 menuOrder = 98,
@@ -332,6 +333,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showCritical = false,
                 showDependencyView = false,
                 showFilters = true,
+                showInfoPanel = true,
                 showMuteOptions = false,
                 showRightPanels = false,
                 onDoubleClick = EditorUtil.OpenTextFile,
