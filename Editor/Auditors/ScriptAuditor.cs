@@ -313,7 +313,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 if (messageStartIndex != -1)
                 {
                     var messageWithCode = message.message.Substring(messageStartIndex + 2);
-                    var messageParts = messageWithCode.Split(new [] { ' ', ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                    var messageParts = messageWithCode.Split(new[] { ' ', ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
                     if (messageParts.Length < 2)
                         continue;
 
@@ -336,13 +336,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         var severity = Rule.Severity.Info;
                         switch (messageType)
                         {
-                            case "warning" :
+                            case "warning":
                                 severity = Rule.Severity.Warning;
                                 break;
-                            case "error" :
+                            case "error":
                                 severity = Rule.Severity.Error;
                                 break;
-
                         }
                         descriptor = new ProblemDescriptor
                             (
