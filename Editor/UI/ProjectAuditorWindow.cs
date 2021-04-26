@@ -351,7 +351,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 descriptionWithIcon = false,
                 showActions = false,
                 showAreaSelection = false,
-//                showAssemblySelection = true,
                 showCritical = false,
                 showDependencyView = false,
                 showFilters = true,
