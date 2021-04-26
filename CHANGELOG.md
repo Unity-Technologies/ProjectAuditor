@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 * Added Build Report view
 * Added Generic types instantiation analysis
-* Added Roslyn analysis view (available in 2020.2+)
 * Added Summary view
 * Added Save&Load support
 * Added *Log Shader Compilation* option to Shader Variants view
