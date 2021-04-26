@@ -1,12 +1,12 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    public class CompilerMessagesView : AnalysisView
+    class CompilerMessagesView : AnalysisView
     {
-        private const string k_Info = "This view shows the compiler warnings and errors.";
-        private const string k_NotAvailable = "This view is not available when 'AnalyzeEditorCode' is enabled.";
+        const string k_Info = "This view shows the compiler warnings and errors.";
+        const string k_NotAvailable = "This view is not available when 'AnalyzeEditorCode' is enabled.";
 
         protected override void OnDrawInfo()
         {
@@ -19,6 +19,5 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.EndHorizontal();
             }
         }
-
     }
 }
