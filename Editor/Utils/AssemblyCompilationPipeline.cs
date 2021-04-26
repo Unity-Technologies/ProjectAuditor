@@ -153,7 +153,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             	compiledAssemblyPaths = CompileAssemblies(assemblies, progressBar);
 #else
             // fallback to CompilationPipeline assemblies
-            compiledAssemblyPaths = CompileEditorAssemblies(assemblies, !Options.editorAssemblies);
+            compiledAssemblyPaths = CompileEditorAssemblies(assemblies, !editorAssemblies);
 #endif
 
             var assemblyInfos = new List<AssemblyInfo>();
