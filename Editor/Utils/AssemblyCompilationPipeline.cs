@@ -150,7 +150,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             if (editorAssemblies)
                 compiledAssemblyPaths = CompileEditorAssemblies(assemblies);
             else
-            	compiledAssemblyPaths = CompileAssemblies(assemblies, progressBar);
+                compiledAssemblyPaths = CompileAssemblies(assemblies, progressBar);
 #else
             // fallback to CompilationPipeline assemblies
             compiledAssemblyPaths = CompileEditorAssemblies(assemblies, !editorAssemblies);
