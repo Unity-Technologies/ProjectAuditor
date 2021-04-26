@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public void DrawInfo();
         public void DrawTableAndPanels();
         public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
-        public virtual bool IsValid();
+        public bool IsValid();
         protected virtual void OnDrawInfo();
         public void Refresh();
         public void SetFlatView(bool value);
@@ -31,7 +31,6 @@ namespace Unity.ProjectAuditor.Editor.UI
     public class CodeView : Unity.ProjectAuditor.Editor.UI.AnalysisView
     {
         public CodeView() {}
-        public virtual bool IsValid();
         protected virtual void OnDrawInfo();
     }
 
