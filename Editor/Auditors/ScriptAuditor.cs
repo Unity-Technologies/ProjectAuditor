@@ -8,7 +8,6 @@ using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
-using UnityEditor.Compilation;
 using UnityEngine;
 using UnityEngine.Profiling;
 using ThreadPriority = System.Threading.ThreadPriority;
@@ -122,31 +121,27 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
+#if UNITY_2020_2_OR_NEWER
+            var enableRoslynAnalysis = true;
+#else
+            var enableRoslynAnalysis = false;
+#endif
+
             var compilationPipeline = new AssemblyCompilationPipeline
             {
                 Options = new AssemblyCompilationOptions
                 {
                     editorAssemblies = m_Config.AnalyzeEditorCode,
-                    roslynAnalysis = true
+                    roslynAnalysis = enableRoslynAnalysis
                 },
                 AssemblyCompilationFinished = (assemblyName, compilerMessages) =>
                 {
-                    ProcessCompilerMessages(assemblyName, compilerMessages, IssueCategory.RoslynDiagnostics,
+                    ProcessCompilerMessages(assemblyName, compilerMessages, IssueCategory.CodeCompilerMessages,
                         onIssueFound);
                 }
             };
 
-            Profiler.BeginSample("ScriptAuditor.Audit.RoslynAnalysis");
-            compilationPipeline.Compile(progressBar);
-            Profiler.EndSample();
-
             Profiler.BeginSample("ScriptAuditor.Audit.Compilation");
-            compilationPipeline.Options.roslynAnalysis = false;
-            compilationPipeline.AssemblyCompilationFinished = (assemblyName, compilerMessages) =>
-            {
-                ProcessCompilerMessages(assemblyName, compilerMessages, IssueCategory.CodeCompilerMessages,
-                    onIssueFound);
-            };
             var assemblyInfos = compilationPipeline.Compile(progressBar);
             Profiler.EndSample();
 
@@ -343,62 +338,47 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
             foreach (var message in compilerMessages)
             {
-                var messageStartIndex = message.message.LastIndexOf("):");
-                if (messageStartIndex != -1)
+                var descriptor = (ProblemDescriptor)null;
+
+                if (m_RuntimeDescriptors.ContainsKey(message.code))
+                    descriptor = m_RuntimeDescriptors[message.code];
+                else
                 {
-                    var messageWithCode = message.message.Substring(messageStartIndex + 2);
-                    var messageParts = messageWithCode.Split(new[] { ' ', ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
-                    if (messageParts.Length < 2)
-                        continue;
-
-                    var messageType = messageParts[0];
-                    if (messageParts[1].IndexOf(':') == -1)
-                        continue;
-
-                    messageParts = messageParts[1].Split(':');
-                    if (messageParts.Length < 2)
-                        continue;
-
-                    var messageCode = messageParts[0];
-                    var messageDescription = messageWithCode.Substring(messageWithCode.IndexOf(": ") + 2);
-                    var descriptor = (ProblemDescriptor)null;
-
-                    if (m_RuntimeDescriptors.ContainsKey(messageCode))
-                        descriptor = m_RuntimeDescriptors[messageCode];
-                    else
+                    var severity = Rule.Severity.Info;
+                    switch (message.type)
                     {
-                        var severity = Rule.Severity.Info;
-                        switch (messageType)
-                        {
-                            case "warning":
-                                severity = Rule.Severity.Warning;
-                                break;
-                            case "error":
-                                severity = Rule.Severity.Error;
-                                break;
-                        }
-                        descriptor = new ProblemDescriptor
-                            (
-                            k_CompilerMessageFirstId + m_RuntimeDescriptors.Count,
-                            messageCode,
-                            Area.CPU
-                            )
-                        {
-                            severity = severity
-                        };
-                        m_RuntimeDescriptors.Add(messageCode, descriptor);
-                    }
+                        case CompilerMessageType.Error:
+                            severity = Rule.Severity.Error;
+                            break;
+                        case CompilerMessageType.Warning:
+                            severity = Rule.Severity.Warning;
+                            break;
+                        case CompilerMessageType.Info:
+                            severity = Rule.Severity.Info;
+                            break;
 
-                    var issue = new ProjectIssue(descriptor, messageDescription,
-                        category,
-                        new Location(message.file, message.line),
-                        new[]
-                        {
-                            messageCode,
-                            assemblyName
-                        });
-                    onIssueFound(issue);
+                    }
+                    descriptor = new ProblemDescriptor
+                    (
+                        k_CompilerMessageFirstId + m_RuntimeDescriptors.Count,
+                        message.code,
+                        Area.CPU
+                    )
+                    {
+                        severity = severity
+                    };
+                    m_RuntimeDescriptors.Add(message.code, descriptor);
                 }
+
+                var issue = new ProjectIssue(descriptor, message.message,
+                    category,
+                    new Location(message.file, message.line),
+                    new[]
+                    {
+                        message.code,
+                        assemblyName
+                    });
+                onIssueFound(issue);
             }
         }
 
