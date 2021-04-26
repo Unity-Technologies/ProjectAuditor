@@ -60,9 +60,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new PropertyDefinition { type = PropertyType.Severity, name = "Type"},
                 new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Code"},
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Description"},
-                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
-                new PropertyDefinition { type = PropertyType.Custom + 1, format = PropertyFormat.String, name = "Target Assembly", longName = "Managed Assembly name" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Full path"},
+                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"}
             }
         };
 
