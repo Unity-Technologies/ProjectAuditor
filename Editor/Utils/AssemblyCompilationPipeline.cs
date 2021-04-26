@@ -285,7 +285,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     AllowUnsafeCode = assembly.compilerOptions.AllowUnsafeCode,
                     ApiCompatibilityLevel = assembly.compilerOptions.ApiCompatibilityLevel,
                     CodeOptimization = assembly.compilerOptions.CodeOptimization,
-                    EmitReferenceAssembly = assembly.compilerOptions.EmitReferenceAssembly,
                     RoslynAnalyzerDllPaths = Options.roslynAnalysis ? m_RoslynAnalyzers : Array.Empty<string>()
                 };
 #else
