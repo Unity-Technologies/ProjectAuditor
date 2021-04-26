@@ -333,6 +333,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showCritical = false,
                 showDependencyView = false,
                 showFilters = true,
+                showInfoPanel = true,
                 showMuteOptions = false,
                 showRightPanels = false,
                 onDoubleClick = EditorUtil.OpenTextFile,
