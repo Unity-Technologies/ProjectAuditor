@@ -342,27 +342,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                viewType = typeof(RoslynAnalysisView),
-                category = IssueCategory.RoslynDiagnostics,
-                name = "Roslyn",
-                menuOrder = 98,
-                menuLabel = "Code/Roslyn Diagnostics",
-                groupByDescriptor = true,
-                descriptionWithIcon = false,
-                showActions = false,
-                showAreaSelection = false,
-                showCritical = false,
-                showDependencyView = false,
-                showFilters = true,
-                showInfoPanel = true,
-                showMuteOptions = false,
-                showRightPanels = false,
-                onDoubleClick = EditorUtil.OpenTextFile,
-                onOpenDescriptor = EditorUtil.OpenCompilerMessageDescriptor,
-                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.CodeCompilerMessages
-            });
-            ViewDescriptor.Register(new ViewDescriptor
-            {
                 category = IssueCategory.Generics,
                 name = "Generics",
                 menuLabel = "Code/Generic Types Instantiation",

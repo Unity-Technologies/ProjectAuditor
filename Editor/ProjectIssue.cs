@@ -16,7 +16,6 @@ namespace Unity.ProjectAuditor.Editor
         Generics,
         ProjectSettings,
         BuildFiles,
-        RoslynDiagnostics,
 
         NumCategories
     }

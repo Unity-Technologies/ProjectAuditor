@@ -51,18 +51,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         };
 
-        static readonly IssueLayout k_RoslynDiagnosticLayout = new IssueLayout
-        {
-            category = IssueCategory.RoslynDiagnostics,
-            properties = new[]
-            {
-                new PropertyDefinition { type = PropertyType.Severity, name = "Type"},
-                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Code"},
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Description"},
-                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"}
-            }
-        };
-
         static readonly IssueLayout k_GenericIssueLayout = new IssueLayout
         {
             category = IssueCategory.Generics,
@@ -91,9 +79,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
             yield return k_IssueLayout;
             yield return k_CompilerMessageLayout;
-#if UNITY_2020_2_OR_NEWER
-            yield return k_RoslynDiagnosticLayout;
-#endif
             yield return k_GenericIssueLayout;
         }
 
