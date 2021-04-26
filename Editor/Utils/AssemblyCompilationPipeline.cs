@@ -108,13 +108,17 @@ namespace Unity.ProjectAuditor.Editor.Utils
         string m_OutputFolder = string.Empty;
 
         Dictionary<string, AssemblyCompilationUnit> m_AssemblyCompilationUnits;
+#if UNITY_2020_2_OR_NEWER
         string[] m_RoslynAnalyzers;
+#endif
 
         public Action<string, CompilerMessage[]> AssemblyCompilationFinished;
 
         public AssemblyCompilationPipeline()
         {
+#if UNITY_2020_2_OR_NEWER
             m_RoslynAnalyzers = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath).ToArray();
+#endif
         }
 
         public void Dispose()

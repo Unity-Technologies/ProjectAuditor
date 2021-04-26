@@ -54,7 +54,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Ignore("Work in progress")]
         public void CustomAuditorIsCreated()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            //var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             //Assert.NotNull(projectAuditor.GetAuditor<CustomAuditor>());
         }
 
