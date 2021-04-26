@@ -341,7 +341,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_OpCodes.AddRange(analyzer.GetOpCodes());
         }
 
-        void ProcessCompilerMessages(string assemblyName, CompilerMessage[] compilerMessages, Action<ProjectIssue> onIssueFound)
+        void ProcessCompilerMessages(string assemblyName, CompilerMessage[] compilerMessages, IssueCategory category, Action<ProjectIssue> onIssueFound)
         {
             foreach (var message in compilerMessages)
             {
@@ -392,7 +392,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     }
 
                     var issue = new ProjectIssue(descriptor, messageDescription,
-                        IssueCategory.CodeCompilerMessages,
+                        category,
                         new Location(message.file, message.line),
                         new[]
                         {
@@ -413,70 +413,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 ComponentSystemAnalysis.IsOnUpdateMethod(methodDefinition))
                 return true;
             return false;
-        }
-
-        void ProcessCompilerMessages(string assemblyName, CompilerMessage[] compilerMessages, IssueCategory category, Action<ProjectIssue> onIssueFound)
-        {
-            foreach (var message in compilerMessages)
-            {
-                var messageStartIndex = message.message.IndexOf("):");
-                if (messageStartIndex != -1)
-                {
-                    var messageWithCode = message.message.Substring(messageStartIndex + 2);
-                    var messageParts = messageWithCode.Split(new [] { ' ', ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
-                    if (messageParts.Length < 2)
-                        continue;
-
-                    var messageType = messageParts[0];
-                    if (messageParts[1].IndexOf(':') == -1)
-                        continue;
-
-                    messageParts = messageParts[1].Split(':');
-                    if (messageParts.Length < 2)
-                        continue;
-
-                    var messageCode = messageParts[0];
-                    var messageDescription = messageWithCode.Substring(messageWithCode.IndexOf(": ") + 2);
-                    var descriptor = (ProblemDescriptor)null;
-
-                    if (m_RuntimeDescriptors.ContainsKey(messageCode))
-                        descriptor = m_RuntimeDescriptors[messageCode];
-                    else
-                    {
-                        var severity = Rule.Severity.Info;
-                        switch (messageType)
-                        {
-                            case "warning" :
-                                severity = Rule.Severity.Warning;
-                                break;
-                            case "error" :
-                                severity = Rule.Severity.Error;
-                                break;
-
-                        }
-                        descriptor = new ProblemDescriptor
-                            (
-                            k_CompilerMessageFirstId + m_RuntimeDescriptors.Count(),
-                            messageCode,
-                            Area.CPU
-                            )
-                        {
-                            severity = severity
-                        };
-                        m_RuntimeDescriptors.Add(messageCode, descriptor);
-                    }
-
-                    var issue = new ProjectIssue(descriptor, messageDescription,
-                        category,
-                        new Location(message.file, message.line),
-                        new[]
-                        {
-                            messageCode,
-                            assemblyName
-                        });
-                    onIssueFound(issue);
-                }
-            }
         }
     }
 }
