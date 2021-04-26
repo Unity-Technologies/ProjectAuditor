@@ -1093,17 +1093,22 @@ namespace Unity.ProjectAuditor.Editor.UI
         public static ProjectAuditorWindow ShowWindow()
         {
             var wnd = GetWindow(typeof(ProjectAuditorWindow)) as ProjectAuditorWindow;
-            if (wnd != null) wnd.titleContent = Contents.WindowTitle;
+            if (wnd != null)
+            {
+                wnd.minSize = new Vector2(LayoutSize.MinWindowWidth, LayoutSize.MinWindowHeight);
+                wnd.titleContent = Contents.WindowTitle;
+            }
+
             return wnd;
         }
 
         // UI styles and layout
         static class LayoutSize
         {
-            public static readonly int ToolbarHeight = 30;
+            public static readonly int MinWindowWidth = 600;
+            public static readonly int MinWindowHeight = 400;
             public static readonly int FilterOptionsLeftLabelWidth = 100;
             public static readonly int FilterOptionsEnumWidth = 50;
-            public static readonly int ModeTabWidth = 300;
         }
 
         static class Contents
