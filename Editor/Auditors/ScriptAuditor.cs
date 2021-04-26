@@ -106,28 +106,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
-#if UNITY_2020_2_OR_NEWER
-            var enableRoslynAnalysis = true;
-#else
-            var enableRoslynAnalysis = false;
-#endif
-
             var compilationPipeline = new AssemblyCompilationPipeline
             {
-                Options = new AssemblyCompilationOptions
-                {
-                    editorAssemblies = m_Config.AnalyzeEditorCode,
-                    roslynAnalysis = enableRoslynAnalysis
-                },
-                AssemblyCompilationFinished = (assemblyName, compilerMessages) =>
-                {
-                    ProcessCompilerMessages(assemblyName, compilerMessages, IssueCategory.CodeCompilerMessages,
-                        onIssueFound);
-                }
+                AssemblyCompilationFinished = (assemblyName, compilerMessages) => ProcessCompilerMessages(assemblyName, compilerMessages, onIssueFound)
             };
 
             Profiler.BeginSample("ScriptAuditor.Audit.Compilation");
-            var assemblyInfos = compilationPipeline.Compile(progressBar);
+            var assemblyInfos = compilationPipeline.Compile(m_Config.AnalyzeEditorCode, progressBar);
             Profiler.EndSample();
 
             var callCrawler = new CallCrawler();
@@ -319,7 +304,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_OpCodes.AddRange(analyzer.GetOpCodes());
         }
 
-        void ProcessCompilerMessages(string assemblyName, CompilerMessage[] compilerMessages, IssueCategory category, Action<ProjectIssue> onIssueFound)
+        void ProcessCompilerMessages(string assemblyName, CompilerMessage[] compilerMessages, Action<ProjectIssue> onIssueFound)
         {
             foreach (var message in compilerMessages)
             {
@@ -356,7 +341,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 }
 
                 var issue = new ProjectIssue(descriptor, message.message,
-                    category,
+                    IssueCategory.CodeCompilerMessages,
                     new Location(message.file, message.line),
                     new[]
                     {
