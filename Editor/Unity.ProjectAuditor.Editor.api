@@ -362,6 +362,23 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
+    public struct CompilerMessage
+    {
+        public string code;
+        public string file;
+        public int line;
+        public string message;
+        public Unity.ProjectAuditor.Editor.Utils.CompilerMessageType type;
+    }
+
+    public enum CompilerMessageType
+    {
+        public const Unity.ProjectAuditor.Editor.Utils.CompilerMessageType Error = 0;
+        public const Unity.ProjectAuditor.Editor.Utils.CompilerMessageType Info = 2;
+        public int value__;
+        public const Unity.ProjectAuditor.Editor.Utils.CompilerMessageType Warning = 1;
+    }
+
     public class Exporter : System.IDisposable
     {
         public Exporter(string path, Unity.ProjectAuditor.Editor.IssueLayout layout) {}

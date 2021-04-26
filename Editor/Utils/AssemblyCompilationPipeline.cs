@@ -13,6 +13,46 @@ using UnityEditor.Build.Player;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
+    public enum CompilerMessageType
+    {
+        /// <summary>
+        ///   <para>Error message.</para>
+        /// </summary>
+        Error,
+        /// <summary>
+        ///   <para>Warning message.</para>
+        /// </summary>
+        Warning,
+        /// <summary>
+        ///   <para>Info message.</para>
+        /// </summary>
+        Info
+    }
+
+    public struct CompilerMessage
+    {
+        /// <summary>
+        ///   <para>Message code.</para>
+        /// </summary>
+        public string code;
+        /// <summary>
+        ///   <para>Message type.</para>
+        /// </summary>
+        public CompilerMessageType type;
+        /// <summary>
+        ///   <para>Message body.</para>
+        /// </summary>
+        public string message;
+        /// <summary>
+        ///   <para>File for the message.</para>
+        /// </summary>
+        public string file;
+        /// <summary>
+        ///   <para>File line for the message.</para>
+        /// </summary>
+        public int line;
+    }
+
     class AssemblyCompilationUnit
     {
         public AssemblyBuilder builder;
@@ -68,8 +108,14 @@ namespace Unity.ProjectAuditor.Editor.Utils
         string m_OutputFolder = string.Empty;
 
         Dictionary<string, AssemblyCompilationUnit> m_AssemblyCompilationUnits;
+        string[] m_RoslynAnalyzers;
 
         public Action<string, CompilerMessage[]> AssemblyCompilationFinished;
+
+        public AssemblyCompilationPipeline()
+        {
+            m_RoslynAnalyzers = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath).ToArray();
+        }
 
         public void Dispose()
         {
@@ -169,7 +215,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
             var editorAssemblies = false; // for future use
             m_AssemblyCompilationUnits = new Dictionary<string, AssemblyCompilationUnit>();
-
             // first pass: create all AssemblyCompilationUnits
             foreach (var assembly in assemblies)
             {
@@ -178,8 +223,67 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 var assemblyPath = Path.Combine(m_OutputFolder, filename);
                 var assemblyBuilder = new AssemblyBuilder(assemblyPath, assembly.sourceFiles);
 
-                assemblyBuilder.buildFinished += assemblyCompilationFinished;
+                assemblyBuilder.buildFinished += (path, originalMessages) =>
+                {
+                    var messages = new CompilerMessage[originalMessages.Length];
+                    for (int i = 0; i < originalMessages.Length; i++)
+                    {
+                        var messageStartIndex = originalMessages[i].message.LastIndexOf("):");
+                        if (messageStartIndex != -1)
+                        {
+                            var messageWithCode = originalMessages[i].message.Substring(messageStartIndex + 2);
+                            var messageParts = messageWithCode.Split(new[] {' ', ':'}, 2,
+                                StringSplitOptions.RemoveEmptyEntries);
+                            if (messageParts.Length < 2)
+                                continue;
+
+                            var messageType = messageParts[0];
+                            if (messageParts[1].IndexOf(':') == -1)
+                                continue;
+
+                            messageParts = messageParts[1].Split(':');
+                            if (messageParts.Length < 2)
+                                continue;
+
+                            var messageBody = messageWithCode.Substring(messageWithCode.IndexOf(": ") + 2);
+                            messages[i] = new CompilerMessage
+                            {
+                                message = messageBody,
+                                file = originalMessages[i].file,
+                                line = originalMessages[i].line,
+                                code = messageParts[0]
+                            };
+
+                            // disregard originalMessages[i].type because it does not support CompilerMessageType.Info in 2020.x
+                            switch (messageType)
+                            {
+                                case "error":
+                                    messages[i].type = CompilerMessageType.Error;
+                                    break;
+                                case "warning":
+                                    messages[i].type = CompilerMessageType.Warning;
+                                    break;
+                                case "info":
+                                    messages[i].type = CompilerMessageType.Info;
+                                    break;
+                            }
+                        }
+                    }
+
+                    assemblyCompilationFinished(path, messages);
+                };
+#if UNITY_2020_2_OR_NEWER
+                assemblyBuilder.compilerOptions = new ScriptCompilerOptions
+                {
+                    AdditionalCompilerArguments = assembly.compilerOptions.AdditionalCompilerArguments,
+                    AllowUnsafeCode = assembly.compilerOptions.AllowUnsafeCode,
+                    ApiCompatibilityLevel = assembly.compilerOptions.ApiCompatibilityLevel,
+                    CodeOptimization = assembly.compilerOptions.CodeOptimization,
+                    RoslynAnalyzerDllPaths = m_RoslynAnalyzers
+                };
+#else
                 assemblyBuilder.compilerOptions = assembly.compilerOptions;
+#endif
                 assemblyBuilder.flags = editorAssemblies ? AssemblyBuilderFlags.EditorAssembly : AssemblyBuilderFlags.DevelopmentBuild;
 
                 // add asmdef-specific defines
