@@ -326,14 +326,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         case CompilerMessageType.Info:
                             severity = Rule.Severity.Info;
                             break;
-
                     }
                     descriptor = new ProblemDescriptor
-                    (
+                        (
                         k_CompilerMessageFirstId + m_RuntimeDescriptors.Count,
                         message.code,
                         Area.CPU
-                    )
+                        )
                     {
                         severity = severity
                     };
