@@ -107,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #if UNITY_2019_3_OR_NEWER
             var assemblies = CompilationPipeline.GetAssemblies(Options.editorAssemblies ? AssembliesType.Editor : AssembliesType.PlayerWithoutTestAssemblies);
 #elif UNITY_2018_1_OR_NEWER
-            var assemblies = CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.Player);
+            var assemblies = CompilationPipeline.GetAssemblies(Options.editorAssemblies ? AssembliesType.Editor : AssembliesType.Player);
 #else
             var assemblies = CompilationPipeline.GetAssemblies();
 #endif
@@ -180,7 +180,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         void PrepareAssemblyBuilders(Assembly[] assemblies, Action<string, CompilerMessage[]> assemblyCompilationFinished)
         {
-            var editorAssemblies = false; // for future use
             m_AssemblyCompilationUnits = new Dictionary<string, AssemblyCompilationUnit>();
             // first pass: create all AssemblyCompilationUnits
             foreach (var assembly in assemblies)
