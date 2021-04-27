@@ -142,7 +142,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     continue;
                 }
 
-                var view = desc.viewType != null ? (AnalysisView)Activator.CreateInstance(desc.viewType) : new AnalysisView();
+                var view = desc.type != null ? (AnalysisView)Activator.CreateInstance(desc.type) : new AnalysisView();
                 view.Create(desc, layout, m_ProjectAuditor.config, m_Preferences, this);
 
                 if (currentState == AnalysisState.Valid)
@@ -219,7 +219,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showActions = false,
                 showFilters = false,
                 showInfoPanel = true,
-                viewType = typeof(SummaryView),
+                type = typeof(SummaryView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Summary
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -271,7 +271,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                viewType = typeof(ShaderVariantsView),
+                type = typeof(ShaderVariantsView),
                 category = IssueCategory.ShaderVariants,
                 name = "Variants",
                 menuOrder = 3,
@@ -298,7 +298,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                viewType = typeof(CodeView),
+                type = typeof(CodeView),
                 category = IssueCategory.Code,
                 name = "Code",
                 menuLabel = "Code/Diagnostics",
@@ -321,7 +321,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                viewType = typeof(CompilerMessagesView),
+                type = typeof(CompilerMessagesView),
                 category = IssueCategory.CodeCompilerMessages,
                 name = "C# Messages",
                 menuOrder = 98,
@@ -381,7 +381,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                viewType = typeof(BuildReportView),
+                type = typeof(BuildReportView),
                 category = IssueCategory.BuildFiles,
                 name = "Build",
                 menuLabel = "Build Report",
