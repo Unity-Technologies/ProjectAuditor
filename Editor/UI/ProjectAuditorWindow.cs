@@ -990,12 +990,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
-                    if (Styles.StatusText == null)
-                    {
-                        Styles.StatusText = new GUIStyle(Utility.GetStyle("ToolbarLabel"));
-                        Styles.StatusText.normal.textColor = Color.yellow;
-                    }
-
                     GUILayout.Label(Contents.AnalysisInProgressLabel, Styles.StatusText, GUILayout.ExpandWidth(true));
                 }
 
@@ -1024,13 +1018,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             EditorGUILayout.BeginVertical(GUI.skin.box);
 
-            if (Styles.WelcomeText == null)
-            {
-                Styles.WelcomeText = new GUIStyle(EditorStyles.textField);
-                Styles.WelcomeText.wordWrap = true;
-            }
-
-            EditorGUILayout.LabelField(Contents.HelpText, Styles.WelcomeText);
+            EditorGUILayout.LabelField(Contents.HelpText, SharedStyles.TextArea);
 
             EditorGUILayout.EndVertical();
         }
@@ -1174,8 +1162,21 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...), by str
 
         static class Styles
         {
-            public static GUIStyle StatusText;
-            public static GUIStyle WelcomeText;
+            public static GUIStyle StatusText
+            {
+                get
+                {
+                    if (s_StatusText == null)
+                    {
+                        s_StatusText = new GUIStyle(Utility.GetStyle("ToolbarLabel"));
+                        StatusText.normal.textColor = Color.yellow;
+                    }
+
+                    return s_StatusText;
+                }
+            }
+
+            static GUIStyle s_StatusText;
         }
 
         [PostProcessBuild(1)]

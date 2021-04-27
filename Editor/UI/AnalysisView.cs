@@ -191,7 +191,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             if (m_Desc.onDrawInfo != null)
             {
-                EditorGUILayout.LabelField(m_Desc.onDrawInfo, Styles.TextArea);
+                EditorGUILayout.LabelField(m_Desc.onDrawInfo, SharedStyles.TextArea);
             }
         }
 
@@ -239,11 +239,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_Preferences.details)
             {
                 if (selectedDescriptors.Length == 0)
-                    GUILayout.TextArea(k_NoSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 else if (selectedDescriptors.Length > 1)
-                    GUILayout.TextArea(k_MultipleSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 else // if (selectedDescriptors.Length == 1)
-                    GUILayout.TextArea(selectedDescriptors[0].problem, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(selectedDescriptors[0].problem, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
             EditorGUILayout.EndVertical();
         }
@@ -254,7 +254,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
             m_Table.SetFontSize(m_Preferences.fontSize);
 
-            Styles.TextArea.fontSize = m_Preferences.fontSize;
+            SharedStyles.TextArea.fontSize = m_Preferences.fontSize;
 
             if (m_Desc.groupByDescriptor)
             {
@@ -297,11 +297,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_Preferences.recommendation)
             {
                 if (selectedDescriptors.Length == 0)
-                    GUILayout.TextArea(k_NoSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 else if (selectedDescriptors.Length > 1)
-                    GUILayout.TextArea(k_MultipleSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 else // if (selectedDescriptors.Length == 1)
-                    GUILayout.TextArea(selectedDescriptors[0].solution, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(selectedDescriptors[0].solution, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
             EditorGUILayout.EndVertical();
         }
@@ -315,11 +315,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 if (issues.Length == 0)
                 {
-                    EditorGUILayout.LabelField(k_NoSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    EditorGUILayout.LabelField(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 }
                 else if (issues.Length > 1)
                 {
-                    EditorGUILayout.LabelField(k_MultipleSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    EditorGUILayout.LabelField(k_MultipleSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 }
                 else// if (issues.Length == 1)
                 {
@@ -343,7 +343,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                     else
                     {
-                        EditorGUILayout.LabelField(k_AnalysisIsRequiredText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                        EditorGUILayout.LabelField(k_AnalysisIsRequiredText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                     }
                 }
             }
@@ -436,36 +436,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout =
                 new GUIContent("Recommendation", "Recommendation on how to solve the issue");
-        }
-
-        internal static class Styles
-        {
-            public static GUIStyle TextArea
-            {
-                get
-                {
-                    if (m_TextArea == null)
-                        m_TextArea = new GUIStyle(EditorStyles.textArea);
-                    return m_TextArea;
-                }
-            }
-
-            public static GUIStyle TextFieldWarning
-            {
-                get
-                {
-                    if (m_TextFieldWarning == null)
-                    {
-                        m_TextFieldWarning = new GUIStyle(EditorStyles.textField);
-                        m_TextFieldWarning.normal.textColor = Color.yellow;
-                    }
-
-                    return m_TextFieldWarning;
-                }
-            }
-
-            static GUIStyle m_TextArea;
-            static GUIStyle m_TextFieldWarning;
         }
     }
 }
