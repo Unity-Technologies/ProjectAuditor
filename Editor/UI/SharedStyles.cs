@@ -5,6 +5,21 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     internal static class SharedStyles
     {
+        public static GUIStyle Foldout
+        {
+            get
+            {
+
+                if (s_Foldout == null)
+                    s_Foldout = new GUIStyle(EditorStyles.foldout)
+                    {
+                        fontStyle = FontStyle.Bold
+                    };
+                return s_Foldout;
+            }
+
+        }
+
         public static GUIStyle TextArea
         {
             get
@@ -29,6 +44,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        static GUIStyle s_Foldout;
         static GUIStyle s_TextArea;
         static GUIStyle s_TextFieldWarning;
     }

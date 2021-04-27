@@ -47,11 +47,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        static class Styles
-        {
-            public static GUIStyle Foldout;
-        }
-
         public class DropdownItem
         {
             public GUIContent Content;
@@ -74,14 +69,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         internal static bool BoldFoldout(bool toggle, GUIContent content)
         {
-            if (Styles.Foldout == null)
-            {
-                Styles.Foldout = new GUIStyle(EditorStyles.foldout)
-                {
-                    fontStyle = FontStyle.Bold
-                };
-            }
-            return EditorGUILayout.Foldout(toggle, content, Styles.Foldout);
+            return EditorGUILayout.Foldout(toggle, content, SharedStyles.Foldout);
         }
 
         internal static void ToolbarDropdownList(DropdownItem[] items, int selectionIndex, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
