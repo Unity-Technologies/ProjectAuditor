@@ -229,7 +229,7 @@
             "method": "GetTierSettings",
             "customevaluator": "GraphicsMixedStandardShaderQuality",
             "area": "BuildSize",
-            "problem": "One or more platforms in in Graphics Settings uses a mixture of different values (Low/Medium/High) for the \"Standard Shader Quality\" setting. This will result in a larger number of shader variants being compiled, which will increase build times and your application's download/install size.",
+            "problem": "One or more platforms in Graphics Settings uses a mixture of different values (Low/Medium/High) for the \"Standard Shader Quality\" setting. This will result in a larger number of shader variants being compiled, which will increase build times and your application's download/install size.",
             "solution": "Unless you support devices with a very wide range of capabilities for a particular platform, consider editing the platform in Graphics Settings to use the same shader quality setting across all Graphics Tiers."
         },
         {
