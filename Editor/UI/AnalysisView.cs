@@ -189,10 +189,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         protected virtual void OnDrawInfo()
         {
-            if (m_Desc.onDrawInfo != null)
-            {
-                EditorGUILayout.LabelField(m_Desc.onDrawInfo, SharedStyles.TextArea);
-            }
         }
 
         void DrawTable(ProjectIssue[] selectedIssues)
