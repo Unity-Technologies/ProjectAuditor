@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Packages.Editor.Utils;
 using Unity.ProjectAuditor.Editor.Auditors;
 using UnityEditor;
@@ -18,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
             else
             {
-                EditorGUILayout.LabelField("Build Name: ", Path.GetFileNameWithoutExtension(report.summary.outputPath));
+                EditorGUILayout.LabelField("Build Name: ", Application.productName);
                 EditorGUILayout.LabelField("Platform: ", report.summary.platform.ToString());
                 EditorGUILayout.LabelField("Started at: ", report.summary.buildStartedAt.ToString());
                 EditorGUILayout.LabelField("Ended at: ", report.summary.buildEndedAt.ToString());
