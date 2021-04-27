@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             get { return m_Desc; }
         }
 
-        public int numIssues
+        protected int numIssues
         {
             get
             {
@@ -115,7 +115,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Table.AddIssues(issues);
         }
 
-        public ProjectIssue[] GetIssues()
+        protected ProjectIssue[] GetIssues()
         {
             return m_Issues.ToArray();
         }
@@ -136,12 +136,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             return m_Table != null;
         }
 
-        public void SetFlatView(bool value)
+        void SetFlatView(bool value)
         {
             m_Table.SetFlatView(value);
         }
 
-        virtual public void DrawFilters()
+        public virtual void DrawFilters()
         {
         }
 
