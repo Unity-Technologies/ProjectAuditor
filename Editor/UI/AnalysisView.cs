@@ -11,29 +11,13 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    class AnalysisViewDescriptor
+    public class AnalysisView
     {
-        public IssueCategory category;
-        public string name;
-        public string menuLabel;
-        public int menuOrder;
-        public bool groupByDescription;
-        public bool descriptionWithIcon;
-        public bool showAreaSelection;
-        public bool showAssemblySelection;
-        public bool showCritical;
-        public bool showDependencyView;
-        public bool showMuteOptions;
-        public bool showRightPanels;
-        public GUIContent dependencyViewGuiContent;
-        public Action<Location> onDoubleClick;
-        public Action<ProblemDescriptor> onOpenDescriptor;
-        public ProjectAuditorAnalytics.UIButton analyticsEvent;
-    }
+        static string s_ExportDirectory = string.Empty;
 
-    class AnalysisView
-    {
-        private static string s_ExportDirectory = string.Empty;
+        public static Action<IssueCategory> OnChangeView;
+
+        protected static ProjectReport s_Report;
 
         enum ExportMode
         {
@@ -42,27 +26,36 @@ namespace Unity.ProjectAuditor.Editor.UI
             Selected
         }
 
-        ProjectAuditorConfig m_Config;
-        Preferences m_Preferences;
-        AnalysisViewDescriptor m_Desc;
-        IProjectIssueFilter m_Filter;
+        protected ProjectAuditorConfig m_Config;
+        protected Preferences m_Preferences;
+        protected ViewDescriptor m_Desc;
+        protected IProjectIssueFilter m_Filter;
 
         DependencyView m_DependencyView;
-        List<ProjectIssue> m_Issues;
+        List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+        bool m_FlatView;
         IssueTable m_Table;
         IssueLayout m_Layout;
 
-        public AnalysisViewDescriptor desc
+        public ViewDescriptor desc
         {
             get { return m_Desc; }
         }
 
-        public IssueTable table
+        public int numIssues
+        {
+            get
+            {
+                return m_Issues.Count();
+            }
+        }
+
+        internal IssueTable table
         {
             get { return m_Table; }
         }
 
-        public void CreateTable(AnalysisViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
             m_Desc = descriptor;
             m_Config = config;
@@ -111,7 +104,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (m_Desc.showDependencyView)
                 m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onDoubleClick);
-            m_Issues = new List<ProjectIssue>();
+
+            SetFlatView(m_FlatView);
         }
 
         public void AddIssues(IEnumerable<ProjectIssue> allIssues)
@@ -147,35 +141,57 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Table.SetFlatView(value);
         }
 
-        public void OnGUI()
+        virtual public void DrawFilters()
         {
-            if (Styles.TextFieldWarning == null)
-            {
-                Styles.TextFieldWarning = new GUIStyle(EditorStyles.textField);
-                Styles.TextFieldWarning.normal.textColor = Color.yellow;
-            }
+        }
 
-            if (Styles.TextArea == null)
-                Styles.TextArea = new GUIStyle(EditorStyles.textArea);
-
+        public void DrawTableAndPanels()
+        {
             var selectedItems = m_Table.GetSelectedItems();
-            var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue);
-            var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor).Distinct();
+            var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
+            var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor).Distinct().ToArray();
 
             EditorGUILayout.BeginHorizontal();
 
-            DrawTable(selectedIssues.ToArray());
+            DrawTable(selectedIssues);
 
             if (m_Desc.showRightPanels)
             {
-                DrawFoldouts(selectedDescriptors.ToArray());
+                DrawFoldouts(selectedDescriptors);
             }
 
             EditorGUILayout.EndHorizontal();
 
             if (m_Desc.showDependencyView)
             {
-                DrawDependencyView(selectedIssues.ToArray());
+                DrawDependencyView(selectedIssues);
+            }
+        }
+
+        public void DrawInfo()
+        {
+            if (!m_Desc.showInfoPanel)
+                return;
+
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
+
+            m_Preferences.info = Utility.BoldFoldout(m_Preferences.info, Contents.InfoFoldout);
+            if (m_Preferences.info)
+            {
+                EditorGUI.indentLevel++;
+
+                OnDrawInfo();
+
+                EditorGUI.indentLevel--;
+            }
+            EditorGUILayout.EndVertical();
+        }
+
+        protected virtual void OnDrawInfo()
+        {
+            if (m_Desc.onDrawInfo != null)
+            {
+                EditorGUILayout.LabelField(m_Desc.onDrawInfo, Styles.TextArea);
             }
         }
 
@@ -186,30 +202,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-            EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
-            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
-            m_Table.SetFontSize(m_Preferences.fontSize);
-
-            Styles.TextArea.fontSize = m_Preferences.fontSize;
-
-            // (optional) collapse/expand buttons
-            if (m_Desc.groupByDescription)
-            {
-                if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                    SetRowsExpanded(false);
-                if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                    SetRowsExpanded(true);
-            }
+            DrawViewOptions();
 
             EditorGUILayout.Space();
 
-            if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
-                OnExport, GUILayout.Width(80)))
-            {
-                Export();
-
-                GUIUtility.ExitGUI();
-            }
+            DrawDataOptions();
 
             EditorGUILayout.EndHorizontal();
 
@@ -249,6 +246,48 @@ namespace Unity.ProjectAuditor.Editor.UI
                     GUILayout.TextArea(selectedDescriptors[0].problem, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
             EditorGUILayout.EndVertical();
+        }
+
+        void DrawViewOptions()
+        {
+            EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
+            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
+            m_Table.SetFontSize(m_Preferences.fontSize);
+
+            Styles.TextArea.fontSize = m_Preferences.fontSize;
+
+            if (m_Desc.groupByDescriptor)
+            {
+                // (optional) collapse/expand buttons
+                GUI.enabled = !m_FlatView;
+                if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    SetRowsExpanded(false);
+                if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                    SetRowsExpanded(true);
+                GUI.enabled = true;
+
+                EditorGUI.BeginChangeCheck();
+                m_FlatView = GUILayout.Toggle(m_FlatView, "Flat View", EditorStyles.toolbarButton, GUILayout.Width(100));
+                if (EditorGUI.EndChangeCheck())
+                {
+                    SetFlatView(m_FlatView);
+                    Refresh();
+                }
+            }
+        }
+
+        void DrawDataOptions()
+        {
+            if (m_Desc.onDrawToolbarDataOptions != null)
+                m_Desc.onDrawToolbarDataOptions();
+
+            if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
+                OnExport, GUILayout.Width(80)))
+            {
+                Export();
+
+                GUIUtility.ExitGUI();
+            }
         }
 
         void DrawRecommendationFoldout(ProblemDescriptor[] selectedDescriptors)
@@ -332,8 +371,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     var matchingIssues = m_Issues.Where(issue => m_Config.GetAction(issue.descriptor, issue.GetCallingMethod()) !=
                         Rule.Severity.None && (match == null || match(issue)));
-                    foreach (var issue in matchingIssues)
-                        exporter.WriteIssue(issue);
+                    exporter.WriteIssues(matchingIssues.ToArray());
                 }
 
                 EditorUtility.RevealInFinder(path);
@@ -365,11 +403,16 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        public static void SetReport(ProjectReport report)
+        {
+            s_Report = report;
+        }
+
         const string k_NoSelectionText = "<No selection>";
         const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         const string k_MultipleSelectionText = "<Multiple selection>";
 
-        static string[] k_ExportModeStrings =
+        static readonly string[] k_ExportModeStrings =
         {
             "All",
             "Filtered",
@@ -385,18 +428,44 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static class Contents
         {
-            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to .csv files.");
-            public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All", "");
-            public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All", "");
+            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
+            public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
+            public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
+
+            public static readonly GUIContent InfoFoldout = new GUIContent("Information");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout =
                 new GUIContent("Recommendation", "Recommendation on how to solve the issue");
         }
 
-        static class Styles
+        internal static class Styles
         {
-            public static GUIStyle TextArea;
-            public static GUIStyle TextFieldWarning;
+            public static GUIStyle TextArea
+            {
+                get
+                {
+                    if (m_TextArea == null)
+                        m_TextArea = new GUIStyle(EditorStyles.textArea);
+                    return m_TextArea;
+                }
+            }
+
+            public static GUIStyle TextFieldWarning
+            {
+                get
+                {
+                    if (m_TextFieldWarning == null)
+                    {
+                        m_TextFieldWarning = new GUIStyle(EditorStyles.textField);
+                        m_TextFieldWarning.normal.textColor = Color.yellow;
+                    }
+
+                    return m_TextFieldWarning;
+                }
+            }
+
+            static GUIStyle m_TextArea;
+            static GUIStyle m_TextFieldWarning;
         }
     }
 }

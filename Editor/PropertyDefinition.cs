@@ -18,7 +18,8 @@ namespace Unity.ProjectAuditor.Editor
     {
         Bool = 0,
         Integer,
-        String
+        String,
+        Bytes
     }
 
     public struct PropertyDefinition
@@ -29,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor
         public string longName;
     }
 
-    public struct IssueLayout
+    public class IssueLayout
     {
         public IssueCategory category;
         public PropertyDefinition[] properties;

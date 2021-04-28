@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             "Use AssetBundles when possible"
             );
 
-        readonly List<ProblemDescriptor> m_ProblemDescriptors = new List<ProblemDescriptor>();
+        List<ProblemDescriptor> m_ProblemDescriptors;
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -44,11 +44,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Initialize(ProjectAuditorConfig config)
         {
+            m_ProblemDescriptors = new List<ProblemDescriptor>();
             RegisterDescriptor(k_Descriptor);
         }
 
-        public void Reload(string path)
+        public bool IsSupported()
         {
+            return true;
         }
 
         public void RegisterDescriptor(ProblemDescriptor descriptor)

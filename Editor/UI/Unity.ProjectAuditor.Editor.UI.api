@@ -1,3 +1,82 @@
 // This file is generated. Do not modify by hand.
 // XML documentation file not found. To check if public methods have XML comments,
 // make sure the XML doc file is present and located next to the scraped dll
+namespace Unity.ProjectAuditor.Editor.UI
+{
+    public class AnalysisView
+    {
+        protected Unity.ProjectAuditor.Editor.ProjectAuditorConfig m_Config;
+        protected Unity.ProjectAuditor.Editor.UI.ViewDescriptor m_Desc;
+        protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_Filter;
+        protected Unity.ProjectAuditor.Editor.UI.Preferences m_Preferences;
+        public static System.Action<Unity.ProjectAuditor.Editor.IssueCategory> OnChangeView;
+        protected static Unity.ProjectAuditor.Editor.ProjectReport s_Report;
+        public Unity.ProjectAuditor.Editor.UI.ViewDescriptor desc { get; }
+        public int numIssues { get; }
+        public AnalysisView() {}
+        public void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
+        public void Clear();
+        public virtual void Create(Unity.ProjectAuditor.Editor.UI.ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueLayout layout, Unity.ProjectAuditor.Editor.ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.UI.Preferences prefs, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
+        public virtual void DrawFilters();
+        public void DrawInfo();
+        public void DrawTableAndPanels();
+        public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
+        public bool IsValid();
+        protected virtual void OnDrawInfo();
+        public void Refresh();
+        public void SetFlatView(bool value);
+        public static void SetReport(Unity.ProjectAuditor.Editor.ProjectReport report);
+    }
+
+    public class CodeView : Unity.ProjectAuditor.Editor.UI.AnalysisView
+    {
+        public CodeView() {}
+        protected virtual void OnDrawInfo();
+    }
+
+    public class Preferences
+    {
+        public bool actions;
+        public bool dependencies;
+        public bool details;
+        public bool emptyGroups;
+        public bool filters;
+        public int fontSize;
+        public bool info;
+        public const int k_MaxFontSize = 22;
+        public const int k_MinFontSize = 12;
+        public bool mutedIssues;
+        public bool onlyCriticalIssues;
+        public bool recommendation;
+        public Preferences() {}
+    }
+
+    public class ViewDescriptor
+    {
+        public int analyticsEvent;
+        public Unity.ProjectAuditor.Editor.IssueCategory category;
+        public UnityEngine.GUIContent dependencyViewGuiContent;
+        public bool descriptionWithIcon;
+        public bool groupByDescriptor;
+        public string menuLabel;
+        public int menuOrder;
+        public string name;
+        public System.Action<Unity.ProjectAuditor.Editor.Utils.Location> onDoubleClick;
+        public string onDrawInfo;
+        public System.Action onDrawToolbarDataOptions;
+        public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenDescriptor;
+        public bool showActions;
+        public bool showAreaSelection;
+        public bool showAssemblySelection;
+        public bool showCritical;
+        public bool showDependencyView;
+        public bool showFilters;
+        public bool showInfoPanel;
+        public bool showMuteOptions;
+        public bool showRightPanels;
+        public System.Type viewType;
+        public ViewDescriptor() {}
+        public static Unity.ProjectAuditor.Editor.UI.ViewDescriptor[] GetAll();
+        public static void Register(Unity.ProjectAuditor.Editor.UI.ViewDescriptor descriptor);
+    }
+}

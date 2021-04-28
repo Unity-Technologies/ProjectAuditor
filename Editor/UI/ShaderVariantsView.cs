@@ -8,25 +8,29 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    class ShaderVariantsWindow : AnalysisWindow, IProjectIssueFilter
+    class ShaderVariantsView : AnalysisView, IProjectIssueFilter
     {
-        const string k_BuildRequiredInfo = @"
-Build the project to view the Shader Variants
-";
+        const string k_BuildRequiredInfo =
+            @"Build the project to view the Shader Variants";
 
-        const string k_PlayerLogInfo = @"
-To find which shader variants are compiled at runtime, follow these steps:
-- Enable the Log Shader Compilation option (Project Settings => Graphics => Shader Loading)
+        const string k_PlayerLogInstructions =
+@"This view shows the built Shader Variants.
+
+The number of Variants contributes to the build size, however, there might be Variants that are not required (compiled) at runtime on the target platform. To find out which of these variants are not compiled at runtime, follow these steps:
+- Enable the Log Shader Compilation option
 - Make a Development build
-- Run the build on the target platform
-- Drag & Drop the Player.log file on this window
-";
-        const string k_NotLogFile = "Player log file not recognized.";
+- Run the build on the target platform. Make sure to go through all scenes.
+- Drag & Drop the Player.log file on this window";
+
+        const string k_PlayerLogParsingUnsupported =
+@"This view shows the built Shader Variants.
+
+The number of Variants contributes to the build size, however, there might be Variants that are not required (compiled) at runtime on the target platform. To find out which of these variants are not compiled at runtime, update to the latest Unity 2018+ LTS.";
+
         const string k_NoCompiledVariantWarning = "No compiled shader variants found in player log. Perhaps, Log Shader Compilation was not enabled when the project was built.";
         const string k_NoCompiledVariantWarningLogDisabled = "No compiled shader variants found in player log. Shader compilation logging is disabled. Would you like to enable it? (Shader compilation will not appear in the log until the project is rebuilt)";
         const string k_PlayerLogProcessed = "Player log file successfully processed.";
 
-        bool m_FlatView;
         bool m_HideCompiledVariants;
         IProjectIssueFilter m_MainFilter;
         ShadersAuditor m_ShadersAuditor;
@@ -41,12 +45,12 @@ To find which shader variants are compiled at runtime, follow these steps:
             if (string.IsNullOrEmpty(logFilename))
                 return;
 
-            var variants = m_AnalysisView.GetIssues().Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
+            var variants = GetIssues().Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
 
             if (m_ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBarDisplay()))
             {
                 EditorUtility.DisplayDialog("Shader Variants", k_PlayerLogProcessed, "Ok");
-                m_AnalysisView.Refresh();
+                Refresh();
             }
             else if (GraphicsSettingsHelper.logShaderCompilationSupported)
             {
@@ -61,42 +65,44 @@ To find which shader variants are compiled at runtime, follow these steps:
             }
         }
 
-        public override void CreateTable(AnalysisViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public override void Create(ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
             m_MainFilter = filter;
-            base.CreateTable(desc, layout, config, prefs, filter);
-            m_AnalysisView.SetFlatView(m_FlatView);
+            base.Create(desc, layout, config, prefs, this);
         }
 
-        public override void OnGUI()
+        public override void DrawFilters()
         {
-            var buildAvailable = ShadersAuditor.BuildDataAvailable();
+            GUI.enabled = numIssues > 0;
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Extra :", GUILayout.Width(80));
+            EditorGUI.BeginChangeCheck();
+            m_HideCompiledVariants = EditorGUILayout.ToggleLeft("Hide Compiled Variants", m_HideCompiledVariants, GUILayout.Width(180));
+            if (EditorGUI.EndChangeCheck())
+            {
+                Refresh();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            GUI.enabled = true;
+        }
+
+        protected override void OnDrawInfo()
+        {
+            var variantsAvailable = numIssues > 0;
 
             EditorGUILayout.BeginVertical(GUI.skin.box);
 
-            var helpStyle = new GUIStyle(EditorStyles.textField);
-            helpStyle.wordWrap = true;
-            EditorGUILayout.LabelField(buildAvailable ? k_PlayerLogInfo : k_BuildRequiredInfo, helpStyle);
-
-            EditorGUI.BeginChangeCheck();
-
-            var lastEnabled = GUI.enabled;
-            GUI.enabled = buildAvailable;
-            m_FlatView = EditorGUILayout.ToggleLeft("Flat View", m_FlatView, GUILayout.Width(160));
-            m_HideCompiledVariants = EditorGUILayout.ToggleLeft("Hide Compiled Variants", m_HideCompiledVariants, GUILayout.Width(160));
-
-            GUI.enabled = lastEnabled;
-
-            if (EditorGUI.EndChangeCheck())
+            if (variantsAvailable)
             {
-                m_AnalysisView.SetFlatView(m_FlatView);
-                m_AnalysisView.Refresh();
-            }
+                EditorGUILayout.LabelField(GraphicsSettingsHelper.logShaderCompilationSupported
+                    ? k_PlayerLogInstructions
+                    : k_PlayerLogParsingUnsupported, Styles.TextArea);
 
-            EditorGUILayout.EndVertical();
+                if (GraphicsSettingsHelper.logShaderCompilationSupported)
+                    GraphicsSettingsHelper.logWhenShaderIsCompiled = EditorGUILayout.Toggle("Log Shader Compilation (requires Build&Run)", GraphicsSettingsHelper.logWhenShaderIsCompiled, GUILayout.Width(320));
 
-            if (buildAvailable)
-            {
                 var evt = Event.current;
 
                 switch (evt.type)
@@ -114,8 +120,13 @@ To find which shader variants are compiled at runtime, follow these steps:
                         evt.Use();
                         break;
                 }
-                base.OnGUI();
             }
+            else
+            {
+                EditorGUILayout.LabelField(k_BuildRequiredInfo, Styles.TextArea);
+            }
+
+            EditorGUILayout.EndVertical();
         }
 
         void HandleDragAndDrop()

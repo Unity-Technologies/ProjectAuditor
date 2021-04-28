@@ -48,7 +48,7 @@ class AddComponentToGameObject : MonoBehaviour
         [Test]
         public void InstantiateIssueIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetInstantiate);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInstantiate);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -58,7 +58,7 @@ class AddComponentToGameObject : MonoBehaviour
         [Test]
         public void AddComponentIssueIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetAddComponent);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetAddComponent);
 
             Assert.AreEqual(1, issues.Count());
 

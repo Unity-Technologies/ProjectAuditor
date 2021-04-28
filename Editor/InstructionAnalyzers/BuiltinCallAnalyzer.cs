@@ -4,21 +4,28 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class MethodCallAnalyzer : IInstructionAnalyzer
+    class BuiltinCallAnalyzer : IInstructionAnalyzer
     {
         Dictionary<string, List<ProblemDescriptor>> m_Descriptors; // method name as key, list of type names as value
         Dictionary<string, ProblemDescriptor> m_WholeNamespaceDescriptors; // namespace as key
 
         public void Initialize(IAuditor auditor)
         {
-            var descriptors = auditor.GetDescriptors().Where(descriptor => !descriptor.method.Equals("*") && !string.IsNullOrEmpty(descriptor.type));
+            var descriptors = ProblemDescriptorLoader.LoadFromJson(ProjectAuditor.DataPath, "ApiDatabase");
+            foreach (var descriptor in descriptors)
+            {
+                auditor.RegisterDescriptor(descriptor);
+            }
+
+            var methodDescriptors = descriptors.Where(descriptor => !descriptor.method.Equals("*") && !string.IsNullOrEmpty(descriptor.type));
 
             m_Descriptors = new Dictionary<string, List<ProblemDescriptor>>();
-            foreach (var d in descriptors)
+            foreach (var d in methodDescriptors)
             {
                 if (!m_Descriptors.ContainsKey(d.method))
                 {

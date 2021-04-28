@@ -3,12 +3,13 @@ using System;
 namespace Unity.ProjectAuditor.Editor.UI
 {
     [Serializable]
-    class Preferences
+    public class Preferences
     {
         public const int k_MinFontSize = 12;
         public const int k_MaxFontSize = 22;
 
         // foldout preferences
+        public bool info = true;
         public bool filters = true;
         public bool actions = true;
         public bool dependencies = true;

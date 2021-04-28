@@ -5,7 +5,23 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
-* Added Generic types instantiation analysis (experimental)
+* Fixed Build Report *Build Name*
+* Fixed *Graphics Tier Settings* misreporting
+
+## [0.6.0-preview] - 2021-04-26
+* Added Build Report support
+* Added Compiler Messages support
+* Added Generic types instantiation analysis
+* Added Summary view
+* Added Save&Load support
+* Added *Log Shader Compilation* option to Shader Variants view
+* Added Shaders view shortcut to Shader Variants view
+* Changed compilation pipeline to use AssemblyBuilder
+* Changed Shader Variants Window to simple view
+* Fixed Shader Variants persistence in UI after Domain Reload
+* Fixed Shader Variants *Compiled* column initial state
+* Fixed Code Diagnostics view sorting
+* Improved main documentation page
 
 ## [0.5.0-preview] - 2021-03-11
 * Fixed reporting of issues affecting multiple areas

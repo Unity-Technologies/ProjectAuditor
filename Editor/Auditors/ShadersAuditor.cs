@@ -136,8 +136,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_GetSRPBatcherCompatibilityCode = m_ShaderUtilType.GetMethod("GetSRPBatcherCompatibilityCode", BindingFlags.Static | BindingFlags.NonPublic);
         }
 
-        public void Reload(string path)
+        public bool IsSupported()
         {
+            return true;
         }
 
         public void RegisterDescriptor(ProblemDescriptor descriptor)
@@ -476,6 +477,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
             return keywords;
         }
+
 #endif
 
         bool ShaderVariantsMatch(CompiledVariantData cv, string[] secondSet, string passName)

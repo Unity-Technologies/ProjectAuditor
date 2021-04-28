@@ -107,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             else
             {
                 payload["numSelected"] = selectedAsmNames.Length.ToString();
-                payload["numUnityAssemblies"] = selectedAsmNames.Where(name => name.Contains("Unity")).Count().ToString();
+                payload["numUnityAssemblies"] = selectedAsmNames.Count(name => name.Contains("Unity")).ToString();
             }
 
             ProjectAuditorAnalytics.SendUIButtonEventWithKeyValues(ProjectAuditorAnalytics.UIButton.AssemblySelectApply, analytic, payload);
@@ -121,7 +121,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             GUILayout.Label("Select Assembly : ", style);
 
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Clear", GUILayout.Width(50))) m_MultiSelectionTable.ClearSelection();
+            if (GUILayout.Button("Clear", GUILayout.Width(50)))
+                m_MultiSelectionTable.ClearSelection();
             if (GUILayout.Button("Apply", GUILayout.Width(50)))
             {
                 ApplySelection();

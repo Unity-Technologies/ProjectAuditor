@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Unity.ProjectAuditor.Editor.SettingsAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
-using UnityEditor.Macros;
 using UnityEngine;
-using TypeInfo = Unity.ProjectAuditor.Editor.Utils.TypeInfo;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
@@ -22,36 +18,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         };
 
-        readonly List<Assembly> m_Assemblies = new List<Assembly>();
-        readonly Evaluators m_Helpers = new Evaluators();
-
-        readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping =
-            new List<KeyValuePair<string, string>>();
-
-        readonly Dictionary<int, ISettingsAnalyzer> m_SettingsAnalyzers =
-            new Dictionary<int, ISettingsAnalyzer>();
+        List<ISettingsAnalyzer> m_Analyzers;
         List<ProblemDescriptor> m_ProblemDescriptors;
-
-        public void Initialize(ProjectAuditorConfig config)
-        {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            m_Assemblies.Add(assemblies.First(a => a.Location.Contains("UnityEngine.dll")));
-            m_Assemblies.Add(assemblies.First(a => a.Location.Contains("UnityEditor.dll")));
-
-            // UnityEditor
-            m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEditor.PlayerSettings",
-                "Project/Player"));
-            m_ProjectSettingsMapping.Add(
-                new KeyValuePair<string, string>("UnityEditor.Rendering.EditorGraphicsSettings", "Project/Graphics"));
-
-            // UnityEngine
-            m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.Physics", "Project/Physics"));
-            m_ProjectSettingsMapping.Add(
-                new KeyValuePair<string, string>("UnityEngine.Physics2D", "Project/Physics 2D"));
-            m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.Time", "Project/Time"));
-            m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.QualitySettings",
-                "Project/Quality"));
-        }
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -63,12 +31,18 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             yield return k_IssueLayout;
         }
 
-        public void Reload(string path)
+        public void Initialize(ProjectAuditorConfig config)
         {
-            m_ProblemDescriptors = ProblemDescriptorLoader.LoadFromJson(path, "ProjectSettings");
+            m_Analyzers = new List<ISettingsAnalyzer>();
+            m_ProblemDescriptors = new List<ProblemDescriptor>();
 
             foreach (var type in TypeInfo.GetAllTypesInheritedFromInterface<ISettingsAnalyzer>())
                 AddAnalyzer(Activator.CreateInstance(type) as ISettingsAnalyzer);
+        }
+
+        public bool IsSupported()
+        {
+            return true;
         }
 
         public void RegisterDescriptor(ProblemDescriptor descriptor)
@@ -78,26 +52,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
-            if (m_ProblemDescriptors == null)
-                throw new Exception("Issue Database not initialized.");
-
             if (progressBar != null)
-                progressBar.Initialize("Analyzing Settings", "Analyzing project settings", m_ProblemDescriptors.Count);
+                progressBar.Initialize("Analyzing Settings", "Analyzing project settings", m_Analyzers.Count);
 
-            foreach (var descriptor in m_ProblemDescriptors)
+            foreach (var analyzer in m_Analyzers)
             {
                 if (progressBar != null)
                     progressBar.AdvanceProgressBar();
 
-                if (m_SettingsAnalyzers.ContainsKey(descriptor.id))
+                foreach (var issue in analyzer.Analyze())
                 {
-                    var analyzer = m_SettingsAnalyzers[descriptor.id];
-                    var projectIssue = analyzer.Analyze();
-                    if (projectIssue != null) onIssueFound(projectIssue);
-                }
-                else
-                {
-                    SearchAndEval(descriptor, onIssueFound);
+                    onIssueFound(issue);
                 }
             }
 
@@ -110,63 +75,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         void AddAnalyzer(ISettingsAnalyzer analyzer)
         {
             analyzer.Initialize(this);
-            m_SettingsAnalyzers.Add(analyzer.GetDescriptorId(), analyzer);
-        }
-
-        void AddIssue(ProblemDescriptor descriptor, string description, Action<ProjectIssue> onIssueFound)
-        {
-            var projectWindowPath = "";
-            var mappings = m_ProjectSettingsMapping.Where(p => descriptor.type.StartsWith(p.Key));
-            if (mappings.Count() > 0)
-                projectWindowPath = mappings.First().Value;
-            onIssueFound(new ProjectIssue
-                (
-                    descriptor,
-                    description,
-                    IssueCategory.ProjectSettings,
-                    new Location(projectWindowPath)
-                )
-            );
-        }
-
-        void SearchAndEval(ProblemDescriptor descriptor, Action<ProjectIssue> onIssueFound)
-        {
-            if (string.IsNullOrEmpty(descriptor.customevaluator))
-            {
-                var paramTypes = new Type[] {};
-                var args = new object[] {};
-                var found = false;
-                // do we actually need to look in all assemblies? Maybe we can find a way to only evaluate on the right assembly
-                foreach (var assembly in m_Assemblies)
-                    try
-                    {
-                        var value = MethodEvaluator.Eval(assembly.Location,
-                            descriptor.type, "get_" + descriptor.method, paramTypes, args);
-
-                        if (value.ToString() == descriptor.value)
-                        {
-                            AddIssue(descriptor, descriptor.description, onIssueFound);
-                        }
-
-                        // Eval did not throw exception so we can stop iterating assemblies
-                        found = true;
-                        break;
-                    }
-                    catch (Exception)
-                    {
-                        // this is safe to ignore
-                    }
-
-                if (!found)
-                    Debug.Log(descriptor.method + " not found in any assembly");
-            }
-            else
-            {
-                var helperType = m_Helpers.GetType();
-                var theMethod = helperType.GetMethod(descriptor.customevaluator);
-                if ((bool)theMethod.Invoke(m_Helpers, null))
-                    AddIssue(descriptor, descriptor.description, onIssueFound);
-            }
+            m_Analyzers.Add(analyzer);
         }
     }
 }

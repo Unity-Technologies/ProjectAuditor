@@ -80,7 +80,6 @@ namespace Unity.ProjectAuditor.Editor
             {
                 var instance = Activator.CreateInstance(type) as IAuditor;
                 instance.Initialize(m_Config);
-                instance.Reload(DataPath);
                 m_Auditors.Add(instance);
             }
         }
@@ -166,13 +165,12 @@ namespace Unity.ProjectAuditor.Editor
                 Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
         }
 
-        internal T GetAuditor<T>() where T : class
+        internal T GetAuditor<T>() where T : class, IAuditor
         {
-            foreach (var iauditor in m_Auditors)
+            foreach (var auditor in m_Auditors)
             {
-                var auditor = iauditor as T;
-                if (auditor != null)
-                    return auditor;
+                if (auditor is T)
+                    return (T)auditor;
             }
 
             return null;
@@ -180,13 +178,8 @@ namespace Unity.ProjectAuditor.Editor
 
         public IssueLayout GetLayout(IssueCategory category)
         {
-            return m_Auditors.SelectMany(auditor => auditor.GetLayouts()).First(a => a.category == category);
-        }
-
-        public void Reload(string path)
-        {
-            foreach (var auditor in m_Auditors)
-                auditor.Reload(path);
+            var layouts = m_Auditors.Where(a => a.IsSupported()).SelectMany(auditor => auditor.GetLayouts()).Where(l => l.category == category);
+            return layouts.FirstOrDefault();
         }
 
 #if UNITY_2018_1_OR_NEWER
