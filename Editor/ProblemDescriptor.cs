@@ -79,7 +79,13 @@ namespace Unity.ProjectAuditor.Editor
             critical = false;
         }
 
-        public ProblemDescriptor(int id, string description, Area area, string problem = null, string solution = null) : this(id, description, area.ToString(), problem, solution)
+        public ProblemDescriptor(int id, string description, Area area, string problem = null, string solution = null)
+            : this(id, description, area.ToString(), problem, solution)
+        {
+        }
+
+        public ProblemDescriptor(int id, string description, Area[] areas, string problem = null, string solution = null)
+            : this(id, description, string.Join("|", areas), problem, solution)
         {
         }
 

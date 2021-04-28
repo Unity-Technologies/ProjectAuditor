@@ -103,5 +103,19 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             LogAssert.Expect(LogType.Error, "Descriptor (102001) minimumVersion (1.1) is greater than maximumVersion (1.0).");
             Assert.False(result);
         }
+
+        [Test]
+        public void ProblemDescriptorWithMultipleAreas()
+        {
+            var desc = new ProblemDescriptor
+            (
+                102001,
+                "test",
+                new[] {Area.CPU, Area.Memory},
+                "this is not actually a problem",
+                "do nothing"
+            );
+            Assert.True(desc.area.Equals("CPU|Memory"));
+        }
     }
 }
