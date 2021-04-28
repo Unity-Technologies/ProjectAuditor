@@ -1,15 +1,12 @@
 #if HDRP_ANALYZER_SUPPORT
 
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
-#if UNITY_2019_3_OR_NEWER
-using System;
 using UnityEngine;
 using UnityEngine.Rendering;
-using PackageInfo = UnityEditor.PackageManager.PackageInfo;
-#endif
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
@@ -44,39 +41,32 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
         public IEnumerable<ProjectIssue> Analyze()
         {
-#if UNITY_2019_3_OR_NEWER
-            if (PackageInfo.FindForAssetPath("Packages/com.unity.render-pipelines.high-definition") != null)
+            if (IsLitShaderModeBoth())
             {
-                if (IsLitShaderModeBoth())
+                var deferredCamera = false;
+                var forwardCamera = false;
+                var allCameraData = new List<HDAdditionalCameraData>();
+                for (int n = 0; n < SceneManager.sceneCount; ++n)
                 {
-                    var deferredCamera = false;
-                    var forwardCamera = false;
-                    var allCameraData = new List<HDAdditionalCameraData>();
-                    for (int n = 0; n < SceneManager.sceneCount; ++n)
+                    var scene = SceneManager.GetSceneAt(n);
+                    var roots = scene.GetRootGameObjects();
+                    foreach (var go in roots)
                     {
-                        var scene = SceneManager.GetSceneAt(n);
-                        var roots = scene.GetRootGameObjects();
-                        foreach (var go in roots)
-                        {
-                            GetCameraComponents(go, ref allCameraData);
-                        }
+                        GetCameraComponents(go, ref allCameraData);
                     }
-                    foreach (var cameraData in allCameraData)
-                    {
-                        if (cameraData.renderingPathCustomFrameSettings.litShaderMode == LitShaderMode.Deferred)
-                            deferredCamera = true;
-                        else
-                            forwardCamera = true;
-
-                        if (deferredCamera && forwardCamera)
-                            yield return new ProjectIssue(k_LitShaderModeBothAndMixedCameras, k_LitShaderModeBothAndMixedCameras.description, IssueCategory.ProjectSettings);
-                    }
-                    yield return new ProjectIssue(k_LitShaderModeBoth, k_LitShaderModeBoth.description, IssueCategory.ProjectSettings);
                 }
+                foreach (var cameraData in allCameraData)
+                {
+                    if (cameraData.renderingPathCustomFrameSettings.litShaderMode == LitShaderMode.Deferred)
+                        deferredCamera = true;
+                    else
+                        forwardCamera = true;
+
+                    if (deferredCamera && forwardCamera)
+                        yield return new ProjectIssue(k_LitShaderModeBothAndMixedCameras, k_LitShaderModeBothAndMixedCameras.description, IssueCategory.ProjectSettings);
+                }
+                yield return new ProjectIssue(k_LitShaderModeBoth, k_LitShaderModeBoth.description, IssueCategory.ProjectSettings);
             }
-#else
-            return Array.Empty<ProjectIssue>();
-#endif
         }
 
         bool IsLitShaderModeBoth()
