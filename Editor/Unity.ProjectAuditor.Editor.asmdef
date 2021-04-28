@@ -19,6 +19,11 @@
             "name": "com.unity.render-pipelines.high-definition",
             "expression": "",
             "define": "HDRP_ANALYZER_SUPPORT"
+        },
+        {
+            "name": "com.unity.rendering.hybrid",
+            "expression": "",
+            "define": "HYBRID_RENDERER_ANALYZER_SUPPORT"
         }
     ],
     "noEngineReferences": false
