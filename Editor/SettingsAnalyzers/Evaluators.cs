@@ -10,11 +10,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
     class Evaluators
     {
-        // Edit this to reflect the target platforms for your project
-        // TODO - Provide an interface for this, or something
-        readonly BuildTargetGroup[] m_BuildTargets =
-        {BuildTargetGroup.iOS, BuildTargetGroup.Android, BuildTargetGroup.Standalone};
-
         readonly GraphicsTier[] m_GraphicsTiers = {GraphicsTier.Tier1, GraphicsTier.Tier2, GraphicsTier.Tier3};
 
         public bool PlayerSettingsAccelerometerFrequency()
@@ -180,51 +175,26 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
         public bool GraphicsMixedStandardShaderQuality()
         {
-            for (var btIdx = 0; btIdx < m_BuildTargets.Length; ++btIdx)
-            {
-                var ssq = EditorGraphicsSettings.GetTierSettings(m_BuildTargets[btIdx], m_GraphicsTiers[0])
-                    .standardShaderQuality;
-                for (var tierIdx = 0; tierIdx < m_GraphicsTiers.Length; ++tierIdx)
-                {
-                    var tierSettings =
-                        EditorGraphicsSettings.GetTierSettings(m_BuildTargets[btIdx], m_GraphicsTiers[tierIdx]);
+            var buildGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+            var standardShaderQualities = m_GraphicsTiers.Select(tier => EditorGraphicsSettings.GetTierSettings(buildGroup, tier).standardShaderQuality);
 
-                    if (tierSettings.standardShaderQuality != ssq)
-                        return true;
-                }
-            }
-
-            return false;
+            return standardShaderQualities.Distinct().Count() > 1;
         }
 
         public bool GraphicsUsingForwardRendering()
         {
-            for (var btIdx = 0; btIdx < m_BuildTargets.Length; ++btIdx)
-                for (var tierIdx = 0; tierIdx < m_GraphicsTiers.Length; ++tierIdx)
-                {
-                    var tierSettings =
-                        EditorGraphicsSettings.GetTierSettings(m_BuildTargets[btIdx], m_GraphicsTiers[tierIdx]);
+            var buildGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+            var renderingPaths = m_GraphicsTiers.Select(tier => EditorGraphicsSettings.GetTierSettings(buildGroup, tier).renderingPath);
 
-                    if (tierSettings.renderingPath == RenderingPath.Forward)
-                        return true;
-                }
-
-            return false;
+            return renderingPaths.Any(path => path == RenderingPath.Forward);
         }
 
         public bool GraphicsUsingDeferredRendering()
         {
-            for (var btIdx = 0; btIdx < m_BuildTargets.Length; ++btIdx)
-                for (var tierIdx = 0; tierIdx < m_GraphicsTiers.Length; ++tierIdx)
-                {
-                    var tierSettings =
-                        EditorGraphicsSettings.GetTierSettings(m_BuildTargets[btIdx], m_GraphicsTiers[tierIdx]);
+            var buildGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+            var renderingPaths = m_GraphicsTiers.Select(tier => EditorGraphicsSettings.GetTierSettings(buildGroup, tier).renderingPath);
 
-                    if (tierSettings.renderingPath == RenderingPath.DeferredShading)
-                        return true;
-                }
-
-            return false;
+            return renderingPaths.Any(path => path == RenderingPath.DeferredShading);
         }
     }
 }
