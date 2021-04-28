@@ -33,11 +33,6 @@ namespace Unity.ProjectAuditor.Editor
         BuildTime,
 
         /// <summary>
-        /// Import time
-        /// </summary>
-        ImportTime,
-
-        /// <summary>
         /// Load times
         /// </summary>
         LoadTimes

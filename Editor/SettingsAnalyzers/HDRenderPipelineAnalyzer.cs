@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         static readonly ProblemDescriptor k_LitShaderModeBoth = new ProblemDescriptor(
             202001,
             "HDRP: Shader mode is set to Both",
-            string.Format("{0}|{1}", Area.BuildSize, Area.BuildTime),
+            new[] { Area.BuildSize, Area.BuildTime },
             "If HDRP 'Lit Shader Mode' is set to Both, shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
             "Change Shader mode to Forward or Deferred."
         );
@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         static readonly ProblemDescriptor k_LitShaderModeBothAndMixedCameras = new ProblemDescriptor(
             202002,
             "HDRP: Mixed usage of 'Lit Shader Mode' Forward and Deferred",
-            string.Format("{0}|{1}", Area.BuildSize, Area.BuildTime),
+            new[] { Area.BuildSize, Area.BuildTime },
             "If Cameras use both 'Lit Shader Mode' Forward and Deferred, shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
             "Change HDRP asset and all Cameras 'Lit Shader Mode' to either Forward or Deferred."
         );
