@@ -1,4 +1,5 @@
-﻿
+#if HDRP_ANALYZER_SUPPORT
+
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine.Rendering.HighDefinition;
@@ -117,3 +118,4 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         }
     }
 }
+#endif
