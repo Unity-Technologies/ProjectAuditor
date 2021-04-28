@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var report = BuildAuditor.GetBuildReport();
             if (report == null)
             {
-                EditorGUILayout.LabelField("Build Report not found");
+                EditorGUILayout.LabelField("Build Report summary not found");
             }
             else
             {
