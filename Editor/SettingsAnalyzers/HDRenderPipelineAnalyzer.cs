@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return k_LitShaderModeBoth.id;
         }
 
-        public ProjectIssue Analyze()
+        public IEnumerable<ProjectIssue> Analyze()
         {
 #if UNITY_2019_3_OR_NEWER
             if (PackageInfo.FindForAssetPath("Packages/com.unity.render-pipelines.high-definition") != null)
@@ -69,14 +69,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
                             forwardCamera = true;
 
                         if (deferredCamera && forwardCamera)
-                            return new ProjectIssue(k_LitShaderModeBothAndMixedCameras, k_LitShaderModeBothAndMixedCameras.description, IssueCategory.ProjectSettings);
+                            yield return new ProjectIssue(k_LitShaderModeBothAndMixedCameras, k_LitShaderModeBothAndMixedCameras.description, IssueCategory.ProjectSettings);
                     }
-                    return new ProjectIssue(k_LitShaderModeBoth, k_LitShaderModeBoth.description, IssueCategory.ProjectSettings);
+                    yield return new ProjectIssue(k_LitShaderModeBoth, k_LitShaderModeBoth.description, IssueCategory.ProjectSettings);
                 }
             }
+#else
+            return Array.Empty<ProjectIssue>();
 #endif
-
-            return null;
         }
 
         bool IsLitShaderModeBoth()
