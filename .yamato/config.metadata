@@ -1,8 +1,8 @@
 test_editors:
   - version: 2018.4
   - version: 2019.4
-  - version: 2020.1
-  - version: 2020.2
+  - version: 2020.3
+  - version: 2021.1
   - version: trunk
 test_platforms:
   - name: win
