@@ -1,6 +1,8 @@
 {
     "name": "Unity.ProjectAuditor.Editor",
-    "references": [],
+    "references": [
+        "Unity.RenderPipelines.HighDefinition.Runtime"
+    ],
     "includePlatforms": [
         "Editor"
     ],
@@ -13,6 +15,11 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [
+        {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "",
+            "define": "HDRP_ANALYZER_SUPPORT"
+        },
         {
             "name": "com.unity.rendering.hybrid",
             "expression": "",

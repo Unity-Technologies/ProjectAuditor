@@ -6,9 +6,10 @@ namespace Unity.ProjectAuditor.Editor
     public enum Area
     {
         public const Unity.ProjectAuditor.Editor.Area BuildSize = 3;
+        public const Unity.ProjectAuditor.Editor.Area BuildTime = 4;
         public const Unity.ProjectAuditor.Editor.Area CPU = 0;
         public const Unity.ProjectAuditor.Editor.Area GPU = 1;
-        public const Unity.ProjectAuditor.Editor.Area LoadTimes = 4;
+        public const Unity.ProjectAuditor.Editor.Area LoadTimes = 5;
         public const Unity.ProjectAuditor.Editor.Area Memory = 2;
         public int value__;
     }
