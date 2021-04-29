@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -75,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         public ProblemDescriptor(int id, string description, Area[] areas, string problem = null, string solution = null)
-            : this(id, description, string.Join("|", areas), problem, solution)
+            : this(id, description, string.Join("|", areas.Select(a => a.ToString()).ToArray()), problem, solution)
         {
         }
 
