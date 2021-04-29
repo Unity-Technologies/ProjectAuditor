@@ -64,8 +64,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var prevSplashScreenEnabled = PlayerSettings.SplashScreen.show;
             PlayerSettings.SplashScreen.show = splashScreenEnabled;
 
-            var evaluators = new Evaluators();
-            Assert.AreEqual(splashScreenEnabled, evaluators.PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled());
+            Assert.AreEqual(splashScreenEnabled, Evaluators.PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled());
 
             PlayerSettings.SplashScreen.show = prevSplashScreenEnabled;
         }
@@ -91,8 +90,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, tier2settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, tier3settings);
 
-            var evaluators = new Evaluators();
-            Assert.AreEqual(isMixed, evaluators.GraphicsMixedStandardShaderQuality());
+            Assert.AreEqual(isMixed, Evaluators.GraphicsMixedStandardShaderQuality());
 
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, savedTier1settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, savedTier2settings);
@@ -120,16 +118,15 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, tier2settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, tier3settings);
 
-            var evaluators = new Evaluators();
             if (renderingPath == RenderingPath.Forward)
             {
-                Assert.AreEqual(true, evaluators.GraphicsUsingForwardRendering());
-                Assert.AreEqual(false, evaluators.GraphicsUsingDeferredRendering());
+                Assert.AreEqual(true, Evaluators.GraphicsUsingForwardRendering());
+                Assert.AreEqual(false, Evaluators.GraphicsUsingDeferredRendering());
             }
             else
             {
-                Assert.AreEqual(false, evaluators.GraphicsUsingForwardRendering());
-                Assert.AreEqual(true, evaluators.GraphicsUsingDeferredRendering());
+                Assert.AreEqual(false, Evaluators.GraphicsUsingForwardRendering());
+                Assert.AreEqual(true, Evaluators.GraphicsUsingDeferredRendering());
             }
 
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, savedTier1settings);

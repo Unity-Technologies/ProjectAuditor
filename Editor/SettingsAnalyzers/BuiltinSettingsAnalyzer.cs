@@ -11,7 +11,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
     class BuiltinSettingsAnalyzer : ISettingsAnalyzer
     {
         readonly List<Assembly> m_Assemblies = new List<Assembly>();
-        readonly Evaluators m_Helpers = new Evaluators();
         readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping =
             new List<KeyValuePair<string, string>>();
         List<ProblemDescriptor> m_ProblemDescriptors;
@@ -89,9 +88,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             }
             else
             {
-                var helperType = m_Helpers.GetType();
-                var theMethod = helperType.GetMethod(descriptor.customevaluator);
-                if ((bool)theMethod.Invoke(m_Helpers, null))
+                var evalType = typeof(Evaluators);
+                var method = evalType.GetMethod(descriptor.customevaluator);
+                if ((bool)method.Invoke(null, null))
                     return NewIssue(descriptor, descriptor.description);
             }
 
