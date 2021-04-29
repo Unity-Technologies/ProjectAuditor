@@ -108,13 +108,13 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         public void ProblemDescriptorWithMultipleAreas()
         {
             var desc = new ProblemDescriptor
-            (
+                (
                 102001,
                 "test",
                 new[] {Area.CPU, Area.Memory},
                 "this is not actually a problem",
                 "do nothing"
-            );
+                );
             Assert.True(desc.area.Equals("CPU|Memory"));
         }
     }
