@@ -322,10 +322,7 @@ Shader ""Custom/MyEditorShader""
         public void ShaderVariantsRequireBuild()
         {
             ShadersAuditor.CleanupBuildData();
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.ShaderVariants);
+            var issues = Utility.Analyze(IssueCategory.ShaderVariants);
             Assert.Zero(issues.Length);
             Assert.False(ShadersAuditor.BuildDataAvailable());
         }
@@ -486,9 +483,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderIsReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shaders);
             var shaderIssue = issues.FirstOrDefault(i => i.description.Equals("Custom/MyTestShader"));
             Assert.NotNull(shaderIssue);
 
@@ -510,9 +505,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderWithErrorIsReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shaders);
             var shadersWithErrors = issues.Where(i => i.severity == Rule.Severity.Error);
             Assert.Positive(shadersWithErrors.Count());
             var shaderIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_ShaderWithErrorResource.relativePath));
@@ -524,9 +517,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderUsingBuiltInKeywordIsReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shaders);
             var shaderIssue = issues.FirstOrDefault(i => i.description.Equals("Custom/ShaderUsingBuiltInKeyword"));
             Assert.NotNull(shaderIssue);
 
@@ -546,9 +537,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void SurfShaderIsReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shaders);
             var shaderIssue = issues.FirstOrDefault(i => i.description.Equals("Custom/MySurfShader"));
             Assert.NotNull(shaderIssue);
 
@@ -568,10 +557,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void EditorShaderIsNotReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shaders);
             issues = issues.Where(i => i.description.Equals("Custom/MyEditorShader")).ToArray();
 
             Assert.Zero(issues.Length);
@@ -580,10 +566,9 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void EditorDefaultResourcesShaderIsNotReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Shaders).Where(i => i.relativePath.Contains("Editor Default Resources")).ToArray();
-            Assert.Zero(issues.Length);
+            var issues = Utility.Analyze(IssueCategory.Shaders);
+            var filteredIssues = issues.Where(i => i.relativePath.Contains("Editor Default Resources")).ToArray();
+            Assert.Zero(filteredIssues.Length);
         }
     }
 }

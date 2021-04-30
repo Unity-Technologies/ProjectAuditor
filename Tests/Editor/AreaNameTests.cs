@@ -15,8 +15,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             // disabling stripUnusedMeshComponents will be reported as an issue
             PlayerSettings.stripUnusedMeshComponents = false;
 
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.ProjectSettings);
+            var issues = Utility.Analyze(IssueCategory.ProjectSettings);
 
             var strippingIssue = issues.FirstOrDefault(i => i.descriptor.method.Equals("stripUnusedMeshComponents"));
             Assert.NotNull(strippingIssue);

@@ -13,9 +13,10 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public static class Utility
     {
-        public static ProjectIssue[] AnalyzeAndFindAssetIssues(TempAsset tempAsset)
+        public static ProjectIssue[] Analyze(IssueCategory category)
         {
-            var auditor = new ScriptAuditor();
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var auditor = projectAuditor.GetAuditor(category);
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             config.AnalyzeInBackground = false;
             auditor.Initialize(config);
@@ -23,14 +24,21 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var foundIssues = new List<ProjectIssue>();
             var completed = false;
             auditor.Audit(issue => {
-                foundIssues.Add(issue);
-            },
+                    foundIssues.Add(issue);
+                },
                 () =>
                 {
                     completed = true;
                 });
 
             Assert.True(completed);
+
+            return foundIssues.Where(i => i.category == category).ToArray();
+        }
+
+        public static ProjectIssue[] AnalyzeAndFindAssetIssues(TempAsset tempAsset)
+        {
+            var foundIssues = Analyze(IssueCategory.Code);
 
             return foundIssues.Where(i => i.relativePath.Equals(tempAsset.relativePath)).ToArray();
         }

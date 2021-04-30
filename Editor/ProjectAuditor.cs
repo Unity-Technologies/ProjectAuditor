@@ -176,6 +176,11 @@ namespace Unity.ProjectAuditor.Editor
             return null;
         }
 
+        internal IAuditor GetAuditor(IssueCategory category)
+        {
+            return m_Auditors.FirstOrDefault(a => a.IsSupported() && a.GetLayouts().FirstOrDefault(l => l.category == category) != null);
+        }
+
         public IssueLayout GetLayout(IssueCategory category)
         {
             var layouts = m_Auditors.Where(a => a.IsSupported()).SelectMany(auditor => auditor.GetLayouts()).Where(l => l.category == category);

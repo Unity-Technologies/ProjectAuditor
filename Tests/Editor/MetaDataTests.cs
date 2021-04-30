@@ -10,10 +10,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void MetaDataIsReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.MetaData);
+            var issues = Utility.Analyze(IssueCategory.MetaData);
             var matchingIssue = issues.FirstOrDefault(i => i.description.Equals("Unity Version"));
 
             Assert.NotNull(matchingIssue);
