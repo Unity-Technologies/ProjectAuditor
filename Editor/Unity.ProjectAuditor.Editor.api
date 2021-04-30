@@ -91,6 +91,7 @@ namespace Unity.ProjectAuditor.Editor
         public string maximumVersion;
         public string method;
         public string minimumVersion;
+        public string[] platforms;
         public string problem;
         public Unity.ProjectAuditor.Editor.Rule.Severity severity;
         public string solution;
