@@ -24,8 +24,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var foundIssues = new List<ProjectIssue>();
             var completed = false;
             auditor.Audit(issue => {
-                    foundIssues.Add(issue);
-                },
+                foundIssues.Add(issue);
+            },
                 () =>
                 {
                     completed = true;
