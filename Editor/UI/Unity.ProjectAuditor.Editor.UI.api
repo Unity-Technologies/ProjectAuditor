@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public static System.Action<Unity.ProjectAuditor.Editor.IssueCategory> OnChangeView;
         protected static Unity.ProjectAuditor.Editor.ProjectReport s_Report;
         public Unity.ProjectAuditor.Editor.UI.ViewDescriptor desc { get; }
-        public int numIssues { get; }
+        protected int numIssues { get; }
         public AnalysisView() {}
         public void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
         public void Clear();
@@ -20,11 +20,10 @@ namespace Unity.ProjectAuditor.Editor.UI
         public virtual void DrawFilters();
         public void DrawInfo();
         public void DrawTableAndPanels();
-        public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
+        protected Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
         public bool IsValid();
         protected virtual void OnDrawInfo();
         public void Refresh();
-        public void SetFlatView(bool value);
         public static void SetReport(Unity.ProjectAuditor.Editor.ProjectReport report);
     }
 
@@ -62,7 +61,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         public int menuOrder;
         public string name;
         public System.Action<Unity.ProjectAuditor.Editor.Utils.Location> onDoubleClick;
-        public string onDrawInfo;
         public System.Action onDrawToolbarDataOptions;
         public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenDescriptor;
         public bool showActions;
@@ -74,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public bool showInfoPanel;
         public bool showMuteOptions;
         public bool showRightPanels;
-        public System.Type viewType;
+        public System.Type type;
         public ViewDescriptor() {}
         public static Unity.ProjectAuditor.Editor.UI.ViewDescriptor[] GetAll();
         public static void Register(Unity.ProjectAuditor.Editor.UI.ViewDescriptor descriptor);

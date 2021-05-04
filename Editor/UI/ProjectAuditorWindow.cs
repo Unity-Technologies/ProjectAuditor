@@ -142,7 +142,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     continue;
                 }
 
-                var view = desc.viewType != null ? (AnalysisView)Activator.CreateInstance(desc.viewType) : new AnalysisView();
+                var view = desc.type != null ? (AnalysisView)Activator.CreateInstance(desc.type) : new AnalysisView();
                 view.Create(desc, layout, m_ProjectAuditor.config, m_Preferences, this);
 
                 if (currentState == AnalysisState.Valid)
@@ -219,7 +219,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showActions = false,
                 showFilters = false,
                 showInfoPanel = true,
-                viewType = typeof(SummaryView),
+                type = typeof(SummaryView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Summary
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -271,7 +271,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                viewType = typeof(ShaderVariantsView),
+                type = typeof(ShaderVariantsView),
                 category = IssueCategory.ShaderVariants,
                 name = "Variants",
                 menuOrder = 3,
@@ -298,7 +298,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                viewType = typeof(CodeView),
+                type = typeof(CodeView),
                 category = IssueCategory.Code,
                 name = "Code",
                 menuLabel = "Code/Diagnostics",
@@ -321,7 +321,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                viewType = typeof(CompilerMessagesView),
+                type = typeof(CompilerMessagesView),
                 category = IssueCategory.CodeCompilerMessages,
                 name = "C# Messages",
                 menuOrder = 98,
@@ -381,7 +381,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                viewType = typeof(BuildReportView),
+                type = typeof(BuildReportView),
                 category = IssueCategory.BuildFiles,
                 name = "Build",
                 menuLabel = "Build Report",
@@ -990,12 +990,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
-                    if (Styles.StatusText == null)
-                    {
-                        Styles.StatusText = new GUIStyle(Utility.GetStyle("ToolbarLabel"));
-                        Styles.StatusText.normal.textColor = Color.yellow;
-                    }
-
                     GUILayout.Label(Contents.AnalysisInProgressLabel, Styles.StatusText, GUILayout.ExpandWidth(true));
                 }
 
@@ -1024,13 +1018,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             EditorGUILayout.BeginVertical(GUI.skin.box);
 
-            if (Styles.WelcomeText == null)
-            {
-                Styles.WelcomeText = new GUIStyle(EditorStyles.textField);
-                Styles.WelcomeText.wordWrap = true;
-            }
-
-            EditorGUILayout.LabelField(Contents.HelpText, Styles.WelcomeText);
+            EditorGUILayout.LabelField(Contents.HelpText, SharedStyles.TextArea);
 
             EditorGUILayout.EndVertical();
         }
@@ -1174,8 +1162,21 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...), by str
 
         static class Styles
         {
-            public static GUIStyle StatusText;
-            public static GUIStyle WelcomeText;
+            public static GUIStyle StatusText
+            {
+                get
+                {
+                    if (s_StatusText == null)
+                    {
+                        s_StatusText = new GUIStyle(Utility.GetStyle("ToolbarLabel"));
+                        StatusText.normal.textColor = Color.yellow;
+                    }
+
+                    return s_StatusText;
+                }
+            }
+
+            static GUIStyle s_StatusText;
         }
 
         [PostProcessBuild(1)]
