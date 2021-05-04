@@ -99,6 +99,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         internal const string k_NoPassName = "<unnamed>";
         internal const string k_UnamedPassPrefix = "Pass ";
         internal const string k_NoKeywords = "<no keywords>";
+        internal const string k_NoRuntimeData = "?";
         internal const string k_NotAvailable = "N/A";
         const int k_ShaderVariantFirstId = 400001;
 
@@ -336,7 +337,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariants, new Location(assetPath));
                 issue.SetCustomProperties(new[]
                 {
-                    "?",
+                    k_NoRuntimeData,
                     compilerData.shaderCompilerPlatform.ToString(),
                     shaderVariantData.passName,
                     KeywordsToString(keywords),

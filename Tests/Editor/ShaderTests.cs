@@ -351,6 +351,7 @@ Shader ""Custom/MyEditorShader""
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals(ShadersAuditor.k_NoKeywords)));
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_A")));
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B")));
+                Assert.True(variantsForPlatform.All(v => v.GetCustomProperty((int)ShaderVariantProperty.Compiled).Equals(ShadersAuditor.k_NoRuntimeData)));
             }
         }
 
@@ -489,6 +490,7 @@ Shader ""Custom/MyEditorShader""
 
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
+            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumVariants).Equals(ShadersAuditor.k_NotAvailable));
 #if UNITY_2019_1_OR_NEWER
             Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
             Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
