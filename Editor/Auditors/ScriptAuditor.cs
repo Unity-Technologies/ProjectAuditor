@@ -330,8 +330,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     descriptor = new ProblemDescriptor
                         (
                         k_CompilerMessageFirstId + m_RuntimeDescriptors.Count,
-                        message.code,
-                        Area.CPU
+                        message.code
                         )
                     {
                         severity = severity

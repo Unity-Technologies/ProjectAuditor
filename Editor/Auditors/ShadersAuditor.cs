@@ -90,8 +90,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         static readonly ProblemDescriptor k_ParseErrorDescriptor = new ProblemDescriptor
             (
             400000,
-            "Parse Error",
-            Area.BuildSize)
+            "Parse Error"
+            )
         {
             severity = Rule.Severity.Error
         };
@@ -256,8 +256,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var descriptor = new ProblemDescriptor
                 (
                 id++,
-                shaderName,
-                Area.BuildSize
+                shaderName
                 );
 
             var passCount = k_NotAvailable;
@@ -326,8 +325,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var descriptor = new ProblemDescriptor
                 (
                 id++,
-                shaderName,
-                Area.BuildSize
+                shaderName
                 );
 
             foreach (var shaderVariantData in shaderVariants)

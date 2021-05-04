@@ -10,8 +10,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
             (
             700000,
-            "Meta Data",
-            Area.BuildSize
+            "Meta Data"
             );
 
         static readonly IssueLayout k_IssueLayout = new IssueLayout

@@ -36,7 +36,12 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Load times
         /// </summary>
-        LoadTimes
+        LoadTimes,
+
+        /// <summary>
+        /// Area not applicable. Information purposes only.
+        /// </summary>
+        Info
     }
 
     /// <summary>
@@ -76,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor
             critical = false;
         }
 
-        public ProblemDescriptor(int id, string description, Area area, string problem = null, string solution = null)
+        public ProblemDescriptor(int id, string description, Area area = Area.Info, string problem = null, string solution = null)
             : this(id, description, area.ToString(), problem, solution)
         {
         }
