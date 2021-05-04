@@ -340,7 +340,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
                 var issue = new ProjectIssue(descriptor, message.message,
                     IssueCategory.CodeCompilerMessages,
-                    new Location(message.file, message.line),
+                    new Location(message.file.Replace("\\", "/"), message.line),
                     new[]
                     {
                         message.code,
