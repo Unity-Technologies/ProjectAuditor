@@ -26,6 +26,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Num
     }
 
+    public enum ShaderKeywordProperty
+    {
+        NumShaders = 0,
+        NumVariants,
+        BuildSize,
+        Num
+    }
+
     public enum ShaderVariantProperty
     {
         Compiled = 0,

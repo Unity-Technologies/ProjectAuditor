@@ -105,6 +105,17 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
+        public void ProblemDescriptorWithDefaultArea()
+        {
+            var desc = new ProblemDescriptor
+                (
+                102001,
+                "test"
+                );
+            Assert.True(desc.area.Equals("Info"));
+        }
+
+        [Test]
         public void ProblemDescriptorWithMultipleAreas()
         {
             var desc = new ProblemDescriptor

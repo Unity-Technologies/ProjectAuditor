@@ -20,6 +20,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Num
     }
 
+    public enum CompilerMessageProperty
+    {
+        Code = 0,
+        Assembly,
+        Num
+    }
+
     class ScriptAuditor : IAuditor
     {
         const int k_CompilerMessageFirstId = 800000;

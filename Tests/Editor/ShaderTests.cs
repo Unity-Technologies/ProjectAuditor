@@ -352,6 +352,9 @@ Shader ""Custom/MyEditorShader""
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_A")));
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B")));
                 Assert.True(variantsForPlatform.All(v => v.GetCustomProperty((int)ShaderVariantProperty.Compiled).Equals(ShadersAuditor.k_NoRuntimeData)));
+
+                // check descriptor
+                Assert.True(variantsForPlatform.All(v => v.descriptor.area.Equals("Info")));
             }
         }
 
@@ -487,6 +490,9 @@ Shader ""Custom/MyEditorShader""
             var issues = Utility.Analyze(IssueCategory.Shaders);
             var shaderIssue = issues.FirstOrDefault(i => i.description.Equals("Custom/MyTestShader"));
             Assert.NotNull(shaderIssue);
+
+            // check descriptor
+            Assert.True(shaderIssue.descriptor.area.Equals(Area.Info.ToString()));
 
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());

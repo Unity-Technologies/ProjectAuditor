@@ -36,9 +36,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             return foundIssues.Where(i => i.category == category).ToArray();
         }
 
-        public static ProjectIssue[] AnalyzeAndFindAssetIssues(TempAsset tempAsset)
+        public static ProjectIssue[] AnalyzeAndFindAssetIssues(TempAsset tempAsset, IssueCategory category = IssueCategory.Code)
         {
-            var foundIssues = Analyze(IssueCategory.Code);
+            var foundIssues = Analyze(category);
 
             return foundIssues.Where(i => i.relativePath.Equals(tempAsset.relativePath)).ToArray();
         }
