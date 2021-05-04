@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 * Added HDRP settings analyzer
 * Fixed Build Report *Build Name*
+* Fixed empty MonoBehaviour event detection
 * Fixed *Graphics Tier Settings* misreporting
 
 ## [0.6.0-preview] - 2021-04-26
