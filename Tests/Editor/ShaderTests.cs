@@ -490,7 +490,7 @@ Shader ""Custom/MyEditorShader""
 
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumVariants).Equals(ShadersAuditor.k_NotAvailable));
+            //Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumVariants).Equals(ShadersAuditor.k_NotAvailable));
 #if UNITY_2019_1_OR_NEWER
             Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
             Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
