@@ -157,7 +157,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             AnalysisView.SetReport(m_ProjectReport);
             AnalysisView.OnChangeView = SelectView;
 
-            GetView<ShaderVariantsView>().SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
+            var variantsView = GetView(IssueCategory.ShaderVariants) as ShaderVariantsView;
+            if (variantsView != null)
+                variantsView.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
 
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid && m_ActiveViewIndex < viewDescriptors.Length)
@@ -505,21 +507,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var newIssues = Audit<ShadersAuditor>();
 
-            UpdateShaderVariantsView(newIssues.ToArray(), false);
-        }
-
-        void UpdateShaderVariantsView(ProjectIssue[] issues = null, bool show = true)
-        {
-            if (issues != null)
-            {
-                var view = m_Views[GetViewIndex(IssueCategory.ShaderVariants)];
-
-                view.AddIssues(m_ProjectReport.GetIssues(IssueCategory.ShaderVariants));
-                view.Refresh();
-            }
-
-            if (show)
-                SelectView(IssueCategory.ShaderVariants);
+            UpdateView(IssueCategory.ShaderVariants, newIssues.ToArray(), false);
         }
 
         void RefreshDisplay()
@@ -543,34 +531,44 @@ namespace Unity.ProjectAuditor.Editor.UI
             activeView.Refresh();
         }
 
-        T GetView<T>() where T : AnalysisView
+        AnalysisView GetView(IssueCategory category)
         {
-            for (int i = 0; i < m_Views.Length; i++)
-            {
-                if (m_Views[i] is T)
-                    return (T)m_Views[i];
-            }
-
-            return null;
+            return m_Views.FirstOrDefault(v => v.desc.category == category);
         }
 
-        int GetViewIndex(IssueCategory category)
+        void ClearView(IssueCategory category)
         {
-            for (int i = 0; i < m_Views.Length; i++)
+            m_ProjectReport.ClearIssues(category);
+            var view = GetView(category);
+            if (view != null)
             {
-                if (m_Views[i].desc.category == category)
-                    return i;
+                view.Clear();
+                view.Refresh();
+            }
+        }
+
+        void UpdateView(IssueCategory category, ProjectIssue[] issues = null, bool show = true)
+        {
+            if (issues != null)
+            {
+                var view = GetView(category);
+
+                view.AddIssues(m_ProjectReport.GetIssues(category));
+                view.Refresh();
             }
 
-            return 0;
+            if (show)
+                SelectView(category);
         }
+
 
         void SelectView(IssueCategory category)
         {
             if (activeView.desc.category == category)
                 return;
 
-            OnViewChanged(GetViewIndex(category));
+            var viewIndex = Array.IndexOf(m_Views, GetView(category));
+            OnViewChanged(viewIndex);
         }
 
         void OnViewChanged(object userData)
