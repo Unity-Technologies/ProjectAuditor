@@ -110,8 +110,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             ProjectAuditorAnalytics.EnableAnalytics();
 
-            ShadersAuditor.OnClearShaderData = OnClearShaderData;
-
             m_ProjectAuditor = new ProjectAuditor();
 
             UpdateAreaSelection();
@@ -470,18 +468,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         void OnPostprocessBuild(BuildTarget target)
         {
             AnalyzeBuildReport();
-            AnalyzeShaderVariants();
-        }
-
-        void OnClearShaderData()
-        {
-            m_ProjectReport.ClearIssues(IssueCategory.ShaderVariants);
-            var variantsView = GetView<ShaderVariantsView>();
-            if (variantsView != null)
-            {
-                variantsView.Clear();
-                variantsView.Refresh();
-            }
         }
 
         List<ProjectIssue> Audit<T>() where T : class, IAuditor
