@@ -10,14 +10,18 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     class ShaderVariantsView : AnalysisView, IProjectIssueFilter
     {
-        const string k_BuildRequiredInfo =
-@"- To view the built Shader Variants, run your build pipeline
-- To update the view after building project and/or AssetBundles, use the Refresh button";
-
-        const string k_PlayerLogInstructions =
+        const string k_BuildInstructions =
 @"This view shows the built Shader Variants.
 
-The number of Variants contributes to the build size, however, there might be Variants that are not required (compiled) at runtime on the target platform. To find out which of these variants are not compiled at runtime, follow these steps:
+To view the built Shader Variants, run your build pipeline and Refresh:
+- Build the project and/or Addressables/AssetBundles
+- Click the Refresh button
+Note that it's important to clear the cache before building Addressables.
+
+To clear the recorded variants use the Clear button";
+
+        const string k_PlayerLogInstructions =
+@"The number of Variants contributes to the build size, however, there might be Variants that are not required (compiled) at runtime on the target platform. To find out which of these variants are not compiled at runtime, follow these steps:
 - Enable the Log Shader Compilation option
 - Make a Development build
 - Run the build on the target platform. Make sure to go through all scenes.
@@ -102,11 +106,10 @@ The number of Variants contributes to the build size, however, there might be Va
 
         protected override void OnDrawInfo()
         {
-            var variantsAvailable = numIssues > 0;
-
             EditorGUILayout.BeginVertical(GUI.skin.box);
+            EditorGUILayout.LabelField(k_BuildInstructions, SharedStyles.TextArea);
 
-            if (variantsAvailable)
+            if (numIssues > 0)
             {
                 EditorGUILayout.LabelField(GraphicsSettingsHelper.logShaderCompilationSupported
                     ? k_PlayerLogInstructions
@@ -132,10 +135,6 @@ The number of Variants contributes to the build size, however, there might be Va
                         evt.Use();
                         break;
                 }
-            }
-            else
-            {
-                EditorGUILayout.LabelField(k_BuildRequiredInfo, SharedStyles.TextArea);
             }
 
             EditorGUILayout.EndVertical();
