@@ -31,7 +31,7 @@ The number of Variants contributes to the build size, however, there might be Va
         const string k_NoCompiledVariantWarning = "No compiled shader variants found in player log. Perhaps, Log Shader Compilation was not enabled when the project was built.";
         const string k_NoCompiledVariantWarningLogDisabled = "No compiled shader variants found in player log. Shader compilation logging is disabled. Would you like to enable it? (Shader compilation will not appear in the log until the project is rebuilt)";
         const string k_PlayerLogProcessed = "Player log file successfully processed.";
-        const string k_PlayerLogReadError = "Player log file could not be opened.";
+        const string k_PlayerLogReadError = "Player log file could not be opened. Make sure the Player application has been closed.";
 
         bool m_ShowCompiledVariants = true;
         bool m_ShowUncompiledVariants = true;
