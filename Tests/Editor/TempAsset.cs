@@ -6,7 +6,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class TempAsset
     {
-        const string TempFolder = "ProjectAuditor-Temp";
+        const string k_TempFolder = "ProjectAuditor-Temp";
 
         public readonly string relativePath;
 
@@ -17,7 +17,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
         private TempAsset(string fileName)
         {
-            relativePath = Path.Combine("Assets", Path.Combine(TempFolder, fileName)).Replace("\\", "/");
+            relativePath = Path.Combine("Assets", Path.Combine(k_TempFolder, fileName)).Replace("\\", "/");
 
             if (!File.Exists(relativePath))
                 Directory.CreateDirectory(Path.GetDirectoryName(relativePath));
@@ -44,7 +44,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
         public static void Cleanup()
         {
-            var path = Path.Combine("Assets", TempFolder);
+            var path = Path.Combine("Assets", k_TempFolder);
             Directory.Delete(path, true);
             File.Delete(path + ".meta");
             AssetDatabase.Refresh();

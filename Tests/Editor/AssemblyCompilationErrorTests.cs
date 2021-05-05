@@ -16,12 +16,12 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 #pragma warning restore 0414
 
 #if UNITY_EDITOR_WIN
-        const string m_ExpectedMessage = "Assets\\ProjectAuditor-Temp\\MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration";
+        const string k_ExpectedMessage = "Assets\\ProjectAuditor-Temp\\MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration";
 #else
-        const string m_ExpectedMessage = "Assets/ProjectAuditor-Temp/MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration";
+        const string k_ExpectedMessage = "Assets/ProjectAuditor-Temp/MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration";
 #endif
-        const string m_ExpectedCode = "CS1519";
-        const string m_ExpectedDescription = "Invalid token '}' in class, struct, or interface member declaration";
+        const string k_ExpectedCode = "CS1519";
+        const string k_ExpectedDescription = "Invalid token '}' in class, struct, or interface member declaration";
 
         [OneTimeSetUp]
         public void SetUp()
@@ -62,13 +62,13 @@ class MyClass {
                 compilationHelper.Compile();
             }
 
-            LogAssert.Expect(LogType.Error, m_ExpectedMessage);
+            LogAssert.Expect(LogType.Error, k_ExpectedMessage);
             LogAssert.Expect(LogType.Error, "Failed to compile player scripts");
             LogAssert.ignoreFailingMessages = false;
 
             Assert.NotNull(defaultAssemblyCompilerMessages);
             Assert.AreEqual(1, defaultAssemblyCompilerMessages.Length);
-            Assert.True(defaultAssemblyCompilerMessages[0].message.Equals(m_ExpectedMessage));
+            Assert.True(defaultAssemblyCompilerMessages[0].message.Equals(k_ExpectedMessage));
         }
 
         [Test]
@@ -90,13 +90,13 @@ class MyClass {
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessages));
-            Assert.True(issue.description.Equals(m_ExpectedDescription));
+            Assert.True(issue.description.Equals(k_ExpectedDescription));
             Assert.That(issue.line, Is.EqualTo(6));
             Assert.That(issue.severity, Is.EqualTo(Rule.Severity.Error));
 
             // check properties
             Assert.AreEqual((int)CompilerMessageProperty.Num, issue.GetNumCustomProperties());
-            Assert.True(issue.GetCustomProperty((int)CompilerMessageProperty.Code).Equals(m_ExpectedCode));
+            Assert.True(issue.GetCustomProperty((int)CompilerMessageProperty.Code).Equals(k_ExpectedCode));
             Assert.True(issue.GetCustomProperty((int)CompilerMessageProperty.Assembly).Equals(AssemblyInfo.DefaultAssemblyName));
         }
     }
