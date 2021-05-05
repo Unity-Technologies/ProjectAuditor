@@ -1054,23 +1054,31 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void Load()
         {
-            var path = EditorUtility.OpenFilePanel("Load from json file", m_SaveLoadDirectory, "json");
+            const string title = "Load from file";
+            const string loadingFailedText = "Loading report from file was unsuccessful.";
+
+            var path = EditorUtility.OpenFilePanel(title, m_SaveLoadDirectory, "json");
             if (path.Length != 0)
             {
-                m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
-
                 m_ProjectReport = ProjectReport.Load(path);
+                if (m_ProjectReport.NumTotalIssues == 0)
+                {
+                    EditorUtility.DisplayDialog(title, loadingFailedText, "Ok");
+                    return;
+                }
+
+                m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
                 m_AnalysisState = AnalysisState.Valid;
-
                 m_SaveLoadDirectory = Path.GetDirectoryName(path);
+
+                OnEnable();
+
+                UpdateAssemblyNames();
+                UpdateAssemblySelection();
+
+                // switch to summary view after loading
+                SelectView(IssueCategory.MetaData);
             }
-            OnEnable();
-
-            UpdateAssemblyNames();
-            UpdateAssemblySelection();
-
-            // switch to summary view after loading
-            SelectView(IssueCategory.MetaData);
         }
 
 #if UNITY_2018_1_OR_NEWER
