@@ -8,6 +8,7 @@ using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
 using ThreadPriority = System.Threading.ThreadPriority;
@@ -96,7 +97,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_OpCodes = new List<OpCode>();
             m_ProblemDescriptors = new List<ProblemDescriptor>();
 
-            foreach (var type in TypeInfo.GetAllTypesInheritedFromInterface<IInstructionAnalyzer>())
+            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IInstructionAnalyzer)))
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
         }
 
