@@ -416,7 +416,7 @@ Shader ""Custom/MyEditorShader""
             /*var projectReport = */ projectAuditor.Audit();
             var shadersAuditor = projectAuditor.GetAuditor<ShadersAuditor>();
             var result = shadersAuditor.ParsePlayerLog(m_PlayerLogWithNoCompilationResource.relativePath, new ProjectIssue[0]);
-            Assert.False(result);
+            Assert.That(result, Is.EqualTo(ParseLogResult.NoCompiledVariants));
         }
 
         [Test]
@@ -458,7 +458,7 @@ Shader ""Custom/MyEditorShader""
             var variants = shadersAndVariants.Where(i => i.description.Equals("Custom/MyTestShader") && i.category == IssueCategory.ShaderVariants).ToArray();
             var result = shadersAuditor.ParsePlayerLog(m_PlayerLogResource.relativePath, variants);
 
-            Assert.True(result, "No compiled shader variants found in player log.");
+            Assert.That(result, Is.EqualTo(ParseLogResult.Success), "No compiled shader variants found in player log.");
 
             var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform)).Distinct();
             var numShaderCompilerPlatforms = shaderCompilerPlatforms.Count();
