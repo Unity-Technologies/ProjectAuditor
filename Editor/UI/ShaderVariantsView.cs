@@ -31,6 +31,7 @@ The number of Variants contributes to the build size, however, there might be Va
         const string k_NoCompiledVariantWarning = "No compiled shader variants found in player log. Perhaps, Log Shader Compilation was not enabled when the project was built.";
         const string k_NoCompiledVariantWarningLogDisabled = "No compiled shader variants found in player log. Shader compilation logging is disabled. Would you like to enable it? (Shader compilation will not appear in the log until the project is rebuilt)";
         const string k_PlayerLogProcessed = "Player log file successfully processed.";
+        const string k_PlayerLogReadError = "Player log file could not be opened.";
 
         bool m_ShowCompiledVariants = true;
         bool m_ShowUncompiledVariants = true;
@@ -47,23 +48,31 @@ The number of Variants contributes to the build size, however, there might be Va
             if (string.IsNullOrEmpty(logFilename))
                 return;
 
+            const string dialogTitle = "Shader Variants";
             var variants = GetIssues().Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
-
-            if (m_ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBarDisplay()))
+            var result = m_ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBarDisplay());
+            switch (result)
             {
-                EditorUtility.DisplayDialog("Shader Variants", k_PlayerLogProcessed, "Ok");
-                Refresh();
-            }
-            else if (GraphicsSettingsHelper.logShaderCompilationSupported)
-            {
-                if (GraphicsSettingsHelper.logWhenShaderIsCompiled)
-                {
-                    EditorUtility.DisplayDialog("Shader Variants", k_NoCompiledVariantWarning, "Ok");
-                }
-                else
-                {
-                    GraphicsSettingsHelper.logWhenShaderIsCompiled = EditorUtility.DisplayDialog("Shader Variants", k_NoCompiledVariantWarningLogDisabled, "Yes", "No");
-                }
+                case ParseLogResult.Success :
+                    EditorUtility.DisplayDialog(dialogTitle, k_PlayerLogProcessed, "Ok");
+                    Refresh();
+                    break;
+                case ParseLogResult.NoCompiledVariants :
+                    if (GraphicsSettingsHelper.logShaderCompilationSupported)
+                    {
+                        if (GraphicsSettingsHelper.logWhenShaderIsCompiled)
+                        {
+                            EditorUtility.DisplayDialog(dialogTitle, k_NoCompiledVariantWarning, "Ok");
+                        }
+                        else
+                        {
+                            GraphicsSettingsHelper.logWhenShaderIsCompiled = EditorUtility.DisplayDialog(dialogTitle, k_NoCompiledVariantWarningLogDisabled, "Yes", "No");
+                        }
+                    }
+                    break;
+                case ParseLogResult.ReadError:
+                    EditorUtility.DisplayDialog(dialogTitle, k_PlayerLogReadError, "Ok");
+                    break;
             }
         }
 

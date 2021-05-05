@@ -44,6 +44,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Num
     }
 
+    public enum ParseLogResult
+    {
+        Success,
+        NoCompiledVariants,
+        ReadError
+    }
+
     class ShaderVariantData
     {
         public string passName;
@@ -378,10 +385,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
 
 
-        public bool ParsePlayerLog(string logFile, ProjectIssue[] builtVariants, IProgressBar progressBar = null)
+        public ParseLogResult ParsePlayerLog(string logFile, ProjectIssue[] builtVariants, IProgressBar progressBar = null)
         {
             var compiledVariants = new Dictionary<string, List<CompiledVariantData>>();
             var lines = GetCompiledShaderLines(logFile);
+            if (lines == null)
+                return ParseLogResult.ReadError;
+
             foreach (var line in lines)
             {
                 var parts = line.Split(',');
@@ -407,7 +417,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
 
             if (!compiledVariants.Any())
-                return false;
+                return ParseLogResult.NoCompiledVariants;
 
             builtVariants = builtVariants.OrderBy(v => v.description).ToArray();
             var shader = (Shader)null;
@@ -440,24 +450,32 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 builtVariant.SetCustomProperty((int)ShaderVariantProperty.Compiled, isVariantCompiled.ToString());
             }
 
-            return true;
+            return ParseLogResult.Success;
         }
 
         string[] GetCompiledShaderLines(string logFile)
         {
             var compilationLines = new List<string>();
-            using (var file = new StreamReader(logFile))
+            try
             {
-                string line;
-                while ((line = file.ReadLine()) != null)
+                using (var file = new StreamReader(logFile))
                 {
-                    const string prefix = "Compiled shader: ";
-                    var compilationLogIndex = line.IndexOf(prefix);
-                    if (compilationLogIndex >= 0)
-                        compilationLines.Add(line.Substring(compilationLogIndex + prefix.Length));
+                    string line;
+                    while ((line = file.ReadLine()) != null)
+                    {
+                        const string prefix = "Compiled shader: ";
+                        var compilationLogIndex = line.IndexOf(prefix);
+                        if (compilationLogIndex >= 0)
+                            compilationLines.Add(line.Substring(compilationLogIndex + prefix.Length));
+                    }
                 }
+                return compilationLines.ToArray();
             }
-            return compilationLines.ToArray();
+            catch (Exception e)
+            {
+                Debug.Log(e);
+                return null;
+            }
         }
 
 #if UNITY_2018_2_OR_NEWER
