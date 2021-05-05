@@ -322,10 +322,7 @@ Shader ""Custom/MyEditorShader""
         public void ShaderVariantsRequireBuild()
         {
             ShadersAuditor.ClearBuildData();
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.ShaderVariants);
+            var issues = Utility.Analyze(IssueCategory.ShaderVariants);
             Assert.Zero(issues.Length);
             Assert.False(ShadersAuditor.BuildDataAvailable());
         }
@@ -333,7 +330,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderVariantsAreReported()
         {
-            var issues = BuildAndAnalyze();
+            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
             Assert.True(ShadersAuditor.BuildDataAvailable());
 
             var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
@@ -354,13 +351,17 @@ Shader ""Custom/MyEditorShader""
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals(ShadersAuditor.k_NoKeywords)));
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_A")));
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B")));
+                Assert.True(variantsForPlatform.All(v => v.GetCustomProperty((int)ShaderVariantProperty.Compiled).Equals(ShadersAuditor.k_NoRuntimeData)));
+
+                // check descriptor
+                Assert.True(variantsForPlatform.All(v => v.descriptor.area.Equals("Info")));
             }
         }
 
         [Test]
         public void ShaderVariantForBuiltInKeywordIsReported()
         {
-            var issues = BuildAndAnalyze();
+            var issues =  Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
 
             var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords)).ToArray();
 
@@ -382,7 +383,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void SurfShaderVariantsAreReported()
         {
-            var issues = BuildAndAnalyze();
+            var issues =  Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
 
             var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
 
@@ -400,40 +401,12 @@ Shader ""Custom/MyEditorShader""
         public void StrippedVariantsAreNotReported()
         {
             StripVariants.Enabled = true;
-            var issues = BuildAndAnalyze();
+            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
             StripVariants.Enabled = false;
 
             var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
 
             Assert.False(keywords.Any(key => key.Equals(s_KeywordName)));
-        }
-
-        static ProjectIssue[] BuildAndAnalyze(IssueCategory category = IssueCategory.ShaderVariants)
-        {
-            // We must save the scene or the build will fail https://unity.slack.com/archives/C3F85MBDL/p1615991512002200
-            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/UntitledScene.unity");
-
-            var buildPath = FileUtil.GetUniqueTempPathInProject();
-            Directory.CreateDirectory(buildPath);
-            var buildPlayerOptions = new BuildPlayerOptions
-            {
-                scenes = new string[] {},
-                locationPathName = Path.Combine(buildPath, "test"),
-                target = EditorUserBuildSettings.activeBuildTarget,
-                targetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget),
-                options = BuildOptions.Development
-            };
-            var buildReport = BuildPipeline.BuildPlayer(buildPlayerOptions);
-
-            Assert.True(buildReport.summary.result == BuildResult.Succeeded);
-
-            Directory.Delete(buildPath, true);
-
-            AssetDatabase.DeleteAsset("Assets/UntitledScene.unity");
-
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-            return projectReport.GetIssues(category);
         }
 
         [Test]
@@ -514,14 +487,16 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderIsReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shaders);
             var shaderIssue = issues.FirstOrDefault(i => i.description.Equals("Custom/MyTestShader"));
             Assert.NotNull(shaderIssue);
 
+            // check descriptor
+            Assert.True(shaderIssue.descriptor.area.Equals(Area.Info.ToString()));
+
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
+            //Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumVariants).Equals(ShadersAuditor.k_NotAvailable));
 #if UNITY_2019_1_OR_NEWER
             Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
             Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
@@ -538,9 +513,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderWithErrorIsReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shaders);
             var shadersWithErrors = issues.Where(i => i.severity == Rule.Severity.Error);
             Assert.Positive(shadersWithErrors.Count());
             var shaderIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_ShaderWithErrorResource.relativePath));
@@ -552,9 +525,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderUsingBuiltInKeywordIsReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shaders);
             var shaderIssue = issues.FirstOrDefault(i => i.description.Equals("Custom/ShaderUsingBuiltInKeyword"));
             Assert.NotNull(shaderIssue);
 
@@ -574,9 +545,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void SurfShaderIsReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shaders);
             var shaderIssue = issues.FirstOrDefault(i => i.description.Equals("Custom/MySurfShader"));
             Assert.NotNull(shaderIssue);
 
@@ -596,10 +565,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void EditorShaderIsNotReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shaders);
             issues = issues.Where(i => i.description.Equals("Custom/MyEditorShader")).ToArray();
 
             Assert.Zero(issues.Length);
@@ -608,10 +574,9 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void EditorDefaultResourcesShaderIsNotReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Shaders).Where(i => i.relativePath.Contains("Editor Default Resources")).ToArray();
-            Assert.Zero(issues.Length);
+            var issues = Utility.Analyze(IssueCategory.Shaders);
+            var filteredIssues = issues.Where(i => i.relativePath.Contains("Editor Default Resources")).ToArray();
+            Assert.Zero(filteredIssues.Length);
         }
     }
 }

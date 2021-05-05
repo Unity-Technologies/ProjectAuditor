@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Serialize;
+using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
@@ -18,6 +19,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             foreach (var rawDescriptor in rawDescriptors)
             {
+                if (!IsPlatformCompatible(rawDescriptor))
+                    continue;
+
                 if (!IsVersionCompatible(rawDescriptor))
                     continue;
 
@@ -43,6 +47,22 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
 
             return descriptors;
+        }
+
+        internal static bool IsPlatformCompatible(ProblemDescriptor desc)
+        {
+            var platforms = desc.platforms;
+            if (platforms == null)
+                return true;
+            foreach (var platform in platforms)
+            {
+                var buildTarget = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), platform, true);
+                var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
+                if (BuildPipeline.IsBuildTargetSupported(buildTargetGroup, buildTarget))
+                    return true;
+            }
+
+            return false;
         }
 
         internal static bool IsVersionCompatible(ProblemDescriptor desc)

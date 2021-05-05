@@ -11,46 +11,13 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    public class AnalysisViewDescriptor
+    public class AnalysisView
     {
-        public Type viewType;
-        public IssueCategory category;
-        public string name;
-        public string menuLabel;
-        public int menuOrder;
-        public bool groupByDescription;
-        public bool descriptionWithIcon;
-        public bool showAreaSelection;
-        public bool showAssemblySelection;
-        public bool showCritical;
-        public bool showDependencyView;
-        public bool showInfoPanel;
-        public bool showMuteOptions;
-        public bool showRightPanels;
-        public GUIContent dependencyViewGuiContent;
-        public Action<Location> onDoubleClick;
-        public string onDrawInfo;
-        public Action onDrawToolbarDataOptions;
-        public Action<ProblemDescriptor> onOpenDescriptor;
-        public int analyticsEvent;
+        static string s_ExportDirectory = string.Empty;
 
-        static Dictionary<int, AnalysisViewDescriptor> s_AnalysisViewDescriptors = new Dictionary<int, AnalysisViewDescriptor>();
+        public static Action<IssueCategory> OnChangeView;
 
-        public static void Register(AnalysisViewDescriptor descriptor)
-        {
-            if (!s_AnalysisViewDescriptors.ContainsKey((int)descriptor.category))
-                s_AnalysisViewDescriptors.Add((int)descriptor.category, descriptor);
-        }
-
-        public static AnalysisViewDescriptor[] GetAll()
-        {
-            return s_AnalysisViewDescriptors.Select(pair => pair.Value).ToArray();
-        }
-    }
-
-    class AnalysisView
-    {
-        private static string s_ExportDirectory = string.Empty;
+        protected static ProjectReport s_Report;
 
         enum ExportMode
         {
@@ -59,27 +26,36 @@ namespace Unity.ProjectAuditor.Editor.UI
             Selected
         }
 
-        ProjectAuditorConfig m_Config;
-        Preferences m_Preferences;
-        AnalysisViewDescriptor m_Desc;
-        IProjectIssueFilter m_Filter;
+        protected ProjectAuditorConfig m_Config;
+        protected Preferences m_Preferences;
+        protected ViewDescriptor m_Desc;
+        protected IProjectIssueFilter m_Filter;
 
         DependencyView m_DependencyView;
-        List<ProjectIssue> m_Issues;
+        List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+        bool m_FlatView;
         IssueTable m_Table;
         IssueLayout m_Layout;
 
-        public AnalysisViewDescriptor desc
+        public ViewDescriptor desc
         {
             get { return m_Desc; }
         }
 
-        public IssueTable table
+        protected int numIssues
+        {
+            get
+            {
+                return m_Issues.Count();
+            }
+        }
+
+        internal IssueTable table
         {
             get { return m_Table; }
         }
 
-        public void CreateTable(AnalysisViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
             m_Desc = descriptor;
             m_Config = config;
@@ -128,7 +104,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (m_Desc.showDependencyView)
                 m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onDoubleClick);
-            m_Issues = new List<ProjectIssue>();
+
+            SetFlatView(m_FlatView);
         }
 
         public void AddIssues(IEnumerable<ProjectIssue> allIssues)
@@ -138,7 +115,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Table.AddIssues(issues);
         }
 
-        public ProjectIssue[] GetIssues()
+        protected ProjectIssue[] GetIssues()
         {
             return m_Issues.ToArray();
         }
@@ -159,22 +136,17 @@ namespace Unity.ProjectAuditor.Editor.UI
             return m_Table != null;
         }
 
-        public void SetFlatView(bool value)
+        void SetFlatView(bool value)
         {
             m_Table.SetFlatView(value);
         }
 
-        public void OnGUI()
+        public virtual void DrawFilters()
         {
-            if (Styles.TextFieldWarning == null)
-            {
-                Styles.TextFieldWarning = new GUIStyle(EditorStyles.textField);
-                Styles.TextFieldWarning.normal.textColor = Color.yellow;
-            }
+        }
 
-            if (Styles.TextArea == null)
-                Styles.TextArea = new GUIStyle(EditorStyles.textArea);
-
+        public void DrawTableAndPanels()
+        {
             var selectedItems = m_Table.GetSelectedItems();
             var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
             var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor).Distinct().ToArray();
@@ -201,9 +173,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!m_Desc.showInfoPanel)
                 return;
 
-            if (Styles.TextArea == null)
-                Styles.TextArea = new GUIStyle(EditorStyles.textArea);
-
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
 
             m_Preferences.info = Utility.BoldFoldout(m_Preferences.info, Contents.InfoFoldout);
@@ -218,12 +187,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndVertical();
         }
 
-        public virtual void OnDrawInfo()
+        protected virtual void OnDrawInfo()
         {
-            if (m_Desc.onDrawInfo != null)
-            {
-                EditorGUILayout.LabelField(m_Desc.onDrawInfo, Styles.TextArea);
-            }
         }
 
         void DrawTable(ProjectIssue[] selectedIssues)
@@ -270,11 +235,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_Preferences.details)
             {
                 if (selectedDescriptors.Length == 0)
-                    GUILayout.TextArea(k_NoSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 else if (selectedDescriptors.Length > 1)
-                    GUILayout.TextArea(k_MultipleSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 else // if (selectedDescriptors.Length == 1)
-                    GUILayout.TextArea(selectedDescriptors[0].problem, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(selectedDescriptors[0].problem, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
             EditorGUILayout.EndVertical();
         }
@@ -285,15 +250,25 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
             m_Table.SetFontSize(m_Preferences.fontSize);
 
-            Styles.TextArea.fontSize = m_Preferences.fontSize;
+            SharedStyles.TextArea.fontSize = m_Preferences.fontSize;
 
-            // (optional) collapse/expand buttons
-            if (m_Desc.groupByDescription)
+            if (m_Desc.groupByDescriptor)
             {
+                // (optional) collapse/expand buttons
+                GUI.enabled = !m_FlatView;
                 if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                     SetRowsExpanded(false);
                 if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                     SetRowsExpanded(true);
+                GUI.enabled = true;
+
+                EditorGUI.BeginChangeCheck();
+                m_FlatView = GUILayout.Toggle(m_FlatView, "Flat View", EditorStyles.toolbarButton, GUILayout.Width(100));
+                if (EditorGUI.EndChangeCheck())
+                {
+                    SetFlatView(m_FlatView);
+                    Refresh();
+                }
             }
         }
 
@@ -318,11 +293,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_Preferences.recommendation)
             {
                 if (selectedDescriptors.Length == 0)
-                    GUILayout.TextArea(k_NoSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 else if (selectedDescriptors.Length > 1)
-                    GUILayout.TextArea(k_MultipleSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 else // if (selectedDescriptors.Length == 1)
-                    GUILayout.TextArea(selectedDescriptors[0].solution, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(selectedDescriptors[0].solution, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
             EditorGUILayout.EndVertical();
         }
@@ -336,11 +311,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 if (issues.Length == 0)
                 {
-                    EditorGUILayout.LabelField(k_NoSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    EditorGUILayout.LabelField(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 }
                 else if (issues.Length > 1)
                 {
-                    EditorGUILayout.LabelField(k_MultipleSelectionText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    EditorGUILayout.LabelField(k_MultipleSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 }
                 else// if (issues.Length == 1)
                 {
@@ -364,7 +339,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                     else
                     {
-                        EditorGUILayout.LabelField(k_AnalysisIsRequiredText, Styles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                        EditorGUILayout.LabelField(k_AnalysisIsRequiredText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                     }
                 }
             }
@@ -392,8 +367,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     var matchingIssues = m_Issues.Where(issue => m_Config.GetAction(issue.descriptor, issue.GetCallingMethod()) !=
                         Rule.Severity.None && (match == null || match(issue)));
-                    foreach (var issue in matchingIssues)
-                        exporter.WriteIssue(issue);
+                    exporter.WriteIssues(matchingIssues.ToArray());
                 }
 
                 EditorUtility.RevealInFinder(path);
@@ -425,11 +399,16 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        public static void SetReport(ProjectReport report)
+        {
+            s_Report = report;
+        }
+
         const string k_NoSelectionText = "<No selection>";
         const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         const string k_MultipleSelectionText = "<Multiple selection>";
 
-        static string[] k_ExportModeStrings =
+        static readonly string[] k_ExportModeStrings =
         {
             "All",
             "Filtered",
@@ -445,19 +424,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static class Contents
         {
+            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
+            public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
+            public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
+
             public static readonly GUIContent InfoFoldout = new GUIContent("Information");
-            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export project report to .csv files.");
-            public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All", "");
-            public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All", "");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout =
                 new GUIContent("Recommendation", "Recommendation on how to solve the issue");
-        }
-
-        static class Styles
-        {
-            public static GUIStyle TextArea;
-            public static GUIStyle TextFieldWarning;
         }
     }
 }

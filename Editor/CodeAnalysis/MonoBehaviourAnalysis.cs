@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         static readonly int k_MonoBehaviourHashCode = "UnityEngine.MonoBehaviour".GetHashCode();
         static readonly int k_ILPostProcessorHashCode = "Unity.CompilationPipeline.Common.ILPostProcessing.ILPostProcessor".GetHashCode();
 
-        static readonly string[] k_MagicMethodNames =
+        static readonly string[] k_EventNames =
         {"Awake", "Start", "OnEnable", "OnDisable", "Update", "LateUpdate", "OnEnable", "FixedUpdate"};
 
         static readonly string[] k_UpdateMethodNames = {"Update", "LateUpdate", "FixedUpdate"};
@@ -41,9 +41,9 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             return false;
         }
 
-        public static bool IsMonoBehaviourMagicMethod(MethodDefinition methodDefinition)
+        public static bool IsMonoBehaviourEvent(MethodDefinition methodDefinition)
         {
-            return k_MagicMethodNames.Contains(methodDefinition.Name);
+            return k_EventNames.Contains(methodDefinition.Name);
         }
 
         public static bool IsMonoBehaviourUpdateMethod(MethodDefinition methodDefinition)

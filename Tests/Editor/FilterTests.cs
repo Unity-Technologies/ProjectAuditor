@@ -47,12 +47,8 @@ class InternalClass
         [Test]
         public void EmptyStringMatchesAllIssues()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-
             // disabling stripEngineCode will be reported as an issue
             PlayerSettings.stripEngineCode = false;
-
-            var projectReport = projectAuditor.Audit();
 
             var stringFilter = new TextFilter
             {
@@ -61,7 +57,7 @@ class InternalClass
                 searchText = string.Empty
             };
 
-            var issues = projectReport.GetIssues(IssueCategory.ProjectSettings);
+            var issues = Utility.Analyze(IssueCategory.ProjectSettings);
             var filteredIssues = issues.Where(i => stringFilter.Match(i));
 
             Assert.AreEqual(issues.Length, filteredIssues.Count());
@@ -70,13 +66,10 @@ class InternalClass
         [Test]
         public void CaseSensitiveMatch()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-
             // disabling stripEngineCode will be reported as an issue
             PlayerSettings.stripEngineCode = false;
 
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.ProjectSettings);
+            var issues = Utility.Analyze(IssueCategory.ProjectSettings);
             var stringFilter = new TextFilter
             {
                 matchCase = true,
@@ -97,13 +90,10 @@ class InternalClass
         [Test]
         public void CaseInsensitiveMatch()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-
             // disabling stripEngineCode will be reported as an issue
             PlayerSettings.stripEngineCode = false;
 
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.ProjectSettings);
+            var issues = Utility.Analyze(IssueCategory.ProjectSettings);
             var stringFilter = new TextFilter
             {
                 matchCase = false,

@@ -96,7 +96,7 @@ class ShaderWarmUpIssueIsCritical
         [Test]
         public void IssueInSimpleClass()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInSimpleClass);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInSimpleClass);
             var issue = issues.First();
             Assert.False(issue.isPerfCriticalContext);
         }
@@ -104,7 +104,7 @@ class ShaderWarmUpIssueIsCritical
         [Test]
         public void IssueInMonoBehaviourUpdate()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetIssueInMonoBehaviourUpdate);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourUpdate);
             var issue = issues.First();
             Assert.True(issue.isPerfCriticalContext);
         }
@@ -113,7 +113,7 @@ class ShaderWarmUpIssueIsCritical
         public void IssueInClassMethodCalledFromMonoBehaviourUpdate()
         {
             var issues =
-                ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(
+                Utility.AnalyzeAndFindAssetIssues(
                     m_TempAssetIssueInClassMethodCalledFromMonoBehaviourUpdate);
             var issue = issues.First();
             Assert.True(issue.isPerfCriticalContext);
@@ -123,7 +123,7 @@ class ShaderWarmUpIssueIsCritical
         public void IssueInClassInheritedFromMonoBehaviour()
         {
             var issues =
-                ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(
+                Utility.AnalyzeAndFindAssetIssues(
                     m_TempAssetIssueInClassInheritedFromMonoBehaviour);
             var issue = issues.First();
             Assert.True(issue.isPerfCriticalContext);
@@ -133,7 +133,7 @@ class ShaderWarmUpIssueIsCritical
         public void ShaderWarmupIssueIsCritical()
         {
             var issues =
-                ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(
+                Utility.AnalyzeAndFindAssetIssues(
                     m_TempAssetShaderWarmupIssueIsCritical);
             var issue = issues.First();
             Assert.True(issue.isPerfCriticalContext);

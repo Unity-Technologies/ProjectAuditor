@@ -20,8 +20,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Num
     }
 
+    public enum CompilerMessageProperty
+    {
+        Code = 0,
+        Assembly,
+        Num
+    }
+
     class ScriptAuditor : IAuditor
     {
+        const int k_CompilerMessageFirstId = 800000;
+
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
             category = IssueCategory.Code,
@@ -32,6 +41,20 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
                 new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" }
+            }
+        };
+
+        static readonly IssueLayout k_CompilerMessageLayout = new IssueLayout
+        {
+            category = IssueCategory.CodeCompilerMessages,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Code"},
+                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Message", longName = "Compiler Message"},
+                new PropertyDefinition { type = PropertyType.Severity, name = "Type"},
+                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
+                new PropertyDefinition { type = PropertyType.Custom + 1, format = PropertyFormat.String, name = "Target Assembly", longName = "Managed Assembly name" },
+                new PropertyDefinition { type = PropertyType.Path, name = "Full path"},
             }
         };
 
@@ -50,6 +73,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         List<IInstructionAnalyzer> m_Analyzers;
         List<OpCode> m_OpCodes;
         List<ProblemDescriptor> m_ProblemDescriptors;
+        Dictionary<string, ProblemDescriptor> m_RuntimeDescriptors = new Dictionary<string, ProblemDescriptor>();
 
         Thread m_AssemblyAnalysisThread;
 
@@ -61,6 +85,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_IssueLayout;
+            yield return k_CompilerMessageLayout;
             yield return k_GenericIssueLayout;
         }
 
@@ -75,6 +100,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
         }
 
+        public bool IsSupported()
+        {
+            return true;
+        }
+
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
         {
             if (m_ProblemDescriptors == null)
@@ -83,13 +113,16 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
-            var compilationHelper = new AssemblyCompilationHelper();
-            var callCrawler = new CallCrawler();
+            var compilationPipeline = new AssemblyCompilationPipeline
+            {
+                AssemblyCompilationFinished = (assemblyName, compilerMessages) => ProcessCompilerMessages(assemblyName, compilerMessages, onIssueFound)
+            };
 
             Profiler.BeginSample("ScriptAuditor.Audit.Compilation");
-            var assemblyInfos = compilationHelper.Compile(m_Config.AnalyzeEditorCode, progressBar);
+            var assemblyInfos = compilationPipeline.Compile(m_Config.AnalyzeEditorCode, progressBar);
             Profiler.EndSample();
 
+            var callCrawler = new CallCrawler();
             var issues = new List<ProjectIssue>();
             var localAssemblyInfos = assemblyInfos.Where(info => !info.readOnly).ToArray();
             var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.readOnly).ToArray();
@@ -106,7 +139,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var onCompleteInternal = new Action<IProgressBar>(bar =>
             {
-                compilationHelper.Dispose();
+                compilationPipeline.Dispose();
                 callCrawler.BuildCallHierarchies(issues, bar);
                 onComplete();
             });
@@ -276,6 +309,52 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             analyzer.Initialize(this);
             m_Analyzers.Add(analyzer);
             m_OpCodes.AddRange(analyzer.GetOpCodes());
+        }
+
+        void ProcessCompilerMessages(string assemblyName, CompilerMessage[] compilerMessages, Action<ProjectIssue> onIssueFound)
+        {
+            foreach (var message in compilerMessages)
+            {
+                var descriptor = (ProblemDescriptor)null;
+
+                if (m_RuntimeDescriptors.ContainsKey(message.code))
+                    descriptor = m_RuntimeDescriptors[message.code];
+                else
+                {
+                    var severity = Rule.Severity.Info;
+                    switch (message.type)
+                    {
+                        case CompilerMessageType.Error:
+                            severity = Rule.Severity.Error;
+                            break;
+                        case CompilerMessageType.Warning:
+                            severity = Rule.Severity.Warning;
+                            break;
+                        case CompilerMessageType.Info:
+                            severity = Rule.Severity.Info;
+                            break;
+                    }
+                    descriptor = new ProblemDescriptor
+                        (
+                        k_CompilerMessageFirstId + m_RuntimeDescriptors.Count,
+                        message.code
+                        )
+                    {
+                        severity = severity
+                    };
+                    m_RuntimeDescriptors.Add(message.code, descriptor);
+                }
+
+                var issue = new ProjectIssue(descriptor, message.message,
+                    IssueCategory.CodeCompilerMessages,
+                    new Location(message.file.Replace("\\", "/"), message.line),
+                    new[]
+                    {
+                        message.code,
+                        assemblyName
+                    });
+                onIssueFound(issue);
+            }
         }
 
         static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)

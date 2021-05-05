@@ -6,32 +6,85 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     static class Utility
     {
-        static class Styles
+        static readonly string k_InfoIconName = "console.infoicon";
+        static readonly string k_WarnIconName = "console.warnicon";
+        static readonly string k_ErrorIconName = "console.erroricon";
+
+        public static GUIContent InfoIcon
         {
-            public static GUIStyle Foldout;
+            get
+            {
+#if UNITY_2018_3_OR_NEWER
+                return EditorGUIUtility.TrIconContent(k_InfoIconName, "Info");
+#else
+                return new GUIContent(EditorGUIUtility.FindTexture(Utility.k_InfoIconName), "Info"), s_LabelStyle);
+#endif
+            }
+        }
+
+
+        public static GUIContent WarnIcon
+        {
+            get
+            {
+#if UNITY_2018_3_OR_NEWER
+                return EditorGUIUtility.TrIconContent(k_WarnIconName, "Warning");
+#else
+                return new GUIContent(EditorGUIUtility.FindTexture(Utility.k_WarnIconName), "Warning"), s_LabelStyle);
+#endif
+            }
+        }
+
+        public static GUIContent ErrorIcon
+        {
+            get
+            {
+#if UNITY_2018_3_OR_NEWER
+                return EditorGUIUtility.TrIconContent(k_ErrorIconName, "Error");
+#else
+                return new GUIContent(EditorGUIUtility.FindTexture(Utility.k_ErrorIconName), "Error"), s_LabelStyle);
+#endif
+            }
+        }
+
+        public class DropdownItem
+        {
+            public GUIContent Content;
+            public GUIContent SelectionContent;
+            public bool Enabled;
+        }
+
+        public static GUIStyle GetStyle(string styleName)
+        {
+            var s = GUI.skin.FindStyle(styleName);
+            if (s == null)
+                s = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector).FindStyle(styleName);
+            if (s == null)
+            {
+                Debug.LogError("Missing built-in guistyle " + styleName);
+                s = new GUIStyle();
+            }
+            return s;
         }
 
         internal static bool BoldFoldout(bool toggle, GUIContent content)
         {
-            if (Styles.Foldout == null)
-            {
-                Styles.Foldout = new GUIStyle(EditorStyles.foldout)
-                {
-                    fontStyle = FontStyle.Bold
-                };
-            }
-            return EditorGUILayout.Foldout(toggle, content, Styles.Foldout);
+            return EditorGUILayout.Foldout(toggle, content, SharedStyles.Foldout);
         }
 
-        internal static void ToolbarDropdownList(GUIContent[] contents, GUIContent activeContent, int activeSelection, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
+        internal static void ToolbarDropdownList(DropdownItem[] items, int selectionIndex, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
         {
-            var r = GUILayoutUtility.GetRect(activeContent, EditorStyles.toolbarButton, options);
-            if (EditorGUI.DropdownButton(r, activeContent, FocusType.Passive, EditorStyles.toolbarDropDown))
+            var selectionContent = items[selectionIndex].SelectionContent;
+            var r = GUILayoutUtility.GetRect(selectionContent, EditorStyles.toolbarButton, options);
+            if (EditorGUI.DropdownButton(r, selectionContent, FocusType.Passive, EditorStyles.toolbarDropDown))
             {
                 var menu = new GenericMenu();
 
-                for (var i = 0; i != contents.Length; i++)
-                    menu.AddItem(contents[i], i == activeSelection, callback, i);
+                for (var i = 0; i != items.Length; i++)
+                    if (items[i].Enabled)
+                        menu.AddItem(items[i].Content, i == selectionIndex, callback, i);
+                    else
+                        menu.AddDisabledItem(items[i].Content);
                 menu.DropDown(r);
             }
         }
@@ -57,6 +110,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             return GUI.Button(rect, content, EditorStyles.toolbarDropDown);
+        }
+
+        internal static void DrawHelpButton(string page)
+        {
+            if (GUILayout.Button(Contents.HelpButton, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
+            {
+                Application.OpenURL(Documentation.baseURL + "master" + Documentation.subURL + page + Documentation.endURL);
+            }
         }
 
         internal static void DrawSelectedText(string text)
@@ -96,5 +157,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             return string.Join(", ", selectedStrings);
         }
+    }
+
+    static class Contents
+    {
+#if UNITY_2018_1_OR_NEWER
+        public static readonly GUIContent HelpButton = EditorGUIUtility.TrIconContent("_Help", "Open Manual (in a web browser)");
+#else
+        public static readonly GUIContent HelpButton = new GUIContent("?", "Open Manual (in a web browser)");
+#endif
     }
 }

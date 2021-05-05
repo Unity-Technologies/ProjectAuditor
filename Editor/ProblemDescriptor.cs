@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -28,9 +29,19 @@ namespace Unity.ProjectAuditor.Editor
         BuildSize,
 
         /// <summary>
+        /// Build time
+        /// </summary>
+        BuildTime,
+
+        /// <summary>
         /// Load times
         /// </summary>
-        LoadTimes
+        LoadTimes,
+
+        /// <summary>
+        /// Area not applicable. Information purposes only.
+        /// </summary>
+        Info
     }
 
     /// <summary>
@@ -51,6 +62,7 @@ namespace Unity.ProjectAuditor.Editor
         public string method;
         public string value;
         public bool critical;
+        public string[] platforms;
         public string problem;
         public string solution;
         public string minimumVersion;
@@ -69,7 +81,13 @@ namespace Unity.ProjectAuditor.Editor
             critical = false;
         }
 
-        public ProblemDescriptor(int id, string description, Area area, string problem = null, string solution = null) : this(id, description, area.ToString(), problem, solution)
+        public ProblemDescriptor(int id, string description, Area area = Area.Info, string problem = null, string solution = null)
+            : this(id, description, area.ToString(), problem, solution)
+        {
+        }
+
+        public ProblemDescriptor(int id, string description, Area[] areas, string problem = null, string solution = null)
+            : this(id, description, string.Join("|", areas.Select(a => a.ToString()).ToArray()), problem, solution)
         {
         }
 

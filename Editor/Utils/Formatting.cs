@@ -1,8 +1,10 @@
+using System;
+
 namespace Packages.Editor.Utils
 {
     static class Formatting
     {
-        public static string FormatTime(System.TimeSpan t)
+        public static string FormatTime(TimeSpan t)
         {
             return t.Hours + ":" + t.Minutes.ToString("D2") + ":" + t.Seconds.ToString("D2");
         }

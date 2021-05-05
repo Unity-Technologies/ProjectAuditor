@@ -26,6 +26,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Num
     }
 
+    public enum ShaderKeywordProperty
+    {
+        NumShaders = 0,
+        NumVariants,
+        BuildSize,
+        Num
+    }
+
     public enum ShaderVariantProperty
     {
         Compiled = 0,
@@ -89,8 +97,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         static readonly ProblemDescriptor k_ParseErrorDescriptor = new ProblemDescriptor
             (
             400000,
-            "Parse Error",
-            Area.BuildSize)
+            "Parse Error"
+            )
         {
             severity = Rule.Severity.Error
         };
@@ -98,6 +106,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         internal const string k_NoPassName = "<unnamed>";
         internal const string k_UnamedPassPrefix = "Pass ";
         internal const string k_NoKeywords = "<no keywords>";
+        internal const string k_NoRuntimeData = "?";
         internal const string k_NotAvailable = "N/A";
         const int k_ShaderVariantFirstId = 400001;
 
@@ -135,6 +144,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_HasInstancingMethod = m_ShaderUtilType.GetMethod("HasInstancing", BindingFlags.Static | BindingFlags.NonPublic);
             m_GetShaderActiveSubshaderIndex = m_ShaderUtilType.GetMethod("GetShaderActiveSubshaderIndex", BindingFlags.Static | BindingFlags.NonPublic);
             m_GetSRPBatcherCompatibilityCode = m_ShaderUtilType.GetMethod("GetSRPBatcherCompatibilityCode", BindingFlags.Static | BindingFlags.NonPublic);
+        }
+
+        public bool IsSupported()
+        {
+            return true;
         }
 
         public void RegisterDescriptor(ProblemDescriptor descriptor)
@@ -247,8 +261,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var descriptor = new ProblemDescriptor
                 (
                 id++,
-                shaderName,
-                Area.BuildSize
+                shaderName
                 );
 
             var passCount = k_NotAvailable;
@@ -317,8 +330,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var descriptor = new ProblemDescriptor
                 (
                 id++,
-                shaderName,
-                Area.BuildSize
+                shaderName
                 );
 
             foreach (var shaderVariantData in shaderVariants)
@@ -328,7 +340,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariants, new Location(assetPath));
                 issue.SetCustomProperties(new[]
                 {
-                    "?",
+                    k_NoRuntimeData,
                     compilerData.shaderCompilerPlatform.ToString(),
                     shaderVariantData.passName,
                     KeywordsToString(keywords),

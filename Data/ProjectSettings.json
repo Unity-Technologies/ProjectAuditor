@@ -28,6 +28,7 @@
             "method": "accelerometerFrequency",
             "customevaluator": "PlayerSettingsAccelerometerFrequency",
             "area": "CPU",
+            "platforms": ["iOS"],
             "problem": "The Accelerometer is enabled in iOS Player Settings.",
             "solution": "Consider setting \"Accelerometer Frequency\" to Disabled if your application doesn't make use of the device's accelerometer. Disabling this option will save a tiny amount of CPU processing time."
         },
@@ -38,6 +39,7 @@
             "method": "GetArchitecture",
             "customevaluator": "PlayerSettingsArchitecture_iOS",
             "area": "BuildSize",
+            "platforms": ["iOS"],
             "problem": "In the iOS Player Settings, \"Architecture\" is set to Universal. This means that the application will be compiled for both 32-bit ARMv7 iOS devices (i.e. up to the iPhone 5 or 5c) and 64-bit ARM64 devices (iPhone 5s onwards), resulting in increased build times and binary size.",
             "solution": "If your application isn't intended to support 32-bit iOS devices, change \"Architecture\" to ARM64."
         },
@@ -48,6 +50,7 @@
             "method": "Android.targetArchitectures",
             "customevaluator": "PlayerSettingsArchitecture_Android",
             "area": "BuildSize",
+            "platforms": ["Android"],
             "problem": "In the Android Player Settings, in the \"Target Architecture\" section, both the \"ARMv7\" and \"ARM64\" options are selected. This means that the application will be compiled for both 32-bit ARMv7 Android devices and 64-bit ARM64 devices, resulting in increased build times and binary size.",
             "solution": "If your application isn't intended to support 32-bit Android devices, disable the \"ARMv7\" option."
         },
@@ -58,6 +61,7 @@
             "method": "GetGraphicsAPIs",
             "customevaluator": "PlayerSettingsGraphicsAPIs_iOS_OpenGLESAndMetal",
             "area": "BuildSize",
+            "platforms": ["iOS"],
             "problem": "In the iOS Player Settings, both Metal and OpenGLES graphics APIs are enabled.",
             "solution": "To reduce build size, remove OpenGLES graphics API if the minimum spec target device supports Metal."
         },
@@ -68,6 +72,7 @@
             "method": "GetGraphicsAPIs",
             "customevaluator": "PlayerSettingsGraphicsAPIs_iOS_OpenGLES",
             "area": "CPU",
+            "platforms": ["iOS"],
             "problem": "In the iOS Player Settings, Metal is not enabled.",
             "solution": "Enable Metal graphics API for better CPU Performance."
         },
@@ -108,6 +113,7 @@
             "method": "dataCaching",
             "value": "False",
             "area": "LoadTimes",
+            "platforms": ["WebGL"],
             "problem": "Build file needs to be downloaded every time the content is loaded.",
             "solution": "Enable dataCaching to cache build files in Browser cache"
         },
@@ -118,6 +124,7 @@
             "method": "linkerTarget",
             "value": "Asm",
             "area": "CPU|Memory",
+            "platforms": ["WebGL"],
             "problem": "WebGLLinkerTarget.Asm is deprecated.",
             "solution": "Set UnityEditor.PlayerSettings.WebGL.linkerTarget to WebGLLinkerTarget.Wasm to generate code in WebAssembly format.",
             "minimumVersion": "2018.1"
@@ -229,7 +236,7 @@
             "method": "GetTierSettings",
             "customevaluator": "GraphicsMixedStandardShaderQuality",
             "area": "BuildSize",
-            "problem": "One or more platforms in in Graphics Settings uses a mixture of different values (Low/Medium/High) for the \"Standard Shader Quality\" setting. This will result in a larger number of shader variants being compiled, which will increase build times and your application's download/install size.",
+            "problem": "The current build target Graphics Tier Settings use a mixture of different values (Low/Medium/High) for the \"Standard Shader Quality\" setting. This will result in a larger number of shader variants being compiled, which will increase build times and your application's download/install size.",
             "solution": "Unless you support devices with a very wide range of capabilities for a particular platform, consider editing the platform in Graphics Settings to use the same shader quality setting across all Graphics Tiers."
         },
         {
@@ -239,7 +246,7 @@
             "method": "GetTierSettings",
             "customevaluator": "GraphicsUsingForwardRendering",
             "area": "GPU",
-            "problem": "This project uses forward rendering, as set in the \"Rendering Path\" settings in Graphics Settings.",
+            "problem": "The current build target uses forward rendering, as set in the \"Rendering Path\" settings in Graphics Tiers.",
             "solution": "This rendering path is suitable for games with simple rendering and lighting requirements - for instance, 2D games, or games which mainly use baked lighting. If the project makes use of a more than a few dynamic lights, consider experimenting with changing \"Rendering Path\" to Deferred to see whether doing so improves GPU rendering times."
         },
         {
@@ -249,7 +256,7 @@
             "method": "GetTierSettings",
             "customevaluator": "GraphicsUsingDeferredRendering",
             "area": "GPU",
-            "problem": "This project uses deferred rendering, as set in the \"Rendering Path\" settings in Graphics Settings.",
+            "problem": "The current build target uses deferred rendering, as set in the \"Rendering Path\" settings in Graphics Tiers.",
             "solution": "This rendering path is suitable for games with more complex rendering requirements - for instance, games that make uses of dynamic lighting or certain types of fullscreen post-processing effects. If the project doesn't make use of such rendering techniques, consider experimenting with changing \"Rendering Path\" to Forward to see whether doing so improves GPU rendering times."
         },
         {
@@ -259,6 +266,7 @@
             "method": "GetManagedStrippingLevel",
             "customevaluator": "PlayerSettingsManagedCodeStripping_Android",
             "area": "BuildSize",
+            "platforms": ["Android"],
             "problem": "Managed code stripping on Android is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",
             "solution": "Set managed stripping level to Medium or High."
         },
@@ -269,6 +277,7 @@
             "method": "GetManagedStrippingLevel",
             "customevaluator": "PlayerSettingsManagedCodeStripping_iOS",
             "area": "BuildSize",
+            "platforms": ["iOS"],
             "problem": "Managed code stripping on iOS is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",
             "solution": "Set managed stripping level to Medium or High."
         },

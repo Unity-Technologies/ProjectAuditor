@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -13,7 +13,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         private readonly IssueLayout m_Layout = new IssueLayout
         {
             category = IssueCategory.Code,
-            properties = new []
+            properties = new[]
             {
                 new PropertyDefinition {type = PropertyType.Description }
             }
@@ -54,8 +54,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Ignore("Work in progress")]
         public void CustomAuditorIsCreated()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            Assert.NotNull(projectAuditor.GetAuditor<CustomAuditor>());
+            //var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            //Assert.NotNull(projectAuditor.GetAuditor<CustomAuditor>());
         }
 
         [Test]

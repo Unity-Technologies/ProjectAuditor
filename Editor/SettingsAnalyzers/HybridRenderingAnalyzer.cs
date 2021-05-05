@@ -1,15 +1,13 @@
+#if HYBRID_RENDERER_ANALYZER_SUPPORT
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 
-#if UNITY_2019_3_OR_NEWER
-using PackageInfo = UnityEditor.PackageManager.PackageInfo;
-#endif
-
 namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
-    class StaticBatchingAndHybridPackage : ISettingsAnalyzer
+    class HybridRenderingAnalyzer : ISettingsAnalyzer
     {
         static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor(
             202000,
@@ -26,14 +24,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
         public IEnumerable<ProjectIssue> Analyze()
         {
-#if UNITY_2019_3_OR_NEWER
-            if (PackageInfo.FindForAssetPath("Packages/com.unity.rendering.hybrid") != null && IsStaticBatchingEnabled(EditorUserBuildSettings.activeBuildTarget))
+            if (IsStaticBatchingEnabled(EditorUserBuildSettings.activeBuildTarget))
             {
                 yield return new ProjectIssue(k_Descriptor, k_Descriptor.description, IssueCategory.ProjectSettings);
             }
-#else
-            return new ProjectIssue[0];
-#endif
         }
 
         static bool IsStaticBatchingEnabled(BuildTarget platform)
@@ -57,3 +51,4 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         }
     }
 }
+#endif

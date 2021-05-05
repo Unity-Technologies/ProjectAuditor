@@ -39,12 +39,17 @@ namespace Unity.ProjectAuditor.Editor.UI
             Unmute,
             ShowMuted,
             OnlyCriticalIssues,
+            Load,
+            Save,
 
             ApiCalls = 100,
             ProjectSettings,
             Assets,
             Shaders,
-            Generics
+            Generics,
+            BuildFiles,
+            Summary,
+            CodeCompilerMessages
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -147,6 +152,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "analyze_button_click";
                 case UIButton.Export:
                     return "export_button_click";
+                case UIButton.Summary:
+                    return "api_summary";
                 case UIButton.ApiCalls:
                     return "api_tab";
                 case UIButton.Assets:
@@ -157,6 +164,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "settings_tab";
                 case UIButton.Generics:
                     return "generics_tab";
+                case UIButton.BuildFiles:
+                    return "buildfiles_tab";
+                case UIButton.CodeCompilerMessages:
+                    return "compiler_messages_tab";
                 case UIButton.AssemblySelect:
                     return "assembly_button_click";
                 case UIButton.AssemblySelectApply:
@@ -173,6 +184,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "show_muted_checkbox";
                 case UIButton.OnlyCriticalIssues:
                     return "only_hotpath_checkbox";
+                case UIButton.Save:
+                    return "save";
+                case UIButton.Load:
+                    return "load";
                 default:
                     Debug.LogFormat("SendUIButtonEvent: Unsupported button type : {0}", uiButton);
                     return "";

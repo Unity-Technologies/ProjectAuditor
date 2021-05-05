@@ -30,7 +30,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectAuditorSettings = projectAuditor.config;
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAsset);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAsset);
 
             Assert.AreEqual(1, issues.Count());
 

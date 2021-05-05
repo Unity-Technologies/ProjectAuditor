@@ -103,5 +103,79 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             LogAssert.Expect(LogType.Error, "Descriptor (102001) minimumVersion (1.1) is greater than maximumVersion (1.0).");
             Assert.False(result);
         }
+
+        [Test]
+        public void ProblemDescriptorWithDefaultArea()
+        {
+            var desc = new ProblemDescriptor
+                (
+                102001,
+                "test"
+                );
+            Assert.True(desc.area.Equals("Info"));
+        }
+
+        [Test]
+        public void ProblemDescriptorWithMultipleAreas()
+        {
+            var desc = new ProblemDescriptor
+                (
+                102001,
+                "test",
+                new[] {Area.CPU, Area.Memory},
+                "this is not actually a problem",
+                "do nothing"
+                );
+            Assert.True(desc.area.Equals("CPU|Memory"));
+        }
+
+        [Test]
+        public void ProblemDescriptorAnyPlatform()
+        {
+            var desc = new ProblemDescriptor
+                (
+                102001,
+                "test",
+                new[] {Area.CPU}
+                );
+
+            Assert.True(ProblemDescriptorLoader.IsPlatformCompatible(desc));
+        }
+
+        [Test]
+        public void ProblemDescriptorSupportedPlatform()
+        {
+            var desc = new ProblemDescriptor
+                (
+                102001,
+                "test",
+                new[] {Area.CPU}
+                )
+            {
+#if UNITY_EDITOR_WIN
+                platforms = new[] { BuildTarget.StandaloneWindows64.ToString() }
+#else
+                platforms = new[] { BuildTarget.StandaloneOSX.ToString() }
+#endif
+            };
+
+            Assert.True(ProblemDescriptorLoader.IsPlatformCompatible(desc));
+        }
+
+        [Test]
+        public void ProblemDescriptorUnsupportedPlatform()
+        {
+            var desc = new ProblemDescriptor
+                (
+                102001,
+                "test",
+                new[] {Area.CPU}
+                )
+            {
+                platforms = new[] { BuildTarget.Android.ToString() }  // assuming Android is not installed by default
+            };
+
+            Assert.False(ProblemDescriptorLoader.IsPlatformCompatible(desc));
+        }
     }
 }

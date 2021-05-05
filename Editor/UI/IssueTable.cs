@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Packages.Editor.Utils;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -13,14 +14,11 @@ namespace Unity.ProjectAuditor.Editor.UI
     class IssueTable : TreeView
     {
         static readonly int k_FirstId = 1;
-        static readonly string k_InfoIconName = "console.infoicon";
-        static readonly string k_WarnIconName = "console.warnicon";
-        static readonly string k_ErrorIconName = "console.erroricon";
 
         static GUIStyle s_LabelStyle;
 
         readonly ProjectAuditorConfig m_Config;
-        readonly AnalysisViewDescriptor m_Desc;
+        readonly ViewDescriptor m_Desc;
         readonly IProjectIssueFilter m_Filter;
         readonly IssueLayout m_Layout;
         readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
@@ -33,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         int m_FontSize;
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
-                          AnalysisViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config,
+                          ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config,
                           IProjectIssueFilter filter) : base(state,
                                                              multicolumnHeader)
         {
@@ -41,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Filter = filter;
             m_Desc = desc;
             m_Layout = layout;
-            m_FlatView = !desc.groupByDescription;
+            m_FlatView = !desc.groupByDescriptor;
             m_NextId = k_FirstId;
             m_FontSize = Preferences.k_MinFontSize;
             multicolumnHeader.sortingChanged += OnSortingChanged;
@@ -49,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void AddIssues(ProjectIssue[] issues)
         {
-            if (m_Desc.groupByDescription)
+            if (m_Desc.groupByDescriptor)
             {
                 var descriptors = issues.Select(i => i.descriptor).Distinct();
                 if (m_TreeViewItemGroups == null)
@@ -69,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 itemsList.AddRange(m_TreeViewItemIssues);
             foreach (var issue in issues)
             {
-                var depth = m_Desc.groupByDescription ? 1 : 0;
+                var depth = m_Desc.groupByDescriptor ? 1 : 0;
                 var item = new IssueTableItem(m_NextId++, depth, issue.name, issue.descriptor, issue);
                 itemsList.Add(item);
             }
@@ -96,7 +94,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var depthForHiddenRoot = -1;
             var root = new TreeViewItem(idForHiddenRoot, depthForHiddenRoot, "root");
 
-            if (m_Desc.groupByDescription)
+            if (m_Desc.groupByDescriptor)
             {
                 foreach (var item in m_TreeViewItemGroups)
                 {
@@ -135,7 +133,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             Profiler.BeginSample("IssueTable.BuildRows");
-            if (m_Desc.groupByDescription && !hasSearch && !m_FlatView)
+            if (m_Desc.groupByDescriptor && !hasSearch && !m_FlatView)
             {
                 var descriptors = filteredItems.Select(i => i.ProblemDescriptor).Distinct();
                 foreach (var descriptor in descriptors)
@@ -206,7 +204,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var columnType = property.type;
 
             // indent first column, if necessary
-            if (m_Desc.groupByDescription && (int)PropertyType.Description == columnType)
+            if (m_Desc.groupByDescriptor && columnIndex == 0)
             {
                 var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
@@ -237,100 +235,78 @@ namespace Unity.ProjectAuditor.Editor.UI
                 GUI.enabled = false;
 
             if (item.IsGroup())
-                switch (columnType)
+            {
+                if (columnIndex == 0)
                 {
-                    case PropertyType.Description:
-                        EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()), s_LabelStyle);
-                        break;
-                    case PropertyType.Area:
-                        EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), s_LabelStyle);
-                        break;
+                    switch (descriptor.severity)
+                    {
+                        case Rule.Severity.Warning:
+                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.warnicon"), s_LabelStyle);
+                            break;
+                        case Rule.Severity.Error:
+                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.erroricon"), s_LabelStyle);
+                            break;
+                        default:
+                            EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()), s_LabelStyle);
+                            break;
+                    }
                 }
+                else if (columnType == PropertyType.Area)
+                    EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), s_LabelStyle);
+            }
             else
                 switch (columnType)
                 {
                     case PropertyType.CriticalContext:
                     {
                         if (issue.isPerfCriticalContext)
-                        {
-                            var tooltip = property.longName;
-#if UNITY_2018_3_OR_NEWER
-                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrIconContent(k_WarnIconName, tooltip), s_LabelStyle);
-#else
-                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(k_WarnIconName), tooltip), s_LabelStyle);
-#endif
-                        }
+                            EditorGUI.LabelField(cellRect, Utility.WarnIcon, s_LabelStyle);
                     }
                     break;
                     case PropertyType.Severity:
                     {
-                        var iconName = string.Empty;
-                        var tooltip = string.Empty;
+                        GUIContent icon = null;
                         switch (issue.descriptor.severity)
                         {
                             case Rule.Severity.Info:
-                                iconName = k_InfoIconName;
-                                tooltip = "Info";
+                                icon = Utility.InfoIcon;
                                 break;
                             case Rule.Severity.Warning:
-                                iconName = k_WarnIconName;
-                                tooltip = "Warning";
+                                icon = Utility.WarnIcon;
                                 break;
                             case Rule.Severity.Error:
-                                iconName = k_ErrorIconName;
-                                tooltip = "Error";
-                                break;
-                            default:
-                                iconName = string.Empty;
-                                tooltip = string.Empty;
+                                icon = Utility.ErrorIcon;
                                 break;
                         }
-                        if (!string.IsNullOrEmpty(iconName))
+                        if (icon != null)
                         {
-#if UNITY_2018_3_OR_NEWER
-                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrIconContent(iconName, tooltip), s_LabelStyle);
-#else
-                            EditorGUI.LabelField(cellRect, new GUIContent(EditorGUIUtility.FindTexture(iconName), tooltip), s_LabelStyle);
-#endif
+                            EditorGUI.LabelField(cellRect, icon, s_LabelStyle);
                         }
                     }
                     break;
 
                     case PropertyType.Area:
-                        if (!m_Desc.groupByDescription)
+                        if (!m_Desc.groupByDescriptor)
                             EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), s_LabelStyle);
                         break;
 
                     case PropertyType.Description:
-                        if (m_Desc.groupByDescription)
+                        GUIContent guiContent = null;
+                        if (issue.location != null && m_Desc.descriptionWithIcon)
                         {
-                            var text = item.GetDisplayName();
-                            var tooltip = issue.GetCallingMethod();
-                            var guiContent = new GUIContent(text, tooltip);
-
 #if UNITY_2018_3_OR_NEWER
-                            if (m_Desc.descriptionWithIcon && issue.location != null)
-                            {
-                                var icon = AssetDatabase.GetCachedIcon(issue.location.Path);
-                                guiContent = EditorGUIUtility.TrTextContentWithIcon(text, tooltip, icon);
-                            }
+                            var icon = AssetDatabase.GetCachedIcon(issue.location.Path);
+                            guiContent = EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), issue.location.Path, icon);
+#else
+                            guiContent = new GUIContent(item.GetDisplayName(), issue.location.Path);
 #endif
-                            EditorGUI.LabelField(cellRect, guiContent, s_LabelStyle);
                         }
-                        else if (string.IsNullOrEmpty(descriptor.problem))
+
+                        if (guiContent == null)
                         {
-                            if (issue.location != null)
-                            {
-                                EditorGUI.LabelField(cellRect,
-                                    new GUIContent(item.GetDisplayName(), issue.location.Path), s_LabelStyle);
-                            }
-                            else
-                                EditorGUI.LabelField(cellRect, item.GetDisplayName(), s_LabelStyle);
+                            guiContent = new GUIContent(item.GetDisplayName(), descriptor.problem);
                         }
-                        else
-                        {
-                            EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), descriptor.problem), s_LabelStyle);
-                        }
+                        EditorGUI.LabelField(cellRect, guiContent, s_LabelStyle);
                         break;
 
                     case PropertyType.Filename:
@@ -350,8 +326,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var customProperty = issue.GetProperty(columnType);
                         if (customProperty != string.Empty)
                         {
-                            if (property.format == PropertyFormat.Bool)
-                                EditorGUI.Toggle(cellRect, customProperty.Equals(true.ToString()));
+                            bool boolValue;
+                            ulong ulongValue;
+                            if (property.format == PropertyFormat.Bool && bool.TryParse(customProperty, out boolValue))
+                            {
+                                EditorGUI.Toggle(cellRect, boolValue);
+                            }
+                            else if (property.format == PropertyFormat.Bytes && ulong.TryParse(customProperty, out ulongValue))
+                            {
+                                EditorGUI.LabelField(cellRect, Formatting.FormatSize(ulongValue));
+                            }
                             else
                                 EditorGUI.LabelField(cellRect, new GUIContent(customProperty), s_LabelStyle);
                         }
@@ -567,19 +551,23 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.location.Extension : string.Empty;
                                 secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.location.Extension : string.Empty;
                                 break;
+                            case PropertyType.CriticalContext:
+                                firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
+                                secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
+                                break;
                             case PropertyType.Severity:
                                 firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.severity.ToString() : string.Empty;
                                 secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.severity.ToString() : string.Empty;
                                 break;
                             default:
                                 var propertyIndex = property.type - PropertyType.Custom;
-                                if (property.format == PropertyFormat.Integer)
+                                if (property.format == PropertyFormat.Integer || property.format == PropertyFormat.Bytes)
                                 {
                                     int first;
                                     int second;
-                                    if (!int.TryParse(firstItem.ProjectIssue.GetCustomProperty(propertyIndex), out first))
+                                    if (firstItem.ProjectIssue == null || !int.TryParse(firstItem.ProjectIssue.GetCustomProperty(propertyIndex), out first))
                                         first = -999999;
-                                    if (!int.TryParse(secondItem.ProjectIssue.GetCustomProperty(propertyIndex), out second))
+                                    if (secondItem.ProjectIssue == null || !int.TryParse(secondItem.ProjectIssue.GetCustomProperty(propertyIndex), out second))
                                         second = -999999;
                                     return first - second;
                                 }

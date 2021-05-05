@@ -16,6 +16,5 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.NotNull(types.FirstOrDefault(type => type == typeof(ScriptAuditor)));
             Assert.NotNull(types.FirstOrDefault(type => type == typeof(SettingsAuditor)));
         }
-
     }
 }

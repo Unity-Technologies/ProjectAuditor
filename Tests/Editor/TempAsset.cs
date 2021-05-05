@@ -6,14 +6,26 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     public class TempAsset
     {
-        const string TempFolder = "ProjectAuditor-Temp";
+        const string k_TempFolder = "ProjectAuditor-Temp";
 
-        public TempAsset(string scriptName, string content)
+        public readonly string relativePath;
+
+        public string fileName
         {
-            relativePath = Path.Combine("Assets", Path.Combine(TempFolder, scriptName)).Replace("\\", "/");
+            get { return Path.GetFileName(relativePath); }
+        }
+
+        private TempAsset(string fileName)
+        {
+            relativePath = Path.Combine("Assets", Path.Combine(k_TempFolder, fileName)).Replace("\\", "/");
+
             if (!File.Exists(relativePath))
                 Directory.CreateDirectory(Path.GetDirectoryName(relativePath));
+        }
 
+        public TempAsset(string fileName, string content) :
+            this(fileName)
+        {
             File.WriteAllText(relativePath, content);
 
             Assert.True(File.Exists(relativePath));
@@ -21,16 +33,18 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             AssetDatabase.ImportAsset(relativePath, ImportAssetOptions.ForceUpdate);
         }
 
-        public readonly string relativePath;
-
-        public string scriptName
+        public static TempAsset Save(UnityEngine.Object asset, string fileName)
         {
-            get { return Path.GetFileName(relativePath); }
+            var tempAsset = new TempAsset(fileName);
+            AssetDatabase.CreateAsset(asset, tempAsset.relativePath);
+            AssetDatabase.ImportAsset(tempAsset.relativePath, ImportAssetOptions.ForceUpdate);
+
+            return tempAsset;
         }
 
         public static void Cleanup()
         {
-            var path = Path.Combine("Assets", TempFolder);
+            var path = Path.Combine("Assets", k_TempFolder);
             Directory.Delete(path, true);
             File.Delete(path + ".meta");
             AssetDatabase.Refresh();

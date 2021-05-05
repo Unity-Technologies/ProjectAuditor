@@ -24,13 +24,19 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
-            if (inst.Previous != null)
+            // skip any no-Nop
+            var previousIL = inst.Previous;
+            while (previousIL != null && previousIL.OpCode == OpCodes.Nop)
+                previousIL = previousIL.Previous;
+
+            // if there is no instruction before OpCodes.Ret, then we know this method is empty
+            if (previousIL != null)
                 return null;
 
             if (!MonoBehaviourAnalysis.IsMonoBehaviour(methodDefinition.DeclaringType))
                 return null;
 
-            if (!MonoBehaviourAnalysis.IsMonoBehaviourMagicMethod(methodDefinition))
+            if (!MonoBehaviourAnalysis.IsMonoBehaviourEvent(methodDefinition))
                 return null;
 
             return new ProjectIssue

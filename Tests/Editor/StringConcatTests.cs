@@ -32,7 +32,7 @@ class StringConcat
         [Test]
         public void StringConcatIssueIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetStringConcat);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetStringConcat);
 
             Assert.AreEqual(1, issues.Count());
 

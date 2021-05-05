@@ -1,3 +1,5 @@
+using System;
+
 namespace Unity.ProjectAuditor.Editor.Utils
 {
     public static class ProjectIssueExtensions

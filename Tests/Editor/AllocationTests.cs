@@ -90,7 +90,7 @@ class ParamsArrayAllocation
         [Test]
         public void ObjectAllocationIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetObjectAllocation);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetObjectAllocation);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -103,7 +103,7 @@ class ParamsArrayAllocation
         [Test]
         public void ClosureAllocationIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetClosureAllocation);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetClosureAllocation);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -118,7 +118,7 @@ class ParamsArrayAllocation
         [Test]
         public void ArrayAllocationIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetArrayAllocation);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.First();
@@ -130,7 +130,7 @@ class ParamsArrayAllocation
         [Test]
         public void MultidimensionalArrayAllocationIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetMultidimensionalArrayAllocation);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetMultidimensionalArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.First();
@@ -142,7 +142,7 @@ class ParamsArrayAllocation
         [Test]
         public void ParamsArrayAllocationIsFound()
         {
-            var issues = ScriptIssueTestHelper.AnalyzeAndFindScriptIssues(m_TempAssetParamsArrayAllocation);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetParamsArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.First();

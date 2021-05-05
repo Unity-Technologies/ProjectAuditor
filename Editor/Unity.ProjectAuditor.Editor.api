@@ -6,16 +6,13 @@ namespace Unity.ProjectAuditor.Editor
     public enum Area
     {
         public const Unity.ProjectAuditor.Editor.Area BuildSize = 3;
+        public const Unity.ProjectAuditor.Editor.Area BuildTime = 4;
         public const Unity.ProjectAuditor.Editor.Area CPU = 0;
         public const Unity.ProjectAuditor.Editor.Area GPU = 1;
-        public const Unity.ProjectAuditor.Editor.Area LoadTimes = 4;
+        public const Unity.ProjectAuditor.Editor.Area Info = 6;
+        public const Unity.ProjectAuditor.Editor.Area LoadTimes = 5;
         public const Unity.ProjectAuditor.Editor.Area Memory = 2;
         public int value__;
-    }
-
-    public class AssemblyCompilationException : System.Exception
-    {
-        public AssemblyCompilationException() {}
     }
 
     public class AssetDependencyNode : Unity.ProjectAuditor.Editor.DependencyNode
@@ -47,6 +44,7 @@ namespace Unity.ProjectAuditor.Editor
         public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
         public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
         public abstract void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
+        public abstract bool IsSupported();
         public abstract void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
     }
 
@@ -64,20 +62,24 @@ namespace Unity.ProjectAuditor.Editor
 
     public enum IssueCategory
     {
-        public const Unity.ProjectAuditor.Editor.IssueCategory Assets = 0;
-        public const Unity.ProjectAuditor.Editor.IssueCategory Code = 3;
-        public const Unity.ProjectAuditor.Editor.IssueCategory Generics = 4;
-        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 6;
-        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 5;
-        public const Unity.ProjectAuditor.Editor.IssueCategory Shaders = 1;
-        public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariants = 2;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Assets = 1;
+        public const Unity.ProjectAuditor.Editor.IssueCategory BuildFiles = 8;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Code = 4;
+        public const Unity.ProjectAuditor.Editor.IssueCategory CodeCompilerMessages = 5;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Generics = 6;
+        public const Unity.ProjectAuditor.Editor.IssueCategory MetaData = 0;
+        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 9;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 7;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Shaders = 2;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariants = 3;
         public int value__;
     }
 
-    public struct IssueLayout
+    public class IssueLayout
     {
         public Unity.ProjectAuditor.Editor.IssueCategory category;
         public Unity.ProjectAuditor.Editor.PropertyDefinition[] properties;
+        public IssueLayout() {}
     }
 
     public class ProblemDescriptor : System.IEquatable<Unity.ProjectAuditor.Editor.ProblemDescriptor>
@@ -90,13 +92,15 @@ namespace Unity.ProjectAuditor.Editor
         public string maximumVersion;
         public string method;
         public string minimumVersion;
+        public string[] platforms;
         public string problem;
         public Unity.ProjectAuditor.Editor.Rule.Severity severity;
         public string solution;
         public string type;
         public string value;
         public ProblemDescriptor(int id, string description, string area, string problem = default(string), string solution = default(string)) {}
-        public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area area, string problem = default(string), string solution = default(string)) {}
+        public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area area = 6, string problem = default(string), string solution = default(string)) {}
+        public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area[] areas, string problem = default(string), string solution = default(string)) {}
         public virtual bool Equals(object obj);
         public virtual bool Equals(Unity.ProjectAuditor.Editor.ProblemDescriptor other);
         public virtual int GetHashCode();
@@ -147,8 +151,10 @@ namespace Unity.ProjectAuditor.Editor
         public string name { get; }
         public string relativePath { get; }
         public Unity.ProjectAuditor.Editor.Rule.Severity severity { get; }
+        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, string[] customProperties) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode dependenciesNode) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location = default(Unity.ProjectAuditor.Editor.Utils.Location)) {}
+        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location, string[] customProperties) {}
         public string GetCustomProperty(int index);
         public int GetNumCustomProperties();
         public void SetCustomProperties(string[] properties);
@@ -161,6 +167,8 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectReport() {}
         public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
         public int GetNumIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public static Unity.ProjectAuditor.Editor.ProjectReport Load(string path);
+        public void Save(string path);
     }
 
     public struct PropertyDefinition
@@ -174,6 +182,7 @@ namespace Unity.ProjectAuditor.Editor
     public enum PropertyFormat
     {
         public const Unity.ProjectAuditor.Editor.PropertyFormat Bool = 0;
+        public const Unity.ProjectAuditor.Editor.PropertyFormat Bytes = 3;
         public const Unity.ProjectAuditor.Editor.PropertyFormat Integer = 1;
         public const Unity.ProjectAuditor.Editor.PropertyFormat String = 2;
         public int value__;
@@ -234,13 +243,64 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.AssetsAuditor.<GetLayouts>d__4))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
         public virtual void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
+        public virtual bool IsSupported();
         public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+    }
+
+    public class BuildAuditor : Unity.ProjectAuditor.Editor.IAuditor, UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPostprocessBuildWithReport
+    {
+        public virtual int callbackOrder { get; }
+        public BuildAuditor() {}
+        public virtual void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
+        public static UnityEditor.Build.Reporting.BuildReport GetBuildReport();
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.BuildAuditor.<GetDescriptors>d__5))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.BuildAuditor.<GetLayouts>d__6))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
+        public virtual void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
+        public virtual bool IsSupported();
+        public virtual void OnPostprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
+        public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+    }
+
+    public enum BuildProperty
+    {
+        public const Unity.ProjectAuditor.Editor.Auditors.BuildProperty BuildFile = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.BuildProperty Num = 2;
+        public const Unity.ProjectAuditor.Editor.Auditors.BuildProperty Size = 0;
+        public int value__;
     }
 
     public enum CodeProperty
     {
         public const Unity.ProjectAuditor.Editor.Auditors.CodeProperty Assembly = 0;
         public const Unity.ProjectAuditor.Editor.Auditors.CodeProperty Num = 1;
+        public int value__;
+    }
+
+    public enum CompilerMessageProperty
+    {
+        public const Unity.ProjectAuditor.Editor.Auditors.CompilerMessageProperty Assembly = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.CompilerMessageProperty Code = 0;
+        public const Unity.ProjectAuditor.Editor.Auditors.CompilerMessageProperty Num = 2;
+        public int value__;
+    }
+
+    public class MetaDataAuditor : Unity.ProjectAuditor.Editor.IAuditor
+    {
+        public MetaDataAuditor() {}
+        public virtual void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.MetaDataAuditor.<GetDescriptors>d__2))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.MetaDataAuditor.<GetLayouts>d__3))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
+        public virtual void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
+        public virtual bool IsSupported();
+        public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+    }
+
+    public enum ShaderKeywordProperty
+    {
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderKeywordProperty BuildSize = 2;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderKeywordProperty Num = 3;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderKeywordProperty NumShaders = 0;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderKeywordProperty NumVariants = 1;
         public int value__;
     }
 
@@ -256,17 +316,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public int value__;
     }
 
-    public class ShadersAuditor : Unity.ProjectAuditor.Editor.IAuditor, UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessShaders
+    public class ShadersAuditor : Unity.ProjectAuditor.Editor.IAuditor, UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport, UnityEditor.Build.IPreprocessShaders
     {
-        public static System.Action OnClearShaderData;
         public virtual int callbackOrder { get; }
         public ShadersAuditor() {}
         public virtual void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public static bool BuildDataAvailable();
-        public static void ClearBuildData();
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.ShadersAuditor.<GetDescriptors>d__17))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.Auditors.ShadersAuditor.<GetLayouts>d__18))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
         public virtual void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
+        public virtual bool IsSupported();
+        public virtual void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
         public virtual void OnProcessShader(UnityEngine.Shader shader, UnityEditor.Rendering.ShaderSnippetData snippet, System.Collections.Generic.IList<UnityEditor.Rendering.ShaderCompilerData> data);
         public bool ParsePlayerLog(string logFile, Unity.ProjectAuditor.Editor.ProjectIssue[] builtVariants, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
         public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
@@ -323,12 +383,29 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
+    public struct CompilerMessage
+    {
+        public string code;
+        public string file;
+        public int line;
+        public string message;
+        public Unity.ProjectAuditor.Editor.Utils.CompilerMessageType type;
+    }
+
+    public enum CompilerMessageType
+    {
+        public const Unity.ProjectAuditor.Editor.Utils.CompilerMessageType Error = 0;
+        public const Unity.ProjectAuditor.Editor.Utils.CompilerMessageType Info = 2;
+        public int value__;
+        public const Unity.ProjectAuditor.Editor.Utils.CompilerMessageType Warning = 1;
+    }
+
     public class Exporter : System.IDisposable
     {
         public Exporter(string path, Unity.ProjectAuditor.Editor.IssueLayout layout) {}
         public virtual void Dispose();
         public void WriteHeader();
-        public void WriteIssue(Unity.ProjectAuditor.Editor.ProjectIssue issue);
+        public void WriteIssues(Unity.ProjectAuditor.Editor.ProjectIssue[] issues);
     }
 
     public class Location
