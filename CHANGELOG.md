@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Fixed Build Report *Build Name*
 * Fixed empty MonoBehaviour event detection
 * Fixed *Graphics Tier Settings* misreporting
+* Fixed failed/cancelled report loading from file
 
 ## [0.6.0-preview] - 2021-04-26
 * Added Build Report support
