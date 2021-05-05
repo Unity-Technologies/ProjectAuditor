@@ -290,11 +290,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbarDataOptions = () =>
                 {
-                    if (GUILayout.Button(Contents.Shaders, EditorStyles.toolbarButton,
-                        GUILayout.Width(80)))
-                    {
-                        Instance.SelectView(IssueCategory.Shaders);
-                    }
+                    GUILayout.FlexibleSpace();
                     if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
                         GUILayout.Width(100)))
                     {
@@ -303,7 +299,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                     if (GUILayout.Button("Clear", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
                         GUILayout.Width(100)))
                     {
+                        Instance.ClearView(IssueCategory.ShaderVariants);
                         ShadersAuditor.ClearBuildData();
+                    }
+                    GUILayout.FlexibleSpace();
+
+                    if (GUILayout.Button(Contents.Shaders, EditorStyles.toolbarButton,
+                        GUILayout.Width(80)))
+                    {
+                        Instance.SelectView(IssueCategory.Shaders);
                     }
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Shaders
