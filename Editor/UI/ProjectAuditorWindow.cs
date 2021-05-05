@@ -1202,5 +1202,11 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...), by str
             static GUIStyle s_StatusText;
         }
 
+        [PostProcessBuild(1)]
+        public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
+        {
+            if (Instance != null)
+                Instance.OnPostprocessBuild(target);
+        }
     }
 }
