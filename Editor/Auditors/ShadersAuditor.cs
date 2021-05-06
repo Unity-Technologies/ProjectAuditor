@@ -202,7 +202,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         void AddShader(Shader shader, string assetPath, int id, Action<ProjectIssue> onIssueFound)
         {
-            var variantCount = -1; // initial state: info not available
+            // set initial state (-1: info not available)
+            var variantCount = s_ShaderVariantData.Count > 0 ? 0 : -1;
 
 #if UNITY_2018_2_OR_NEWER
             // add variants first
@@ -212,10 +213,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 variantCount = variants.Count;
 
                 AddVariants(shader, assetPath, id++, variants, onIssueFound);
-            }
-            else
-            {
-            	variantCount = 0;
             }
 #endif
 
