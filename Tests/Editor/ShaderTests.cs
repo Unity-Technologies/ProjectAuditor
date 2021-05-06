@@ -10,6 +10,7 @@ using UnityEditor.Build;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 #if UNITY_2018_2_OR_NEWER
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
@@ -390,7 +391,7 @@ Shader ""Custom/MyEditorShader""
 
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
 
-            var variants = issues.Where(i => i.description.Equals("Custom/MySurfShader"));
+            var variants = issues.Where(i => i.description.Equals("Custom/MySurfShader")).ToArray();
             Assert.Positive(variants.Count());
 
             // check custom property
@@ -423,7 +424,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void UnusedVariantsAreReported()
         {
-            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/UntitledScene.unity");
+            EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), "Assets/UntitledScene.unity");
 
             var buildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(buildPath);
