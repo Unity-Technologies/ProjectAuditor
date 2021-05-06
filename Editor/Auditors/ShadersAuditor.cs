@@ -199,7 +199,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         void AddShader(Shader shader, string assetPath, int id, Action<ProjectIssue> onIssueFound)
         {
-            var variantCount = 0;
+            var variantCount = -1; // initial state: info not available
 
 #if UNITY_2018_2_OR_NEWER
             // add variants first
@@ -313,7 +313,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
-        internal static void CleanupBuildData()
+        internal static void ClearBuildData()
         {
             s_ShaderVariantData = null;
         }

@@ -322,7 +322,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderVariantsRequireBuild()
         {
-            ShadersAuditor.CleanupBuildData();
+            ShadersAuditor.ClearBuildData();
             var issues = Utility.Analyze(IssueCategory.ShaderVariants);
             Assert.Zero(issues.Length);
             Assert.False(ShadersAuditor.BuildDataAvailable());
@@ -488,6 +488,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderIsReported()
         {
+            ShadersAuditor.ClearBuildData();
             var issues = Utility.Analyze(IssueCategory.Shaders);
             var shaderIssue = issues.FirstOrDefault(i => i.description.Equals("Custom/MyTestShader"));
             Assert.NotNull(shaderIssue);
@@ -497,7 +498,8 @@ Shader ""Custom/MyEditorShader""
 
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
-            //Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumVariants).Equals(ShadersAuditor.k_NotAvailable));
+            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumVariants).Equals(ShadersAuditor.k_NotAvailable), "Num Variants: " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumVariants));
+
 #if UNITY_2019_1_OR_NEWER
             Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
             Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
