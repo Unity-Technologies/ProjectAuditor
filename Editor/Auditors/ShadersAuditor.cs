@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build;
@@ -113,16 +112,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData;
 
-#pragma warning disable 0414
-        Type m_ShaderUtilType;
-        MethodInfo m_GetShaderVariantCountMethod;
-        MethodInfo m_GetShaderGlobalKeywordsMethod;
-        MethodInfo m_GetShaderLocalKeywordsMethod;
-        MethodInfo m_HasInstancingMethod;
-        MethodInfo m_GetShaderActiveSubshaderIndex;
-        MethodInfo m_GetSRPBatcherCompatibilityCode;
-#pragma warning restore 0414
-
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             yield return null;
@@ -136,13 +125,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Initialize(ProjectAuditorConfig config)
         {
-            m_ShaderUtilType = typeof(ShaderUtil);
-            m_GetShaderVariantCountMethod = m_ShaderUtilType.GetMethod("GetVariantCount", BindingFlags.Static | BindingFlags.NonPublic);
-            m_GetShaderGlobalKeywordsMethod = m_ShaderUtilType.GetMethod("GetShaderGlobalKeywords", BindingFlags.Static | BindingFlags.NonPublic);
-            m_GetShaderLocalKeywordsMethod = m_ShaderUtilType.GetMethod("GetShaderLocalKeywords", BindingFlags.Static | BindingFlags.NonPublic);
-            m_HasInstancingMethod = m_ShaderUtilType.GetMethod("HasInstancing", BindingFlags.Static | BindingFlags.NonPublic);
-            m_GetShaderActiveSubshaderIndex = m_ShaderUtilType.GetMethod("GetShaderActiveSubshaderIndex", BindingFlags.Static | BindingFlags.NonPublic);
-            m_GetSRPBatcherCompatibilityCode = m_ShaderUtilType.GetMethod("GetSRPBatcherCompatibilityCode", BindingFlags.Static | BindingFlags.NonPublic);
         }
 
         public bool IsSupported()
@@ -217,7 +199,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         void AddShader(Shader shader, string assetPath, int id, Action<ProjectIssue> onIssueFound)
         {
-            var variantCount = k_NotAvailable;
+            var variantCount = 0;
 
 #if UNITY_2018_2_OR_NEWER
             // add variants first
@@ -225,13 +207,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 if (s_ShaderVariantData.ContainsKey(shader))
                 {
                     var variants = s_ShaderVariantData[shader];
-                    variantCount = variants.Count.ToString();
+                    variantCount = variants.Count;
 
                     AddVariants(shader, assetPath, id++, variants, onIssueFound);
                 }
                 else
                 {
-                    variantCount = "0";
+                    variantCount = 0;
                 }
 #endif
 
@@ -267,9 +249,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 shaderName
                 );
 
-            var passCount = k_NotAvailable;
-            var keywordCount = k_NotAvailable;
-            var hasInstancing = k_NotAvailable;
 /*
             var usedBySceneOnly = false;
             if (m_GetShaderVariantCountMethod != null)
@@ -278,44 +257,24 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 variantCount = value.ToString();
             }
 */
-            if (m_GetShaderGlobalKeywordsMethod != null && m_GetShaderLocalKeywordsMethod != null)
-            {
-                var globalKeywords = (string[])m_GetShaderGlobalKeywordsMethod.Invoke(null, new object[] { shader});
-                var localKeywords = (string[])m_GetShaderLocalKeywordsMethod.Invoke(null, new object[] { shader});
-                keywordCount = (globalKeywords.Length + localKeywords.Length).ToString();
-            }
-
-            if (m_HasInstancingMethod != null)
-            {
-                var value = (bool)m_HasInstancingMethod.Invoke(null, new object[] { shader});
-                hasInstancing = value.ToString();
-            }
-
-            // srp batcher
-            var isSrpBatcherCompatible = false;
-            if (m_GetShaderGlobalKeywordsMethod != null && m_GetShaderLocalKeywordsMethod != null)
-            {
-#if UNITY_2019_1_OR_NEWER
-                if (RenderPipelineManager.currentPipeline != null)
-                {
-                    int subShader = (int)m_GetShaderActiveSubshaderIndex.Invoke(null, new object[] { shader});
-                    int SRPErrCode = (int)m_GetSRPBatcherCompatibilityCode.Invoke(null, new object[] { shader, subShader});
-                    isSrpBatcherCompatible = (0 == SRPErrCode);
-                }
-#endif
-            }
+            var passCount = -1;
+            var globalKeywords = ShaderUtilProxy.GetShaderGlobalKeywords(shader);
+            var localKeywords = ShaderUtilProxy.GetShaderLocalKeywords(shader);
+            var hasInstancing = ShaderUtilProxy.HasInstancing(shader);
+            var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(shader);
+            var isSrpBatcherCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(shader, subShaderIndex) == 0;
 
 #if UNITY_2019_1_OR_NEWER
-            passCount = shader.passCount.ToString();
+            passCount = shader.passCount;
 #endif
             var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.Shaders, new Location(assetPath));
             issue.SetCustomProperties(new[]
             {
-                variantCount,
-                passCount,
-                keywordCount,
+                variantCount == -1 ? k_NotAvailable : variantCount.ToString(),
+                passCount == -1 ? k_NotAvailable : passCount.ToString(),
+                (globalKeywords == null || localKeywords == null) ? k_NotAvailable : (globalKeywords.Length + localKeywords.Length).ToString(),
                 shader.renderQueue.ToString(),
-                hasInstancing,
+                hasInstancing.ToString(),
                 isSrpBatcherCompatible.ToString()
             });
             onIssueFound(issue);

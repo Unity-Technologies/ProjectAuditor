@@ -5,6 +5,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Auditors;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.Build;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -338,12 +339,12 @@ Shader ""Custom/MyEditorShader""
 
             var variants = issues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
             var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform)).Distinct();
-            var numShaderCompilerPlatforms = shaderCompilerPlatforms.Count();
-
-            Assert.AreEqual(5 * numShaderCompilerPlatforms, variants.Length);
+            var compilerPlatformNames = ShaderUtilProxy.GetCompilerPlatformNames();
 
             foreach (var plat in shaderCompilerPlatforms)
             {
+                Assert.Contains(plat, compilerPlatformNames);
+
                 var variantsForPlatform = variants.Where(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform).Equals(plat)).ToArray();
                 Assert.AreEqual((int)ShaderVariantProperty.Num, variantsForPlatform[0].GetNumCustomProperties());
 
@@ -505,8 +506,8 @@ Shader ""Custom/MyEditorShader""
             Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
 #endif
             Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue));
-            Assert.False(shaderIssue.GetCustomPropertyAsBool((int)ShaderProperty.Instancing));
-            Assert.False(shaderIssue.GetCustomPropertyAsBool((int)ShaderProperty.SrpBatcher));
+            Assert.False(shaderIssue.GetCustomPropertyAsBool((int)ShaderProperty.Instancing), "Instancing is supported but it should not be.");
+            Assert.False(shaderIssue.GetCustomPropertyAsBool((int)ShaderProperty.SrpBatcher), "SRP Batcher is supported but it should not be.");
         }
 
 #if UNITY_2019_1_OR_NEWER
