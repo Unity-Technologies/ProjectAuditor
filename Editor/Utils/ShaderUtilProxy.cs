@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         // note that this method is not present in ShaderUtil
         public static string[] GetCompilerPlatformNames()
         {
-            if (s_ShaderUtilType == null)
+            if (s_TypeShaderUtil == null)
                 Init();
 
             return s_ShaderPlatformNames;
@@ -55,48 +55,48 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static int GetShaderActiveSubshaderIndex(Shader shader)
         {
-            if (s_ShaderUtilType == null)
+            if (s_TypeShaderUtil == null)
                 Init();
 
-            if (s_GetShaderActiveSubshaderIndex == null)
+            if (s_MethodGetShaderActiveSubshaderIndex == null)
                 return 0;
 
-            return (int)s_GetShaderActiveSubshaderIndex.Invoke(null, new object[] { shader});
+            return (int)s_MethodGetShaderActiveSubshaderIndex.Invoke(null, new object[] { shader});
         }
 
         public static string[] GetShaderGlobalKeywords(Shader shader)
         {
-            if (s_ShaderUtilType == null)
+            if (s_TypeShaderUtil == null)
                 Init();
 
-            if (s_GetShaderGlobalKeywordsMethod == null)
+            if (s_MethodGetShaderGlobalKeywords == null)
                 return null;
 
-            return (string[])s_GetShaderGlobalKeywordsMethod.Invoke(null, new object[] { shader});
+            return (string[])s_MethodGetShaderGlobalKeywords.Invoke(null, new object[] { shader});
         }
 
         public static string[] GetShaderLocalKeywords(Shader shader)
         {
-            if (s_ShaderUtilType == null)
+            if (s_TypeShaderUtil == null)
                 Init();
 
-            if (s_GetShaderLocalKeywordsMethod == null)
+            if (s_MethodGetShaderLocalKeywords == null)
                 return null;
 
-            return (string[])s_GetShaderLocalKeywordsMethod.Invoke(null, new object[] { shader});
+            return (string[])s_MethodGetShaderLocalKeywords.Invoke(null, new object[] { shader});
         }
 
         public static int GetSRPBatcherCompatibilityCode(Shader shader, int subShaderIdx)
         {
 #if UNITY_2019_1_OR_NEWER
-            if (s_ShaderUtilType == null)
+            if (s_TypeShaderUtil == null)
                 Init();
 
-            if (s_GetSRPBatcherCompatibilityCode == null)
+            if (s_MethodGetSRPBatcherCompatibilityCode == null)
                 return -1;
             if (RenderPipelineManager.currentPipeline == null)
                 return -1;
-            return (int)s_GetSRPBatcherCompatibilityCode.Invoke(null, new object[] { shader, subShaderIdx});
+            return (int)s_MethodGetSRPBatcherCompatibilityCode.Invoke(null, new object[] { shader, subShaderIdx});
 #else
             return -1;
 #endif
@@ -104,24 +104,24 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static int GetVariantCount(Shader shader)
         {
-            if (s_ShaderUtilType == null)
+            if (s_TypeShaderUtil == null)
                 Init();
 
-            if (s_GetShaderVariantCountMethod == null)
+            if (s_MethodGetShaderVariantCount == null)
                 return 0;
 
-            return (int)s_GetShaderVariantCountMethod.Invoke(null, new object[] { shader});
+            return (int)s_MethodGetShaderVariantCount.Invoke(null, new object[] { shader});
         }
 
         public static bool HasInstancing(Shader shader)
         {
-            if (s_ShaderUtilType == null)
+            if (s_TypeShaderUtil == null)
                 Init();
 
-            if (s_HasInstancingMethod == null)
+            if (s_MethodHasInstancing == null)
                 return false;
 
-            return (bool)s_HasInstancingMethod.Invoke(null, new object[] { shader});
+            return (bool)s_MethodHasInstancing.Invoke(null, new object[] { shader});
         }
     }
 }
