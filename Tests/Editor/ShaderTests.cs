@@ -461,10 +461,10 @@ Shader ""Custom/MyEditorShader""
 
             Assert.That(result, Is.EqualTo(ParseLogResult.Success), "No compiled shader variants found in player log.");
 
-            var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform)).Distinct();
+            var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform)).Distinct().ToArray();
             var numShaderCompilerPlatforms = shaderCompilerPlatforms.Count();
 
-            Assert.AreEqual(5 * numShaderCompilerPlatforms, variants.Length);
+            Assert.AreEqual(5 * numShaderCompilerPlatforms, variants.Length, "Compiler Platforms: " + string.Join(", ", shaderCompilerPlatforms));
 
             var unusedVariants = variants.Where(i => !i.GetCustomPropertyAsBool((int)ShaderVariantProperty.Compiled)).ToArray();
             foreach (var plat in shaderCompilerPlatforms)
