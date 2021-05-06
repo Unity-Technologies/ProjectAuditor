@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.SettingsAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
@@ -36,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_Analyzers = new List<ISettingsAnalyzer>();
             m_ProblemDescriptors = new List<ProblemDescriptor>();
 
-            foreach (var type in TypeInfo.GetAllTypesInheritedFromInterface<ISettingsAnalyzer>())
+            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ISettingsAnalyzer)))
                 AddAnalyzer(Activator.CreateInstance(type) as ISettingsAnalyzer);
         }
 

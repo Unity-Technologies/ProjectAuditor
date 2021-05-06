@@ -11,7 +11,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void CanGetBuiltinAuditorTypes()
         {
-            var types = TypeInfo.GetAllTypesInheritedFromInterface<IAuditor>();
+            var types = TypeCache.GetTypesDerivedFrom(typeof(IAuditor));
 
             Assert.NotNull(types.FirstOrDefault(type => type == typeof(ScriptAuditor)));
             Assert.NotNull(types.FirstOrDefault(type => type == typeof(SettingsAuditor)));

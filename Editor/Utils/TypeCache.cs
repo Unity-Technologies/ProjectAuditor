@@ -1,3 +1,5 @@
+﻿#if !UNITY_2019_2_OR_NEWER
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +8,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    static class TypeInfo
+    public static class TypeCache
     {
         static List<Type> s_Types;
 
@@ -33,11 +35,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return types;
         }
 
-        public static IEnumerable<Type> GetAllTypesInheritedFromInterface<InterfaceT>()
+        public static IEnumerable<Type> GetTypesDerivedFrom(Type parentType)
         {
-            var interfaceType = typeof(InterfaceT);
             return GetAllTypes()
-                .Where(type => type != interfaceType && interfaceType.IsAssignableFrom(type));
+                .Where(type => type != parentType && parentType.IsAssignableFrom(type));
         }
     }
 }
+#endif

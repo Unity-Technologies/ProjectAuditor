@@ -7,6 +7,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     static class MonoCecilHelper
     {
+        // for reference https://github.com/Unity-Technologies/UnityCsReference/blob/master/Editor/Mono/MonoCecil/MonoCecilHelper.cs
         public static IEnumerable<TypeDefinition> AggregateAllTypeDefinitions(IEnumerable<TypeDefinition> types)
         {
             var typeDefs = types.ToList();
