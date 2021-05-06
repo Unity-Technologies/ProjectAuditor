@@ -444,9 +444,8 @@ Shader ""Custom/MyEditorShader""
 
             AssetDatabase.DeleteAsset("Assets/UntitledScene.unity");
 
+            ShadersAuditor.ClearBuildData();
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            projectAuditor.Audit();
-
             var shadersAndVariants = new List<ProjectIssue>();
             var shadersAuditor = projectAuditor.GetAuditor<ShadersAuditor>();
             var completed = false;
