@@ -24,8 +24,17 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
+        static ProjectAuditorWindow m_Instance;
 
-        public static ProjectAuditorWindow Instance;
+        public static ProjectAuditorWindow Instance
+        {
+            get
+            {
+                if (m_Instance == null)
+                    ShowWindow();
+                return m_Instance;
+            }
+        }
 
         Utility.DropdownItem[] m_ViewDropdownItems;
         ProjectAuditor m_ProjectAuditor;
@@ -170,7 +179,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             RefreshDisplay();
 
-            Instance = this;
+            m_Instance = this;
         }
 
         void OnGUI()
