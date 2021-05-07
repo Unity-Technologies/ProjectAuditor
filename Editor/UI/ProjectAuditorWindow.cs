@@ -12,7 +12,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IProjectIssueFilter
+    public class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IProjectIssueFilter
     {
         enum AnalysisState
         {
@@ -24,7 +24,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
-        static ProjectAuditorWindow Instance;
+
+        public static ProjectAuditorWindow Instance;
 
         Utility.DropdownItem[] m_ViewDropdownItems;
         ProjectAuditor m_ProjectAuditor;
@@ -513,7 +514,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Audit<BuildAuditor>();
         }
 
-        void AnalyzeShaderVariants()
+        public void AnalyzeShaderVariants()
         {
             if (m_ProjectReport == null)
                 m_ProjectReport = new ProjectReport();
@@ -544,7 +545,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             activeView.Refresh();
         }
 
-        AnalysisView GetView(IssueCategory category)
+        public AnalysisView GetView(IssueCategory category)
         {
             return m_Views.FirstOrDefault(v => v.desc.category == category);
         }
@@ -852,13 +853,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndVertical();
         }
 
-        public void SetAreaSelection(TreeViewSelection selection)
+        internal void SetAreaSelection(TreeViewSelection selection)
         {
             m_AreaSelection = selection;
             RefreshDisplay();
         }
 
-        public void SetAssemblySelection(TreeViewSelection selection)
+        internal void SetAssemblySelection(TreeViewSelection selection)
         {
             m_AssemblySelection = selection;
             RefreshDisplay();
