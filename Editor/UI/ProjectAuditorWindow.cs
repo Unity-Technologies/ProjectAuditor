@@ -300,8 +300,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     if (GUILayout.Button("Clear", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
                         GUILayout.Width(100)))
                     {
-                        Instance.ClearView(IssueCategory.ShaderVariants);
-                        ShadersAuditor.ClearBuildData();
+                        Instance.ClearShaderVariants();
                     }
                     GUILayout.FlexibleSpace();
 
@@ -517,6 +516,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void ClearShaderVariants()
         {
+            m_ProjectReport.ClearIssues(IssueCategory.ShaderVariants);
+
+            ClearView(IssueCategory.ShaderVariants);
+
             ShadersAuditor.ClearBuildData();
         }
 
@@ -548,7 +551,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void ClearView(IssueCategory category)
         {
-            m_ProjectReport.ClearIssues(category);
             var view = GetView(category);
             if (view != null)
             {
