@@ -472,11 +472,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnPostprocessBuild(BuildTarget target)
         {
-            AnalyzeBuildReport();
+            IncrementalAudit<BuildAuditor>();
         }
 
-        List<ProjectIssue> Audit<T>() where T : class, IAuditor
+        void IncrementalAudit<T>() where T : class, IAuditor
         {
+            if (m_ProjectReport == null)
+                m_ProjectReport = new ProjectReport();
+
             var auditor = m_ProjectAuditor.GetAuditor<T>();
             var layouts = auditor.GetLayouts().ToArray();
             foreach (var layout in layouts)
@@ -505,23 +508,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 view.AddIssues(newIssues);
                 view.Refresh();
             }
-
-            return newIssues;
-        }
-
-        void AnalyzeBuildReport()
-        {
-            Audit<BuildAuditor>();
         }
 
         public void AnalyzeShaderVariants()
         {
-            if (m_ProjectReport == null)
-                m_ProjectReport = new ProjectReport();
-
-            var newIssues = Audit<ShadersAuditor>();
-
-            UpdateView(IssueCategory.ShaderVariants, newIssues.ToArray(), false);
+            IncrementalAudit<ShadersAuditor>();
         }
 
         void RefreshDisplay()
@@ -560,21 +551,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 view.Refresh();
             }
         }
-
-        void UpdateView(IssueCategory category, ProjectIssue[] issues = null, bool show = true)
-        {
-            if (issues != null)
-            {
-                var view = GetView(category);
-
-                view.AddIssues(m_ProjectReport.GetIssues(category));
-                view.Refresh();
-            }
-
-            if (show)
-                SelectView(category);
-        }
-
 
         void SelectView(IssueCategory category)
         {
