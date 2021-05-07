@@ -515,6 +515,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             IncrementalAudit<ShadersAuditor>();
         }
 
+        public void ClearShaderVariants()
+        {
+            ShadersAuditor.ClearBuildData();
+        }
+
         void RefreshDisplay()
         {
             if (!IsAnalysisValid())
