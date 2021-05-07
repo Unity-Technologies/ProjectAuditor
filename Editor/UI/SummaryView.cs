@@ -42,8 +42,12 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(title, GUILayout.ExpandWidth(false));
+#if UNITY_2019_2_OR_NEWER
+            if (GUILayout.Button(value, Utility.GetStyle("LinkLabel")))
+#else
             EditorGUILayout.LabelField(value, GUILayout.MaxWidth(90), GUILayout.ExpandWidth(false));
             if (GUILayout.Button("View", EditorStyles.miniButton, GUILayout.Width(50)))
+#endif
                 OnChangeView(category);
             if (icon != null)
                 EditorGUILayout.LabelField(icon);
