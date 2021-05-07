@@ -545,7 +545,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             activeView.Refresh();
         }
 
-        public AnalysisView GetView(IssueCategory category)
+        AnalysisView GetView(IssueCategory category)
         {
             return m_Views.FirstOrDefault(v => v.desc.category == category);
         }
