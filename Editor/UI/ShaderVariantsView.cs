@@ -62,15 +62,15 @@ The number of Variants contributes to the build size, however, there might be Va
                     Refresh();
                     break;
                 case ParseLogResult.NoCompiledVariants:
-                    if (GraphicsSettingsHelper.logShaderCompilationSupported)
+                    if (GraphicsSettingsProxy.logShaderCompilationSupported)
                     {
-                        if (GraphicsSettingsHelper.logWhenShaderIsCompiled)
+                        if (GraphicsSettingsProxy.logWhenShaderIsCompiled)
                         {
                             EditorUtility.DisplayDialog(dialogTitle, k_NoCompiledVariantWarning, "Ok");
                         }
                         else
                         {
-                            GraphicsSettingsHelper.logWhenShaderIsCompiled = EditorUtility.DisplayDialog(dialogTitle, k_NoCompiledVariantWarningLogDisabled, "Yes", "No");
+                            GraphicsSettingsProxy.logWhenShaderIsCompiled = EditorUtility.DisplayDialog(dialogTitle, k_NoCompiledVariantWarningLogDisabled, "Yes", "No");
                         }
                     }
                     break;
@@ -111,12 +111,12 @@ The number of Variants contributes to the build size, however, there might be Va
 
             if (numIssues > 0)
             {
-                EditorGUILayout.LabelField(GraphicsSettingsHelper.logShaderCompilationSupported
+                EditorGUILayout.LabelField(GraphicsSettingsProxy.logShaderCompilationSupported
                     ? k_PlayerLogInstructions
                     : k_PlayerLogParsingUnsupported, SharedStyles.TextArea);
 
-                if (GraphicsSettingsHelper.logShaderCompilationSupported)
-                    GraphicsSettingsHelper.logWhenShaderIsCompiled = EditorGUILayout.Toggle("Log Shader Compilation (requires Build&Run)", GraphicsSettingsHelper.logWhenShaderIsCompiled, GUILayout.Width(320));
+                if (GraphicsSettingsProxy.logShaderCompilationSupported)
+                    GraphicsSettingsProxy.logWhenShaderIsCompiled = EditorGUILayout.Toggle("Log Shader Compilation (requires Build&Run)", GraphicsSettingsProxy.logWhenShaderIsCompiled, GUILayout.Width(320));
 
                 var evt = Event.current;
 
