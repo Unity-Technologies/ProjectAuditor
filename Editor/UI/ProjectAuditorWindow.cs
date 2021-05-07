@@ -12,7 +12,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IProjectIssueFilter
+    public class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IProjectIssueFilter
     {
         enum AnalysisState
         {
@@ -300,6 +300,19 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbarDataOptions = () =>
                 {
+                    GUILayout.FlexibleSpace();
+                    if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
+                        GUILayout.Width(100)))
+                    {
+                        Instance.AnalyzeShaderVariants();
+                    }
+                    if (GUILayout.Button("Clear", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
+                        GUILayout.Width(100)))
+                    {
+                        Instance.ClearShaderVariants();
+                    }
+                    GUILayout.FlexibleSpace();
+
                     if (GUILayout.Button(Contents.Shaders, EditorStyles.toolbarButton,
                         GUILayout.Width(80)))
                     {
@@ -467,12 +480,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnPostprocessBuild(BuildTarget target)
         {
-            AnalyzeBuildReport();
-            AnalyzeShaderVariants();
+            IncrementalAudit<BuildAuditor>();
         }
 
-        List<ProjectIssue> Audit<T>() where T : class, IAuditor
+        void IncrementalAudit<T>() where T : class, IAuditor
         {
+            if (m_ProjectReport == null)
+                m_ProjectReport = new ProjectReport();
+
             var auditor = m_ProjectAuditor.GetAuditor<T>();
             var layouts = auditor.GetLayouts().ToArray();
             foreach (var layout in layouts)
@@ -501,23 +516,20 @@ namespace Unity.ProjectAuditor.Editor.UI
                 view.AddIssues(newIssues);
                 view.Refresh();
             }
-
-            return newIssues;
         }
 
-        void AnalyzeBuildReport()
+        public void AnalyzeShaderVariants()
         {
-            Audit<BuildAuditor>();
+            IncrementalAudit<ShadersAuditor>();
         }
 
-        void AnalyzeShaderVariants()
+        public void ClearShaderVariants()
         {
-            if (m_ProjectReport == null)
-                m_ProjectReport = new ProjectReport();
+            m_ProjectReport.ClearIssues(IssueCategory.ShaderVariants);
 
-            var newIssues = Audit<ShadersAuditor>();
+            ClearView(IssueCategory.ShaderVariants);
 
-            UpdateView(IssueCategory.ShaderVariants, newIssues.ToArray(), false);
+            ShadersAuditor.ClearBuildData();
         }
 
         void RefreshDisplay()
@@ -548,7 +560,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void ClearView(IssueCategory category)
         {
-            m_ProjectReport.ClearIssues(category);
             var view = GetView(category);
             if (view != null)
             {
@@ -556,21 +567,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 view.Refresh();
             }
         }
-
-        void UpdateView(IssueCategory category, ProjectIssue[] issues = null, bool show = true)
-        {
-            if (issues != null)
-            {
-                var view = GetView(category);
-
-                view.AddIssues(m_ProjectReport.GetIssues(category));
-                view.Refresh();
-            }
-
-            if (show)
-                SelectView(category);
-        }
-
 
         void SelectView(IssueCategory category)
         {
@@ -849,13 +845,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndVertical();
         }
 
-        public void SetAreaSelection(TreeViewSelection selection)
+        internal void SetAreaSelection(TreeViewSelection selection)
         {
             m_AreaSelection = selection;
             RefreshDisplay();
         }
 
-        public void SetAssemblySelection(TreeViewSelection selection)
+        internal void SetAssemblySelection(TreeViewSelection selection)
         {
             m_AssemblySelection = selection;
             RefreshDisplay();

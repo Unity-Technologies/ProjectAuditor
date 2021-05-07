@@ -10,13 +10,18 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     class ShaderVariantsView : AnalysisView, IProjectIssueFilter
     {
-        const string k_BuildRequiredInfo =
-            @"Build the project to view the Shader Variants";
-
-        const string k_PlayerLogInstructions =
+        const string k_BuildInstructions =
 @"This view shows the built Shader Variants.
 
-The number of Variants contributes to the build size, however, there might be Variants that are not required (compiled) at runtime on the target platform. To find out which of these variants are not compiled at runtime, follow these steps:
+To view the built Shader Variants, run your build pipeline and Refresh:
+- Build the project and/or Addressables/AssetBundles
+- Click the Refresh button
+Note that it's important to clear the cache before building Addressables.
+
+To clear the recorded variants use the Clear button";
+
+        const string k_PlayerLogInstructions =
+@"The number of Variants contributes to the build size, however, there might be Variants that are not required (compiled) at runtime on the target platform. To find out which of these variants are not compiled at runtime, follow these steps:
 - Enable the Log Shader Compilation option
 - Make a Development build
 - Run the build on the target platform. Make sure to go through all scenes.
@@ -30,8 +35,10 @@ The number of Variants contributes to the build size, however, there might be Va
         const string k_NoCompiledVariantWarning = "No compiled shader variants found in player log. Perhaps, Log Shader Compilation was not enabled when the project was built.";
         const string k_NoCompiledVariantWarningLogDisabled = "No compiled shader variants found in player log. Shader compilation logging is disabled. Would you like to enable it? (Shader compilation will not appear in the log until the project is rebuilt)";
         const string k_PlayerLogProcessed = "Player log file successfully processed.";
+        const string k_PlayerLogReadError = "Player log file could not be opened. Make sure the Player application has been closed.";
 
-        bool m_HideCompiledVariants;
+        bool m_ShowCompiledVariants = true;
+        bool m_ShowUncompiledVariants = true;
         IProjectIssueFilter m_MainFilter;
         ShadersAuditor m_ShadersAuditor;
 
@@ -45,23 +52,31 @@ The number of Variants contributes to the build size, however, there might be Va
             if (string.IsNullOrEmpty(logFilename))
                 return;
 
+            const string dialogTitle = "Shader Variants";
             var variants = GetIssues().Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
-
-            if (m_ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBarDisplay()))
+            var result = m_ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBarDisplay());
+            switch (result)
             {
-                EditorUtility.DisplayDialog("Shader Variants", k_PlayerLogProcessed, "Ok");
-                Refresh();
-            }
-            else if (GraphicsSettingsHelper.logShaderCompilationSupported)
-            {
-                if (GraphicsSettingsHelper.logWhenShaderIsCompiled)
-                {
-                    EditorUtility.DisplayDialog("Shader Variants", k_NoCompiledVariantWarning, "Ok");
-                }
-                else
-                {
-                    GraphicsSettingsHelper.logWhenShaderIsCompiled = EditorUtility.DisplayDialog("Shader Variants", k_NoCompiledVariantWarningLogDisabled, "Yes", "No");
-                }
+                case ParseLogResult.Success :
+                    EditorUtility.DisplayDialog(dialogTitle, k_PlayerLogProcessed, "Ok");
+                    Refresh();
+                    break;
+                case ParseLogResult.NoCompiledVariants :
+                    if (GraphicsSettingsHelper.logShaderCompilationSupported)
+                    {
+                        if (GraphicsSettingsHelper.logWhenShaderIsCompiled)
+                        {
+                            EditorUtility.DisplayDialog(dialogTitle, k_NoCompiledVariantWarning, "Ok");
+                        }
+                        else
+                        {
+                            GraphicsSettingsHelper.logWhenShaderIsCompiled = EditorUtility.DisplayDialog(dialogTitle, k_NoCompiledVariantWarningLogDisabled, "Yes", "No");
+                        }
+                    }
+                    break;
+                case ParseLogResult.ReadError:
+                    EditorUtility.DisplayDialog(dialogTitle, k_PlayerLogReadError, "Ok");
+                    break;
             }
         }
 
@@ -78,7 +93,8 @@ The number of Variants contributes to the build size, however, there might be Va
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Extra :", GUILayout.Width(80));
             EditorGUI.BeginChangeCheck();
-            m_HideCompiledVariants = EditorGUILayout.ToggleLeft("Hide Compiled Variants", m_HideCompiledVariants, GUILayout.Width(180));
+            m_ShowCompiledVariants = EditorGUILayout.ToggleLeft("Compiled Variants", m_ShowCompiledVariants, GUILayout.Width(180));
+            m_ShowUncompiledVariants = EditorGUILayout.ToggleLeft("Uncompiled Variants", m_ShowUncompiledVariants, GUILayout.Width(180));
             if (EditorGUI.EndChangeCheck())
             {
                 Refresh();
@@ -90,11 +106,10 @@ The number of Variants contributes to the build size, however, there might be Va
 
         protected override void OnDrawInfo()
         {
-            var variantsAvailable = numIssues > 0;
-
             EditorGUILayout.BeginVertical(GUI.skin.box);
+            EditorGUILayout.LabelField(k_BuildInstructions, SharedStyles.TextArea);
 
-            if (variantsAvailable)
+            if (numIssues > 0)
             {
                 EditorGUILayout.LabelField(GraphicsSettingsHelper.logShaderCompilationSupported
                     ? k_PlayerLogInstructions
@@ -121,10 +136,6 @@ The number of Variants contributes to the build size, however, there might be Va
                         break;
                 }
             }
-            else
-            {
-                EditorGUILayout.LabelField(k_BuildRequiredInfo, SharedStyles.TextArea);
-            }
 
             EditorGUILayout.EndVertical();
         }
@@ -142,9 +153,12 @@ The number of Variants contributes to the build size, however, there might be Va
         {
             if (!m_MainFilter.Match(issue))
                 return false;
-            if (m_HideCompiledVariants)
-                return !issue.GetCustomPropertyAsBool((int)ShaderVariantProperty.Compiled);
-            return true;
+            var compiled = issue.GetCustomPropertyAsBool((int)ShaderVariantProperty.Compiled);
+            if (compiled && m_ShowCompiledVariants)
+                return true;
+            if (!compiled && m_ShowUncompiledVariants)
+                return true;
+            return false;
         }
     }
 }

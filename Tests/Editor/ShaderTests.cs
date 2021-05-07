@@ -10,6 +10,7 @@ using UnityEditor.Build;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 #if UNITY_2018_2_OR_NEWER
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
@@ -390,7 +391,7 @@ Shader ""Custom/MyEditorShader""
 
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
 
-            var variants = issues.Where(i => i.description.Equals("Custom/MySurfShader"));
+            var variants = issues.Where(i => i.description.Equals("Custom/MySurfShader")).ToArray();
             Assert.Positive(variants.Count());
 
             // check custom property
@@ -417,13 +418,13 @@ Shader ""Custom/MyEditorShader""
             /*var projectReport = */ projectAuditor.Audit();
             var shadersAuditor = projectAuditor.GetAuditor<ShadersAuditor>();
             var result = shadersAuditor.ParsePlayerLog(m_PlayerLogWithNoCompilationResource.relativePath, new ProjectIssue[0]);
-            Assert.False(result);
+            Assert.That(result, Is.EqualTo(ParseLogResult.NoCompiledVariants));
         }
 
         [Test]
         public void UnusedVariantsAreReported()
         {
-            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/UntitledScene.unity");
+            EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), "Assets/UntitledScene.unity");
 
             var buildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(buildPath);
@@ -443,9 +444,8 @@ Shader ""Custom/MyEditorShader""
 
             AssetDatabase.DeleteAsset("Assets/UntitledScene.unity");
 
+            ShadersAuditor.ClearBuildData();
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            projectAuditor.Audit();
-
             var shadersAndVariants = new List<ProjectIssue>();
             var shadersAuditor = projectAuditor.GetAuditor<ShadersAuditor>();
             var completed = false;
@@ -459,12 +459,12 @@ Shader ""Custom/MyEditorShader""
             var variants = shadersAndVariants.Where(i => i.description.Equals("Custom/MyTestShader") && i.category == IssueCategory.ShaderVariants).ToArray();
             var result = shadersAuditor.ParsePlayerLog(m_PlayerLogResource.relativePath, variants);
 
-            Assert.True(result, "No compiled shader variants found in player log.");
+            Assert.That(result, Is.EqualTo(ParseLogResult.Success), "No compiled shader variants found in player log.");
 
-            var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform)).Distinct();
+            var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform)).Distinct().ToArray();
             var numShaderCompilerPlatforms = shaderCompilerPlatforms.Count();
 
-            Assert.AreEqual(5 * numShaderCompilerPlatforms, variants.Length);
+            Assert.AreEqual(5 * numShaderCompilerPlatforms, variants.Length, "Compiler Platforms: " + string.Join(", ", shaderCompilerPlatforms));
 
             var unusedVariants = variants.Where(i => !i.GetCustomPropertyAsBool((int)ShaderVariantProperty.Compiled)).ToArray();
             foreach (var plat in shaderCompilerPlatforms)
