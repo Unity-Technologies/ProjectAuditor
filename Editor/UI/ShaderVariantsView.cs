@@ -93,8 +93,8 @@ The number of Variants contributes to the build size, however, there might be Va
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Extra :", GUILayout.Width(80));
             EditorGUI.BeginChangeCheck();
-            m_ShowCompiledVariants = EditorGUILayout.ToggleLeft("Compiled Variants", m_ShowCompiledVariants, GUILayout.Width(160));
-            m_ShowUncompiledVariants = EditorGUILayout.ToggleLeft("Uncompiled Variants", m_ShowUncompiledVariants, GUILayout.Width(160));
+            m_ShowCompiledVariants = EditorGUILayout.ToggleLeft("Compiled Variants", m_ShowCompiledVariants, GUILayout.Width(180));
+            m_ShowUncompiledVariants = EditorGUILayout.ToggleLeft("Uncompiled Variants", m_ShowUncompiledVariants, GUILayout.Width(180));
             if (EditorGUI.EndChangeCheck())
             {
                 Refresh();
