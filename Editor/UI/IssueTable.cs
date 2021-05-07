@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         readonly IssueLayout m_Layout;
         readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
 
-        List<IssueTableItem> m_TreeViewItemGroups;
+        List<IssueTableItem> m_TreeViewItemGroups = new List<IssueTableItem>();
         IssueTableItem[] m_TreeViewItemIssues;
         int m_NextId;
         int m_NumMatchingIssues;
@@ -49,17 +49,9 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             if (m_Desc.groupByDescriptor)
             {
-                var descriptors = issues.Select(i => i.descriptor).Distinct();
-                if (m_TreeViewItemGroups == null)
-                {
-                    m_TreeViewItemGroups = new List<IssueTableItem>(descriptors.Count());
-                }
-
-                foreach (var descriptor in descriptors)
-                {
-                    var groupItem = new IssueTableItem(m_NextId++, 0, descriptor);
-                    m_TreeViewItemGroups.Add(groupItem);
-                }
+                var descriptors = issues.Select(i => i.descriptor).Distinct().ToArray();
+                var itemGroups = descriptors.Select(d => new IssueTableItem(m_NextId++, 0, d)).ToArray();
+                m_TreeViewItemGroups.AddRange(itemGroups);
             }
 
             var itemsList = new List<IssueTableItem>(issues.Length);
@@ -78,9 +70,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         public void Clear()
         {
             m_NextId = k_FirstId;
-            if (m_TreeViewItemGroups != null)
-                m_TreeViewItemGroups.Clear();
-            m_TreeViewItemIssues = null;
+            m_TreeViewItemGroups.Clear();
+            m_TreeViewItemIssues = new IssueTableItem[] { };
         }
 
         public void SetFlatView(bool value)
