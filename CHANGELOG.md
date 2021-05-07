@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Fixed empty MonoBehaviour event detection
 * Fixed *Graphics Tier Settings* misreporting
 * Fixed failed/cancelled report loading from file
+* Improved Shader Variants analysis workflow
 
 ## [0.6.0-preview] - 2021-04-26
 * Added Build Report support
