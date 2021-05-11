@@ -50,6 +50,18 @@ namespace Unity.ProjectAuditor.Editor.UI
         public Preferences() {}
     }
 
+    public class ProjectAuditorWindow : UnityEditor.EditorWindow, Unity.ProjectAuditor.Editor.IProjectIssueFilter, UnityEditor.IHasCustomMenu
+    {
+        public static Unity.ProjectAuditor.Editor.UI.ProjectAuditorWindow Instance { get; }
+        public ProjectAuditorWindow() {}
+        public virtual void AddItemsToMenu(UnityEditor.GenericMenu menu);
+        public void AnalyzeShaderVariants();
+        public void ClearShaderVariants();
+        public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
+        [UnityEditor.Callbacks.PostProcessBuild(1)] public static void OnPostprocessBuild(UnityEditor.BuildTarget target, string pathToBuiltProject);
+        [UnityEditor.MenuItem(@"Window/Analysis/Project Auditor")] public static Unity.ProjectAuditor.Editor.UI.ProjectAuditorWindow ShowWindow();
+    }
+
     public class ViewDescriptor
     {
         public int analyticsEvent;

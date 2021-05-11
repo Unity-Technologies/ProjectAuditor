@@ -71,7 +71,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             m_NextId = k_FirstId;
             m_TreeViewItemGroups.Clear();
-            m_TreeViewItemIssues = new IssueTableItem[] { };
+            m_TreeViewItemIssues = new IssueTableItem[] {};
         }
 
         public void SetFlatView(bool value)

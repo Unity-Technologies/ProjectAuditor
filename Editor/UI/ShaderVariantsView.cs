@@ -57,11 +57,11 @@ The number of Variants contributes to the build size, however, there might be Va
             var result = m_ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBarDisplay());
             switch (result)
             {
-                case ParseLogResult.Success :
+                case ParseLogResult.Success:
                     EditorUtility.DisplayDialog(dialogTitle, k_PlayerLogProcessed, "Ok");
                     Refresh();
                     break;
-                case ParseLogResult.NoCompiledVariants :
+                case ParseLogResult.NoCompiledVariants:
                     if (GraphicsSettingsHelper.logShaderCompilationSupported)
                     {
                         if (GraphicsSettingsHelper.logWhenShaderIsCompiled)
