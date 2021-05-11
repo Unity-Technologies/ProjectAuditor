@@ -48,6 +48,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
             Assert.NotNull(matchingIssue);
             Assert.True(matchingIssue.description.Equals(Path.GetFileNameWithoutExtension(m_TempAsset.relativePath)));
+            Assert.That(matchingIssue.GetNumCustomProperties(), Is.EqualTo((int)BuildProperty.Num));
+            Assert.True(matchingIssue.GetCustomProperty((int)BuildProperty.BuildFile).Equals("resources.assets"));
+            Assert.That(matchingIssue.GetCustomPropertyAsInt((int)BuildProperty.Size), Is.Positive);
         }
     }
 }
