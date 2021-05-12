@@ -342,7 +342,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
 
 
-        public ParseLogResult ParsePlayerLog(string logFile, ProjectIssue[] builtVariants, IProgressBar progressBar = null)
+        public static ParseLogResult ParsePlayerLog(string logFile, ProjectIssue[] builtVariants, IProgressBar progressBar = null)
         {
             var compiledVariants = new Dictionary<string, List<CompiledVariantData>>();
             var lines = GetCompiledShaderLines(logFile);
@@ -410,7 +410,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             return ParseLogResult.Success;
         }
 
-        string[] GetCompiledShaderLines(string logFile)
+        static string[] GetCompiledShaderLines(string logFile)
         {
             var compilationLines = new List<string>();
             try
@@ -435,20 +435,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
-#if UNITY_2018_2_OR_NEWER
-        string[] GetShaderKeywords(Shader shader, ShaderKeyword[] shaderKeywords)
-        {
-#if UNITY_2019_3_OR_NEWER
-            var keywords = shaderKeywords.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ? ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword)).ToArray();
-#else
-            var keywords = shaderKeywords.Select(keyword => keyword.GetKeywordName()).ToArray();
-#endif
-            return keywords;
-        }
-
-#endif
-
-        bool ShaderVariantsMatch(CompiledVariantData cv, string[] secondSet, string passName)
+        static bool ShaderVariantsMatch(CompiledVariantData cv, string[] secondSet, string passName)
         {
             var passMatch = cv.pass.Equals(passName);
             if (!passMatch)
@@ -466,14 +453,27 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             return cv.keywords.OrderBy(e => e).SequenceEqual(secondSet.OrderBy(e => e));
         }
 
-        string[] StringToKeywords(string keywordsString)
+#if UNITY_2018_2_OR_NEWER
+        static string[] GetShaderKeywords(Shader shader, ShaderKeyword[] shaderKeywords)
+        {
+#if UNITY_2019_3_OR_NEWER
+            var keywords = shaderKeywords.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ? ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword)).ToArray();
+#else
+            var keywords = shaderKeywords.Select(keyword => keyword.GetKeywordName()).ToArray();
+#endif
+            return keywords;
+        }
+
+#endif
+
+        static string[] StringToKeywords(string keywordsString)
         {
             if (keywordsString.Equals(k_NoKeywords))
                 return new string[] {};
             return keywordsString.Split(' ');
         }
 
-        string KeywordsToString(string[] keywords)
+        static string KeywordsToString(string[] keywords)
         {
             var keywordString = String.Join(" ", keywords);
             if (string.IsNullOrEmpty(keywordString))

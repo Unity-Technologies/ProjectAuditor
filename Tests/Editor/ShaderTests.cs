@@ -414,10 +414,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void PlayerLogDoesNotContainShaderCompilationLog()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            /*var projectReport = */ projectAuditor.Audit();
-            var shadersAuditor = projectAuditor.GetAuditor<ShadersAuditor>();
-            var result = shadersAuditor.ParsePlayerLog(m_PlayerLogWithNoCompilationResource.relativePath, new ProjectIssue[0]);
+            var result = ShadersAuditor.ParsePlayerLog(m_PlayerLogWithNoCompilationResource.relativePath, new ProjectIssue[0]);
             Assert.That(result, Is.EqualTo(ParseLogResult.NoCompiledVariants));
         }
 
@@ -445,19 +442,10 @@ Shader ""Custom/MyEditorShader""
             AssetDatabase.DeleteAsset("Assets/UntitledScene.unity");
 
             ShadersAuditor.ClearBuildData();
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var shadersAndVariants = new List<ProjectIssue>();
-            var shadersAuditor = projectAuditor.GetAuditor<ShadersAuditor>();
-            var completed = false;
-            shadersAuditor.Audit(shadersAndVariants.Add,
-                () =>
-                {
-                    completed = true;
-                });
-            Assert.True(completed);
+            var shadersAndVariants = Utility.Analyze(IssueCategory.ShaderVariants);
 
             var variants = shadersAndVariants.Where(i => i.description.Equals("Custom/MyTestShader") && i.category == IssueCategory.ShaderVariants).ToArray();
-            var result = shadersAuditor.ParsePlayerLog(m_PlayerLogResource.relativePath, variants);
+            var result = ShadersAuditor.ParsePlayerLog(m_PlayerLogResource.relativePath, variants);
 
             Assert.That(result, Is.EqualTo(ParseLogResult.Success), "No compiled shader variants found in player log.");
 

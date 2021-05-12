@@ -167,10 +167,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             AnalysisView.SetReport(m_ProjectReport);
             AnalysisView.OnChangeView = SelectView;
 
-            var variantsView = GetView(IssueCategory.ShaderVariants) as ShaderVariantsView;
-            if (variantsView != null)
-                variantsView.SetShadersAuditor(m_ProjectAuditor.GetAuditor<ShadersAuditor>());
-
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid && m_ActiveViewIndex < viewDescriptors.Length)
                 m_AnalysisState = currentState;

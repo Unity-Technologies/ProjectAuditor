@@ -40,12 +40,6 @@ The number of Variants contributes to the build size, however, there might be Va
         bool m_ShowCompiledVariants = true;
         bool m_ShowUncompiledVariants = true;
         IProjectIssueFilter m_MainFilter;
-        ShadersAuditor m_ShadersAuditor;
-
-        public void SetShadersAuditor(ShadersAuditor shadersAuditor)
-        {
-            m_ShadersAuditor = shadersAuditor;
-        }
 
         void ParsePlayerLog(string logFilename)
         {
@@ -54,7 +48,7 @@ The number of Variants contributes to the build size, however, there might be Va
 
             const string dialogTitle = "Shader Variants";
             var variants = GetIssues().Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
-            var result = m_ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBarDisplay());
+            var result = ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBarDisplay());
             switch (result)
             {
                 case ParseLogResult.Success:
