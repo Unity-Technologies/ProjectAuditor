@@ -13,6 +13,12 @@ using UnityEditor.Build.Player;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
+    enum CodeOptimization
+    {
+        Debug,
+        Release
+    }
+
     public enum CompilerMessageType
     {
         /// <summary>
@@ -113,6 +119,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #endif
 
         public Action<string, CompilerMessage[]> AssemblyCompilationFinished;
+
+        public static CodeOptimization CodeOptimization = CodeOptimization.Release;
 
         public AssemblyCompilationPipeline()
         {
@@ -282,7 +290,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     AdditionalCompilerArguments = assembly.compilerOptions.AdditionalCompilerArguments,
                     AllowUnsafeCode = assembly.compilerOptions.AllowUnsafeCode,
                     ApiCompatibilityLevel = assembly.compilerOptions.ApiCompatibilityLevel,
-                    CodeOptimization = assembly.compilerOptions.CodeOptimization,
+                    CodeOptimization = CodeOptimization == CodeOptimization.Release ? UnityEditor.Compilation.CodeOptimization.Release : UnityEditor.Compilation.CodeOptimization.Debug, // assembly.compilerOptions.CodeOptimization,
                     RoslynAnalyzerDllPaths = m_RoslynAnalyzers
                 };
 #else

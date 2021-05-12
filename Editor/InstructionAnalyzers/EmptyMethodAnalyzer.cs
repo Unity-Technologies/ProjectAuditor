@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
-            // skip any no-Nop
+            // skip any no-op
             var previousIL = inst.Previous;
             while (previousIL != null && previousIL.OpCode == OpCodes.Nop)
                 previousIL = previousIL.Previous;

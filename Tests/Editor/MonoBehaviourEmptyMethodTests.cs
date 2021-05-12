@@ -4,22 +4,23 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
+using Unity.ProjectAuditor.Editor.Utils;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    class MonoBehaviourEmptyMagicMethodTests
+    class MonoBehaviourEmptyMethodTests
     {
-        TempAsset m_MonoBehaviourWithEmptyMagicMethod;
+        TempAsset m_MonoBehaviourWithEmptyEventMethod;
         TempAsset m_MonoBehaviourWithEmptyMethod;
         TempAsset m_NotMonoBehaviourWithEmptyMethod;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_MonoBehaviourWithEmptyMagicMethod = new TempAsset("MonoBehaviourWithEmptyMagicMethod.cs",
-                "using UnityEngine; class MyBaseClass : MonoBehaviour { } class MonoBehaviourWithEmptyMagicMethod : MyBaseClass { void Update() { } }");
+            m_MonoBehaviourWithEmptyEventMethod = new TempAsset("MonoBehaviourWithEmptyEventMethod.cs",
+                "using UnityEngine; class MyBaseClass : MonoBehaviour { } class MonoBehaviourWithEmptyEventMethod : MyBaseClass { void Update() { ; } }"); // ';' should introduce a noop
             m_MonoBehaviourWithEmptyMethod = new TempAsset("MonoBehaviourWithEmptyMethod.cs",
-                "using UnityEngine; class MonoBehaviourWithEmptyMethod : MonoBehaviour{ void NotMagicMethod() { } }");
+                "using UnityEngine; class MonoBehaviourWithEmptyMethod : MonoBehaviour{ void NotAnEvent() { } }");
             m_NotMonoBehaviourWithEmptyMethod = new TempAsset("NotMonoBehaviourWithEmptyMethod.cs",
                 "class NotMonoBehaviourWithEmptyMethod { void Update() { } }");
         }
@@ -31,9 +32,16 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void MonoBehaviourWithEmptyMagicMethodIsReported()
+        [TestCase(CodeOptimization.Debug)]
+        [TestCase(CodeOptimization.Release)]
+        public void MonoBehaviourWithEmptyEventMethodIsReported(CodeOptimization codeOptimization)
         {
-            var scriptIssues = Utility.AnalyzeAndFindAssetIssues(m_MonoBehaviourWithEmptyMagicMethod);
+            var prevCodeOptimization = AssemblyCompilationPipeline.CodeOptimization;
+            AssemblyCompilationPipeline.CodeOptimization = codeOptimization;
+
+            var scriptIssues = Utility.AnalyzeAndFindAssetIssues(m_MonoBehaviourWithEmptyEventMethod);
+
+            AssemblyCompilationPipeline.CodeOptimization = prevCodeOptimization; // restore previous value
 
             Assert.AreEqual(1, scriptIssues.Count());
 
@@ -47,10 +55,10 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.True(string.IsNullOrEmpty(issue.descriptor.type));
             Assert.True(string.IsNullOrEmpty(issue.descriptor.method));
 
-            Assert.True(issue.name.Equals("MonoBehaviourWithEmptyMagicMethod.Update"));
-            Assert.True(issue.filename.Equals(m_MonoBehaviourWithEmptyMagicMethod.fileName));
-            Assert.True(issue.description.Equals("System.Void MonoBehaviourWithEmptyMagicMethod::Update()"));
-            Assert.True(issue.GetCallingMethod().Equals("System.Void MonoBehaviourWithEmptyMagicMethod::Update()"));
+            Assert.True(issue.name.Equals("MonoBehaviourWithEmptyEventMethod.Update"));
+            Assert.True(issue.filename.Equals(m_MonoBehaviourWithEmptyEventMethod.fileName));
+            Assert.True(issue.description.Equals("System.Void MonoBehaviourWithEmptyEventMethod::Update()"));
+            Assert.True(issue.GetCallingMethod().Equals("System.Void MonoBehaviourWithEmptyEventMethod::Update()"));
             Assert.AreEqual(1, issue.line);
             Assert.AreEqual(IssueCategory.Code, issue.category);
         }
