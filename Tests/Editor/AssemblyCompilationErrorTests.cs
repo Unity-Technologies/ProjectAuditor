@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class AssemblyCompilationErrorTests
+    class AssemblyCompilationErrorTests
     {
 #pragma warning disable 0414
         TempAsset m_TempAsset;

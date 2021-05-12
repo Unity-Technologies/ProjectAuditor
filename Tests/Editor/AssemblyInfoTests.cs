@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class AssemblyInfoTests
+    class AssemblyInfoTests
     {
 #pragma warning disable 0414
         TempAsset m_TempAsset;

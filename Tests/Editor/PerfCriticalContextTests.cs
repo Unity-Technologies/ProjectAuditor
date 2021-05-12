@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class PerfCriticalContextTests
+    class PerfCriticalContextTests
     {
         TempAsset m_TempAssetIssueInClassInheritedFromMonoBehaviour;
         TempAsset m_TempAssetIssueInClassMethodCalledFromMonoBehaviourUpdate;

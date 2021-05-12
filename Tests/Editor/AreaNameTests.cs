@@ -5,7 +5,7 @@ using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class AreaNameTests
+    class AreaNameTests
     {
         [Test]
         public void AreaNameIsValid()

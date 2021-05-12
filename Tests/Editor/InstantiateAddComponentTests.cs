@@ -5,7 +5,7 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class InstantiateAddComponentTests
+    class InstantiateAddComponentTests
     {
         TempAsset m_TempAssetAddComponent;
         TempAsset m_TempAssetInstantiate;

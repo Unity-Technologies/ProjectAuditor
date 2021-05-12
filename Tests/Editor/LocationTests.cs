@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class LocationTests
+    class LocationTests
     {
         [Test]
         public void NoExtensionIsValid()

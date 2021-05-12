@@ -6,7 +6,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class AuditorTests
+    class AuditorTests
     {
         [Test]
         public void CanGetBuiltinAuditorTypes()

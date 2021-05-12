@@ -3,7 +3,7 @@ using Unity.ProjectAuditor.Editor;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class SaveLoadTests
+    class SaveLoadTests
     {
         private const string k_ReportPath = "report.json";
 

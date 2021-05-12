@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class PreprocessBuildTests
+    class PreprocessBuildTests
     {
         [Test]
         public void ProjectAuditorCanBeInstantiated()

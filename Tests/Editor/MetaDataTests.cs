@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class MetaDataTests
+    class MetaDataTests
     {
         [Test]
         public void MetaDataIsReported()

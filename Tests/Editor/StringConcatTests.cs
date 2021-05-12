@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class StringConcatTests
+    class StringConcatTests
     {
         TempAsset m_TempAssetStringConcat;
 

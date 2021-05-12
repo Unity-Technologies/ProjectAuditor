@@ -4,7 +4,7 @@ using Packages.Editor.Utils;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class FormattingTests
+    class FormattingTests
     {
         [Test]
         [TestCase((ulong)512, "512 B")]

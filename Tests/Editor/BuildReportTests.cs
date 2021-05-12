@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class BuildReportTests
+    class BuildReportTests
     {
         private TempAsset m_TempAsset;
 

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class AssemblyCompilationTests
+    class AssemblyCompilationTests
     {
         TempAsset m_TempAsset;
 

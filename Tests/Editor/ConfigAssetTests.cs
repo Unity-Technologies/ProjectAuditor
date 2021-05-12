@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class ConfigAssetTests
+    class ConfigAssetTests
     {
         [Test]
         public void DefaultConfigAssetIsCreated()

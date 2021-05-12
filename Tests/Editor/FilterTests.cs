@@ -7,7 +7,7 @@ using Assert = UnityEngine.Assertions.Assert;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    public class FilterTests
+    class FilterTests
     {
 #pragma warning disable 0414
         TempAsset m_TempAsset;
