@@ -9,16 +9,16 @@ using UnityEngine.TestTools;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    class AssemblyCompilationErrorTests
+    class CompilerErrorTests
     {
 #pragma warning disable 0414
-        TempAsset m_TempAsset;
+        TempAsset m_ScriptWithError;
 #pragma warning restore 0414
 
 #if UNITY_EDITOR_WIN
-        const string k_ExpectedMessage = "Assets\\ProjectAuditor-Temp\\MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration";
+        const string k_ExpectedMessage = "Assets\\ProjectAuditor-Temp\\ScriptWithError.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration";
 #else
-        const string k_ExpectedMessage = "Assets/ProjectAuditor-Temp/MyClass.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration";
+        const string k_ExpectedMessage = "Assets/ProjectAuditor-Temp/ScriptWithError.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration";
 #endif
         const string k_ExpectedCode = "CS1519";
         const string k_ExpectedDescription = "Invalid token '}' in class, struct, or interface member declaration";
@@ -26,8 +26,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TempAsset = new TempAsset("MyClass.cs", @"
-class MyClass {
+            m_ScriptWithError = new TempAsset("ScriptWithError.cs", @"
+class ScriptWithError {
 #if !UNITY_EDITOR
     asd
 #endif
@@ -48,7 +48,7 @@ class MyClass {
             LogAssert.ignoreFailingMessages = true;
 
             CompilerMessage[] defaultAssemblyCompilerMessages = null;
-            using (var compilationHelper = new AssemblyCompilationPipeline
+            using (var compilationPipeline = new AssemblyCompilationPipeline
                {
                    AssemblyCompilationFinished = (assemblyName, messages) =>
                    {
@@ -59,7 +59,7 @@ class MyClass {
                    }
                })
             {
-                compilationHelper.Compile();
+                compilationPipeline.Compile();
             }
 
             LogAssert.Expect(LogType.Error, k_ExpectedMessage);
@@ -68,16 +68,18 @@ class MyClass {
 
             Assert.NotNull(defaultAssemblyCompilerMessages);
             Assert.AreEqual(1, defaultAssemblyCompilerMessages.Length);
-            Assert.True(defaultAssemblyCompilerMessages[0].message.Equals(k_ExpectedMessage));
+            Assert.True(defaultAssemblyCompilerMessages[0].code.Equals(k_ExpectedCode));
+            Assert.True(defaultAssemblyCompilerMessages[0].message.Equals(k_ExpectedDescription));
+            Assert.AreEqual(CompilerMessageType.Error, defaultAssemblyCompilerMessages[0].type);
         }
 
         [Test]
         [ExplicitAttribute]
-        public void CompilerMessageIssueIsReported()
+        public void CompilerErrorIssueIsReported()
         {
             LogAssert.ignoreFailingMessages = true;
 
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAsset, IssueCategory.CodeCompilerMessages);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_ScriptWithError, IssueCategory.CodeCompilerMessages);
 
             LogAssert.ignoreFailingMessages = false;
 
