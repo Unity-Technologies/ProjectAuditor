@@ -58,10 +58,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_ProblemDescriptors.Add(descriptor);
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null)
         {
             AnalyzeResources(onIssueFound);
-            onComplete();
+            if (onComplete != null)
+                onComplete();
         }
 
         static void AnalyzeResources(Action<ProjectIssue> onIssueFound)

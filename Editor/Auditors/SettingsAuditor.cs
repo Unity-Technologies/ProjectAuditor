@@ -51,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_ProblemDescriptors.Add(descriptor);
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null)
         {
             if (progressBar != null)
                 progressBar.Initialize("Analyzing Settings", "Analyzing project settings", m_Analyzers.Count);
@@ -70,7 +70,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (progressBar != null)
                 progressBar.ClearProgressBar();
 
-            onComplete();
+            if (onComplete != null)
+                onComplete();
         }
 
         void AddAnalyzer(ISettingsAnalyzer analyzer)

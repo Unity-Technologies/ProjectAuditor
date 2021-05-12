@@ -22,16 +22,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             auditor.Initialize(config);
 
             var foundIssues = new List<ProjectIssue>();
-            var completed = false;
             auditor.Audit(issue => {
                 foundIssues.Add(issue);
-            },
-                () =>
-                {
-                    completed = true;
-                });
-
-            Assert.True(completed);
+            });
 
             return foundIssues.Where(i => i.category == category).ToArray();
         }

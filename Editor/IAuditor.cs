@@ -24,6 +24,6 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="onIssueFound"> Action called whenever a new issue is found </param>
         /// <param name="onComplete"> Action called when the analysis completes </param>
         /// <param name="progressBar"> Progress bar, if applicable </param>
-        void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null);
+        void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null);
     }
 }

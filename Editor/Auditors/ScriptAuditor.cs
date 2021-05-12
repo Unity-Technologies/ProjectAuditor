@@ -106,7 +106,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             return true;
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null)
         {
             if (m_ProblemDescriptors == null)
                 throw new Exception("Issue Database not initialized.");
@@ -142,7 +142,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 compilationPipeline.Dispose();
                 callCrawler.BuildCallHierarchies(issues, bar);
-                onComplete();
+                if (onComplete != null)
+                    onComplete();
             });
 
             var onIssueFoundInternal = new Action<ProjectIssue>(issue =>
@@ -214,9 +215,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 progressBar.ClearProgressBar();
 
             if (onComplete != null)
-            {
                 onComplete(progressBar);
-            }
         }
 
         public void RegisterDescriptor(ProblemDescriptor descriptor)

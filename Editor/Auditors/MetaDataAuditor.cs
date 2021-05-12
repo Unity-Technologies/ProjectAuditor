@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             throw new NotImplementedException();
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null)
         {
             onIssueFound(new ProjectIssue(k_Descriptor, "Date and Time", IssueCategory.MetaData,
                 new[] {DateTime.Now.ToString()}));
@@ -70,7 +70,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             onIssueFound(new ProjectIssue(k_Descriptor, "Unity Version", IssueCategory.MetaData,
                 new[] {Application.unityVersion}));
 
-            onComplete();
+            if (onComplete != null)
+                onComplete();
         }
     }
 }

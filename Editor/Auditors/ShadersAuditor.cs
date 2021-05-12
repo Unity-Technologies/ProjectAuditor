@@ -142,7 +142,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null)
         {
             var shaderPathMap = new Dictionary<Shader, string>();
             var shaderGuids = AssetDatabase.FindAssets("t:shader");
@@ -197,7 +197,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 AddShader(shader, assetPath, id++, onIssueFound);
             }
 
-            onComplete();
+            if (onComplete != null)
+                onComplete();
         }
 
         void AddShader(Shader shader, string assetPath, int id, Action<ProjectIssue> onIssueFound)
