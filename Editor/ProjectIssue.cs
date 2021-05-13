@@ -39,28 +39,30 @@ namespace Unity.ProjectAuditor.Editor
         /// ProjectIssue constructor
         /// </summary>
         /// <param name="descriptor"> descriptor </param>
-        /// <param name="description"> Issue-specific description of the problem </param>
+        /// <param name="description"> human-readable description </param>
         /// <param name="category"> Issue category </param>
-        /// <param name="location"> Issue address </param>
+        /// <param name="location"> Issue address: path and, if applicable, line number </param>
+        /// <param name="customProperties"> Issue-specific properties </param>
         public ProjectIssue(ProblemDescriptor descriptor,
                             string description,
                             IssueCategory category,
-                            Location location = null)
+                            Location location = null,
+                            string[] customProperties = null)
         {
             this.descriptor = descriptor;
             this.description = description;
             this.category = category;
             this.location = location;
+            this.customProperties = customProperties;
         }
 
         public ProjectIssue(ProblemDescriptor descriptor,
                             string description,
                             IssueCategory category,
-                            Location location,
+                            string path,
                             string[] customProperties)
-            : this(descriptor, description, category, location)
+            : this(descriptor, description, category, new Location(path), customProperties)
         {
-            this.customProperties = customProperties;
         }
 
         public ProjectIssue(ProblemDescriptor descriptor,
