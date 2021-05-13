@@ -369,6 +369,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return;
             }
 
+            if (m_Desc.onDoubleClick == null)
+                return;
+
             var issue = tableItem.ProjectIssue;
             if (issue.location != null && issue.location.IsValid())
             {
