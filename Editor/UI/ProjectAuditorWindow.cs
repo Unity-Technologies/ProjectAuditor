@@ -603,6 +603,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (activeView.desc.category == category)
                 return;
 
+            var layout = m_ProjectAuditor.GetLayout(category);
+            if (layout == null)
+                return;
+
             var viewIndex = Array.IndexOf(m_Views, GetView(category));
             OnViewChanged(viewIndex);
         }
