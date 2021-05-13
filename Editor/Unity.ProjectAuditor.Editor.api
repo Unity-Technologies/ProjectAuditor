@@ -283,8 +283,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public const Unity.ProjectAuditor.Editor.Auditors.BuildReportFileProperty Size = 0;
         public int value__;
     }
-        public int value__;
-    }
 
     public enum CodeProperty
     {
