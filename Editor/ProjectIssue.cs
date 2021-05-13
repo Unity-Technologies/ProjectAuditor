@@ -84,6 +84,8 @@ namespace Unity.ProjectAuditor.Editor
             dependencies = dependenciesNode;
         }
 
+        public int depth = 0;
+
         public string filename
         {
             get

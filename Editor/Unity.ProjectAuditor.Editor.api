@@ -79,6 +79,7 @@ namespace Unity.ProjectAuditor.Editor
     public class IssueLayout
     {
         public Unity.ProjectAuditor.Editor.IssueCategory category;
+        public bool hierarchy;
         public Unity.ProjectAuditor.Editor.PropertyDefinition[] properties;
         public IssueLayout() {}
     }
@@ -143,6 +144,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         public Unity.ProjectAuditor.Editor.IssueCategory category;
         public Unity.ProjectAuditor.Editor.DependencyNode dependencies;
+        public int depth;
         public string description;
         public Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor;
         public Unity.ProjectAuditor.Editor.Utils.Location location;
