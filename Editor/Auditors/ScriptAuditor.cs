@@ -15,6 +15,12 @@ using ThreadPriority = System.Threading.ThreadPriority;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
+    public enum AssemblyProperty
+    {
+        ReadOnly = 0,
+        Num
+    }
+
     public enum CodeProperty
     {
         Assembly = 0,
@@ -30,7 +36,24 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
     class ScriptAuditor : IAuditor
     {
+        static readonly ProblemDescriptor k_AssemblyDescriptor = new ProblemDescriptor
+            (
+            700001,
+            "Assembly"
+            );
+
         const int k_CompilerMessageFirstId = 800000;
+
+        static readonly IssueLayout k_AssemblyLayout = new IssueLayout
+        {
+            category = IssueCategory.Assemblies,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Assembly Name"},
+                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.Bool, name = "Read Only"},
+                new PropertyDefinition { type = PropertyType.Path, name = "asmdef Path"},
+            }
+        };
 
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
@@ -85,6 +108,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public IEnumerable<IssueLayout> GetLayouts()
         {
+            yield return k_AssemblyLayout;
             yield return k_IssueLayout;
             yield return k_CompilerMessageLayout;
             yield return k_GenericIssueLayout;
@@ -127,6 +151,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var issues = new List<ProjectIssue>();
             var localAssemblyInfos = assemblyInfos.Where(info => !info.readOnly).ToArray();
             var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.readOnly).ToArray();
+
+            foreach (var assemblyInfo in assemblyInfos)
+            {
+                onIssueFound(new ProjectIssue(k_AssemblyDescriptor, assemblyInfo.name, IssueCategory.Assemblies, assemblyInfo.asmDefPath, new[] { assemblyInfo.readOnly.ToString() }));
+            }
 
             var assemblyDirectories = new List<string>();
             assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UserAssembly | PrecompiledAssemblyTypes.UnityEngine));

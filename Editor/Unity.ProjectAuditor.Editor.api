@@ -62,13 +62,14 @@ namespace Unity.ProjectAuditor.Editor
 
     public enum IssueCategory
     {
+        public const Unity.ProjectAuditor.Editor.IssueCategory Assemblies = 9;
         public const Unity.ProjectAuditor.Editor.IssueCategory Assets = 1;
         public const Unity.ProjectAuditor.Editor.IssueCategory BuildFiles = 8;
         public const Unity.ProjectAuditor.Editor.IssueCategory Code = 4;
         public const Unity.ProjectAuditor.Editor.IssueCategory CodeCompilerMessages = 5;
         public const Unity.ProjectAuditor.Editor.IssueCategory Generics = 6;
         public const Unity.ProjectAuditor.Editor.IssueCategory MetaData = 0;
-        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 9;
+        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 10;
         public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 7;
         public const Unity.ProjectAuditor.Editor.IssueCategory Shaders = 2;
         public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariants = 3;
@@ -236,6 +237,13 @@ namespace Unity.ProjectAuditor.Editor
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
+    public enum AssemblyProperty
+    {
+        public const Unity.ProjectAuditor.Editor.Auditors.AssemblyProperty Num = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.AssemblyProperty ReadOnly = 0;
+        public int value__;
+    }
+
     public class AssetsAuditor : Unity.ProjectAuditor.Editor.IAuditor
     {
         public AssetsAuditor() {}

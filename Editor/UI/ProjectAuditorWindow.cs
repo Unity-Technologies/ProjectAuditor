@@ -319,6 +319,15 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
+                category = IssueCategory.Assemblies,
+                name = "Assemblies",
+                menuLabel = "Experimental/Assemblies",
+                menuOrder = 99,
+                onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assemblies
+            });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
                 type = typeof(CodeView),
                 category = IssueCategory.Code,
                 name = "Code",
