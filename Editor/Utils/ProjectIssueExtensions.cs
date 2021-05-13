@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 case PropertyType.CriticalContext:
                     return issue.isPerfCriticalContext.ToString();
                 default:
-                    var propertyIndex = propertyType - PropertyType.Custom;
+                    var propertyIndex = propertyType - PropertyType.Num;
                     return issue.GetCustomProperty(propertyIndex);
             }
         }

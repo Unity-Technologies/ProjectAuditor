@@ -193,13 +193,18 @@ namespace Unity.ProjectAuditor.Editor
     {
         public const Unity.ProjectAuditor.Editor.PropertyType Area = 2;
         public const Unity.ProjectAuditor.Editor.PropertyType CriticalContext = 6;
-        public const Unity.ProjectAuditor.Editor.PropertyType Custom = 7;
         public const Unity.ProjectAuditor.Editor.PropertyType Description = 0;
         public const Unity.ProjectAuditor.Editor.PropertyType Filename = 4;
         public const Unity.ProjectAuditor.Editor.PropertyType FileType = 5;
+        public const Unity.ProjectAuditor.Editor.PropertyType Num = 7;
         public const Unity.ProjectAuditor.Editor.PropertyType Path = 3;
         public const Unity.ProjectAuditor.Editor.PropertyType Severity = 1;
         public int value__;
+    }
+
+    public struct PropertyTypeUtil
+    {
+        public static Unity.ProjectAuditor.Editor.PropertyType FromCustom<T>(T customPropEnum) where T : System.Enum;
     }
 
     public class Rule : System.IEquatable<Unity.ProjectAuditor.Editor.Rule>
@@ -301,6 +306,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public virtual void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
         public virtual bool IsSupported();
         public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+    }
+
+    public enum MetaDataProperty
+    {
+        public const Unity.ProjectAuditor.Editor.Auditors.MetaDataProperty Num = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.MetaDataProperty Value = 0;
+        public int value__;
     }
 
     public enum ParseLogResult

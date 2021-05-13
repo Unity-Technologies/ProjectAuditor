@@ -11,7 +11,15 @@ namespace Unity.ProjectAuditor.Editor
         Filename,
         FileType,
         CriticalContext,
-        Custom
+        Num
+    }
+
+    public struct PropertyTypeUtil
+    {
+        public static PropertyType FromCustom<T>(T customPropEnum) where T : Enum
+        {
+            return PropertyType.Num + Convert.ToInt32(customPropEnum);
+        }
     }
 
     public enum PropertyFormat

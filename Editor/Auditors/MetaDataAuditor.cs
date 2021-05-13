@@ -5,6 +5,12 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
+    public enum MetaDataProperty
+    {
+        Value = 0,
+        Num
+    }
+
     public class MetaDataAuditor : IAuditor
     {
         static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
@@ -19,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Meta Data"},
-                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.String, name = "Value"}
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(MetaDataProperty.Value), format = PropertyFormat.String, name = "Value"}
             }
         };
 
