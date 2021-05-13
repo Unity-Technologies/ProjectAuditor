@@ -42,5 +42,6 @@ namespace Unity.ProjectAuditor.Editor
     {
         public IssueCategory category;
         public PropertyDefinition[] properties;
+        public bool hierarchy = false;
     }
 }

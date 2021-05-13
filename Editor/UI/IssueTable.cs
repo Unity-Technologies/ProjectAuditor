@@ -59,7 +59,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 itemsList.AddRange(m_TreeViewItemIssues);
             foreach (var issue in issues)
             {
-                var depth = m_Desc.groupByDescriptor ? 1 : 0;
+                var depth = issue.depth;
+                if (m_Desc.groupByDescriptor)
+                    depth++;
                 var item = new IssueTableItem(m_NextId++, depth, issue.name, issue.descriptor, issue);
                 itemsList.Add(item);
             }
@@ -408,6 +410,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnSortingChanged(MultiColumnHeader _multiColumnHeader)
         {
+            if (m_Layout.hierarchy)
+                return;
+
             SortIfNeeded(GetRows());
         }
 
