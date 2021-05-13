@@ -1,6 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Auditors;
 using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
@@ -14,7 +15,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var matchingIssue = issues.FirstOrDefault(i => i.description.Equals("Unity Version"));
 
             Assert.NotNull(matchingIssue);
-            Assert.True(matchingIssue.GetCustomProperty(0).Equals(Application.unityVersion));
+            Assert.True(matchingIssue.GetCustomProperty(MetaDataProperty.Value).Equals(Application.unityVersion));
         }
     }
 }

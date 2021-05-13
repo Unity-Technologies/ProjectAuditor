@@ -54,8 +54,8 @@ class ScriptWithWarning {
 
             // check properties
             Assert.AreEqual((int)CompilerMessageProperty.Num, issue.GetNumCustomProperties());
-            Assert.True(issue.GetCustomProperty((int)CompilerMessageProperty.Code).Equals("CS0219"));
-            Assert.True(issue.GetCustomProperty((int)CompilerMessageProperty.Assembly).Equals(AssemblyInfo.DefaultAssemblyName));
+            Assert.True(issue.GetCustomProperty(CompilerMessageProperty.Code).Equals("CS0219"));
+            Assert.True(issue.GetCustomProperty(CompilerMessageProperty.Assembly).Equals(AssemblyInfo.DefaultAssemblyName));
         }
     }
 }

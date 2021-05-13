@@ -143,32 +143,37 @@ namespace Unity.ProjectAuditor.Editor
             return customProperties != null ? customProperties.Length : 0;
         }
 
-        public string GetCustomProperty(int index)
+        public string GetCustomProperty<T>(T propertyEnum) where T : struct
+        {
+            return GetCustomProperty(Convert.ToInt32(propertyEnum));
+        }
+
+        internal string GetCustomProperty(int index)
         {
             return customProperties != null ? customProperties[index] : string.Empty;
         }
 
-        internal bool GetCustomPropertyAsBool(int index)
+        internal bool GetCustomPropertyAsBool<T>(T propertyEnum) where T : struct
         {
-            var valueAsString = GetCustomProperty(index);
+            var valueAsString = GetCustomProperty(propertyEnum);
             var value = false;
             if (!bool.TryParse(valueAsString, out value))
                 return false;
             return value;
         }
 
-        internal int GetCustomPropertyAsInt(int index)
+        internal int GetCustomPropertyAsInt<T>(T propertyEnum) where T : struct
         {
-            var valueAsString = GetCustomProperty(index);
+            var valueAsString = GetCustomProperty(propertyEnum);
             var value = 0;
             if (!int.TryParse(valueAsString, out value))
                 return 0;
             return value;
         }
 
-        public void SetCustomProperty(int index, string property)
+        public void SetCustomProperty<T>(T propertyEnum, string property) where T : struct
         {
-            customProperties[index] = property;
+            customProperties[Convert.ToUInt32(propertyEnum)] = property;
         }
 
         public void SetCustomProperties(string[] properties)

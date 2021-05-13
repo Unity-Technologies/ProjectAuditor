@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor
 
     public struct PropertyTypeUtil
     {
-        public static PropertyType FromCustom<T>(T customPropEnum) where T : Enum
+        public static PropertyType FromCustom<T>(T customPropEnum) where T : struct
         {
             return PropertyType.Num + Convert.ToInt32(customPropEnum);
         }

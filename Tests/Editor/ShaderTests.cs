@@ -335,25 +335,25 @@ Shader ""Custom/MyEditorShader""
             var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
             Assert.True(ShadersAuditor.BuildDataAvailable());
 
-            var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
+            var keywords = issues.Select(i => i.GetCustomProperty(ShaderVariantProperty.Keywords));
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
 
             var variants = issues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
-            var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform)).Distinct();
+            var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty(ShaderVariantProperty.Platform)).Distinct();
             var compilerPlatformNames = ShaderUtilProxy.GetCompilerPlatformNames();
 
             foreach (var plat in shaderCompilerPlatforms)
             {
                 Assert.Contains(plat, compilerPlatformNames);
 
-                var variantsForPlatform = variants.Where(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform).Equals(plat)).ToArray();
-                Assert.AreEqual((int)ShaderVariantProperty.Num, variantsForPlatform[0].GetNumCustomProperties());
+                var variantsForPlatform = variants.Where(v => v.GetCustomProperty(ShaderVariantProperty.Platform).Equals(plat)).ToArray();
+                Assert.AreEqual(ShaderVariantProperty.Num, variantsForPlatform[0].GetNumCustomProperties());
 
                 // "#pragma multi_compile __ KEYWORD_A KEYWORD_B" should produce 3 variants for each graphics API
-                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals(ShadersAuditor.k_NoKeywords)));
-                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_A")));
-                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B")));
-                Assert.True(variantsForPlatform.All(v => v.GetCustomProperty((int)ShaderVariantProperty.Compiled).Equals(ShadersAuditor.k_NoRuntimeData)));
+                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals(ShadersAuditor.k_NoKeywords)));
+                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("KEYWORD_A")));
+                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("KEYWORD_B")));
+                Assert.True(variantsForPlatform.All(v => v.GetCustomProperty(ShaderVariantProperty.Compiled).Equals(ShadersAuditor.k_NoRuntimeData)));
 
                 // check descriptor
                 Assert.True(variantsForPlatform.All(v => v.descriptor.area.Equals("Info")));
@@ -365,7 +365,7 @@ Shader ""Custom/MyEditorShader""
         {
             var issues =  Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
 
-            var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords)).ToArray();
+            var keywords = issues.Select(i => i.GetCustomProperty(ShaderVariantProperty.Keywords)).ToArray();
 
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
 
@@ -373,12 +373,12 @@ Shader ""Custom/MyEditorShader""
             Assert.Positive(variants.Length, "No shader variants found");
 
             // check custom properties
-            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("<no keywords>")), "No shader variants found without INSTANCING_ON keyword");
-            Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Requirements).Equals("BaseShaders, Derivatives")), "No shader variants found without Instancing requirement");
+            Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("<no keywords>")), "No shader variants found without INSTANCING_ON keyword");
+            Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Requirements).Equals("BaseShaders, Derivatives")), "No shader variants found without Instancing requirement");
 #if UNITY_2019_1_OR_NEWER
             //this one fails on yamato
-            //Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("INSTANCING_ON")), "No shader variants found with INSTANCING_ON keyword");
-            //Assert.True(variants.Any(v => v.GetCustomProperty((int)ShaderVariantProperty.Requirements).Equals("BaseShaders, Derivatives, Instancing")), "No shader variants found with Instancing requirement");
+            //Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("INSTANCING_ON")), "No shader variants found with INSTANCING_ON keyword");
+            //Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Requirements).Equals("BaseShaders, Derivatives, Instancing")), "No shader variants found with Instancing requirement");
 #endif
         }
 
@@ -387,7 +387,7 @@ Shader ""Custom/MyEditorShader""
         {
             var issues =  Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
 
-            var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
+            var keywords = issues.Select(i => i.GetCustomProperty(ShaderVariantProperty.Keywords));
 
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
 
@@ -395,7 +395,7 @@ Shader ""Custom/MyEditorShader""
             Assert.Positive(variants.Count());
 
             // check custom property
-            var variant = variants.FirstOrDefault(v => v.GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("FORWARD") && v.GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("DIRECTIONAL"));
+            var variant = variants.FirstOrDefault(v => v.GetCustomProperty(ShaderVariantProperty.PassName).Equals("FORWARD") && v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("DIRECTIONAL"));
             Assert.NotNull(variant);
         }
 
@@ -406,7 +406,7 @@ Shader ""Custom/MyEditorShader""
             var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
             StripVariants.Enabled = false;
 
-            var keywords = issues.Select(i => i.GetCustomProperty((int)ShaderVariantProperty.Keywords));
+            var keywords = issues.Select(i => i.GetCustomProperty(ShaderVariantProperty.Keywords));
 
             Assert.False(keywords.Any(key => key.Equals(s_KeywordName)));
         }
@@ -449,25 +449,25 @@ Shader ""Custom/MyEditorShader""
 
             Assert.That(result, Is.EqualTo(ParseLogResult.Success), "No compiled shader variants found in player log.");
 
-            var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform)).Distinct().ToArray();
+            var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty(ShaderVariantProperty.Platform)).Distinct().ToArray();
             var numShaderCompilerPlatforms = shaderCompilerPlatforms.Count();
 
             Assert.AreEqual(5 * numShaderCompilerPlatforms, variants.Length, "Compiler Platforms: " + string.Join(", ", shaderCompilerPlatforms));
 
-            var unusedVariants = variants.Where(i => !i.GetCustomPropertyAsBool((int)ShaderVariantProperty.Compiled)).ToArray();
+            var unusedVariants = variants.Where(i => !i.GetCustomPropertyAsBool(ShaderVariantProperty.Compiled)).ToArray();
             foreach (var plat in shaderCompilerPlatforms)
             {
-                var unusedVariantsForPlatform = unusedVariants.Where(v => v.GetCustomProperty((int)ShaderVariantProperty.Platform).Equals(plat)).ToArray();
+                var unusedVariantsForPlatform = unusedVariants.Where(v => v.GetCustomProperty(ShaderVariantProperty.Platform).Equals(plat)).ToArray();
 
                 Assert.AreEqual(2, unusedVariantsForPlatform.Length);
-                Assert.True(unusedVariantsForPlatform[0].GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("MyTestShader/Pass"));
-                Assert.True(unusedVariantsForPlatform[0].GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals("KEYWORD_B"));
+                Assert.True(unusedVariantsForPlatform[0].GetCustomProperty(ShaderVariantProperty.PassName).Equals("MyTestShader/Pass"));
+                Assert.True(unusedVariantsForPlatform[0].GetCustomProperty(ShaderVariantProperty.Keywords).Equals("KEYWORD_B"));
 #if UNITY_2019_1_OR_NEWER
-                Assert.True(unusedVariantsForPlatform[1].GetCustomProperty((int)ShaderVariantProperty.PassName).Equals("Pass 1"));
+                Assert.True(unusedVariantsForPlatform[1].GetCustomProperty(ShaderVariantProperty.PassName).Equals("Pass 1"));
 #else
-                Assert.True(unusedVariantsForPlatform[1].GetCustomProperty((int)ShaderVariantProperty.PassName).Equals(string.Empty));
+                Assert.True(unusedVariantsForPlatform[1].GetCustomProperty(ShaderVariantProperty.PassName).Equals(string.Empty));
 #endif
-                Assert.True(unusedVariantsForPlatform[1].GetCustomProperty((int)ShaderVariantProperty.Keywords).Equals(ShadersAuditor.k_NoKeywords));
+                Assert.True(unusedVariantsForPlatform[1].GetCustomProperty(ShaderVariantProperty.Keywords).Equals(ShadersAuditor.k_NoKeywords));
             }
         }
 
@@ -485,19 +485,19 @@ Shader ""Custom/MyEditorShader""
             Assert.True(shaderIssue.descriptor.area.Equals(Area.Info.ToString()));
 
             // check custom property
-            Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
-            Assert.True(shaderIssue.GetCustomProperty((int)ShaderProperty.NumVariants).Equals(ShadersAuditor.k_NotAvailable), "Num Variants: " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumVariants));
+            Assert.AreEqual(ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
+            Assert.True(shaderIssue.GetCustomProperty(ShaderProperty.NumVariants).Equals(ShadersAuditor.k_NotAvailable), "Num Variants: " + shaderIssue.GetCustomProperty(ShaderProperty.NumVariants));
 
 #if UNITY_2019_1_OR_NEWER
-            Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
-            Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
+            Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
+            Assert.AreEqual(2, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
 #else
-            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
-            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
 #endif
-            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue));
-            Assert.False(shaderIssue.GetCustomPropertyAsBool((int)ShaderProperty.Instancing), "Instancing is supported but it should not be.");
-            Assert.False(shaderIssue.GetCustomPropertyAsBool((int)ShaderProperty.SrpBatcher), "SRP Batcher is supported but it should not be.");
+            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty(ShaderProperty.RenderQueue));
+            Assert.False(shaderIssue.GetCustomPropertyAsBool(ShaderProperty.Instancing), "Instancing is supported but it should not be.");
+            Assert.False(shaderIssue.GetCustomPropertyAsBool(ShaderProperty.SrpBatcher), "SRP Batcher is supported but it should not be.");
         }
 
 #if UNITY_2019_1_OR_NEWER
@@ -521,16 +521,16 @@ Shader ""Custom/MyEditorShader""
             Assert.NotNull(shaderIssue);
 
             // check custom property
-            Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
+            Assert.AreEqual(ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
 #if UNITY_2019_1_OR_NEWER
-            Assert.AreEqual(1, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
-            Assert.AreEqual(1, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
+            Assert.AreEqual(1, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
+            Assert.AreEqual(1, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
 #else
-            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
-            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
 #endif
-            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue));
-            Assert.True(shaderIssue.GetCustomPropertyAsBool((int)ShaderProperty.Instancing));
+            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty(ShaderProperty.RenderQueue));
+            Assert.True(shaderIssue.GetCustomPropertyAsBool(ShaderProperty.Instancing));
         }
 
         [Test]
@@ -541,16 +541,16 @@ Shader ""Custom/MyEditorShader""
             Assert.NotNull(shaderIssue);
 
             // check custom property
-            Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
+            Assert.AreEqual(ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
 #if UNITY_2019_1_OR_NEWER
-            Assert.AreEqual(4, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
-            Assert.AreEqual(22, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
+            Assert.AreEqual(4, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
+            Assert.AreEqual(22, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
 #else
-            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumPasses));
-            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.NumKeywords));
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
 #endif
-            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt((int)ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty((int)ShaderProperty.RenderQueue));
-            Assert.True(shaderIssue.GetCustomPropertyAsBool((int)ShaderProperty.Instancing));
+            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty(ShaderProperty.RenderQueue));
+            Assert.True(shaderIssue.GetCustomPropertyAsBool(ShaderProperty.Instancing));
         }
 
         [Test]

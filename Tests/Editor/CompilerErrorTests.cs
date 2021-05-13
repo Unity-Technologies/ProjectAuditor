@@ -98,8 +98,8 @@ class ScriptWithError {
 
             // check properties
             Assert.AreEqual((int)CompilerMessageProperty.Num, issue.GetNumCustomProperties());
-            Assert.True(issue.GetCustomProperty((int)CompilerMessageProperty.Code).Equals(k_ExpectedCode));
-            Assert.True(issue.GetCustomProperty((int)CompilerMessageProperty.Assembly).Equals(AssemblyInfo.DefaultAssemblyName));
+            Assert.True(issue.GetCustomProperty(CompilerMessageProperty.Code).Equals(k_ExpectedCode));
+            Assert.True(issue.GetCustomProperty(CompilerMessageProperty.Assembly).Equals(AssemblyInfo.DefaultAssemblyName));
         }
     }
 }

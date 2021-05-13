@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Profiler.BeginSample("MatchAssembly");
             var matchAssembly = !activeView.desc.showAssemblySelection ||
                 m_AssemblySelection != null &&
-                (m_AssemblySelection.Contains(issue.GetCustomProperty((int)CodeProperty.Assembly)) ||
+                (m_AssemblySelection.Contains(issue.GetCustomProperty(CodeProperty.Assembly)) ||
                     m_AssemblySelection.ContainsGroup("All"));
             Profiler.EndSample();
             if (!matchAssembly)
@@ -891,7 +891,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             // update list of assembly names
             var scriptIssues = m_ProjectReport.GetIssues(IssueCategory.Code);
-            m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty((int)CodeProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
+            m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty(CodeProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
         }
 
         void UpdateAssemblySelection()

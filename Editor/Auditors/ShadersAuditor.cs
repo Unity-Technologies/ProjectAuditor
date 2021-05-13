@@ -387,13 +387,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
                 if (shader == null)
                 {
-                    builtVariant.SetCustomProperty((int)ShaderVariantProperty.Compiled, "?");
+                    builtVariant.SetCustomProperty(ShaderVariantProperty.Compiled, "?");
                     continue;
                 }
 
                 var shaderName = shader.name;
-                var passName = builtVariant.GetCustomProperty((int)ShaderVariantProperty.PassName);
-                var keywordsString = builtVariant.GetCustomProperty((int)ShaderVariantProperty.Keywords);
+                var passName = builtVariant.GetCustomProperty(ShaderVariantProperty.PassName);
+                var keywordsString = builtVariant.GetCustomProperty(ShaderVariantProperty.Keywords);
                 var keywords = StringToKeywords(keywordsString);
                 var isVariantCompiled = false;
 
@@ -404,7 +404,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     isVariantCompiled = matchingVariants.Count() > 0;
                 }
 
-                builtVariant.SetCustomProperty((int)ShaderVariantProperty.Compiled, isVariantCompiled.ToString());
+                builtVariant.SetCustomProperty(ShaderVariantProperty.Compiled, isVariantCompiled.ToString());
             }
 
             return ParseLogResult.Success;
