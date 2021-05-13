@@ -36,8 +36,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.BuildFile), format = PropertyFormat.String, name = "Build File"}
             }
         };
-            }
-        };
 
         static BuildReport s_BuildReport;
 
