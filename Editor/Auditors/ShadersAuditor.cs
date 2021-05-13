@@ -77,12 +77,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
 //                new PropertyDefinition { type = PropertyType.Severity},
                 new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
-                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.Integer, name = "Actual Variants", longName = "Number of variants in the build" },
-                new PropertyDefinition { type = PropertyType.Custom + 1, format = PropertyFormat.Integer, name = "Passes", longName = "Number of Passes" },
-                new PropertyDefinition { type = PropertyType.Custom + 2, format = PropertyFormat.Integer, name = "Keywords", longName = "Number of Keywords" },
-                new PropertyDefinition { type = PropertyType.Custom + 3, format = PropertyFormat.Integer, name = "Render Queue" },
-                new PropertyDefinition { type = PropertyType.Custom + 4, format = PropertyFormat.Bool, name = "Instancing", longName = "GPU Instancing Support" },
-                new PropertyDefinition { type = PropertyType.Custom + 5, format = PropertyFormat.Bool, name = "SRP Batcher", longName = "SRP Batcher Compatible" }
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumVariants), format = PropertyFormat.Integer, name = "Actual Variants", longName = "Number of variants in the build" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumPasses), format = PropertyFormat.Integer, name = "Passes", longName = "Number of Passes" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumKeywords), format = PropertyFormat.Integer, name = "Keywords", longName = "Number of Keywords" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.RenderQueue), format = PropertyFormat.Integer, name = "Render Queue" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.Instancing), format = PropertyFormat.Bool, name = "Instancing", longName = "GPU Instancing Support" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.SrpBatcher), format = PropertyFormat.Bool, name = "SRP Batcher", longName = "SRP Batcher Compatible" }
             }
         };
 
@@ -92,11 +92,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
-                new PropertyDefinition { type = PropertyType.Custom, format = PropertyFormat.Bool, name = "Compiled", longName = "Compiled at runtime by the player" },
-                new PropertyDefinition { type = PropertyType.Custom + 1, format = PropertyFormat.String, name = "Graphics API" },
-                new PropertyDefinition { type = PropertyType.Custom + 2, format = PropertyFormat.String, name = "Pass Name" },
-                new PropertyDefinition { type = PropertyType.Custom + 3, format = PropertyFormat.String, name = "Keywords" },
-                new PropertyDefinition { type = PropertyType.Custom + 4, format = PropertyFormat.String, name = "Requirements" }
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Compiled), format = PropertyFormat.Bool, name = "Compiled", longName = "Compiled at runtime by the player" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Platform), format = PropertyFormat.String, name = "Graphics API" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PassName), format = PropertyFormat.String, name = "Pass Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Keywords), format = PropertyFormat.String, name = "Keywords" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Requirements), format = PropertyFormat.String, name = "Requirements" }
             }
         };
 
@@ -387,13 +387,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
                 if (shader == null)
                 {
-                    builtVariant.SetCustomProperty((int)ShaderVariantProperty.Compiled, "?");
+                    builtVariant.SetCustomProperty(ShaderVariantProperty.Compiled, "?");
                     continue;
                 }
 
                 var shaderName = shader.name;
-                var passName = builtVariant.GetCustomProperty((int)ShaderVariantProperty.PassName);
-                var keywordsString = builtVariant.GetCustomProperty((int)ShaderVariantProperty.Keywords);
+                var passName = builtVariant.GetCustomProperty(ShaderVariantProperty.PassName);
+                var keywordsString = builtVariant.GetCustomProperty(ShaderVariantProperty.Keywords);
                 var keywords = StringToKeywords(keywordsString);
                 var isVariantCompiled = false;
 
@@ -404,7 +404,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     isVariantCompiled = matchingVariants.Count() > 0;
                 }
 
-                builtVariant.SetCustomProperty((int)ShaderVariantProperty.Compiled, isVariantCompiled.ToString());
+                builtVariant.SetCustomProperty(ShaderVariantProperty.Compiled, isVariantCompiled.ToString());
             }
 
             return ParseLogResult.Success;

@@ -147,7 +147,7 @@ The number of Variants contributes to the build size, however, there might be Va
         {
             if (!m_MainFilter.Match(issue))
                 return false;
-            var compiled = issue.GetCustomPropertyAsBool((int)ShaderVariantProperty.Compiled);
+            var compiled = issue.GetCustomPropertyAsBool(ShaderVariantProperty.Compiled);
             if (compiled && m_ShowCompiledVariants)
                 return true;
             if (!compiled && m_ShowUncompiledVariants)

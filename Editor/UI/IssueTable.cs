@@ -554,23 +554,22 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.severity.ToString() : string.Empty;
                                 break;
                             default:
-                                var propertyIndex = property.type - PropertyType.Custom;
                                 if (property.format == PropertyFormat.Integer || property.format == PropertyFormat.Bytes)
                                 {
                                     int first;
                                     int second;
-                                    if (firstItem.ProjectIssue == null || !int.TryParse(firstItem.ProjectIssue.GetCustomProperty(propertyIndex), out first))
+                                    if (firstItem.ProjectIssue == null || !int.TryParse(firstItem.ProjectIssue.GetProperty(property.type), out first))
                                         first = -999999;
-                                    if (secondItem.ProjectIssue == null || !int.TryParse(secondItem.ProjectIssue.GetCustomProperty(propertyIndex), out second))
+                                    if (secondItem.ProjectIssue == null || !int.TryParse(secondItem.ProjectIssue.GetProperty(property.type), out second))
                                         second = -999999;
                                     return first - second;
                                 }
 
                                 firstString = firstItem.ProjectIssue != null
-                                    ? firstItem.ProjectIssue.GetCustomProperty(propertyIndex)
+                                    ? firstItem.ProjectIssue.GetProperty(property.type)
                                     : string.Empty;
                                 secondString = secondItem.ProjectIssue != null
-                                    ? secondItem.ProjectIssue.GetCustomProperty(propertyIndex)
+                                    ? secondItem.ProjectIssue.GetProperty(property.type)
                                     : string.Empty;
 
                                 break;

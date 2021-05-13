@@ -230,7 +230,7 @@ class AnyApiInNamespace
 
             // check custom property
             Assert.AreEqual((int)CodeProperty.Num, myIssue.GetNumCustomProperties());
-            Assert.True(myIssue.GetCustomProperty((int)CodeProperty.Assembly).Equals(AssemblyInfo.DefaultAssemblyName));
+            Assert.True(myIssue.GetCustomProperty(CodeProperty.Assembly).Equals(AssemblyInfo.DefaultAssemblyName));
         }
 
         [Test]
