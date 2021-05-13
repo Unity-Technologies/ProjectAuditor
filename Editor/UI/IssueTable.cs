@@ -203,6 +203,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                 cellRect.xMin += indent;
                 CenterRectUsingSingleLineHeight(ref cellRect);
             }
+            else if (m_Layout.hierarchy && property.type == PropertyType.Description)
+            {
+                var indent = GetContentIndent(treeViewItem);
+                cellRect.xMin += indent;
+                CenterRectUsingSingleLineHeight(ref cellRect);
+            }
 
             if (s_LabelStyle == null)
                 s_LabelStyle = new GUIStyle(EditorStyles.label);

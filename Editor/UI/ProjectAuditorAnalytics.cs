@@ -50,7 +50,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             BuildFiles,
             Summary,
             CodeCompilerMessages,
-            Assemblies
+            Assemblies,
+            BuildSteps,
         }
 
         // -------------------------------------------------------------------------------------------------------------
