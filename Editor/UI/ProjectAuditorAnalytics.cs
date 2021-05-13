@@ -166,7 +166,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 case UIButton.Generics:
                     return "generics_tab";
                 case UIButton.BuildFiles:
-                    return "buildfiles_tab";
+                    return "build_files_tab";
                 case UIButton.CodeCompilerMessages:
                     return "compiler_messages_tab";
                 case UIButton.Assemblies:
