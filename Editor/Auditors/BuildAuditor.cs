@@ -6,7 +6,6 @@ using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-using UnityEditorInternal;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
