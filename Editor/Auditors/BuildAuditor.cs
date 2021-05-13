@@ -8,7 +8,7 @@ using UnityEditor.Build.Reporting;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
-    public enum BuildProperty
+    public enum BuildReportFileProperty
     {
         Size = 0,
         BuildFile,
@@ -24,16 +24,16 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Area.BuildSize
             );
 
-        static readonly IssueLayout k_IssueLayout = new IssueLayout
+        static readonly IssueLayout k_FileLayout = new IssueLayout
         {
             category = IssueCategory.BuildFiles,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Source Asset"},
                 new PropertyDefinition { type = PropertyType.FileType, name = "Type"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size in the Build"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size in the Build"},
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildProperty.BuildFile), format = PropertyFormat.String, name = "Build File"}
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.BuildFile), format = PropertyFormat.String, name = "Build File"}
             }
         };
 
@@ -49,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public IEnumerable<IssueLayout> GetLayouts()
         {
-            yield return k_IssueLayout;
+            yield return k_FileLayout;
         }
 
         public void Initialize(ProjectAuditorConfig config)
@@ -75,57 +75,71 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var buildReport = GetBuildReport();
             if (buildReport != null)
             {
-                foreach (var packedAsset in buildReport.packedAssets)
-                {
-                    // note that there can be several entries for each source asset (for example, a prefab can reference a Texture, a Material and a shader)
-                    var dict = new Dictionary<GUID, List<PackedAssetInfo>>();
-                    foreach (var content in packedAsset.contents)
-                    {
-                        var assetPath = content.sourceAssetPath;
-                        if (!Path.HasExtension(assetPath))
-                            continue;
-
-                        if (Path.GetExtension(assetPath).Equals(".cs"))
-                            continue;
-
-                        if (!dict.ContainsKey(content.sourceAssetGUID))
-                        {
-                            dict.Add(content.sourceAssetGUID, new List<PackedAssetInfo>());
-                        }
-                        dict[content.sourceAssetGUID].Add(content);
-                    }
-
-                    foreach (var entry in dict)
-                    {
-                        var content = entry.Value[0]; // sourceAssets are the same for all entries
-                        var assetPath = content.sourceAssetPath;
-
-                        ulong sum = 0;
-                        foreach (var v in entry.Value)
-                        {
-                            sum += v.packedSize;
-                        }
-
-                        var assetName = Path.GetFileNameWithoutExtension(assetPath);
-                        string description;
-                        if (entry.Value.Count > 1)
-                            description = string.Format("{0} ({1})", assetName, entry.Value.Count);
-                        else
-                            description = assetName;
-                        var issue = new ProjectIssue(k_Descriptor, description, IssueCategory.BuildFiles, new Location(assetPath));
-                        issue.SetCustomProperties(new[]
-                        {
-                            sum.ToString(),
-                            packedAsset.shortPath
-                        });
-                        onIssueFound(issue);
-                    }
-                }
+                AnalyzeBuildSteps(onIssueFound, buildReport);
+                AnalyzePackedAssets(onIssueFound, buildReport);
             }
 #endif
             if (onComplete != null)
                 onComplete();
         }
+
+#if UNITY_2019_4_OR_NEWER
+        private static void AnalyzeBuildSteps(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
+        {
+        }
+
+        private static void AnalyzePackedAssets(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
+        {
+            foreach (var packedAsset in buildReport.packedAssets)
+            {
+                // note that there can be several entries for each source asset (for example, a prefab can reference a Texture, a Material and a shader)
+                var dict = new Dictionary<GUID, List<PackedAssetInfo>>();
+                foreach (var content in packedAsset.contents)
+                {
+                    var assetPath = content.sourceAssetPath;
+                    if (!Path.HasExtension(assetPath))
+                        continue;
+
+                    if (Path.GetExtension(assetPath).Equals(".cs"))
+                        continue;
+
+                    if (!dict.ContainsKey(content.sourceAssetGUID))
+                    {
+                        dict.Add(content.sourceAssetGUID, new List<PackedAssetInfo>());
+                    }
+
+                    dict[content.sourceAssetGUID].Add(content);
+                }
+
+                foreach (var entry in dict)
+                {
+                    var content = entry.Value[0]; // sourceAssets are the same for all entries
+                    var assetPath = content.sourceAssetPath;
+
+                    ulong sum = 0;
+                    foreach (var v in entry.Value)
+                    {
+                        sum += v.packedSize;
+                    }
+
+                    var assetName = Path.GetFileNameWithoutExtension(assetPath);
+                    string description;
+                    if (entry.Value.Count > 1)
+                        description = string.Format("{0} ({1})", assetName, entry.Value.Count);
+                    else
+                        description = assetName;
+                    var issue = new ProjectIssue(k_Descriptor, description, IssueCategory.BuildFiles, new Location(assetPath));
+                    issue.SetCustomProperties(new[]
+                    {
+                        sum.ToString(),
+                        packedAsset.shortPath
+                    });
+                    onIssueFound(issue);
+                }
+            }
+        }
+
+#endif
 
         public static BuildReport GetBuildReport()
         {
