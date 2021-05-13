@@ -411,11 +411,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
+                type = typeof(BuildReportView),
                 category = IssueCategory.BuildSteps,
                 name = "Build Steps",
                 menuLabel = "Build Report/Steps",
                 menuOrder = 100,
                 showFilters = true,
+                showInfoPanel = true,
                 onDrawToolbarDataOptions = () =>
                 {
                     if (GUILayout.Button(Contents.BuildFiles, EditorStyles.toolbarButton,
