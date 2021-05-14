@@ -89,11 +89,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
             // then check if any uses SupportedLitShaderMode.Both or a mix of Forward and Deferred
             return hdrpAssets.Any(asset => asset.currentPlatformRenderPipelineSettings.supportedLitShaderMode ==
-                                            RenderPipelineSettings.SupportedLitShaderMode.Both) ||
-                    hdrpAssets.Where(asset => asset.currentPlatformRenderPipelineSettings.supportedLitShaderMode !=
-                                              RenderPipelineSettings.SupportedLitShaderMode.Both).Select(asset =>
-                            asset.currentPlatformRenderPipelineSettings.supportedLitShaderMode)
-                        .Distinct().Count() > 1;
+                RenderPipelineSettings.SupportedLitShaderMode.Both) ||
+                hdrpAssets.Where(asset => asset.currentPlatformRenderPipelineSettings.supportedLitShaderMode !=
+                RenderPipelineSettings.SupportedLitShaderMode.Both).Select(asset =>
+                        asset.currentPlatformRenderPipelineSettings.supportedLitShaderMode)
+                    .Distinct().Count() > 1;
         }
 
         void GetCameraComponents(GameObject go, ref List<HDAdditionalCameraData> components)
