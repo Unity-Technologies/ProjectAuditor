@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
@@ -12,17 +13,17 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
     public class HDRenderPipelineAnalyzer : ISettingsAnalyzer
     {
-        static readonly ProblemDescriptor k_LitShaderModeBoth = new ProblemDescriptor(
+        static readonly ProblemDescriptor k_AssetLitShaderModeBothOrMixed = new ProblemDescriptor(
             202001,
-            "HDRP: Shader mode is set to Both",
+            "HDRP: Render Pipeline Assets use both 'Lit Shader Mode' Forward and Deferred",
             new[] { Area.BuildSize, Area.BuildTime },
-            "If HDRP 'Lit Shader Mode' is set to Both, shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
+            "If HDRP 'Lit Shader Mode' is set to Both (or a mix of Forward and Deferred), shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
             "Change Shader mode to Forward or Deferred."
         );
 
-        static readonly ProblemDescriptor k_LitShaderModeBothAndMixedCameras = new ProblemDescriptor(
+        static readonly ProblemDescriptor k_CameraLitShaderModeBothOrMixed = new ProblemDescriptor(
             202002,
-            "HDRP: Mixed usage of 'Lit Shader Mode' Forward and Deferred",
+            "HDRP: Cameras mix usage of 'Lit Shader Mode' Forward and Deferred",
             new[] { Area.BuildSize, Area.BuildTime },
             "If Cameras use both 'Lit Shader Mode' Forward and Deferred, shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
             "Change HDRP asset and all Cameras 'Lit Shader Mode' to either Forward or Deferred."
@@ -30,18 +31,18 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
         public void Initialize(IAuditor auditor)
         {
-            auditor.RegisterDescriptor(k_LitShaderModeBoth);
-            auditor.RegisterDescriptor(k_LitShaderModeBothAndMixedCameras);
+            auditor.RegisterDescriptor(k_AssetLitShaderModeBothOrMixed);
+            auditor.RegisterDescriptor(k_CameraLitShaderModeBothOrMixed);
         }
 
         public int GetDescriptorId()
         {
-            return k_LitShaderModeBoth.id;
+            return k_AssetLitShaderModeBothOrMixed.id;
         }
 
         public IEnumerable<ProjectIssue> Analyze()
         {
-            if (IsLitShaderModeBoth())
+            if (IsLitShaderModeBothOrMixed())
             {
                 var deferredCamera = false;
                 var forwardCamera = false;
@@ -63,37 +64,36 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
                         forwardCamera = true;
 
                     if (deferredCamera && forwardCamera)
-                        yield return new ProjectIssue(k_LitShaderModeBothAndMixedCameras, k_LitShaderModeBothAndMixedCameras.description, IssueCategory.ProjectSettings);
+                        yield return new ProjectIssue(k_CameraLitShaderModeBothOrMixed, k_CameraLitShaderModeBothOrMixed.description, IssueCategory.ProjectSettings);
                 }
-                yield return new ProjectIssue(k_LitShaderModeBoth, k_LitShaderModeBoth.description, IssueCategory.ProjectSettings);
+                yield return new ProjectIssue(k_AssetLitShaderModeBothOrMixed, k_AssetLitShaderModeBothOrMixed.description, IssueCategory.ProjectSettings);
             }
         }
 
-        bool IsLitShaderModeBoth()
+        bool IsLitShaderModeBothOrMixed()
         {
-            var renderPipelineAsset = GraphicsSettings.currentRenderPipeline;
-            if (renderPipelineAsset is HDRenderPipelineAsset currentHdrpAsset)
+            // first gather all hdrp assets
+            var hdrpAssets = new HashSet<HDRenderPipelineAsset>();
+            if (GraphicsSettings.defaultRenderPipeline is HDRenderPipelineAsset defaultRenderPipeline)
             {
-                if (currentHdrpAsset.currentPlatformRenderPipelineSettings.supportedLitShaderMode ==
-                    RenderPipelineSettings.SupportedLitShaderMode.Both)
-                {
-                    return true;
-                }
+                hdrpAssets.Add(defaultRenderPipeline);
             }
 
             for (int i = 0, c = QualitySettings.names.Length; i < c; ++i)
             {
                 if (QualitySettings.GetRenderPipelineAssetAt(i) is HDRenderPipelineAsset hdrpAsset)
                 {
-                    if (hdrpAsset.currentPlatformRenderPipelineSettings.supportedLitShaderMode ==
-                        RenderPipelineSettings.SupportedLitShaderMode.Both)
-                    {
-                        return true;
-                    }
+                    hdrpAssets.Add(hdrpAsset);
                 }
             }
 
-            return false;
+            // then check if any uses SupportedLitShaderMode.Both or a mix of Forward and Deferred
+            return hdrpAssets.Any(asset => asset.currentPlatformRenderPipelineSettings.supportedLitShaderMode ==
+                                            RenderPipelineSettings.SupportedLitShaderMode.Both) ||
+                    hdrpAssets.Where(asset => asset.currentPlatformRenderPipelineSettings.supportedLitShaderMode !=
+                                              RenderPipelineSettings.SupportedLitShaderMode.Both).Select(asset =>
+                            asset.currentPlatformRenderPipelineSettings.supportedLitShaderMode)
+                        .Distinct().Count() > 1;
         }
 
         void GetCameraComponents(GameObject go, ref List<HDAdditionalCameraData> components)
