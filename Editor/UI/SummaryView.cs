@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 SummaryItem("Assets in Resources folders:", s_Report.GetIssues(IssueCategory.Assets).Length, IssueCategory.Assets);
                 SummaryItem("Shaders in the project:", s_Report.GetIssues(IssueCategory.Shaders).Length, IssueCategory.Shaders);
                 var buildAvailable = s_Report.GetIssues(IssueCategory.BuildFiles).Length > 0;
-                SummaryItem("Build Report available:", buildAvailable ? "Yes" : "No", IssueCategory.BuildSteps);
+                SummaryItem("Build Report available:", buildAvailable, IssueCategory.BuildSteps);
                 EditorGUI.indentLevel--;
 
                 EditorGUILayout.Space();
@@ -33,22 +33,35 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField("Select a View from the toolbar to start browsing the report");
         }
 
-        static void SummaryItem(string title, int value, IssueCategory category, GUIContent icon = null)
+        static void SummaryItem<T>(string title, T value, IssueCategory category, GUIContent icon = null)
         {
-            SummaryItem(title, value.ToString(), category, icon);
-        }
+            var viewLink = true;
+            var valueAsString = value.ToString();
+            if (typeof(T) == typeof(bool))
+            {
+                var valueAsBool = (bool)(object)value;
+                valueAsString = valueAsBool ? "Yes" : "No";
+                viewLink = valueAsBool;
+            }
 
-        static void SummaryItem(string title, string value, IssueCategory category, GUIContent icon = null)
-        {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(title, GUILayout.ExpandWidth(false));
+
+            if (viewLink)
+            {
 #if UNITY_2019_2_OR_NEWER
-            if (GUILayout.Button(value, Utility.GetStyle("LinkLabel")))
+                if (GUILayout.Button(valueAsString, Utility.GetStyle("LinkLabel")))
+                    OnChangeView(category);
 #else
-            EditorGUILayout.LabelField(value, GUILayout.MaxWidth(90), GUILayout.ExpandWidth(false));
-            if (GUILayout.Button("View", EditorStyles.miniButton, GUILayout.Width(50)))
+                EditorGUILayout.LabelField(valueAsString, GUILayout.MaxWidth(90), GUILayout.ExpandWidth(false));
+                if (GUILayout.Button("View", EditorStyles.miniButton, GUILayout.Width(50)))
+                    OnChangeView(category);
 #endif
-                OnChangeView(category);
+            }
+            else
+            {
+                EditorGUILayout.LabelField(valueAsString, GUILayout.MaxWidth(90), GUILayout.ExpandWidth(false));
+            }
             if (icon != null)
                 EditorGUILayout.LabelField(icon);
             EditorGUILayout.EndHorizontal();
