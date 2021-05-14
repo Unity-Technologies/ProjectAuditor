@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Packages.Editor.Utils;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
@@ -12,6 +14,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     {
         Size = 0,
         BuildFile,
+        Num
+    }
+
+    public enum BuildReportStepProperty
+    {
+        Duration = 0,
         Num
     }
 
@@ -24,6 +32,33 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Area.BuildSize
             );
 
+        private static readonly ProblemDescriptor k_InfoDescriptor = new ProblemDescriptor
+            (
+            600001,
+            "Build step info"
+            )
+        {
+            severity = Rule.Severity.Info
+        };
+
+        static readonly ProblemDescriptor k_WarnDescriptor = new ProblemDescriptor
+            (
+            600002,
+            "Build step warning"
+            )
+        {
+            severity = Rule.Severity.Warning
+        };
+
+        static readonly ProblemDescriptor k_ErrorDescriptor = new ProblemDescriptor
+            (
+            600003,
+            "Build step error"
+            )
+        {
+            severity = Rule.Severity.Error
+        };
+
         static readonly IssueLayout k_FileLayout = new IssueLayout
         {
             category = IssueCategory.BuildFiles,
@@ -35,6 +70,18 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.BuildFile), format = PropertyFormat.String, name = "Build File"}
             }
+        };
+
+        static readonly IssueLayout k_StepLayout = new IssueLayout
+        {
+            category = IssueCategory.BuildSteps,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Severity},
+                new PropertyDefinition { type = PropertyType.Description, name = "Build Step"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportStepProperty.Duration), format = PropertyFormat.String, name = "Duration"}
+            },
+            hierarchy = true
         };
 
         static BuildReport s_BuildReport;
@@ -50,6 +97,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_FileLayout;
+            yield return k_StepLayout;
         }
 
         public void Initialize(ProjectAuditorConfig config)
@@ -86,6 +134,40 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #if UNITY_2019_4_OR_NEWER
         private static void AnalyzeBuildSteps(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
         {
+            foreach (var step in buildReport.steps)
+            {
+                var depth = step.depth;
+                onIssueFound(new ProjectIssue(k_InfoDescriptor, step.name, IssueCategory.BuildSteps, new[]
+                {
+                    Formatting.FormatTime(step.duration)
+                })
+                    {
+                        depth = depth
+                    });
+
+                foreach (var message in step.messages)
+                {
+                    var descriptor = k_InfoDescriptor;
+                    switch (message.type)
+                    {
+                        case LogType.Assert:
+                        case LogType.Error:
+                        case LogType.Exception:
+                            descriptor = k_ErrorDescriptor;
+                            break;
+                        case LogType.Warning:
+                            descriptor = k_WarnDescriptor;
+                            break;
+                    }
+                    onIssueFound(new ProjectIssue(descriptor, message.content, IssueCategory.BuildSteps, new[]
+                    {
+                        string.Empty
+                    })
+                        {
+                            depth = depth + 1,
+                        });
+                }
+            }
         }
 
         private static void AnalyzePackedAssets(Action<ProjectIssue> onIssueFound, BuildReport buildReport)

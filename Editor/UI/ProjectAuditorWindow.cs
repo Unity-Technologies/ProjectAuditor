@@ -412,10 +412,29 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 type = typeof(BuildReportView),
+                category = IssueCategory.BuildSteps,
+                name = "Build Steps",
+                menuLabel = "Build Report/Steps",
+                menuOrder = 100,
+                showFilters = true,
+                showInfoPanel = true,
+                onDrawToolbarDataOptions = () =>
+                {
+                    if (GUILayout.Button(Contents.BuildFiles, EditorStyles.toolbarButton,
+                        GUILayout.Width(80)))
+                    {
+                        Instance.SelectView(IssueCategory.BuildFiles);
+                    }
+                },
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildSteps
+            });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                type = typeof(BuildReportView),
                 category = IssueCategory.BuildFiles,
-                name = "Build",
-                menuLabel = "Build Report",
-                menuOrder = 98,
+                name = "Build Files",
+                menuLabel = "Build Report/Files",
+                menuOrder = 101,
                 groupByDescriptor = false,
                 descriptionWithIcon = true,
                 showActions = false,
@@ -426,6 +445,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showInfoPanel = true,
                 showRightPanels = false,
                 onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
+                onDrawToolbarDataOptions = () =>
+                {
+                    if (GUILayout.Button(Contents.BuildSteps, EditorStyles.toolbarButton,
+                        GUILayout.Width(80)))
+                    {
+                        Instance.SelectView(IssueCategory.BuildSteps);
+                    }
+                },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
             });
         }
@@ -1179,6 +1206,9 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...), by str
 
             public static readonly GUIContent Shaders = new GUIContent("Shaders", "Inspect Shaders");
             public static readonly GUIContent ShaderVariantsButton = new GUIContent("Variants", "Inspect Shader Variants");
+
+            public static readonly GUIContent BuildFiles = new GUIContent("Build Files");
+            public static readonly GUIContent BuildSteps = new GUIContent("Build Steps");
         }
 
         static class Styles

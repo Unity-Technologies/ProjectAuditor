@@ -50,7 +50,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             BuildFiles,
             Summary,
             CodeCompilerMessages,
-            Assemblies
+            Assemblies,
+            BuildSteps,
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -167,6 +168,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "generics_tab";
                 case UIButton.BuildFiles:
                     return "build_files_tab";
+                case UIButton.BuildSteps:
+                    return "build_steps_tab";
                 case UIButton.CodeCompilerMessages:
                     return "compiler_messages_tab";
                 case UIButton.Assemblies:

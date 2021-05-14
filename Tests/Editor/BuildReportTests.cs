@@ -41,7 +41,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 #if !UNITY_2019_4_OR_NEWER
         [Ignore("Not Supported in this version of Unity")]
 #endif
-        public void BuildReportIsFound()
+        public void BuildReportFilesAreReported()
         {
             var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.BuildFiles);
             var matchingIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TempAsset.relativePath));
@@ -51,6 +51,34 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.That(matchingIssue.GetNumCustomProperties(), Is.EqualTo((int)BuildReportFileProperty.Num));
             Assert.True(matchingIssue.GetCustomProperty(BuildReportFileProperty.BuildFile).Equals("resources.assets"));
             Assert.That(matchingIssue.GetCustomPropertyAsInt(BuildReportFileProperty.Size), Is.Positive);
+        }
+
+        [Test]
+#if !UNITY_2019_4_OR_NEWER
+        [Ignore("Not Supported in this version of Unity")]
+#endif
+        public void BuildReportStepsAreReported()
+        {
+            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.BuildSteps);
+            var step = issues.FirstOrDefault(i => i.description.Equals("Build player"));
+            Assert.NotNull(step);
+            Assert.That(step.depth, Is.EqualTo(0));
+
+            step = issues.FirstOrDefault(i => i.description.Equals("Compile scripts"));
+            Assert.NotNull(step);
+            Assert.That(step.depth, Is.EqualTo(1));
+
+            step = issues.FirstOrDefault(i => i.description.Equals("Writing asset files"));
+            Assert.NotNull(step);
+            Assert.That(step.depth, Is.EqualTo(1));
+
+            step = issues.FirstOrDefault(i => i.description.Equals("Packaging assets - resources.assets"));
+            Assert.NotNull(step);
+            Assert.That(step.depth, Is.EqualTo(2));
+
+            step = issues.FirstOrDefault(i => i.description.Equals("Postprocess built player"));
+            Assert.NotNull(step);
+            Assert.That(step.depth, Is.EqualTo(1));
         }
     }
 }
