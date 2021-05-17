@@ -43,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Num
     }
 
-    public enum ParseLogResult
+    enum ParseLogResult
     {
         Success,
         NoCompiledVariants,
@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public string[] keywords;
     }
 
-    public class ShadersAuditor : IAuditor
+    class ShadersAuditor : IAuditor
 #if UNITY_2018_2_OR_NEWER
         , IPreprocessShaders
 #endif

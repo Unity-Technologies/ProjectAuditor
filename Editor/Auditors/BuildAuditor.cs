@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Num
     }
 
-    public class BuildAuditor : IAuditor, IPostprocessBuildWithReport
+    class BuildAuditor : IAuditor, IPostprocessBuildWithReport
     {
         static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
             (

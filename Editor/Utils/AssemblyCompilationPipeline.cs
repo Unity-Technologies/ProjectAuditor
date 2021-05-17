@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         Release
     }
 
-    public enum CompilerMessageType
+    enum CompilerMessageType
     {
         /// <summary>
         ///   <para>Error message.</para>
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         Info
     }
 
-    public struct CompilerMessage
+    struct CompilerMessage
     {
         /// <summary>
         ///   <para>Message code.</para>
