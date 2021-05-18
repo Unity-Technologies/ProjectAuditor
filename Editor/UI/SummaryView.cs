@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Auditors;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,17 +15,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField("Analysis overview", EditorStyles.boldLabel);
 
                 EditorGUI.indentLevel++;
-                SummaryItem("Code Issues: ", s_Report.GetIssues(IssueCategory.Code).Length, IssueCategory.Code);
+                DrawSummaryItem("Code Issues: ", s_Report.GetIssues(IssueCategory.Code).Length, IssueCategory.Code);
                 var numCompilationErrors = s_Report.GetIssues(IssueCategory.CodeCompilerMessages).Count(i => i.severity == Rule.Severity.Error);
                 if (numCompilationErrors > 0)
                 {
-                    SummaryItem("Compilation Errors: ", numCompilationErrors, IssueCategory.CodeCompilerMessages, Utility.ErrorIcon);
+                    DrawSummaryItem("Compilation Errors: ", numCompilationErrors, IssueCategory.CodeCompilerMessages, Utility.ErrorIcon);
                 }
-                SummaryItem("Settings Issues:", s_Report.GetIssues(IssueCategory.ProjectSettings).Length, IssueCategory.ProjectSettings);
-                SummaryItem("Assets in Resources folders:", s_Report.GetIssues(IssueCategory.Assets).Length, IssueCategory.Assets);
-                SummaryItem("Shaders in the project:", s_Report.GetIssues(IssueCategory.Shaders).Length, IssueCategory.Shaders);
+                DrawSummaryItem("Settings Issues:", s_Report.GetIssues(IssueCategory.ProjectSettings).Length, IssueCategory.ProjectSettings);
+                DrawSummaryItem("Assets in Resources folders:", s_Report.GetIssues(IssueCategory.Assets).Length, IssueCategory.Assets);
+                DrawSummaryItem("Shaders in the project:", s_Report.GetIssues(IssueCategory.Shaders).Length, IssueCategory.Shaders);
                 var buildAvailable = s_Report.GetIssues(IssueCategory.BuildFiles).Length > 0;
-                SummaryItem("Build Report available:", buildAvailable, IssueCategory.BuildSteps);
+                DrawSummaryItem("Build Report available:", buildAvailable, IssueCategory.BuildSteps);
                 EditorGUI.indentLevel--;
 
                 EditorGUILayout.Space();
@@ -33,7 +34,28 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField("Select a View from the toolbar to start browsing the report");
         }
 
-        static void SummaryItem<T>(string title, T value, IssueCategory category, GUIContent icon = null)
+        public override void DrawContent()
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginVertical();
+            EditorGUI.indentLevel++;
+            foreach (var issue in m_Issues)
+            {
+                DrawKeyValue(issue.description, issue.GetCustomProperty(MetaDataProperty.Value));
+            }
+            EditorGUI.indentLevel--;
+            EditorGUILayout.EndVertical();
+        }
+
+        static void DrawKeyValue(string key, string value)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(string.Format("{0}:", key), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(value,  GUILayout.ExpandWidth(true));
+            EditorGUILayout.EndHorizontal();
+        }
+
+        static void DrawSummaryItem<T>(string title, T value, IssueCategory category, GUIContent icon = null)
         {
             var viewLink = true;
             var valueAsString = value.ToString();
