@@ -57,7 +57,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return;
             }
 
-            m_AnalysisView.DrawTableAndPanels();
+            m_AnalysisView.DrawContent();
         }
     }
 }

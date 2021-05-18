@@ -30,9 +30,9 @@ namespace Unity.ProjectAuditor.Editor.UI
         protected Preferences m_Preferences;
         protected ViewDescriptor m_Desc;
         protected IProjectIssueFilter m_Filter;
+        protected List<ProjectIssue> m_Issues = new List<ProjectIssue>();
 
         DependencyView m_DependencyView;
-        List<ProjectIssue> m_Issues = new List<ProjectIssue>();
         bool m_FlatView;
         IssueTable m_Table;
         IssueLayout m_Layout;
@@ -145,7 +145,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
         }
 
-        public void DrawTableAndPanels()
+        public virtual void DrawContent()
         {
             var selectedItems = m_Table.GetSelectedItems();
             var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();

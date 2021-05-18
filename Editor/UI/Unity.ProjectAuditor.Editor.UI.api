@@ -8,6 +8,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         protected Unity.ProjectAuditor.Editor.ProjectAuditorConfig m_Config;
         protected Unity.ProjectAuditor.Editor.UI.ViewDescriptor m_Desc;
         protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_Filter;
+        protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.ProjectIssue> m_Issues;
         protected Unity.ProjectAuditor.Editor.UI.Preferences m_Preferences;
         public static System.Action<Unity.ProjectAuditor.Editor.IssueCategory> OnChangeView;
         protected static Unity.ProjectAuditor.Editor.ProjectReport s_Report;
@@ -17,9 +18,9 @@ namespace Unity.ProjectAuditor.Editor.UI
         public void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
         public void Clear();
         public virtual void Create(Unity.ProjectAuditor.Editor.UI.ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueLayout layout, Unity.ProjectAuditor.Editor.ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.UI.Preferences prefs, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
+        public virtual void DrawContent();
         public virtual void DrawFilters();
         public void DrawInfo();
-        public void DrawTableAndPanels();
         protected Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
         public bool IsValid();
         protected virtual void OnDrawInfo();

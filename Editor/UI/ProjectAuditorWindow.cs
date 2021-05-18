@@ -207,7 +207,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         m_ShouldRefresh = false;
                     }
 
-                    activeView.DrawTableAndPanels();
+                    activeView.DrawContent();
                 }
             }
             else
