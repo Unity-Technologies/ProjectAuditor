@@ -59,6 +59,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected int GetChildCount(Unity.ProjectAuditor.Editor.UI.Framework.TreeItemIdentifier selectedIdentifier, out int selected);
         public Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection GetTreeViewSelection();
         protected virtual void RowGUI(UnityEditor.IMGUI.Controls.TreeView.RowGUIArgs args);
+        public enum Column
+        {
+            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.Column GroupName = 2;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.Column ItemName = 0;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.Column State = 1;
+            public int value__;
+        }
         public struct HeaderData
         {
             public bool allowToggleVisibility;
@@ -67,13 +74,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public float minWidth;
             public float width;
             public HeaderData(string name, string tooltip = , float _width = 50, float _minWidth = 30, bool _autoResize = True, bool _allowToggleVisibility = True) {}
-        }
-        public enum MyColumns
-        {
-            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.MyColumns GroupName = 2;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.MyColumns ItemName = 0;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.MyColumns State = 1;
-            public int value__;
         }
         public enum SortOption
         {

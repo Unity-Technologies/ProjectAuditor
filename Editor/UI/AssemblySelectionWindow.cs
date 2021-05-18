@@ -86,7 +86,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_MultiColumnHeaderState = MultiSelectionTable.CreateDefaultMultiColumnHeaderState(headerData);
 
             var multiColumnHeader = new MultiColumnHeader(m_MultiColumnHeaderState);
-            multiColumnHeader.SetSorting((int)MultiSelectionTable.MyColumns.ItemName, true);
+            multiColumnHeader.SetSorting((int)MultiSelectionTable.Column.ItemName, true);
             multiColumnHeader.ResizeToFit();
             m_MultiSelectionTable = new MultiSelectionTable(m_TreeViewState, multiColumnHeader, m_Names, selection);
         }

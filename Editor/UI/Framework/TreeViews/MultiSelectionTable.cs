@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     public class MultiSelectionTable : TreeView
     {
         // All columns
-        public enum MyColumns
+        public enum Column
         {
             ItemName,
             State,
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_AllIdentifier.SetName("All");
             m_AllIdentifier.SetAll();
 
-            Assert.AreEqual(m_SortOptions.Length, Enum.GetValues(typeof(MyColumns)).Length,
+            Assert.AreEqual(m_SortOptions.Length, Enum.GetValues(typeof(Column)).Length,
                 "Ensure number of sort options are in sync with number of MyColumns enum values");
 
             // Custom setup
@@ -291,7 +291,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var item = (SelectionWindowTreeViewItem)args.item;
 
             for (var i = 0; i < args.GetNumVisibleColumns(); ++i)
-                CellGUI(args.GetCellRect(i), item, (MyColumns)args.GetColumn(i), ref args);
+                CellGUI(args.GetCellRect(i), item, (Column)args.GetColumn(i), ref args);
         }
 
         bool TreeItemSelected(TreeItemIdentifier selectedIdentifier)
@@ -356,14 +356,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return false;
         }
 
-        void CellGUI(Rect cellRect, SelectionWindowTreeViewItem item, MyColumns column, ref RowGUIArgs args)
+        void CellGUI(Rect cellRect, SelectionWindowTreeViewItem item, Column column, ref RowGUIArgs args)
         {
             // Center cell rect vertically (makes it easier to place controls, icons etc in the cells)
             CenterRectUsingSingleLineHeight(ref cellRect);
 
             switch (column)
             {
-                case MyColumns.ItemName:
+                case Column.ItemName:
                 {
                     args.rowRect = cellRect;
                     // base.RowGUI(args);    // Required to show tree indenting
@@ -430,14 +430,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     }
                 }
                 break;
-                case MyColumns.GroupName:
+                case Column.GroupName:
                 {
                     var groupName = GetItemGroupName(item);
                     var content = new GUIContent(groupName);
                     EditorGUI.LabelField(cellRect, content);
                 }
                 break;
-                case MyColumns.State:
+                case Column.State:
                     var oldState = TreeItemSelected(item.TreeItemIdentifier);
                     var newState = EditorGUI.Toggle(cellRect, oldState);
                     if (newState != oldState)
@@ -555,14 +555,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             ;
             var columns = columnList.ToArray();
 
-            Assert.AreEqual(columns.Length, Enum.GetValues(typeof(MyColumns)).Length,
+            Assert.AreEqual(columns.Length, Enum.GetValues(typeof(Column)).Length,
                 "Number of columns should match number of enum values: You probably forgot to update one of them.");
 
             var state = new MultiColumnHeaderState(columns);
             state.visibleColumns = new[]
             {
-                (int)MyColumns.ItemName,
-                (int)MyColumns.State
+                (int)Column.ItemName,
+                (int)Column.State
                 //(int)MyColumns.GroupName
             };
             return state;
