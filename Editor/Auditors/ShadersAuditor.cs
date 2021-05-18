@@ -229,15 +229,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 shaderName = Path.GetFileNameWithoutExtension(assetPath) + ": Parse Error";
 
                 var issueWithError = new ProjectIssue(k_ParseErrorDescriptor, shaderName, IssueCategory.Shaders, new Location(assetPath));
-                issueWithError.SetCustomProperties(new[]
-                {
-                    k_NotAvailable,
-                    k_NotAvailable,
-                    k_NotAvailable,
-                    k_NotAvailable,
-                    k_NotAvailable,
-                    k_NotAvailable
-                });
+                issueWithError.SetCustomProperties((int)ShaderProperty.Num, k_NotAvailable);
+
                 onIssueFound(issueWithError);
 
                 return;
@@ -268,7 +261,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             passCount = shader.passCount;
 #endif
             var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.Shaders, new Location(assetPath));
-            issue.SetCustomProperties(new[]
+            issue.SetCustomProperties(new string[(int)ShaderProperty.Num]
             {
                 variantCount == -1 ? k_NotAvailable : variantCount.ToString(),
                 passCount == -1 ? k_NotAvailable : passCount.ToString(),
@@ -300,7 +293,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var compilerData = shaderVariantData.compilerData;
                 var keywords = GetShaderKeywords(shader, compilerData.shaderKeywordSet.GetShaderKeywords());
                 var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariants, new Location(assetPath));
-                issue.SetCustomProperties(new[]
+                issue.SetCustomProperties(new string[(int)ShaderVariantProperty.Num]
                 {
                     k_NoRuntimeData,
                     compilerData.shaderCompilerPlatform.ToString(),

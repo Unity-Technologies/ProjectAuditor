@@ -162,6 +162,7 @@ namespace Unity.ProjectAuditor.Editor
         public string GetCustomProperty<T>(T propertyEnum) where T : System.ValueType, new();
         public int GetNumCustomProperties();
         public void SetCustomProperties(string[] properties);
+        public void SetCustomProperties(int numProperties, string property);
         public void SetCustomProperty<T>(T propertyEnum, string property) where T : System.ValueType, new();
     }
 

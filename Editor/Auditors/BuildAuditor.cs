@@ -137,7 +137,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             foreach (var step in buildReport.steps)
             {
                 var depth = step.depth;
-                onIssueFound(new ProjectIssue(k_InfoDescriptor, step.name, IssueCategory.BuildSteps, new[]
+                onIssueFound(new ProjectIssue(k_InfoDescriptor, step.name, IssueCategory.BuildSteps, new string[(int)BuildReportStepProperty.Num]
                 {
                     Formatting.FormatTime(step.duration)
                 })
@@ -159,13 +159,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                             descriptor = k_WarnDescriptor;
                             break;
                     }
-                    onIssueFound(new ProjectIssue(descriptor, message.content, IssueCategory.BuildSteps, new[]
+                    onIssueFound(new ProjectIssue(descriptor, message.content, IssueCategory.BuildSteps)
                     {
-                        string.Empty
-                    })
-                        {
-                            depth = depth + 1,
-                        });
+                        depth = depth + 1,
+                    });
                 }
             }
         }
@@ -211,7 +208,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     else
                         description = assetName;
                     var issue = new ProjectIssue(k_Descriptor, description, IssueCategory.BuildFiles, new Location(assetPath));
-                    issue.SetCustomProperties(new[]
+                    issue.SetCustomProperties(new string[(int)BuildReportFileProperty.Num]
                     {
                         sum.ToString(),
                         packedAsset.shortPath

@@ -153,7 +153,7 @@ namespace Unity.ProjectAuditor.Editor
 
         internal string GetCustomProperty(int index)
         {
-            return customProperties != null ? customProperties[index] : string.Empty;
+            return customProperties != null && customProperties.Length > 0 ? customProperties[index] : string.Empty;
         }
 
         internal bool GetCustomPropertyAsBool<T>(T propertyEnum) where T : struct
@@ -177,6 +177,18 @@ namespace Unity.ProjectAuditor.Editor
         public void SetCustomProperty<T>(T propertyEnum, string property) where T : struct
         {
             customProperties[Convert.ToUInt32(propertyEnum)] = property;
+        }
+
+        /// <summary>
+        /// Initialize all custom properties to the same value
+        /// </summary>
+        /// <param name="numProperties"> total number of custom properties </param>
+        /// <param name="property"> value the properties will be set to </param>
+        public void SetCustomProperties(int numProperties, string property)
+        {
+            customProperties = new string[numProperties];
+            for (var i = 0; i < numProperties; i++)
+                customProperties[i] = property;
         }
 
         public void SetCustomProperties(string[] properties)
