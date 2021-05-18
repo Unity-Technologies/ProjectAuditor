@@ -5,9 +5,9 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Analytics;
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    static class ProjectAuditorAnalytics
+    public static class ProjectAuditorAnalytics
     {
         const int k_MaxEventsPerHour = 100;
         const int k_MaxEventItems = 1000;

@@ -2,9 +2,9 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    static class Utility
+    public static class Utility
     {
         static readonly string k_InfoIconName = "console.infoicon";
         static readonly string k_WarnIconName = "console.warnicon";
@@ -67,12 +67,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             return s;
         }
 
-        internal static bool BoldFoldout(bool toggle, GUIContent content)
+        public static bool BoldFoldout(bool toggle, GUIContent content)
         {
             return EditorGUILayout.Foldout(toggle, content, SharedStyles.Foldout);
         }
 
-        internal static void ToolbarDropdownList(DropdownItem[] items, int selectionIndex, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
+        public static void ToolbarDropdownList(DropdownItem[] items, int selectionIndex, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
         {
             var selectionContent = items[selectionIndex].SelectionContent;
             var r = GUILayoutUtility.GetRect(selectionContent, EditorStyles.toolbarButton, options);
@@ -112,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             return GUI.Button(rect, content, EditorStyles.toolbarDropDown);
         }
 
-        internal static void DrawHelpButton(string page)
+        public static void DrawHelpButton(string page)
         {
             if (GUILayout.Button(Contents.HelpButton, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
             {
@@ -120,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        internal static void DrawSelectedText(string text)
+        public static void DrawSelectedText(string text)
         {
 #if UNITY_2019_1_OR_NEWER
             var treeViewSelectionStyle = (GUIStyle)"TV Selection";
@@ -144,7 +144,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        internal static string GetTreeViewSelectedSummary(TreeViewSelection selection, string[] names)
+        public static string GetTreeViewSelectedSummary(TreeViewSelection selection, string[] names)
         {
             var selectedStrings = selection.GetSelectedStrings(names, true);
             var numStrings = selectedStrings.Length;

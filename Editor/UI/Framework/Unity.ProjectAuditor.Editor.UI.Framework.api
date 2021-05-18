@@ -1,0 +1,247 @@
+// This file is generated. Do not modify by hand.
+// XML documentation file not found. To check if public methods have XML comments,
+// make sure the XML doc file is present and located next to the scraped dll
+namespace Unity.ProjectAuditor.Editor.UI.Framework
+{
+    public class AnalysisView
+    {
+        protected Unity.ProjectAuditor.Editor.ProjectAuditorConfig m_Config;
+        protected Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor m_Desc;
+        protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_Filter;
+        protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.ProjectIssue> m_Issues;
+        protected Unity.ProjectAuditor.Editor.UI.Framework.Preferences m_Preferences;
+        public static System.Action<Unity.ProjectAuditor.Editor.IssueCategory> OnChangeView;
+        protected static Unity.ProjectAuditor.Editor.ProjectReport s_Report;
+        public Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor desc { get; }
+        protected int numIssues { get; }
+        public AnalysisView() {}
+        public void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
+        public void Clear();
+        public virtual void Create(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueLayout layout, Unity.ProjectAuditor.Editor.ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.UI.Framework.Preferences prefs, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
+        public virtual void DrawContent();
+        public virtual void DrawFilters();
+        public void DrawInfo();
+        protected Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
+        public bool IsValid();
+        protected virtual void OnDrawInfo();
+        public void Refresh();
+        public static void SetReport(Unity.ProjectAuditor.Editor.ProjectReport report);
+    }
+
+    public static class EditorUtil
+    {
+        public static void FocusOnAssetInProjectWindow(Unity.ProjectAuditor.Editor.Utils.Location location);
+        public static void OpenCodeDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+        public static void OpenCompilerMessageDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+        public static void OpenProjectSettings(Unity.ProjectAuditor.Editor.Utils.Location location);
+        public static void OpenTextFile(Unity.ProjectAuditor.Editor.Utils.Location location);
+    }
+
+    public class IssueTableItem : UnityEditor.IMGUI.Controls.TreeViewItem
+    {
+        public readonly Unity.ProjectAuditor.Editor.ProblemDescriptor ProblemDescriptor;
+        public readonly Unity.ProjectAuditor.Editor.ProjectIssue ProjectIssue;
+        public IssueTableItem(int id, int depth, Unity.ProjectAuditor.Editor.ProblemDescriptor problemDescriptor) {}
+        public IssueTableItem(int id, int depth, string displayName, Unity.ProjectAuditor.Editor.ProblemDescriptor problemDescriptor, Unity.ProjectAuditor.Editor.ProjectIssue projectIssue) {}
+        public bool Find(Unity.ProjectAuditor.Editor.ProjectIssue issue);
+        public string GetDisplayName();
+        public bool IsGroup();
+    }
+
+    public class MultiSelectionTable : UnityEditor.IMGUI.Controls.TreeView
+    {
+        public MultiSelectionTable(UnityEditor.IMGUI.Controls.TreeViewState state, UnityEditor.IMGUI.Controls.MultiColumnHeader multicolumnHeader, string[] names, Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection) {}
+        protected virtual UnityEditor.IMGUI.Controls.TreeViewItem BuildRoot();
+        protected virtual System.Collections.Generic.IList<UnityEditor.IMGUI.Controls.TreeViewItem> BuildRows(UnityEditor.IMGUI.Controls.TreeViewItem root);
+        protected virtual bool CanMultiSelect(UnityEditor.IMGUI.Controls.TreeViewItem item);
+        public void ClearSelection();
+        public static UnityEditor.IMGUI.Controls.MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.HeaderData[] headerData);
+        protected int GetChildCount(Unity.ProjectAuditor.Editor.UI.Framework.TreeItemIdentifier selectedIdentifier, out int selected);
+        public Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection GetTreeViewSelection();
+        protected virtual void RowGUI(UnityEditor.IMGUI.Controls.TreeView.RowGUIArgs args);
+        public struct HeaderData
+        {
+            public bool allowToggleVisibility;
+            public bool autoResize;
+            public UnityEngine.GUIContent content;
+            public float minWidth;
+            public float width;
+            public HeaderData(string name, string tooltip = , float _width = 50, float _minWidth = 30, bool _autoResize = True, bool _allowToggleVisibility = True) {}
+        }
+        public enum MyColumns
+        {
+            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.MyColumns GroupName = 2;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.MyColumns ItemName = 0;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.MyColumns State = 1;
+            public int value__;
+        }
+        public enum SortOption
+        {
+            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.SortOption GroupName = 1;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.SortOption ItemName = 0;
+            public int value__;
+        }
+    }
+
+    public class Preferences
+    {
+        public bool actions;
+        public bool dependencies;
+        public bool details;
+        public bool emptyGroups;
+        public bool filters;
+        public int fontSize;
+        public bool info;
+        public const int k_MaxFontSize = 22;
+        public const int k_MinFontSize = 12;
+        public bool mutedIssues;
+        public bool onlyCriticalIssues;
+        public bool recommendation;
+        public Preferences() {}
+    }
+
+    public class ProgressBarDisplay : Unity.ProjectAuditor.Editor.IProgressBar
+    {
+        public ProgressBarDisplay() {}
+        public virtual void AdvanceProgressBar(string description = );
+        public virtual void ClearProgressBar();
+        public virtual void Initialize(string title, string description, int total);
+    }
+
+    public static class ProjectAuditorAnalytics
+    {
+        public static Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic BeginAnalytic();
+        public static void EnableAnalytics();
+        public static bool SendUIButtonEvent(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic);
+        public static bool SendUIButtonEventWithAnalyzeSummary(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic, Unity.ProjectAuditor.Editor.ProjectReport projectReport);
+        public static bool SendUIButtonEventWithKeyValues(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic, System.Collections.Generic.Dictionary<string, string> payload);
+        public static bool SendUIButtonEventWithSelectionSummary(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic, Unity.ProjectAuditor.Editor.UI.Framework.IssueTableItem[] selectedItems);
+        public class Analytic
+        {
+            public Analytic() {}
+            public void End();
+            public bool GetBlocking();
+            public float GetDurationInSeconds();
+            public double GetStartTime();
+            public long GetTimestamp();
+        }
+        public struct IssueStats
+        {
+            public int id;
+            public int numHotPathOccurrences;
+            public int numOccurrences;
+        }
+        public enum UIButton
+        {
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Analyze = 0;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton ApiCalls = 100;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton AreaSelect = 4;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton AreaSelectApply = 5;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Assemblies = 108;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton AssemblySelect = 2;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton AssemblySelectApply = 3;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Assets = 102;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton BuildFiles = 105;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton BuildSteps = 109;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton CodeCompilerMessages = 107;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Export = 1;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Generics = 104;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Load = 10;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Mute = 6;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton OnlyCriticalIssues = 9;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton ProjectSettings = 101;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Save = 11;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Shaders = 103;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton ShowMuted = 8;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Summary = 106;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Unmute = 7;
+            public int value__;
+        }
+    }
+
+    public static class SharedStyles
+    {
+        public static UnityEngine.GUIStyle Foldout { get; }
+        public static UnityEngine.GUIStyle TextArea { get; }
+        public static UnityEngine.GUIStyle TextFieldWarning { get; }
+    }
+
+    public struct TreeItemIdentifier
+    {
+        public static int kAll;
+        public static int kSingle;
+        public int index { get; }
+        public string name { get; }
+        public string nameWithIndex { get; }
+        public TreeItemIdentifier(string _nameWithIndex) {}
+        public TreeItemIdentifier(Unity.ProjectAuditor.Editor.UI.Framework.TreeItemIdentifier treeItemIdentifier) {}
+        public TreeItemIdentifier(string _name, int _index) {}
+        public void SetAll();
+        public void SetIndex(int newIndex);
+        public void SetName(string newName);
+    }
+
+    public class TreeViewSelection
+    {
+        public System.Collections.Generic.List<string> groups;
+        public System.Collections.Generic.List<string> selection;
+        public TreeViewSelection() {}
+        public TreeViewSelection(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection) {}
+        public bool Contains(string name);
+        public bool ContainsAny(string[] names);
+        public bool ContainsGroup(string groupName);
+        public string[] GetSelectedStrings(string[] names, bool summarize);
+        public void Set(string name);
+        public void Set(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection);
+        public void SetAll(string[] names);
+        public void SetGroup(string groupName);
+    }
+
+    public static class Utility
+    {
+        public static UnityEngine.GUIContent ErrorIcon { get; }
+        public static UnityEngine.GUIContent InfoIcon { get; }
+        public static UnityEngine.GUIContent WarnIcon { get; }
+        public static bool BoldFoldout(bool toggle, UnityEngine.GUIContent content);
+        public static void DrawHelpButton(string page);
+        public static void DrawSelectedText(string text);
+        public static UnityEngine.GUIStyle GetStyle(string styleName);
+        public static string GetTreeViewSelectedSummary(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection, string[] names);
+        public static void ToolbarDropdownList(Unity.ProjectAuditor.Editor.UI.Framework.Utility.DropdownItem[] items, int selectionIndex, UnityEditor.GenericMenu.MenuFunction2 callback, params UnityEngine.GUILayoutOption[] options);
+        public class DropdownItem
+        {
+            public UnityEngine.GUIContent Content;
+            public bool Enabled;
+            public UnityEngine.GUIContent SelectionContent;
+            public DropdownItem() {}
+        }
+    }
+
+    public class ViewDescriptor
+    {
+        public int analyticsEvent;
+        public Unity.ProjectAuditor.Editor.IssueCategory category;
+        public UnityEngine.GUIContent dependencyViewGuiContent;
+        public bool descriptionWithIcon;
+        public bool groupByDescriptor;
+        public string menuLabel;
+        public int menuOrder;
+        public string name;
+        public System.Action<Unity.ProjectAuditor.Editor.Utils.Location> onDoubleClick;
+        public System.Action onDrawToolbarDataOptions;
+        public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenDescriptor;
+        public bool showActions;
+        public bool showAreaSelection;
+        public bool showAssemblySelection;
+        public bool showCritical;
+        public bool showDependencyView;
+        public bool showFilters;
+        public bool showInfoPanel;
+        public bool showMuteOptions;
+        public bool showRightPanels;
+        public System.Type type;
+        public ViewDescriptor() {}
+        public static Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor[] GetAll();
+        public static void Register(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor);
+    }
+}

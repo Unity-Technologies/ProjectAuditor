@@ -1,15 +1,14 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    internal static class SharedStyles
+    public static class SharedStyles
     {
         public static GUIStyle Foldout
         {
             get
             {
-
                 if (s_Foldout == null)
                     s_Foldout = new GUIStyle(EditorStyles.foldout)
                     {
@@ -17,7 +16,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     };
                 return s_Foldout;
             }
-
         }
 
         public static GUIStyle TextArea
@@ -48,5 +46,4 @@ namespace Unity.ProjectAuditor.Editor.UI
         static GUIStyle s_TextArea;
         static GUIStyle s_TextFieldWarning;
     }
-
 }

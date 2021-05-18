@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    class TreeViewSelection
+    public class TreeViewSelection
     {
         public List<string> groups;
         public List<string> selection;

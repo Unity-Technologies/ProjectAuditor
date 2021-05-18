@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;

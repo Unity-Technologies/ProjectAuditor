@@ -2,9 +2,9 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    class ProgressBarDisplay : IProgressBar
+    public class ProgressBarDisplay : IProgressBar
     {
         int m_Current;
         string m_Description;

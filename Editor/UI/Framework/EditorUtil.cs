@@ -4,9 +4,9 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    static class EditorUtil
+    public static class EditorUtil
     {
         public static void OpenCodeDescriptor(ProblemDescriptor descriptor)
         {

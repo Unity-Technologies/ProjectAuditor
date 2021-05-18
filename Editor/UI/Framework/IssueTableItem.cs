@@ -2,9 +2,9 @@ using System;
 using System.Linq;
 using UnityEditor.IMGUI.Controls;
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    class IssueTableItem : TreeViewItem
+    public class IssueTableItem : TreeViewItem
     {
         public readonly ProblemDescriptor ProblemDescriptor;
         public readonly ProjectIssue ProjectIssue;

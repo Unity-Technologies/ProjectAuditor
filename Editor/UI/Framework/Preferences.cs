@@ -1,6 +1,6 @@
 using System;
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     [Serializable]
     public class Preferences

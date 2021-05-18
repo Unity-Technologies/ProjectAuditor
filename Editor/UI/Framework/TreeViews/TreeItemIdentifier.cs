@@ -1,9 +1,9 @@
 using System;
 using UnityEditor.IMGUI.Controls;
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    struct TreeItemIdentifier
+    public struct TreeItemIdentifier
     {
         public string nameWithIndex { get; private set; }
 

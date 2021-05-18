@@ -6,9 +6,9 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    class MultiSelectionTable : TreeView
+    public class MultiSelectionTable : TreeView
     {
         // All columns
         public enum MyColumns

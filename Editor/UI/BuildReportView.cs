@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Packages.Editor.Utils;
 using Unity.ProjectAuditor.Editor.Auditors;
+using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEditor;
 using UnityEngine;
 

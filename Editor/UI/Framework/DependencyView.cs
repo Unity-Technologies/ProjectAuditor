@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.IMGUI.Controls;
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     class DependencyView : TreeView
     {
