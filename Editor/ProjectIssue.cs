@@ -5,23 +5,6 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public enum IssueCategory
-    {
-        MetaData,
-        Assets,
-        Shaders,
-        ShaderVariants,
-        Code,
-        CodeCompilerMessages,
-        Generics,
-        ProjectSettings,
-        BuildFiles,
-        BuildSteps,
-        Assemblies,
-
-        NumCategories
-    }
-
     /// <summary>
     /// ProjectAuditor Issue found in the current project
     /// </summary>
