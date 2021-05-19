@@ -15,8 +15,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor desc { get; }
         protected int numIssues { get; }
         public AnalysisView() {}
-        public void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
-        public void Clear();
+        public virtual void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
+        public virtual void Clear();
         public virtual void Create(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueLayout layout, Unity.ProjectAuditor.Editor.ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.UI.Framework.Preferences prefs, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
         public virtual void DrawContent();
         public virtual void DrawFilters();

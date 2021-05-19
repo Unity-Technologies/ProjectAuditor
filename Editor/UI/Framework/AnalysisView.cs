@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             SetFlatView(m_FlatView);
         }
 
-        public void AddIssues(IEnumerable<ProjectIssue> allIssues)
+        public virtual void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
             var issues = allIssues.Where(i => i.category == m_Desc.category).ToArray();
             m_Issues.AddRange(issues);
@@ -120,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return m_Issues.ToArray();
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             m_Issues.Clear();
             m_Table.Clear();
