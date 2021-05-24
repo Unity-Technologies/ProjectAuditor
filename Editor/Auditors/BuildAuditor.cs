@@ -88,10 +88,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             hierarchy = true
         };
 
-        static BuildReport s_BuildReport;
+        const string k_BuildReportDir = "Assets/BuildReports";
+        const string k_LastBuildReportPath = "Library/LastBuild.buildreport";
 
-        const string s_BuildReportDir = "Assets/BuildReports";
-        const string s_LastBuildReportPath = "Library/LastBuild.buildreport";
+        static BuildReport s_BuildReport;
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -233,17 +233,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (s_BuildReport != null)
                 return s_BuildReport;
 
-            if (!Directory.Exists(s_BuildReportDir))
-                Directory.CreateDirectory(s_BuildReportDir);
+            if (!Directory.Exists(k_BuildReportDir))
+                Directory.CreateDirectory(k_BuildReportDir);
 
-            var date = File.GetLastWriteTime(s_LastBuildReportPath);
-            var assetPath = s_BuildReportDir + "/Build_" + date.ToString("yyyy-MM-dd-HH-mm-ss") + ".buildreport";
+            var date = File.GetLastWriteTime(k_LastBuildReportPath);
+            var assetPath = k_BuildReportDir + "/Build_" + date.ToString("yyyy-MM-dd-HH-mm-ss") + ".buildreport";
 
             if (!File.Exists(assetPath))
             {
-                if (!File.Exists(s_LastBuildReportPath))
+                if (!File.Exists(k_LastBuildReportPath))
                     return null; // the project was never built
-                File.Copy(s_LastBuildReportPath, assetPath, true);
+                File.Copy(k_LastBuildReportPath, assetPath, true);
                 AssetDatabase.ImportAsset(assetPath);
             }
             s_BuildReport = AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
