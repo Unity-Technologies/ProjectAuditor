@@ -57,67 +57,67 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         };
 
         static readonly ProblemDescriptor k_AssetDescriptor = new ProblemDescriptor
-        (
+            (
             600003,
             "Asset",
             Area.BuildSize
-        );
+            );
 
         static readonly ProblemDescriptor k_ByteDataDescriptor = new ProblemDescriptor
-        (
+            (
             600004,
             "Byte data",
             Area.BuildSize
-        );
+            );
 
         static readonly ProblemDescriptor k_FontDescriptor = new ProblemDescriptor
-        (
+            (
             600005,
             "Font",
             Area.BuildSize
-        );
+            );
 
         static readonly ProblemDescriptor k_MaterialDescriptor = new ProblemDescriptor
-        (
+            (
             600006,
             "Material",
             Area.BuildSize
-        );
+            );
 
         static readonly ProblemDescriptor k_ModelDescriptor = new ProblemDescriptor
-        (
+            (
             600007,
             "Model",
             Area.BuildSize
-        );
+            );
 
         static readonly ProblemDescriptor k_PrefabDescriptor = new ProblemDescriptor
-        (
+            (
             600008,
             "Prefab",
             Area.BuildSize
-        );
+            );
 
         static readonly ProblemDescriptor k_ShaderDescriptor = new ProblemDescriptor
-        (
+            (
             600009,
             "Shader",
             Area.BuildSize
-        );
+            );
 
         static readonly ProblemDescriptor k_TextureDescriptor = new ProblemDescriptor
-        (
+            (
             600010,
             "Texture",
             Area.BuildSize
-        );
+            );
 
         static readonly ProblemDescriptor k_OtherTypeDescriptor = new ProblemDescriptor
-        (
+            (
             600011,
             "Other Type",
             Area.BuildSize
-        );
+            );
 
 
         readonly Dictionary<string, ProblemDescriptor> m_DescriptorByExtension = new Dictionary<string, ProblemDescriptor>()

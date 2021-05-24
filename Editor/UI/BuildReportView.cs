@@ -34,11 +34,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_Desc.category == IssueCategory.BuildFiles)
             {
                 var list = m_Issues.GroupBy(i => i.descriptor).Select(g => new GroupStats
-                    {
-                        assetGroup = g.Key.description,
-                        count = g.Count(),
-                        size = g.Sum(s => s.GetCustomPropertyAsInt(BuildReportFileProperty.Size))
-                    }).ToList();
+                {
+                    assetGroup = g.Key.description,
+                    count = g.Count(),
+                    size = g.Sum(s => s.GetCustomPropertyAsInt(BuildReportFileProperty.Size))
+                }).ToList();
                 list.Sort((a, b) => b.size.CompareTo(a.size));
                 m_GroupStats = list.ToArray();
             }
@@ -78,8 +78,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     var width = 180;
                     EditorGUILayout.BeginHorizontal();
-                        EditorGUILayout.LabelField("Size of Build", GUILayout.Width(width));
-                        EditorGUILayout.LabelField(Formatting.FormatSize(report.summary.totalSize));
+                    EditorGUILayout.LabelField("Size of Build", GUILayout.Width(width));
+                    EditorGUILayout.LabelField(Formatting.FormatSize(report.summary.totalSize));
                     EditorGUILayout.EndHorizontal();
                     EditorGUILayout.Space();
 
