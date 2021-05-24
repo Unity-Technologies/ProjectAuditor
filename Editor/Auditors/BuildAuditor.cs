@@ -25,16 +25,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
     class BuildAuditor : IAuditor, IPostprocessBuildWithReport
     {
-        static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
-            (
-            600000,
-            "Build file",
-            Area.BuildSize
-            );
-
         private static readonly ProblemDescriptor k_InfoDescriptor = new ProblemDescriptor
             (
-            600001,
+            600000,
             "Build step info"
             )
         {
@@ -43,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly ProblemDescriptor k_WarnDescriptor = new ProblemDescriptor
             (
-            600002,
+            600001,
             "Build step warning"
             )
         {
@@ -52,11 +45,90 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly ProblemDescriptor k_ErrorDescriptor = new ProblemDescriptor
             (
-            600003,
+            600002,
             "Build step error"
             )
         {
             severity = Rule.Severity.Error
+        };
+
+        static readonly ProblemDescriptor k_AssetDescriptor = new ProblemDescriptor
+        (
+            600003,
+            "Assets",
+            Area.BuildSize
+        );
+
+        static readonly ProblemDescriptor k_ByteDataDescriptor = new ProblemDescriptor
+        (
+            600004,
+            "Byte data",
+            Area.BuildSize
+        );
+
+        static readonly ProblemDescriptor k_FontDescriptor = new ProblemDescriptor
+        (
+            600004,
+            "Fonts",
+            Area.BuildSize
+        );
+
+        static readonly ProblemDescriptor k_MaterialDescriptor = new ProblemDescriptor
+        (
+            600005,
+            "Materials",
+            Area.BuildSize
+        );
+
+        static readonly ProblemDescriptor k_ModelDescriptor = new ProblemDescriptor
+        (
+            600006,
+            "Models",
+            Area.BuildSize
+        );
+
+        static readonly ProblemDescriptor k_PrefabDescriptor = new ProblemDescriptor
+        (
+            600007,
+            "Prefabs",
+            Area.BuildSize
+        );
+
+        static readonly ProblemDescriptor k_ShaderDescriptor = new ProblemDescriptor
+        (
+            600008,
+            "Shaders",
+            Area.BuildSize
+        );
+
+        static readonly ProblemDescriptor k_TextureDescriptor = new ProblemDescriptor
+        (
+            600009,
+            "Textures",
+            Area.BuildSize
+        );
+
+        static readonly ProblemDescriptor k_OtherTypeDescriptor = new ProblemDescriptor
+        (
+            600010,
+            "Other Type",
+            Area.BuildSize
+        );
+
+
+        readonly Dictionary<string, ProblemDescriptor> m_DescriptorByExtension = new Dictionary<string, ProblemDescriptor>()
+        {
+            { ".asset", k_AssetDescriptor },
+            { ".compute", k_ShaderDescriptor },
+            { ".shader", k_ShaderDescriptor },
+            { ".png", k_TextureDescriptor },
+            { ".tga", k_TextureDescriptor },
+            { ".exr", k_TextureDescriptor },
+            { ".mat", k_MaterialDescriptor },
+            { ".fbx", k_ModelDescriptor },
+            { ".ttf", k_FontDescriptor },
+            { ".bytes", k_ByteDataDescriptor },
+            { ".prefab", k_PrefabDescriptor },
         };
 
         static readonly IssueLayout k_FileLayout = new IssueLayout
@@ -91,7 +163,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
-            yield return k_Descriptor;
+            yield return k_AssetDescriptor;
+            yield return k_ByteDataDescriptor;
+            yield return k_FontDescriptor;
+            yield return k_MaterialDescriptor;
+            yield return k_ModelDescriptor;
+            yield return k_PrefabDescriptor;
+            yield return k_ShaderDescriptor;
+            yield return k_TextureDescriptor;
+            yield return k_OtherTypeDescriptor;
         }
 
         public IEnumerable<IssueLayout> GetLayouts()
@@ -132,7 +212,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         }
 
 #if UNITY_2019_4_OR_NEWER
-        private static void AnalyzeBuildSteps(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
+        private void AnalyzeBuildSteps(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
         {
             foreach (var step in buildReport.steps)
             {
@@ -167,7 +247,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
-        private static void AnalyzePackedAssets(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
+        private void AnalyzePackedAssets(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
         {
             foreach (var packedAsset in buildReport.packedAssets)
             {
@@ -207,7 +287,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         description = string.Format("{0} ({1})", assetName, entry.Value.Count);
                     else
                         description = assetName;
-                    var issue = new ProjectIssue(k_Descriptor, description, IssueCategory.BuildFiles, new Location(assetPath));
+
+                    var descriptor = k_OtherTypeDescriptor;
+                    var ext = Path.GetExtension(assetPath);
+                    if (m_DescriptorByExtension.ContainsKey(ext))
+                        descriptor = m_DescriptorByExtension[ext];
+
+                    var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFiles, new Location(assetPath));
                     issue.SetCustomProperties(new string[(int)BuildReportFileProperty.Num]
                     {
                         sum.ToString(),

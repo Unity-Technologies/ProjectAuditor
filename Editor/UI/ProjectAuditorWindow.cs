@@ -436,7 +436,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Build Size",
                 menuLabel = "Build Report/Size",
                 menuOrder = 101,
-                groupByDescriptor = false,
+                groupByDescriptor = true,
                 descriptionWithIcon = true,
                 showActions = false,
                 showAssemblySelection = false,

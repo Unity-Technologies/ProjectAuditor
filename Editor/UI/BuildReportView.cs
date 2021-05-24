@@ -14,31 +14,6 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         readonly Draw2D m_2D;
 
-        private const string k_StringAssets = "Assets";
-        private const string k_StringByteData = "Byte data";
-        private const string k_StringFonts = "Fonts";
-        private const string k_StringMaterials = "Materials";
-        private const string k_StringModels = "Models";
-        private const string k_StringPrefabs = "Prefabs";
-        private const string k_StringShaders = "Shaders";
-        private const string k_StringTextures = "Textures";
-        private const string k_StringOtherTypes = "Other types";
-
-        readonly Dictionary<string, string> m_AssetTypeLabels = new Dictionary<string, string>()
-        {
-            { ".asset", k_StringAssets },
-            { ".compute", k_StringShaders },
-            { ".shader", k_StringShaders },
-            { ".png", k_StringTextures },
-            { ".tga", k_StringTextures },
-            { ".exr", k_StringTextures },
-            { ".mat", k_StringMaterials },
-            { ".fbx", k_StringModels },
-            { ".ttf", k_StringFonts },
-            { ".bytes", k_StringByteData },
-            { ".prefab", k_StringPrefabs },
-        };
-
         struct GroupStats
         {
             public string assetGroup;
@@ -58,16 +33,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             base.AddIssues(allIssues);
             if (m_Desc.category == IssueCategory.BuildFiles)
             {
-                //var stats = new Dictionary<string, GroupStats>();
-                var list = m_Issues.GroupBy(i =>
-                {
-                    var ext = i.location.Extension;
-                    if (m_AssetTypeLabels.ContainsKey(ext))
-                        return m_AssetTypeLabels[ext];
-                    return k_StringOtherTypes;
-                }).Select(g => new GroupStats
+                var list = m_Issues.GroupBy(i => i.descriptor).Select(g => new GroupStats
                     {
-                        assetGroup = g.Key,
+                        assetGroup = g.Key.description,
                         count = g.Count(),
                         size = g.Sum(s => s.GetCustomPropertyAsInt(BuildReportFileProperty.Size))
                     }).ToList();
@@ -131,7 +99,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var groupSize = group.size;
                         EditorGUILayout.BeginHorizontal();
 
-                        EditorGUILayout.LabelField(string.Format("{0} ({1}):", group.assetGroup, group.count), GUILayout.Width(200));
+                        EditorGUILayout.LabelField(string.Format("{0}:", group.assetGroup, group.count), GUILayout.Width(200));
 
                         var rect = EditorGUILayout.GetControlRect(GUILayout.Width(width));
                         if (m_2D.DrawStart(rect))
