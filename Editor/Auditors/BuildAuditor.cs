@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Area.BuildSize
             );
 
-        private static readonly ProblemDescriptor k_InfoDescriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor k_InfoDescriptor = new ProblemDescriptor
             (
             600001,
             "Build step info"
