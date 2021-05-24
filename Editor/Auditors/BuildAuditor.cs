@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         static readonly ProblemDescriptor k_AssetDescriptor = new ProblemDescriptor
         (
             600003,
-            "Assets",
+            "Asset",
             Area.BuildSize
         );
 
@@ -69,42 +69,42 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         static readonly ProblemDescriptor k_FontDescriptor = new ProblemDescriptor
         (
             600004,
-            "Fonts",
+            "Font",
             Area.BuildSize
         );
 
         static readonly ProblemDescriptor k_MaterialDescriptor = new ProblemDescriptor
         (
             600005,
-            "Materials",
+            "Material",
             Area.BuildSize
         );
 
         static readonly ProblemDescriptor k_ModelDescriptor = new ProblemDescriptor
         (
             600006,
-            "Models",
+            "Model",
             Area.BuildSize
         );
 
         static readonly ProblemDescriptor k_PrefabDescriptor = new ProblemDescriptor
         (
             600007,
-            "Prefabs",
+            "Prefab",
             Area.BuildSize
         );
 
         static readonly ProblemDescriptor k_ShaderDescriptor = new ProblemDescriptor
         (
             600008,
-            "Shaders",
+            "Shader",
             Area.BuildSize
         );
 
         static readonly ProblemDescriptor k_TextureDescriptor = new ProblemDescriptor
         (
             600009,
-            "Textures",
+            "Texture",
             Area.BuildSize
         );
 
