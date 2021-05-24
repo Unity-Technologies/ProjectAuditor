@@ -140,7 +140,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         }
 
 #if BUILD_REPORT_API_SUPPORTED
-        private static void AnalyzeBuildSteps(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
+        void AnalyzeBuildSteps(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
         {
             foreach (var step in buildReport.steps)
             {
@@ -175,7 +175,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
-        private static void AnalyzePackedAssets(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
+        void AnalyzePackedAssets(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
         {
             foreach (var packedAsset in buildReport.packedAssets)
             {
