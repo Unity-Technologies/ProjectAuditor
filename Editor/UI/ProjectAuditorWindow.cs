@@ -433,8 +433,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 type = typeof(BuildReportView),
                 category = IssueCategory.BuildFiles,
-                name = "Build Files",
-                menuLabel = "Build Report/Files",
+                name = "Build Size",
+                menuLabel = "Build Report/Size",
                 menuOrder = 101,
                 groupByDescriptor = false,
                 descriptionWithIcon = true,
@@ -1208,7 +1208,7 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...), by str
             public static readonly GUIContent Shaders = new GUIContent("Shaders", "Inspect Shaders");
             public static readonly GUIContent ShaderVariantsButton = new GUIContent("Variants", "Inspect Shader Variants");
 
-            public static readonly GUIContent BuildFiles = new GUIContent("Build Files");
+            public static readonly GUIContent BuildFiles = new GUIContent("Build Size");
             public static readonly GUIContent BuildSteps = new GUIContent("Build Steps");
         }
 
