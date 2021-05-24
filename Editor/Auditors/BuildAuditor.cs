@@ -1,3 +1,7 @@
+#if UNITY_2019_4_OR_NEWER
+    #define BUILD_REPORT_API_SUPPORTED
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
     class BuildAuditor : IAuditor, IPostprocessBuildWithReport
     {
-        private static readonly ProblemDescriptor k_InfoDescriptor = new ProblemDescriptor
+        static readonly ProblemDescriptor k_InfoDescriptor = new ProblemDescriptor
             (
             600000,
             "Build step info"
@@ -156,10 +160,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             hierarchy = true
         };
 
-        static BuildReport s_BuildReport;
+        const string k_BuildReportDir = "Assets/BuildReports";
+        const string k_LastBuildReportPath = "Library/LastBuild.buildreport";
 
-        const string s_BuildReportDir = "Assets/BuildReports";
-        const string s_LastBuildReportPath = "Library/LastBuild.buildreport";
+        static BuildReport s_BuildReport;
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -190,7 +194,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public bool IsSupported()
         {
-#if UNITY_2019_4_OR_NEWER
+#if BUILD_REPORT_API_SUPPORTED
             return true;
 #else
             return false;
@@ -203,7 +207,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null)
         {
-#if UNITY_2019_4_OR_NEWER
+#if BUILD_REPORT_API_SUPPORTED
             var buildReport = GetBuildReport();
             if (buildReport != null)
             {
@@ -215,8 +219,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 onComplete();
         }
 
-#if UNITY_2019_4_OR_NEWER
-        private void AnalyzeBuildSteps(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
+#if BUILD_REPORT_API_SUPPORTED
+        void AnalyzeBuildSteps(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
         {
             foreach (var step in buildReport.steps)
             {
@@ -251,7 +255,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
-        private void AnalyzePackedAssets(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
+        void AnalyzePackedAssets(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
         {
             foreach (var packedAsset in buildReport.packedAssets)
             {
@@ -315,17 +319,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (s_BuildReport != null)
                 return s_BuildReport;
 
-            if (!Directory.Exists(s_BuildReportDir))
-                Directory.CreateDirectory(s_BuildReportDir);
+            if (!Directory.Exists(k_BuildReportDir))
+                Directory.CreateDirectory(k_BuildReportDir);
 
-            var date = File.GetLastWriteTime(s_LastBuildReportPath);
-            var assetPath = s_BuildReportDir + "/Build_" + date.ToString("yyyy-MM-dd-HH-mm-ss") + ".buildreport";
+            var date = File.GetLastWriteTime(k_LastBuildReportPath);
+            var assetPath = k_BuildReportDir + "/Build_" + date.ToString("yyyy-MM-dd-HH-mm-ss") + ".buildreport";
 
             if (!File.Exists(assetPath))
             {
-                if (!File.Exists(s_LastBuildReportPath))
+                if (!File.Exists(k_LastBuildReportPath))
                     return null; // the project was never built
-                File.Copy(s_LastBuildReportPath, assetPath, true);
+                File.Copy(k_LastBuildReportPath, assetPath, true);
                 AssetDatabase.ImportAsset(assetPath);
             }
             s_BuildReport = AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
