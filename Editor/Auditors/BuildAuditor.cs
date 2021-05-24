@@ -91,6 +91,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
+            yield return k_InfoDescriptor;
+            yield return k_WarnDescriptor;
+            yield return k_ErrorDescriptor;
+
             yield return k_Descriptor;
         }
 
