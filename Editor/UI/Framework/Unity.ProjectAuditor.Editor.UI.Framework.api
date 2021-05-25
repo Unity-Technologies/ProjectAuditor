@@ -1,6 +1,16 @@
 // This file is generated. Do not modify by hand.
 // XML documentation file not found. To check if public methods have XML comments,
 // make sure the XML doc file is present and located next to the scraped dll
+namespace Editor.UI.Framework
+{
+    public class ViewManager
+    {
+        public ViewManager(Unity.ProjectAuditor.Editor.IssueCategory[] categories) {}
+        public void Create(Unity.ProjectAuditor.Editor.ProjectAuditor projectAuditor, Unity.ProjectAuditor.Editor.UI.Framework.Preferences preferences, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
+        public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetActiveView();
+    }
+}
+
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class AnalysisView
