@@ -27,7 +27,49 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Num
     }
 
-    class BuildAuditor : IAuditor, IPostprocessBuildWithReport
+    public interface IBuildReportProvider
+    {
+        BuildReport GetBuildReport();
+    }
+
+    class LastBuildReportProvider : IBuildReportProvider, IPostprocessBuildWithReport
+    {
+        const string k_BuildReportDir = "Assets/BuildReports";
+        const string k_LastBuildReportPath = "Library/LastBuild.buildreport";
+
+        static BuildReport s_BuildReport;
+
+        public BuildReport GetBuildReport()
+        {
+            if (s_BuildReport != null)
+                return s_BuildReport;
+
+            if (!Directory.Exists(k_BuildReportDir))
+                Directory.CreateDirectory(k_BuildReportDir);
+
+            var date = File.GetLastWriteTime(k_LastBuildReportPath);
+            var assetPath = k_BuildReportDir + "/Build_" + date.ToString("yyyy-MM-dd-HH-mm-ss") + ".buildreport";
+
+            if (!File.Exists(assetPath))
+            {
+                if (!File.Exists(k_LastBuildReportPath))
+                    return null; // the project was never built
+                File.Copy(k_LastBuildReportPath, assetPath, true);
+                AssetDatabase.ImportAsset(assetPath);
+            }
+            s_BuildReport = AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
+            return s_BuildReport;
+        }
+
+        public int callbackOrder { get; }
+        public void OnPostprocessBuild(BuildReport report)
+        {
+            s_BuildReport = report;
+        }
+    }
+
+    public // TEMP
+    class BuildAuditor : IAuditor
     {
         static readonly ProblemDescriptor k_InfoDescriptor = new ProblemDescriptor
             (
@@ -160,10 +202,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             hierarchy = true
         };
 
-        const string k_BuildReportDir = "Assets/BuildReports";
-        const string k_LastBuildReportPath = "Library/LastBuild.buildreport";
+        static IBuildReportProvider m_BuildReportProvider;
+        static IBuildReportProvider m_DefaultBuildReportProvider = new LastBuildReportProvider();
 
-        static BuildReport s_BuildReport;
+        public static IBuildReportProvider BuildReportProvider
+        {
+            get { return m_BuildReportProvider != null ? m_BuildReportProvider : m_DefaultBuildReportProvider;  }
+            set { m_BuildReportProvider = value;  }
+        }
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -208,7 +254,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null)
         {
 #if BUILD_REPORT_API_SUPPORTED
-            var buildReport = GetBuildReport();
+            var buildReport = BuildReportProvider.GetBuildReport();
             if (buildReport != null)
             {
                 AnalyzeBuildSteps(onIssueFound, buildReport);
@@ -313,33 +359,5 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         }
 
 #endif
-
-        public static BuildReport GetBuildReport()
-        {
-            if (s_BuildReport != null)
-                return s_BuildReport;
-
-            if (!Directory.Exists(k_BuildReportDir))
-                Directory.CreateDirectory(k_BuildReportDir);
-
-            var date = File.GetLastWriteTime(k_LastBuildReportPath);
-            var assetPath = k_BuildReportDir + "/Build_" + date.ToString("yyyy-MM-dd-HH-mm-ss") + ".buildreport";
-
-            if (!File.Exists(assetPath))
-            {
-                if (!File.Exists(k_LastBuildReportPath))
-                    return null; // the project was never built
-                File.Copy(k_LastBuildReportPath, assetPath, true);
-                AssetDatabase.ImportAsset(assetPath);
-            }
-            s_BuildReport = AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
-            return s_BuildReport;
-        }
-
-        public int callbackOrder { get; }
-        public void OnPostprocessBuild(BuildReport report)
-        {
-            s_BuildReport = report;
-        }
     }
 }

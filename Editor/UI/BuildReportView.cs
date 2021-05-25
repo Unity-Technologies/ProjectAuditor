@@ -24,10 +24,13 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         GroupStats[] m_GroupStats;
 
+        IBuildReportProvider m_BuildReportProvider;
+
         public BuildReportView(ViewManager viewManager) :
             base(viewManager)
         {
             m_2D = new Draw2D("Unlit/ProjectAuditor");
+            m_BuildReportProvider = BuildAuditor.BuildReportProvider;
         }
 
         public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
@@ -55,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         protected override void OnDrawInfo()
         {
-            var report = BuildAuditor.GetBuildReport();
+            var report = m_BuildReportProvider.GetBuildReport();
             if (report == null)
             {
                 EditorGUILayout.LabelField("Build Report summary not found");
