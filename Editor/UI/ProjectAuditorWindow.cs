@@ -133,8 +133,16 @@ namespace Unity.ProjectAuditor.Editor.UI
             Array.Sort(viewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
 
             m_ViewDropdownItems = new Utility.DropdownItem[viewDescriptors.Length];
-            if (m_ViewManager == null)
+            if (m_ViewManager == null || !m_ViewManager.IsValid())
                 m_ViewManager = new ViewManager(viewDescriptors.Select(d => d.category).ToArray());
+            m_ViewManager.onViewChanged += i =>
+            {
+                ProjectAuditorAnalytics.SendUIButtonEvent((ProjectAuditorAnalytics.UIButton)m_ViewManager.GetView(i).desc.analyticsEvent, ProjectAuditorAnalytics.BeginAnalytic());
+            };
+            m_ViewManager.onViewExported += () =>
+            {
+                ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Export, ProjectAuditorAnalytics.BeginAnalytic());
+            };
             m_ViewManager.Create(m_ProjectAuditor, m_Preferences, this, (desc, isSupported) =>
             {
                 var index = Array.IndexOf(viewDescriptors, desc);

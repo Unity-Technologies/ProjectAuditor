@@ -21,11 +21,17 @@ namespace Editor.UI.Framework
             set { m_ActiveViewIndex = value;  }
         }
 
+        public Action onViewExported;
         public Action<int> onViewChanged;
 
         public ViewManager(IssueCategory[] categories)
         {
             m_Categories = categories;
+        }
+
+        public bool IsValid()
+        {
+            return m_Categories != null && m_Categories.Length > 0;
         }
 
         public void AddIssues(ProjectIssue[] issues)
@@ -102,6 +108,11 @@ namespace Editor.UI.Framework
             return m_Views[m_ActiveViewIndex];
         }
 
+        public AnalysisView GetView(int index)
+        {
+            return m_Views[index];
+        }
+
         public AnalysisView GetView(IssueCategory category)
         {
             return m_Views.FirstOrDefault(v => v.desc.category == category);
@@ -126,8 +137,6 @@ namespace Editor.UI.Framework
                 var activeView = m_Views[m_ActiveViewIndex];
 
                 activeView.Refresh();
-
-                ProjectAuditorAnalytics.SendUIButtonEvent((ProjectAuditorAnalytics.UIButton)activeView.desc.analyticsEvent, ProjectAuditorAnalytics.BeginAnalytic());
 
                 if (onViewChanged != null)
                     onViewChanged(m_ActiveViewIndex);

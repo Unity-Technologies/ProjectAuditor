@@ -365,7 +365,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 "csv");
             if (path.Length != 0)
             {
-                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                 using (var exporter = new Exporter(path, m_Layout))
                 {
                     exporter.WriteHeader();
@@ -377,7 +376,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 EditorUtility.RevealInFinder(path);
 
-                ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Export, analytic);
+                if (m_ViewManager.onViewExported != null)
+                    m_ViewManager.onViewExported();
 
                 s_ExportDirectory = Path.GetDirectoryName(path);
             }
