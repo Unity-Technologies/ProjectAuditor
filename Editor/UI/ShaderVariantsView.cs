@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.Utils;
 using Unity.ProjectAuditor.Editor.UI.Framework;
@@ -154,6 +155,10 @@ The number of Variants contributes to the build size, however, there might be Va
             if (!compiled && m_ShowUncompiledVariants)
                 return true;
             return false;
+        }
+
+        public ShaderVariantsView(ViewManager viewManager) : base(viewManager)
+        {
         }
     }
 }

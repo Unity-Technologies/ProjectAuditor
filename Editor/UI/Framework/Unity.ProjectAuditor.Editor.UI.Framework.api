@@ -5,9 +5,18 @@ namespace Editor.UI.Framework
 {
     public class ViewManager
     {
+        public System.Action<int> onViewChanged;
+        public int activeViewIndex { get; set; }
         public ViewManager(Unity.ProjectAuditor.Editor.IssueCategory[] categories) {}
-        public void Create(Unity.ProjectAuditor.Editor.ProjectAuditor projectAuditor, Unity.ProjectAuditor.Editor.UI.Framework.Preferences preferences, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
+        public void AddIssues(Unity.ProjectAuditor.Editor.ProjectIssue[] issues);
+        public void Audit(Unity.ProjectAuditor.Editor.ProjectAuditor projectAuditor);
+        public void ChangeView(int index);
+        public void ChangeView(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public void Clear();
+        public void ClearView(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public void Create(Unity.ProjectAuditor.Editor.ProjectAuditor projectAuditor, Unity.ProjectAuditor.Editor.UI.Framework.Preferences preferences, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter, System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor, bool> onCreateView = default(System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor, bool>));
         public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetActiveView();
+        public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(Unity.ProjectAuditor.Editor.IssueCategory category);
     }
 }
 
@@ -20,11 +29,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_Filter;
         protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.ProjectIssue> m_Issues;
         protected Unity.ProjectAuditor.Editor.UI.Framework.Preferences m_Preferences;
-        public static System.Action<Unity.ProjectAuditor.Editor.IssueCategory> OnChangeView;
+        protected Editor.UI.Framework.ViewManager m_ViewManager;
         protected static Unity.ProjectAuditor.Editor.ProjectReport s_Report;
         public Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor desc { get; }
         protected int numIssues { get; }
-        public AnalysisView() {}
+        public AnalysisView(Editor.UI.Framework.ViewManager viewManager) {}
         public virtual void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
         public virtual void Clear();
         public virtual void Create(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueLayout layout, Unity.ProjectAuditor.Editor.ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.UI.Framework.Preferences prefs, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
@@ -238,7 +247,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public int menuOrder;
         public string name;
         public System.Action<Unity.ProjectAuditor.Editor.Utils.Location> onDoubleClick;
-        public System.Action onDrawToolbarDataOptions;
+        public System.Action<Editor.UI.Framework.ViewManager> onDrawToolbarDataOptions;
         public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenDescriptor;
         public bool showActions;
         public bool showAreaSelection;
