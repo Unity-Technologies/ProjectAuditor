@@ -197,7 +197,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var columnType = property.type;
 
             // indent first column, if necessary
-            if (m_Desc.groupByDescriptor && columnIndex == 0)
+            if (m_Desc.groupByDescriptor && columnIndex == 0 && !m_FlatView)
             {
                 var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
