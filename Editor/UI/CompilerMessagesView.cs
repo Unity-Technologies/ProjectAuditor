@@ -1,3 +1,4 @@
+using Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -8,6 +9,10 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         const string k_Info = "This view shows the compiler error, warning and info messages.";
         const string k_NotAvailable = "This view is not available when 'AnalyzeEditorCode' is enabled.";
+
+        public CompilerMessagesView(ViewManager viewManager) : base(viewManager)
+        {
+        }
 
         protected override void OnDrawInfo()
         {

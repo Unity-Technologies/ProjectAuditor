@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -14,8 +15,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     public class AnalysisView
     {
         static string s_ExportDirectory = string.Empty;
-
-        public static Action<IssueCategory> OnChangeView;
 
         protected static ProjectReport s_Report;
 
@@ -31,6 +30,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected ViewDescriptor m_Desc;
         protected IProjectIssueFilter m_Filter;
         protected List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+        protected ViewManager m_ViewManager;
 
         DependencyView m_DependencyView;
         bool m_FlatView;
@@ -53,6 +53,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         internal IssueTable table
         {
             get { return m_Table; }
+        }
+
+        public AnalysisView(ViewManager viewManager)
+        {
+            m_ViewManager = viewManager;
         }
 
         public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
@@ -275,7 +280,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         void DrawDataOptions()
         {
             if (m_Desc.onDrawToolbarDataOptions != null)
-                m_Desc.onDrawToolbarDataOptions();
+                m_Desc.onDrawToolbarDataOptions(m_ViewManager);
 
             if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
                 OnExport, GUILayout.Width(80)))

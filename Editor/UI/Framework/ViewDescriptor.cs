@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
@@ -26,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
         public Action<Location> onDoubleClick;
-        public Action onDrawToolbarDataOptions;
+        public Action<ViewManager> onDrawToolbarDataOptions;
         public Action<ProblemDescriptor> onOpenDescriptor;
         public int analyticsEvent;
 
