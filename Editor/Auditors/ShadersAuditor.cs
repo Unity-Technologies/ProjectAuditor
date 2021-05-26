@@ -1,6 +1,3 @@
-#if UNITY_2018_2_OR_NEWER
-using UnityEditor.Build.Reporting;
-#endif
 using System;
 using System.Collections.Generic;
 using System.IO;
