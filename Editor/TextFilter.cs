@@ -52,9 +52,9 @@ namespace Unity.ProjectAuditor.Editor
                     return true;
             }
             if (recursive)
-                for (var i = 0; i < callTreeNode.GetNumChildren(); i++)
+                for (var i = 0; i < node.GetNumChildren(); i++)
                 {
-                    if (MatchesSearch(callTreeNode.GetChild(i), true))
+                    if (MatchesSearch(node.GetChild(i), true))
                         return true;
                 }
 
