@@ -578,9 +578,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisState = AnalysisState.Valid;
 
                 if (m_LoadButtonAnalytic != null)
-                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Load, m_LoadButtonAnalytic);
+                    ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Load, m_LoadButtonAnalytic);
                 if (m_AnalyzeButtonAnalytic != null)
-                    ProjectAuditorAnalytics.SendUIButtonEventWithAnalyzeSummary(ProjectAuditorAnalytics.UIButton.Analyze, m_AnalyzeButtonAnalytic, m_ProjectReport);
+                    ProjectAuditorAnalytics.SendEventWithAnalyzeSummary(ProjectAuditorAnalytics.UIButton.Analyze, m_AnalyzeButtonAnalytic, m_ProjectReport);
             }
 
             activeView.Refresh();
@@ -624,7 +624,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 activeView.Refresh();
 
-                ProjectAuditorAnalytics.SendUIButtonEvent((ProjectAuditorAnalytics.UIButton)activeView.desc.analyticsEvent, ProjectAuditorAnalytics.BeginAnalytic());
+                ProjectAuditorAnalytics.SendEvent((ProjectAuditorAnalytics.UIButton)activeView.desc.analyticsEvent, ProjectAuditorAnalytics.BeginAnalytic());
             }
         }
 
@@ -673,7 +673,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             m_AssemblyNames);
                     }
 
-                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.AssemblySelect,
+                    ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.AssemblySelect,
                         analytic);
                 }
             }
@@ -726,7 +726,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             AreaNames);
                     }
 
-                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.AreaSelect, analytic);
+                    ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.AreaSelect, analytic);
                 }
 
                 GUI.enabled = lastEnabled;
@@ -791,7 +791,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                     var payload = new Dictionary<string, string>();
                     payload["selected"] = activeView.desc.showCritical ? "true" : "false";
-                    ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues,
+                    ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues,
                         analytic);
                 }
 
@@ -805,7 +805,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                     var payload = new Dictionary<string, string>();
                     payload["selected"] = m_Preferences.mutedIssues ? "true" : "false";
-                    ProjectAuditorAnalytics.SendUIButtonEventWithKeyValues(ProjectAuditorAnalytics.UIButton.ShowMuted,
+                    ProjectAuditorAnalytics.SendEventWithKeyValues(ProjectAuditorAnalytics.UIButton.ShowMuted,
                         analytic, payload);
                 }
 
@@ -856,7 +856,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         table.SetSelection(new List<int>());
                     }
 
-                    ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
+                    ProjectAuditorAnalytics.SendEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
                         analytic, table.GetSelectedItems());
                 }
 
@@ -869,7 +869,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         ClearRulesForItem(item);
                     }
 
-                    ProjectAuditorAnalytics.SendUIButtonEventWithSelectionSummary(
+                    ProjectAuditorAnalytics.SendEventWithSelectionSummary(
                         ProjectAuditorAnalytics.UIButton.Unmute, analytic, table.GetSelectedItems());
                 }
 
@@ -1089,7 +1089,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_SaveLoadDirectory = Path.GetDirectoryName(path);
 
                 EditorUtility.RevealInFinder(path);
-                ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Save, ProjectAuditorAnalytics.BeginAnalytic());
+                ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Save, ProjectAuditorAnalytics.BeginAnalytic());
             }
         }
 

@@ -372,7 +372,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 EditorUtility.RevealInFinder(path);
 
-                ProjectAuditorAnalytics.SendUIButtonEvent(ProjectAuditorAnalytics.UIButton.Export, analytic);
+                ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Export, analytic);
 
                 s_ExportDirectory = Path.GetDirectoryName(path);
             }
