@@ -46,6 +46,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             ProjectSettings,
             Assets,
             Shaders,
+            ShaderVariants,
             Generics,
             BuildFiles,
             Summary,
@@ -155,13 +156,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 case UIButton.Export:
                     return "export_button_click";
                 case UIButton.Summary:
-                    return "api_summary";
+                    return "summary_tab";
                 case UIButton.ApiCalls:
                     return "api_tab";
                 case UIButton.Assets:
                     return "assets_tab";
                 case UIButton.Shaders:
                     return "shaders_tab";
+                case UIButton.ShaderVariants:
+                    return "shader_variants_tab";
                 case UIButton.ProjectSettings:
                     return "settings_tab";
                 case UIButton.Generics:

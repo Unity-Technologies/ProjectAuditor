@@ -316,7 +316,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         Instance.SelectView(IssueCategory.Shaders);
                     }
                 },
-                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Shaders
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderVariants
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
