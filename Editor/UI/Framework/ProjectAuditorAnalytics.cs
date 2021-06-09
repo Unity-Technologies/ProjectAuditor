@@ -41,18 +41,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             OnlyCriticalIssues,
             Load,
             Save,
-
-            ApiCalls = 100,
+            // views
+            Summary,
+            ApiCalls,
+            CodeCompilerMessages,
+            Generics,
             ProjectSettings,
             Assets,
             Shaders,
             ShaderVariants,
-            Generics,
             BuildFiles,
-            Summary,
-            CodeCompilerMessages,
-            Assemblies,
             BuildSteps,
+            Assemblies,
         }
 
         // -------------------------------------------------------------------------------------------------------------
