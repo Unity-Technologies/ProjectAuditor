@@ -112,10 +112,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     {
         public static Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic BeginAnalytic();
         public static void EnableAnalytics();
-        public static bool SendUIButtonEvent(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic);
-        public static bool SendUIButtonEventWithAnalyzeSummary(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic, Unity.ProjectAuditor.Editor.ProjectReport projectReport);
-        public static bool SendUIButtonEventWithKeyValues(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic, System.Collections.Generic.Dictionary<string, string> payload);
-        public static bool SendUIButtonEventWithSelectionSummary(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic, Unity.ProjectAuditor.Editor.UI.Framework.IssueTableItem[] selectedItems);
+        public static bool SendEvent(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic);
+        public static bool SendEventWithAnalyzeSummary(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic, Unity.ProjectAuditor.Editor.ProjectReport projectReport);
+        public static bool SendEventWithKeyValues(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic, System.Collections.Generic.Dictionary<string, string> payload);
+        public static bool SendEventWithSelectionSummary(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic, Unity.ProjectAuditor.Editor.UI.Framework.IssueTableItem[] selectedItems);
         public class Analytic
         {
             public Analytic() {}
@@ -134,26 +134,27 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public enum UIButton
         {
             public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Analyze = 0;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton ApiCalls = 100;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton ApiCalls = 13;
             public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton AreaSelect = 4;
             public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton AreaSelectApply = 5;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Assemblies = 108;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Assemblies = 22;
             public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton AssemblySelect = 2;
             public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton AssemblySelectApply = 3;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Assets = 102;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton BuildFiles = 105;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton BuildSteps = 109;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton CodeCompilerMessages = 107;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Assets = 17;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton BuildFiles = 20;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton BuildSteps = 21;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton CodeCompilerMessages = 14;
             public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Export = 1;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Generics = 104;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Generics = 15;
             public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Load = 10;
             public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Mute = 6;
             public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton OnlyCriticalIssues = 9;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton ProjectSettings = 101;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton ProjectSettings = 16;
             public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Save = 11;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Shaders = 103;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Shaders = 18;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton ShaderVariants = 19;
             public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton ShowMuted = 8;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Summary = 106;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Summary = 12;
             public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Unmute = 7;
             public int value__;
         }
