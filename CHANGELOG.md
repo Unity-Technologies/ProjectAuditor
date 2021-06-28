@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-* Fixed *NullReferenceException* when searching Call Tree on Resources view 
+* Fixed *NullReferenceException* when searching Call Tree on Resources view
+* Fixed Player.log parsing if a shader name contains commas
 
 ## [0.6.2-preview] - 2021-05-25
 * Added Assemblies view (experimental)

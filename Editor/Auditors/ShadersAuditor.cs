@@ -341,11 +341,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             foreach (var line in lines)
             {
-                var parts = line.Split(',');
+                var parts = line.Split(new[] {", pass: ", ", stage: ", ", keywords "}, StringSplitOptions.None);
+                if (parts.Length != 4)
+                {
+                    Debug.LogError("Malformed shader compilation log info: " + line);
+                    continue;
+                }
+
                 var shaderName = parts[0];
-                var pass = parts[1].Trim(' ').Substring("pass: ".Length);
-                var stage = parts[2].Trim(' ').Substring("stage: ".Length);
-                var keywordsString = parts[3].Trim(' ').Substring("keywords ".Length); // note that the log is missing ':'
+                var pass = parts[1];
+                var stage = parts[2];
+                var keywordsString = parts[3];
                 var keywords = StringToKeywords(keywordsString);
 
                 if (!stage.Equals("fragment") && !stage.Equals("pixel") && !stage.Equals("all"))
