@@ -18,6 +18,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         static MethodInfo s_MethodGetShaderActiveSubshaderIndex;
         static MethodInfo s_MethodGetSRPBatcherCompatibilityCode;
         static MethodInfo s_MethodHasInstancing;
+        static MethodInfo s_MethodHasSurfaceShaders;
 #pragma warning restore 0414
 
         static string[] s_ShaderPlatformNames;
@@ -32,6 +33,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             s_MethodGetShaderVariantCount = s_TypeShaderUtil.GetMethod("GetVariantCount", BindingFlags.Static | BindingFlags.NonPublic);
             s_MethodGetSRPBatcherCompatibilityCode = s_TypeShaderUtil.GetMethod("GetSRPBatcherCompatibilityCode", BindingFlags.Static | BindingFlags.NonPublic);
             s_MethodHasInstancing = s_TypeShaderUtil.GetMethod("HasInstancing", BindingFlags.Static | BindingFlags.NonPublic);
+            s_MethodHasSurfaceShaders = s_TypeShaderUtil.GetMethod("HasSurfaceShaders", BindingFlags.Static | BindingFlags.NonPublic);
 
             var platformMask = (int)s_MethodGetAvailableShaderCompilerPlatforms.Invoke(null, new object[] { });
             var names = new List<string>();
@@ -122,6 +124,17 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 return false;
 
             return (bool)s_MethodHasInstancing.Invoke(null, new object[] { shader});
+        }
+
+        public static bool HasSurfaceShaders(Shader shader)
+        {
+            if (s_TypeShaderUtil == null)
+                Init();
+
+            if (s_MethodHasSurfaceShaders == null)
+                return false;
+
+            return (bool)s_MethodHasSurfaceShaders.Invoke(null, new object[] { shader});
         }
     }
 }
