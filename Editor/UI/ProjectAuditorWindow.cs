@@ -507,7 +507,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     m_ShouldRefresh = true;
                 },
-                new ProgressBarDisplay()
+                new ProgressBar()
             );
         }
 
@@ -537,7 +537,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 () =>
                 {
                 },
-                new ProgressBarDisplay()
+                new ProgressBar()
             );
 
             // update views

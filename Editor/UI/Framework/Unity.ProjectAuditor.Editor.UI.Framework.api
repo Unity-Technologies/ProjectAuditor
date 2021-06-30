@@ -100,12 +100,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Preferences() {}
     }
 
-    public class ProgressBarDisplay : Unity.ProjectAuditor.Editor.IProgressBar
+    public class ProgressBar : Unity.ProjectAuditor.Editor.IProgress
     {
-        public ProgressBarDisplay() {}
-        public virtual void AdvanceProgressBar(string description = );
-        public virtual void ClearProgressBar();
-        public virtual void Initialize(string title, string description, int total);
+        public ProgressBar() {}
+        public virtual void Advance(string description = );
+        public virtual void Clear();
+        public virtual void Start(string title, string description, int total);
     }
 
     public static class ProjectAuditorAnalytics

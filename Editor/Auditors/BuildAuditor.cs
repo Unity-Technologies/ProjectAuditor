@@ -205,7 +205,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
 #if BUILD_REPORT_API_SUPPORTED
             var buildReport = GetBuildReport();

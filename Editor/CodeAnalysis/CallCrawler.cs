@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             }
         }
 
-        public void BuildCallHierarchies(List<ProjectIssue> issues, IProgressBar progressBar = null)
+        public void BuildCallHierarchies(List<ProjectIssue> issues, IProgress progress = null)
         {
             foreach (var entry in m_CallPairs)
             {
@@ -45,13 +45,13 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             {
                 Profiler.BeginSample("CallCrawler.BuildCallHierarchies");
 
-                if (progressBar != null)
-                    progressBar.Initialize("Analyzing Scripts", "Analyzing call trees", issues.Count);
+                if (progress != null)
+                    progress.Start("Analyzing Scripts", "Analyzing call trees", issues.Count);
 
                 foreach (var issue in issues)
                 {
-                    if (progressBar != null)
-                        progressBar.AdvanceProgressBar();
+                    if (progress != null)
+                        progress.Advance();
 
                     const int depth = 0;
                     var callTree = issue.dependencies;
@@ -63,8 +63,8 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                         issue.location = callTree.GetChild().location;
                     }
                 }
-                if (progressBar != null)
-                    progressBar.ClearProgressBar();
+                if (progress != null)
+                    progress.Clear();
 
                 Profiler.EndSample();
             }
