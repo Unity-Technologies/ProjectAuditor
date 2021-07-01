@@ -212,7 +212,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Table.OnGUI(r);
             Profiler.EndSample();
 
-            var info = selectedIssues.Length + " / " + m_Table.GetNumMatchingIssues() + " Items";
+            var info = selectedIssues.Length + " / " + m_Table.GetNumMatchingIssues() + " Items selected";
             EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
 
             EditorGUILayout.EndVertical();
