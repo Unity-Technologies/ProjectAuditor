@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Num
     }
 
-    class ScriptAuditor : IAuditor
+    class CodeModule : IProjectAuditorModule
     {
         static readonly ProblemDescriptor k_AssemblyDescriptor = new ProblemDescriptor
             (

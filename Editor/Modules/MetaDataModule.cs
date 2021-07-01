@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Num
     }
 
-    class MetaDataAuditor : IAuditor
+    class MetaDataModule : IProjectAuditorModule
     {
         static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
             (

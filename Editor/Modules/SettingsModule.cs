@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
-    class SettingsAuditor : IAuditor
+    class SettingsModule : IProjectAuditorModule
     {
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {

@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         Dictionary<string, ProblemDescriptor> m_GenericDescriptors = new Dictionary<string, ProblemDescriptor>();
 
-        public void Initialize(IAuditor auditor)
+        public void Initialize(IProjectAuditorModule module)
         {
         }
 

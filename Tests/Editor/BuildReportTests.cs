@@ -28,7 +28,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         public void BuildReportIsSupported()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var auditor = projectAuditor.GetAuditor<BuildAuditor>();
+            var auditor = projectAuditor.GetAuditor<BuildReportModule>();
             var isSupported = auditor.IsSupported();
 #if UNITY_2019_4_OR_NEWER
             Assert.True(isSupported);

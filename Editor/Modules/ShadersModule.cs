@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public string[] keywords;
     }
 
-    class ShadersAuditor : IAuditor
+    class ShadersModule : IProjectAuditorModule
 #if UNITY_2018_2_OR_NEWER
         , IPreprocessShaders
 #endif

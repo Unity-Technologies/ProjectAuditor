@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         static string s_DataPath;
 
-        readonly List<IAuditor> m_Auditors = new List<IAuditor>();
+        readonly List<IProjectAuditorModule> m_Auditors = new List<IProjectAuditorModule>();
         ProjectAuditorConfig m_Config;
 
         public const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
@@ -76,9 +76,9 @@ namespace Unity.ProjectAuditor.Editor
 
         void InitAuditors()
         {
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IAuditor)))
+            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IProjectAuditorModule)))
             {
-                var instance = Activator.CreateInstance(type) as IAuditor;
+                var instance = Activator.CreateInstance(type) as IProjectAuditorModule;
                 instance.Initialize(m_Config);
                 m_Auditors.Add(instance);
             }
@@ -165,7 +165,7 @@ namespace Unity.ProjectAuditor.Editor
                 Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
         }
 
-        internal T GetAuditor<T>() where T : class, IAuditor
+        internal T GetAuditor<T>() where T : class, IProjectAuditorModule
         {
             foreach (var auditor in m_Auditors)
             {
@@ -176,7 +176,7 @@ namespace Unity.ProjectAuditor.Editor
             return null;
         }
 
-        internal IAuditor GetAuditor(IssueCategory category)
+        internal IProjectAuditorModule GetAuditor(IssueCategory category)
         {
             return m_Auditors.FirstOrDefault(a => a.IsSupported() && a.GetLayouts().FirstOrDefault(l => l.category == category) != null);
         }

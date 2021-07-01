@@ -513,10 +513,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnPostprocessBuild(BuildTarget target)
         {
-            IncrementalAudit<BuildAuditor>();
+            IncrementalAudit<BuildReportModule>();
         }
 
-        void IncrementalAudit<T>() where T : class, IAuditor
+        void IncrementalAudit<T>() where T : class, IProjectAuditorModule
         {
             if (m_ProjectReport == null)
                 m_ProjectReport = new ProjectReport();
@@ -553,7 +553,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void AnalyzeShaderVariants()
         {
-            IncrementalAudit<ShadersAuditor>();
+            IncrementalAudit<ShadersModule>();
         }
 
         public void ClearShaderVariants()
@@ -562,7 +562,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             ClearView(IssueCategory.ShaderVariants);
 
-            ShadersAuditor.ClearBuildData();
+            ShadersModule.ClearBuildData();
         }
 
         void RefreshDisplay()

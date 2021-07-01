@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             new List<KeyValuePair<string, string>>();
         List<ProblemDescriptor> m_ProblemDescriptors;
 
-        public void Initialize(IAuditor auditor)
+        public void Initialize(IProjectAuditorModule module)
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             m_Assemblies.Add(assemblies.First(a => a.Location.Contains("UnityEngine.dll")));
@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             m_ProblemDescriptors = ProblemDescriptorLoader.LoadFromJson(ProjectAuditor.DataPath, "ProjectSettings");
             foreach (var descriptor in m_ProblemDescriptors)
             {
-                auditor.RegisterDescriptor(descriptor);
+                module.RegisterDescriptor(descriptor);
             }
         }
 

@@ -53,7 +53,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         protected override void OnDrawInfo()
         {
-            var report = BuildAuditor.GetBuildReport();
+            var report = BuildReportModule.GetBuildReport();
             if (report == null)
             {
                 EditorGUILayout.LabelField("Build Report summary not found");

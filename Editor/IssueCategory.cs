@@ -1,4 +1,4 @@
-﻿namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor
 {
     public enum IssueCategory
     {
