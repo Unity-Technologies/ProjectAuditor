@@ -157,6 +157,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             return string.Join(", ", selectedStrings);
         }
+
+        public static GUIContent GetIcon(string name)
+        {
+            return EditorGUIUtility.TrIconContent(ProjectAuditor.PackagePath + "/Editor/Icons/" + name + ".png");
+        }
     }
 
     static class Contents
