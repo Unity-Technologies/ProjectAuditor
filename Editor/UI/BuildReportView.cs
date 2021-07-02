@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     assetGroup = g.Key.description,
                     count = g.Count(),
-                    size = g.Sum(s => s.GetCustomPropertyAsInt(BuildReportFileProperty.Size))
+                    size = g.Sum(s => s.GetCustomPropertyAsLong(BuildReportFileProperty.Size))
                 }).ToList();
                 list.Sort((a, b) => b.size.CompareTo(a.size));
                 m_GroupStats = list.ToArray();
