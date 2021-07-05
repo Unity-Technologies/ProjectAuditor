@@ -511,6 +511,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             );
         }
 
+        private void Update()
+        {
+            if (m_ShouldRefresh)
+                Repaint();
+        }
+
         void OnPostprocessBuild(BuildTarget target)
         {
             IncrementalAudit<BuildAuditor>();

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Fixed *NullReferenceException* when searching Call Tree on Resources view
 * Fixed *OverflowException* on reporting build sizes
 * Fixed Player.log parsing if a shader name contains commas
+* Fixed persistent "Analysis in progress..." message
 
 ## [0.6.2-preview] - 2021-05-25
 * Added Assemblies view (experimental)
