@@ -15,8 +15,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     {
         static readonly int k_FirstId = 1;
 
-        static GUIStyle s_LabelStyle;
-
         readonly ProjectAuditorConfig m_Config;
         readonly ViewDescriptor m_Desc;
         readonly IProjectIssueFilter m_Filter;
@@ -210,15 +208,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 CenterRectUsingSingleLineHeight(ref cellRect);
             }
 
-            if (s_LabelStyle == null)
-                s_LabelStyle = new GUIStyle(EditorStyles.label);
-            s_LabelStyle.fontSize = m_FontSize;
-
+            var labelStyle = SharedStyles.Label;
             var item = treeViewItem as IssueTableItem;
             if (item == null)
             {
                 if (columnType == PropertyType.Description)
-                    EditorGUI.LabelField(cellRect, new GUIContent(treeViewItem.displayName, treeViewItem.displayName), s_LabelStyle);
+                    EditorGUI.LabelField(cellRect, new GUIContent(treeViewItem.displayName, treeViewItem.displayName), labelStyle);
                 return;
             }
 
@@ -240,21 +235,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     switch (descriptor.severity)
                     {
                         case Rule.Severity.Info:
-                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.infoicon"), s_LabelStyle);
+                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.infoicon"), labelStyle);
                             break;
                         case Rule.Severity.Warning:
-                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.warnicon"), s_LabelStyle);
+                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.warnicon"), labelStyle);
                             break;
                         case Rule.Severity.Error:
-                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.erroricon"), s_LabelStyle);
+                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.erroricon"), labelStyle);
                             break;
                         default:
-                            EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()), s_LabelStyle);
+                            EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()), labelStyle);
                             break;
                     }
                 }
                 else if (columnType == PropertyType.Area)
-                    EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), s_LabelStyle);
+                    EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), labelStyle);
             }
             else
                 switch (columnType)
@@ -262,7 +257,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     case PropertyType.CriticalContext:
                     {
                         if (issue.isPerfCriticalContext)
-                            EditorGUI.LabelField(cellRect, Utility.WarnIcon, s_LabelStyle);
+                            EditorGUI.LabelField(cellRect, Utility.WarnIcon, labelStyle);
                     }
                     break;
                     case PropertyType.Severity:
@@ -282,14 +277,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         }
                         if (icon != null)
                         {
-                            EditorGUI.LabelField(cellRect, icon, s_LabelStyle);
+                            EditorGUI.LabelField(cellRect, icon, labelStyle);
                         }
                     }
                     break;
 
                     case PropertyType.Area:
                         if (!m_Desc.groupByDescriptor)
-                            EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), s_LabelStyle);
+                            EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), labelStyle);
                         break;
 
                     case PropertyType.Description:
@@ -308,20 +303,20 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         {
                             guiContent = new GUIContent(item.GetDisplayName(), descriptor.problem);
                         }
-                        EditorGUI.LabelField(cellRect, guiContent, s_LabelStyle);
+                        EditorGUI.LabelField(cellRect, guiContent, labelStyle);
                         break;
 
                     case PropertyType.Filename:
                         // display fullpath as tooltip
-                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(PropertyType.Filename), issue.GetProperty(PropertyType.Path)), s_LabelStyle);
+                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(PropertyType.Filename), issue.GetProperty(PropertyType.Path)), labelStyle);
                         break;
 
                     case PropertyType.Path:
-                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(PropertyType.Path)), s_LabelStyle);
+                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(PropertyType.Path)), labelStyle);
                         break;
 
                     case PropertyType.FileType:
-                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(PropertyType.FileType)), s_LabelStyle);
+                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(PropertyType.FileType)), labelStyle);
                         break;
 
                     default:
@@ -339,7 +334,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                 EditorGUI.LabelField(cellRect, Formatting.FormatSize(ulongValue));
                             }
                             else
-                                EditorGUI.LabelField(cellRect, new GUIContent(customProperty), s_LabelStyle);
+                                EditorGUI.LabelField(cellRect, new GUIContent(customProperty), labelStyle);
                         }
 
                         break;
