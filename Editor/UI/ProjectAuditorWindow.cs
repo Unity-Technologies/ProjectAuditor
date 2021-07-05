@@ -511,7 +511,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             );
         }
 
-        private void Update()
+        void Update()
         {
             if (m_ShouldRefresh)
                 Repaint();
