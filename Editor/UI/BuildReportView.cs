@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
             base.AddIssues(allIssues);
-            if (m_Desc.category == IssueCategory.BuildFiles)
+            if (m_Desc.category == IssueCategory.BuildFile)
             {
                 var list = m_Issues.GroupBy(i => i.descriptor).Select(g => new GroupStats
                 {
@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
             else
             {
-                if (m_Desc.category == IssueCategory.BuildSteps)
+                if (m_Desc.category == IssueCategory.BuildStep)
                 {
                     EditorGUILayout.BeginVertical();
 

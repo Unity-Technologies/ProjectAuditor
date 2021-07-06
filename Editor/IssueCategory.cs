@@ -3,16 +3,16 @@ namespace Unity.ProjectAuditor.Editor
     public enum IssueCategory
     {
         MetaData,
-        Assets,
-        Shaders,
-        ShaderVariants,
+        Asset,
+        Shader,
+        ShaderVariant,
         Code,
-        CodeCompilerMessages,
-        Generics,
-        ProjectSettings,
-        BuildFiles,
-        BuildSteps,
-        Assemblies,
+        CodeCompilerMessage,
+        GenericInstance,
+        ProjectSetting,
+        BuildFile,
+        BuildStep,
+        Assembly,
 
         NumCategories
     }

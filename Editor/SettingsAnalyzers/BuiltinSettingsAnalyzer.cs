@@ -107,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             (
                 descriptor,
                 description,
-                IssueCategory.ProjectSettings,
+                IssueCategory.ProjectSetting,
                 new Location(projectWindowPath)
             );
         }

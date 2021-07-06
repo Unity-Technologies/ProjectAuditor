@@ -43,7 +43,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 #endif
         public void BuildReportFilesAreReported()
         {
-            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.BuildFiles);
+            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.BuildFile);
             var matchingIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TempAsset.relativePath));
 
             Assert.NotNull(matchingIssue);
@@ -59,7 +59,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 #endif
         public void BuildReportStepsAreReported()
         {
-            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.BuildSteps);
+            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.BuildStep);
             var step = issues.FirstOrDefault(i => i.description.Equals("Build player"));
             Assert.NotNull(step);
             Assert.That(step.depth, Is.EqualTo(0));

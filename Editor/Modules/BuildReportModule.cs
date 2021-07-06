@@ -137,7 +137,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly IssueLayout k_FileLayout = new IssueLayout
         {
-            category = IssueCategory.BuildFiles,
+            category = IssueCategory.BuildFile,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Source Asset"},
@@ -150,7 +150,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly IssueLayout k_StepLayout = new IssueLayout
         {
-            category = IssueCategory.BuildSteps,
+            category = IssueCategory.BuildStep,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Severity},
@@ -225,7 +225,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             foreach (var step in buildReport.steps)
             {
                 var depth = step.depth;
-                onIssueFound(new ProjectIssue(k_InfoDescriptor, step.name, IssueCategory.BuildSteps, new string[(int)BuildReportStepProperty.Num]
+                onIssueFound(new ProjectIssue(k_InfoDescriptor, step.name, IssueCategory.BuildStep, new string[(int)BuildReportStepProperty.Num]
                 {
                     Formatting.FormatTime(step.duration)
                 })
@@ -247,7 +247,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                             descriptor = k_WarnDescriptor;
                             break;
                     }
-                    onIssueFound(new ProjectIssue(descriptor, message.content, IssueCategory.BuildSteps)
+                    onIssueFound(new ProjectIssue(descriptor, message.content, IssueCategory.BuildStep)
                     {
                         depth = depth + 1,
                     });
@@ -301,7 +301,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     if (m_DescriptorByExtension.ContainsKey(ext))
                         descriptor = m_DescriptorByExtension[ext];
 
-                    var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFiles, new Location(assetPath));
+                    var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
                     issue.SetCustomProperties(new string[(int)BuildReportFileProperty.Num]
                     {
                         sum.ToString(),

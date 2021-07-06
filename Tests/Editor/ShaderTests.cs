@@ -326,7 +326,7 @@ Shader ""Custom/MyEditorShader""
         public void ShaderVariantsRequireBuild()
         {
             ShadersModule.ClearBuildData();
-            var issues = Utility.Analyze(IssueCategory.ShaderVariants);
+            var issues = Utility.Analyze(IssueCategory.ShaderVariant);
             Assert.Zero(issues.Length);
             Assert.False(ShadersModule.BuildDataAvailable());
         }
@@ -334,7 +334,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderVariantsAreReported()
         {
-            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
+            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariant);
             Assert.True(ShadersModule.BuildDataAvailable());
 
             var keywords = issues.Select(i => i.GetCustomProperty(ShaderVariantProperty.Keywords));
@@ -367,7 +367,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderVariantForBuiltInKeywordIsReported()
         {
-            var issues =  Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
+            var issues =  Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariant);
 
             var keywords = issues.Select(i => i.GetCustomProperty(ShaderVariantProperty.Keywords)).ToArray();
 
@@ -389,7 +389,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void SurfShaderVariantsAreReported()
         {
-            var issues =  Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
+            var issues =  Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariant);
 
             var keywords = issues.Select(i => i.GetCustomProperty(ShaderVariantProperty.Keywords));
 
@@ -407,7 +407,7 @@ Shader ""Custom/MyEditorShader""
         public void StrippedVariantsAreNotReported()
         {
             StripVariants.Enabled = true;
-            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariants);
+            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariant);
             StripVariants.Enabled = false;
 
             var keywords = issues.Select(i => i.GetCustomProperty(ShaderVariantProperty.Keywords));
@@ -446,10 +446,10 @@ Shader ""Custom/MyEditorShader""
 
             AssetDatabase.DeleteAsset("Assets/UntitledScene.unity");
 
-            var allVariants = Utility.Analyze(IssueCategory.ShaderVariants);
+            var allVariants = Utility.Analyze(IssueCategory.ShaderVariant);
             ShadersModule.ClearBuildData(); // cleanup
 
-            var variants = allVariants.Where(i => i.description.Equals(k_ShaderName) && i.category == IssueCategory.ShaderVariants).ToArray();
+            var variants = allVariants.Where(i => i.description.Equals(k_ShaderName) && i.category == IssueCategory.ShaderVariant).ToArray();
             Assert.Positive(variants.Length);
 
             var result = ShadersModule.ParsePlayerLog(m_PlayerLogResource.relativePath, variants);
@@ -484,7 +484,7 @@ Shader ""Custom/MyEditorShader""
         public void ShaderIsReported()
         {
             ShadersModule.ClearBuildData();
-            var issues = Utility.Analyze(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shader);
             var shaderIssue = issues.FirstOrDefault(i => i.description.Equals(k_ShaderName));
             Assert.NotNull(shaderIssue);
 
@@ -511,7 +511,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderWithErrorIsReported()
         {
-            var issues = Utility.Analyze(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shader);
             var shadersWithErrors = issues.Where(i => i.severity == Rule.Severity.Error);
             Assert.Positive(shadersWithErrors.Count());
             var shaderIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_ShaderWithErrorResource.relativePath));
@@ -523,7 +523,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShaderUsingBuiltInKeywordIsReported()
         {
-            var issues = Utility.Analyze(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shader);
             var shaderIssue = issues.FirstOrDefault(i => i.description.Equals("Custom/ShaderUsingBuiltInKeyword"));
             Assert.NotNull(shaderIssue);
 
@@ -543,7 +543,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void SurfShaderIsReported()
         {
-            var issues = Utility.Analyze(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shader);
             var shaderIssue = issues.FirstOrDefault(i => i.description.Equals("Custom/MySurfShader"));
             Assert.NotNull(shaderIssue);
 
@@ -563,7 +563,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void EditorShaderIsNotReported()
         {
-            var issues = Utility.Analyze(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shader);
             issues = issues.Where(i => i.description.Equals("Custom/MyEditorShader")).ToArray();
 
             Assert.Zero(issues.Length);
@@ -572,7 +572,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void EditorDefaultResourcesShaderIsNotReported()
         {
-            var issues = Utility.Analyze(IssueCategory.Shaders);
+            var issues = Utility.Analyze(IssueCategory.Shader);
             var filteredIssues = issues.Where(i => i.relativePath.Contains("Editor Default Resources")).ToArray();
             Assert.Zero(filteredIssues.Length);
         }

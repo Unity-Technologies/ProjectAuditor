@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     {
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
-            category = IssueCategory.ProjectSettings,
+            category = IssueCategory.ProjectSetting,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
