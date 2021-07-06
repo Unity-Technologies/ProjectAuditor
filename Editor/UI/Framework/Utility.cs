@@ -162,6 +162,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             return EditorGUIUtility.TrIconContent(ProjectAuditor.PackagePath + "/Editor/Icons/" + name + ".png");
         }
+		
+		public static GUIContent GetStatusWheel()
+        {
+            if (Contents.StatusWheel == null)
+            {
+                Contents.StatusWheel = new GUIContent[12];
+                for (int i = 0; i < 12; i++)
+                    Contents.StatusWheel[i] = EditorGUIUtility.IconContent("WaitSpin" + i.ToString("00"));
+
+            }
+            int frame = (int)Mathf.Repeat(Time.realtimeSinceStartup * 10, 11.99f);
+            return Contents.StatusWheel[frame];
+        }
     }
 
     static class Contents
@@ -171,5 +184,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 #else
         public static readonly GUIContent HelpButton = new GUIContent("?", "Open Manual (in a web browser)");
 #endif
+
+        public static GUIContent[] StatusWheel;
     }
 }

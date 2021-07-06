@@ -515,6 +515,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             if (m_ShouldRefresh)
                 Repaint();
+            if (m_AnalysisState == AnalysisState.InProgress)
+                Repaint();
         }
 
         void OnPostprocessBuild(BuildTarget target)
@@ -587,6 +589,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                     ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Load, m_LoadButtonAnalytic);
                 if (m_AnalyzeButtonAnalytic != null)
                     ProjectAuditorAnalytics.SendEventWithAnalyzeSummary(ProjectAuditorAnalytics.UIButton.Analyze, m_AnalyzeButtonAnalytic, m_ProjectReport);
+
+                // repaint once more to make status wheel disappear
+                Repaint();
             }
 
             activeView.Refresh();
@@ -1037,7 +1042,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
-                    GUILayout.Label(Contents.AnalysisInProgressLabel, Styles.StatusText, GUILayout.ExpandWidth(true));
+                    GUILayout.Label(Utility.GetStatusWheel());
                 }
 
                 EditorGUILayout.Space();
@@ -1163,9 +1168,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent AnalyzeButton =
                 new GUIContent("Analyze", "Analyze Project and list all issues found.");
-
-            public static readonly GUIContent AnalysisInProgressLabel =
-                new GUIContent("Analysis in progress...", "Analysis in progress...please wait.");
 
 #if UNITY_2019_1_OR_NEWER
             public static readonly GUIContent SaveButton = EditorGUIUtility.TrIconContent("SaveAs", "Save current report to json file");
