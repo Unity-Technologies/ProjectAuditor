@@ -1174,25 +1174,6 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...), by str
             public static readonly GUIContent BuildSteps = new GUIContent("Build Steps");
         }
 
-        static class Styles
-        {
-            public static GUIStyle StatusText
-            {
-                get
-                {
-                    if (s_StatusText == null)
-                    {
-                        s_StatusText = new GUIStyle(Utility.GetStyle("ToolbarLabel"));
-                        StatusText.normal.textColor = Color.yellow;
-                    }
-
-                    return s_StatusText;
-                }
-            }
-
-            static GUIStyle s_StatusText;
-        }
-
         [PostProcessBuild(1)]
         public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
         {
