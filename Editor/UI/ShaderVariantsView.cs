@@ -48,8 +48,8 @@ The number of Variants contributes to the build size, however, there might be Va
                 return;
 
             const string dialogTitle = "Shader Variants";
-            var variants = GetIssues().Where(i => i.category == IssueCategory.ShaderVariants).ToArray();
-            var result = ShadersAuditor.ParsePlayerLog(logFilename, variants, new ProgressBar());
+            var variants = GetIssues().Where(i => i.category == IssueCategory.ShaderVariant).ToArray();
+            var result = ShadersModule.ParsePlayerLog(logFilename, variants, new ProgressBar());
             switch (result)
             {
                 case ParseLogResult.Success:

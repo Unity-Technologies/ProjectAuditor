@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
-    /// Auditor interface. Any class implementing the IAuditor interface will be instantiated by ProjectAuditor and used to audit the project
+    /// Project Auditor module interface. Any class implementing the IProjectAuditorModule interface will be instantiated by ProjectAuditor and used to audit the project
     /// </summary>
-    public interface IAuditor
+    public interface IProjectAuditorModule
     {
         IEnumerable<ProblemDescriptor> GetDescriptors();
 

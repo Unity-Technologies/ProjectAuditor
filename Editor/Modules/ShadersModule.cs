@@ -62,14 +62,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public string[] keywords;
     }
 
-    class ShadersAuditor : IAuditor
+    class ShadersModule : IProjectAuditorModule
 #if UNITY_2018_2_OR_NEWER
         , IPreprocessShaders
 #endif
     {
         static readonly IssueLayout k_ShaderLayout = new IssueLayout
         {
-            category = IssueCategory.Shaders,
+            category = IssueCategory.Shader,
             properties = new[]
             {
 //                new PropertyDefinition { type = PropertyType.Severity},
@@ -85,7 +85,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly IssueLayout k_ShaderVariantLayout = new IssueLayout
         {
-            category = IssueCategory.ShaderVariants,
+            category = IssueCategory.ShaderVariant,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
@@ -225,7 +225,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 shaderName = Path.GetFileNameWithoutExtension(assetPath) + ": Parse Error";
 
-                var issueWithError = new ProjectIssue(k_ParseErrorDescriptor, shaderName, IssueCategory.Shaders, new Location(assetPath));
+                var issueWithError = new ProjectIssue(k_ParseErrorDescriptor, shaderName, IssueCategory.Shader, new Location(assetPath));
                 issueWithError.SetCustomProperties((int)ShaderProperty.Num, k_NotAvailable);
 
                 onIssueFound(issueWithError);
@@ -257,7 +257,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #if UNITY_2019_1_OR_NEWER
             passCount = shader.passCount;
 #endif
-            var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.Shaders, new Location(assetPath));
+            var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.Shader, new Location(assetPath));
             issue.SetCustomProperties(new string[(int)ShaderProperty.Num]
             {
                 variantCount == -1 ? k_NotAvailable : variantCount.ToString(),
@@ -289,7 +289,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 var compilerData = shaderVariantData.compilerData;
                 var keywords = GetShaderKeywords(shader, compilerData.shaderKeywordSet.GetShaderKeywords());
-                var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariants, new Location(assetPath));
+                var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariant, new Location(assetPath));
                 issue.SetCustomProperties(new string[(int)ShaderVariantProperty.Num]
                 {
                     k_NoRuntimeData,

@@ -233,7 +233,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Assets,
+                category = IssueCategory.Asset,
                 name = "Resources",
                 menuLabel = "Assets/Resources",
                 menuOrder = 1,
@@ -253,7 +253,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Shaders,
+                category = IssueCategory.Shader,
                 name = "Shaders",
                 menuOrder = 2,
                 menuLabel = "Assets/Shaders",
@@ -273,7 +273,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     if (GUILayout.Button(Contents.ShaderVariantsButton, EditorStyles.toolbarButton,
                         GUILayout.Width(80)))
                     {
-                        Instance.SelectView(IssueCategory.ShaderVariants);
+                        Instance.SelectView(IssueCategory.ShaderVariant);
                     }
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Shaders
@@ -281,7 +281,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 type = typeof(ShaderVariantsView),
-                category = IssueCategory.ShaderVariants,
+                category = IssueCategory.ShaderVariant,
                 name = "Variants",
                 menuOrder = 3,
                 menuLabel = "Assets/Shader Variants",
@@ -313,14 +313,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                     if (GUILayout.Button(Contents.Shaders, EditorStyles.toolbarButton,
                         GUILayout.Width(80)))
                     {
-                        Instance.SelectView(IssueCategory.Shaders);
+                        Instance.SelectView(IssueCategory.Shader);
                     }
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderVariants
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Assemblies,
+                category = IssueCategory.Assembly,
                 name = "Assemblies",
                 menuLabel = "Experimental/Assemblies",
                 menuOrder = 99,
@@ -353,7 +353,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 type = typeof(CompilerMessagesView),
-                category = IssueCategory.CodeCompilerMessages,
+                category = IssueCategory.CodeCompilerMessage,
                 name = "C# Messages",
                 menuOrder = 98,
                 menuLabel = "Code/C# Compiler Messages",
@@ -373,7 +373,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Generics,
+                category = IssueCategory.GenericInstance,
                 name = "Generics",
                 menuLabel = "Code/Generic Types Instantiation",
                 menuOrder = 99,
@@ -393,7 +393,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.ProjectSettings,
+                category = IssueCategory.ProjectSetting,
                 name = "Settings",
                 menuLabel = "Settings/Diagnostics",
                 menuOrder = 1,
@@ -413,7 +413,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 type = typeof(BuildReportView),
-                category = IssueCategory.BuildSteps,
+                category = IssueCategory.BuildStep,
                 name = "Build Steps",
                 menuLabel = "Build Report/Steps",
                 menuOrder = 100,
@@ -424,7 +424,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     if (GUILayout.Button(Contents.BuildFiles, EditorStyles.toolbarButton,
                         GUILayout.Width(80)))
                     {
-                        Instance.SelectView(IssueCategory.BuildFiles);
+                        Instance.SelectView(IssueCategory.BuildFile);
                     }
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildSteps
@@ -432,7 +432,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 type = typeof(BuildReportView),
-                category = IssueCategory.BuildFiles,
+                category = IssueCategory.BuildFile,
                 name = "Build Size",
                 menuLabel = "Build Report/Size",
                 menuOrder = 101,
@@ -451,7 +451,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     if (GUILayout.Button(Contents.BuildSteps, EditorStyles.toolbarButton,
                         GUILayout.Width(80)))
                     {
-                        Instance.SelectView(IssueCategory.BuildSteps);
+                        Instance.SelectView(IssueCategory.BuildStep);
                     }
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
@@ -521,10 +521,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnPostprocessBuild(BuildTarget target)
         {
-            IncrementalAudit<BuildAuditor>();
+            IncrementalAudit<BuildReportModule>();
         }
 
-        void IncrementalAudit<T>() where T : class, IAuditor
+        void IncrementalAudit<T>() where T : class, IProjectAuditorModule
         {
             if (m_ProjectReport == null)
                 m_ProjectReport = new ProjectReport();
@@ -561,16 +561,16 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void AnalyzeShaderVariants()
         {
-            IncrementalAudit<ShadersAuditor>();
+            IncrementalAudit<ShadersModule>();
         }
 
         public void ClearShaderVariants()
         {
-            m_ProjectReport.ClearIssues(IssueCategory.ShaderVariants);
+            m_ProjectReport.ClearIssues(IssueCategory.ShaderVariant);
 
-            ClearView(IssueCategory.ShaderVariants);
+            ClearView(IssueCategory.ShaderVariant);
 
-            ShadersAuditor.ClearBuildData();
+            ShadersModule.ClearBuildData();
         }
 
         void RefreshDisplay()

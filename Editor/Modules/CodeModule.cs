@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Num
     }
 
-    class ScriptAuditor : IAuditor
+    class CodeModule : IProjectAuditorModule
     {
         static readonly ProblemDescriptor k_AssemblyDescriptor = new ProblemDescriptor
             (
@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly IssueLayout k_AssemblyLayout = new IssueLayout
         {
-            category = IssueCategory.Assemblies,
+            category = IssueCategory.Assembly,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Assembly Name"},
@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly IssueLayout k_CompilerMessageLayout = new IssueLayout
         {
-            category = IssueCategory.CodeCompilerMessages,
+            category = IssueCategory.CodeCompilerMessage,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Severity, name = "Type"},
@@ -84,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly IssueLayout k_GenericIssueLayout = new IssueLayout
         {
-            category = IssueCategory.Generics,
+            category = IssueCategory.GenericInstance,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Generic Type"},
@@ -154,7 +154,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             foreach (var assemblyInfo in assemblyInfos)
             {
-                onIssueFound(new ProjectIssue(k_AssemblyDescriptor, assemblyInfo.name, IssueCategory.Assemblies, assemblyInfo.asmDefPath, new string[(int)AssemblyProperty.Num] { assemblyInfo.readOnly.ToString() }));
+                onIssueFound(new ProjectIssue(k_AssemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath, new string[(int)AssemblyProperty.Num] { assemblyInfo.readOnly.ToString() }));
             }
 
             var assemblyDirectories = new List<string>();
@@ -375,7 +375,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 }
 
                 var issue = new ProjectIssue(descriptor, message.message,
-                    IssueCategory.CodeCompilerMessages,
+                    IssueCategory.CodeCompilerMessage,
                     new Location(message.file.Replace("\\", "/"), message.line),
                     new string[(int)CompilerMessageProperty.Num]
                     {

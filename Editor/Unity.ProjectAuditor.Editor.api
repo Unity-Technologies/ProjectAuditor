@@ -38,7 +38,14 @@ namespace Unity.ProjectAuditor.Editor
         public abstract bool IsPerfCritical();
     }
 
-    public interface IAuditor
+    public interface IProgress
+    {
+        public abstract void Advance(string description = );
+        public abstract void Clear();
+        public abstract void Start(string title, string description, int total);
+    }
+
+    public interface IProjectAuditorModule
     {
         public abstract void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete = default(System.Action), Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
         public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
@@ -46,13 +53,6 @@ namespace Unity.ProjectAuditor.Editor
         public abstract void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
         public abstract bool IsSupported();
         public abstract void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-    }
-
-    public interface IProgress
-    {
-        public abstract void Advance(string description = );
-        public abstract void Clear();
-        public abstract void Start(string title, string description, int total);
     }
 
     public interface IProjectIssueFilter
@@ -347,7 +347,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     {
         public abstract Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
         public abstract System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
-        public abstract void Initialize(Unity.ProjectAuditor.Editor.IAuditor auditor);
+        public abstract void Initialize(Unity.ProjectAuditor.Editor.IProjectAuditorModule module);
     }
 }
 
@@ -356,7 +356,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
     public interface ISettingsAnalyzer
     {
         public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> Analyze();
-        public abstract void Initialize(Unity.ProjectAuditor.Editor.IAuditor auditor);
+        public abstract void Initialize(Unity.ProjectAuditor.Editor.IProjectAuditorModule module);
     }
 }
 

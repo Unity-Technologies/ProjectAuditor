@@ -17,16 +17,16 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUI.indentLevel++;
                 DrawSummaryItem("Code Issues: ", s_Report.GetIssues(IssueCategory.Code).Length, IssueCategory.Code);
-                var numCompilationErrors = s_Report.GetIssues(IssueCategory.CodeCompilerMessages).Count(i => i.severity == Rule.Severity.Error);
+                var numCompilationErrors = s_Report.GetIssues(IssueCategory.CodeCompilerMessage).Count(i => i.severity == Rule.Severity.Error);
                 if (numCompilationErrors > 0)
                 {
-                    DrawSummaryItem("Compilation Errors: ", numCompilationErrors, IssueCategory.CodeCompilerMessages, Utility.ErrorIcon);
+                    DrawSummaryItem("Compilation Errors: ", numCompilationErrors, IssueCategory.CodeCompilerMessage, Utility.ErrorIcon);
                 }
-                DrawSummaryItem("Settings Issues:", s_Report.GetIssues(IssueCategory.ProjectSettings).Length, IssueCategory.ProjectSettings);
-                DrawSummaryItem("Assets in Resources folders:", s_Report.GetIssues(IssueCategory.Assets).Length, IssueCategory.Assets);
-                DrawSummaryItem("Shaders in the project:", s_Report.GetIssues(IssueCategory.Shaders).Length, IssueCategory.Shaders);
-                var buildAvailable = s_Report.GetIssues(IssueCategory.BuildFiles).Length > 0;
-                DrawSummaryItem("Build Report available:", buildAvailable, IssueCategory.BuildSteps);
+                DrawSummaryItem("Settings Issues:", s_Report.GetIssues(IssueCategory.ProjectSetting).Length, IssueCategory.ProjectSetting);
+                DrawSummaryItem("Assets in Resources folders:", s_Report.GetIssues(IssueCategory.Asset).Length, IssueCategory.Asset);
+                DrawSummaryItem("Shaders in the project:", s_Report.GetIssues(IssueCategory.Shader).Length, IssueCategory.Shader);
+                var buildAvailable = s_Report.GetIssues(IssueCategory.BuildFile).Length > 0;
+                DrawSummaryItem("Build Report available:", buildAvailable, IssueCategory.BuildStep);
                 EditorGUI.indentLevel--;
 
                 EditorGUILayout.Space();
