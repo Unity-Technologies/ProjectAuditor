@@ -112,7 +112,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
                 102001,
                 "test"
                 );
-            Assert.True(desc.area.Equals("Info"));
+            Assert.AreEqual(1, desc.areasAsEnums.Length);
+            Assert.Contains(Area.Info, desc.areasAsEnums);
         }
 
         [Test]
@@ -126,7 +127,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
                 "this is not actually a problem",
                 "do nothing"
                 );
-            Assert.True(desc.area.Equals("CPU|Memory"));
+            Assert.AreEqual(2, desc.areasAsEnums.Length);
+            Assert.Contains(Area.CPU, desc.areasAsEnums);
+            Assert.Contains(Area.Memory, desc.areasAsEnums);
         }
 
         [Test]

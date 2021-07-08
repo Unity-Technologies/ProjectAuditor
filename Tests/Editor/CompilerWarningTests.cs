@@ -44,7 +44,8 @@ class ScriptWithWarning {
             var issue = issues.First();
 
             // check descriptor
-            Assert.That(issue.descriptor.area, Is.EqualTo(Area.Info.ToString()));
+            Assert.AreEqual(1, issue.descriptor.areasAsEnums.Length);
+            Assert.Contains(Area.Info, issue.descriptor.areasAsEnums);
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));

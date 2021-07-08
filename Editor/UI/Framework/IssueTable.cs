@@ -219,8 +219,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             var issue = item.ProjectIssue;
             var descriptor = item.ProblemDescriptor;
-            var areaName = descriptor.area.Replace('|', ',');
-            var areaLongDescription = "This issue might have an impact on " + descriptor.area;
+            var areaNames = string.Join(", ", descriptor.areasAsEnums);
+            var areaLongDescription = "Areas that this issue might have an impact on";
 
             var rule = m_Config.GetRule(descriptor, issue != null ? issue.GetCallingMethod() : string.Empty);
             if (rule == null && issue != null)
@@ -249,7 +249,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     }
                 }
                 else if (columnType == PropertyType.Area)
-                    EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), labelStyle);
+                    EditorGUI.LabelField(cellRect, new GUIContent(areaNames, areaLongDescription), labelStyle);
             }
             else
                 switch (columnType)
@@ -284,7 +284,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                     case PropertyType.Area:
                         if (!m_Desc.groupByDescriptor)
-                            EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), labelStyle);
+                            EditorGUI.LabelField(cellRect, new GUIContent(areaNames, areaLongDescription), labelStyle);
                         break;
 
                     case PropertyType.Description:
@@ -520,8 +520,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             secondItem = a.m_Item;
                         }
 
-                        var firstString = String.Empty;
-                        var secondString = String.Empty;
+                        string firstString;
+                        string secondString;
 
                         var property = m_Layout.properties[columnSortOrder[i]];
                         switch (property.type)
@@ -531,8 +531,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                 secondString = secondItem.GetDisplayName();
                                 break;
                             case PropertyType.Area:
-                                firstString = firstItem.ProblemDescriptor.area;
-                                secondString = secondItem.ProblemDescriptor.area;
+                                firstString = firstItem.ProblemDescriptor.areas.ToString();
+                                secondString = secondItem.ProblemDescriptor.areas.ToString();
                                 break;
                             case PropertyType.Filename:
                             case PropertyType.Path:

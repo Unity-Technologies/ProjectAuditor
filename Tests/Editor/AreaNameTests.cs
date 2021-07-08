@@ -11,16 +11,19 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         public void AreaNameIsValid()
         {
             // disabling stripUnusedMeshComponents will be reported as an issue
+            var stripUnusedMeshComponents = PlayerSettings.stripUnusedMeshComponents = false;
             PlayerSettings.stripUnusedMeshComponents = false;
 
             var issues = Utility.Analyze(IssueCategory.ProjectSetting);
 
-            var strippingIssue = issues.FirstOrDefault(i => i.descriptor.method.Equals("stripUnusedMeshComponents"));
-            Assert.NotNull(strippingIssue);
-            Assert.True(strippingIssue.descriptor.area.Contains(Area.BuildSize.ToString()));
-            Assert.True(strippingIssue.descriptor.area.Contains(Area.LoadTime.ToString()));
-            Assert.True(strippingIssue.descriptor.area.Contains(Area.GPU.ToString()));
-            Assert.True(strippingIssue.descriptor.area.Equals("BuildSize|LoadTimes|GPU"));
+            var issue = issues.FirstOrDefault(i => i.descriptor.method.Equals("stripUnusedMeshComponents"));
+            Assert.NotNull(issue);
+            Assert.Contains(Area.BuildSize, issue.descriptor.areasAsEnums);
+            Assert.Contains(Area.GPU, issue.descriptor.areasAsEnums);
+            Assert.Contains(Area.LoadTime, issue.descriptor.areasAsEnums);
+
+            // restore stripUnusedMeshComponents
+            PlayerSettings.stripUnusedMeshComponents = stripUnusedMeshComponents;
         }
     }
 }

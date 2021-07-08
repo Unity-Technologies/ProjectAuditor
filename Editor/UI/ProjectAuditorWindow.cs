@@ -90,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Profiler.BeginSample("MatchArea");
             var matchArea = !activeView.desc.showAreaSelection ||
-                m_AreaSelection.ContainsAny(issue.descriptor.area.Split('|')) ||
+                m_AreaSelection.ContainsAny(issue.descriptor.areas) ||
                 m_AreaSelection.ContainsGroup("All");
             Profiler.EndSample();
             if (!matchArea)
