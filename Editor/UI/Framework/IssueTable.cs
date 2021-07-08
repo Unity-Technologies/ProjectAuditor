@@ -530,32 +530,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                 secondString = secondItem.ProblemDescriptor.area;
                                 break;
                             case PropertyType.Filename:
-                                firstString = firstItem.ProjectIssue != null
-                                    ? firstItem.ProjectIssue.filename
-                                    : string.Empty;
-                                secondString = secondItem.ProjectIssue != null
-                                    ? secondItem.ProjectIssue.filename
-                                    : string.Empty;
-                                break;
                             case PropertyType.Path:
-                                firstString = firstItem.ProjectIssue != null
-                                    ? firstItem.ProjectIssue.location.Path
-                                    : string.Empty;
-                                secondString = secondItem.ProjectIssue != null
-                                    ? secondItem.ProjectIssue.location.Path
-                                    : string.Empty;
-                                break;
                             case PropertyType.FileType:
-                                firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.location.Extension : string.Empty;
-                                secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.location.Extension : string.Empty;
-                                break;
-                            case PropertyType.CriticalContext:
-                                firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
-                                secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.isPerfCriticalContext.ToString() : string.Empty;
-                                break;
                             case PropertyType.Severity:
-                                firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.severity.ToString() : string.Empty;
-                                secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.severity.ToString() : string.Empty;
+                                firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.GetProperty(property.type) : string.Empty;
+                                secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.GetProperty(property.type) : string.Empty;
                                 break;
                             default:
                                 if (property.format == PropertyFormat.Integer || property.format == PropertyFormat.Bytes)
