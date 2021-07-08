@@ -69,7 +69,7 @@ class MyClass : MonoBehaviour
             Assert.AreEqual(0, projectReport.GetNumIssues(IssueCategory.ProjectSetting));
         }
 
-        void AnalyzeAndExport(IssueCategory category, string path)
+        ProjectIssue[] AnalyzeAndExport(IssueCategory category, string path)
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             config.AnalyzeEditorCode = false;
@@ -81,6 +81,8 @@ class MyClass : MonoBehaviour
             projectReport.ExportToCSV(path, layout);
 
             Assert.True(File.Exists(path));
+
+            return projectReport.GetIssues(category);
         }
 
         [Test]
@@ -110,19 +112,21 @@ class MyClass : MonoBehaviour
         [Test]
         public void SettingsIssuesAreExportedAndFormatted()
         {
-            var savedSetting = PlayerSettings.bakeCollisionMeshes;
+            var bakeCollisionMeshes = PlayerSettings.bakeCollisionMeshes;
             PlayerSettings.bakeCollisionMeshes = false;
 
             var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
-            AnalyzeAndExport(category, path);
+            var issues = AnalyzeAndExport(category, path);
+            var issue = issues.FirstOrDefault(i => i.descriptor.method.Equals("bakeCollisionMeshes"));
+            var expectedIssueLine = string.Format("\"{0}\",\"{1}\"", issue.description, issue.descriptor.areasString);
+
             var issueFound = false;
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.True(line.Equals("Issue,Area"));
+                Assert.True(line.Equals("Issue,Area"), "Header was: " + line);
 
-                var expectedIssueLine = "\"Player: Prebake Collision Meshes\",\"BuildSize,LoadTimes\"";
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();
@@ -133,7 +137,7 @@ class MyClass : MonoBehaviour
 
             Assert.True(issueFound);
 
-            PlayerSettings.bakeCollisionMeshes = savedSetting;
+            PlayerSettings.bakeCollisionMeshes = bakeCollisionMeshes;
         }
     }
 }
