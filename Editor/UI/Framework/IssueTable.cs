@@ -219,7 +219,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             var issue = item.ProjectIssue;
             var descriptor = item.ProblemDescriptor;
-            var areaNames = string.Join(", ", descriptor.areasAsEnums);
+            var areaNames = descriptor.areasString;
             var areaLongDescription = "Areas that this issue might have an impact on";
 
             var rule = m_Config.GetRule(descriptor, issue != null ? issue.GetCallingMethod() : string.Empty);
