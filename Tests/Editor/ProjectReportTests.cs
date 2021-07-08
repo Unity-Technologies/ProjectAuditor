@@ -122,7 +122,7 @@ class MyClass : MonoBehaviour
                 var line = file.ReadLine();
                 Assert.True(line.Equals("Issue,Area"));
 
-                var expectedIssueLine = "\"Player: Prebake Collision Meshes\",\"BuildSize|LoadTimes\"";
+                var expectedIssueLine = "\"Player: Prebake Collision Meshes\",\"BuildSize,LoadTimes\"";
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();
