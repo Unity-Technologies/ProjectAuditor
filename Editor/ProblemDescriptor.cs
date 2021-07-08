@@ -77,6 +77,14 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
+        internal string areasString
+        {
+            get
+            {
+                return string.Join(", ", areas);
+            }
+        }
+
         public ProblemDescriptor(int id, string description, string[] areas, string problem = null, string solution = null)
         {
             this.id = id;

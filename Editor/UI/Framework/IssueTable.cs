@@ -531,8 +531,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                 secondString = secondItem.GetDisplayName();
                                 break;
                             case PropertyType.Area:
-                                firstString = firstItem.ProblemDescriptor.areas.ToString();
-                                secondString = secondItem.ProblemDescriptor.areas.ToString();
+                                firstString = firstItem.ProblemDescriptor.areasString;
+                                secondString = secondItem.ProblemDescriptor.areasString;
                                 break;
                             case PropertyType.Filename:
                             case PropertyType.Path:

@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 case PropertyType.Severity:
                     return issue.severity.ToString();
                 case PropertyType.Area:
-                    return issue.descriptor.areas.ToString();
+                    return issue.descriptor.areasString;
                 case PropertyType.FileType:
                     var ext = issue.location.Extension;
                     if (ext.StartsWith("."))
