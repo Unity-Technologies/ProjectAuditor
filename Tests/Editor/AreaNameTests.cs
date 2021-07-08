@@ -18,9 +18,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var strippingIssue = issues.FirstOrDefault(i => i.descriptor.method.Equals("stripUnusedMeshComponents"));
             Assert.NotNull(strippingIssue);
             Assert.True(strippingIssue.descriptor.area.Contains(Area.BuildSize.ToString()));
-            Assert.True(strippingIssue.descriptor.area.Contains(Area.LoadTimes.ToString()));
+            Assert.True(strippingIssue.descriptor.area.Contains(Area.LoadTime.ToString()));
             Assert.True(strippingIssue.descriptor.area.Contains(Area.GPU.ToString()));
-            Assert.True(strippingIssue.descriptor.area.Equals("BuildSize|LoadTimes|GPU"));
+            Assert.True(strippingIssue.descriptor.area.Equals("BuildSize|LoadTime|GPU"));
         }
     }
 }
