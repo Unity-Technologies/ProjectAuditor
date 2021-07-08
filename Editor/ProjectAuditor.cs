@@ -32,6 +32,19 @@ namespace Unity.ProjectAuditor.Editor
         public const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
         public const string PackagePath = "Packages/com.unity.project-auditor";
 
+        public static string PackageVersion
+        {
+            get
+            {
+#if UNITY_2019_3_OR_NEWER
+                var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(PackagePath +  "/Editor/Unity.ProjectAuditor.Editor.asmdef");
+                return packageInfo.version;
+#else
+                return "Unknown";
+#endif
+            }
+        }
+
         public ProjectAuditorConfig config
         {
             get { return m_Config; }
