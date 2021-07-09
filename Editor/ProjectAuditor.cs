@@ -29,6 +29,28 @@ namespace Unity.ProjectAuditor.Editor
         readonly List<IProjectAuditorModule> m_Auditors = new List<IProjectAuditorModule>();
         ProjectAuditorConfig m_Config;
 
+        public static string DataPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(s_DataPath))
+                {
+                    const string path = PackagePath + "/Data";
+                    if (!File.Exists(Path.GetFullPath(path)))
+                    {
+                        // if it's not a package, let's search through all assets
+                        var apiDatabasePath = AssetDatabase.GetAllAssetPaths()
+                            .FirstOrDefault(p => p.EndsWith("Data/ApiDatabase.json"));
+
+                        if (string.IsNullOrEmpty(apiDatabasePath))
+                            throw new Exception("Could not find ApiDatabase.json");
+                        s_DataPath = apiDatabasePath.Substring(0, apiDatabasePath.IndexOf("/ApiDatabase.json"));
+                    }
+                }
+
+                return s_DataPath;
+            }
+        }
         public const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
         public const string PackagePath = "Packages/com.unity.project-auditor";
 
@@ -94,29 +116,6 @@ namespace Unity.ProjectAuditor.Editor
                 var instance = Activator.CreateInstance(type) as IProjectAuditorModule;
                 instance.Initialize(m_Config);
                 m_Auditors.Add(instance);
-            }
-        }
-
-        public static string DataPath
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(s_DataPath))
-                {
-                    const string path = PackagePath + "/Data";
-                    if (!File.Exists(Path.GetFullPath(path)))
-                    {
-                        // if it's not a package, let's search through all assets
-                        var apiDatabasePath = AssetDatabase.GetAllAssetPaths()
-                            .FirstOrDefault(p => p.EndsWith("Data/ApiDatabase.json"));
-
-                        if (string.IsNullOrEmpty(apiDatabasePath))
-                            throw new Exception("Could not find ApiDatabase.json");
-                        s_DataPath = apiDatabasePath.Substring(0, apiDatabasePath.IndexOf("/ApiDatabase.json"));
-                    }
-                }
-
-                return s_DataPath;
             }
         }
 
