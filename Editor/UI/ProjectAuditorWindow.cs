@@ -483,15 +483,15 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_ProjectReport == null)
                 m_ProjectReport = new ProjectReport();
 
-            var auditor = m_ProjectAuditor.GetAuditor<T>();
-            var layouts = auditor.GetLayouts().ToArray();
+            var module = m_ProjectAuditor.GetModule<T>();
+            var layouts = module.GetLayouts().ToArray();
             foreach (var layout in layouts)
             {
                 m_ProjectReport.ClearIssues(layout.category);
             }
 
             var newIssues = new List<ProjectIssue>();
-            auditor.Audit(issue =>
+            module.Audit(issue =>
             {
                 newIssues.Add(issue);
                 m_ProjectReport.AddIssue(issue);

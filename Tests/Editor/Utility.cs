@@ -16,13 +16,13 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         public static ProjectIssue[] Analyze(IssueCategory category)
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var auditor = projectAuditor.GetAuditor(category);
+            var module = projectAuditor.GetModule(category);
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             config.AnalyzeInBackground = false;
-            auditor.Initialize(config);
+            module.Initialize(config);
 
             var foundIssues = new List<ProjectIssue>();
-            auditor.Audit(issue => {
+            module.Audit(issue => {
                 foundIssues.Add(issue);
             });
 
