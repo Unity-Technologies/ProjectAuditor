@@ -279,8 +279,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     break;
 
                     case PropertyType.Area:
-                        if (!m_Desc.groupByDescriptor)
-                            EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), labelStyle);
+                        EditorGUI.LabelField(cellRect, new GUIContent(areaName, areaLongDescription), labelStyle);
                         break;
 
                     case PropertyType.Description:
