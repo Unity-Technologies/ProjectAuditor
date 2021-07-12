@@ -8,11 +8,11 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
-    class AssetsAuditor : IAuditor
+    class AssetsModule : IProjectAuditorModule
     {
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
-            category = IssueCategory.Assets,
+            category = IssueCategory.Asset,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Asset Name"},
@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_ProblemDescriptors.Add(descriptor);
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
             AnalyzeResources(onIssueFound);
             if (onComplete != null)
@@ -117,7 +117,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 (
                     k_Descriptor,
                     Path.GetFileNameWithoutExtension(location.Path),
-                    IssueCategory.Assets,
+                    IssueCategory.Asset,
                     location
                 )
                 {

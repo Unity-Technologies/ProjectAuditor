@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor
         public const Unity.ProjectAuditor.Editor.Area CPU = 0;
         public const Unity.ProjectAuditor.Editor.Area GPU = 1;
         public const Unity.ProjectAuditor.Editor.Area Info = 6;
-        public const Unity.ProjectAuditor.Editor.Area LoadTimes = 5;
+        public const Unity.ProjectAuditor.Editor.Area LoadTime = 5;
         public const Unity.ProjectAuditor.Editor.Area Memory = 2;
         public int value__;
     }
@@ -38,21 +38,21 @@ namespace Unity.ProjectAuditor.Editor
         public abstract bool IsPerfCritical();
     }
 
-    public interface IAuditor
+    public interface IProgress
     {
-        public abstract void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete = default(System.Action), Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
+        public abstract void Advance(string description = );
+        public abstract void Clear();
+        public abstract void Start(string title, string description, int total);
+    }
+
+    public interface IProjectAuditorModule
+    {
+        public abstract void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete = default(System.Action), Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
         public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
         public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
         public abstract void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
         public abstract bool IsSupported();
         public abstract void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-    }
-
-    public interface IProgressBar
-    {
-        public abstract void AdvanceProgressBar(string description = );
-        public abstract void ClearProgressBar();
-        public abstract void Initialize(string title, string description, int total);
     }
 
     public interface IProjectIssueFilter
@@ -62,18 +62,18 @@ namespace Unity.ProjectAuditor.Editor
 
     public enum IssueCategory
     {
-        public const Unity.ProjectAuditor.Editor.IssueCategory Assemblies = 10;
-        public const Unity.ProjectAuditor.Editor.IssueCategory Assets = 1;
-        public const Unity.ProjectAuditor.Editor.IssueCategory BuildFiles = 8;
-        public const Unity.ProjectAuditor.Editor.IssueCategory BuildSteps = 9;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Assembly = 10;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Asset = 1;
+        public const Unity.ProjectAuditor.Editor.IssueCategory BuildFile = 8;
+        public const Unity.ProjectAuditor.Editor.IssueCategory BuildStep = 9;
         public const Unity.ProjectAuditor.Editor.IssueCategory Code = 4;
-        public const Unity.ProjectAuditor.Editor.IssueCategory CodeCompilerMessages = 5;
-        public const Unity.ProjectAuditor.Editor.IssueCategory Generics = 6;
+        public const Unity.ProjectAuditor.Editor.IssueCategory CodeCompilerMessage = 5;
+        public const Unity.ProjectAuditor.Editor.IssueCategory GenericInstance = 6;
         public const Unity.ProjectAuditor.Editor.IssueCategory MetaData = 0;
         public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 11;
-        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 7;
-        public const Unity.ProjectAuditor.Editor.IssueCategory Shaders = 2;
-        public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariants = 3;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSetting = 7;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Shader = 2;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariant = 3;
         public int value__;
     }
 
@@ -116,11 +116,12 @@ namespace Unity.ProjectAuditor.Editor
         public virtual int callbackOrder { get; }
         public Unity.ProjectAuditor.Editor.ProjectAuditorConfig config { get; }
         public static string DataPath { get; }
+        public static string PackageVersion { get; }
         public ProjectAuditor() {}
         public ProjectAuditor(string assetPath) {}
         public ProjectAuditor(Unity.ProjectAuditor.Editor.ProjectAuditorConfig projectAuditorConfig) {}
-        public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
-        public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<bool> onUpdate, Unity.ProjectAuditor.Editor.IProgressBar progressBar = default(Unity.ProjectAuditor.Editor.IProgressBar));
+        public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
+        public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<bool> onUpdate, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
         public Unity.ProjectAuditor.Editor.IssueLayout GetLayout(Unity.ProjectAuditor.Editor.IssueCategory category);
         public virtual void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
     }
@@ -365,7 +366,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     {
         public abstract Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
         public abstract System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
-        public abstract void Initialize(Unity.ProjectAuditor.Editor.IAuditor auditor);
+        public abstract void Initialize(Unity.ProjectAuditor.Editor.IProjectAuditorModule module);
     }
 }
 
@@ -374,7 +375,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
     public interface ISettingsAnalyzer
     {
         public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> Analyze();
-        public abstract void Initialize(Unity.ProjectAuditor.Editor.IAuditor auditor);
+        public abstract void Initialize(Unity.ProjectAuditor.Editor.IProjectAuditorModule module);
     }
 }
 

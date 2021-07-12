@@ -37,7 +37,7 @@ class ScriptWithWarning {
         [Test]
         public void CompilerWarningIssueIsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_ScriptWithWarning, IssueCategory.CodeCompilerMessages);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_ScriptWithWarning, IssueCategory.CodeCompilerMessage);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -47,7 +47,7 @@ class ScriptWithWarning {
             Assert.That(issue.descriptor.area, Is.EqualTo(Area.Info.ToString()));
 
             // check issue
-            Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessages));
+            Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
             Assert.True(issue.description.Equals("The variable 'i' is assigned but its value is never used"));
             Assert.That(issue.line, Is.EqualTo(5));
             Assert.That(issue.severity, Is.EqualTo(Rule.Severity.Warning));

@@ -7,7 +7,7 @@ using UnityEngine.Analytics;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public static class ProjectAuditorAnalytics
+    static class ProjectAuditorAnalytics
     {
         const int k_MaxEventsPerHour = 100;
         const int k_MaxEventItems = 1000;
@@ -41,23 +41,24 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             OnlyCriticalIssues,
             Load,
             Save,
-
-            ApiCalls = 100,
+            // views
+            Summary,
+            ApiCalls,
+            CodeCompilerMessages,
+            Generics,
             ProjectSettings,
             Assets,
             Shaders,
-            Generics,
+            ShaderVariants,
             BuildFiles,
-            Summary,
-            CodeCompilerMessages,
-            Assemblies,
             BuildSteps,
+            Assemblies,
         }
 
         // -------------------------------------------------------------------------------------------------------------
 
         [Serializable]
-        struct ProjectAuditorUIButtonEvent
+        struct ProjectAuditorEvent
         {
             // camelCase since these events get serialized to Json and naming convention in analytics is camelCase
             public string action;    // Name of the buttom
@@ -65,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public Int64 duration; // Duration of event in ticks - 100-nanosecond intervals.
             public Int64 ts; //Timestamp (milliseconds epoch) when action started.
 
-            public ProjectAuditorUIButtonEvent(string name, Analytic analytic)
+            public ProjectAuditorEvent(string name, Analytic analytic)
             {
                 action = name;
                 t_since_start = SecondsToMicroseconds(analytic.GetStartTime());
@@ -75,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
 
         [Serializable]
-        struct ProjectAuditorUIButtonEventWithKeyValues
+        struct ProjectAuditorEventWithKeyValues
         {
             [Serializable]
             public struct EventKeyValue
@@ -90,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public Int64 ts;
             public EventKeyValue[] action_params;
 
-            public ProjectAuditorUIButtonEventWithKeyValues(string name, Analytic analytic, Dictionary<string, string> payload)
+            public ProjectAuditorEventWithKeyValues(string name, Analytic analytic, Dictionary<string, string> payload)
             {
                 action = name;
                 t_since_start = SecondsToMicroseconds(analytic.GetStartTime());
@@ -146,7 +147,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         // -------------------------------------------------------------------------------------------------------------
 
-        static string GetButtonName(UIButton uiButton)
+        static string GetEventName(UIButton uiButton)
         {
             switch (uiButton)
             {
@@ -155,13 +156,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 case UIButton.Export:
                     return "export_button_click";
                 case UIButton.Summary:
-                    return "api_summary";
+                    return "summary_tab";
                 case UIButton.ApiCalls:
                     return "api_tab";
                 case UIButton.Assets:
                     return "assets_tab";
                 case UIButton.Shaders:
                     return "shaders_tab";
+                case UIButton.ShaderVariants:
+                    return "shader_variants_tab";
                 case UIButton.ProjectSettings:
                     return "settings_tab";
                 case UIButton.Generics:
@@ -310,14 +313,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         // -------------------------------------------------------------------------------------------------------------
 
-        public static bool SendUIButtonEvent(UIButton uiButton, Analytic analytic)
+        public static bool SendEvent(UIButton uiButton, Analytic analytic)
         {
             analytic.End();
 
             if (s_EnableAnalytics)
             {
 #if UNITY_2018_1_OR_NEWER
-                var uiButtonEvent = new ProjectAuditorUIButtonEvent(GetButtonName(uiButton), analytic);
+                var uiButtonEvent = new ProjectAuditorEvent(GetEventName(uiButton), analytic);
 
                 var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
                 return (result == AnalyticsResult.Ok);
@@ -326,14 +329,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return false;
         }
 
-        public static bool SendUIButtonEventWithKeyValues(UIButton uiButton, Analytic analytic, Dictionary<string, string> payload)
+        public static bool SendEventWithKeyValues(UIButton uiButton, Analytic analytic, Dictionary<string, string> payload)
         {
             analytic.End();
 
             if (s_EnableAnalytics)
             {
 #if UNITY_2018_1_OR_NEWER
-                var uiButtonEvent = new ProjectAuditorUIButtonEventWithKeyValues(GetButtonName(uiButton), analytic, payload);
+                var uiButtonEvent = new ProjectAuditorEventWithKeyValues(GetEventName(uiButton), analytic, payload);
 
                 var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
                 return (result == AnalyticsResult.Ok);
@@ -342,7 +345,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return false;
         }
 
-        public static bool SendUIButtonEventWithSelectionSummary(UIButton uiButton, Analytic analytic, IssueTableItem[] selectedItems)
+        public static bool SendEventWithSelectionSummary(UIButton uiButton, Analytic analytic, IssueTableItem[] selectedItems)
         {
             analytic.End();
 
@@ -351,7 +354,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 #if UNITY_2018_1_OR_NEWER
                 var payload = CollectSelectionStats(selectedItems);
 
-                var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetButtonName(uiButton), analytic, payload);
+                var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
                 var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
                 return (result == AnalyticsResult.Ok);
@@ -360,7 +363,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return false;
         }
 
-        public static bool SendUIButtonEventWithAnalyzeSummary(UIButton uiButton, Analytic analytic, ProjectReport projectReport)
+        public static bool SendEventWithAnalyzeSummary(UIButton uiButton, Analytic analytic, ProjectReport projectReport)
         {
             analytic.End();
 
@@ -369,7 +372,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 #if UNITY_2018_1_OR_NEWER
                 var payload = GetScriptIssuesSummary(projectReport);
 
-                var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetButtonName(uiButton), analytic, payload);
+                var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
                 var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
                 return (result == AnalyticsResult.Ok);

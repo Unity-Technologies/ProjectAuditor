@@ -21,11 +21,17 @@ namespace Editor.UI.Framework
             set { m_ActiveViewIndex = value;  }
         }
 
+        public Action onViewExported;
         public Action<int> onViewChanged;
 
         public ViewManager(IssueCategory[] categories)
         {
             m_Categories = categories;
+        }
+
+        public bool IsValid()
+        {
+            return m_Categories != null && m_Categories.Length > 0;
         }
 
         public void AddIssues(ProjectIssue[] issues)
@@ -74,7 +80,7 @@ namespace Editor.UI.Framework
         public void Audit(ProjectAuditor projectAuditor)
         {
             var issues = new List<ProjectIssue>();
-            var modules = m_Categories.Select(projectAuditor.GetAuditor).Distinct();
+            var modules = m_Categories.Select(projectAuditor.GetModule).Distinct();
             foreach (var module in modules)
             {
                 module.Audit(issue => { issues.Add(issue); });
@@ -100,6 +106,11 @@ namespace Editor.UI.Framework
         public AnalysisView GetActiveView()
         {
             return m_Views[m_ActiveViewIndex];
+        }
+
+        public AnalysisView GetView(int index)
+        {
+            return m_Views[index];
         }
 
         public AnalysisView GetView(IssueCategory category)

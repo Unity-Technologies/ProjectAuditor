@@ -79,7 +79,7 @@ class ScriptWithError {
         {
             LogAssert.ignoreFailingMessages = true;
 
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_ScriptWithError, IssueCategory.CodeCompilerMessages);
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_ScriptWithError, IssueCategory.CodeCompilerMessage);
 
             LogAssert.ignoreFailingMessages = false;
 
@@ -91,7 +91,7 @@ class ScriptWithError {
             Assert.That(issue.descriptor.area, Is.EqualTo(Area.Info.ToString()));
 
             // check issue
-            Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessages));
+            Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
             Assert.True(issue.description.Equals(k_ExpectedDescription));
             Assert.That(issue.line, Is.EqualTo(6));
             Assert.That(issue.severity, Is.EqualTo(Rule.Severity.Error));

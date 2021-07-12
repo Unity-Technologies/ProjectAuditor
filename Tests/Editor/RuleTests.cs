@@ -62,7 +62,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         public void RuleTestPass()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var settingsAuditor = projectAuditor.GetAuditor<SettingsAuditor>();
+            var settingsAuditor = projectAuditor.GetModule<SettingsModule>();
             var descriptors = settingsAuditor.GetDescriptors();
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             var firstDescriptor = descriptors.FirstOrDefault();

@@ -18,6 +18,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        public static GUIStyle Label
+        {
+            get
+            {
+                if (s_Label == null)
+                    s_Label = new GUIStyle(EditorStyles.label);
+                return s_Label;
+            }
+        }
+
+
         public static GUIStyle TextArea
         {
             get
@@ -43,6 +54,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
 
         static GUIStyle s_Foldout;
+        static GUIStyle s_Label;
         static GUIStyle s_TextArea;
         static GUIStyle s_TextFieldWarning;
     }

@@ -147,7 +147,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             m_OutputFolder = string.Empty;
         }
 
-        public IEnumerable<AssemblyInfo> Compile(bool editorAssemblies = false, IProgressBar progressBar = null)
+        public IEnumerable<AssemblyInfo> Compile(bool editorAssemblies = false, IProgress progress = null)
         {
 #if UNITY_2019_3_OR_NEWER
             var assemblies = CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.PlayerWithoutTestAssemblies);
@@ -162,7 +162,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             if (editorAssemblies)
                 compiledAssemblyPaths = CompileEditorAssemblies(assemblies);
             else
-                compiledAssemblyPaths = CompileAssemblies(assemblies, progressBar);
+                compiledAssemblyPaths = CompileAssemblies(assemblies, progress);
 #else
             // fallback to CompilationPipeline assemblies
             compiledAssemblyPaths = CompileEditorAssemblies(assemblies, !editorAssemblies);
@@ -190,12 +190,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
         }
 
 #if UNITY_2018_2_OR_NEWER
-        IEnumerable<string> CompileAssemblies(Assembly[] assemblies, IProgressBar progressBar = null)
+        IEnumerable<string> CompileAssemblies(Assembly[] assemblies, IProgress progress = null)
         {
-            if (progressBar != null)
+            if (progress != null)
             {
                 var numAssemblies = assemblies.Length;
-                progressBar.Initialize("Assembly Compilation", "Compiling project scripts",
+                progress.Start("Assembly Compilation", "Compiling project scripts",
                     numAssemblies);
             }
 
@@ -209,16 +209,16 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 var assemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
                 m_AssemblyCompilationUnits[assemblyName].messages = messages;
 
-                if (progressBar != null)
-                    progressBar.AdvanceProgressBar(assemblyName);
+                if (progress != null)
+                    progress.Advance(assemblyName);
 
                 if (AssemblyCompilationFinished != null)
                     AssemblyCompilationFinished(assemblyName, messages);
             });
             UpdateAssemblyBuilders();
 
-            if (progressBar != null)
-                progressBar.ClearProgressBar();
+            if (progress != null)
+                progress.Clear();
 
             return m_AssemblyCompilationUnits.Where(pair => pair.Value.Success()).Select(unit => unit.Value.assemblyPath);
         }

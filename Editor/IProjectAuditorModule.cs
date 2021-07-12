@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
-    /// Auditor interface. Any class implementing the IAuditor interface will be instantiated by ProjectAuditor and used to audit the project
+    /// Project Auditor module interface. Any class implementing the IProjectAuditorModule interface will be instantiated by ProjectAuditor and used to audit the project
     /// </summary>
-    public interface IAuditor
+    public interface IProjectAuditorModule
     {
         IEnumerable<ProblemDescriptor> GetDescriptors();
 
@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="onIssueFound"> Action called whenever a new issue is found </param>
         /// <param name="onComplete"> Action called when the analysis completes </param>
-        /// <param name="progressBar"> Progress bar, if applicable </param>
-        void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null);
+        /// <param name="progress"> Progress bar, if applicable </param>
+        void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null);
     }
 }

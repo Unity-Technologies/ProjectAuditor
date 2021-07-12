@@ -40,7 +40,7 @@ class MyClass : MonoBehaviour
             var projectReport = new ProjectReport();
             Assert.Zero(projectReport.NumTotalIssues);
             Assert.Zero(projectReport.GetNumIssues(IssueCategory.Code));
-            Assert.Zero(projectReport.GetNumIssues(IssueCategory.ProjectSettings));
+            Assert.Zero(projectReport.GetNumIssues(IssueCategory.ProjectSetting));
         }
 
         [Test]
@@ -66,7 +66,7 @@ class MyClass : MonoBehaviour
 
             Assert.AreEqual(1, projectReport.NumTotalIssues);
             Assert.AreEqual(1, projectReport.GetNumIssues(IssueCategory.Code));
-            Assert.AreEqual(0, projectReport.GetNumIssues(IssueCategory.ProjectSettings));
+            Assert.AreEqual(0, projectReport.GetNumIssues(IssueCategory.ProjectSetting));
         }
 
         void AnalyzeAndExport(IssueCategory category, string path)
@@ -113,7 +113,7 @@ class MyClass : MonoBehaviour
             var savedSetting = PlayerSettings.bakeCollisionMeshes;
             PlayerSettings.bakeCollisionMeshes = false;
 
-            var category = IssueCategory.ProjectSettings;
+            var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
             AnalyzeAndExport(category, path);
             var issueFound = false;
@@ -122,7 +122,7 @@ class MyClass : MonoBehaviour
                 var line = file.ReadLine();
                 Assert.True(line.Equals("Issue,Area"));
 
-                var expectedIssueLine = "\"Player: Prebake Collision Meshes\",\"BuildSize|LoadTimes\"";
+                var expectedIssueLine = "\"Player: Prebake Collision Meshes\",\"BuildSize|LoadTime\"";
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();

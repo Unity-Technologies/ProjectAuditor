@@ -18,13 +18,15 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var savedSetting = PlayerSettings.bakeCollisionMeshes;
             PlayerSettings.bakeCollisionMeshes = false;
 
-            var issues = Utility.Analyze(IssueCategory.ProjectSettings);
+            var issues = Utility.Analyze(IssueCategory.ProjectSetting);
             var playerSettingIssue = issues.FirstOrDefault(i => i.descriptor.method.Equals("bakeCollisionMeshes"));
 
             Assert.NotNull(playerSettingIssue);
             Assert.True(playerSettingIssue.description.Equals("Player: Prebake Collision Meshes"));
             Assert.True(playerSettingIssue.location.Path.Equals("Project/Player"));
+            Assert.True(playerSettingIssue.descriptor.area.Equals("BuildSize|LoadTime"));
 
+            // restore bakeCollisionMeshes
             PlayerSettings.bakeCollisionMeshes = savedSetting;
         }
 
@@ -35,7 +37,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             // 0.02f is the default Time.fixedDeltaTime value and will be reported as an issue
             Time.fixedDeltaTime = 0.02f;
 
-            var issues = Utility.Analyze(IssueCategory.ProjectSettings);
+            var issues = Utility.Analyze(IssueCategory.ProjectSetting);
             var fixedDeltaTimeIssue = issues.FirstOrDefault(i => i.descriptor.method.Equals("fixedDeltaTime"));
             Assert.NotNull(fixedDeltaTimeIssue);
             Assert.True(fixedDeltaTimeIssue.description.Equals("Time: Fixed Timestep"));
@@ -44,7 +46,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             // "fix" fixedDeltaTime so it's not reported anymore
             Time.fixedDeltaTime = 0.021f;
 
-            issues = Utility.Analyze(IssueCategory.ProjectSettings);
+            issues = Utility.Analyze(IssueCategory.ProjectSetting);
             Assert.Null(issues.FirstOrDefault(i => i.descriptor.method.Equals("fixedDeltaTime")));
 
             // restore Time.fixedDeltaTime

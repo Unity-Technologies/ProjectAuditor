@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         Dictionary<string, ProblemDescriptor> m_GenericDescriptors = new Dictionary<string, ProblemDescriptor>();
 
-        public void Initialize(IAuditor auditor)
+        public void Initialize(IProjectAuditorModule module)
         {
         }
 
@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                     m_GenericDescriptors.Add(typeDefinition.FullName, desc);
                 }
 
-                return new ProjectIssue(m_GenericDescriptors[genericTypeName], typeReference.FullName, IssueCategory.Generics, new CallTreeNode(methodDefinition));
+                return new ProjectIssue(m_GenericDescriptors[genericTypeName], typeReference.FullName, IssueCategory.GenericInstance, new CallTreeNode(methodDefinition));
             }
             catch (AssemblyResolutionException e)
             {

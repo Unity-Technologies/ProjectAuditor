@@ -7,11 +7,11 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
-    class SettingsAuditor : IAuditor
+    class SettingsModule : IProjectAuditorModule
     {
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
-            category = IssueCategory.ProjectSettings,
+            category = IssueCategory.ProjectSetting,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
@@ -51,15 +51,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_ProblemDescriptors.Add(descriptor);
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
-            if (progressBar != null)
-                progressBar.Initialize("Analyzing Settings", "Analyzing project settings", m_Analyzers.Count);
+            if (progress != null)
+                progress.Start("Analyzing Settings", "Analyzing project settings", m_Analyzers.Count);
 
             foreach (var analyzer in m_Analyzers)
             {
-                if (progressBar != null)
-                    progressBar.AdvanceProgressBar();
+                if (progress != null)
+                    progress.Advance();
 
                 foreach (var issue in analyzer.Analyze())
                 {
@@ -67,8 +67,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 }
             }
 
-            if (progressBar != null)
-                progressBar.ClearProgressBar();
+            if (progress != null)
+                progress.Clear();
 
             if (onComplete != null)
                 onComplete();

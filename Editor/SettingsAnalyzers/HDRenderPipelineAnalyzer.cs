@@ -29,10 +29,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             "Change HDRP asset and all Cameras 'Lit Shader Mode' to either Forward or Deferred."
         );
 
-        public void Initialize(IAuditor auditor)
+        public void Initialize(IProjectAuditorModule module)
         {
-            auditor.RegisterDescriptor(k_AssetLitShaderModeBothOrMixed);
-            auditor.RegisterDescriptor(k_CameraLitShaderModeBothOrMixed);
+            module.RegisterDescriptor(k_AssetLitShaderModeBothOrMixed);
+            module.RegisterDescriptor(k_CameraLitShaderModeBothOrMixed);
         }
 
         public int GetDescriptorId()
@@ -64,9 +64,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
                         forwardCamera = true;
 
                     if (deferredCamera && forwardCamera)
-                        yield return new ProjectIssue(k_CameraLitShaderModeBothOrMixed, k_CameraLitShaderModeBothOrMixed.description, IssueCategory.ProjectSettings);
+                        yield return new ProjectIssue(k_CameraLitShaderModeBothOrMixed, k_CameraLitShaderModeBothOrMixed.description, IssueCategory.ProjectSetting);
                 }
-                yield return new ProjectIssue(k_AssetLitShaderModeBothOrMixed, k_AssetLitShaderModeBothOrMixed.description, IssueCategory.ProjectSettings);
+                yield return new ProjectIssue(k_AssetLitShaderModeBothOrMixed, k_AssetLitShaderModeBothOrMixed.description, IssueCategory.ProjectSetting);
             }
         }
 

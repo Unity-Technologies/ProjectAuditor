@@ -11,10 +11,10 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         public void CanGetBuiltinAuditorTypes()
         {
-            var types = TypeCache.GetTypesDerivedFrom(typeof(IAuditor));
+            var types = TypeCache.GetTypesDerivedFrom(typeof(IProjectAuditorModule));
 
-            Assert.NotNull(types.FirstOrDefault(type => type == typeof(ScriptAuditor)));
-            Assert.NotNull(types.FirstOrDefault(type => type == typeof(SettingsAuditor)));
+            Assert.NotNull(types.FirstOrDefault(type => type == typeof(CodeModule)));
+            Assert.NotNull(types.FirstOrDefault(type => type == typeof(SettingsModule)));
         }
     }
 }
