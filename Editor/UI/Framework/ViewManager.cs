@@ -138,8 +138,6 @@ namespace Editor.UI.Framework
 
                 activeView.Refresh();
 
-                ProjectAuditorAnalytics.SendUIButtonEvent((ProjectAuditorAnalytics.UIButton)activeView.desc.analyticsEvent, ProjectAuditorAnalytics.BeginAnalytic());
-
                 if (onViewChanged != null)
                     onViewChanged(m_ActiveViewIndex);
             }

@@ -460,7 +460,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnPostprocessBuild(BuildTarget target)
         {
-            IncrementalAudit<BuildReportModule>();
+            IncrementalAudit<BuildAuditor>();
         }
 
         void IncrementalAudit<T>() where T : class, IProjectAuditorModule

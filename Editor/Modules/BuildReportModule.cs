@@ -161,85 +161,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Area.BuildSize
             );
 
-
-        readonly Dictionary<string, ProblemDescriptor> m_DescriptorByExtension = new Dictionary<string, ProblemDescriptor>()
-        {
-            { ".asset", k_AssetDescriptor },
-            { ".compute", k_ShaderDescriptor },
-            { ".shader", k_ShaderDescriptor },
-            { ".png", k_TextureDescriptor },
-            { ".tga", k_TextureDescriptor },
-            { ".exr", k_TextureDescriptor },
-            { ".mat", k_MaterialDescriptor },
-            { ".fbx", k_ModelDescriptor },
-            { ".ttf", k_FontDescriptor },
-            { ".bytes", k_ByteDataDescriptor },
-            { ".prefab", k_PrefabDescriptor },
-        };
-
-        static readonly ProblemDescriptor k_AssetDescriptor = new ProblemDescriptor
-            (
-            600003,
-            "Asset",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_ByteDataDescriptor = new ProblemDescriptor
-            (
-            600004,
-            "Byte data",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_FontDescriptor = new ProblemDescriptor
-            (
-            600005,
-            "Font",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_MaterialDescriptor = new ProblemDescriptor
-            (
-            600006,
-            "Material",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_ModelDescriptor = new ProblemDescriptor
-            (
-            600007,
-            "Model",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_PrefabDescriptor = new ProblemDescriptor
-            (
-            600008,
-            "Prefab",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_ShaderDescriptor = new ProblemDescriptor
-            (
-            600009,
-            "Shader",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_TextureDescriptor = new ProblemDescriptor
-            (
-            600010,
-            "Texture",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_OtherTypeDescriptor = new ProblemDescriptor
-            (
-            600011,
-            "Other Type",
-            Area.BuildSize
-            );
-
 #pragma warning disable 0414
         readonly Dictionary<string, ProblemDescriptor> m_DescriptorByExtension = new Dictionary<string, ProblemDescriptor>()
         {
@@ -427,7 +348,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     if (m_DescriptorByExtension.ContainsKey(ext))
                         descriptor = m_DescriptorByExtension[ext];
 
-                    var issue = new ProjectIssue(k_Descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
+                    var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
                     issue.SetCustomProperties(new string[(int)BuildReportFileProperty.Num]
                     {
                         sum.ToString(),

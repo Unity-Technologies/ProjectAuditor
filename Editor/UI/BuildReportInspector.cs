@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 var projectAuditor = new ProjectAuditor();
                 m_Preferences = new Preferences();
-                m_ViewManager = new ViewManager(new[] { IssueCategory.BuildSteps, IssueCategory.BuildFiles});
+                m_ViewManager = new ViewManager(new[] { IssueCategory.BuildStep, IssueCategory.BuildFile});
                 m_ViewManager.Create(projectAuditor, m_Preferences, this);
                 m_ViewManager.Audit(projectAuditor);
                 m_ViewManager.activeViewIndex = s_ActiveViewIndex;
