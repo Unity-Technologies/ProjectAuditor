@@ -40,7 +40,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Space();
             EditorGUILayout.BeginVertical();
             EditorGUI.indentLevel++;
-            foreach (var issue in m_Issues)
+
+            // note that m_Issues might change during background analysis.
+            foreach (var issue in m_Issues.ToArray())
             {
                 DrawKeyValue(issue.description, issue.GetCustomProperty(MetaDataProperty.Value));
             }
