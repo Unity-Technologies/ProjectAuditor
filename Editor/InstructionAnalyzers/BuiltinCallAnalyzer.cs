@@ -14,12 +14,12 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         Dictionary<string, List<ProblemDescriptor>> m_Descriptors; // method name as key, list of type names as value
         Dictionary<string, ProblemDescriptor> m_WholeNamespaceDescriptors; // namespace as key
 
-        public void Initialize(IAuditor auditor)
+        public void Initialize(IProjectAuditorModule module)
         {
             var descriptors = ProblemDescriptorLoader.LoadFromJson(ProjectAuditor.DataPath, "ApiDatabase");
             foreach (var descriptor in descriptors)
             {
-                auditor.RegisterDescriptor(descriptor);
+                module.RegisterDescriptor(descriptor);
             }
 
             var methodDescriptors = descriptors.Where(descriptor => !descriptor.method.Equals("*") && !string.IsNullOrEmpty(descriptor.type));
@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 m_Descriptors[d.method].Add(d);
             }
 
-            m_WholeNamespaceDescriptors = auditor.GetDescriptors().Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
+            m_WholeNamespaceDescriptors = module.GetDescriptors().Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
         }
 
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)

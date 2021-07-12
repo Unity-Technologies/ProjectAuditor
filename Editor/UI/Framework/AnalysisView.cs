@@ -217,7 +217,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Table.OnGUI(r);
             Profiler.EndSample();
 
-            var info = selectedIssues.Length + " / " + m_Table.GetNumMatchingIssues() + " Items";
+            var info = selectedIssues.Length + " / " + m_Table.GetNumMatchingIssues() + " Items selected";
             EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
 
             EditorGUILayout.EndVertical();
@@ -255,6 +255,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
             m_Table.SetFontSize(m_Preferences.fontSize);
 
+            SharedStyles.Label.fontSize = m_Preferences.fontSize;
             SharedStyles.TextArea.fontSize = m_Preferences.fontSize;
 
             if (m_Desc.groupByDescriptor)

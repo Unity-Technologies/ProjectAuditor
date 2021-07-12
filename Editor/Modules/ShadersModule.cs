@@ -1,6 +1,3 @@
-#if UNITY_2018_2_OR_NEWER
-using UnityEditor.Build.Reporting;
-#endif
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -65,14 +62,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public string[] keywords;
     }
 
-    class ShadersAuditor : IAuditor
+    class ShadersModule : IProjectAuditorModule
 #if UNITY_2018_2_OR_NEWER
         , IPreprocessShaders
 #endif
     {
         static readonly IssueLayout k_ShaderLayout = new IssueLayout
         {
-            category = IssueCategory.Shaders,
+            category = IssueCategory.Shader,
             properties = new[]
             {
 //                new PropertyDefinition { type = PropertyType.Severity},
@@ -88,7 +85,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly IssueLayout k_ShaderVariantLayout = new IssueLayout
         {
-            category = IssueCategory.ShaderVariants,
+            category = IssueCategory.ShaderVariant,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
@@ -142,7 +139,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
             var shaderPathMap = new Dictionary<Shader, string>();
             var shaderGuids = AssetDatabase.FindAssets("t:shader");
@@ -228,7 +225,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 shaderName = Path.GetFileNameWithoutExtension(assetPath) + ": Parse Error";
 
-                var issueWithError = new ProjectIssue(k_ParseErrorDescriptor, shaderName, IssueCategory.Shaders, new Location(assetPath));
+                var issueWithError = new ProjectIssue(k_ParseErrorDescriptor, shaderName, IssueCategory.Shader, new Location(assetPath));
                 issueWithError.SetCustomProperties((int)ShaderProperty.Num, k_NotAvailable);
 
                 onIssueFound(issueWithError);
@@ -260,7 +257,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #if UNITY_2019_1_OR_NEWER
             passCount = shader.passCount;
 #endif
-            var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.Shaders, new Location(assetPath));
+            var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.Shader, new Location(assetPath));
             issue.SetCustomProperties(new string[(int)ShaderProperty.Num]
             {
                 variantCount == -1 ? k_NotAvailable : variantCount.ToString(),
@@ -292,7 +289,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 var compilerData = shaderVariantData.compilerData;
                 var keywords = GetShaderKeywords(shader, compilerData.shaderKeywordSet.GetShaderKeywords());
-                var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariants, new Location(assetPath));
+                var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariant, new Location(assetPath));
                 issue.SetCustomProperties(new string[(int)ShaderVariantProperty.Num]
                 {
                     k_NoRuntimeData,
@@ -335,7 +332,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
 
 
-        public static ParseLogResult ParsePlayerLog(string logFile, ProjectIssue[] builtVariants, IProgressBar progressBar = null)
+        public static ParseLogResult ParsePlayerLog(string logFile, ProjectIssue[] builtVariants, IProgress progress = null)
         {
             var compiledVariants = new Dictionary<string, List<CompiledVariantData>>();
             var lines = GetCompiledShaderLines(logFile);
@@ -344,11 +341,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             foreach (var line in lines)
             {
-                var parts = line.Split(',');
+                var parts = line.Split(new[] {", pass: ", ", stage: ", ", keywords "}, StringSplitOptions.None);
+                if (parts.Length != 4)
+                {
+                    Debug.LogError("Malformed shader compilation log info: " + line);
+                    continue;
+                }
+
                 var shaderName = parts[0];
-                var pass = parts[1].Trim(' ').Substring("pass: ".Length);
-                var stage = parts[2].Trim(' ').Substring("stage: ".Length);
-                var keywordsString = parts[3].Trim(' ').Substring("keywords ".Length); // note that the log is missing ':'
+                var pass = parts[1];
+                var stage = parts[2];
+                var keywordsString = parts[3];
                 var keywords = StringToKeywords(keywordsString);
 
                 if (!stage.Equals("fragment") && !stage.Equals("pixel") && !stage.Equals("all"))

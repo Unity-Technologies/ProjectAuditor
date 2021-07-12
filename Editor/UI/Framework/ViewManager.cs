@@ -80,7 +80,7 @@ namespace Editor.UI.Framework
         public void Audit(ProjectAuditor projectAuditor)
         {
             var issues = new List<ProjectIssue>();
-            var modules = m_Categories.Select(projectAuditor.GetAuditor).Distinct();
+            var modules = m_Categories.Select(projectAuditor.GetModule).Distinct();
             foreach (var module in modules)
             {
                 module.Audit(issue => { issues.Add(issue); });

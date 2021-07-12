@@ -33,13 +33,13 @@ namespace Unity.ProjectAuditor.Editor.UI
         public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
             base.AddIssues(allIssues);
-            if (m_Desc.category == IssueCategory.BuildFiles)
+            if (m_Desc.category == IssueCategory.BuildFile)
             {
                 var list = m_Issues.GroupBy(i => i.descriptor).Select(g => new GroupStats
                 {
                     assetGroup = g.Key.description,
                     count = g.Count(),
-                    size = g.Sum(s => s.GetCustomPropertyAsInt(BuildReportFileProperty.Size))
+                    size = g.Sum(s => s.GetCustomPropertyAsLong(BuildReportFileProperty.Size))
                 }).ToList();
                 list.Sort((a, b) => b.size.CompareTo(a.size));
                 m_GroupStats = list.ToArray();
@@ -55,14 +55,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         protected override void OnDrawInfo()
         {
-            var report = BuildAuditor.GetBuildReport();
+            var report = BuildReportModule.GetBuildReport();
             if (report == null)
             {
                 EditorGUILayout.LabelField("Build Report summary not found");
             }
             else
             {
-                if (m_Desc.category == IssueCategory.BuildSteps)
+                if (m_Desc.category == IssueCategory.BuildStep)
                 {
                     EditorGUILayout.BeginVertical();
 
@@ -95,18 +95,19 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     EditorGUILayout.BeginVertical();
 
+                    var barColor = new Color(0.0f, 0.6f, 0.6f);
                     var maxGroupSize = (float)m_GroupStats.Max(g => g.size);
                     foreach (var group in m_GroupStats)
                     {
                         var groupSize = group.size;
                         EditorGUILayout.BeginHorizontal();
 
-                        EditorGUILayout.LabelField(string.Format("{0}:", group.assetGroup, group.count), GUILayout.Width(200));
+                        EditorGUILayout.LabelField(string.Format("{0}:", group.assetGroup), GUILayout.Width(200));
 
                         var rect = EditorGUILayout.GetControlRect(GUILayout.Width(width));
                         if (m_2D.DrawStart(rect))
                         {
-                            m_2D.DrawFilledBox(0, 1, Math.Max(1, rect.width * groupSize / maxGroupSize), rect.height - 1, Color.white);
+                            m_2D.DrawFilledBox(0, 1, Math.Max(1, rect.width * groupSize / maxGroupSize), rect.height - 1, barColor);
                             m_2D.DrawEnd();
                         }
 

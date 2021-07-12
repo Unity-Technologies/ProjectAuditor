@@ -5,7 +5,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
     public interface ISettingsAnalyzer
     {
-        void Initialize(IAuditor auditor);
+        void Initialize(IProjectAuditorModule module);
 
         IEnumerable<ProjectIssue> Analyze();
     }

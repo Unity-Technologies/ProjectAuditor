@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Num
     }
 
-    class ScriptAuditor : IAuditor
+    class CodeModule : IProjectAuditorModule
     {
         static readonly ProblemDescriptor k_AssemblyDescriptor = new ProblemDescriptor
             (
@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly IssueLayout k_AssemblyLayout = new IssueLayout
         {
-            category = IssueCategory.Assemblies,
+            category = IssueCategory.Assembly,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Assembly Name"},
@@ -70,12 +70,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly IssueLayout k_CompilerMessageLayout = new IssueLayout
         {
-            category = IssueCategory.CodeCompilerMessages,
+            category = IssueCategory.CodeCompilerMessage,
             properties = new[]
             {
+                new PropertyDefinition { type = PropertyType.Severity, name = "Type"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Code), format = PropertyFormat.String, name = "Code"},
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Message", longName = "Compiler Message"},
-                new PropertyDefinition { type = PropertyType.Severity, name = "Type"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Assembly), format = PropertyFormat.String, name = "Target Assembly", longName = "Managed Assembly name" },
                 new PropertyDefinition { type = PropertyType.Path, name = "Full path"},
@@ -84,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly IssueLayout k_GenericIssueLayout = new IssueLayout
         {
-            category = IssueCategory.Generics,
+            category = IssueCategory.GenericInstance,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Generic Type"},
@@ -130,7 +130,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             return true;
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
             if (m_ProblemDescriptors == null)
                 throw new Exception("Issue Database not initialized.");
@@ -144,7 +144,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             };
 
             Profiler.BeginSample("ScriptAuditor.Audit.Compilation");
-            var assemblyInfos = compilationPipeline.Compile(m_Config.AnalyzeEditorCode, progressBar);
+            var assemblyInfos = compilationPipeline.Compile(m_Config.AnalyzeEditorCode, progress);
             Profiler.EndSample();
 
             var callCrawler = new CallCrawler();
@@ -154,7 +154,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             foreach (var assemblyInfo in assemblyInfos)
             {
-                onIssueFound(new ProjectIssue(k_AssemblyDescriptor, assemblyInfo.name, IssueCategory.Assemblies, assemblyInfo.asmDefPath, new string[(int)AssemblyProperty.Num] { assemblyInfo.readOnly.ToString() }));
+                onIssueFound(new ProjectIssue(k_AssemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath, new string[(int)AssemblyProperty.Num] { assemblyInfo.readOnly.ToString() }));
             }
 
             var assemblyDirectories = new List<string>();
@@ -167,7 +167,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 callCrawler.Add(pair);
             });
 
-            var onCompleteInternal = new Action<IProgressBar>(bar =>
+            var onCompleteInternal = new Action<IProgress>(bar =>
             {
                 compilationPipeline.Dispose();
                 callCrawler.BuildCallHierarchies(issues, bar);
@@ -185,7 +185,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Profiler.BeginSample("ScriptAuditor.Audit.Analysis");
 
             // first phase: analyze assemblies generated from editable scripts
-            AnalyzeAssemblies(localAssemblyInfos, assemblyDirectories, onCallFound, onIssueFoundInternal, null, progressBar);
+            AnalyzeAssemblies(localAssemblyInfos, assemblyDirectories, onCallFound, onIssueFoundInternal, null, progress);
 
             var enableBackgroundAnalysis = m_Config.AnalyzeInBackground;
 #if !UNITY_2019_3_OR_NEWER
@@ -203,13 +203,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             else
             {
                 Profiler.BeginSample("ScriptAuditor.Audit.AnalysisReadOnly");
-                AnalyzeAssemblies(readOnlyAssemblyInfos, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal, progressBar);
+                AnalyzeAssemblies(readOnlyAssemblyInfos, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal, progress);
                 Profiler.EndSample();
             }
             Profiler.EndSample();
         }
 
-        void AnalyzeAssemblies(IEnumerable<AssemblyInfo> assemblyInfos, List<string> assemblyDirectories, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound, Action<IProgressBar> onComplete, IProgressBar progressBar = null)
+        void AnalyzeAssemblies(IEnumerable<AssemblyInfo> assemblyInfos, List<string> assemblyDirectories, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound, Action<IProgress> onComplete, IProgress progress = null)
         {
             using (var assemblyResolver = new DefaultAssemblyResolver())
             {
@@ -219,16 +219,16 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 foreach (var dir in assemblyInfos.Select(info => Path.GetDirectoryName(info.path)).Distinct())
                     assemblyResolver.AddSearchDirectory(dir);
 
-                if (progressBar != null)
-                    progressBar.Initialize("Analyzing Scripts", "Analyzing project scripts",
+                if (progress != null)
+                    progress.Start("Analyzing Scripts", "Analyzing project scripts",
                         assemblyInfos.Count());
 
                 // Analyse all Player assemblies
                 foreach (var assemblyInfo in assemblyInfos)
                 {
                     Console.WriteLine("[Project Auditor] Analyzing {0}", assemblyInfo.name);
-                    if (progressBar != null)
-                        progressBar.AdvanceProgressBar(string.Format("Analyzing {0}", assemblyInfo.name));
+                    if (progress != null)
+                        progress.Advance(string.Format("Analyzing {0}", assemblyInfo.name));
 
                     if (!File.Exists(assemblyInfo.path))
                     {
@@ -240,11 +240,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 }
             }
 
-            if (progressBar != null)
-                progressBar.ClearProgressBar();
+            if (progress != null)
+                progress.Clear();
 
             if (onComplete != null)
-                onComplete(progressBar);
+                onComplete(progress);
         }
 
         public void RegisterDescriptor(ProblemDescriptor descriptor)
@@ -375,7 +375,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 }
 
                 var issue = new ProjectIssue(descriptor, message.message,
-                    IssueCategory.CodeCompilerMessages,
+                    IssueCategory.CodeCompilerMessage,
                     new Location(message.file.Replace("\\", "/"), message.line),
                     new string[(int)CompilerMessageProperty.Num]
                     {

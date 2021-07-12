@@ -57,7 +57,7 @@ class InternalClass
                 searchText = string.Empty
             };
 
-            var issues = Utility.Analyze(IssueCategory.ProjectSettings);
+            var issues = Utility.Analyze(IssueCategory.ProjectSetting);
             var filteredIssues = issues.Where(i => stringFilter.Match(i));
 
             Assert.AreEqual(issues.Length, filteredIssues.Count());
@@ -69,7 +69,7 @@ class InternalClass
             // disabling stripEngineCode will be reported as an issue
             PlayerSettings.stripEngineCode = false;
 
-            var issues = Utility.Analyze(IssueCategory.ProjectSettings);
+            var issues = Utility.Analyze(IssueCategory.ProjectSetting);
             var stringFilter = new TextFilter
             {
                 matchCase = true,
@@ -93,7 +93,7 @@ class InternalClass
             // disabling stripEngineCode will be reported as an issue
             PlayerSettings.stripEngineCode = false;
 
-            var issues = Utility.Analyze(IssueCategory.ProjectSettings);
+            var issues = Utility.Analyze(IssueCategory.ProjectSetting);
             var stringFilter = new TextFilter
             {
                 matchCase = false,

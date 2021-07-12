@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Load times
         /// </summary>
-        LoadTimes,
+        LoadTime,
 
         /// <summary>
         /// Area not applicable. Information purposes only.

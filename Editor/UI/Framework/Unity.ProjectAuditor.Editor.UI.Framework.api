@@ -122,17 +122,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Preferences() {}
     }
 
-    public class ProgressBarDisplay : Unity.ProjectAuditor.Editor.IProgressBar
+    public class ProgressBar : Unity.ProjectAuditor.Editor.IProgress
     {
-        public ProgressBarDisplay() {}
-        public virtual void AdvanceProgressBar(string description = );
-        public virtual void ClearProgressBar();
-        public virtual void Initialize(string title, string description, int total);
+        public ProgressBar() {}
+        public virtual void Advance(string description = );
+        public virtual void Clear();
+        public virtual void Start(string title, string description, int total);
     }
 
     public static class SharedStyles
     {
         public static UnityEngine.GUIStyle Foldout { get; }
+        public static UnityEngine.GUIStyle Label { get; }
         public static UnityEngine.GUIStyle TextArea { get; }
         public static UnityEngine.GUIStyle TextFieldWarning { get; }
     }
@@ -176,6 +177,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static bool BoldFoldout(bool toggle, UnityEngine.GUIContent content);
         public static void DrawHelpButton(string page);
         public static void DrawSelectedText(string text);
+        public static UnityEngine.GUIContent GetIcon(string name);
+        public static UnityEngine.GUIContent GetStatusWheel();
         public static UnityEngine.GUIStyle GetStyle(string styleName);
         public static string GetTreeViewSelectedSummary(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection, string[] names);
         public static void ToolbarDropdownList(Unity.ProjectAuditor.Editor.UI.Framework.Utility.DropdownItem[] items, int selectionIndex, UnityEditor.GenericMenu.MenuFunction2 callback, params UnityEngine.GUILayoutOption[] options);
