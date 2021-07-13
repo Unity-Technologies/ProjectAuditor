@@ -25,8 +25,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (m_ViewManager == null)
             {
-                BuildReportModule.BuildReportProvider = this;
-
                 var projectAuditor = new ProjectAuditor();
                 m_Preferences = new Preferences();
                 m_ViewManager = new ViewManager(new[] { IssueCategory.BuildStep, IssueCategory.BuildFile});
@@ -34,8 +32,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ViewManager.Audit(projectAuditor);
                 m_ViewManager.activeViewIndex = s_ActiveViewIndex;
                 m_ViewManager.onViewChanged = index => s_ActiveViewIndex = index;
-
-                BuildReportModule.BuildReportProvider = null;
+                (m_ViewManager.GetView(IssueCategory.BuildStep) as BuildReportView).buildReportProvider = this;
+                (m_ViewManager.GetView(IssueCategory.BuildFile) as BuildReportView).buildReportProvider = this;
             }
 
             EditorGUILayout.BeginVertical(GUILayout.Height(Screen.height));

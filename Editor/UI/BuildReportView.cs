@@ -26,6 +26,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         IBuildReportProvider m_BuildReportProvider;
 
+        public IBuildReportProvider buildReportProvider
+        {
+            set
+            {
+                m_BuildReportProvider = value;
+            }
+        }
+
         public BuildReportView(ViewManager viewManager) :
             base(viewManager)
         {

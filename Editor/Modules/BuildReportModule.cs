@@ -68,7 +68,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         }
     }
 
-    public // TEMP
     class BuildReportModule : IProjectAuditorModule
     {
         static readonly ProblemDescriptor k_InfoDescriptor = new ProblemDescriptor
