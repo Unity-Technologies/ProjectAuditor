@@ -24,6 +24,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.NotNull(playerSettingIssue);
             Assert.True(playerSettingIssue.description.Equals("Player: Prebake Collision Meshes"));
             Assert.True(playerSettingIssue.location.Path.Equals("Project/Player"));
+            Assert.AreEqual(2, playerSettingIssue.descriptor.areasAsEnums.Length);
             Assert.Contains(Area.BuildSize, playerSettingIssue.descriptor.areasAsEnums);
             Assert.Contains(Area.LoadTime, playerSettingIssue.descriptor.areasAsEnums);
 
