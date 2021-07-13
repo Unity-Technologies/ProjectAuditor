@@ -13,6 +13,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     class IssueTable : TreeView
     {
+        static readonly int k_DefaultRowHeight = 18;
         static readonly int k_FirstId = 1;
 
         readonly ProjectAuditorConfig m_Config;
@@ -26,7 +27,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         int m_NextId;
         int m_NumMatchingIssues;
         bool m_FlatView;
-        int m_FontSize;
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
                           ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config,
@@ -39,7 +39,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Layout = layout;
             m_FlatView = !desc.groupByDescriptor;
             m_NextId = k_FirstId;
-            m_FontSize = Preferences.k_MinFontSize;
             multicolumnHeader.sortingChanged += OnSortingChanged;
         }
 
@@ -177,9 +176,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void SetFontSize(int fontSize)
         {
-            const int k_DefaultRowHeight = 18;
-
-            m_FontSize = fontSize;
             rowHeight = k_DefaultRowHeight * fontSize / Preferences.k_MinFontSize;
         }
 
@@ -283,8 +279,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     break;
 
                     case PropertyType.Area:
-                        if (!m_Desc.groupByDescriptor)
-                            EditorGUI.LabelField(cellRect, new GUIContent(areaNames, areaLongDescription), labelStyle);
+                        EditorGUI.LabelField(cellRect, new GUIContent(areaNames, areaLongDescription), labelStyle);
                         break;
 
                     case PropertyType.Description:

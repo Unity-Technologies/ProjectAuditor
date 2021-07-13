@@ -62,18 +62,18 @@ namespace Unity.ProjectAuditor.Editor
 
     public enum IssueCategory
     {
-        public const Unity.ProjectAuditor.Editor.IssueCategory Assemblies = 10;
-        public const Unity.ProjectAuditor.Editor.IssueCategory Assets = 1;
-        public const Unity.ProjectAuditor.Editor.IssueCategory BuildFiles = 8;
-        public const Unity.ProjectAuditor.Editor.IssueCategory BuildSteps = 9;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Assembly = 10;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Asset = 1;
+        public const Unity.ProjectAuditor.Editor.IssueCategory BuildFile = 8;
+        public const Unity.ProjectAuditor.Editor.IssueCategory BuildStep = 9;
         public const Unity.ProjectAuditor.Editor.IssueCategory Code = 4;
-        public const Unity.ProjectAuditor.Editor.IssueCategory CodeCompilerMessages = 5;
-        public const Unity.ProjectAuditor.Editor.IssueCategory Generics = 6;
+        public const Unity.ProjectAuditor.Editor.IssueCategory CodeCompilerMessage = 5;
+        public const Unity.ProjectAuditor.Editor.IssueCategory GenericInstance = 6;
         public const Unity.ProjectAuditor.Editor.IssueCategory MetaData = 0;
         public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 11;
-        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSettings = 7;
-        public const Unity.ProjectAuditor.Editor.IssueCategory Shaders = 2;
-        public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariants = 3;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSetting = 7;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Shader = 2;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariant = 3;
         public int value__;
     }
 
@@ -116,6 +116,7 @@ namespace Unity.ProjectAuditor.Editor
         public virtual int callbackOrder { get; }
         public Unity.ProjectAuditor.Editor.ProjectAuditorConfig config { get; }
         public static string DataPath { get; }
+        public static string PackageVersion { get; }
         public ProjectAuditor() {}
         public ProjectAuditor(string assetPath) {}
         public ProjectAuditor(Unity.ProjectAuditor.Editor.ProjectAuditorConfig projectAuditorConfig) {}
@@ -170,6 +171,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         public int NumTotalIssues { get; }
         public ProjectReport() {}
+        public Unity.ProjectAuditor.Editor.ProjectIssue[] GetAllIssues();
         public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
         public int GetNumIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
         public static Unity.ProjectAuditor.Editor.ProjectReport Load(string path);

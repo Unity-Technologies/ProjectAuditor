@@ -1,4 +1,5 @@
 using System.Linq;
+using Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -7,6 +8,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     public class CodeView : AnalysisView
     {
+        public CodeView(ViewManager viewManager) : base(viewManager)
+        {
+        }
+
         protected override void OnDrawInfo()
         {
             EditorGUILayout.LabelField("- Use the Filters to reduce the number of reported issues");
@@ -19,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField(Utility.ErrorIcon, GUILayout.MaxWidth(36));
                 EditorGUILayout.LabelField(new GUIContent("Code Analysis is incomplete due to compilation errors"), GUILayout.Width(330), GUILayout.ExpandWidth(false));
                 if (GUILayout.Button("View", EditorStyles.miniButton, GUILayout.Width(50)))
-                    OnChangeView(IssueCategory.CodeCompilerMessage);
+                    m_ViewManager.ChangeView(IssueCategory.CodeCompilerMessage);
                 EditorGUILayout.EndHorizontal();
             }
         }

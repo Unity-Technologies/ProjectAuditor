@@ -119,7 +119,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Area.BuildSize
             );
 
-
+#pragma warning disable 0414
         readonly Dictionary<string, ProblemDescriptor> m_DescriptorByExtension = new Dictionary<string, ProblemDescriptor>()
         {
             { ".asset", k_AssetDescriptor },
@@ -134,6 +134,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             { ".bytes", k_ByteDataDescriptor },
             { ".prefab", k_PrefabDescriptor },
         };
+#pragma warning restore 0414
 
         static readonly IssueLayout k_FileLayout = new IssueLayout
         {

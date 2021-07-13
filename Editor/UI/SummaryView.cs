@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEditor;
@@ -9,6 +10,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     class SummaryView : AnalysisView
     {
+        public SummaryView(ViewManager viewManager) : base(viewManager)
+        {
+        }
+
         protected override void OnDrawInfo()
         {
             if (s_Report != null)
@@ -40,7 +45,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Space();
             EditorGUILayout.BeginVertical();
             EditorGUI.indentLevel++;
-            foreach (var issue in m_Issues)
+
+            // note that m_Issues might change during background analysis.
+            foreach (var issue in m_Issues.ToArray())
             {
                 DrawKeyValue(issue.description, issue.GetCustomProperty(MetaDataProperty.Value));
             }
@@ -48,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndVertical();
         }
 
-        static void DrawKeyValue(string key, string value)
+        void DrawKeyValue(string key, string value)
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(string.Format("{0}:", key), GUILayout.ExpandWidth(false));
@@ -56,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndHorizontal();
         }
 
-        static void DrawSummaryItem<T>(string title, T value, IssueCategory category, GUIContent icon = null)
+        void DrawSummaryItem<T>(string title, T value, IssueCategory category, GUIContent icon = null)
         {
             var viewLink = true;
             var valueAsString = value.ToString();
@@ -74,11 +81,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
 #if UNITY_2019_2_OR_NEWER
                 if (GUILayout.Button(valueAsString, Utility.GetStyle("LinkLabel")))
-                    OnChangeView(category);
+                    m_ViewManager.ChangeView(category);
 #else
                 EditorGUILayout.LabelField(valueAsString, GUILayout.MaxWidth(90), GUILayout.ExpandWidth(false));
                 if (GUILayout.Button("View", EditorStyles.miniButton, GUILayout.Width(50)))
-                    OnChangeView(category);
+                    m_ViewManager.ChangeView(category);
 #endif
             }
             else

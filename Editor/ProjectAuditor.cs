@@ -26,63 +26,8 @@ namespace Unity.ProjectAuditor.Editor
     {
         static string s_DataPath;
 
-        readonly List<IProjectAuditorModule> m_Auditors = new List<IProjectAuditorModule>();
+        readonly List<IProjectAuditorModule> m_Modules = new List<IProjectAuditorModule>();
         ProjectAuditorConfig m_Config;
-
-        public const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
-        public const string PackagePath = "Packages/com.unity.project-auditor";
-
-        public ProjectAuditorConfig config
-        {
-            get { return m_Config; }
-        }
-
-        public ProjectAuditor()
-        {
-            InitAsset(DefaultAssetPath);
-            InitAuditors();
-        }
-
-        public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
-        {
-            m_Config = projectAuditorConfig;
-            InitAuditors();
-        }
-
-        /// <summary>
-        /// ProjectAuditor constructor
-        /// </summary>
-        /// <param name="assetPath"> Path to the ProjectAuditorConfig asset</param>
-        public ProjectAuditor(string assetPath)
-        {
-            InitAsset(assetPath);
-            InitAuditors();
-        }
-
-        void InitAsset(string assetPath)
-        {
-            m_Config = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
-            if (m_Config == null)
-            {
-                var path = Path.GetDirectoryName(assetPath);
-                if (!File.Exists(path))
-                    Directory.CreateDirectory(path);
-                m_Config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-                AssetDatabase.CreateAsset(m_Config, assetPath);
-
-                Debug.LogFormat("Project Auditor: {0} has been created.", assetPath);
-            }
-        }
-
-        void InitAuditors()
-        {
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IProjectAuditorModule)))
-            {
-                var instance = Activator.CreateInstance(type) as IProjectAuditorModule;
-                instance.Initialize(m_Config);
-                m_Auditors.Add(instance);
-            }
-        }
 
         public static string DataPath
         {
@@ -106,9 +51,76 @@ namespace Unity.ProjectAuditor.Editor
                 return s_DataPath;
             }
         }
+        public const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
+        public const string PackagePath = "Packages/com.unity.project-auditor";
+
+        public static string PackageVersion
+        {
+            get
+            {
+#if UNITY_2019_3_OR_NEWER
+                var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(PackagePath +  "/Editor/Unity.ProjectAuditor.Editor.asmdef");
+                return packageInfo.version;
+#else
+                return "Unknown";
+#endif
+            }
+        }
+
+        public ProjectAuditorConfig config
+        {
+            get { return m_Config; }
+        }
+
+        public ProjectAuditor()
+        {
+            InitAsset(DefaultAssetPath);
+            InitModules();
+        }
+
+        public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
+        {
+            m_Config = projectAuditorConfig;
+            InitModules();
+        }
 
         /// <summary>
-        /// Runs all available auditors (code, project settings) and generate a report of all found issues.
+        /// ProjectAuditor constructor
+        /// </summary>
+        /// <param name="assetPath"> Path to the ProjectAuditorConfig asset</param>
+        public ProjectAuditor(string assetPath)
+        {
+            InitAsset(assetPath);
+            InitModules();
+        }
+
+        void InitAsset(string assetPath)
+        {
+            m_Config = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
+            if (m_Config == null)
+            {
+                var path = Path.GetDirectoryName(assetPath);
+                if (!File.Exists(path))
+                    Directory.CreateDirectory(path);
+                m_Config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+                AssetDatabase.CreateAsset(m_Config, assetPath);
+
+                Debug.LogFormat("Project Auditor: {0} has been created.", assetPath);
+            }
+        }
+
+        void InitModules()
+        {
+            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IProjectAuditorModule)))
+            {
+                var instance = Activator.CreateInstance(type) as IProjectAuditorModule;
+                instance.Initialize(m_Config);
+                m_Modules.Add(instance);
+            }
+        }
+
+        /// <summary>
+        /// Runs all available modules (code, project settings) and generate a report of all found issues.
         /// </summary>
         /// <param name="progress"> Progress bar, if applicable </param>
         /// <returns> Generated report </returns>
@@ -125,31 +137,31 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Runs all available auditors (code, project settings) and generate a report of all found issues.
+        /// Runs all available modules (code, project settings) and generate a report of all found issues.
         /// </summary>
         /// <param name="onIssueFound"> Action called whenever a new issue is found </param>
-        /// <param name="onUpdate"> Action called whenever an internal auditor completes </param>
+        /// <param name="onUpdate"> Action called whenever a module completes </param>
         /// <param name="progress"> Progress bar, if applicable </param>
         public void Audit(Action<ProjectIssue> onIssueFound, Action<bool> onUpdate, IProgress progress = null)
         {
-            var numAuditors = m_Auditors.Count;
-            if (numAuditors == 0)
+            var numModules = m_Modules.Count;
+            if (numModules == 0)
             {
-                // early out if, for any reason, there are no registered Auditors
+                // early out if, for any reason, there are no registered modules
                 onUpdate(true);
                 return;
             }
 
             var stopwatch = Stopwatch.StartNew();
-            foreach (var auditor in m_Auditors)
+            foreach (var module in m_Modules)
             {
                 var startTime = stopwatch.ElapsedMilliseconds;
-                auditor.Audit(onIssueFound, () =>
+                module.Audit(onIssueFound, () =>
                 {
                     if (m_Config.LogTimingsInfo)
-                        Debug.Log(auditor.GetType().Name + " took: " + (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
+                        Debug.Log(module.GetType().Name + " took: " + (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
 
-                    var finished = --numAuditors == 0;
+                    var finished = --numModules == 0;
                     if (finished)
                     {
                         stopwatch.Stop();
@@ -165,25 +177,25 @@ namespace Unity.ProjectAuditor.Editor
                 Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
         }
 
-        internal T GetAuditor<T>() where T : class, IProjectAuditorModule
+        internal T GetModule<T>() where T : class, IProjectAuditorModule
         {
-            foreach (var auditor in m_Auditors)
+            foreach (var module in m_Modules)
             {
-                if (auditor is T)
-                    return (T)auditor;
+                if (module is T)
+                    return (T)module;
             }
 
             return null;
         }
 
-        internal IProjectAuditorModule GetAuditor(IssueCategory category)
+        internal IProjectAuditorModule GetModule(IssueCategory category)
         {
-            return m_Auditors.FirstOrDefault(a => a.IsSupported() && a.GetLayouts().FirstOrDefault(l => l.category == category) != null);
+            return m_Modules.FirstOrDefault(a => a.IsSupported() && a.GetLayouts().FirstOrDefault(l => l.category == category) != null);
         }
 
         public IssueLayout GetLayout(IssueCategory category)
         {
-            var layouts = m_Auditors.Where(a => a.IsSupported()).SelectMany(auditor => auditor.GetLayouts()).Where(l => l.category == category);
+            var layouts = m_Modules.Where(a => a.IsSupported()).SelectMany(module => module.GetLayouts()).Where(l => l.category == category);
             return layouts.FirstOrDefault();
         }
 

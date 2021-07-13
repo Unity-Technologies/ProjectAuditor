@@ -23,6 +23,14 @@ namespace Unity.ProjectAuditor.Editor
             get { return m_Issues.Count; }
         }
 
+        public ProjectIssue[] GetAllIssues()
+        {
+            s_Mutex.WaitOne();
+            var result = m_Issues.ToArray();
+            s_Mutex.ReleaseMutex();
+            return result;
+        }
+
         /// <summary>
         /// Get total number of issues for a specific IssueCategory
         /// </summary>

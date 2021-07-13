@@ -1,6 +1,28 @@
 // This file is generated. Do not modify by hand.
 // XML documentation file not found. To check if public methods have XML comments,
 // make sure the XML doc file is present and located next to the scraped dll
+namespace Editor.UI.Framework
+{
+    public class ViewManager
+    {
+        public System.Action<int> onViewChanged;
+        public System.Action onViewExported;
+        public int activeViewIndex { get; set; }
+        public ViewManager(Unity.ProjectAuditor.Editor.IssueCategory[] categories) {}
+        public void AddIssues(Unity.ProjectAuditor.Editor.ProjectIssue[] issues);
+        public void Audit(Unity.ProjectAuditor.Editor.ProjectAuditor projectAuditor);
+        public void ChangeView(int index);
+        public void ChangeView(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public void Clear();
+        public void ClearView(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public void Create(Unity.ProjectAuditor.Editor.ProjectAuditor projectAuditor, Unity.ProjectAuditor.Editor.UI.Framework.Preferences preferences, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter, System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor, bool> onCreateView = default(System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor, bool>));
+        public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetActiveView();
+        public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(int index);
+        public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public bool IsValid();
+    }
+}
+
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class AnalysisView
@@ -10,11 +32,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_Filter;
         protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.ProjectIssue> m_Issues;
         protected Unity.ProjectAuditor.Editor.UI.Framework.Preferences m_Preferences;
-        public static System.Action<Unity.ProjectAuditor.Editor.IssueCategory> OnChangeView;
+        protected Editor.UI.Framework.ViewManager m_ViewManager;
         protected static Unity.ProjectAuditor.Editor.ProjectReport s_Report;
         public Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor desc { get; }
         protected int numIssues { get; }
-        public AnalysisView() {}
+        public AnalysisView(Editor.UI.Framework.ViewManager viewManager) {}
         public virtual void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
         public virtual void Clear();
         public virtual void Create(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueLayout layout, Unity.ProjectAuditor.Editor.ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.UI.Framework.Preferences prefs, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
@@ -108,58 +130,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void Start(string title, string description, int total);
     }
 
-    public static class ProjectAuditorAnalytics
-    {
-        public static Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic BeginAnalytic();
-        public static void EnableAnalytics();
-        public static bool SendEvent(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic);
-        public static bool SendEventWithAnalyzeSummary(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic, Unity.ProjectAuditor.Editor.ProjectReport projectReport);
-        public static bool SendEventWithKeyValues(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic, System.Collections.Generic.Dictionary<string, string> payload);
-        public static bool SendEventWithSelectionSummary(Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton uiButton, Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.Analytic analytic, Unity.ProjectAuditor.Editor.UI.Framework.IssueTableItem[] selectedItems);
-        public class Analytic
-        {
-            public Analytic() {}
-            public void End();
-            public bool GetBlocking();
-            public float GetDurationInSeconds();
-            public double GetStartTime();
-            public long GetTimestamp();
-        }
-        public struct IssueStats
-        {
-            public int id;
-            public int numHotPathOccurrences;
-            public int numOccurrences;
-        }
-        public enum UIButton
-        {
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Analyze = 0;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton ApiCalls = 13;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton AreaSelect = 4;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton AreaSelectApply = 5;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Assemblies = 22;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton AssemblySelect = 2;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton AssemblySelectApply = 3;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Assets = 17;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton BuildFiles = 20;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton BuildSteps = 21;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton CodeCompilerMessages = 14;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Export = 1;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Generics = 15;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Load = 10;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Mute = 6;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton OnlyCriticalIssues = 9;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton ProjectSettings = 16;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Save = 11;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Shaders = 18;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton ShaderVariants = 19;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton ShowMuted = 8;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Summary = 12;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.ProjectAuditorAnalytics.UIButton Unmute = 7;
-            public int value__;
-        }
-    }
-
     public static class SharedStyles
     {
         public static UnityEngine.GUIStyle Foldout { get; }
@@ -232,7 +202,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public int menuOrder;
         public string name;
         public System.Action<Unity.ProjectAuditor.Editor.Utils.Location> onDoubleClick;
-        public System.Action onDrawToolbarDataOptions;
+        public System.Action<Editor.UI.Framework.ViewManager> onDrawToolbarDataOptions;
         public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenDescriptor;
         public bool showActions;
         public bool showAreaSelection;
