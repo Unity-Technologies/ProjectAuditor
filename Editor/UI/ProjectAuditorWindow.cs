@@ -469,6 +469,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ProjectReport = new ProjectReport();
 
             var module = m_ProjectAuditor.GetModule<T>();
+            if (!module.IsSupported())
+                return;
+
             var layouts = module.GetLayouts().ToArray();
             foreach (var layout in layouts)
             {
