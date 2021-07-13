@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Unity.ProjectAuditor.Editor.UI
 {
     [CustomEditor(typeof(BuildReport))]
-    class BuildReportInspector : UnityEditor.Editor, IBuildReportProvider, IProjectIssueFilter
+    class BuildReportViewer : UnityEditor.Editor, IBuildReportProvider, IProjectIssueFilter
     {
         static int s_ActiveViewIndex;
 
