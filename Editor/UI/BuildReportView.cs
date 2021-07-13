@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             base(viewManager)
         {
             m_2D = new Draw2D("Unlit/ProjectAuditor");
-            m_BuildReportProvider = BuildAuditor.BuildReportProvider;
+            m_BuildReportProvider = BuildReportModule.BuildReportProvider;
         }
 
         public override void AddIssues(IEnumerable<ProjectIssue> allIssues)

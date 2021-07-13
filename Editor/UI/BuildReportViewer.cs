@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (m_ViewManager == null)
             {
-                BuildAuditor.BuildReportProvider = this;
+                BuildReportModule.BuildReportProvider = this;
 
                 var projectAuditor = new ProjectAuditor();
                 m_Preferences = new Preferences();
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ViewManager.activeViewIndex = s_ActiveViewIndex;
                 m_ViewManager.onViewChanged = index => s_ActiveViewIndex = index;
 
-                BuildAuditor.BuildReportProvider = null;
+                BuildReportModule.BuildReportProvider = null;
             }
 
             EditorGUILayout.BeginVertical(GUILayout.Height(Screen.height));
