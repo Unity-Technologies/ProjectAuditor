@@ -113,7 +113,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var groupSize = group.size;
                         EditorGUILayout.BeginHorizontal();
 
-                        EditorGUILayout.LabelField(string.Format("{0}:", group.assetGroup, group.count), GUILayout.Width(200));
+                        EditorGUILayout.LabelField(string.Format("{0} ({1}):", group.assetGroup, group.count), GUILayout.Width(200));
 
                         var rect = EditorGUILayout.GetControlRect(GUILayout.Width(width));
                         if (m_2D.DrawStart(rect))
