@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Utils;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -19,7 +20,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             var issue = issues.FirstOrDefault(i => i.descriptor.method.Equals("stripUnusedMeshComponents"));
             Assert.NotNull(issue);
 
-            var areas = issue.descriptor.areasAsEnums;
+            var areas = issue.descriptor.GetAreas();
             Assert.AreEqual(3, areas.Length);
             Assert.Contains(Area.BuildSize, areas);
             Assert.Contains(Area.GPU, areas);

@@ -88,7 +88,7 @@ class ScriptWithError {
             var issue = issues.First();
 
             // check descriptor
-            Assert.Contains(Area.Info, issue.descriptor.areasAsEnums);
+            Assert.Contains(Area.Info, issue.descriptor.GetAreas());
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));

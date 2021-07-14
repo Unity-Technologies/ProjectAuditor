@@ -381,6 +381,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public bool IsValid();
     }
 
+    [System.Runtime.CompilerServices.Extension] public static class ProblemDescriptorExtensions
+    {
+        [System.Runtime.CompilerServices.Extension] public static Unity.ProjectAuditor.Editor.Area[] GetAreas(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+        [System.Runtime.CompilerServices.Extension] public static string GetAreasSummary(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+    }
+
     [System.Runtime.CompilerServices.Extension] public static class ProjectIssueExtensions
     {
         [System.Runtime.CompilerServices.Extension] public static string GetProperty(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyType propertyType);

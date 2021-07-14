@@ -68,23 +68,6 @@ namespace Unity.ProjectAuditor.Editor
         public string minimumVersion;
         public string maximumVersion;
 
-
-        internal Area[] areasAsEnums
-        {
-            get
-            {
-                return areas.Select(a => (Area)Enum.Parse(typeof(Area), a)).ToArray();
-            }
-        }
-
-        internal string areasString
-        {
-            get
-            {
-                return string.Join(", ", areas);
-            }
-        }
-
         public ProblemDescriptor(int id, string description, string[] areas, string problem = null, string solution = null)
         {
             this.id = id;

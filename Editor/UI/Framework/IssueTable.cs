@@ -215,7 +215,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             var issue = item.ProjectIssue;
             var descriptor = item.ProblemDescriptor;
-            var areaNames = descriptor.areasString;
+            var areaNames = descriptor.GetAreasSummary();
             var areaLongDescription = "Areas that this issue might have an impact on";
 
             var rule = m_Config.GetRule(descriptor, issue != null ? issue.GetCallingMethod() : string.Empty);
@@ -526,8 +526,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                 secondString = secondItem.GetDisplayName();
                                 break;
                             case PropertyType.Area:
-                                firstString = firstItem.ProblemDescriptor.areasString;
-                                secondString = secondItem.ProblemDescriptor.areasString;
+                                firstString = firstItem.ProblemDescriptor.GetAreasSummary();
+                                secondString = secondItem.ProblemDescriptor.GetAreasSummary();
                                 break;
                             case PropertyType.Filename:
                             case PropertyType.Path:

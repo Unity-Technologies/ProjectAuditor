@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.SettingsAnalyzers;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -24,9 +25,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.NotNull(playerSettingIssue);
             Assert.True(playerSettingIssue.description.Equals("Player: Prebake Collision Meshes"));
             Assert.True(playerSettingIssue.location.Path.Equals("Project/Player"));
-            Assert.AreEqual(2, playerSettingIssue.descriptor.areasAsEnums.Length);
-            Assert.Contains(Area.BuildSize, playerSettingIssue.descriptor.areasAsEnums);
-            Assert.Contains(Area.LoadTime, playerSettingIssue.descriptor.areasAsEnums);
+            Assert.AreEqual(2, playerSettingIssue.descriptor.GetAreas().Length);
+            Assert.Contains(Area.BuildSize, playerSettingIssue.descriptor.GetAreas());
+            Assert.Contains(Area.LoadTime, playerSettingIssue.descriptor.GetAreas());
 
             // restore bakeCollisionMeshes
             PlayerSettings.bakeCollisionMeshes = savedSetting;
