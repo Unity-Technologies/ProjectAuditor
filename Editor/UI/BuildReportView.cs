@@ -24,10 +24,21 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         GroupStats[] m_GroupStats;
 
+        IBuildReportProvider m_BuildReportProvider;
+
+        public IBuildReportProvider buildReportProvider
+        {
+            set
+            {
+                m_BuildReportProvider = value;
+            }
+        }
+
         public BuildReportView(ViewManager viewManager) :
             base(viewManager)
         {
             m_2D = new Draw2D("Unlit/ProjectAuditor");
+            m_BuildReportProvider = BuildReportModule.BuildReportProvider;
         }
 
         public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
@@ -55,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         protected override void OnDrawInfo()
         {
-            var report = BuildReportModule.GetBuildReport();
+            var report = m_BuildReportProvider.GetBuildReport();
             if (report == null)
             {
                 EditorGUILayout.LabelField("Build Report summary not found");
@@ -102,7 +113,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var groupSize = group.size;
                         EditorGUILayout.BeginHorizontal();
 
-                        EditorGUILayout.LabelField(string.Format("{0}:", group.assetGroup), GUILayout.Width(200));
+                        EditorGUILayout.LabelField(string.Format("{0} ({1}):", group.assetGroup, group.count), GUILayout.Width(200));
 
                         var rect = EditorGUILayout.GetControlRect(GUILayout.Width(width));
                         if (m_2D.DrawStart(rect))
