@@ -201,15 +201,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.BeginVertical();
             EditorGUILayout.Space();
 
-            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-            DrawViewOptions();
-
-            EditorGUILayout.Space();
-
-            DrawDataOptions();
-
-            EditorGUILayout.EndHorizontal();
+            DrawToolbar();
 
             var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
 
@@ -221,6 +213,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
 
             EditorGUILayout.EndVertical();
+        }
+
+        void DrawToolbar()
+        {
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+
+            DrawViewOptions();
+
+            EditorGUILayout.Space();
+
+            DrawDataOptions();
+
+            EditorGUILayout.EndHorizontal();
         }
 
         void DrawFoldouts(ProblemDescriptor[] selectedDescriptors)
