@@ -324,7 +324,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 type = typeof(CompilerMessagesView),
                 category = IssueCategory.CodeCompilerMessage,
-                name = "C# Messages",
+                name = "Compiler Messages",
                 menuOrder = 98,
                 menuLabel = "Code/C# Compiler Messages",
                 groupByDescriptor = true,
@@ -958,7 +958,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
                 GUI.enabled = true;
 
-                Utility.DrawHelpButton("index");
+                Utility.DrawHelpButton(SharedStyles.HelpButton, "index");
             }
             EditorGUILayout.EndHorizontal();
         }

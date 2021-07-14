@@ -112,11 +112,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return GUI.Button(rect, content, EditorStyles.toolbarDropDown);
         }
 
-        public static void DrawHelpButton(string page)
+        public static void DrawHelpButton(GUIContent content, string page)
         {
-            if (GUILayout.Button(Contents.HelpButton, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
+            if (GUILayout.Button(content, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
             {
-                Application.OpenURL(Documentation.baseURL + "master" + Documentation.subURL + page + Documentation.endURL);
+                Application.OpenURL(Documentation.baseURL + ProjectAuditor.PackageVersion + Documentation.subURL + page + Documentation.endURL);
             }
         }
 
@@ -162,29 +162,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             return EditorGUIUtility.TrIconContent(ProjectAuditor.PackagePath + "/Editor/Icons/" + name + ".png");
         }
-		
+
 		public static GUIContent GetStatusWheel()
         {
-            if (Contents.StatusWheel == null)
+            if (SharedStyles.StatusWheel == null)
             {
-                Contents.StatusWheel = new GUIContent[12];
+                SharedStyles.StatusWheel = new GUIContent[12];
                 for (int i = 0; i < 12; i++)
-                    Contents.StatusWheel[i] = EditorGUIUtility.IconContent("WaitSpin" + i.ToString("00"));
+                    SharedStyles.StatusWheel[i] = EditorGUIUtility.IconContent("WaitSpin" + i.ToString("00"));
 
             }
             int frame = (int)Mathf.Repeat(Time.realtimeSinceStartup * 10, 11.99f);
-            return Contents.StatusWheel[frame];
+            return SharedStyles.StatusWheel[frame];
         }
-    }
-
-    static class Contents
-    {
-#if UNITY_2018_1_OR_NEWER
-        public static readonly GUIContent HelpButton = EditorGUIUtility.TrIconContent("_Help", "Open Manual (in a web browser)");
-#else
-        public static readonly GUIContent HelpButton = new GUIContent("?", "Open Manual (in a web browser)");
-#endif
-
-        public static GUIContent[] StatusWheel;
     }
 }

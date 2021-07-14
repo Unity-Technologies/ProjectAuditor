@@ -5,6 +5,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public static class SharedStyles
     {
+        static GUIStyle s_Foldout;
+        static GUIStyle s_Label;
+        static GUIStyle s_TextArea;
+        static GUIStyle s_TextFieldWarning;
+
         public static GUIStyle Foldout
         {
             get
@@ -53,9 +58,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        static GUIStyle s_Foldout;
-        static GUIStyle s_Label;
-        static GUIStyle s_TextArea;
-        static GUIStyle s_TextFieldWarning;
+
+#if UNITY_2018_1_OR_NEWER
+        public static readonly GUIContent HelpButton = EditorGUIUtility.TrIconContent("_Help", "Open Manual (in a web browser)");
+#else
+        public static readonly GUIContent HelpButton = new GUIContent("?", "Open Manual (in a web browser)");
+#endif
+
+        public static GUIContent[] StatusWheel;
     }
 }
