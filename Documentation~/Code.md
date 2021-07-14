@@ -1,2 +1,3 @@
 <a name="Code"></a>
-# This is a placeholder
+# Overview
+This view reports all Script-related diagnostics.
