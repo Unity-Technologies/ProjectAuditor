@@ -181,6 +181,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     return "compiler_messages_tab";
                 case UIButton.Assemblies:
                     return "assemblies_tab";
+                case UIButton.Models:
+                    return "models_tab";
                 case UIButton.AssemblySelect:
                     return "assembly_button_click";
                 case UIButton.AssemblySelectApply:
