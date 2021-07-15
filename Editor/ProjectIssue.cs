@@ -157,6 +157,15 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
+        internal long GetCustomPropertyAsLong<T>(T propertyEnum) where T : struct
+        {
+            var valueAsString = GetCustomProperty(propertyEnum);
+            var value = (long)0;
+            if (!long.TryParse(valueAsString, out value))
+                return 0;
+            return value;
+        }
+
         public void SetCustomProperty<T>(T propertyEnum, string property) where T : struct
         {
             customProperties[Convert.ToUInt32(propertyEnum)] = property;

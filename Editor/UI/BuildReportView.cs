@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     assetGroup = g.Key.description,
                     count = g.Count(),
-                    size = g.Sum(s => s.GetCustomPropertyAsInt(BuildReportFileProperty.Size))
+                    size = g.Sum(s => s.GetCustomPropertyAsLong(BuildReportFileProperty.Size))
                 }).ToList();
                 list.Sort((a, b) => b.size.CompareTo(a.size));
                 m_GroupStats = list.ToArray();
@@ -93,18 +93,19 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     EditorGUILayout.BeginVertical();
 
+                    var barColor = new Color(0.0f, 0.6f, 0.6f);
                     var maxGroupSize = (float)m_GroupStats.Max(g => g.size);
                     foreach (var group in m_GroupStats)
                     {
                         var groupSize = group.size;
                         EditorGUILayout.BeginHorizontal();
 
-                        EditorGUILayout.LabelField(string.Format("{0}:", group.assetGroup, group.count), GUILayout.Width(200));
+                        EditorGUILayout.LabelField(string.Format("{0}:", group.assetGroup), GUILayout.Width(200));
 
                         var rect = EditorGUILayout.GetControlRect(GUILayout.Width(width));
                         if (m_2D.DrawStart(rect))
                         {
-                            m_2D.DrawFilledBox(0, 1, Math.Max(1, rect.width * groupSize / maxGroupSize), rect.height - 1, Color.white);
+                            m_2D.DrawFilledBox(0, 1, Math.Max(1, rect.width * groupSize / maxGroupSize), rect.height - 1, barColor);
                             m_2D.DrawEnd();
                         }
 

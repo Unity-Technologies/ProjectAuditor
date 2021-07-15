@@ -53,7 +53,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             throw new NotImplementedException();
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
             onIssueFound(new ProjectIssue(k_Descriptor, "Date and Time", IssueCategory.MetaData,
                 new[] {DateTime.Now.ToString()}));

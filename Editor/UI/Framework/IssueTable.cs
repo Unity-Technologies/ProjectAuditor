@@ -239,6 +239,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     switch (descriptor.severity)
                     {
+                        case Rule.Severity.Info:
+                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.infoicon"), s_LabelStyle);
+                            break;
                         case Rule.Severity.Warning:
                             EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.warnicon"), s_LabelStyle);
                             break;

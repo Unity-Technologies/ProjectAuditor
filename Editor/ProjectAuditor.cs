@@ -110,14 +110,14 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Runs all available auditors (code, project settings) and generate a report of all found issues.
         /// </summary>
-        /// <param name="progressBar"> Progress bar, if applicable </param>
+        /// <param name="progress"> Progress bar, if applicable </param>
         /// <returns> Generated report </returns>
-        public ProjectReport Audit(IProgressBar progressBar = null)
+        public ProjectReport Audit(IProgress progress = null)
         {
             var projectReport = new ProjectReport();
             var completed = false;
 
-            Audit(projectReport.AddIssue, _completed => { completed = _completed; }, progressBar);
+            Audit(projectReport.AddIssue, _completed => { completed = _completed; }, progress);
 
             while (!completed)
                 Thread.Sleep(50);
@@ -129,8 +129,8 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="onIssueFound"> Action called whenever a new issue is found </param>
         /// <param name="onUpdate"> Action called whenever an internal auditor completes </param>
-        /// <param name="progressBar"> Progress bar, if applicable </param>
-        public void Audit(Action<ProjectIssue> onIssueFound, Action<bool> onUpdate, IProgressBar progressBar = null)
+        /// <param name="progress"> Progress bar, if applicable </param>
+        public void Audit(Action<ProjectIssue> onIssueFound, Action<bool> onUpdate, IProgress progress = null)
         {
             var numAuditors = m_Auditors.Count;
             if (numAuditors == 0)
@@ -158,7 +158,7 @@ namespace Unity.ProjectAuditor.Editor
                     }
 
                     onUpdate(finished);
-                }, progressBar);
+                }, progress);
             }
 
             if (m_Config.LogTimingsInfo)

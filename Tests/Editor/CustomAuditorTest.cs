@@ -41,7 +41,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         {
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgress progress = null)
         {
             onIssueFound(new ProjectIssue(m_Descriptor, "This is a test issue", IssueCategory.Code));
             onComplete();

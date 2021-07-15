@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public class ProgressBarDisplay : IProgressBar
+    public class ProgressBar : IProgress
     {
         int m_Current;
         string m_Description;
         string m_Title;
         int m_Total;
 
-        public void AdvanceProgressBar(string description = "")
+        public void Advance(string description = "")
         {
             if (!string.IsNullOrEmpty(description))
                 m_Description = description;
@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorUtility.DisplayProgressBar(m_Title, description, progress);
         }
 
-        public void Initialize(string title, string description, int total)
+        public void Start(string title, string description, int total)
         {
             m_Current = 0;
             m_Total = total;
@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorUtility.DisplayProgressBar(m_Title, m_Description, m_Current);
         }
 
-        public void ClearProgressBar()
+        public void Clear()
         {
             EditorUtility.ClearProgressBar();
         }

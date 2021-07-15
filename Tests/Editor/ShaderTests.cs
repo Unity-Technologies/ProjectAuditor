@@ -20,6 +20,8 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 {
     class ShaderTests
     {
+        const string k_ShaderName = "Custom/MyTestShader,1"; // comma in the name for testing purposes
+
 #pragma warning disable 0414
         TempAsset m_ShaderResource;
         TempAsset m_PlayerLogResource;
@@ -64,7 +66,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         public void SetUp()
         {
             m_ShaderResource = new TempAsset("Resources/MyTestShader.shader", @"
-            Shader ""Custom/MyTestShader""
+            Shader ""Custom/MyTestShader,1""
             {
                 SubShader
                 {
@@ -147,13 +149,13 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             }");
 
             m_PlayerLogResource = new TempAsset("player.log", @"
-02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: vertex, keywords <no keywords>
-02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: fragment, keywords <no keywords>
-02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: vertex, keywords KEYWORD_A
-02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader, pass: MyTestShader/Pass, stage: fragment, keywords KEYWORD_A
+02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader,1, pass: MyTestShader/Pass, stage: vertex, keywords <no keywords>
+02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader,1, pass: MyTestShader/Pass, stage: fragment, keywords <no keywords>
+02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader,1, pass: MyTestShader/Pass, stage: vertex, keywords KEYWORD_A
+02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader,1, pass: MyTestShader/Pass, stage: fragment, keywords KEYWORD_A
 02-10 17:36:20.945  6554  6816 D Unity   :
-02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: vertex, keywords KEYWORD_A
-02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader, pass: <unnamed>, stage: fragment, keywords KEYWORD_A
+02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader,1, pass: <unnamed>, stage: vertex, keywords KEYWORD_A
+02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader,1, pass: <unnamed>, stage: fragment, keywords KEYWORD_A
             ");
 
 
@@ -338,7 +340,9 @@ Shader ""Custom/MyEditorShader""
             var keywords = issues.Select(i => i.GetCustomProperty(ShaderVariantProperty.Keywords));
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
 
-            var variants = issues.Where(i => i.description.Equals("Custom/MyTestShader")).ToArray();
+            var variants = issues.Where(i => i.description.Equals(k_ShaderName)).ToArray();
+            Assert.Positive(variants.Length);
+
             var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty(ShaderVariantProperty.Platform)).Distinct();
             var compilerPlatformNames = ShaderUtilProxy.GetCompilerPlatformNames();
 
@@ -425,15 +429,16 @@ Shader ""Custom/MyEditorShader""
 
             var buildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(buildPath);
-            var buildPlayerOptions = new BuildPlayerOptions
+
+            ShadersAuditor.ClearBuildData(); // clear previously built variants, if any
+            var buildReport = BuildPipeline.BuildPlayer(new BuildPlayerOptions
             {
                 scenes = new string[] {},
                 locationPathName = Path.Combine(buildPath, "test"),
                 target = EditorUserBuildSettings.activeBuildTarget,
                 targetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget),
                 options = BuildOptions.Development
-            };
-            var buildReport = BuildPipeline.BuildPlayer(buildPlayerOptions);
+            });
 
             Assert.True(buildReport.summary.result == BuildResult.Succeeded);
 
@@ -441,10 +446,12 @@ Shader ""Custom/MyEditorShader""
 
             AssetDatabase.DeleteAsset("Assets/UntitledScene.unity");
 
-            ShadersAuditor.ClearBuildData();
-            var shadersAndVariants = Utility.Analyze(IssueCategory.ShaderVariants);
+            var allVariants = Utility.Analyze(IssueCategory.ShaderVariants);
+            ShadersAuditor.ClearBuildData(); // cleanup
 
-            var variants = shadersAndVariants.Where(i => i.description.Equals("Custom/MyTestShader") && i.category == IssueCategory.ShaderVariants).ToArray();
+            var variants = allVariants.Where(i => i.description.Equals(k_ShaderName) && i.category == IssueCategory.ShaderVariants).ToArray();
+            Assert.Positive(variants.Length);
+
             var result = ShadersAuditor.ParsePlayerLog(m_PlayerLogResource.relativePath, variants);
 
             Assert.That(result, Is.EqualTo(ParseLogResult.Success), "No compiled shader variants found in player log.");
@@ -478,7 +485,7 @@ Shader ""Custom/MyEditorShader""
         {
             ShadersAuditor.ClearBuildData();
             var issues = Utility.Analyze(IssueCategory.Shaders);
-            var shaderIssue = issues.FirstOrDefault(i => i.description.Equals("Custom/MyTestShader"));
+            var shaderIssue = issues.FirstOrDefault(i => i.description.Equals(k_ShaderName));
             Assert.NotNull(shaderIssue);
 
             // check descriptor

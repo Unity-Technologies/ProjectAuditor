@@ -111,7 +111,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 payload["numUnityAssemblies"] = selectedAsmNames.Count(name => name.Contains("Unity")).ToString();
             }
 
-            ProjectAuditorAnalytics.SendUIButtonEventWithKeyValues(ProjectAuditorAnalytics.UIButton.AssemblySelectApply, analytic, payload);
+            ProjectAuditorAnalytics.SendEventWithKeyValues(ProjectAuditorAnalytics.UIButton.AssemblySelectApply, analytic, payload);
         }
 
         void OnGUI()
