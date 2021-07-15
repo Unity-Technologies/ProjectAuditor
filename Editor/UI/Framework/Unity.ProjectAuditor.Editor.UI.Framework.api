@@ -134,8 +134,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     {
         public static UnityEngine.GUIStyle Foldout { get; }
         public static UnityEngine.GUIStyle Label { get; }
+        public static UnityEngine.GUIStyle LinkLabel { get; }
         public static UnityEngine.GUIStyle TextArea { get; }
-        public static UnityEngine.GUIStyle TextFieldWarning { get; }
     }
 
     public struct TreeItemIdentifier
@@ -175,11 +175,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static UnityEngine.GUIContent InfoIcon { get; }
         public static UnityEngine.GUIContent WarnIcon { get; }
         public static bool BoldFoldout(bool toggle, UnityEngine.GUIContent content);
-        public static void DrawHelpButton(string page);
+        public static void DrawHelpButton(UnityEngine.GUIContent content, string page);
         public static void DrawSelectedText(string text);
         public static UnityEngine.GUIContent GetIcon(string name);
         public static UnityEngine.GUIContent GetStatusWheel();
-        public static UnityEngine.GUIStyle GetStyle(string styleName);
         public static string GetTreeViewSelectedSummary(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection, string[] names);
         public static void ToolbarDropdownList(Unity.ProjectAuditor.Editor.UI.Framework.Utility.DropdownItem[] items, int selectionIndex, UnityEditor.GenericMenu.MenuFunction2 callback, params UnityEngine.GUILayoutOption[] options);
         public class DropdownItem
