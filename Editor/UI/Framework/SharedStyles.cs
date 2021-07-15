@@ -58,13 +58,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-
-#if UNITY_2018_1_OR_NEWER
-        public static readonly GUIContent HelpButton = EditorGUIUtility.TrIconContent("_Help", "Open Manual (in a web browser)");
-#else
-        public static readonly GUIContent HelpButton = new GUIContent("?", "Open Manual (in a web browser)");
-#endif
-
         public static GUIContent[] StatusWheel;
     }
 }
