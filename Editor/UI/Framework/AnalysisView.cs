@@ -111,7 +111,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (m_Desc.showDependencyView)
                 m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onDoubleClick);
 
-            var helpButtonTooltip = string.Format("Open {0} Manual (in a web browser)", m_Desc.name);
+            var helpButtonTooltip = string.Format("Open Reference for {0}", m_Desc.name);
 #if UNITY_2018_1_OR_NEWER
             m_HelpButtonContent = EditorGUIUtility.TrIconContent("_Help", helpButtonTooltip);
 #else
