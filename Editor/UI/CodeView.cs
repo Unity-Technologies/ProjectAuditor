@@ -1,5 +1,5 @@
 using System.Linq;
-using Editor.UI.Framework;
+using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEditor;
 using UnityEngine;

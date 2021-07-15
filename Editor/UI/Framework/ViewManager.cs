@@ -5,7 +5,7 @@ using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEngine;
 
-namespace Editor.UI.Framework
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     [Serializable]
     public class ViewManager

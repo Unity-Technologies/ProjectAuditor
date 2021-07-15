@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Editor.UI.Framework;
+using Unity.ProjectAuditor.Editor.UI.Framework;
 using Packages.Editor.Utils;
 using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.UI.Framework;
