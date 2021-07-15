@@ -154,18 +154,19 @@ namespace Unity.ProjectAuditor.Editor.UI
                 };
             });
 
-            if (currentState == AnalysisState.Valid)
-                m_ViewManager.AddIssues(m_ProjectReport.GetAllIssues());
-            else
-                m_ProjectReport = new ProjectReport();
-
-            AnalysisView.SetReport(m_ProjectReport);
-
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid && m_ViewManager.activeViewIndex < viewDescriptors.Length)
+            {
+                m_ViewManager.AddIssues(m_ProjectReport.GetAllIssues());
                 m_AnalysisState = currentState;
+            }
             else
+            {
+                m_ProjectReport = new ProjectReport();
                 m_AnalysisState = AnalysisState.Initialized;
+            }
+
+            AnalysisView.SetReport(m_ProjectReport);
 
             RefreshDisplay();
 
@@ -469,6 +470,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ProjectReport = new ProjectReport();
 
             var module = m_ProjectAuditor.GetModule<T>();
+            if (!module.IsSupported())
+                return;
+
             var layouts = module.GetLayouts().ToArray();
             foreach (var layout in layouts)
             {
