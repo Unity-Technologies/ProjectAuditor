@@ -103,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             if (GUILayout.Button(content, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
             {
-                Application.OpenURL(Documentation.baseURL + "master" + Documentation.subURL + page + Documentation.endURL);
+                Application.OpenURL(Documentation.baseURL + ProjectAuditor.PackageVersion + Documentation.subURL + page + Documentation.endURL);
             }
         }
 
@@ -162,10 +162,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             int frame = (int)Mathf.Repeat(Time.realtimeSinceStartup * 10, 11.99f);
             return Contents.StatusWheel[frame];
         }
-    }
 
-    static class Contents
-    {
-        public static GUIContent[] StatusWheel;
+        static class Contents
+        {
+            public static GUIContent[] StatusWheel;
+        }
     }
 }

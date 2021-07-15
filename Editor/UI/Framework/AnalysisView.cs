@@ -34,6 +34,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         DependencyView m_DependencyView;
         bool m_FlatView;
+        GUIContent m_HelpButtonContent;
         IssueTable m_Table;
         IssueLayout m_Layout;
 
@@ -109,6 +110,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             if (m_Desc.showDependencyView)
                 m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onDoubleClick);
+
+            var helpButtonTooltip = string.Format("Open {0} Manual (in a web browser)", m_Desc.name);
+#if UNITY_2018_1_OR_NEWER
+            m_HelpButtonContent = EditorGUIUtility.TrIconContent("_Help", helpButtonTooltip);
+#else
+            m_HelpButtonContent = new GUIContent("?", helpButtonTooltip);
+#endif
 
             SetFlatView(m_FlatView);
         }
@@ -224,6 +232,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.Space();
 
             DrawDataOptions();
+
+            Utility.DrawHelpButton(m_HelpButtonContent, new string(m_Desc.name.Where(char.IsLetterOrDigit).ToArray()));
 
             EditorGUILayout.EndHorizontal();
         }
