@@ -1,28 +1,6 @@
 // This file is generated. Do not modify by hand.
 // XML documentation file not found. To check if public methods have XML comments,
 // make sure the XML doc file is present and located next to the scraped dll
-namespace Editor.UI.Framework
-{
-    public class ViewManager
-    {
-        public System.Action<int> onViewChanged;
-        public System.Action onViewExported;
-        public int activeViewIndex { get; set; }
-        public ViewManager(Unity.ProjectAuditor.Editor.IssueCategory[] categories) {}
-        public void AddIssues(Unity.ProjectAuditor.Editor.ProjectIssue[] issues);
-        public void Audit(Unity.ProjectAuditor.Editor.ProjectAuditor projectAuditor);
-        public void ChangeView(int index);
-        public void ChangeView(Unity.ProjectAuditor.Editor.IssueCategory category);
-        public void Clear();
-        public void ClearView(Unity.ProjectAuditor.Editor.IssueCategory category);
-        public void Create(Unity.ProjectAuditor.Editor.ProjectAuditor projectAuditor, Unity.ProjectAuditor.Editor.UI.Framework.Preferences preferences, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter, System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor, bool> onCreateView = default(System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor, bool>));
-        public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetActiveView();
-        public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(int index);
-        public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(Unity.ProjectAuditor.Editor.IssueCategory category);
-        public bool IsValid();
-    }
-}
-
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class AnalysisView
@@ -32,11 +10,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_Filter;
         protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.ProjectIssue> m_Issues;
         protected Unity.ProjectAuditor.Editor.UI.Framework.Preferences m_Preferences;
-        protected Editor.UI.Framework.ViewManager m_ViewManager;
+        protected Unity.ProjectAuditor.Editor.UI.Framework.ViewManager m_ViewManager;
         protected static Unity.ProjectAuditor.Editor.ProjectReport s_Report;
         public Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor desc { get; }
         protected int numIssues { get; }
-        public AnalysisView(Editor.UI.Framework.ViewManager viewManager) {}
+        public AnalysisView(Unity.ProjectAuditor.Editor.UI.Framework.ViewManager viewManager) {}
         public virtual void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
         public virtual void Clear();
         public virtual void Create(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueLayout layout, Unity.ProjectAuditor.Editor.ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.UI.Framework.Preferences prefs, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
@@ -201,7 +179,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public int menuOrder;
         public string name;
         public System.Action<Unity.ProjectAuditor.Editor.Utils.Location> onDoubleClick;
-        public System.Action<Editor.UI.Framework.ViewManager> onDrawToolbarDataOptions;
+        public System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewManager> onDrawToolbarDataOptions;
         public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenDescriptor;
         public bool showActions;
         public bool showAreaSelection;
@@ -216,5 +194,24 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public ViewDescriptor() {}
         public static Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor[] GetAll();
         public static void Register(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor);
+    }
+
+    public class ViewManager
+    {
+        public System.Action<int> onViewChanged;
+        public System.Action onViewExported;
+        public int activeViewIndex { get; set; }
+        public ViewManager(Unity.ProjectAuditor.Editor.IssueCategory[] categories) {}
+        public void AddIssues(Unity.ProjectAuditor.Editor.ProjectIssue[] issues);
+        public void Audit(Unity.ProjectAuditor.Editor.ProjectAuditor projectAuditor);
+        public void ChangeView(int index);
+        public void ChangeView(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public void Clear();
+        public void ClearView(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public void Create(Unity.ProjectAuditor.Editor.ProjectAuditor projectAuditor, Unity.ProjectAuditor.Editor.UI.Framework.Preferences preferences, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter, System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor, bool> onCreateView = default(System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor, bool>));
+        public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetActiveView();
+        public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(int index);
+        public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public bool IsValid();
     }
 }
