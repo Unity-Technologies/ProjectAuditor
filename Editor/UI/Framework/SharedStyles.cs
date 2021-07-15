@@ -7,8 +7,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     {
         static GUIStyle s_Foldout;
         static GUIStyle s_Label;
+        static GUIStyle s_LinkLabel;
         static GUIStyle s_TextArea;
-        static GUIStyle s_TextFieldWarning;
 
         public static GUIStyle Foldout
         {
@@ -33,6 +33,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        public static GUIStyle LinkLabel
+        {
+            get
+            {
+                if (s_LinkLabel == null)
+                    s_LinkLabel = GetStyle("LinkLabel");
+                return s_LinkLabel;
+            }
+        }
 
         public static GUIStyle TextArea
         {
@@ -44,20 +53,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public static GUIStyle TextFieldWarning
+        static GUIStyle GetStyle(string styleName)
         {
-            get
+            var s = GUI.skin.FindStyle(styleName);
+            if (s == null)
+                s = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector).FindStyle(styleName);
+            if (s == null)
             {
-                if (s_TextFieldWarning == null)
-                {
-                    s_TextFieldWarning = new GUIStyle(EditorStyles.textField);
-                    s_TextFieldWarning.normal.textColor = Color.yellow;
-                }
-
-                return s_TextFieldWarning;
+                Debug.LogError("Missing built-in guistyle " + styleName);
+                s = new GUIStyle();
             }
+            return s;
         }
-
-        public static GUIContent[] StatusWheel;
     }
 }

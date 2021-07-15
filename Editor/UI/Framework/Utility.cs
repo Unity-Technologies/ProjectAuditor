@@ -54,19 +54,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public bool Enabled;
         }
 
-        public static GUIStyle GetStyle(string styleName)
-        {
-            var s = GUI.skin.FindStyle(styleName);
-            if (s == null)
-                s = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector).FindStyle(styleName);
-            if (s == null)
-            {
-                Debug.LogError("Missing built-in guistyle " + styleName);
-                s = new GUIStyle();
-            }
-            return s;
-        }
-
         public static bool BoldFoldout(bool toggle, GUIContent content)
         {
             return EditorGUILayout.Foldout(toggle, content, SharedStyles.Foldout);
@@ -165,15 +152,20 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
 		public static GUIContent GetStatusWheel()
         {
-            if (SharedStyles.StatusWheel == null)
+            if (Contents.StatusWheel == null)
             {
-                SharedStyles.StatusWheel = new GUIContent[12];
+                Contents.StatusWheel = new GUIContent[12];
                 for (int i = 0; i < 12; i++)
-                    SharedStyles.StatusWheel[i] = EditorGUIUtility.IconContent("WaitSpin" + i.ToString("00"));
+                    Contents.StatusWheel[i] = EditorGUIUtility.IconContent("WaitSpin" + i.ToString("00"));
 
             }
             int frame = (int)Mathf.Repeat(Time.realtimeSinceStartup * 10, 11.99f);
-            return SharedStyles.StatusWheel[frame];
+            return Contents.StatusWheel[frame];
+        }
+
+        static class Contents
+        {
+            public static GUIContent[] StatusWheel;
         }
     }
 }
