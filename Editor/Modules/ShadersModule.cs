@@ -8,6 +8,7 @@ using UnityEditor.Build;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Object = System.Object;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
@@ -258,14 +259,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             passCount = shader.passCount;
 #endif
             var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.Shader, new Location(assetPath));
-            issue.SetCustomProperties(new string[(int)ShaderProperty.Num]
+            issue.SetCustomProperties(new object[(int)ShaderProperty.Num]
             {
                 variantCount == -1 ? k_NotAvailable : variantCount.ToString(),
                 passCount == -1 ? k_NotAvailable : passCount.ToString(),
                 (globalKeywords == null || localKeywords == null) ? k_NotAvailable : (globalKeywords.Length + localKeywords.Length).ToString(),
-                shader.renderQueue.ToString(),
-                hasInstancing.ToString(),
-                isSrpBatcherCompatible.ToString()
+                shader.renderQueue,
+                hasInstancing,
+                isSrpBatcherCompatible
             });
             onIssueFound(issue);
         }
@@ -290,13 +291,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var compilerData = shaderVariantData.compilerData;
                 var keywords = GetShaderKeywords(shader, compilerData.shaderKeywordSet.GetShaderKeywords());
                 var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariant, new Location(assetPath));
-                issue.SetCustomProperties(new string[(int)ShaderVariantProperty.Num]
+                issue.SetCustomProperties(new object[(int)ShaderVariantProperty.Num]
                 {
                     k_NoRuntimeData,
-                    compilerData.shaderCompilerPlatform.ToString(),
+                    compilerData.shaderCompilerPlatform,
                     shaderVariantData.passName,
                     KeywordsToString(keywords),
-                    compilerData.shaderRequirements.ToString()
+                    compilerData.shaderRequirements
                 });
 
                 onIssueFound(issue);
@@ -400,7 +401,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     isVariantCompiled = matchingVariants.Count() > 0;
                 }
 
-                builtVariant.SetCustomProperty(ShaderVariantProperty.Compiled, isVariantCompiled.ToString());
+                builtVariant.SetCustomProperty(ShaderVariantProperty.Compiled, isVariantCompiled);
             }
 
             return ParseLogResult.Success;

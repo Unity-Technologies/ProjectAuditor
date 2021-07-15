@@ -56,22 +56,22 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
             onIssueFound(new ProjectIssue(k_Descriptor, "Date and Time", IssueCategory.MetaData,
-                new[] {DateTime.Now.ToString()}));
+                new object[] {DateTime.Now}));
             onIssueFound(new ProjectIssue(k_Descriptor, "Host Name", IssueCategory.MetaData,
-                new[] {SystemInfo.deviceName}));
+                new object[] {SystemInfo.deviceName}));
             onIssueFound(new ProjectIssue(k_Descriptor, "Host Platform", IssueCategory.MetaData,
-                new[] {SystemInfo.operatingSystem}));
+                new object[] {SystemInfo.operatingSystem}));
 
             onIssueFound(new ProjectIssue(k_Descriptor, "Company Name", IssueCategory.MetaData,
-                new[] {Application.companyName}));
+                new object[] {Application.companyName}));
             onIssueFound(new ProjectIssue(k_Descriptor, "Product Name", IssueCategory.MetaData,
-                new[] {Application.productName}));
+                new object[] {Application.productName}));
             onIssueFound(new ProjectIssue(k_Descriptor, "Build Target", IssueCategory.MetaData,
-                new[] {EditorUserBuildSettings.activeBuildTarget.ToString()}));
+                new object[] {EditorUserBuildSettings.activeBuildTarget.ToString()}));
             onIssueFound(new ProjectIssue(k_Descriptor, "Project Auditor Version", IssueCategory.MetaData,
-                new[] { ProjectAuditor.PackageVersion}));
+                new object[] { ProjectAuditor.PackageVersion}));
             onIssueFound(new ProjectIssue(k_Descriptor, "Unity Version", IssueCategory.MetaData,
-                new[] {Application.unityVersion}));
+                new object[] {Application.unityVersion}));
 
             if (onComplete != null)
                 onComplete();

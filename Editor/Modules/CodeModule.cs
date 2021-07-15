@@ -154,7 +154,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             foreach (var assemblyInfo in assemblyInfos)
             {
-                onIssueFound(new ProjectIssue(k_AssemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath, new string[(int)AssemblyProperty.Num] { assemblyInfo.readOnly.ToString() }));
+                onIssueFound(new ProjectIssue(k_AssemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath,
+                    new object[(int)AssemblyProperty.Num]
+                    {
+                        assemblyInfo.readOnly
+                    }));
             }
 
             var assemblyDirectories = new List<string>();
@@ -377,7 +381,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var issue = new ProjectIssue(descriptor, message.message,
                     IssueCategory.CodeCompilerMessage,
                     new Location(message.file.Replace("\\", "/"), message.line),
-                    new string[(int)CompilerMessageProperty.Num]
+                    new object[(int)CompilerMessageProperty.Num]
                     {
                         message.code,
                         assemblyName

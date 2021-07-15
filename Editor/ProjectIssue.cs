@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
@@ -32,20 +33,20 @@ namespace Unity.ProjectAuditor.Editor
                             string description,
                             IssueCategory category,
                             Location location = null,
-                            string[] customProperties = null)
+                            object[] customProperties = null)
         {
             this.descriptor = descriptor;
             this.description = description;
             this.category = category;
             this.location = location;
-            this.customProperties = customProperties;
+            this.SetCustomProperties(customProperties);
         }
 
         public ProjectIssue(ProblemDescriptor descriptor,
                             string description,
                             IssueCategory category,
                             string path,
-                            string[] customProperties)
+                            object[] customProperties)
             : this(descriptor, description, category, new Location(path), customProperties)
         {
         }
@@ -53,10 +54,11 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectIssue(ProblemDescriptor descriptor,
                             string description,
                             IssueCategory category,
-                            string[] customProperties)
+                            object[] customProperties)
             : this(descriptor, description, category)
         {
-            this.customProperties = customProperties;
+            if (customProperties != null)
+                this.customProperties = customProperties.Select(p => p.ToString()).ToArray();
         }
 
         public ProjectIssue(ProblemDescriptor descriptor,
@@ -166,9 +168,9 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
-        public void SetCustomProperty<T>(T propertyEnum, string property) where T : struct
+        public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct
         {
-            customProperties[Convert.ToUInt32(propertyEnum)] = property;
+            customProperties[Convert.ToUInt32(propertyEnum)] = property.ToString();
         }
 
         /// <summary>
@@ -176,16 +178,19 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="numProperties"> total number of custom properties </param>
         /// <param name="property"> value the properties will be set to </param>
-        public void SetCustomProperties(int numProperties, string property)
+        public void SetCustomProperties(int numProperties, object property)
         {
             customProperties = new string[numProperties];
             for (var i = 0; i < numProperties; i++)
-                customProperties[i] = property;
+                customProperties[i] = property.ToString();
         }
 
-        public void SetCustomProperties(string[] properties)
+        public void SetCustomProperties(object[] properties)
         {
-            customProperties = properties;
+            if (properties != null)
+                this.customProperties = properties.Select(p => p.ToString()).ToArray();
+            else
+                this.customProperties = null;
         }
     }
 }

@@ -271,7 +271,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             foreach (var step in buildReport.steps)
             {
                 var depth = step.depth;
-                onIssueFound(new ProjectIssue(k_InfoDescriptor, step.name, IssueCategory.BuildStep, new string[(int)BuildReportStepProperty.Num]
+                onIssueFound(new ProjectIssue(k_InfoDescriptor, step.name, IssueCategory.BuildStep, new object[(int)BuildReportStepProperty.Num]
                 {
                     Formatting.FormatTime(step.duration)
                 })
@@ -348,9 +348,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         descriptor = m_DescriptorByExtension[ext];
 
                     var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
-                    issue.SetCustomProperties(new string[(int)BuildReportFileProperty.Num]
+                    issue.SetCustomProperties(new object[(int)BuildReportFileProperty.Num]
                     {
-                        sum.ToString(),
+                        sum,
                         packedAsset.shortPath
                     });
                     onIssueFound(issue);
