@@ -71,7 +71,7 @@ namespace Unity.ProjectAuditor.Editor
             s_Mutex.ReleaseMutex();
         }
 
-        internal void ExportToCSV(string path, IssueLayout layout, Func<ProjectIssue, bool> match = null)
+        public void ExportToCSV(string path, IssueLayout layout, Func<ProjectIssue, bool> match = null)
         {
             using (var exporter = new Exporter(path, layout))
             {
