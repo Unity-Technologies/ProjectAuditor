@@ -274,10 +274,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             throw new NotImplementedException();
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgressBar progressBar = null)
+        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progressBar = null)
         {
             if (progressBar != null)
-                progressBar.Initialize("Analyzing Scenes in Build Settings", "Collecting statistics",
+                progressBar.Start("Analyzing Scenes in Build Settings", "Collecting statistics",
                     EditorBuildSettings.scenes.Length);
             var prevSceneSetups =  EditorSceneManager.GetSceneManagerSetup();
 
@@ -291,7 +291,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var path = editorBuildSettingsScene.path;
 
                 if (progressBar != null)
-                    progressBar.AdvanceProgressBar(path);
+                    progressBar.Advance(path);
 
                 if (!File.Exists(path))
                     continue;
@@ -331,7 +331,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Debug.Log("Unique Textures: "  + globalStats.textures);
 
             if (progressBar != null)
-                progressBar.ClearProgressBar();
+                progressBar.Clear();
 
             if (onComplete != null)
                 onComplete();
