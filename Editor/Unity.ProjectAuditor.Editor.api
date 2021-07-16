@@ -384,6 +384,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public string Filename { get; }
         public int Line { get; }
         public string Path { get; }
+        public Location(string path) {}
+        public Location(string path, int line) {}
         public bool IsValid();
     }
 
