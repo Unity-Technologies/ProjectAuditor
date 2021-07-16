@@ -24,10 +24,8 @@ namespace Unity.ProjectAuditor.Editor
         : IPreprocessBuildWithReport
 #endif
     {
+        static Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
         static string s_DataPath;
-
-        readonly List<IProjectAuditorModule> m_Modules = new List<IProjectAuditorModule>();
-        ProjectAuditorConfig m_Config;
 
         public static string DataPath
         {
@@ -66,6 +64,9 @@ namespace Unity.ProjectAuditor.Editor
 #endif
             }
         }
+
+        readonly List<IProjectAuditorModule> m_Modules = new List<IProjectAuditorModule>();
+        ProjectAuditorConfig m_Config;
 
         public ProjectAuditorConfig config
         {
@@ -197,6 +198,13 @@ namespace Unity.ProjectAuditor.Editor
         {
             var layouts = m_Modules.Where(a => a.IsSupported()).SelectMany(module => module.GetLayouts()).Where(l => l.category == category);
             return layouts.FirstOrDefault();
+        }
+
+        public static IssueCategory GetOrRegisterCategory(string name)
+        {
+            if (!s_CustomCategories.ContainsKey(name))
+                s_CustomCategories.Add(name, IssueCategory.FirstCustomCategory + s_CustomCategories.Count);
+            return s_CustomCategories[name];
         }
 
 #if UNITY_2018_1_OR_NEWER
