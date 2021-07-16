@@ -289,9 +289,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             foreach (var editorBuildSettingsScene in EditorBuildSettings.scenes)
             {
                 var path = editorBuildSettingsScene.path;
-
                 if (progress != null)
                     progress.Advance(path);
+
+                // skip scene if it does not contribute to the build
+                if (!editorBuildSettingsScene.enabled)
+                    continue;
 
                 if (!File.Exists(path))
                     continue;
