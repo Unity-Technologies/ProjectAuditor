@@ -202,7 +202,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 objects = m_NumObjects,
                 materials = m_Materials.Count,
-                models = m_Materials.Count,
+                models = m_Models.Count,
                 shaders = m_Shaders.Count,
                 textures = m_Textures.Count,
                 prefabs = m_Prefabs.Count
