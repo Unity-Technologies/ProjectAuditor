@@ -156,15 +156,15 @@ namespace Unity.ProjectAuditor.Editor
         public string name { get; }
         public string relativePath { get; }
         public Unity.ProjectAuditor.Editor.Rule.Severity severity { get; }
-        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, string[] customProperties) {}
+        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, object[] customProperties) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode dependenciesNode) {}
-        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, string path, string[] customProperties) {}
-        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location = default(Unity.ProjectAuditor.Editor.Utils.Location), string[] customProperties = default(string[])) {}
+        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, string path, object[] customProperties) {}
+        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location = default(Unity.ProjectAuditor.Editor.Utils.Location), object[] customProperties = default(object[])) {}
         public string GetCustomProperty<T>(T propertyEnum) where T : System.ValueType, new();
         public int GetNumCustomProperties();
-        public void SetCustomProperties(string[] properties);
-        public void SetCustomProperties(int numProperties, string property);
-        public void SetCustomProperty<T>(T propertyEnum, string property) where T : System.ValueType, new();
+        public void SetCustomProperties(object[] properties);
+        public void SetCustomProperties(int numProperties, object property);
+        public void SetCustomProperty<T>(T propertyEnum, object property) where T : System.ValueType, new();
     }
 
     public class ProjectReport
