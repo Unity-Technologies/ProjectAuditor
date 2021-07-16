@@ -14,6 +14,6 @@ namespace Unity.ProjectAuditor.Editor
         BuildStep,
         Assembly,
 
-        NumCategories
+        FirstCustomCategory
     }
 }

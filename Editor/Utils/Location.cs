@@ -39,12 +39,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
         }
 
-        internal Location(string path)
+        public Location(string path)
         {
             m_Path = path;
         }
 
-        internal Location(string path, int line)
+        public Location(string path, int line)
         {
             m_Path = path;
             m_Line = line;

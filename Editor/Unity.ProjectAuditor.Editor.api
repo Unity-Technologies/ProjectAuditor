@@ -68,9 +68,9 @@ namespace Unity.ProjectAuditor.Editor
         public const Unity.ProjectAuditor.Editor.IssueCategory BuildStep = 9;
         public const Unity.ProjectAuditor.Editor.IssueCategory Code = 4;
         public const Unity.ProjectAuditor.Editor.IssueCategory CodeCompilerMessage = 5;
+        public const Unity.ProjectAuditor.Editor.IssueCategory FirstCustomCategory = 11;
         public const Unity.ProjectAuditor.Editor.IssueCategory GenericInstance = 6;
         public const Unity.ProjectAuditor.Editor.IssueCategory MetaData = 0;
-        public const Unity.ProjectAuditor.Editor.IssueCategory NumCategories = 11;
         public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSetting = 7;
         public const Unity.ProjectAuditor.Editor.IssueCategory Shader = 2;
         public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariant = 3;
@@ -123,6 +123,7 @@ namespace Unity.ProjectAuditor.Editor
         public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
         public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<bool> onUpdate, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
         public Unity.ProjectAuditor.Editor.IssueLayout GetLayout(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public static Unity.ProjectAuditor.Editor.IssueCategory GetOrRegisterCategory(string name);
         public virtual void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
     }
 
@@ -384,6 +385,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public string Filename { get; }
         public int Line { get; }
         public string Path { get; }
+        public Location(string path) {}
+        public Location(string path, int line) {}
         public bool IsValid();
     }
 
