@@ -323,7 +323,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
 
             // restore previously-loaded scenes
-            EditorSceneManager.RestoreSceneManagerSetup(prevSceneSetups);
+            if (prevSceneSetups.Length > 0)
+                EditorSceneManager.RestoreSceneManagerSetup(prevSceneSetups);
 
             var globalStats = globalCollector.GetStats();
 
