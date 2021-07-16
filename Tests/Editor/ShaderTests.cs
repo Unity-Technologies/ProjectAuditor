@@ -360,7 +360,7 @@ Shader ""Custom/MyEditorShader""
                 Assert.True(variantsForPlatform.All(v => v.GetCustomProperty(ShaderVariantProperty.Compiled).Equals(ShadersModule.k_NoRuntimeData)));
 
                 // check descriptor
-                Assert.True(variantsForPlatform.All(v => v.descriptor.area.Equals("Info")));
+                Assert.True(variantsForPlatform.Select(v => v.descriptor.GetAreas()).All(areas => areas.Length == 1 && areas.Contains(Area.Info)));
             }
         }
 
@@ -489,7 +489,8 @@ Shader ""Custom/MyEditorShader""
             Assert.NotNull(shaderIssue);
 
             // check descriptor
-            Assert.True(shaderIssue.descriptor.area.Equals(Area.Info.ToString()));
+            Assert.AreEqual(1, shaderIssue.descriptor.GetAreas().Length);
+            Assert.Contains(Area.Info, shaderIssue.descriptor.GetAreas());
 
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());

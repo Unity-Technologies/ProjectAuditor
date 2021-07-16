@@ -87,7 +87,7 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProblemDescriptor : System.IEquatable<Unity.ProjectAuditor.Editor.ProblemDescriptor>
     {
-        public string area;
+        public string[] areas;
         public bool critical;
         public string customevaluator;
         public string description;
@@ -101,7 +101,7 @@ namespace Unity.ProjectAuditor.Editor
         public string solution;
         public string type;
         public string value;
-        public ProblemDescriptor(int id, string description, string area, string problem = default(string), string solution = default(string)) {}
+        public ProblemDescriptor(int id, string description, string[] areas, string problem = default(string), string solution = default(string)) {}
         public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area area = 6, string problem = default(string), string solution = default(string)) {}
         public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area[] areas, string problem = default(string), string solution = default(string)) {}
         public virtual bool Equals(object obj);
@@ -385,6 +385,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public int Line { get; }
         public string Path { get; }
         public bool IsValid();
+    }
+
+    [System.Runtime.CompilerServices.Extension] public static class ProblemDescriptorExtensions
+    {
+        [System.Runtime.CompilerServices.Extension] public static Unity.ProjectAuditor.Editor.Area[] GetAreas(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+        [System.Runtime.CompilerServices.Extension] public static string GetAreasSummary(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
     }
 
     [System.Runtime.CompilerServices.Extension] public static class ProjectIssueExtensions
