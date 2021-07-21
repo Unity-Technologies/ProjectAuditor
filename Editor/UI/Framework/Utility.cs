@@ -10,6 +10,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_WarnIconName = "console.warnicon";
         static readonly string k_ErrorIconName = "console.erroricon";
 
+        public static readonly GUIContent CopyToClipboard = new GUIContent("Copy to Clipboard");
+
         public static GUIContent InfoIcon
         {
             get

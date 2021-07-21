@@ -337,6 +337,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             if (rule != null && rule.severity == Rule.Severity.None)
                 GUI.enabled = true;
+
+            ShowContextMenu(cellRect, item);
         }
 
         new void CenterRectUsingSingleLineHeight(ref Rect rect)
@@ -413,6 +415,25 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return;
 
             SortIfNeeded(GetRows());
+        }
+
+        void ShowContextMenu(Rect cellRect, IssueTableItem item)
+        {
+            Event current = Event.current;
+            if (cellRect.Contains(current.mousePosition) && current.type == EventType.ContextClick)
+            {
+                GenericMenu menu = new GenericMenu();
+
+                menu.AddItem(Utility.CopyToClipboard, false, () => CopyToClipboard(item.GetDisplayName()));
+                menu.ShowAsContext();
+
+                current.Use();
+            }
+        }
+
+        void CopyToClipboard(string text)
+        {
+            EditorGUIUtility.systemCopyBuffer = text;
         }
 
         void SortIfNeeded(IList<TreeViewItem> rows)
