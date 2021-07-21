@@ -10,6 +10,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_WarnIconName = "console.warnicon";
         static readonly string k_ErrorIconName = "console.erroricon";
 
+        static GUIContent[] s_StatusWheel;
+
         public static readonly GUIContent CopyToClipboard = new GUIContent("Copy to Clipboard");
 
         public static GUIContent InfoIcon
@@ -61,7 +63,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return EditorGUILayout.Foldout(toggle, content, SharedStyles.Foldout);
         }
 
-        public static void ToolbarDropdownList(DropdownItem[] items, int selectionIndex, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
+        public static void ToolbarDropdownList(DropdownItem[] items, int selectionIndex,
+            GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
         {
             var selectionContent = items[selectionIndex].SelectionContent;
             var r = GUILayoutUtility.GetRect(selectionContent, EditorStyles.toolbarButton, options);
@@ -78,7 +81,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal static bool ToolbarButtonWithDropdownList(GUIContent content, string[] buttonNames, GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
+        internal static bool ToolbarButtonWithDropdownList(GUIContent content, string[] buttonNames,
+            GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
         {
             var rect = GUILayoutUtility.GetRect(content, EditorStyles.toolbarDropDown, options);
             var dropDownRect = rect;
@@ -105,17 +109,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             if (GUILayout.Button(content, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
             {
-                Application.OpenURL(Documentation.baseURL + "master" + Documentation.subURL + page + Documentation.endURL);
+                Application.OpenURL(Documentation.baseURL + "master" + Documentation.subURL + page +
+                                    Documentation.endURL);
             }
         }
 
         public static void DrawSelectedText(string text)
         {
 #if UNITY_2019_1_OR_NEWER
-            var treeViewSelectionStyle = (GUIStyle)"TV Selection";
+            var treeViewSelectionStyle = (GUIStyle) "TV Selection";
             var backgroundStyle = new GUIStyle(treeViewSelectionStyle);
 
-            var treeViewLineStyle = (GUIStyle)"TV Line";
+            var treeViewLineStyle = (GUIStyle) "TV Line";
             var textStyle = new GUIStyle(treeViewLineStyle);
 #else
             var textStyle = GUI.skin.label;
@@ -152,22 +157,28 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return EditorGUIUtility.TrIconContent(ProjectAuditor.PackagePath + "/Editor/Icons/" + name + ".png");
         }
 
-		public static GUIContent GetStatusWheel()
+        public static GUIContent GetStatusWheel()
         {
-            if (Contents.StatusWheel == null)
+            if (s_StatusWheel == null)
             {
-                Contents.StatusWheel = new GUIContent[12];
+                s_StatusWheel = new GUIContent[12];
                 for (int i = 0; i < 12; i++)
-                    Contents.StatusWheel[i] = EditorGUIUtility.IconContent("WaitSpin" + i.ToString("00"));
+                    s_StatusWheel[i] = EditorGUIUtility.IconContent("WaitSpin" + i.ToString("00"));
 
             }
-            int frame = (int)Mathf.Repeat(Time.realtimeSinceStartup * 10, 11.99f);
-            return Contents.StatusWheel[frame];
-        }
-    }
 
-    static class Contents
-    {
-        public static GUIContent[] StatusWheel;
+            int frame = (int) Mathf.Repeat(Time.realtimeSinceStartup * 10, 11.99f);
+            return s_StatusWheel[frame];
+        }
+
+        public static GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath)
+        {
+#if UNITY_2018_3_OR_NEWER
+            var icon = AssetDatabase.GetCachedIcon(assetPath);
+            return EditorGUIUtility.TrTextContentWithIcon(displayName, assetPath, icon);
+#else
+            return new GUIContent(item.GetDisplayName(), issue.location.Path);
+#endif
+        }
     }
 }

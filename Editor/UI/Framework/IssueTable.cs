@@ -286,12 +286,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         GUIContent guiContent = null;
                         if (issue.location != null && m_Desc.descriptionWithIcon)
                         {
-#if UNITY_2018_3_OR_NEWER
-                            var icon = AssetDatabase.GetCachedIcon(issue.location.Path);
-                            guiContent = EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), issue.location.Path, icon);
-#else
-                            guiContent = new GUIContent(item.GetDisplayName(), issue.location.Path);
-#endif
+                            guiContent =
+                                Utility.GetTextContentWithAssetIcon(item.GetDisplayName(), issue.location.Path);
                         }
 
                         if (guiContent == null)

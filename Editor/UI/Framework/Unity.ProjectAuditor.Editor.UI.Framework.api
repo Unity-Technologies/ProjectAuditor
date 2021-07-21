@@ -158,6 +158,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static void DrawSelectedText(string text);
         public static UnityEngine.GUIContent GetIcon(string name);
         public static UnityEngine.GUIContent GetStatusWheel();
+        public static UnityEngine.GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath);
         public static string GetTreeViewSelectedSummary(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection, string[] names);
         public static void ToolbarDropdownList(Unity.ProjectAuditor.Editor.UI.Framework.Utility.DropdownItem[] items, int selectionIndex, UnityEditor.GenericMenu.MenuFunction2 callback, params UnityEngine.GUILayoutOption[] options);
         public class DropdownItem
