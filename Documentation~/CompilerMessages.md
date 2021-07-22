@@ -10,4 +10,5 @@ In addition to the compiler messages, this view also reports any Roslyn analysis
 <img src="images/roslyn-analysis.png">
 
 Note that this feature requires one or more Roslyn analyzer DLLs in the Unity project, tagged with the *RoslynAnalyzer* label. In order to add a label, click in the DLL in the Project Browser and use the inspector:
+
 <img src="images/roslyn-analyzer-dll.png">
