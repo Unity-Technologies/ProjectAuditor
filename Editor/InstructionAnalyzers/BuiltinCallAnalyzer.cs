@@ -5,7 +5,9 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
@@ -40,29 +42,30 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             var callee = (MethodReference)inst.Operand;
-
-            // replace root with callee node
-            var calleeNode = new CallTreeNode(callee);
             var description = string.Empty;
+            var methodName = callee.Name;
 
             ProblemDescriptor descriptor;
-            var methodName = callee.Name;
-            if (methodName.StartsWith("get_"))
-                methodName = methodName.Substring("get_".Length);
+            var declaringType = callee.DeclaringType;
 
             // Are we trying to warn about a whole namespace?
-            m_WholeNamespaceDescriptors.TryGetValue(callee.DeclaringType.Namespace, out descriptor);
-            if (descriptor != null)
+            if (m_WholeNamespaceDescriptors.TryGetValue(declaringType.Namespace, out descriptor))
             {
-                description = calleeNode.prettyName;
+                description = string.Format("{0}.{1}", declaringType, methodName);
             }
             else
             {
+                if (methodName.StartsWith("get_"))
+                    methodName = methodName.Substring("get_".Length);
+
                 List<ProblemDescriptor> descriptors;
                 if (!m_Descriptors.TryGetValue(methodName, out descriptors))
                     return null;
 
-                descriptor = descriptors.Find(d => IsOrInheritedFrom(callee.DeclaringType, d.type));
+                Profiler.BeginSample("BuiltinCallAnalyzer.FindDescriptor");
+                descriptor = descriptors.Find(d => IsOrInheritedFrom(declaringType, d.type));
+                Profiler.EndSample();
+
                 if (descriptor == null)
                     return null;
 
@@ -75,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 descriptor,
                 description,
                 IssueCategory.Code,
-                calleeNode
+                new CallTreeNode(callee)
             );
         }
 

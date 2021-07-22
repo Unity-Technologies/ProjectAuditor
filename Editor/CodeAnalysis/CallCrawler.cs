@@ -8,37 +8,63 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     class CallInfo
     {
-        public MethodReference callee;
-        public MethodReference caller;
-        public Location location;
-        public bool perfCriticalContext;
+        public readonly MethodReference callee;
+        public readonly MethodReference caller;
+        public readonly Location location;
+        public readonly bool perfCriticalContext;
+
+        public CallInfo(
+            MethodReference callee,
+            MethodReference caller,
+            Location location,
+            bool perfCriticalContext)
+        {
+            this.callee = callee;
+            this.caller = caller;
+            this.location = location;
+            this.perfCriticalContext = perfCriticalContext;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as CallInfo;
+            if (other == null)
+            {
+                return false;
+            }
+
+            return other.callee == callee &&
+                   other.caller == caller;
+        }
+
+        public override int GetHashCode()
+        {
+            return callee.GetHashCode()
+                   + caller.GetHashCode();
+        }
     }
 
     class CallCrawler
     {
         const int k_MaxDepth = 10;
 
-        readonly Dictionary<string, List<CallInfo>> m_BucketedCallPairs =
+        readonly Dictionary<string, List<CallInfo>> m_BucketedCalls =
             new Dictionary<string, List<CallInfo>>();
 
-        readonly Dictionary<string, CallInfo> m_CallPairs = new Dictionary<string, CallInfo>();
+        readonly HashSet<CallInfo> m_Calls = new HashSet<CallInfo>();
 
         public void Add(CallInfo callInfo)
         {
-            var key = string.Concat(callInfo.caller, "->", callInfo.callee);
-            if (!m_CallPairs.ContainsKey(key))
-            {
-                m_CallPairs.Add(key, callInfo);
-            }
+            m_Calls.Add(callInfo);
         }
 
         public void BuildCallHierarchies(List<ProjectIssue> issues, IProgress progress = null)
         {
-            foreach (var entry in m_CallPairs)
+            foreach (var callInfo in m_Calls)
             {
-                if (!m_BucketedCallPairs.ContainsKey(entry.Value.callee.FullName))
-                    m_BucketedCallPairs.Add(entry.Value.callee.FullName, new List<CallInfo>());
-                m_BucketedCallPairs[entry.Value.callee.FullName].Add(entry.Value);
+                if (!m_BucketedCalls.ContainsKey(callInfo.callee.FullName))
+                    m_BucketedCalls.Add(callInfo.callee.FullName, new List<CallInfo>());
+                m_BucketedCalls[callInfo.callee.FullName].Add(callInfo);
             }
 
             if (issues.Count > 0)
@@ -46,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                 Profiler.BeginSample("CallCrawler.BuildCallHierarchies");
 
                 if (progress != null)
-                    progress.Start("Analyzing Scripts", "Analyzing call trees", issues.Count);
+                    progress.Start("Analyzing Method calls", string.Empty, issues.Count);
 
                 foreach (var issue in issues)
                 {
@@ -76,9 +102,9 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                 return;
 
             // let's find all callers with matching callee
-            if (m_BucketedCallPairs.ContainsKey(callee.name))
+            if (m_BucketedCalls.ContainsKey(callee.name))
             {
-                var callPairs = m_BucketedCallPairs[callee.name];
+                var callPairs = m_BucketedCalls[callee.name];
 
                 foreach (var call in callPairs)
                     // ignore recursive calls

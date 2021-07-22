@@ -122,8 +122,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ProjectAuditor = new ProjectAuditor();
 
+            Profiler.BeginSample("Update Selections");
             UpdateAreaSelection();
             UpdateAssemblySelection();
+            Profiler.EndSample();
 
             if (m_TextFilter == null)
                 m_TextFilter = new TextFilter();
@@ -142,6 +144,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Export, ProjectAuditorAnalytics.BeginAnalytic());
             };
+
             m_ViewManager.Create(m_ProjectAuditor, m_Preferences, this, (desc, isSupported) =>
             {
                 var index = Array.IndexOf(viewDescriptors, desc);
@@ -167,7 +170,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             AnalysisView.SetReport(m_ProjectReport);
 
+            Profiler.BeginSample("Refresh");
             RefreshDisplay();
+            Profiler.EndSample();
 
             m_Instance = this;
         }
@@ -871,7 +876,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 var compiledAssemblies = m_AssemblyNames.Where(a => !AssemblyInfoProvider.IsUnityEngineAssembly(a));
                 compiledAssemblies = compiledAssemblies.Where(a =>
-                    !AssemblyInfoProvider.IsReadOnlyAssembly(a));
+                    !AssemblyInfoProvider.IsReadOnlyAssembly(a)).ToArray();
                 m_AssemblySelection.selection.AddRange(compiledAssemblies);
 
                 if (!m_AssemblySelection.selection.Any())

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
@@ -34,10 +35,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void AddIssues(ProjectIssue[] issues)
         {
+            Profiler.BeginSample("ViewManager.AddIssues");
             foreach (var view in m_Views)
             {
                 view.AddIssues(issues);
             }
+            Profiler.EndSample();
         }
 
         public void Clear()
@@ -51,6 +54,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void Create(ProjectAuditor projectAuditor, Preferences preferences, IProjectIssueFilter filter, Action<ViewDescriptor, bool> onCreateView = null)
         {
+            Profiler.BeginSample("ViewManager.Create");
             var views = new List<AnalysisView>();
             foreach (var category in m_Categories)
             {
@@ -73,6 +77,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
 
             m_Views = views.ToArray();
+            Profiler.EndSample();
         }
 
         public void Audit(ProjectAuditor projectAuditor)
