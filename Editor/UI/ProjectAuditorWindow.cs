@@ -145,6 +145,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Export, ProjectAuditorAnalytics.BeginAnalytic());
             };
 
+            Profiler.BeginSample("Views Creation");
             m_ViewManager.Create(m_ProjectAuditor, m_Preferences, this, (desc, isSupported) =>
             {
                 var index = Array.IndexOf(viewDescriptors, desc);
@@ -155,12 +156,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                     Enabled = isSupported
                 };
             });
+            Profiler.EndSample();
 
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid && m_ViewManager.activeViewIndex < viewDescriptors.Length)
             {
+                Profiler.BeginSample("Views Update");
                 m_ViewManager.AddIssues(m_ProjectReport.GetAllIssues());
                 m_AnalysisState = currentState;
+                Profiler.EndSample();
             }
             else
             {
