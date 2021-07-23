@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 if (!IsVersionCompatible(rawDescriptor))
                     continue;
 
-                var desc = new ProblemDescriptor(rawDescriptor.id, rawDescriptor.description, rawDescriptor.area)
+                var desc = new ProblemDescriptor(rawDescriptor.id, rawDescriptor.description, rawDescriptor.areas)
                 {
                     customevaluator = rawDescriptor.customevaluator,
                     type = rawDescriptor.type,

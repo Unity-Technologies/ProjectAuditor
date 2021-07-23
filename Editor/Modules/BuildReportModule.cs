@@ -202,13 +202,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             hierarchy = true
         };
 
-        static IBuildReportProvider m_BuildReportProvider;
-        static IBuildReportProvider m_DefaultBuildReportProvider = new LastBuildReportProvider();
+        static IBuildReportProvider s_BuildReportProvider;
+        static IBuildReportProvider s_DefaultBuildReportProvider = new LastBuildReportProvider();
 
         public static IBuildReportProvider BuildReportProvider
         {
-            get { return m_BuildReportProvider != null ? m_BuildReportProvider : m_DefaultBuildReportProvider;  }
-            set { m_BuildReportProvider = value;  }
+            get { return s_BuildReportProvider != null ? s_BuildReportProvider : s_DefaultBuildReportProvider;  }
+            set { s_BuildReportProvider = value;  }
         }
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
@@ -271,7 +271,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             foreach (var step in buildReport.steps)
             {
                 var depth = step.depth;
-                onIssueFound(new ProjectIssue(k_InfoDescriptor, step.name, IssueCategory.BuildStep, new string[(int)BuildReportStepProperty.Num]
+                onIssueFound(new ProjectIssue(k_InfoDescriptor, step.name, IssueCategory.BuildStep, new object[(int)BuildReportStepProperty.Num]
                 {
                     Formatting.FormatTime(step.duration)
                 })
@@ -348,9 +348,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         descriptor = m_DescriptorByExtension[ext];
 
                     var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
-                    issue.SetCustomProperties(new string[(int)BuildReportFileProperty.Num]
+                    issue.SetCustomProperties(new object[(int)BuildReportFileProperty.Num]
                     {
-                        sum.ToString(),
+                        sum,
                         packedAsset.shortPath
                     });
                     onIssueFound(issue);

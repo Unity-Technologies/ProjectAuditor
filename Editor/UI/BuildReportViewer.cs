@@ -1,7 +1,6 @@
 using System;
-using Editor.UI.Framework;
-using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.UI.Framework;
+using Unity.ProjectAuditor.Editor.Auditors;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;

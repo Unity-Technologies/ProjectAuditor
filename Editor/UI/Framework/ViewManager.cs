@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEngine;
+using UnityEngine.Profiling;
 
-namespace Editor.UI.Framework
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     [Serializable]
     public class ViewManager
@@ -36,10 +35,12 @@ namespace Editor.UI.Framework
 
         public void AddIssues(ProjectIssue[] issues)
         {
+            Profiler.BeginSample("ViewManager.AddIssues");
             foreach (var view in m_Views)
             {
                 view.AddIssues(issues);
             }
+            Profiler.EndSample();
         }
 
         public void Clear()
@@ -53,6 +54,7 @@ namespace Editor.UI.Framework
 
         public void Create(ProjectAuditor projectAuditor, Preferences preferences, IProjectIssueFilter filter, Action<ViewDescriptor, bool> onCreateView = null)
         {
+            Profiler.BeginSample("ViewManager.Create");
             var views = new List<AnalysisView>();
             foreach (var category in m_Categories)
             {
@@ -75,6 +77,7 @@ namespace Editor.UI.Framework
             }
 
             m_Views = views.ToArray();
+            Profiler.EndSample();
         }
 
         public void Audit(ProjectAuditor projectAuditor)

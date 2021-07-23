@@ -36,13 +36,7 @@ The mute/unmute buttons can be used to silence specific issues, or groups of iss
 <img src="images/mute.png">
 
 ## Running from command line
-Project Auditor analysis can be executed from command line by launching the editor in batch mode. This requires an editor script that:
-
-* Creates a ProjectAuditor object
-* Runs the analysis
-* Exports the report
-
-Here is an example:
+Project Auditor is not a standalone application. However, since it is a Unity Editor tool and provides a C# API, its analysis can be executed from command line by launching the editor in batch mode. This requires an editor script that creates a ProjectAuditor instance and runs the analysis, for example:
 
 ```
 using Unity.ProjectAuditor.Editor;
@@ -52,12 +46,13 @@ public static class ProjectAuditorCI
 {
     public static void AuditAndExport()
     {
-        var configFilename = "Assets/Editor/ProjectAuditorConfig.asset";
-        var outputFilename = "project-auditor-report.csv";
-
-        var projectAuditor = new ProjectAuditor(configFilename);
+        var assetPath = "Assets/Editor/ProjectAuditorConfig.asset";
+        var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(assetPath);
         var projectReport = projectAuditor.Audit();
-        projectReport.ExportToCSV(outputFilename);
+        
+        var codeIssues = projectReport.GetIssues(IssueCategory.Code);
+        
+        Debug.Log("Project Auditor found " + codeIssues.Length + " code issues");
     }
 }
 ```

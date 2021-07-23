@@ -349,7 +349,7 @@ class AnyApiInNamespace
         public void IssueInNamespaceIsFound()
         {
             var allScriptIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetAnyApiInNamespace);
-            var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("Enumerable.Sum"));
+            var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("System.Linq.Enumerable.Sum"));
             Assert.NotNull(issue);
 
             Assert.True(issue.descriptor.description.Equals("System.Linq.*"));

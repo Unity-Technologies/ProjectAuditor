@@ -51,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ProblemDescriptor : IEquatable<ProblemDescriptor>
     {
         public Rule.Severity severity;
-        public string area;
+        public string[] areas;
         public string customevaluator;
 
         public string description;
@@ -68,11 +68,11 @@ namespace Unity.ProjectAuditor.Editor
         public string minimumVersion;
         public string maximumVersion;
 
-        public ProblemDescriptor(int id, string description, string area, string problem = null, string solution = null)
+        public ProblemDescriptor(int id, string description, string[] areas, string problem = null, string solution = null)
         {
             this.id = id;
             this.description = description;
-            this.area = area;
+            this.areas = areas;
             this.problem = problem;
             this.solution = solution;
 
@@ -82,12 +82,12 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         public ProblemDescriptor(int id, string description, Area area = Area.Info, string problem = null, string solution = null)
-            : this(id, description, area.ToString(), problem, solution)
+            : this(id, description, new[] {area.ToString()}, problem, solution)
         {
         }
 
         public ProblemDescriptor(int id, string description, Area[] areas, string problem = null, string solution = null)
-            : this(id, description, string.Join("|", areas.Select(a => a.ToString()).ToArray()), problem, solution)
+            : this(id, description, areas.Select(a => a.ToString()).ToArray(), problem, solution)
         {
         }
 

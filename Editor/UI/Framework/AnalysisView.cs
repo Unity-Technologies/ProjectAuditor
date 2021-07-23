@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Editor.UI.Framework;
+using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -299,7 +299,26 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_Desc.onDrawToolbarDataOptions(m_ViewManager);
 
             if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
-                OnExport, GUILayout.Width(80)))
+                (data) =>
+                {
+                    var mode = (ExportMode)data;
+                    switch (mode)
+                    {
+                        case ExportMode.All:
+                            Export();
+                            return;
+                        case ExportMode.Filtered:
+                            Export(issue => { return m_Filter.Match(issue); });
+                            return;
+                        case ExportMode.Selected:
+                            var selectedItems = table.GetSelectedItems();
+                            Export(issue =>
+                            {
+                                return selectedItems.Any(item => item.Find(issue));
+                            });
+                            return;
+                    }
+                }, GUILayout.Width(80)))
             {
                 Export();
 
@@ -396,27 +415,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     m_ViewManager.onViewExported();
 
                 s_ExportDirectory = Path.GetDirectoryName(path);
-            }
-        }
-
-        void OnExport(object data)
-        {
-            var mode = (ExportMode)data;
-            switch (mode)
-            {
-                case ExportMode.All:
-                    Export();
-                    return;
-                case ExportMode.Filtered:
-                    Export(issue => { return m_Filter.Match(issue); });
-                    return;
-                case ExportMode.Selected:
-                    var selectedItems = table.GetSelectedItems();
-                    Export(issue =>
-                    {
-                        return selectedItems.Any(item => item.Find(issue));
-                    });
-                    return;
             }
         }
 

@@ -6,7 +6,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "enableMetalAPIValidation",
             "value": "True",
-            "area": "CPU",
+            "areas": ["CPU"],
             "problem": "The \"Metal API Validation\" option is enabled in the iOS Player Settings.",
             "solution": "We recommend disabling it. This option will only affect builds running from Xcode, but it rarely highlights anything that the user will have control over.",
             "minimumVersion": "2018.1"
@@ -17,7 +17,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "graphicsJobs",
             "value": "False",
-            "area": "CPU",
+            "areas": ["CPU"],
             "problem": "The \"Graphics Jobs (Experimental)\" option in Player Settings is disabled.",
             "solution": "Try enabling it and testing your application. This option spreads the task of building the render command buffer every frame across as many CPU cores as possible, rather than performing all the work in the render thread which is often a bottleneck. Note: This feature is experimental. It may not deliver a performance improvement for your project, and may introduce new crashes. Test accordingly."
         },
@@ -27,7 +27,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "accelerometerFrequency",
             "customevaluator": "PlayerSettingsAccelerometerFrequency",
-            "area": "CPU",
+            "areas": ["CPU"],
             "platforms": ["iOS"],
             "problem": "The Accelerometer is enabled in iOS Player Settings.",
             "solution": "Consider setting \"Accelerometer Frequency\" to Disabled if your application doesn't make use of the device's accelerometer. Disabling this option will save a tiny amount of CPU processing time."
@@ -38,7 +38,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "GetArchitecture",
             "customevaluator": "PlayerSettingsArchitecture_iOS",
-            "area": "BuildSize",
+            "areas": ["BuildSize"],
             "platforms": ["iOS"],
             "problem": "In the iOS Player Settings, \"Architecture\" is set to Universal. This means that the application will be compiled for both 32-bit ARMv7 iOS devices (i.e. up to the iPhone 5 or 5c) and 64-bit ARM64 devices (iPhone 5s onwards), resulting in increased build times and binary size.",
             "solution": "If your application isn't intended to support 32-bit iOS devices, change \"Architecture\" to ARM64."
@@ -49,7 +49,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "Android.targetArchitectures",
             "customevaluator": "PlayerSettingsArchitecture_Android",
-            "area": "BuildSize",
+            "areas": ["BuildSize"],
             "platforms": ["Android"],
             "problem": "In the Android Player Settings, in the \"Target Architecture\" section, both the \"ARMv7\" and \"ARM64\" options are selected. This means that the application will be compiled for both 32-bit ARMv7 Android devices and 64-bit ARM64 devices, resulting in increased build times and binary size.",
             "solution": "If your application isn't intended to support 32-bit Android devices, disable the \"ARMv7\" option."
@@ -60,7 +60,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "GetGraphicsAPIs",
             "customevaluator": "PlayerSettingsGraphicsAPIs_iOS_OpenGLESAndMetal",
-            "area": "BuildSize",
+            "areas": ["BuildSize"],
             "platforms": ["iOS"],
             "problem": "In the iOS Player Settings, both Metal and OpenGLES graphics APIs are enabled.",
             "solution": "To reduce build size, remove OpenGLES graphics API if the minimum spec target device supports Metal."
@@ -71,7 +71,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "GetGraphicsAPIs",
             "customevaluator": "PlayerSettingsGraphicsAPIs_iOS_OpenGLES",
-            "area": "CPU",
+            "areas": ["CPU"],
             "platforms": ["iOS"],
             "problem": "In the iOS Player Settings, Metal is not enabled.",
             "solution": "Enable Metal graphics API for better CPU Performance."
@@ -82,7 +82,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "bakeCollisionMeshes",
             "value": "False",
-            "area": "BuildSize|LoadTime",
+            "areas": ["BuildSize","LoadTime"],
             "problem": "The \"Prebake Collision Meshes\" option in Player Settings is disabled.",
             "solution": "If you are using physics in your application, consider enabling this option. Prebaked collision meshes can result in an increase in build times and sizes, but reduce loading/initialization times in your application, because serializing prebaked meshes is faster than baking them at runtime."
         },
@@ -92,7 +92,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "stripUnusedMeshComponents",
             "value": "False",
-            "area": "BuildSize|LoadTime|GPU",
+            "areas": ["BuildSize","LoadTime","GPU"],
             "problem": "The \"Optimize Mesh Data\" option in Player Settings is disabled.",
             "solution": "Consider enabling it. This option strips out vertex channels on meshes which are not used by the materials which are applied to them. This can reduce the file size of your meshes and the time to load them, and increase GPU rendering performance. It can, however, cause problems if mesh materials are changed at runtime, since the new materials might rely on vertex channels which have been removed, and it may contribute to longer build times."
         },
@@ -102,7 +102,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "stripEngineCode",
             "value": "False",
-            "area": "BuildSize",
+            "areas": ["BuildSize"],
             "problem": "Engine code stripping is disabled. The generated build will be larger than necessary.",
             "solution": "Enable stripEngineCode in PlayerSettings"
         },
@@ -112,7 +112,7 @@
             "type": "UnityEditor.PlayerSettings+WebGL",
             "method": "dataCaching",
             "value": "False",
-            "area": "LoadTime",
+            "areas": ["LoadTime"],
             "platforms": ["WebGL"],
             "problem": "Build file needs to be downloaded every time the content is loaded.",
             "solution": "Enable dataCaching to cache build files in Browser cache"
@@ -123,7 +123,7 @@
             "type": "UnityEditor.PlayerSettings+WebGL",
             "method": "linkerTarget",
             "value": "Asm",
-            "area": "CPU|Memory",
+            "areas": ["CPU","Memory"],
             "platforms": ["WebGL"],
             "problem": "WebGLLinkerTarget.Asm is deprecated.",
             "solution": "Set UnityEditor.PlayerSettings.WebGL.linkerTarget to WebGLLinkerTarget.Wasm to generate code in WebAssembly format.",
@@ -135,7 +135,7 @@
             "type": "UnityEngine.Physics",
             "method": "autoSyncTransforms",
             "value": "True",
-            "area": "CPU",
+            "areas": ["CPU"],
             "problem": "In Physics Settings, \"Auto Sync Transforms\" is enabled. This option ensures backwards compatibility with the behaviour of older versions of Unity in which physics transforms were always kept in sync with GameObject transforms. In newer versions of Unity, transform syncs are batched for greater efficiency on the CPU. Enabling this option means that transforms are always synced before physics queries (e.g. Physics.Raycast()); before reading data back from the physics engine (e.g. Rigidbody.position); before simulating particles that compute collisions, and before updating the camera flares effect. This adds an additional CPU cost.",
             "solution": "Consider disabling \"Auto Sync Transforms\" and testing your game to identify any areas where physics behavior is affected by the change. If there are areas of the game where more frequent synchronization is required to maintain the desired behaviour, this can be enforced by calling Physics.SyncTransforms() directly."
         },
@@ -145,7 +145,7 @@
             "type": "UnityEngine.Physics",
             "method": "GetIgnoreLayerCollision",
             "customevaluator": "PhysicsLayerCollisionMatrix",
-            "area": "CPU",
+            "areas": ["CPU"],
             "problem": "In Physics Settings, all of the boxes in the \"Layer Collision Matrix\" are ticked. This increases the CPU work that Unity must do when calculating collision detections.",
             "solution": "Un-tick all of the boxes except the ones that represent collisions that should be considered by the physics system."
         },
@@ -155,7 +155,7 @@
             "type": "UnityEngine.Physics2D",
             "method": "autoSyncTransforms",
             "value": "True",
-            "area": "CPU",
+            "areas": ["CPU"],
             "problem": "In Physics 2D Settings, \"Auto Sync Transforms\" is enabled. This option ensures backwards compatibility with the behaviour of older versions of Unity in which physics transforms were always kept in sync with GameObject transforms. In newer versions of Unity, transform syncs are batched for greater efficiency on the CPU. Enabling this option means that transforms are always synced before physics queries (e.g. Physics2D.Raycast()); before reading data back from the physics engine (e.g. Rigidbody2D.position); before simulating particles that compute collisions, and before updating the camera flares effect. This adds an additional CPU cost.",
             "solution": "Consider disabling \"Auto Sync Transforms\" and testing your game to identify any areas where physics behavior is affected by the change. If there are areas of the game where more frequent synchronization is required to maintain the desired behaviour, this can be enforced by calling Physics2D.SyncTransforms() directly."
         },
@@ -165,7 +165,7 @@
             "type": "UnityEngine.Physics2D",
             "method": "GetIgnoreLayerCollision",
             "customevaluator": "Physics2DLayerCollisionMatrix",
-            "area": "CPU",
+            "areas": ["CPU"],
             "problem": "In Physics 2D Settings, all of the boxes in the \"Layer Collision Matrix\" are ticked. This increases the CPU work that Unity must do when calculating collision detections.",
             "solution": "Un-tick all of the boxes except the ones that represent collisions that should be considered by the 2D physics system."
         },
@@ -175,7 +175,7 @@
             "type": "UnityEngine.Time",
             "method": "fixedDeltaTime",
             "value": "0.02",
-            "area": "CPU",
+            "areas": ["CPU"],
             "problem": "In the Time Settings, \"Fixed Timestep\" is set to the default value of 0.02. This means that Unity will try to ensure that the FixedUpdate() methods of MonoBehaviours, and physics updates will be called 50 times per second. This is appropriate for games running at 60 FPS, but at 30 FPS this would mean that the FixedUpdate step will be called twice during most frames.",
             "solution": "We recommend setting Fixed Timestep to 0.04 when running at 30 FPS, in order to call the fixed updates at 25 Hz. The reason for having the fixed update be slightly less than the target frame rate is to avoid the “spiral of death”, in which if one frame takes longer than 33.3ms, FixedUpdate() happens multiple times on the next frame to catch up, pushing that frame time over as well, and permanently locking the game into a state where it cannot reach the desired frame rate because FixedUpdate() is constantly trying to catch up."
         },
@@ -185,7 +185,7 @@
             "type": "UnityEngine.Time",
             "method": "maximumDeltaTime",
             "value": "0.1",
-            "area": "CPU",
+            "areas": ["CPU"],
             "problem": "In the Time Settings, \"Maximum Allowed Timestep\" is set to the default value of 0.1. This means that if the Time Manager is trying to \"catch\" up with previous frames that took longer than \"Fixed Timestep\" to process, the project's FixedUpdate() methods could end up being called repeatedly, up to a maximum of 0.1 seconds (100 milliseconds). Spending so long in FixedUpdate() would likely mean that FixedUpdate() must also be called multiple times in the subsequent frames, contributing to the \"spiral of death\".",
             "solution": "Consider reducing \"Maximum Allowed Timestep\" to a time that can be comfortably accommodated within your project's target frame rate."
         },
@@ -195,7 +195,7 @@
             "type": "UnityEngine.QualitySettings",
             "method": "GetQualityLevel",
             "customevaluator": "QualityUsingDefaultSettings",
-            "area": "CPU|GPU|BuildSize|LoadTime",
+            "areas": ["CPU","GPU","BuildSize","LoadTime"],
             "problem": "This project is using the default set of quality levels defined in Quality Settings.",
             "solution": "Check the quality setting for each platform the project supports in the grid - it's the level with the green tick. Remove quality levels you are not using, to make the Quality Settings simpler to see and edit. Adjust the setting for each platform if necessary, then select the appropriate levels to examine their settings in the panel below."
         },
@@ -205,7 +205,7 @@
             "type": "UnityEngine.QualitySettings",
             "method": "masterTextureLimit",
             "customevaluator": "QualityUsingLowQualityTextures",
-            "area": "BuildSize|GPU",
+            "areas": ["BuildSize","GPU"],
             "problem": "One or more of the quality levels in the project's Quality Settings has \"Texture Quality\" set to something other than Full Res. This option can save memory on lower-spec devices and platforms by discarding higher-resolution mip levels on mipmapped textures before uploading them to the GPU. However, this option has no effect on textures which don't have mipmaps enabled (as is frequently the case with UI textures, for instance), does nothing to reduce download or install size, and gives you no control over the texture resize algorithm.",
             "solution": "For devices which must use lower-resolution versions of textures, consider creating these lower resolution textures separately, and choosing the appropriate content to load at runtime using AssetBundle variants."
         },
@@ -215,7 +215,7 @@
             "type": "UnityEngine.QualitySettings",
             "method": "asyncUploadTimeSlice",
             "customevaluator": "QualityDefaultAsyncUploadTimeSlice",
-            "area": "LoadTime",
+            "areas": ["LoadTime"],
             "problem": "The \"Async Upload Time Slice\" option for one or more quality levels in the project's Quality Settings is set to the default value of 2ms.",
             "solution": "If the project encounters long loading times when loading large amount of texture and/or mesh data, experiment with increasing this value to see if it allows content to be uploaded to the GPU more quickly."
         },
@@ -225,7 +225,7 @@
             "type": "UnityEngine.QualitySettings",
             "method": "asyncUploadBufferSize",
             "customevaluator": "QualityDefaultAsyncUploadBufferSize",
-            "area": "LoadTime",
+            "areas": ["LoadTime"],
             "problem": "The \"Async Upload Buffer Size\" option for one or more quality levels in the project's Quality Settings is set to the default value.",
             "solution": "If the project encounters long loading times when loading large amount of texture and/or mesh data, experiment with increasing this value to see if it allows content to be uploaded to the GPU more quickly. This is most likely to help if you are loading large textures. Note that this setting controls a buffer size in megabytes, so exercise caution if memory is limited in your application."
         },
@@ -235,7 +235,7 @@
             "type": "UnityEditor.Rendering.EditorGraphicsSettings",
             "method": "GetTierSettings",
             "customevaluator": "GraphicsMixedStandardShaderQuality",
-            "area": "BuildSize",
+            "areas": ["BuildSize"],
             "problem": "The current build target Graphics Tier Settings use a mixture of different values (Low/Medium/High) for the \"Standard Shader Quality\" setting. This will result in a larger number of shader variants being compiled, which will increase build times and your application's download/install size.",
             "solution": "Unless you support devices with a very wide range of capabilities for a particular platform, consider editing the platform in Graphics Settings to use the same shader quality setting across all Graphics Tiers."
         },
@@ -245,7 +245,7 @@
             "type": "UnityEditor.Rendering.EditorGraphicsSettings",
             "method": "GetTierSettings",
             "customevaluator": "GraphicsUsingForwardRendering",
-            "area": "GPU",
+            "areas": ["GPU"],
             "problem": "The current build target uses forward rendering, as set in the \"Rendering Path\" settings in Graphics Tiers.",
             "solution": "This rendering path is suitable for games with simple rendering and lighting requirements - for instance, 2D games, or games which mainly use baked lighting. If the project makes use of a more than a few dynamic lights, consider experimenting with changing \"Rendering Path\" to Deferred to see whether doing so improves GPU rendering times."
         },
@@ -255,7 +255,7 @@
             "type": "UnityEditor.Rendering.EditorGraphicsSettings",
             "method": "GetTierSettings",
             "customevaluator": "GraphicsUsingDeferredRendering",
-            "area": "GPU",
+            "areas": ["GPU"],
             "problem": "The current build target uses deferred rendering, as set in the \"Rendering Path\" settings in Graphics Tiers.",
             "solution": "This rendering path is suitable for games with more complex rendering requirements - for instance, games that make uses of dynamic lighting or certain types of fullscreen post-processing effects. If the project doesn't make use of such rendering techniques, consider experimenting with changing \"Rendering Path\" to Forward to see whether doing so improves GPU rendering times."
         },
@@ -265,7 +265,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "GetManagedStrippingLevel",
             "customevaluator": "PlayerSettingsManagedCodeStripping_Android",
-            "area": "BuildSize",
+            "areas": ["BuildSize"],
             "platforms": ["Android"],
             "problem": "Managed code stripping on Android is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",
             "solution": "Set managed stripping level to Medium or High."
@@ -276,7 +276,7 @@
             "type": "UnityEditor.PlayerSettings",
             "method": "GetManagedStrippingLevel",
             "customevaluator": "PlayerSettingsManagedCodeStripping_iOS",
-            "area": "BuildSize",
+            "areas": ["BuildSize"],
             "platforms": ["iOS"],
             "problem": "Managed code stripping on iOS is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",
             "solution": "Set managed stripping level to Medium or High."
@@ -287,7 +287,7 @@
           "type": "UnityEditor.PlayerSettings",
           "method": "mipStripping",
           "value": "False",
-          "area": "BuildSize",
+          "areas": ["BuildSize"],
           "problem": "The \"Texture MipMap Stripping\" option in Player Settings is disabled. The generated build might be larger than necessary. ",
           "solution": "Enable Texture MipMap stripping. Note that this feature will only reduce the build size if no quality levels on the platform use highest mip(s). Furthermore, if code drives the \"masterTextureLevel\" to a value higher than those in the quality level settings the mip will no longer be available if this is enabled.",
           "minimumVersion": "2020.2"
@@ -298,7 +298,7 @@
           "type": "UnityEngine.Physics",
           "method": "reuseCollisionCallbacks",
           "value": "False",
-          "area": "Memory",
+          "areas": ["Memory"],
           "problem": "The \"Reuse Collision Callbacks\" option in Physics Settings is disabled. For each OnCollision* callback, a temporary managed object is allocated which, eventually, will need to be garbage collected.",
           "solution": "When this option is enabled, only a single instance of the Collision type is created and reused for each individual callback. This reduces waste for the garbage collector to handle and improves performance.",
           "minimumVersion": "2018.3"
@@ -309,7 +309,7 @@
           "type": "UnityEditor.PlayerSettings.SplashScreen",
           "method": "show",
           "customevaluator": "PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled",
-          "area": "LoadTime",
+          "areas": ["LoadTime"],
           "problem": "Splash Screen is enabled and will increase the time it takes to load into the first scene.",
           "solution": "Disable the Splash Screen option in Player Settings."
         }

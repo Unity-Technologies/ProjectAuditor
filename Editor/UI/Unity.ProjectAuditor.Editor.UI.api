@@ -5,7 +5,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     public class CodeView : Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView
     {
-        public CodeView(Editor.UI.Framework.ViewManager viewManager) {}
+        public CodeView(Unity.ProjectAuditor.Editor.UI.Framework.ViewManager viewManager) {}
         protected virtual void OnDrawInfo();
     }
 

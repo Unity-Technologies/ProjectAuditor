@@ -143,7 +143,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 AssemblyCompilationFinished = (assemblyName, compilerMessages) => ProcessCompilerMessages(assemblyName, compilerMessages, onIssueFound)
             };
 
-            Profiler.BeginSample("ScriptAuditor.Audit.Compilation");
+            Profiler.BeginSample("CodeModule.Audit.Compilation");
             var assemblyInfos = compilationPipeline.Compile(m_Config.AnalyzeEditorCode, progress);
             Profiler.EndSample();
 
@@ -154,7 +154,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             foreach (var assemblyInfo in assemblyInfos)
             {
-                onIssueFound(new ProjectIssue(k_AssemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath, new string[(int)AssemblyProperty.Num] { assemblyInfo.readOnly.ToString() }));
+                onIssueFound(new ProjectIssue(k_AssemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath,
+                    new object[(int)AssemblyProperty.Num]
+                    {
+                        assemblyInfo.readOnly
+                    }));
             }
 
             var assemblyDirectories = new List<string>();
@@ -169,8 +173,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var onCompleteInternal = new Action<IProgress>(bar =>
             {
+                Profiler.BeginSample("CodeModule.Audit.BuildCallHierarchies");
                 compilationPipeline.Dispose();
                 callCrawler.BuildCallHierarchies(issues, bar);
+                Profiler.EndSample();
+
                 if (onComplete != null)
                     onComplete();
             });
@@ -182,7 +189,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 onIssueFound(issue);
             });
 
-            Profiler.BeginSample("ScriptAuditor.Audit.Analysis");
+            Profiler.BeginSample("CodeModule.Audit.Analysis");
 
             // first phase: analyze assemblies generated from editable scripts
             AnalyzeAssemblies(localAssemblyInfos, assemblyDirectories, onCallFound, onIssueFoundInternal, null, progress);
@@ -202,7 +209,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
             else
             {
-                Profiler.BeginSample("ScriptAuditor.Audit.AnalysisReadOnly");
+                Profiler.BeginSample("CodeModule.Audit.AnalysisReadOnly");
                 AnalyzeAssemblies(readOnlyAssemblyInfos, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal, progress);
                 Profiler.EndSample();
             }
@@ -220,15 +227,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     assemblyResolver.AddSearchDirectory(dir);
 
                 if (progress != null)
-                    progress.Start("Analyzing Scripts", "Analyzing project scripts",
-                        assemblyInfos.Count());
+                    progress.Start("Analyzing Assemblies", string.Empty, assemblyInfos.Count());
 
                 // Analyse all Player assemblies
                 foreach (var assemblyInfo in assemblyInfos)
                 {
                     Console.WriteLine("[Project Auditor] Analyzing {0}", assemblyInfo.name);
                     if (progress != null)
-                        progress.Advance(string.Format("Analyzing {0}", assemblyInfo.name));
+                        progress.Advance(assemblyInfo.name);
 
                     if (!File.Exists(assemblyInfo.path))
                     {
@@ -255,7 +261,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         void AnalyzeAssembly(AssemblyInfo assemblyInfo, IAssemblyResolver assemblyResolver, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)
         {
-            Profiler.BeginSample("ScriptAuditor.AnalyzeAssembly " + assemblyInfo.name);
+            Profiler.BeginSample("CodeModule.Analyze " + assemblyInfo.name);
 
             using (var assembly = AssemblyDefinition.ReadAssembly(assemblyInfo.path,
                 new ReaderParameters {ReadSymbols = true, AssemblyResolver = assemblyResolver}))
@@ -278,10 +284,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (!caller.DebugInformation.HasSequencePoints)
                 return;
 
-            Profiler.BeginSample("ScriptAuditor.AnalyzeMethodBody");
+            Profiler.BeginSample("CodeModule.AnalyzeMethodBody");
 
             var callerNode = new CallTreeNode(caller);
+
+            Profiler.BeginSample("CodeModule.IsPerformanceCriticalContext");
             var perfCriticalContext = IsPerformanceCriticalContext(caller);
+            Profiler.EndSample();
 
             foreach (var inst in caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode)))
             {
@@ -306,18 +315,21 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
                 if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
                 {
-                    onCallFound(new CallInfo
-                    {
-                        callee = (MethodReference)inst.Operand,
-                        caller = caller,
-                        location = location,
-                        perfCriticalContext = perfCriticalContext
-                    });
+                    Profiler.BeginSample("CodeModule.OnCallFound");
+                    onCallFound(new CallInfo(
+                        (MethodReference)inst.Operand,
+                        caller,
+                        location,
+                        perfCriticalContext
+                    ));
+                    Profiler.EndSample();
                 }
 
+                Profiler.BeginSample("CodeModule.Analyzing " + inst.OpCode.Name);
                 foreach (var analyzer in m_Analyzers)
                     if (analyzer.GetOpCodes().Contains(inst.OpCode))
                     {
+                        Profiler.BeginSample("CodeModule " + analyzer.GetType().Name);
                         var projectIssue = analyzer.Analyze(caller, inst);
                         if (projectIssue != null)
                         {
@@ -328,7 +340,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
                             onIssueFound(projectIssue);
                         }
+                        Profiler.EndSample();
                     }
+                Profiler.EndSample();
             }
             Profiler.EndSample();
         }
@@ -342,6 +356,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         void ProcessCompilerMessages(string assemblyName, CompilerMessage[] compilerMessages, Action<ProjectIssue> onIssueFound)
         {
+            Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
+
             foreach (var message in compilerMessages)
             {
                 var descriptor = (ProblemDescriptor)null;
@@ -377,13 +393,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var issue = new ProjectIssue(descriptor, message.message,
                     IssueCategory.CodeCompilerMessage,
                     new Location(message.file.Replace("\\", "/"), message.line),
-                    new string[(int)CompilerMessageProperty.Num]
+                    new object[(int)CompilerMessageProperty.Num]
                     {
                         message.code,
                         assemblyName
                     });
                 onIssueFound(issue);
             }
+
+            Profiler.EndSample();
         }
 
         static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)
@@ -391,9 +409,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (MonoBehaviourAnalysis.IsMonoBehaviour(methodDefinition.DeclaringType) &&
                 MonoBehaviourAnalysis.IsMonoBehaviourUpdateMethod(methodDefinition))
                 return true;
+#if ENTITIES_PACKAGE_INSTALLED
             if (ComponentSystemAnalysis.IsComponentSystem(methodDefinition.DeclaringType) &&
                 ComponentSystemAnalysis.IsOnUpdateMethod(methodDefinition))
                 return true;
+#endif
             return false;
         }
     }

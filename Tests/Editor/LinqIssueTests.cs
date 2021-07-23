@@ -52,7 +52,7 @@ class MyClass
 
             Assert.True(myIssue.name.Equals("Enumerable.Count"));
             Assert.True(myIssue.filename.Equals(m_TempAsset.fileName));
-            Assert.True(myIssue.description.Equals("Enumerable.Count"));
+            Assert.True(myIssue.description.Equals("System.Linq.Enumerable.Count"), "Description: {0}", myIssue.description);
             Assert.True(
                 myIssue.GetCallingMethod().Equals(
                     "System.Int32 MyClass::Dummy(System.Collections.Generic.List`1<System.Int32>)"));

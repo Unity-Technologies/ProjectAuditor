@@ -86,7 +86,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static IEnumerable<string> GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes flags)
         {
-            foreach (var dir in GetPrecompiledAssemblyPaths(flags).Select(path => Path.GetDirectoryName(path)).Distinct())
+            foreach (var dir in GetPrecompiledAssemblyPaths(flags).Select(Path.GetDirectoryName).Distinct())
                 yield return dir;
         }
 

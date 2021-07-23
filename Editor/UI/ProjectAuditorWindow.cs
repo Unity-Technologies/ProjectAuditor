@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Editor.UI.Framework;
+using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
-using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -90,7 +89,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Profiler.BeginSample("MatchArea");
             var matchArea = !activeView.desc.showAreaSelection ||
-                m_AreaSelection.ContainsAny(issue.descriptor.area.Split('|')) ||
+                m_AreaSelection.ContainsAny(issue.descriptor.areas) ||
                 m_AreaSelection.ContainsGroup("All");
             Profiler.EndSample();
             if (!matchArea)
@@ -123,8 +122,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ProjectAuditor = new ProjectAuditor();
 
+            Profiler.BeginSample("Update Selections");
             UpdateAreaSelection();
             UpdateAssemblySelection();
+            Profiler.EndSample();
 
             if (m_TextFilter == null)
                 m_TextFilter = new TextFilter();
@@ -143,6 +144,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Export, ProjectAuditorAnalytics.BeginAnalytic());
             };
+
+            Profiler.BeginSample("Views Creation");
             m_ViewManager.Create(m_ProjectAuditor, m_Preferences, this, (desc, isSupported) =>
             {
                 var index = Array.IndexOf(viewDescriptors, desc);
@@ -153,12 +156,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                     Enabled = isSupported
                 };
             });
+            Profiler.EndSample();
 
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid && m_ViewManager.activeViewIndex < viewDescriptors.Length)
             {
+                Profiler.BeginSample("Views Update");
                 m_ViewManager.AddIssues(m_ProjectReport.GetAllIssues());
                 m_AnalysisState = currentState;
+                Profiler.EndSample();
             }
             else
             {
@@ -168,7 +174,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             AnalysisView.SetReport(m_ProjectReport);
 
+            Profiler.BeginSample("Refresh");
             RefreshDisplay();
+            Profiler.EndSample();
 
             m_Instance = this;
         }
@@ -872,7 +880,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 var compiledAssemblies = m_AssemblyNames.Where(a => !AssemblyInfoProvider.IsUnityEngineAssembly(a));
                 compiledAssemblies = compiledAssemblies.Where(a =>
-                    !AssemblyInfoProvider.IsReadOnlyAssembly(a));
+                    !AssemblyInfoProvider.IsReadOnlyAssembly(a)).ToArray();
                 m_AssemblySelection.selection.AddRange(compiledAssemblies);
 
                 if (!m_AssemblySelection.selection.Any())
