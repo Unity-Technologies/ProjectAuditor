@@ -48,6 +48,7 @@ The following table indicates the package directory structure:
 ## Document revision history
 |Date|Reason|
 |---|---|
+|Jul 23, 2021|Added view-specific pages|
 |Apr 9, 2021|Updated index page with more detail|
 |Feb 15, 2021|Updated documentation|
 |Oct 16, 2020|Added information about command line execution|
