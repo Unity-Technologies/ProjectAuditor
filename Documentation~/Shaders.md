@@ -4,4 +4,4 @@ This view reports all shaders in the projects.
 
 <img src="images/shaders.png">
 
-Note that built-in shaders included only after building the project for the target platform.
+Note that built-in shaders are reported only after building the project for the target platform.
