@@ -1,3 +1,11 @@
 <a name="Build Size"></a>
-# Overview
-This view shows all build file sizes from the last BuildReport
+# Build Size View
+This view shows all build file sizes from the last BuildReport.
+
+<img src="images/build-size.png">
+
+* *Source Asset*: filename of the source asset
+* *Type*: file type of the source asset
+* *Size*: size of the file, converted for the target platform
+* *Path*: full path of the source asset
+* *Build File*: filename of the archive containing the file
