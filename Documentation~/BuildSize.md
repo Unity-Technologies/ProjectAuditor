@@ -1,6 +1,6 @@
 <a name="Build Size"></a>
 # Build Size View
-This view shows all build file sizes from the last BuildReport.
+This view shows all build file sizes from the last [BuildReport](https://docs.unity3d.com/ScriptReference/Build.Reporting.BuildReport.html).
 
 <img src="images/build-size.png">
 
