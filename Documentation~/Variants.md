@@ -1,7 +1,12 @@
 <a name="Variants"></a>
-# Overview
-This view reports all shader variants the build. Note that built-in shaders included only after building the project for the target platform.
+# Shader Variants View
+This view reports all shader variants included in the build.
 
+<img src="images/variants.png">
+
+Note that built-in shaders included only after building the project for the target platform.
+
+# How to Use
 To view the built Shader Variants, run your build pipeline and Refresh:
 * Build the project and/or Addressables/AssetBundles
 * Click the *Refresh* button
