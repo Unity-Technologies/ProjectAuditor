@@ -1,5 +1,5 @@
 <a name="Shaders"></a>
-# Shaders view
+# Shaders View
 This view reports all shaders in the projects.
 
 <img src="images/shaders.png">
