@@ -34,13 +34,13 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             }
 
             return other.callee == callee &&
-                   other.caller == caller;
+                other.caller == caller;
         }
 
         public override int GetHashCode()
         {
             return callee.GetHashCode()
-                   + caller.GetHashCode();
+                + caller.GetHashCode();
         }
     }
 
