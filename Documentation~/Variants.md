@@ -20,3 +20,7 @@ The number of Variants contributes to the build size, however, there might be Va
 * Make a Development build
 * Run the build on the target platform. Make sure to go through all scenes.
 * Drag & Drop the Player.log file on this window
+
+By following the above steps, Project Auditor will parse the compilation log and populate the *Compiled* column. For example:
+
+<img src="images/variants-shader-compilation.png">
