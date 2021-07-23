@@ -333,7 +333,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 type = typeof(CompilerMessagesView),
                 category = IssueCategory.CodeCompilerMessage,
-                name = "C# Messages",
+                name = "Compiler Messages",
                 menuOrder = 98,
                 menuLabel = "Code/C# Compiler Messages",
                 groupByDescriptor = true,
