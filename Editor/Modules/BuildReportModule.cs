@@ -5,18 +5,21 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Packages.Editor.Utils;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public enum BuildReportFileProperty
     {
-        Size = 0,
+        Type = 0,
+        Size,
         BuildFile,
         Num
     }
@@ -97,83 +100,114 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             severity = Rule.Severity.Error
         };
 
+        static readonly ProblemDescriptor k_AnimationDescriptor = new ProblemDescriptor
+        (
+            600003,
+            "Animation",
+            Area.BuildSize
+        );
+
         static readonly ProblemDescriptor k_AssetDescriptor = new ProblemDescriptor
             (
-            600003,
+            600004,
             "Asset",
             Area.BuildSize
             );
 
+        static readonly ProblemDescriptor k_AudioDescriptor = new ProblemDescriptor
+        (
+            600005,
+            "Audio",
+            Area.BuildSize
+        );
+
         static readonly ProblemDescriptor k_ByteDataDescriptor = new ProblemDescriptor
             (
-            600004,
+            600006,
             "Byte data",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_FontDescriptor = new ProblemDescriptor
             (
-            600005,
+            600007,
             "Font",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_MaterialDescriptor = new ProblemDescriptor
             (
-            600006,
+            600008,
             "Material",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_ModelDescriptor = new ProblemDescriptor
             (
-            600007,
+            600009,
             "Model",
             Area.BuildSize
             );
 
+        static readonly ProblemDescriptor k_MonoBehaviourDescriptor = new ProblemDescriptor
+        (
+            600010,
+            "MonoBehaviour",
+            Area.BuildSize
+        );
+
         static readonly ProblemDescriptor k_PrefabDescriptor = new ProblemDescriptor
             (
-            600008,
+            600011,
             "Prefab",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_ShaderDescriptor = new ProblemDescriptor
             (
-            600009,
+            600012,
             "Shader",
             Area.BuildSize
             );
 
+        static readonly ProblemDescriptor k_TextDescriptor = new ProblemDescriptor
+        (
+            600013,
+            "Text",
+            Area.BuildSize
+        );
+
         static readonly ProblemDescriptor k_TextureDescriptor = new ProblemDescriptor
             (
-            600010,
+            600014,
             "Texture",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_OtherTypeDescriptor = new ProblemDescriptor
             (
-            600011,
+            600015,
             "Other Type",
             Area.BuildSize
             );
 
 #pragma warning disable 0414
-        readonly Dictionary<string, ProblemDescriptor> m_DescriptorByExtension = new Dictionary<string, ProblemDescriptor>()
+        readonly Dictionary<Type, ProblemDescriptor> m_DescriptorsMap = new Dictionary<Type, ProblemDescriptor>()
         {
-            { ".asset", k_AssetDescriptor },
-            { ".compute", k_ShaderDescriptor },
-            { ".shader", k_ShaderDescriptor },
-            { ".png", k_TextureDescriptor },
-            { ".tga", k_TextureDescriptor },
-            { ".exr", k_TextureDescriptor },
-            { ".mat", k_MaterialDescriptor },
-            { ".fbx", k_ModelDescriptor },
-            { ".ttf", k_FontDescriptor },
-            { ".bytes", k_ByteDataDescriptor },
-            { ".prefab", k_PrefabDescriptor },
+            { typeof(AudioClip), k_AudioDescriptor },
+            { typeof(AudioMixer), k_AudioDescriptor },
+            { typeof(AnimationClip), k_AnimationDescriptor },
+            { typeof(UnityEditor.Animations.AnimatorController), k_AnimationDescriptor },
+            { typeof(ComputeShader), k_ShaderDescriptor },
+            { typeof(Shader), k_ShaderDescriptor },
+            { typeof(ShaderVariantCollection), k_ShaderDescriptor },
+            { typeof(Material), k_MaterialDescriptor },
+            { typeof(Mesh), k_ModelDescriptor },
+            { typeof(MonoBehaviour), k_MonoBehaviourDescriptor },
+            { typeof(GameObject), k_PrefabDescriptor },
+            { typeof(Sprite), k_TextureDescriptor },
+            { typeof(Texture), k_TextureDescriptor },
+            { typeof(TextAsset), k_TextDescriptor },
         };
 #pragma warning restore 0414
 
@@ -183,7 +217,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Source Asset"},
-                new PropertyDefinition { type = PropertyType.FileType, name = "Type"},
+                new PropertyDefinition { type = PropertyType.FileType, name = "Ext"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.Type), format = PropertyFormat.String, name = "Type"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size in the Build"},
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.BuildFile), format = PropertyFormat.String, name = "Build File"}
@@ -217,13 +252,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             yield return k_WarnDescriptor;
             yield return k_ErrorDescriptor;
 
+            yield return k_AnimationDescriptor;
             yield return k_AssetDescriptor;
+            yield return k_AudioDescriptor;
             yield return k_ByteDataDescriptor;
             yield return k_FontDescriptor;
             yield return k_MaterialDescriptor;
             yield return k_ModelDescriptor;
+            yield return k_MonoBehaviourDescriptor;
             yield return k_PrefabDescriptor;
             yield return k_ShaderDescriptor;
+            yield return k_TextDescriptor;
             yield return k_TextureDescriptor;
             yield return k_OtherTypeDescriptor;
         }
@@ -342,14 +381,34 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     else
                         description = assetName;
 
-                    var descriptor = k_OtherTypeDescriptor;
-                    var ext = Path.GetExtension(assetPath);
-                    if (m_DescriptorByExtension.ContainsKey(ext))
-                        descriptor = m_DescriptorByExtension[ext];
+                    ProblemDescriptor descriptor = null;
 
+                    // special case for raw bytes data as they use TextAsset at runtime
+                    if (Path.GetExtension(assetPath).Equals(".bytes", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        descriptor = k_ByteDataDescriptor;
+                    }
+                    else if (m_DescriptorsMap.ContainsKey(content.type))
+                        descriptor = m_DescriptorsMap[content.type];
+                    {
+                        foreach (var pair in m_DescriptorsMap)
+                        {
+                            if (content.type.IsSubclassOf(pair.Key))
+                            {
+                                descriptor = pair.Value;
+                                break;
+                            }
+                        }
+
+                        if (descriptor == null)
+                        {
+                            descriptor = k_OtherTypeDescriptor;
+                        }
+                    }
                     var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
                     issue.SetCustomProperties(new object[(int)BuildReportFileProperty.Num]
                     {
+                        content.type,
                         sum,
                         packedAsset.shortPath
                     });

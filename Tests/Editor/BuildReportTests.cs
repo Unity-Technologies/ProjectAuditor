@@ -51,6 +51,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.That(matchingIssue.GetNumCustomProperties(), Is.EqualTo((int)BuildReportFileProperty.Num));
             Assert.True(matchingIssue.GetCustomProperty(BuildReportFileProperty.BuildFile).Equals("resources.assets"));
             Assert.That(matchingIssue.GetCustomPropertyAsInt(BuildReportFileProperty.Size), Is.Positive);
+            Assert.True(matchingIssue.GetCustomProperty(BuildReportFileProperty.Type).Equals(typeof(Material).ToString()));
         }
 
         [Test]
