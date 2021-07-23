@@ -4,7 +4,7 @@ This view reports all shader variants included in the build.
 
 <img src="images/variants.png">
 
-Note that built-in shaders included only after building the project for the target platform.
+Note that built-in shaders are included only after building the project for the target platform.
 
 # How to Use
 To view the built Shader Variants, run your build pipeline and Refresh:
