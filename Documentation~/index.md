@@ -17,6 +17,17 @@ The Project Auditor editor window can be opened via *Window => Analysis => Proje
 
 For more information, check the [Getting started](GettingStarted.md) guide.
 
+For information on a specific view, check the corresponding page:
+* [Code](Code.md) (Diagnostics)
+* [Settings](Settings.md) (Diagnostics)
+* [Assemblies](Assemblies.md)
+* [Generics](Generics.md)
+* [Resources](Resources.md)
+* [Shaders](Shaders.md)
+* [Shader Variants](Variants.md)
+* [Build Steps](BuildSteps.md) (Build Report)
+* [Build Size](BuildSize.md) (Build Report)
+
 ## Reporting issues
 If you have issues running Project Auditor in your Unity project, please report them on the [GitHub repository](https://github.com/Unity-Technologies/ProjectAuditor/issues).
 
