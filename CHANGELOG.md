@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added Documentation pages
 * Added UI Button to open doc page based on active view
 * Added BuildReport Viewer UI
+* Added Runtime Type property to BuildReport size items
 
 ## [0.6.3-preview] - 2021-07-05
 * Fixed *NullReferenceException* when searching Call Tree on Resources view
