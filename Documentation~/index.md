@@ -25,8 +25,8 @@ For information on a specific view, check the corresponding page:
 * [Resources](Resources.md)
 * [Shaders](Shaders.md)
 * [Shader Variants](Variants.md)
-* [Build Steps](BuildSteps.md) (Build Report)
-* [Build Size](BuildSize.md) (Build Report)
+* [Build Steps](BuildSteps.md) (Build Report - Requires Unity 2019.4 or newer)
+* [Build Size](BuildSize.md) (Build Report - Requires Unity 2019.4 or newer)
 
 ## Reporting issues
 If you have issues running Project Auditor in your Unity project, please report them on the [GitHub repository](https://github.com/Unity-Technologies/ProjectAuditor/issues).

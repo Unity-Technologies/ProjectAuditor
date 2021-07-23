@@ -9,3 +9,5 @@ This view shows all build file sizes from the last [BuildReport](https://docs.un
 * *Size*: size of the file, converted for the target platform
 * *Path*: full path of the source asset
 * *Build File*: filename of the archive containing the file
+
+Note that this view is available when using Unity 2019.4 or newer.

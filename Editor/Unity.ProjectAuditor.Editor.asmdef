@@ -16,6 +16,11 @@
     "defineConstraints": [],
     "versionDefines": [
         {
+            "name": "Unity",
+            "expression": "2019.4",
+            "define": "BUILD_REPORT_API_SUPPORT"
+        },
+        {
             "name": "com.unity.render-pipelines.high-definition",
             "expression": "",
             "define": "HDRP_ANALYZER_SUPPORT"

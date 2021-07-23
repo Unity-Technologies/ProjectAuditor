@@ -1,7 +1,3 @@
-#if UNITY_2019_4_OR_NEWER
-    #define BUILD_REPORT_API_SUPPORTED
-#endif
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -279,7 +275,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public bool IsSupported()
         {
-#if BUILD_REPORT_API_SUPPORTED
+#if BUILD_REPORT_API_SUPPORT
             return true;
 #else
             return false;
@@ -292,7 +288,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
-#if BUILD_REPORT_API_SUPPORTED
+#if BUILD_REPORT_API_SUPPORT
             var buildReport = BuildReportProvider.GetBuildReport();
             if (buildReport != null)
             {
@@ -304,7 +300,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 onComplete();
         }
 
-#if BUILD_REPORT_API_SUPPORTED
+#if BUILD_REPORT_API_SUPPORT
         void AnalyzeBuildSteps(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
         {
             foreach (var step in buildReport.steps)
