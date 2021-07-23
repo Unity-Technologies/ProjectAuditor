@@ -17,14 +17,6 @@ The Project Auditor editor window can be opened via *Window => Analysis => Proje
 
 For more information, check the [Getting started](GettingStarted.md) guide.
 
-## Known limitations
-Here are several Project Auditor's known limitations:
-
-* It reports issues in code that might be stripped by the build process.
-* It cannot distinguish between different versions of an API method with different parameters/return types: for example, it can't differentiate between public Component[] GetComponentsInChildren(Type type, bool includeInactive = false); (which allocates managed memory) and public void GetComponentsInChildren(List<T> results); (which doesn't), so it reports both.
-* It is unable to distinguish between "hot" and "cold" code paths, except by checking if a method is in (or is a called by) one of the standard MonoBehaviour (Fixed/Late)Update methods.
-* The call tree analysis does not support virtual methods.
-
 ## Reporting issues
 If you have issues running Project Auditor in your Unity project, please report them on the [GitHub repository](https://github.com/Unity-Technologies/ProjectAuditor/issues).
 
