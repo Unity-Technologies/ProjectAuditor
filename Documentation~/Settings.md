@@ -1,5 +1,5 @@
 <a name="Settings"></a>
-# Overview
+# Settings View
 This view reports all Project Settings diagnostics.
 
 <img src="images/settings.png">
