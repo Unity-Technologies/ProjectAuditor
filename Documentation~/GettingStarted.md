@@ -11,13 +11,13 @@ Once the Project Auditor window is opened. Press *Analyze* to analyse the projec
 
 <img src="images/intro.png">
 
-The analysis might take several seconds, depending on how large the project is. Once the analysis completes, Project Auditor will show the report of potential issues, filters and additional information.
+The analysis might take several seconds, depending on how large the project is. Once the analysis completes, Project Auditor will show a summary of the report.
+
+<img src="images/summary.png">
+
+From the summary it's possible to open one of the diagnostics views (Code or Settings).
 
 <img src="images/overview.png">
-
-The issues are classified into several different views. The active view can be selected from the toolbar.
-
-<img src="images/view-selection.png">
 
 The filters allow the user to search through the list of potential issues by string, Assembly and other criterias.
 
