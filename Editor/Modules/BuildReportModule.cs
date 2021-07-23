@@ -202,13 +202,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             hierarchy = true
         };
 
-        static IBuildReportProvider m_BuildReportProvider;
-        static IBuildReportProvider m_DefaultBuildReportProvider = new LastBuildReportProvider();
+        static IBuildReportProvider s_BuildReportProvider;
+        static IBuildReportProvider s_DefaultBuildReportProvider = new LastBuildReportProvider();
 
         public static IBuildReportProvider BuildReportProvider
         {
-            get { return m_BuildReportProvider != null ? m_BuildReportProvider : m_DefaultBuildReportProvider;  }
-            set { m_BuildReportProvider = value;  }
+            get { return s_BuildReportProvider != null ? s_BuildReportProvider : s_DefaultBuildReportProvider;  }
+            set { s_BuildReportProvider = value;  }
         }
 
         public IEnumerable<ProblemDescriptor> GetDescriptors()
