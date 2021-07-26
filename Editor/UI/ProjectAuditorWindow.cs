@@ -1138,6 +1138,9 @@ In addition, it is possible to filter issues by area (CPU/Memory/etc...), by str
         [PostProcessBuild(1)]
         public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
         {
+            if (Application.isBatchMode)
+                return;
+
             if (Instance != null)
                 Instance.OnPostprocessBuild(target);
         }
