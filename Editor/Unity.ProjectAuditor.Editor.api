@@ -259,9 +259,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
     public enum BuildReportFileProperty
     {
-        public const Unity.ProjectAuditor.Editor.Auditors.BuildReportFileProperty BuildFile = 1;
-        public const Unity.ProjectAuditor.Editor.Auditors.BuildReportFileProperty Num = 2;
-        public const Unity.ProjectAuditor.Editor.Auditors.BuildReportFileProperty Size = 0;
+        public const Unity.ProjectAuditor.Editor.Auditors.BuildReportFileProperty BuildFile = 2;
+        public const Unity.ProjectAuditor.Editor.Auditors.BuildReportFileProperty Num = 3;
+        public const Unity.ProjectAuditor.Editor.Auditors.BuildReportFileProperty Size = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.BuildReportFileProperty Type = 0;
         public int value__;
     }
 
