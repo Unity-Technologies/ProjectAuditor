@@ -97,11 +97,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         };
 
         static readonly ProblemDescriptor k_AnimationDescriptor = new ProblemDescriptor
-        (
+            (
             600003,
             "Animation",
             Area.BuildSize
-        );
+            );
 
         static readonly ProblemDescriptor k_AssetDescriptor = new ProblemDescriptor
             (
@@ -111,11 +111,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             );
 
         static readonly ProblemDescriptor k_AudioDescriptor = new ProblemDescriptor
-        (
+            (
             600005,
             "Audio",
             Area.BuildSize
-        );
+            );
 
         static readonly ProblemDescriptor k_ByteDataDescriptor = new ProblemDescriptor
             (
@@ -146,11 +146,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             );
 
         static readonly ProblemDescriptor k_MonoBehaviourDescriptor = new ProblemDescriptor
-        (
+            (
             600010,
             "MonoBehaviour",
             Area.BuildSize
-        );
+            );
 
         static readonly ProblemDescriptor k_PrefabDescriptor = new ProblemDescriptor
             (
@@ -167,11 +167,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             );
 
         static readonly ProblemDescriptor k_TextDescriptor = new ProblemDescriptor
-        (
+            (
             600013,
             "Text",
             Area.BuildSize
-        );
+            );
 
         static readonly ProblemDescriptor k_TextureDescriptor = new ProblemDescriptor
             (
