@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added BuildReport Viewer UI
 * Added Runtime Type property to BuildReport size items
 
+## [0.6.4-preview] - 2021-07-26
+* Added *ProjectReport.ExportToCSV* to *public* API
+* Fixed "No graphic device is available" error in batchmode
+
 ## [0.6.3-preview] - 2021-07-05
 * Fixed *NullReferenceException* when searching Call Tree on Resources view
 * Fixed *OverflowException* on reporting build sizes
