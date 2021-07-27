@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Analytics;
 
-namespace Unity.ProjectAuditor.Editor.UI.Framework
+namespace Unity.ProjectAuditor.Editor.UI
 {
     static class ProjectAuditorAnalytics
     {
