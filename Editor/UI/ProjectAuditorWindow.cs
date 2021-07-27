@@ -1117,15 +1117,18 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent ActionsFoldout = new GUIContent("Actions", "Actions on selected issues");
 
             public static readonly GUIContent HelpText = new GUIContent(
-@"Project Auditor is an experimental static analysis tool for Unity Projects.
-This tool will analyze assets, scripts and project settings of a Unity project
-and report a list of possible problems that might affect performance, memory and other areas.
+@"
+Project Auditor is an experimental static analysis tool that analyzes assets, settings and scripts of the Unity project and produces a report that contains the following:
+
+* Code and Settings Diagnostics: a list of possible problems that might affect performance, memory and other areas.
+* BuildReport: timing and size information of the last build.
+* Assets information
 
 To Analyze the project, click on Analyze.
 
-Once the project is analyzed, the tool displays a list of issues of a specific kind. Initially, code-related issues will be shown.
-To switch type of issues, for example from code to settings-related issues, use the 'View' dropdown and select Settings.
-In addition, it is possible to filter issues by area (CPU/Memory/etc...), by string or by other search criteria."
+Once the project is analyzed, Project Auditor displays a summary with high-level information. Then, it is possible to dive into a specific section of the report from the View menu.
+A view allows the user to browse through the listed items and filter by string or other search criteria.
+"
             );
 
             public static readonly GUIContent Shaders = new GUIContent("Shaders", "Inspect Shaders");
