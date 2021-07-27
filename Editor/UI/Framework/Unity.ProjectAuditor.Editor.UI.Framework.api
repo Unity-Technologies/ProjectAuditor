@@ -1,6 +1,35 @@
 // This file is generated. Do not modify by hand.
 // XML documentation file not found. To check if public methods have XML comments,
 // make sure the XML doc file is present and located next to the scraped dll
+namespace Unity.ProjectAuditor.Editor.UI
+{
+    public class Draw2D
+    {
+        public Draw2D(string shaderName) {}
+        public bool CheckAndSetupMaterial();
+        public void ClearClipRect();
+        public void DrawBox(float x, float y, float w, float h, UnityEngine.Color col);
+        public void DrawBox(float x, float y, float w, float h, float r, float g, float b);
+        public void DrawEnd();
+        public void DrawFilledBox(float x, float y, float w, float h, UnityEngine.Color col);
+        public void DrawFilledBox(float x, float y, float w, float h, float r, float g, float b);
+        public void DrawLine(float x, float y, float x2, float y2, UnityEngine.Color col);
+        public void DrawLine(float x, float y, float x2, float y2, float r, float g, float b);
+        public bool DrawStart(UnityEngine.Rect r, Unity.ProjectAuditor.Editor.UI.Draw2D.Origin origin = 0);
+        public bool DrawStart(float w, float h, Unity.ProjectAuditor.Editor.UI.Draw2D.Origin origin = 0, UnityEngine.GUIStyle style = default(UnityEngine.GUIStyle));
+        public bool IsMaterialValid();
+        public void OnGUI();
+        public void SetClipRect(UnityEngine.Rect clipRect);
+        public void Translate(ref float x, ref float y);
+        public enum Origin
+        {
+            public const Unity.ProjectAuditor.Editor.UI.Draw2D.Origin BottomLeft = 1;
+            public const Unity.ProjectAuditor.Editor.UI.Draw2D.Origin TopLeft = 0;
+            public int value__;
+        }
+    }
+}
+
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class AnalysisView

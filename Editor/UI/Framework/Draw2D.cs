@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    internal class Draw2D
+    public class Draw2D
     {
         public enum Origin
         {
