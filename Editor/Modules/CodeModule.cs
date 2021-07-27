@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Num
     }
 
-    class CodeModule : IProjectAuditorModule
+    class CodeModule : ProjectAuditorModule
     {
         static readonly ProblemDescriptor k_AssemblyDescriptor = new ProblemDescriptor
             (
@@ -101,12 +101,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         Thread m_AssemblyAnalysisThread;
 
-        public IEnumerable<ProblemDescriptor> GetDescriptors()
+        public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             return m_ProblemDescriptors;
         }
 
-        public IEnumerable<IssueLayout> GetLayouts()
+        public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_AssemblyLayout;
             yield return k_IssueLayout;
@@ -114,7 +114,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             yield return k_GenericIssueLayout;
         }
 
-        public void Initialize(ProjectAuditorConfig config)
+        public override void Initialize(ProjectAuditorConfig config)
         {
             m_Config = config;
             m_Analyzers = new List<IInstructionAnalyzer>();
@@ -125,12 +125,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
         }
 
-        public bool IsSupported()
-        {
-            return true;
-        }
-
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
+        public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
             if (m_ProblemDescriptors == null)
                 throw new Exception("Issue Database not initialized.");
@@ -253,7 +248,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 onComplete(progress);
         }
 
-        public void RegisterDescriptor(ProblemDescriptor descriptor)
+        public override void RegisterDescriptor(ProblemDescriptor descriptor)
         {
             // TODO: check for id conflict
             m_ProblemDescriptors.Add(descriptor);

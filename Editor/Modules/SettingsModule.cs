@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
-    class SettingsModule : IProjectAuditorModule
+    class SettingsModule : ProjectAuditorModule
     {
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
@@ -22,17 +22,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         List<ISettingsAnalyzer> m_Analyzers;
         List<ProblemDescriptor> m_ProblemDescriptors;
 
-        public IEnumerable<ProblemDescriptor> GetDescriptors()
+        public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             return m_ProblemDescriptors;
         }
 
-        public IEnumerable<IssueLayout> GetLayouts()
+        public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_IssueLayout;
         }
 
-        public void Initialize(ProjectAuditorConfig config)
+        public override void Initialize(ProjectAuditorConfig config)
         {
             m_Analyzers = new List<ISettingsAnalyzer>();
             m_ProblemDescriptors = new List<ProblemDescriptor>();
@@ -41,17 +41,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 AddAnalyzer(Activator.CreateInstance(type) as ISettingsAnalyzer);
         }
 
-        public bool IsSupported()
-        {
-            return true;
-        }
-
-        public void RegisterDescriptor(ProblemDescriptor descriptor)
+        public override void RegisterDescriptor(ProblemDescriptor descriptor)
         {
             m_ProblemDescriptors.Add(descriptor);
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
+        public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
             if (progress != null)
                 progress.Start("Analyzing Settings", "Analyzing project settings", m_Analyzers.Count);

@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         }
     }
 
-    class BuildReportModule : IProjectAuditorModule
+    class BuildReportModule : ProjectAuditorModule
     {
         static readonly ProblemDescriptor k_InfoDescriptor = new ProblemDescriptor
             (
@@ -242,7 +242,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             set { s_BuildReportProvider = value;  }
         }
 
-        public IEnumerable<ProblemDescriptor> GetDescriptors()
+        public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             yield return k_InfoDescriptor;
             yield return k_WarnDescriptor;
@@ -263,30 +263,21 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             yield return k_OtherTypeDescriptor;
         }
 
-        public IEnumerable<IssueLayout> GetLayouts()
+        public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_FileLayout;
             yield return k_StepLayout;
         }
 
-        public void Initialize(ProjectAuditorConfig config)
+#if !BUILD_REPORT_API_SUPPORT
+        public override bool IsSupported()
         {
-        }
-
-        public bool IsSupported()
-        {
-#if BUILD_REPORT_API_SUPPORT
-            return true;
-#else
             return false;
+        }
+
 #endif
-        }
 
-        public void RegisterDescriptor(ProblemDescriptor descriptor)
-        {
-        }
-
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
+        public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
 #if BUILD_REPORT_API_SUPPORT
             var buildReport = BuildReportProvider.GetBuildReport();

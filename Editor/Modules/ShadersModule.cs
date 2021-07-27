@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public string[] keywords;
     }
 
-    class ShadersModule : IProjectAuditorModule
+    class ShadersModule : ProjectAuditorModule
 #if UNITY_2018_2_OR_NEWER
         , IPreprocessShaders
 #endif
@@ -116,31 +116,18 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData = new Dictionary<Shader, List<ShaderVariantData>>();
 
-        public IEnumerable<ProblemDescriptor> GetDescriptors()
+        public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             yield return null;
         }
 
-        public IEnumerable<IssueLayout> GetLayouts()
+        public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_ShaderLayout;
             yield return k_ShaderVariantLayout;
         }
 
-        public void Initialize(ProjectAuditorConfig config)
-        {
-        }
-
-        public bool IsSupported()
-        {
-            return true;
-        }
-
-        public void RegisterDescriptor(ProblemDescriptor descriptor)
-        {
-        }
-
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
+        public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
             var shaderPathMap = new Dictionary<Shader, string>();
             var shaderGuids = AssetDatabase.FindAssets("t:shader");

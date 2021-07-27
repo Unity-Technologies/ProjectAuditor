@@ -45,16 +45,6 @@ namespace Unity.ProjectAuditor.Editor
         public abstract void Start(string title, string description, int total);
     }
 
-    public interface IProjectAuditorModule
-    {
-        public abstract void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete = default(System.Action), Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
-        public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
-        public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
-        public abstract void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
-        public abstract bool IsSupported();
-        public abstract void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-    }
-
     public interface IProjectIssueFilter
     {
         public abstract bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
@@ -141,6 +131,17 @@ namespace Unity.ProjectAuditor.Editor
         public void ClearRules(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string filter = );
         public Unity.ProjectAuditor.Editor.Rule.Severity GetAction(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string filter = );
         public Unity.ProjectAuditor.Editor.Rule GetRule(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string filter = );
+    }
+
+    public abstract class ProjectAuditorModule
+    {
+        protected ProjectAuditorModule() {}
+        public abstract void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action onComplete = default(System.Action), Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
+        [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.ProjectAuditorModule.<GetDescriptors>d__0))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
+        public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
+        public virtual void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
+        public virtual bool IsSupported();
+        public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
     }
 
     public class ProjectIssue
@@ -357,7 +358,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     {
         public abstract Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
         public abstract System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
-        public abstract void Initialize(Unity.ProjectAuditor.Editor.IProjectAuditorModule module);
+        public abstract void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorModule module);
     }
 }
 
@@ -366,7 +367,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
     public interface ISettingsAnalyzer
     {
         public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> Analyze();
-        public abstract void Initialize(Unity.ProjectAuditor.Editor.IProjectAuditorModule module);
+        public abstract void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorModule module);
     }
 }
 

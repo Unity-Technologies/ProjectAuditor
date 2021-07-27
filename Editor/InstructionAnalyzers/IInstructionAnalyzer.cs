@@ -7,7 +7,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     public interface IInstructionAnalyzer
     {
-        void Initialize(IProjectAuditorModule module);
+        void Initialize(ProjectAuditorModule module);
 
         ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst);
 

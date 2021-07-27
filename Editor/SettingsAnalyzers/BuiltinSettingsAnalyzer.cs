@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             new List<KeyValuePair<string, string>>();
         List<ProblemDescriptor> m_ProblemDescriptors;
 
-        public void Initialize(IProjectAuditorModule module)
+        public void Initialize(ProjectAuditorModule module)
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             m_Assemblies.Add(assemblies.First(a => a.Location.Contains("UnityEngine.dll")));

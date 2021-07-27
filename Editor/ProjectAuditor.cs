@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        readonly List<IProjectAuditorModule> m_Modules = new List<IProjectAuditorModule>();
+        readonly List<ProjectAuditorModule> m_Modules = new List<ProjectAuditorModule>();
         ProjectAuditorConfig m_Config;
 
         public ProjectAuditorConfig config
@@ -112,9 +112,9 @@ namespace Unity.ProjectAuditor.Editor
 
         void InitModules()
         {
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IProjectAuditorModule)))
+            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ProjectAuditorModule)))
             {
-                var instance = Activator.CreateInstance(type) as IProjectAuditorModule;
+                var instance = Activator.CreateInstance(type) as ProjectAuditorModule;
                 instance.Initialize(m_Config);
                 m_Modules.Add(instance);
             }
@@ -178,7 +178,7 @@ namespace Unity.ProjectAuditor.Editor
                 Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
         }
 
-        internal T GetModule<T>() where T : class, IProjectAuditorModule
+        internal T GetModule<T>() where T : ProjectAuditorModule
         {
             foreach (var module in m_Modules)
             {
@@ -189,7 +189,7 @@ namespace Unity.ProjectAuditor.Editor
             return null;
         }
 
-        internal IProjectAuditorModule GetModule(IssueCategory category)
+        internal ProjectAuditorModule GetModule(IssueCategory category)
         {
             return m_Modules.FirstOrDefault(a => a.IsSupported() && a.GetLayouts().FirstOrDefault(l => l.category == category) != null);
         }

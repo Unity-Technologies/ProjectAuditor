@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Try to avoid allocating arrays in frequently-updated code."
             );
 
-        public void Initialize(IProjectAuditorModule module)
+        public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_ObjectAllocationDescriptor);
             module.RegisterDescriptor(k_ClosureAllocationDescriptor);

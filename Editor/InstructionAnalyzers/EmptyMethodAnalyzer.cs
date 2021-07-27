@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Remove any empty MonoBehaviour methods."
             );
 
-        public void Initialize(IProjectAuditorModule module)
+        public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_Descriptor);
         }

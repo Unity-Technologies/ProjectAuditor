@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Try to avoid Boxing when possible."
             );
 
-        public void Initialize(IProjectAuditorModule module)
+        public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_Descriptor);
         }

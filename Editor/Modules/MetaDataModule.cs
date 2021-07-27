@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Num
     }
 
-    class MetaDataModule : IProjectAuditorModule
+    class MetaDataModule : ProjectAuditorModule
     {
         static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
             (
@@ -29,31 +29,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         };
 
-        public IEnumerable<ProblemDescriptor> GetDescriptors()
+        public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             yield return k_Descriptor;
         }
 
-        public IEnumerable<IssueLayout> GetLayouts()
+        public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_IssueLayout;
         }
 
-        public void Initialize(ProjectAuditorConfig config)
-        {
-        }
-
-        public bool IsSupported()
-        {
-            return true;
-        }
-
-        public void RegisterDescriptor(ProblemDescriptor descriptor)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
+        public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
             onIssueFound(new ProjectIssue(k_Descriptor, "Date and Time", IssueCategory.MetaData,
                 new object[] {DateTime.Now}));

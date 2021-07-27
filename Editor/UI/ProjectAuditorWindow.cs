@@ -472,7 +472,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             IncrementalAudit<BuildReportModule>();
         }
 
-        void IncrementalAudit<T>() where T : class, IProjectAuditorModule
+        void IncrementalAudit<T>() where T : ProjectAuditorModule
         {
             if (m_ProjectReport == null)
                 m_ProjectReport = new ProjectReport();
