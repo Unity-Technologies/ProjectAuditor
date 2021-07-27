@@ -188,7 +188,7 @@ namespace Unity.ProjectAuditor.Editor
         public void SetCustomProperties(object[] properties)
         {
             if (properties != null)
-                this.customProperties = properties.Select(p => p.ToString()).ToArray();
+                this.customProperties = properties.Select(p => p != null ? p.ToString() : string.Empty).ToArray();
             else
                 this.customProperties = null;
         }
