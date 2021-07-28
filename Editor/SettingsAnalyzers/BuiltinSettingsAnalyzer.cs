@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         public IEnumerable<ProjectIssue> Analyze()
         {
             if (m_ProblemDescriptors == null)
-                throw new Exception("Issue Database not initialized.");
+                throw new Exception("Descriptors Database not initialized.");
 
             foreach (var descriptor in m_ProblemDescriptors)
             {

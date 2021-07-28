@@ -128,7 +128,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
             if (m_ProblemDescriptors == null)
-                throw new Exception("Issue Database not initialized.");
+                throw new Exception("Descriptors Database not initialized.");
 
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
