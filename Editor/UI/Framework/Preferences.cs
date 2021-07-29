@@ -22,5 +22,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool emptyGroups;
 
         public int fontSize = k_MinFontSize;
+
+        public bool developerMode = false;
     }
 }
