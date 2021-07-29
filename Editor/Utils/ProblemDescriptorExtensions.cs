@@ -14,5 +14,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
             return Formatting.CombineStrings(descriptor.areas);
         }
+
+        public static string GetFullTypeName(this ProblemDescriptor descriptor)
+        {
+            return descriptor.type + "." + descriptor.method;
+        }
     }
 }

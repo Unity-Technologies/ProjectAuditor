@@ -406,6 +406,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
     {
         [System.Runtime.CompilerServices.Extension] public static Unity.ProjectAuditor.Editor.Area[] GetAreas(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
         [System.Runtime.CompilerServices.Extension] public static string GetAreasSummary(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+        [System.Runtime.CompilerServices.Extension] public static string GetFullTypeName(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
     }
 
     [System.Runtime.CompilerServices.Extension] public static class ProjectIssueExtensions
