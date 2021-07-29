@@ -12,7 +12,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public class AnalysisView
+    public class AnalysisView : IProjectIssueFilter
     {
         static string s_ExportDirectory = string.Empty;
 
@@ -28,8 +28,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected ProjectAuditorConfig m_Config;
         protected Preferences m_Preferences;
         protected ViewDescriptor m_Desc;
-        protected IProjectIssueFilter m_Filter;
+        protected IProjectIssueFilter m_BaseFilter;
         protected List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+        protected TextFilter m_TextFilter;
         protected ViewManager m_ViewManager;
 
         DependencyView m_DependencyView;
@@ -66,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Desc = descriptor;
             m_Config = config;
             m_Preferences = prefs;
-            m_Filter = filter;
+            m_BaseFilter = filter;
             m_Layout = layout;
 
             if (m_Table != null)
@@ -106,10 +107,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_Desc,
                 layout,
                 m_Config,
-                m_Filter);
+                this);
 
             if (m_Desc.showDependencyView)
                 m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onDoubleClick);
+
+            if (m_TextFilter == null)
+                m_TextFilter = new TextFilter();
 
             var helpButtonTooltip = string.Format("Open Reference for {0}", m_Desc.name);
 #if UNITY_2018_1_OR_NEWER
@@ -223,6 +227,29 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndVertical();
         }
 
+        public virtual void DrawTextSearch()
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            EditorGUILayout.LabelField(Contents.TextSearchLabel, GUILayout.Width(80));
+
+            m_TextFilter.searchText = EditorGUILayout.DelayedTextField(m_TextFilter.searchText, GUILayout.Width(180));
+            m_TextFilter.matchCase = EditorGUILayout.ToggleLeft(Contents.TextSearchCaseSensitive, m_TextFilter.matchCase, GUILayout.Width(160));
+
+            m_Table.searchString = m_TextFilter.searchText;
+
+            if (m_Preferences.developerMode)
+            {
+                // this is only available in developer mode because it is still too slow at the moment
+                GUI.enabled = m_Desc.showDependencyView;
+                m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Call Tree (slow)",
+                    m_TextFilter.searchDependencies, GUILayout.Width(160));
+                GUI.enabled = true;
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
         void DrawToolbar()
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
@@ -308,7 +335,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             Export();
                             return;
                         case ExportMode.Filtered:
-                            Export(issue => { return m_Filter.Match(issue); });
+                            Export(Match);
                             return;
                         case ExportMode.Selected:
                             var selectedItems = table.GetSelectedItems();
@@ -418,6 +445,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        public virtual bool Match(ProjectIssue issue)
+        {
+            return m_BaseFilter.Match(issue) && m_TextFilter.Match(issue);
+        }
+
         public static void SetReport(ProjectReport report)
         {
             s_Report = report;
@@ -451,6 +483,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout =
                 new GUIContent("Recommendation", "Recommendation on how to solve the issue");
+            public static readonly GUIContent TextSearchLabel = new GUIContent("Search : ", "Text search options");
+            public static readonly GUIContent TextSearchCaseSensitive = new GUIContent("Match Case", "Case-sensitive search");
         }
     }
 }

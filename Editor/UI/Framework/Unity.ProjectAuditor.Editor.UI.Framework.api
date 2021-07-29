@@ -32,13 +32,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public class AnalysisView
+    public class AnalysisView : Unity.ProjectAuditor.Editor.IProjectIssueFilter
     {
+        protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_BaseFilter;
         protected Unity.ProjectAuditor.Editor.ProjectAuditorConfig m_Config;
         protected Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor m_Desc;
-        protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_Filter;
         protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.ProjectIssue> m_Issues;
         protected Unity.ProjectAuditor.Editor.UI.Framework.Preferences m_Preferences;
+        protected Unity.ProjectAuditor.Editor.TextFilter m_TextFilter;
         protected Unity.ProjectAuditor.Editor.UI.Framework.ViewManager m_ViewManager;
         protected static Unity.ProjectAuditor.Editor.ProjectReport s_Report;
         public Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor desc { get; }
@@ -50,8 +51,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void DrawContent();
         public virtual void DrawFilters();
         public void DrawInfo();
+        public virtual void DrawTextSearch();
         protected Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
         public bool IsValid();
+        public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
         protected virtual void OnDrawInfo();
         public void Refresh();
         public static void SetReport(Unity.ProjectAuditor.Editor.ProjectReport report);
