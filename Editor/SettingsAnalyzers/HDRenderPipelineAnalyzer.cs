@@ -11,7 +11,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
-    public class HDRenderPipelineAnalyzer : ISettingsAnalyzer
+    class HDRenderPipelineAnalyzer : ISettingsAnalyzer
     {
         static readonly ProblemDescriptor k_AssetLitShaderModeBothOrMixed = new ProblemDescriptor(
             202001,
