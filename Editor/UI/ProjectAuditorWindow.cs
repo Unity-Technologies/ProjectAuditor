@@ -66,7 +66,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         public void AddItemsToMenu(GenericMenu menu)
         {
             menu.AddItem(Contents.DeveloperMode, m_Preferences.developerMode, OnToggleDeveloperMode);
-            menu.AddItem(Contents.UserMode, !m_Preferences.developerMode, OnToggleDeveloperMode);
         }
 
         public bool Match(ProjectIssue issue)
@@ -1070,7 +1069,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         static class Contents
         {
             public static readonly GUIContent DeveloperMode = new GUIContent("Developer Mode");
-            public static readonly GUIContent UserMode = new GUIContent("User Mode");
 
             public static readonly GUIContent WindowTitle = new GUIContent("Project Auditor");
 
