@@ -4,11 +4,10 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    [Serializable]
     public class TextFilter : IProjectIssueFilter
     {
-        public bool matchCase;
-        public bool searchDependencies;
+        public bool ignoreCase = true;
+        public bool searchDependencies = false;
         public string searchText = string.Empty;
 
         public bool Match(ProjectIssue issue)
@@ -37,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor
         bool MatchesSearch(string text)
         {
             return !string.IsNullOrEmpty(text) &&
-                text.IndexOf(searchText, matchCase ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase) >= 0;
+                text.IndexOf(searchText, ignoreCase ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture) >= 0;
         }
 
         bool MatchesSearch(DependencyNode node, bool recursive)

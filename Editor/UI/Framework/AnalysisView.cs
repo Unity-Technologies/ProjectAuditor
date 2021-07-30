@@ -226,7 +226,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.LabelField(Contents.TextSearchLabel, GUILayout.Width(80));
 
             m_TextFilter.searchText = EditorGUILayout.DelayedTextField(m_TextFilter.searchText, GUILayout.Width(180));
-            m_TextFilter.matchCase = EditorGUILayout.ToggleLeft(Contents.TextSearchCaseSensitive, m_TextFilter.matchCase, GUILayout.Width(160));
+            m_TextFilter.ignoreCase = EditorGUILayout.ToggleLeft(Contents.TextSearchCaseSensitive, m_TextFilter.ignoreCase, GUILayout.Width(160));
 
             m_Table.searchString = m_TextFilter.searchText;
 
@@ -444,11 +444,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         internal virtual void OnEnable()
         {
             m_Table.flatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey));
+            m_TextFilter.searchDependencies = EditorPrefs.GetBool(GetPrefKey(k_SearchDepsKey));
+            m_TextFilter.ignoreCase = EditorPrefs.GetBool(GetPrefKey(k_SearchIgnoreCaseKey));
+            m_TextFilter.searchText = EditorPrefs.GetString(GetPrefKey(k_SearchStringKey));
         }
 
         internal virtual void SaveSettings()
         {
             EditorPrefs.SetBool(GetPrefKey(k_FlatModeKey), m_Table.flatView);
+            EditorPrefs.SetBool(GetPrefKey(k_SearchDepsKey), m_TextFilter.searchDependencies);
+            EditorPrefs.SetBool(GetPrefKey(k_SearchIgnoreCaseKey), m_TextFilter.ignoreCase);
+            EditorPrefs.SetString(GetPrefKey(k_SearchStringKey), m_TextFilter.searchText);
         }
 
         protected string GetPrefKey(string key)
@@ -464,6 +470,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         // pref keys
         const string k_PrefKeyPrefix = "ProjectAuditor.AnalysisView.";
         const string k_FlatModeKey = "FlatMode";
+        const string k_SearchDepsKey = "SearchDeps";
+        const string k_SearchIgnoreCaseKey = "SearchIgnoreCase";
+        const string k_SearchStringKey = "SearchString";
 
         // UI strings
         const string k_NoSelectionText = "<No selection>";
