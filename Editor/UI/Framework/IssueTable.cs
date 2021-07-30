@@ -28,6 +28,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         int m_NumMatchingIssues;
         bool m_FlatView;
 
+        public bool flatView
+        {
+            get { return m_FlatView; }
+            set { m_FlatView = value; }
+        }
+
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
                           ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config,
                           IProjectIssueFilter filter) : base(state,
@@ -71,11 +77,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_NextId = k_FirstId;
             m_TreeViewItemGroups.Clear();
             m_TreeViewItemIssues = new IssueTableItem[] {};
-        }
-
-        public void SetFlatView(bool value)
-        {
-            m_FlatView = value;
         }
 
         protected override TreeViewItem BuildRoot()

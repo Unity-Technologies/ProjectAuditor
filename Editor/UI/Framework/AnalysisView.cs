@@ -33,7 +33,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected ViewManager m_ViewManager;
 
         DependencyView m_DependencyView;
-        bool m_FlatView;
         GUIContent m_HelpButtonContent;
         IssueTable m_Table;
         IssueLayout m_Layout;
@@ -117,8 +116,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 #else
             m_HelpButtonContent = new GUIContent("?", helpButtonTooltip);
 #endif
-
-            SetFlatView(m_FlatView);
         }
 
         public virtual void AddIssues(IEnumerable<ProjectIssue> allIssues)
@@ -147,11 +144,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool IsValid()
         {
             return m_Table != null;
-        }
-
-        void SetFlatView(bool value)
-        {
-            m_Table.SetFlatView(value);
         }
 
         public virtual void DrawFilters()
@@ -276,7 +268,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (m_Desc.groupByDescriptor)
             {
                 // (optional) collapse/expand buttons
-                GUI.enabled = !m_FlatView;
+                GUI.enabled = !m_Table.flatView;
                 if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                     SetRowsExpanded(false);
                 if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
@@ -284,10 +276,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 GUI.enabled = true;
 
                 EditorGUI.BeginChangeCheck();
-                m_FlatView = GUILayout.Toggle(m_FlatView, "Flat View", EditorStyles.toolbarButton, GUILayout.Width(100));
+                m_Table.flatView = GUILayout.Toggle(m_Table.flatView, "Flat View", EditorStyles.toolbarButton, GUILayout.Width(100));
                 if (EditorGUI.EndChangeCheck())
                 {
-                    SetFlatView(m_FlatView);
                     Refresh();
                 }
             }
@@ -420,13 +411,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         internal virtual void OnEnable()
         {
-            m_FlatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey));
-            SetFlatView(m_FlatView);
+            m_Table.flatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey));
         }
 
         internal virtual void SaveSettings()
         {
-            EditorPrefs.SetBool(GetPrefKey(k_FlatModeKey), m_FlatView);
+            EditorPrefs.SetBool(GetPrefKey(k_FlatModeKey), m_Table.flatView);
         }
 
         protected string GetPrefKey(string key)
