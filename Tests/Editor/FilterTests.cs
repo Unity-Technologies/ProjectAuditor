@@ -52,7 +52,7 @@ class InternalClass
 
             var stringFilter = new TextFilter
             {
-                matchCase = true,
+                ignoreCase = false,
                 searchDependencies = false,
                 searchText = string.Empty
             };
@@ -72,7 +72,7 @@ class InternalClass
             var issues = Utility.Analyze(IssueCategory.ProjectSetting);
             var stringFilter = new TextFilter
             {
-                matchCase = true,
+                ignoreCase = false,
                 searchDependencies = false,
                 searchText = "Engine Code Stripping"
             };
@@ -96,7 +96,7 @@ class InternalClass
             var issues = Utility.Analyze(IssueCategory.ProjectSetting);
             var stringFilter = new TextFilter
             {
-                matchCase = false,
+                ignoreCase = true,
                 searchDependencies = false,
                 searchText = "engine code stripping"
             };
@@ -116,7 +116,7 @@ class InternalClass
             var issues = projectReport.GetIssues(IssueCategory.Code);
             var stringFilter = new TextFilter
             {
-                matchCase = false,
+                ignoreCase = true,
                 searchDependencies = false,
                 searchText = "FilterTests.cs"
             };
@@ -136,7 +136,7 @@ class InternalClass
             var issues = projectReport.GetIssues(IssueCategory.Code);
             var stringFilter = new TextFilter
             {
-                matchCase = true,
+                ignoreCase = false,
                 searchDependencies = false,
                 searchText = "WrapperClass"
             };

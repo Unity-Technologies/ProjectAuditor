@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 !issue.isPerfCriticalContext)
                 return false;
 
-            return m_TextFilter.Match(issue);
+            return true;
         }
 
         void OnEnable()
@@ -124,9 +124,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             UpdateAreaSelection();
             UpdateAssemblySelection();
             Profiler.EndSample();
-
-            if (m_TextFilter == null)
-                m_TextFilter = new TextFilter();
 
             var viewDescriptors = ViewDescriptor.GetAll();
             Array.Sort(viewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
@@ -680,25 +677,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUI.BeginChangeCheck();
 
-                EditorGUILayout.BeginHorizontal();
-
-                EditorGUILayout.LabelField(Contents.TextSearchLabel, GUILayout.Width(80));
-
-                m_TextFilter.searchText = EditorGUILayout.DelayedTextField(m_TextFilter.searchText, GUILayout.Width(180));
-                activeView.table.searchString = m_TextFilter.searchText;
-
-                m_TextFilter.matchCase = EditorGUILayout.ToggleLeft(Contents.TextSearchCaseSensitive, m_TextFilter.matchCase, GUILayout.Width(160));
-
-                if (m_Preferences.developerMode)
-                {
-                    // this is only available in developer mode because it is still too slow at the moment
-                    GUI.enabled = activeView.desc.showDependencyView;
-                    m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Call Tree (slow)",
-                        m_TextFilter.searchDependencies, GUILayout.Width(160));
-                    GUI.enabled = true;
-                }
-
-                EditorGUILayout.EndHorizontal();
+                activeView.DrawTextSearch();
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
@@ -1103,12 +1082,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent AreaFilterSelect =
                 new GUIContent("Select", "Select performance areas to display");
-
-            public static readonly GUIContent TextSearchLabel =
-                new GUIContent("Search : ", "Text search options");
-
-            public static readonly GUIContent TextSearchCaseSensitive =
-                new GUIContent("Match Case", "Case-sensitive search");
 
             public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore selected issues.");
             public static readonly GUIContent UnmuteButton = new GUIContent("Unmute", "Always show selected issues.");

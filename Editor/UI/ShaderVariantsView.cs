@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    class ShaderVariantsView : AnalysisView, IProjectIssueFilter
+    class ShaderVariantsView : AnalysisView
     {
         const string k_BuildInstructions =
 @"This view shows the built Shader Variants.
@@ -40,7 +40,6 @@ The number of Variants contributes to the build size, however, there might be Va
 
         bool m_ShowCompiledVariants = true;
         bool m_ShowUncompiledVariants = true;
-        IProjectIssueFilter m_MainFilter;
 
         void ParsePlayerLog(string logFilename)
         {
@@ -77,7 +76,6 @@ The number of Variants contributes to the build size, however, there might be Va
 
         public override void Create(ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
         {
-            m_MainFilter = filter;
             base.Create(desc, layout, config, prefs, this);
         }
 
@@ -144,9 +142,9 @@ The number of Variants contributes to the build size, however, there might be Va
             }
         }
 
-        public bool Match(ProjectIssue issue)
+        public override bool Match(ProjectIssue issue)
         {
-            if (!m_MainFilter.Match(issue))
+            if (!base.Match(issue))
                 return false;
             var compiled = issue.GetCustomPropertyAsBool(ShaderVariantProperty.Compiled);
             if (compiled && m_ShowCompiledVariants)
