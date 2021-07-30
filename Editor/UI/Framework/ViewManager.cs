@@ -73,6 +73,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 var view = desc.type != null ? (AnalysisView)Activator.CreateInstance(desc.type, this) : new AnalysisView(this);
                 view.Create(desc, layout, projectAuditor.config, preferences, filter);
+                view.OnEnable();
                 views.Add(view);
             }
 
@@ -143,6 +144,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 if (onViewChanged != null)
                     onViewChanged(m_ActiveViewIndex);
+            }
+        }
+
+        public void SaveSettings()
+        {
+            foreach (var view in m_Views)
+            {
+                view.SaveSettings();
             }
         }
     }
