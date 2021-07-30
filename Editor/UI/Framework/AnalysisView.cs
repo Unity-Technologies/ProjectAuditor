@@ -443,6 +443,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         internal virtual void OnEnable()
         {
+            var columns = m_Table.multiColumnHeader.state.columns;
+            for (int i = 0; i < m_Layout.properties.Length; i++)
+            {
+                columns[i].width = EditorPrefs.GetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width);
+            }
             m_Table.flatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey), false);
             m_TextFilter.searchDependencies = EditorPrefs.GetBool(GetPrefKey(k_SearchDepsKey), false);
             m_TextFilter.ignoreCase = EditorPrefs.GetBool(GetPrefKey(k_SearchIgnoreCaseKey), true);
@@ -451,6 +456,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         internal virtual void SaveSettings()
         {
+            var columns = m_Table.multiColumnHeader.state.columns;
+            for (int i = 0; i < m_Layout.properties.Length; i++)
+            {
+                EditorPrefs.SetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width);
+            }
             EditorPrefs.SetBool(GetPrefKey(k_FlatModeKey), m_Table.flatView);
             EditorPrefs.SetBool(GetPrefKey(k_SearchDepsKey), m_TextFilter.searchDependencies);
             EditorPrefs.SetBool(GetPrefKey(k_SearchIgnoreCaseKey), m_TextFilter.ignoreCase);
@@ -469,6 +479,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         // pref keys
         const string k_PrefKeyPrefix = "ProjectAuditor.AnalysisView.";
+        const string k_ColumnSizeKey = "ColumnSize";
         const string k_FlatModeKey = "FlatMode";
         const string k_SearchDepsKey = "SearchDeps";
         const string k_SearchIgnoreCaseKey = "SearchIgnoreCase";
