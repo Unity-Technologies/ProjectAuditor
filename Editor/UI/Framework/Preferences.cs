@@ -2,6 +2,9 @@ using System;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
+    /// <summary>
+    /// Global UI preferences
+    /// </summary>
     [Serializable]
     public class Preferences
     {
