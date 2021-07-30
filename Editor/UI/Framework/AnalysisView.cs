@@ -418,6 +418,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        internal virtual void SaveSettings()
+        {
+        }
+
         public static void SetReport(ProjectReport report)
         {
             s_Report = report;

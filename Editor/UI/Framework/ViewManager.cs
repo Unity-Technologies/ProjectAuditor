@@ -145,5 +145,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     onViewChanged(m_ActiveViewIndex);
             }
         }
+
+        public void SaveSettings()
+        {
+            foreach (var view in m_Views)
+            {
+                view.SaveSettings();
+            }
+        }
     }
 }

@@ -179,6 +179,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Instance = this;
         }
 
+        void OnDisable()
+        {
+            m_ViewManager.SaveSettings();
+        }
+
         void OnGUI()
         {
             if (m_AnalysisState == AnalysisState.Completed)
