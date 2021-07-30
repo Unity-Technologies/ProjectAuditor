@@ -443,9 +443,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         internal virtual void OnEnable()
         {
-            m_Table.flatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey));
-            m_TextFilter.searchDependencies = EditorPrefs.GetBool(GetPrefKey(k_SearchDepsKey));
-            m_TextFilter.ignoreCase = EditorPrefs.GetBool(GetPrefKey(k_SearchIgnoreCaseKey));
+            m_Table.flatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey), false);
+            m_TextFilter.searchDependencies = EditorPrefs.GetBool(GetPrefKey(k_SearchDepsKey), false);
+            m_TextFilter.ignoreCase = EditorPrefs.GetBool(GetPrefKey(k_SearchIgnoreCaseKey), true);
             m_TextFilter.searchText = EditorPrefs.GetString(GetPrefKey(k_SearchStringKey));
         }
 
