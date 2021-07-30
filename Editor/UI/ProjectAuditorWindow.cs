@@ -997,8 +997,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ProjectAuditor.config.AnalyzeOnBuild, GUILayout.Width(100));
                 m_ProjectAuditor.config.FailBuildOnIssues = EditorGUILayout.ToggleLeft("Fail on Issues",
                     m_ProjectAuditor.config.FailBuildOnIssues, GUILayout.Width(100));
-                m_Preferences.emptyGroups = EditorGUILayout.ToggleLeft("Show Empty Groups",
-                    m_Preferences.emptyGroups, GUILayout.Width(100));
                 EditorGUILayout.EndHorizontal();
             }
         }

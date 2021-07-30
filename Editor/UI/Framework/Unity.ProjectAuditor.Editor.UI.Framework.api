@@ -119,7 +119,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool dependencies;
         public bool details;
         public bool developerMode;
-        public bool emptyGroups;
         public bool filters;
         public int fontSize;
         public bool info;
