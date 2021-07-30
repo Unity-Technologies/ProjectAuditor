@@ -53,7 +53,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] string[] m_AssemblyNames;
         [SerializeField] string m_AssemblySelectionSummary;
         [SerializeField] ProjectReport m_ProjectReport;
-        [SerializeField] TextFilter m_TextFilter;
         [SerializeField] AnalysisState m_AnalysisState = AnalysisState.Initializing;
         [SerializeField] Preferences m_Preferences = new Preferences();
         [SerializeField] ViewManager m_ViewManager;
@@ -982,7 +981,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void Save()
         {
-            var path = EditorUtility.SaveFilePanel("Save report to json file", m_SaveLoadDirectory, "project-auditor-report.json", "json");
+            var path = EditorUtility.SaveFilePanel(k_SaveToFile, m_SaveLoadDirectory, "project-auditor-report.json", "json");
             if (path.Length != 0)
             {
                 m_ProjectReport.Save(path);
@@ -995,16 +994,13 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void Load()
         {
-            const string title = "Load from file";
-            const string loadingFailedText = "Loading report from file was unsuccessful.";
-
-            var path = EditorUtility.OpenFilePanel(title, m_SaveLoadDirectory, "json");
+            var path = EditorUtility.OpenFilePanel(k_LoadFromFile, m_SaveLoadDirectory, "json");
             if (path.Length != 0)
             {
                 m_ProjectReport = ProjectReport.Load(path);
                 if (m_ProjectReport.NumTotalIssues == 0)
                 {
-                    EditorUtility.DisplayDialog(title, loadingFailedText, "Ok");
+                    EditorUtility.DisplayDialog(k_LoadFromFile, k_LoadingFailed, "Ok");
                     return;
                 }
 
@@ -1038,6 +1034,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             return wnd;
         }
+
+        const string k_LoadFromFile = "Load from file";
+        const string k_LoadingFailed = "Loading report from file was unsuccessful.";
+        const string k_SaveToFile = "Save report to json file";
 
         // UI styles and layout
         static class LayoutSize
