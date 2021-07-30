@@ -51,6 +51,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void DrawFilters();
         public void DrawInfo();
         protected Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
+        protected string GetPrefKey(string key);
         public bool IsValid();
         protected virtual void OnDrawInfo();
         public void Refresh();

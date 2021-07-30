@@ -418,8 +418,20 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        internal virtual void OnEnable()
+        {
+            m_FlatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey));
+            SetFlatView(m_FlatView);
+        }
+
         internal virtual void SaveSettings()
         {
+            EditorPrefs.SetBool(GetPrefKey(k_FlatModeKey), m_FlatView);
+        }
+
+        protected string GetPrefKey(string key)
+        {
+            return k_PrefKeyPrefix + m_Desc.name + key;
         }
 
         public static void SetReport(ProjectReport report)
@@ -427,6 +439,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             s_Report = report;
         }
 
+        // pref keys
+        const string k_PrefKeyPrefix = "ProjectAuditor.AnalysisView.";
+        const string k_FlatModeKey = "FlatMode";
+
+        // UI strings
         const string k_NoSelectionText = "<No selection>";
         const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         const string k_MultipleSelectionText = "<Multiple selection>";
