@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             "Disable static batching in Player Settings"
         );
 
-        public void Initialize(IProjectAuditorModule module)
+        public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_Descriptor);
         }
