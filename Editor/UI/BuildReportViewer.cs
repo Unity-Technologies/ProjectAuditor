@@ -20,26 +20,20 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void InitializeIfNeeded()
         {
-            if (s_Preferences == null)
+            if (m_Preferences == null)
             {
-                // static and non-static Preferences/ActiveViewIndex need to stay in sync so that they persists when user switches between reports
-                s_Preferences = m_Preferences = new Preferences();
-                s_ActiveViewIndex = m_ActiveViewIndex = 0;
-            }
-            else if (m_Preferences == null)
-            {
-                m_Preferences = s_Preferences;
-                m_ActiveViewIndex = s_ActiveViewIndex;
+                m_Preferences = new Preferences();
+                m_ActiveViewIndex = 0;
             }
 
-            if (m_ViewManager == null)
+            if (m_ViewManager == null || !m_ViewManager.IsValid())
             {
                 var projectAuditor = new ProjectAuditor();
                 m_ViewManager = new ViewManager(new[] { IssueCategory.BuildStep, IssueCategory.BuildFile});
                 m_ViewManager.Create(projectAuditor, m_Preferences, this);
                 m_ViewManager.Audit(projectAuditor);
                 m_ViewManager.activeViewIndex = m_ActiveViewIndex;
-                m_ViewManager.onViewChanged = index => s_ActiveViewIndex = m_ActiveViewIndex = index;
+                m_ViewManager.onViewChanged = index => m_ActiveViewIndex = index;
                 (m_ViewManager.GetView(IssueCategory.BuildStep) as BuildReportView).buildReportProvider = this;
                 (m_ViewManager.GetView(IssueCategory.BuildFile) as BuildReportView).buildReportProvider = this;
             }
@@ -47,7 +41,20 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnEnable()
         {
+            // restore prefs/active view when switching between report assets
+            if (s_Preferences != null)
+            {
+                m_Preferences = s_Preferences;
+                m_ActiveViewIndex = s_ActiveViewIndex;
+            }
+
             InitializeIfNeeded();
+        }
+
+        void OnDisable()
+        {
+            s_Preferences = m_Preferences;
+            s_ActiveViewIndex = m_ActiveViewIndex;
         }
 
         public override void OnInspectorGUI()

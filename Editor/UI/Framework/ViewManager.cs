@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public bool IsValid()
         {
-            return m_Categories != null && m_Categories.Length > 0;
+            return m_Views != null && m_Views.Length > 0;
         }
 
         public void AddIssues(ProjectIssue[] issues)
