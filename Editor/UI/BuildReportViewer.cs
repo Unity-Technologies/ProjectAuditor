@@ -63,6 +63,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.BeginVertical(GUILayout.Height(Screen.height));
             var view = m_ViewManager.GetActiveView();
             view.DrawInfo();
+
+            EditorGUI.BeginChangeCheck();
+            view.DrawTextSearch();
+            if (EditorGUI.EndChangeCheck())
+                view.Refresh();
+
             view.DrawContent();
             EditorGUILayout.EndVertical();
         }
