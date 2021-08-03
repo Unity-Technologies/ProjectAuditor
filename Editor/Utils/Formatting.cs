@@ -1,6 +1,6 @@
 using System;
 
-namespace Packages.Editor.Utils
+namespace Unity.ProjectAuditor.Editor.Utils
 {
     static class Formatting
     {

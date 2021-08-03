@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.UI.Framework;
-using Packages.Editor.Utils;
 using Unity.ProjectAuditor.Editor.Auditors;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
-using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
