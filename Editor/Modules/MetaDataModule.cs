@@ -41,26 +41,22 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
-            onIssueFound(new ProjectIssue(k_Descriptor, "Date and Time", IssueCategory.MetaData,
-                new object[] {DateTime.Now}));
-            onIssueFound(new ProjectIssue(k_Descriptor, "Host Name", IssueCategory.MetaData,
-                new object[] {SystemInfo.deviceName}));
-            onIssueFound(new ProjectIssue(k_Descriptor, "Host Platform", IssueCategory.MetaData,
-                new object[] {SystemInfo.operatingSystem}));
-
-            onIssueFound(new ProjectIssue(k_Descriptor, "Company Name", IssueCategory.MetaData,
-                new object[] {Application.companyName}));
-            onIssueFound(new ProjectIssue(k_Descriptor, "Product Name", IssueCategory.MetaData,
-                new object[] {Application.productName}));
-            onIssueFound(new ProjectIssue(k_Descriptor, "Build Target", IssueCategory.MetaData,
-                new object[] {EditorUserBuildSettings.activeBuildTarget.ToString()}));
-            onIssueFound(new ProjectIssue(k_Descriptor, "Project Auditor Version", IssueCategory.MetaData,
-                new object[] { ProjectAuditor.PackageVersion}));
-            onIssueFound(new ProjectIssue(k_Descriptor, "Unity Version", IssueCategory.MetaData,
-                new object[] {Application.unityVersion}));
+            NewMetaData("Date and Time", DateTime.Now, onIssueFound);
+            NewMetaData("Host Name", SystemInfo.deviceName, onIssueFound);
+            NewMetaData("Host Platform", SystemInfo.operatingSystem, onIssueFound);
+            NewMetaData("Company Name", Application.companyName, onIssueFound);
+            NewMetaData("Product Name", Application.productName, onIssueFound);
+            NewMetaData("Build Target", EditorUserBuildSettings.activeBuildTarget, onIssueFound);
+            NewMetaData("Project Auditor Version", ProjectAuditor.PackageVersion, onIssueFound);
+            NewMetaData("Unity Version", Application.unityVersion, onIssueFound);
 
             if (onComplete != null)
                 onComplete();
+        }
+
+        void NewMetaData(string key, object value, Action<ProjectIssue> onIssueFound)
+        {
+            onIssueFound(new ProjectIssue(k_Descriptor, key, IssueCategory.MetaData, new object[(int)MetaDataProperty.Num] {value}));
         }
     }
 }
