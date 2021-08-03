@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
             EditorGUILayout.EndVertical();
 
-            if (m_Desc.category == IssueCategory.BuildFile)
+            if (m_Desc.category == IssueCategory.BuildFile && m_GroupStats.Length > 0)
             {
                 EditorGUILayout.Space();
 
