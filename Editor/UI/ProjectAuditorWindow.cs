@@ -166,8 +166,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisState = AnalysisState.Initialized;
             }
 
-            AnalysisView.SetReport(m_ProjectReport);
-
             Profiler.BeginSample("Refresh");
             RefreshDisplay();
             Profiler.EndSample();
@@ -431,8 +429,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_AnalysisState = AnalysisState.InProgress;
             m_ProjectReport = new ProjectReport();
             m_ViewManager.Clear();
-
-            AnalysisView.SetReport(m_ProjectReport);
 
             var newIssues = new List<ProjectIssue>();
 

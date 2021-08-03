@@ -16,8 +16,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     {
         static string s_ExportDirectory = string.Empty;
 
-        protected static ProjectReport s_Report;
-
         enum ExportMode
         {
             All = 0,
@@ -470,11 +468,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected string GetPrefKey(string key)
         {
             return k_PrefKeyPrefix + m_Desc.name + key;
-        }
-
-        public static void SetReport(ProjectReport report)
-        {
-            s_Report = report;
         }
 
         // pref keys

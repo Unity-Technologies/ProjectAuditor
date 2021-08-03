@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Auditors;
@@ -9,32 +10,61 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     class SummaryView : AnalysisView
     {
+        int m_NumBuildSteps;
+        int m_NumCodeIssues;
+        int m_NumCompilerErrors;
+        int m_NumSettingIssues;
+        int m_NumResources;
+        int m_NumShaders;
+
         public SummaryView(ViewManager viewManager) : base(viewManager)
         {
         }
 
+        public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
+        {
+            base.AddIssues(allIssues);
+
+            m_NumBuildSteps += allIssues.Count(i => i.category == IssueCategory.BuildStep);
+            m_NumCodeIssues += allIssues.Count(i => i.category == IssueCategory.Code);
+            m_NumSettingIssues += allIssues.Count(i => i.category == IssueCategory.ProjectSetting);
+            m_NumResources += allIssues.Count(i => i.category == IssueCategory.Asset);
+            m_NumShaders += allIssues.Count(i => i.category == IssueCategory.Shader);
+
+            var compilerMessages = allIssues.Where(i => i.category == IssueCategory.CodeCompilerMessage);
+            m_NumCompilerErrors += compilerMessages.Count(i => i.severity == Rule.Severity.Error);
+        }
+
+        public override void Clear()
+        {
+            base.Clear();
+
+            m_NumBuildSteps = 0;
+            m_NumCodeIssues = 0;
+            m_NumCompilerErrors = 0;
+            m_NumSettingIssues = 0;
+            m_NumResources = 0;
+            m_NumShaders = 0;
+        }
+
         protected override void OnDrawInfo()
         {
-            if (s_Report != null)
+            EditorGUILayout.LabelField("Analysis overview", EditorStyles.boldLabel);
+
+            EditorGUI.indentLevel++;
+            DrawSummaryItem("Code Issues: ", m_NumCodeIssues, IssueCategory.Code);
+            if (m_NumCompilerErrors > 0)
             {
-                EditorGUILayout.LabelField("Analysis overview", EditorStyles.boldLabel);
-
-                EditorGUI.indentLevel++;
-                DrawSummaryItem("Code Issues: ", s_Report.GetIssues(IssueCategory.Code).Length, IssueCategory.Code);
-                var numCompilationErrors = s_Report.GetIssues(IssueCategory.CodeCompilerMessage).Count(i => i.severity == Rule.Severity.Error);
-                if (numCompilationErrors > 0)
-                {
-                    DrawSummaryItem("Compilation Errors: ", numCompilationErrors, IssueCategory.CodeCompilerMessage, Utility.ErrorIcon);
-                }
-                DrawSummaryItem("Settings Issues:", s_Report.GetIssues(IssueCategory.ProjectSetting).Length, IssueCategory.ProjectSetting);
-                DrawSummaryItem("Assets in Resources folders:", s_Report.GetIssues(IssueCategory.Asset).Length, IssueCategory.Asset);
-                DrawSummaryItem("Shaders in the project:", s_Report.GetIssues(IssueCategory.Shader).Length, IssueCategory.Shader);
-                var buildAvailable = s_Report.GetIssues(IssueCategory.BuildFile).Length > 0;
-                DrawSummaryItem("Build Report available:", buildAvailable, IssueCategory.BuildStep);
-                EditorGUI.indentLevel--;
-
-                EditorGUILayout.Space();
+                DrawSummaryItem("Compilation Errors: ", m_NumCompilerErrors, IssueCategory.CodeCompilerMessage, Utility.ErrorIcon);
             }
+            DrawSummaryItem("Settings Issues:", m_NumSettingIssues, IssueCategory.ProjectSetting);
+            DrawSummaryItem("Assets in Resources folders:", m_NumResources, IssueCategory.Asset);
+            DrawSummaryItem("Shaders in the project:", m_NumShaders, IssueCategory.Shader);
+            var buildAvailable = m_NumBuildSteps > 0;
+            DrawSummaryItem("Build Report available:", buildAvailable, IssueCategory.BuildStep);
+            EditorGUI.indentLevel--;
+
+            EditorGUILayout.Space();
 
             EditorGUILayout.LabelField("Select a View from the toolbar to start browsing the report");
         }

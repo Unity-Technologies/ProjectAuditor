@@ -41,7 +41,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected Unity.ProjectAuditor.Editor.UI.Framework.Preferences m_Preferences;
         protected Unity.ProjectAuditor.Editor.TextFilter m_TextFilter;
         protected Unity.ProjectAuditor.Editor.UI.Framework.ViewManager m_ViewManager;
-        protected static Unity.ProjectAuditor.Editor.ProjectReport s_Report;
         public Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor desc { get; }
         protected int numIssues { get; }
         public AnalysisView(Unity.ProjectAuditor.Editor.UI.Framework.ViewManager viewManager) {}
@@ -58,7 +57,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
         protected virtual void OnDrawInfo();
         public void Refresh();
-        public static void SetReport(Unity.ProjectAuditor.Editor.ProjectReport report);
     }
 
     public static class EditorUtil
