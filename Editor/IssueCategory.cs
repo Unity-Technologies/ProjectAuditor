@@ -15,6 +15,7 @@ namespace Unity.ProjectAuditor.Editor
         ProjectSetting,
         BuildFile,
         BuildStep,
+        BuildSummary,
         Assembly,
 
         FirstCustomCategory

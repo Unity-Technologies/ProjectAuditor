@@ -6,6 +6,7 @@ using Unity.ProjectAuditor.Editor.UI.Framework;
 using Packages.Editor.Utils;
 using Unity.ProjectAuditor.Editor.Auditors;
 using UnityEditor;
+using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
@@ -22,22 +23,12 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         GroupStats[] m_GroupStats;
-
-        IBuildReportProvider m_BuildReportProvider;
-
-        public IBuildReportProvider buildReportProvider
-        {
-            set
-            {
-                m_BuildReportProvider = value;
-            }
-        }
+        List<ProjectIssue> m_MetaData = new List<ProjectIssue>();
 
         public BuildReportView(ViewManager viewManager) :
             base(viewManager)
         {
             m_2D = new Draw2D("Unlit/ProjectAuditor");
-            m_BuildReportProvider = BuildReportModule.BuildReportProvider;
         }
 
         public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
@@ -54,6 +45,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 list.Sort((a, b) => b.size.CompareTo(a.size));
                 m_GroupStats = list.ToArray();
             }
+
+            m_MetaData.AddRange(allIssues.Where(i => i.category == IssueCategory.BuildSummary));
         }
 
         public override void Clear()
@@ -61,75 +54,65 @@ namespace Unity.ProjectAuditor.Editor.UI
             base.Clear();
 
             m_GroupStats = null;
+            m_MetaData.Clear();
         }
 
         protected override void OnDrawInfo()
         {
-            var report = m_BuildReportProvider.GetBuildReport();
-            if (report == null)
+            EditorGUILayout.BeginVertical();
+            foreach (var issue in m_MetaData)
             {
-                EditorGUILayout.LabelField("Build Report summary not found");
+                DrawKeyValue(issue.description, issue.GetCustomProperty(BuildReportMetaData.Value));
             }
-            else
+            EditorGUILayout.EndVertical();
+
+            if (m_Desc.category == IssueCategory.BuildFile)
             {
-                if (m_Desc.category == IssueCategory.BuildStep)
+                EditorGUILayout.Space();
+
+                var width = 180;
+                var dataSize = m_GroupStats.Sum(g => g.size);
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Size of Data (Uncompressed)", GUILayout.Width(width));
+                EditorGUILayout.LabelField(Formatting.FormatSize((ulong)dataSize));
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.LabelField("Size By Asset Group", EditorStyles.boldLabel);
+                EditorGUI.indentLevel++;
+
+                EditorGUILayout.BeginVertical();
+
+                var barColor = new Color(0.0f, 0.6f, 0.6f);
+                var maxGroupSize = (float)m_GroupStats.Max(g => g.size);
+                foreach (var group in m_GroupStats)
                 {
-                    EditorGUILayout.BeginVertical();
-
-                    EditorGUILayout.LabelField("Build Name: ", Path.GetFileNameWithoutExtension(report.summary.outputPath));
-                    EditorGUILayout.LabelField("Platform: ", report.summary.platform.ToString());
-                    EditorGUILayout.LabelField("Build Result: ", report.summary.result.ToString());
-
-                    EditorGUILayout.LabelField("Started at: ", report.summary.buildStartedAt.ToString());
-                    EditorGUILayout.LabelField("Ended at: ", report.summary.buildEndedAt.ToString());
-
-                    EditorGUILayout.LabelField("Total Time: ", Formatting.FormatTime(report.summary.totalTime));
-                    EditorGUILayout.EndVertical();
-                }
-                else
-                {
-                    var width = 180;
+                    var groupSize = group.size;
                     EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Size of Build", GUILayout.Width(width));
-                    EditorGUILayout.LabelField(Formatting.FormatSize(report.summary.totalSize));
-                    EditorGUILayout.EndHorizontal();
-                    EditorGUILayout.Space();
 
-                    var dataSize = m_GroupStats.Sum(g => g.size);
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Size of Data (Uncompressed)", GUILayout.Width(width));
-                    EditorGUILayout.LabelField(Formatting.FormatSize((ulong)dataSize));
-                    EditorGUILayout.EndHorizontal();
-                    EditorGUILayout.LabelField("Size By Asset Group", EditorStyles.boldLabel);
-                    EditorGUI.indentLevel++;
+                    EditorGUILayout.LabelField(string.Format("{0} ({1}):", group.assetGroup, group.count), GUILayout.Width(200));
 
-                    EditorGUILayout.BeginVertical();
-
-                    var barColor = new Color(0.0f, 0.6f, 0.6f);
-                    var maxGroupSize = (float)m_GroupStats.Max(g => g.size);
-                    foreach (var group in m_GroupStats)
+                    var rect = EditorGUILayout.GetControlRect(GUILayout.Width(width));
+                    if (m_2D.DrawStart(rect))
                     {
-                        var groupSize = group.size;
-                        EditorGUILayout.BeginHorizontal();
-
-                        EditorGUILayout.LabelField(string.Format("{0} ({1}):", group.assetGroup, group.count), GUILayout.Width(200));
-
-                        var rect = EditorGUILayout.GetControlRect(GUILayout.Width(width));
-                        if (m_2D.DrawStart(rect))
-                        {
-                            m_2D.DrawFilledBox(0, 1, Math.Max(1, rect.width * groupSize / maxGroupSize), rect.height - 1, barColor);
-                            m_2D.DrawEnd();
-                        }
-
-                        EditorGUILayout.LabelField(string.Format("{0} / {1:0.0}%", Formatting.FormatSize((ulong)group.size), 100 * groupSize / (float)dataSize));
-                        EditorGUILayout.Space();
-                        EditorGUILayout.EndHorizontal();
+                        m_2D.DrawFilledBox(0, 1, Math.Max(1, rect.width * groupSize / maxGroupSize), rect.height - 1, barColor);
+                        m_2D.DrawEnd();
                     }
-                    EditorGUILayout.EndVertical();
 
-                    EditorGUI.indentLevel--;
+                    EditorGUILayout.LabelField(string.Format("{0} / {1:0.0}%", Formatting.FormatSize((ulong)group.size), 100 * groupSize / (float)dataSize));
+                    EditorGUILayout.Space();
+                    EditorGUILayout.EndHorizontal();
                 }
+                EditorGUILayout.EndVertical();
+
+                EditorGUI.indentLevel--;
             }
+        }
+
+        void DrawKeyValue(string key, string value)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(string.Format("{0}:", key), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(value,  GUILayout.ExpandWidth(true));
+            EditorGUILayout.EndHorizontal();
         }
     }
 }

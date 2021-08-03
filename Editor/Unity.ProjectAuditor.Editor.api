@@ -52,13 +52,14 @@ namespace Unity.ProjectAuditor.Editor
 
     public enum IssueCategory
     {
-        public const Unity.ProjectAuditor.Editor.IssueCategory Assembly = 10;
+        public const Unity.ProjectAuditor.Editor.IssueCategory Assembly = 11;
         public const Unity.ProjectAuditor.Editor.IssueCategory Asset = 1;
         public const Unity.ProjectAuditor.Editor.IssueCategory BuildFile = 8;
         public const Unity.ProjectAuditor.Editor.IssueCategory BuildStep = 9;
+        public const Unity.ProjectAuditor.Editor.IssueCategory BuildSummary = 10;
         public const Unity.ProjectAuditor.Editor.IssueCategory Code = 4;
         public const Unity.ProjectAuditor.Editor.IssueCategory CodeCompilerMessage = 5;
-        public const Unity.ProjectAuditor.Editor.IssueCategory FirstCustomCategory = 11;
+        public const Unity.ProjectAuditor.Editor.IssueCategory FirstCustomCategory = 12;
         public const Unity.ProjectAuditor.Editor.IssueCategory GenericInstance = 6;
         public const Unity.ProjectAuditor.Editor.IssueCategory MetaData = 0;
         public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSetting = 7;
@@ -264,6 +265,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public const Unity.ProjectAuditor.Editor.Auditors.BuildReportFileProperty Num = 3;
         public const Unity.ProjectAuditor.Editor.Auditors.BuildReportFileProperty Size = 1;
         public const Unity.ProjectAuditor.Editor.Auditors.BuildReportFileProperty Type = 0;
+        public int value__;
+    }
+
+    public enum BuildReportMetaData
+    {
+        public const Unity.ProjectAuditor.Editor.Auditors.BuildReportMetaData Num = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.BuildReportMetaData Value = 0;
         public int value__;
     }
 

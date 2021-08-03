@@ -12,6 +12,7 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         static int s_ActiveViewIndex;
         static Preferences s_Preferences;
+        static BuildReport s_BuildReport;
 
         [SerializeField] int m_ActiveViewIndex;
         [SerializeField] Preferences m_Preferences;
@@ -28,14 +29,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (m_ViewManager == null || !m_ViewManager.IsValid())
             {
+                BuildReportModule.BuildReportProvider = this;
                 var projectAuditor = new ProjectAuditor();
                 m_ViewManager = new ViewManager(new[] { IssueCategory.BuildStep, IssueCategory.BuildFile});
                 m_ViewManager.Create(projectAuditor, m_Preferences, this);
                 m_ViewManager.Audit(projectAuditor);
                 m_ViewManager.activeViewIndex = m_ActiveViewIndex;
                 m_ViewManager.onViewChanged = index => m_ActiveViewIndex = index;
-                (m_ViewManager.GetView(IssueCategory.BuildStep) as BuildReportView).buildReportProvider = this;
-                (m_ViewManager.GetView(IssueCategory.BuildFile) as BuildReportView).buildReportProvider = this;
+                BuildReportModule.BuildReportProvider = BuildReportModule.DefaultBuildReportProvider;
             }
         }
 
@@ -46,6 +47,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 m_Preferences = s_Preferences;
                 m_ActiveViewIndex = s_ActiveViewIndex;
+            }
+
+            var buildReport = GetBuildReport();
+            if (s_BuildReport != buildReport)
+            {
+                s_BuildReport = buildReport;
+                m_ViewManager = null; // trigger new audit
             }
 
             InitializeIfNeeded();
@@ -59,12 +67,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public override void OnInspectorGUI()
         {
-            if (GetBuildReport() == null)
-            {
-                EditorGUILayout.HelpBox("No Build Report.", MessageType.Info);
-                return;
-            }
-
             InitializeIfNeeded();
 
             EditorGUILayout.BeginVertical(GUILayout.Height(Screen.height));
@@ -82,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public bool Match(ProjectIssue issue)
         {
-            return true; // there is no search field
+            return true;
         }
 
         public BuildReport GetBuildReport()

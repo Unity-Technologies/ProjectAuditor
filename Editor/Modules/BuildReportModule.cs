@@ -12,6 +12,12 @@ using UnityEngine.Audio;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
+    public enum BuildReportMetaData
+    {
+        Value,
+        Num
+    }
+
     public enum BuildReportFileProperty
     {
         Type = 0,
@@ -31,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         BuildReport GetBuildReport();
     }
 
-    class LastBuildReportProvider : IBuildReportProvider, IPostprocessBuildWithReport
+    class LastBuildReportProvider : IBuildReportProvider
     {
         const string k_BuildReportDir = "Assets/BuildReports";
         const string k_LastBuildReportPath = "Library/LastBuild.buildreport";
@@ -59,19 +65,28 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             s_BuildReport = AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
             return s_BuildReport;
         }
-
-        public int callbackOrder { get; }
-        public void OnPostprocessBuild(BuildReport report)
-        {
-            s_BuildReport = report;
-        }
     }
 
     class BuildReportModule : ProjectAuditorModule
     {
-        static readonly ProblemDescriptor k_InfoDescriptor = new ProblemDescriptor
+        const string k_KeyBuildName = "Name";
+        const string k_KeyPlatform = "Platform";
+        const string k_KeyResult = "Result";
+
+        const string k_KeyStartTime = "Start Time";
+        const string k_KeyEndTime = "End Time";
+        const string k_KeyTotalTime = "Total Time";
+        const string k_KeyTotalSize = "Total Size";
+
+        static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
             (
             600000,
+            "Build Meta Data"
+            );
+
+        static readonly ProblemDescriptor k_InfoDescriptor = new ProblemDescriptor
+            (
+            600001,
             "Build step info"
             )
         {
@@ -80,7 +95,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly ProblemDescriptor k_WarnDescriptor = new ProblemDescriptor
             (
-            600001,
+            600002,
             "Build step warning"
             )
         {
@@ -89,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly ProblemDescriptor k_ErrorDescriptor = new ProblemDescriptor
             (
-            600002,
+            600003,
             "Build step error"
             )
         {
@@ -98,91 +113,91 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static readonly ProblemDescriptor k_AnimationDescriptor = new ProblemDescriptor
             (
-            600003,
+            600004,
             "Animation",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_AssetDescriptor = new ProblemDescriptor
             (
-            600004,
+            600005,
             "Asset",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_AudioDescriptor = new ProblemDescriptor
             (
-            600005,
+            600006,
             "Audio",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_ByteDataDescriptor = new ProblemDescriptor
             (
-            600006,
+            600007,
             "Byte data",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_FontDescriptor = new ProblemDescriptor
             (
-            600007,
+            600008,
             "Font",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_MaterialDescriptor = new ProblemDescriptor
             (
-            600008,
+            600009,
             "Material",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_ModelDescriptor = new ProblemDescriptor
             (
-            600009,
+            600010,
             "Model",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_MonoBehaviourDescriptor = new ProblemDescriptor
             (
-            600010,
+            600011,
             "MonoBehaviour",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_PrefabDescriptor = new ProblemDescriptor
             (
-            600011,
+            600012,
             "Prefab",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_ShaderDescriptor = new ProblemDescriptor
             (
-            600012,
+            600013,
             "Shader",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_TextDescriptor = new ProblemDescriptor
             (
-            600013,
+            600014,
             "Text",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_TextureDescriptor = new ProblemDescriptor
             (
-            600014,
+            600015,
             "Texture",
             Area.BuildSize
             );
 
         static readonly ProblemDescriptor k_OtherTypeDescriptor = new ProblemDescriptor
             (
-            600015,
+            600016,
             "Other Type",
             Area.BuildSize
             );
@@ -242,6 +257,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             set { s_BuildReportProvider = value;  }
         }
 
+        public static IBuildReportProvider DefaultBuildReportProvider
+        {
+            get { return s_BuildReportProvider; }
+        }
+
         public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             yield return k_InfoDescriptor;
@@ -283,6 +303,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var buildReport = BuildReportProvider.GetBuildReport();
             if (buildReport != null)
             {
+                NewMetaData(k_KeyBuildName, Path.GetFileNameWithoutExtension(buildReport.summary.outputPath), onIssueFound);
+                NewMetaData(k_KeyPlatform, buildReport.summary.platform, onIssueFound);
+                NewMetaData(k_KeyResult, buildReport.summary.result, onIssueFound);
+                NewMetaData(k_KeyStartTime, buildReport.summary.buildStartedAt, onIssueFound);
+                NewMetaData(k_KeyEndTime, buildReport.summary.buildEndedAt, onIssueFound);
+                NewMetaData(k_KeyTotalTime, Formatting.FormatTime(buildReport.summary.totalTime), onIssueFound);
+                NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize), onIssueFound);
+
                 AnalyzeBuildSteps(onIssueFound, buildReport);
                 AnalyzePackedAssets(onIssueFound, buildReport);
             }
@@ -402,6 +430,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     onIssueFound(issue);
                 }
             }
+        }
+
+        void NewMetaData(string key, object value, Action<ProjectIssue> onIssueFound)
+        {
+            onIssueFound(new ProjectIssue(k_Descriptor, key, IssueCategory.BuildSummary, new object[(int)BuildReportMetaData.Num] {value}));
         }
 
 #endif
