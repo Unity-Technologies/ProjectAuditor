@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added UI Button to open doc page based on active view
 * Added BuildReport Viewer UI
 * Added Runtime Type property to BuildReport size items
+* Fixed Mono.Cecil package dependency
 
 ## [0.6.4-preview] - 2021-07-26
 * Added *ProjectReport.ExportToCSV* to *public* API
