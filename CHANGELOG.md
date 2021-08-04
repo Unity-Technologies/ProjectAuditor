@@ -4,6 +4,9 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.6.5-preview] - 2021-08-04
+* Fixed Mono.Cecil package dependency
+
 ## [0.6.4-preview] - 2021-07-26
 * Added *ProjectReport.ExportToCSV* to *public* API
 * Fixed "No graphic device is available" error in batchmode
