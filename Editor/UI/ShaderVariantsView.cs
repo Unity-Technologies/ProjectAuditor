@@ -74,11 +74,6 @@ The number of Variants contributes to the build size, however, there might be Va
             }
         }
 
-        public override void Create(ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
-        {
-            base.Create(desc, layout, config, prefs, this);
-        }
-
         public override void DrawFilters()
         {
             GUI.enabled = numIssues > 0;
