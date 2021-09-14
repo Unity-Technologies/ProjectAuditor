@@ -13,6 +13,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.build-report-inspector",
+            "expression": "",
+            "define": "BUILD_REPORT_INSPECTOR_INSTALLED"
+        }
+    ],
     "noEngineReferences": false
 }

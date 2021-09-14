@@ -1,3 +1,5 @@
+#if !BUILD_REPORT_INSPECTOR_INSTALLED
+
 using System;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Auditors;
@@ -93,3 +95,5 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
     }
 }
+
+#endif
