@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added BuildReport Viewer UI
 * Added Runtime Type property to BuildReport size items
 
+## [0.6.6-preview] - 2021-10-14
+* Fixed *ProjectReport.ExportToCSV* filtering
+
 ## [0.6.5-preview] - 2021-08-04
 * Fixed Mono.Cecil package dependency
 
