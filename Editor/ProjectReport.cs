@@ -71,9 +71,9 @@ namespace Unity.ProjectAuditor.Editor
             s_Mutex.ReleaseMutex();
         }
 
-        public void ExportToCSV(string path, IssueLayout layout, Func<ProjectIssue, bool> match = null)
+        public void ExportToCSV(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
-            var issues = m_Issues.Where(i => i.category == layout.category && (match == null || match(i))).ToArray();
+            var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new Exporter(path, layout))
             {
                 exporter.WriteHeader();

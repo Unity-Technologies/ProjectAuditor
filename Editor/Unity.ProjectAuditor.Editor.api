@@ -174,7 +174,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         public int NumTotalIssues { get; }
         public ProjectReport() {}
-        public void ExportToCSV(string path, Unity.ProjectAuditor.Editor.IssueLayout layout, System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool> match = default(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool>));
+        public void ExportToCSV(string path, Unity.ProjectAuditor.Editor.IssueLayout layout, System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool> predicate = default(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool>));
         public Unity.ProjectAuditor.Editor.ProjectIssue[] GetAllIssues();
         public Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
         public int GetNumIssues(Unity.ProjectAuditor.Editor.IssueCategory category);

@@ -409,7 +409,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_Table.SetExpanded(row.id, expanded);
         }
 
-        void Export(Func<ProjectIssue, bool> match = null)
+        void Export(Func<ProjectIssue, bool> predicate = null)
         {
             var path = EditorUtility.SaveFilePanel("Save to CSV file", s_ExportDirectory, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
                 "csv");
@@ -420,7 +420,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     exporter.WriteHeader();
 
                     var matchingIssues = m_Issues.Where(issue => m_Config.GetAction(issue.descriptor, issue.GetCallingMethod()) !=
-                        Rule.Severity.None && (match == null || match(issue)));
+                        Rule.Severity.None && (predicate == null || predicate(issue)));
                     exporter.WriteIssues(matchingIssues.ToArray());
                 }
 

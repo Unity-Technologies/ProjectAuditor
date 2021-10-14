@@ -70,7 +70,7 @@ class MyClass : MonoBehaviour
             Assert.AreEqual(0, projectReport.GetNumIssues(IssueCategory.ProjectSetting));
         }
 
-        ProjectIssue[] AnalyzeAndExport(IssueCategory category, string path, Func<ProjectIssue, bool> match = null)
+        ProjectIssue[] AnalyzeAndExport(IssueCategory category, string path, Func<ProjectIssue, bool> predicate = null)
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             config.AnalyzeEditorCode = false;
@@ -79,7 +79,7 @@ class MyClass : MonoBehaviour
             var projectReport = projectAuditor.Audit();
             var layout = projectAuditor.GetLayout(category);
 
-            projectReport.ExportToCSV(path, layout, match);
+            projectReport.ExportToCSV(path, layout, predicate);
 
             Assert.True(File.Exists(path));
 
