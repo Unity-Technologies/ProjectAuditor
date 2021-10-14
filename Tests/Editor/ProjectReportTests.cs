@@ -69,7 +69,7 @@ class MyClass : MonoBehaviour
             Assert.AreEqual(0, projectReport.GetNumIssues(IssueCategory.ProjectSettings));
         }
 
-        void AnalyzeAndExport(IssueCategory category, string path)
+        void AnalyzeAndExport(IssueCategory category, string path, Func<ProjectIssue, bool> match = null)
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             config.AnalyzeEditorCode = false;
@@ -78,7 +78,7 @@ class MyClass : MonoBehaviour
             var projectReport = projectAuditor.Audit();
             var layout = projectAuditor.GetLayout(category);
 
-            projectReport.ExportToCSV(path, layout);
+            projectReport.ExportToCSV(path, layout, match);
 
             Assert.True(File.Exists(path));
         }
@@ -96,6 +96,33 @@ class MyClass : MonoBehaviour
                 Assert.True(line.Equals("Issue,Critical,Area,Filename,Assembly"));
 
                 var expectedIssueLine = "\"UnityEngine.Camera.allCameras\",\"True\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\"";
+                while (file.Peek() >= 0)
+                {
+                    line = file.ReadLine();
+                    if (line.Equals(expectedIssueLine))
+                        issueFound = true;
+                }
+            }
+
+            Assert.True(issueFound);
+        }
+
+        [Test]
+        public void CodesIssuesAreFilteredAndExported()
+        {
+            var category = IssueCategory.Code;
+            var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
+            AnalyzeAndExport(category, path, issue =>
+            {
+                return issue.description.StartsWith("Conversion");
+            });
+            var issueFound = false;
+            using (var file = new StreamReader(path))
+            {
+                var line = file.ReadLine();
+                Assert.True(line.Equals("Issue,Critical,Area,Filename,Assembly"));
+
+                var expectedIssueLine = "\"Conversion from value type 'Int32' to ref type\",\"True\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\"";
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();

@@ -65,10 +65,11 @@ namespace Unity.ProjectAuditor.Editor
 
         public void ExportToCSV(string path, IssueLayout layout, Func<ProjectIssue, bool> match = null)
         {
+            var issues = m_Issues.Where(i => i.category == layout.category && match(i)).ToArray();
             using (var exporter = new Exporter(path, layout))
             {
                 exporter.WriteHeader();
-                exporter.WriteIssues(m_Issues.Where(i => i.category == layout.category).ToArray());
+                exporter.WriteIssues(issues);
             }
         }
 
