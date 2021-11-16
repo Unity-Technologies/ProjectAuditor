@@ -26,6 +26,13 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             {
                 var typeDefinition = typeReference.Resolve();
 
+                if (typeDefinition == null)
+                {
+                    // temporary fix to handle case where the assembly is found but not the type
+                    Debug.LogWarning(typeReference.FullName + " could not be resolved.");
+                    return false;
+                }
+
                 if (typeDefinition.FullName.GetHashCode() == k_MonoBehaviourHashCode &&
                     typeDefinition.Module.Name.GetHashCode() == k_CoreModuleHashCode)
                     return true;
