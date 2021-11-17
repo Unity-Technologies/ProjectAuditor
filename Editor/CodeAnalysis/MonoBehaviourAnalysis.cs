@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         static readonly int k_ILPostProcessorHashCode = "Unity.CompilationPipeline.Common.ILPostProcessing.ILPostProcessor".GetHashCode();
 
         static readonly string[] k_EventNames =
-        {"Awake", "Start", "OnEnable", "OnDisable", "Update", "LateUpdate", "OnEnable", "FixedUpdate"};
+        {"Awake", "Start", "OnEnable", "OnDisable", "Update", "LateUpdate", "FixedUpdate"};
 
         static readonly string[] k_UpdateMethodNames = {"Update", "LateUpdate", "FixedUpdate"};
 
