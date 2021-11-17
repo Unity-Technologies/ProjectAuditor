@@ -9,6 +9,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         TempAsset m_TempAssetIssueInClassInheritedFromMonoBehaviour;
         TempAsset m_TempAssetIssueInClassMethodCalledFromMonoBehaviourUpdate;
         TempAsset m_TempAssetIssueInMonoBehaviourUpdate;
+        TempAsset m_TempAssetIssueInMonoBehaviourOnAnimatorMove;
         TempAsset m_TempAssetIssueInSimpleClass;
         TempAsset m_TempAssetShaderWarmupIssueIsCritical;
 
@@ -31,6 +32,17 @@ using UnityEngine;
 class IssueInMonoBehaviourUpdate : MonoBehaviour
 {
     void Update()
+    {
+        Debug.Log(Camera.allCameras.Length);
+    }
+}
+");
+
+            m_TempAssetIssueInMonoBehaviourOnAnimatorMove = new TempAsset("IssueInMonoBehaviourOnAnimatorMove.cs", @"
+using UnityEngine;
+class IssueInMonoBehaviourOnAnimatorMove : MonoBehaviour
+{
+    void OnAnimatorMove()
     {
         Debug.Log(Camera.allCameras.Length);
     }
@@ -102,9 +114,17 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void IssueInMonoBehaviourUpdate()
+        public void IssueInMonoBehaviourUpdateIsCritical()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourUpdate);
+            var issue = issues.First();
+            Assert.True(issue.isPerfCriticalContext);
+        }
+
+        [Test]
+        public void IssueInMonoBehaviourOnAnimatorMoveIsCritical()
+        {
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnAnimatorMove);
             var issue = issues.First();
             Assert.True(issue.isPerfCriticalContext);
         }
