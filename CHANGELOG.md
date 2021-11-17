@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added UI Button to open doc page based on active view
 * Added BuildReport Viewer UI
 * Added Runtime Type property to BuildReport size items
+* Added OnAnimatorIK and OnAnimatorMove to MonoBehaviour hot-paths
+* Fixed *NullReferenceException* on projects with multiple dll with same name
 
 ## [0.6.6-preview] - 2021-10-14
 * Fixed *ProjectReport.ExportToCSV* filtering
@@ -78,8 +80,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added Shader errors/warnings reporting via Shader 'severity' icon
 * Added [Shader Requirements](https://docs.unity3d.com/ScriptReference/Rendering.ShaderRequirements.html) column to Shader tab
 * Fixed exception when switching focus from Area/Assembly window
-* Fixed null ref exception on invalid shader or vfx shader
-* Fixed null ref exception when building AssetBundles
+* Fixed *NullReferenceException* on invalid shader or vfx shader
+* Fixed *NullReferenceException* when building AssetBundles
 * Fixed shader variants reporting due to *OnPreprocessBuild* callback default order
 
 ## [0.4.1-preview] - 2020-12-14
