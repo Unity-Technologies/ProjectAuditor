@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added Runtime Type property to BuildReport size items
 * Added OnAnimatorIK and OnAnimatorMove to MonoBehaviour hot-paths
 * Fixed *NullReferenceException* on projects with multiple dll with same name
+* Fixed Variant *ShaderRequirements* information
 
 ## [0.6.6-preview] - 2021-10-14
 * Fixed *ProjectReport.ExportToCSV* filtering

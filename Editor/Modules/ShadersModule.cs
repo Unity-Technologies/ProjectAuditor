@@ -278,13 +278,23 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var compilerData = shaderVariantData.compilerData;
                 var keywords = GetShaderKeywords(shader, compilerData.shaderKeywordSet.GetShaderKeywords());
                 var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariant, new Location(assetPath));
+
+                var shaderRequirements = compilerData.shaderRequirements;
+                var shaderRequirementsList = new List<ShaderRequirements>();
+                foreach (ShaderRequirements value in Enum.GetValues(shaderRequirements.GetType()))
+                    if (shaderRequirements.HasFlag(value))
+                        shaderRequirementsList.Add(value);
+
+                if (shaderRequirementsList.Count > 1)
+                    shaderRequirementsList.Remove(ShaderRequirements.None);
+
                 issue.SetCustomProperties(new object[(int)ShaderVariantProperty.Num]
                 {
                     k_NoRuntimeData,
                     compilerData.shaderCompilerPlatform,
                     shaderVariantData.passName,
                     KeywordsToString(keywords),
-                    compilerData.shaderRequirements
+                    string.Join(" ", shaderRequirementsList)
                 });
 
                 onIssueFound(issue);

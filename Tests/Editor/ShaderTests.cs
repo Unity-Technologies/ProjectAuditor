@@ -358,6 +358,7 @@ Shader ""Custom/MyEditorShader""
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("KEYWORD_A")));
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("KEYWORD_B")));
                 Assert.True(variantsForPlatform.All(v => v.GetCustomProperty(ShaderVariantProperty.Compiled).Equals(ShadersModule.k_NoRuntimeData)));
+                Assert.True(variantsForPlatform.All(v => v.GetCustomProperty(ShaderVariantProperty.Requirements).Contains(ShaderRequirements.BaseShaders.ToString())));
 
                 // check descriptor
                 Assert.True(variantsForPlatform.Select(v => v.descriptor.GetAreas()).All(areas => areas.Length == 1 && areas.Contains(Area.Info)));
