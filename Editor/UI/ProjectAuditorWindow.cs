@@ -1113,9 +1113,11 @@ A view allows the user to browse through the listed items and filter by string o
             if (Application.isBatchMode)
                 return;
 
+#if UNITY_2019_3_OR_NEWER
             // do nothing if ProjectAuditorWindow is not already opened
             if (!HasOpenInstances<ProjectAuditorWindow>())
                 return;
+#endif
 
             if (Instance != null)
                 Instance.OnPostprocessBuild(target);

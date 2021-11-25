@@ -282,7 +282,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var shaderRequirements = compilerData.shaderRequirements;
                 var shaderRequirementsList = new List<ShaderRequirements>();
                 foreach (ShaderRequirements value in Enum.GetValues(shaderRequirements.GetType()))
-                    if (shaderRequirements.HasFlag(value))
+                    if ((shaderRequirements & value) != 0)
                         shaderRequirementsList.Add(value);
 
                 if (shaderRequirementsList.Count > 1)
@@ -294,7 +294,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     compilerData.shaderCompilerPlatform,
                     shaderVariantData.passName,
                     KeywordsToString(keywords),
-                    string.Join(" ", shaderRequirementsList)
+                    string.Join(" ", shaderRequirementsList.Select(r => r.ToString()).ToArray())
                 });
 
                 onIssueFound(issue);
