@@ -36,8 +36,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     {
         Compiled = 0,
         Platform,
+        Stage,
         PassName,
         Keywords,
+        PlatformKeywords,
         Requirements,
         Num
     }
@@ -52,6 +54,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     class ShaderVariantData
     {
         public string passName;
+        public ShaderType shaderType;
 #if UNITY_2018_2_OR_NEWER
         public ShaderCompilerData compilerData;
 #endif
@@ -94,8 +97,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Compiled), format = PropertyFormat.Bool, name = "Compiled", longName = "Compiled at runtime by the player" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Platform), format = PropertyFormat.String, name = "Graphics API" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Stage), format = PropertyFormat.String, name = "Stage" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PassName), format = PropertyFormat.String, name = "Pass Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Keywords), format = PropertyFormat.String, name = "Keywords" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PlatformKeywords), format = PropertyFormat.String, name = "Platform Keywords" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Requirements), format = PropertyFormat.String, name = "Requirements" }
             }
         };
@@ -320,8 +325,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 {
                     k_NoRuntimeData,
                     compilerData.shaderCompilerPlatform,
+                    shaderVariantData.shaderType,
                     shaderVariantData.passName,
                     KeywordsToString(keywords),
+                    PlatformKeywordsToString(compilerData.platformKeywordSet),
                     string.Join(" ", shaderRequirementsList.Select(r => r.ToString()).ToArray())
                 });
 
@@ -504,5 +511,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 keywordString = k_NoKeywords;
             return keywordString;
         }
+
+        static string PlatformKeywordsToString(PlatformKeywordSet platformKeywordSet)
+        {
+            var builtinShaderDefines = new List<BuiltinShaderDefine>();
+
+            foreach (BuiltinShaderDefine value in Enum.GetValues(typeof(BuiltinShaderDefine)))
+                if (platformKeywordSet.IsEnabled(value))
+                    builtinShaderDefines.Add(value);
+
+            return string.Join(" ", builtinShaderDefines.Select(d => d.ToString()).ToArray());
+        }
+
     }
 }
