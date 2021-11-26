@@ -1,3 +1,7 @@
+#if UNITY_2018_2_OR_NEWER && !UNITY_2021_1_OR_NEWER
+    #define VARIANTS_ANALYSIS_SUPPORT
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +12,6 @@ using UnityEditor.Build;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
-using Object = System.Object;
 
 namespace Unity.ProjectAuditor.Editor.Auditors
 {
@@ -55,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     {
         public string passName;
         public ShaderType shaderType;
-#if UNITY_2018_2_OR_NEWER
+#if VARIANTS_ANALYSIS_SUPPORT
         public ShaderCompilerData compilerData;
 #endif
     }
@@ -68,7 +71,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     }
 
     class ShadersModule : ProjectAuditorModule
-#if UNITY_2018_2_OR_NEWER
+#if VARIANTS_ANALYSIS_SUPPORT
         , IPreprocessShaders
 #endif
     {
@@ -131,7 +134,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_ShaderLayout;
+#if VARIANTS_ANALYSIS_SUPPORT
             yield return k_ShaderVariantLayout;
+#endif
         }
 
         public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
@@ -187,7 +192,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 }
             }
 
-#if UNITY_2018_2_OR_NEWER
+#if VARIANTS_ANALYSIS_SUPPORT
             // find hidden shaders
             var shadersInBuild = s_ShaderVariantData.Select(variant => variant.Key);
             foreach (var shader in shadersInBuild)
@@ -223,7 +228,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             // set initial state (-1: info not available)
             var variantCount = s_ShaderVariantData.Count > 0 ? 0 : -1;
 
-#if UNITY_2018_2_OR_NEWER
+#if VARIANTS_ANALYSIS_SUPPORT
             // add variants first
             if (s_ShaderVariantData.ContainsKey(shader))
             {
@@ -296,7 +301,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             return s_ShaderVariantData.Any();
         }
 
-#if UNITY_2018_2_OR_NEWER
+#if VARIANTS_ANALYSIS_SUPPORT
         void AddVariants(Shader shader, string assetPath, int id, List<ShaderVariantData> shaderVariants, Action<ProjectIssue> onIssueFound)
         {
             var shaderName = shader.name;
@@ -482,7 +487,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             return cv.keywords.OrderBy(e => e).SequenceEqual(secondSet.OrderBy(e => e));
         }
 
-#if UNITY_2018_2_OR_NEWER
+#if VARIANTS_ANALYSIS_SUPPORT
         static string[] GetShaderKeywords(Shader shader, ShaderKeyword[] shaderKeywords)
         {
 #if UNITY_2021_2_OR_NEWER
