@@ -20,6 +20,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         RenderQueue,
         Instancing,
         SrpBatcher,
+        AlwaysIncluded,
         Num
     }
 
@@ -80,7 +81,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumKeywords), format = PropertyFormat.Integer, name = "Keywords", longName = "Number of Keywords" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.RenderQueue), format = PropertyFormat.Integer, name = "Render Queue" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.Instancing), format = PropertyFormat.Bool, name = "Instancing", longName = "GPU Instancing Support" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.SrpBatcher), format = PropertyFormat.Bool, name = "SRP Batcher", longName = "SRP Batcher Compatible" }
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.SrpBatcher), format = PropertyFormat.Bool, name = "SRP Batcher", longName = "SRP Batcher Compatible" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.AlwaysIncluded), format = PropertyFormat.Bool, name = "Always Included", longName = "Always Included in Build" }
             }
         };
 
@@ -155,7 +157,31 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 shaderPathMap.Add(shader, assetPath);
             }
 
-            var id = k_ShaderVariantFirstId;
+            var alwaysIncludedShaders = new HashSet<Shader>();
+            var graphicsSettings = Unsupported.GetSerializedAssetInterfaceSingleton("GraphicsSettings");
+            var graphicsSettingsSerializedObject = new SerializedObject(graphicsSettings);
+            var alwaysIncludedShadersSerializedProperty = graphicsSettingsSerializedObject.FindProperty("m_AlwaysIncludedShaders");
+
+            for (int i = 0; i < alwaysIncludedShadersSerializedProperty.arraySize; i++)
+            {
+                var shader = (Shader)alwaysIncludedShadersSerializedProperty.GetArrayElementAtIndex(i).objectReferenceValue;
+
+                // sanity check, maybe the shader was removed/deleted
+                if (shader == null)
+                    continue;
+
+                if (!alwaysIncludedShaders.Contains(shader))
+                {
+                    alwaysIncludedShaders.Add(shader);
+                }
+                if (!shaderPathMap.ContainsKey(shader))
+                {
+                    var assetPath = AssetDatabase.GetAssetPath(shader);
+
+                    shaderPathMap.Add(shader, assetPath);
+                }
+            }
+
 #if UNITY_2018_2_OR_NEWER
             // find hidden shaders
             var shadersInBuild = s_ShaderVariantData.Select(variant => variant.Key);
@@ -174,19 +200,20 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
 #endif
 
+            var id = k_ShaderVariantFirstId;
             var sortedShaders = shaderPathMap.Keys.ToList().OrderBy(shader => shader.name);
             foreach (var shader in sortedShaders)
             {
                 var assetPath = shaderPathMap[shader];
 
-                AddShader(shader, assetPath, id++, onIssueFound);
+                AddShader(shader, assetPath, id++, alwaysIncludedShaders.Contains(shader), onIssueFound);
             }
 
             if (onComplete != null)
                 onComplete();
         }
 
-        void AddShader(Shader shader, string assetPath, int id, Action<ProjectIssue> onIssueFound)
+        void AddShader(Shader shader, string assetPath, int id, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)
         {
             // set initial state (-1: info not available)
             var variantCount = s_ShaderVariantData.Count > 0 ? 0 : -1;
@@ -253,7 +280,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 (globalKeywords == null || localKeywords == null) ? k_NotAvailable : (globalKeywords.Length + localKeywords.Length).ToString(),
                 shader.renderQueue,
                 hasInstancing,
-                isSrpBatcherCompatible
+                isSrpBatcherCompatible,
+                isAlwaysIncluded
             });
             onIssueFound(issue);
         }
