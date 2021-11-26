@@ -478,12 +478,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #if UNITY_2018_2_OR_NEWER
         static string[] GetShaderKeywords(Shader shader, ShaderKeyword[] shaderKeywords)
         {
-#if UNITY_2019_3_OR_NEWER
-            var keywords = shaderKeywords.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ? ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword)).ToArray();
+#if UNITY_2021_2_OR_NEWER
+            var keywords = shaderKeywords.Select(keyword => keyword.name);
+#elif UNITY_2019_3_OR_NEWER
+            var keywords = shaderKeywords.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ? ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword));
 #else
-            var keywords = shaderKeywords.Select(keyword => keyword.GetKeywordName()).ToArray();
+            var keywords = shaderKeywords.Select(keyword => keyword.GetKeywordName());
 #endif
-            return keywords;
+            return keywords.ToArray();
         }
 
 #endif
