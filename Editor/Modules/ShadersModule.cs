@@ -330,7 +330,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 {
                     k_NoRuntimeData,
                     compilerData.shaderCompilerPlatform,
-                    shaderVariantData.shaderType,
+                    shaderVariantData.shaderType.ToString(),
                     shaderVariantData.passName,
                     KeywordsToString(keywords),
                     PlatformKeywordsToString(compilerData.platformKeywordSet),
@@ -349,9 +349,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public int callbackOrder { get { return Int32.MaxValue; } }
         public void OnProcessShader(Shader shader, ShaderSnippetData snippet, IList<ShaderCompilerData> data)
         {
-            if (snippet.shaderType != ShaderType.Fragment)
-                return;
-
             if (!s_ShaderVariantData.ContainsKey(shader))
             {
                 s_ShaderVariantData.Add(shader, new List<ShaderVariantData>());
@@ -361,7 +358,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 s_ShaderVariantData[shader].Add(new ShaderVariantData
                 {
-                    passName =  snippet.passName,
+                    passName = string.Format("{0}: {1}", snippet.passType, snippet.passName),
+                    shaderType = snippet.shaderType,
                     compilerData = shaderCompilerData
                 });
             }
@@ -527,6 +525,5 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             return string.Join(" ", builtinShaderDefines.Select(d => d.ToString()).ToArray());
         }
-
     }
 }
