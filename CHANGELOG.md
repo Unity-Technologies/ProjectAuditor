@@ -6,13 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.7.0-preview] - 2021-11-29
 * Added Documentation pages
-* Added UI Button to open doc page based on active view
+* Added UI Button to open documentation page based on active view
 * Added BuildReport Viewer UI
 * Added Runtime Type property to BuildReport size items
-* Added OnAnimatorIK and OnAnimatorMove to MonoBehaviour hot-paths
+* Added *OnAnimatorIK* and *OnAnimatorMove* to *MonoBehaviour* hot-paths
 * Fixed *NullReferenceException* on projects with multiple dll with same name
-* Fixed Variant *ShaderRequirements* information
-* Fixed window opening after build
+* Fixed Variants view *ShaderRequirements* information
+* Fixed window opening after each build
 
 ## [0.6.6-preview] - 2021-10-14
 * Fixed *ProjectReport.ExportToCSV* filtering
