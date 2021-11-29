@@ -66,6 +66,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
     class BuildReportModule : ProjectAuditorModule
     {
+#if BUILD_REPORT_API_SUPPORT
         const string k_KeyBuildName = "Name";
         const string k_KeyPlatform = "Platform";
         const string k_KeyResult = "Result";
@@ -80,6 +81,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             600000,
             "Build Meta Data"
             );
+#endif
 
         static readonly ProblemDescriptor k_InfoDescriptor = new ProblemDescriptor
             (
