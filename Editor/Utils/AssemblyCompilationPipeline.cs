@@ -300,6 +300,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
                 // add asmdef-specific defines
                 var additionalDefines = new List<string>(assembly.defines.Except(assemblyBuilder.defaultDefines));
+
+                // temp fix for UWP compilation error (failing to find references to Windows SDK assemblies)
+                additionalDefines.Remove("ENABLE_WINMD_SUPPORT");
+                additionalDefines.Remove("WINDOWS_UWP");
+
                 additionalDefines.Add("ENABLE_UNITY_COLLECTIONS_CHECKS");
                 assemblyBuilder.additionalDefines = additionalDefines.ToArray();
 
