@@ -164,8 +164,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     var sourcePath = assemblyInfo.sourcePaths.FirstOrDefault(sourcePath => path.Contains(sourcePath));
                     if (sourcePath != null)
                         return Path.Combine(assemblyInfo.relativePath, sourcePath);
-                    else
-                        return path; // Could not resolve path
+
+                    Debug.LogWarningFormat("Could not find asmdef for {0} when analyzing {1}", path, assemblyInfo.name);
+                    return path; // Could not resolve path
                 }
                 return Path.Combine(assemblyInfo.relativePath, path.Substring(path.IndexOf(asmDefFolder)));
             }
