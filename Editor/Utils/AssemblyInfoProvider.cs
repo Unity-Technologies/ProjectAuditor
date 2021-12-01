@@ -161,7 +161,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 if (path.IndexOf(asmDefFolder) < 0)
                 {
                     // handle source files that are not located with asmdef
-                    return Path.Combine(assemblyInfo.relativePath, assemblyInfo.sourcePaths.First(sourcePath => path.Contains(sourcePath)));
+                    var sourcePath = assemblyInfo.sourcePaths.FirstOrDefault(sourcePath => path.Contains(sourcePath));
+                    if (sourcePath != null)
+                        return Path.Combine(assemblyInfo.relativePath, sourcePath);
+                    else
+                        return path; // Could not resolve path
                 }
                 return Path.Combine(assemblyInfo.relativePath, path.Substring(path.IndexOf(asmDefFolder)));
             }
