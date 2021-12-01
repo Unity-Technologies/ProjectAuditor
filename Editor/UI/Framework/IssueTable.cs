@@ -30,7 +30,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool flatView
         {
             get { return m_FlatView; }
-            set { m_FlatView = value; }
+            set
+            {
+                if (m_Desc.groupByDescriptor)
+                    m_FlatView = value;
+            }
         }
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
@@ -134,7 +138,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
 
             Profiler.BeginSample("IssueTable.BuildRows");
-            if (m_Desc.groupByDescriptor && !hasSearch && !m_FlatView)
+            if (!hasSearch && !m_FlatView)
             {
                 var descriptors = filteredItems.Select(i => i.ProblemDescriptor).Distinct();
                 foreach (var descriptor in descriptors)
@@ -206,7 +210,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var columnType = property.type;
 
             // indent first column, if necessary
-            if (m_Desc.groupByDescriptor && columnIndex == 0 && !m_FlatView)
+            if (columnIndex == 0 && !hasSearch && !m_FlatView)
             {
                 var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
