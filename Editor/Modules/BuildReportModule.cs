@@ -359,41 +359,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             foreach (var packedAsset in buildReport.packedAssets)
             {
                 // note that there can be several entries for each source asset (for example, a prefab can reference a Texture, a Material and a shader)
-                var dict = new Dictionary<GUID, List<PackedAssetInfo>>();
                 foreach (var content in packedAsset.contents)
                 {
                     var assetPath = content.sourceAssetPath;
+
                     if (!Path.HasExtension(assetPath))
                         continue;
-
-                    if (Path.GetExtension(assetPath).Equals(".cs"))
-                        continue;
-
-                    if (!dict.ContainsKey(content.sourceAssetGUID))
-                    {
-                        dict.Add(content.sourceAssetGUID, new List<PackedAssetInfo>());
-                    }
-
-                    dict[content.sourceAssetGUID].Add(content);
-                }
-
-                foreach (var entry in dict)
-                {
-                    var content = entry.Value[0]; // sourceAssets are the same for all entries
-                    var assetPath = content.sourceAssetPath;
-
-                    ulong sum = 0;
-                    foreach (var v in entry.Value)
-                    {
-                        sum += v.packedSize;
-                    }
-
-                    var assetName = Path.GetFileNameWithoutExtension(assetPath);
-                    string description;
-                    if (entry.Value.Count > 1)
-                        description = string.Format("{0} ({1})", assetName, entry.Value.Count);
-                    else
-                        description = assetName;
 
                     ProblemDescriptor descriptor = null;
 
@@ -419,11 +390,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                             descriptor = k_OtherTypeDescriptor;
                         }
                     }
+
+                    var description = Path.GetFileNameWithoutExtension(assetPath);
                     var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
                     issue.SetCustomProperties(new object[(int)BuildReportFileProperty.Num]
                     {
                         content.type,
-                        sum,
+                        content.packedSize,
                         packedAsset.shortPath
                     });
                     onIssueFound(issue);
