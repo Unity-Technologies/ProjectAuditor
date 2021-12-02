@@ -355,6 +355,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             foreach (var message in compilerMessages)
             {
+                if (message.code == null)
+                {
+                    Debug.LogWarningFormat("Missing information in compiler message for {0} assembly", assemblyName);
+                    continue;
+                }
+
                 var descriptor = (ProblemDescriptor)null;
 
                 if (m_RuntimeDescriptors.ContainsKey(message.code))
