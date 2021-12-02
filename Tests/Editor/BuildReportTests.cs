@@ -66,19 +66,15 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             Assert.That(step.depth, Is.EqualTo(0));
 
             step = issues.FirstOrDefault(i => i.description.Equals("Compile scripts"));
-            Assert.NotNull(step);
+            Assert.NotNull(step, "\"Compile scripts\" string not found");
+#if UNITY_2022_1_OR_NEWER
+            Assert.That(step.depth, Is.EqualTo(3));
+#else
             Assert.That(step.depth, Is.EqualTo(1));
-
-            step = issues.FirstOrDefault(i => i.description.Equals("Writing asset files"));
-            Assert.NotNull(step);
-            Assert.That(step.depth, Is.EqualTo(1));
-
-            step = issues.FirstOrDefault(i => i.description.Equals("Packaging assets - resources.assets"));
-            Assert.NotNull(step);
-            Assert.That(step.depth, Is.EqualTo(2));
+#endif
 
             step = issues.FirstOrDefault(i => i.description.Equals("Postprocess built player"));
-            Assert.NotNull(step);
+            Assert.NotNull(step, "\"Postprocess built player\" string not found");
             Assert.That(step.depth, Is.EqualTo(1));
         }
     }
