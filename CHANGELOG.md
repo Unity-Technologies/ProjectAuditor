@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+* Fixed platform-specific compilation caused by missing assembly references
+* Fixed *ArgumentException* on table Page Up/Down
+* Fixed *InvalidOperationException* due failure to resolve asmdef
+* Fixed *NullReferenceException* due to null compiler message
 * Fixed *ShaderCompilerData* parsing in 2021.2.0a16 or newer
 
 ## [0.7.0-preview] - 2021-11-29

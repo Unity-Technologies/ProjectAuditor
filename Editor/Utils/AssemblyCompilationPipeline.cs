@@ -300,15 +300,21 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
                 // add asmdef-specific defines
                 var additionalDefines = new List<string>(assembly.defines.Except(assemblyBuilder.defaultDefines));
+
                 additionalDefines.Add("ENABLE_UNITY_COLLECTIONS_CHECKS");
                 assemblyBuilder.additionalDefines = additionalDefines.ToArray();
 
-                // add references to assemblies we need to build
-                assemblyBuilder.additionalReferences = assembly.assemblyReferences.Select(r => Path.Combine(m_OutputFolder, Path.GetFileName(r.outputPath))).ToArray();
+                // add references to target assemblies
+                var additionalReferences = assembly.assemblyReferences.Select(r => Path.Combine(m_OutputFolder, Path.GetFileName(r.outputPath))).ToList();
+                // add missing references
+                additionalReferences.AddRange(assembly.allReferences.Except(assemblyBuilder.defaultReferences));
+                assemblyBuilder.additionalReferences = additionalReferences.ToArray();
 
                 // exclude all assemblies that we are building ourselves to a Temp folder
-                assemblyBuilder.excludeReferences =
-                    assemblyBuilder.defaultReferences.Where(r => r.StartsWith("Library")).ToArray();
+                var excludeReferences = assemblyBuilder.defaultReferences.Where(r => r.StartsWith("Library")).ToList();
+                if (!editorAssemblies)
+                    excludeReferences.AddRange(assemblyBuilder.defaultReferences.Where(r => r.EndsWith("UnityEngine.dll")));
+                assemblyBuilder.excludeReferences = excludeReferences.ToArray();
 
 #if UNITY_2019_1_OR_NEWER
                 assemblyBuilder.referencesOptions = ReferencesOptions.UseEngineModules;

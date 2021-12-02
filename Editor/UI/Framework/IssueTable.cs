@@ -30,7 +30,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool flatView
         {
             get { return m_FlatView; }
-            set { m_FlatView = value; }
+            set
+            {
+                if (m_Desc.groupByDescriptor)
+                    m_FlatView = value;
+            }
         }
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
@@ -49,11 +53,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void AddIssues(ProjectIssue[] issues)
         {
+            // update groups, if applicable
             if (m_Desc.groupByDescriptor)
             {
                 var descriptors = issues.Select(i => i.descriptor).Distinct().ToArray();
-                var itemGroups = descriptors.Select(d => new IssueTableItem(m_NextId++, 0, d)).ToArray();
-                m_TreeViewItemGroups.AddRange(itemGroups);
+                foreach (var d in descriptors)
+                {
+                    // if necessary, create a group
+                    if (m_TreeViewItemGroups.All(g => g.ProblemDescriptor.id != d.id))
+                        m_TreeViewItemGroups.Add((new IssueTableItem(m_NextId++, 0, d)));
+                }
             }
 
             var itemsList = new List<IssueTableItem>(issues.Length);
@@ -122,8 +131,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return m_Rows;
             }
 
+            foreach (var group in m_TreeViewItemGroups)
+            {
+                if (group.children != null)
+                    group.children.Clear();
+            }
+
             Profiler.BeginSample("IssueTable.BuildRows");
-            if (m_Desc.groupByDescriptor && !hasSearch && !m_FlatView)
+            if (!hasSearch && !m_FlatView)
             {
                 var descriptors = filteredItems.Select(i => i.ProblemDescriptor).Distinct();
                 foreach (var descriptor in descriptors)
@@ -135,8 +150,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     var children = filteredItems.Where(item => item.ProblemDescriptor.Equals(descriptor));
 
                     group.displayName = string.Format("{0} ({1})", descriptor.description, children.Count());
-                    if (group.children != null)
-                        group.children.Clear();
 
                     foreach (var child in children)
                     {
@@ -150,6 +163,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 foreach (var item in filteredItems)
                 {
+                    if (m_Desc.groupByDescriptor)
+                    {
+                        var group = m_TreeViewItemGroups.Find(g => g.ProblemDescriptor.Equals(item.ProblemDescriptor));
+                        group.AddChild(item);
+                    }
+
                     m_Rows.Add(item);
                 }
             }
@@ -191,7 +210,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var columnType = property.type;
 
             // indent first column, if necessary
-            if (m_Desc.groupByDescriptor && columnIndex == 0 && !m_FlatView)
+            if (columnIndex == 0 && !hasSearch && !m_FlatView)
             {
                 var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
