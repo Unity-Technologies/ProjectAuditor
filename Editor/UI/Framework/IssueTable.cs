@@ -311,7 +311,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                         if (guiContent == null)
                         {
-                            guiContent = new GUIContent(item.GetDisplayName(), descriptor.problem);
+                            guiContent = new GUIContent(item.GetDisplayName(), descriptor.problem != null ? descriptor.problem : item.GetDisplayName());
                         }
                         EditorGUI.LabelField(cellRect, guiContent, labelStyle);
                         break;
