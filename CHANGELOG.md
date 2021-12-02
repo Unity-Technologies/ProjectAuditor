@@ -4,6 +4,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+* Fixed platform-specific compilation caused by missing assembly references
+* Fixed *ArgumentException* on table Page Up/Down
+* Fixed *InvalidOperationException* due failure to resolve asmdef
+* Fixed *NullReferenceException* due to null compiler message
+
 ## [0.7.0-preview] - 2021-11-29
 * Added Documentation pages
 * Added UI Button to open documentation page based on active view
