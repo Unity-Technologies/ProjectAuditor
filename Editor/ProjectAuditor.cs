@@ -145,7 +145,8 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="progress"> Progress bar, if applicable </param>
         public void Audit(Action<ProjectIssue> onIssueFound, Action<bool> onUpdate, IProgress progress = null)
         {
-            var numModules = m_Modules.Count;
+            var supportedModules = m_Modules.Where(m => m.IsSupported()).ToArray();
+            var numModules = supportedModules.Length;
             if (numModules == 0)
             {
                 // early out if, for any reason, there are no registered modules
@@ -154,7 +155,7 @@ namespace Unity.ProjectAuditor.Editor
             }
 
             var stopwatch = Stopwatch.StartNew();
-            foreach (var module in m_Modules)
+            foreach (var module in supportedModules)
             {
                 var startTime = stopwatch.ElapsedMilliseconds;
                 module.Audit(onIssueFound, () =>
