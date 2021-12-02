@@ -47,8 +47,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Desc = desc;
             m_Layout = layout;
             m_FlatView = !desc.groupByDescriptor;
-            m_NextId = k_FirstId;
             multicolumnHeader.sortingChanged += OnSortingChanged;
+
+            Clear();
         }
 
         public void AddIssues(ProjectIssue[] issues)
