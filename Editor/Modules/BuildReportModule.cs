@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     class BuildReportModule : ProjectAuditorModule
     {
 #if BUILD_REPORT_API_SUPPORT
-        const string k_KeyBuildName = "Name";
+        const string k_KeyBuildPath = "Path";
         const string k_KeyPlatform = "Platform";
         const string k_KeyResult = "Result";
 
@@ -302,7 +302,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var buildReport = BuildReportProvider.GetBuildReport();
             if (buildReport != null)
             {
-                NewMetaData(k_KeyBuildName, Path.GetFileNameWithoutExtension(buildReport.summary.outputPath), onIssueFound);
+                NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath, onIssueFound);
                 NewMetaData(k_KeyPlatform, buildReport.summary.platform, onIssueFound);
                 NewMetaData(k_KeyResult, buildReport.summary.result, onIssueFound);
                 NewMetaData(k_KeyStartTime, buildReport.summary.buildStartedAt, onIssueFound);
