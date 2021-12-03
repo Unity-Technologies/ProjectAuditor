@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Fixed *NullReferenceException* on empty table
 * Fixed *ShaderCompilerData* parsing in 2021.2.0a16 or newer
 * Fixed disabling of unsupported modules
+* Fixed unreported output files from the same source asset
 
 ## [0.7.0-preview] - 2021-11-29
 * Added Documentation pages
