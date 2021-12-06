@@ -54,6 +54,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] string m_AssemblySelectionSummary;
         [SerializeField] ProjectReport m_ProjectReport;
         [SerializeField] AnalysisState m_AnalysisState = AnalysisState.Initializing;
+        [SerializeField] bool m_NewBuildAvailable = false;
         [SerializeField] Preferences m_Preferences = new Preferences();
         [SerializeField] ViewManager m_ViewManager;
 
@@ -460,11 +461,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 Repaint();
             if (m_AnalysisState == AnalysisState.InProgress)
                 Repaint();
+            if (m_NewBuildAvailable && LastBuildReportProvider.GetLastBuildReportAsset() != null)
+                m_NewBuildAvailable = false;
         }
 
         void OnPostprocessBuild(BuildTarget target)
         {
-            IncrementalAudit<BuildReportModule>();
+            // Note that we can't run BuildReportModule in OnPostprocessBuild because the Library/LastBuild.buildreport file is only created AFTER OnPostprocessBuild
+            m_NewBuildAvailable = true;
         }
 
         void IncrementalAudit<T>() where T : ProjectAuditorModule

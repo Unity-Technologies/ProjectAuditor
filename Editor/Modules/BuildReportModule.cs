@@ -39,13 +39,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         const string k_BuildReportDir = "Assets/BuildReports";
         const string k_LastBuildReportPath = "Library/LastBuild.buildreport";
 
-        static BuildReport s_BuildReport;
-
         public BuildReport GetBuildReport()
         {
-            if (s_BuildReport != null)
-                return s_BuildReport;
+            return GetLastBuildReportAsset();
+        }
 
+        public static BuildReport GetLastBuildReportAsset()
+        {
             if (!Directory.Exists(k_BuildReportDir))
                 Directory.CreateDirectory(k_BuildReportDir);
 
@@ -59,8 +59,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 File.Copy(k_LastBuildReportPath, assetPath, true);
                 AssetDatabase.ImportAsset(assetPath);
             }
-            s_BuildReport = AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
-            return s_BuildReport;
+
+            return AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
         }
     }
 
