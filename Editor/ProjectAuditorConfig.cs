@@ -35,6 +35,12 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public bool LogTimingsInfo;
 
+        /// <summary>
+        /// If enabled, a BuildReport asset is created after each build
+        /// </summary>
+        public bool SaveBuildReports;
+
+
         readonly List<Rule> m_Rules = new List<Rule>();
 
         public int NumRules
