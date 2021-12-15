@@ -35,6 +35,17 @@ The mute/unmute buttons can be used to silence specific issues, or groups of iss
 
 <img src="images/mute.png">
 
+## Build Reports
+A BuildReport contains information about a specific build, and helps you profile the time spent building your project and the builds disk size footprint. This information may help you improving your build times and build sizes.
+
+After each build the [BuildReport](https://docs.unity3d.com/ScriptReference/Build.Reporting.BuildReport.html) is saved for later inspection. However, this is not normally accessible or exposed to the user. Project Auditor allows you to view BuildReports in two different ways:
+* By analyzing the project, the last BuildReport will be automatically included in the report.
+* By selecting a BuildReport asset, Build Steps and Size information will be shown in the inspector window.
+
+Note that, by default BuildReport assets are not visible to the user. This is to avoid situations in which a new build report is added to the project after every build, which could make version control more complicated or bloat projects over time. In order to automatically create an accessible BuildReport asset for every build, enable the *Save Build Reports* option in the *ProjectAuditorConfig* asset which typically is in *Assets/Editor*. If this option is enabled, build reports will be created in *Assets/BuildReports*.
+
+<img src="images/save-build-reports.png">
+
 ## Running from command line
 Project Auditor is not a standalone application. However, since it is a Unity Editor tool and provides a C# API, its analysis can be executed from command line by launching the editor in batch mode. This requires an editor script that creates a ProjectAuditor instance and runs the analysis, for example:
 
