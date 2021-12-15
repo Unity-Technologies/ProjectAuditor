@@ -44,7 +44,7 @@ After each build the [BuildReport](https://docs.unity3d.com/ScriptReference/Buil
 
 Note that, by default BuildReport assets are not visible to the user. This is to avoid situations in which a new build report is added to the project after every build, which could make version control more complicated or bloat projects over time. In order to automatically create an accessible BuildReport asset for every build, enable the *Save Build Reports* option in the *ProjectAuditorConfig* asset which typically is in *Assets/Editor*. If this option is enabled, build reports will be created in *Assets/BuildReports*.
 
-![save-build-reports](https://user-images.githubusercontent.com/12098182/146169756-67410b3c-5beb-4cfb-94fd-66249b5984a8.PNG)
+<img src="images/save-build-reports.png">
 
 ## Running from command line
 Project Auditor is not a standalone application. However, since it is a Unity Editor tool and provides a C# API, its analysis can be executed from command line by launching the editor in batch mode. This requires an editor script that creates a ProjectAuditor instance and runs the analysis, for example:
