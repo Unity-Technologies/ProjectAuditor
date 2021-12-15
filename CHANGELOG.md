@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-* Added option to disable creation of BuildReport asset after each build
+* Added option to enable creation of BuildReport asset after each build
 * Fixed platform-specific compilation caused by missing assembly references
 * Fixed *ArgumentException* on table Page Up/Down
 * Fixed *InvalidOperationException* due failure to resolve asmdef
