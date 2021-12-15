@@ -42,7 +42,7 @@ After each build the [BuildReport](https://docs.unity3d.com/ScriptReference/Buil
 * By analyzing the project, the last BuildReport will be automatically included in the report.
 * By selecting a BuildReport asset, Build Steps and Size information will be shown in the inspector window.
 
-Note that, by default BuildReport assets are not visible to the user. In order to automatically create a BuildReport asset, it is possible to enable the *SaveBuildReport* option in the *ProjectAuditorConfig* asset which typically is in *Assets/Editor*.
+Note that, by default BuildReport assets are not visible to the user. In order to automatically create a BuildReport asset, it is possible to enable the *Save Build Reports* option in the *ProjectAuditorConfig* asset which typically is in *Assets/Editor*.
 
 ![save-build-reports](https://user-images.githubusercontent.com/12098182/146169756-67410b3c-5beb-4cfb-94fd-66249b5984a8.PNG)
 
