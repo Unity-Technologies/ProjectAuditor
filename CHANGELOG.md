@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 * Added option to enable creation of BuildReport asset after each build
-* Fixed platform-specific compilation caused by missing assembly references
+* Fixed UWP compilation issues
 * Fixed *ArgumentException* on table Page Up/Down
 * Fixed *InvalidOperationException* due failure to resolve asmdef
 * Fixed *NullReferenceException* due to null compiler message
