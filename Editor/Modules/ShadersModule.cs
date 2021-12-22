@@ -9,6 +9,7 @@ using System.Linq;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -17,7 +18,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public enum ShaderProperty
     {
-        NumVariants = 0,
+        Size = 0,
+        NumVariants,
         NumPasses,
         NumKeywords,
         RenderQueue,
@@ -80,6 +82,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
 //                new PropertyDefinition { type = PropertyType.Severity},
                 new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size of the variants in the build" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumVariants), format = PropertyFormat.Integer, name = "Actual Variants", longName = "Number of variants in the build" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumPasses), format = PropertyFormat.Integer, name = "Passes", longName = "Number of Passes" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumKeywords), format = PropertyFormat.Integer, name = "Keywords", longName = "Number of Keywords" },
@@ -210,19 +213,38 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
 
             var id = k_ShaderVariantFirstId;
+
+            var packetAssetInfos = new PackedAssetInfo[0];
+            var buildReport = BuildReportModule.BuildReportProvider.GetBuildReport();
+            if (buildReport != null)
+            {
+                packetAssetInfos = buildReport.packedAssets.SelectMany(packedAsset => packedAsset.contents).ToArray();
+            }
+
             var sortedShaders = shaderPathMap.Keys.ToList().OrderBy(shader => shader.name);
             foreach (var shader in sortedShaders)
             {
                 var assetPath = shaderPathMap[shader];
+                var assetSize = k_NotAvailable;
+                if (packetAssetInfos.Length > 0)
+                {
+                    var builtAssets = packetAssetInfos.Where(p => p.sourceAssetPath.Equals(assetPath)).ToArray();
+                    ulong packedSize = 0;
+                    if (builtAssets.Length > 1)
+                    {
+                        packedSize = builtAssets[0].packedSize;
+                    }
+                    assetSize = packedSize.ToString();
+                }
 
-                AddShader(shader, assetPath, id++, alwaysIncludedShaders.Contains(shader), onIssueFound);
+                AddShader(shader, assetPath, assetSize, id++, alwaysIncludedShaders.Contains(shader), onIssueFound);
             }
 
             if (onComplete != null)
                 onComplete();
         }
 
-        void AddShader(Shader shader, string assetPath, int id, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)
+        void AddShader(Shader shader, string assetPath, string assetSize, int id, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)
         {
             // set initial state (-1: info not available)
             var variantCount = s_ShaderVariantData.Count > 0 ? 0 : -1;
@@ -284,6 +306,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.Shader, new Location(assetPath));
             issue.SetCustomProperties(new object[(int)ShaderProperty.Num]
             {
+                assetSize,
                 variantCount == -1 ? k_NotAvailable : variantCount.ToString(),
                 passCount == -1 ? k_NotAvailable : passCount.ToString(),
                 (globalKeywords == null || localKeywords == null) ? k_NotAvailable : (globalKeywords.Length + localKeywords.Length).ToString(),

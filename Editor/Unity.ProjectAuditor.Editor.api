@@ -311,14 +311,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
     public enum ShaderProperty
     {
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty AlwaysIncluded = 6;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty Instancing = 4;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty Num = 7;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumKeywords = 2;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumPasses = 1;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumVariants = 0;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty RenderQueue = 3;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty SrpBatcher = 5;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty AlwaysIncluded = 7;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty Instancing = 5;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty Num = 8;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumKeywords = 3;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumPasses = 2;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumVariants = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty RenderQueue = 4;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty Size = 0;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty SrpBatcher = 6;
         public int value__;
     }
 
