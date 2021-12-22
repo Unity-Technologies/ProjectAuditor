@@ -309,15 +309,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public int value__;
     }
 
-    public enum ShaderKeywordProperty
-    {
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderKeywordProperty BuildSize = 2;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderKeywordProperty Num = 3;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderKeywordProperty NumShaders = 0;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderKeywordProperty NumVariants = 1;
-        public int value__;
-    }
-
     public enum ShaderProperty
     {
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty AlwaysIncluded = 6;
