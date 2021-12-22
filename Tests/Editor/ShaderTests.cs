@@ -378,8 +378,8 @@ Shader ""Custom/MyEditorShader""
             Assert.Positive(variants.Length, "No shader variants found");
 
             // check custom properties
-            Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("<no keywords>")), "No shader variants found without INSTANCING_ON keyword");
-            Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Requirements).Equals("BaseShaders, Derivatives")), "No shader variants found without Instancing requirement");
+            Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("<no keywords>")), "No shader variants found without keywords");
+            Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Requirements).Equals("BaseShaders Derivatives")), "No shader variants found with BaseShaders and Derivatives requirements");
 #if UNITY_2019_1_OR_NEWER
             //this one fails on yamato
             //Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("INSTANCING_ON")), "No shader variants found with INSTANCING_ON keyword");

@@ -39,13 +39,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         const string k_BuildReportDir = "Assets/BuildReports";
         const string k_LastBuildReportPath = "Library/LastBuild.buildreport";
 
-        static BuildReport s_BuildReport;
-
         public BuildReport GetBuildReport()
         {
-            if (s_BuildReport != null)
-                return s_BuildReport;
+            return GetLastBuildReportAsset();
+        }
 
+        public static BuildReport GetLastBuildReportAsset()
+        {
             if (!Directory.Exists(k_BuildReportDir))
                 Directory.CreateDirectory(k_BuildReportDir);
 
@@ -59,14 +59,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 File.Copy(k_LastBuildReportPath, assetPath, true);
                 AssetDatabase.ImportAsset(assetPath);
             }
-            s_BuildReport = AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
-            return s_BuildReport;
+
+            return AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
         }
     }
 
     class BuildReportModule : ProjectAuditorModule
     {
-        const string k_KeyBuildName = "Name";
+#if BUILD_REPORT_API_SUPPORT
+        const string k_KeyBuildPath = "Path";
         const string k_KeyPlatform = "Platform";
         const string k_KeyResult = "Result";
 
@@ -80,6 +81,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             600000,
             "Build Meta Data"
             );
+#endif
 
         static readonly ProblemDescriptor k_InfoDescriptor = new ProblemDescriptor
             (
@@ -300,7 +302,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var buildReport = BuildReportProvider.GetBuildReport();
             if (buildReport != null)
             {
-                NewMetaData(k_KeyBuildName, Path.GetFileNameWithoutExtension(buildReport.summary.outputPath), onIssueFound);
+                NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath, onIssueFound);
                 NewMetaData(k_KeyPlatform, buildReport.summary.platform, onIssueFound);
                 NewMetaData(k_KeyResult, buildReport.summary.result, onIssueFound);
                 NewMetaData(k_KeyStartTime, buildReport.summary.buildStartedAt, onIssueFound);
@@ -357,41 +359,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             foreach (var packedAsset in buildReport.packedAssets)
             {
                 // note that there can be several entries for each source asset (for example, a prefab can reference a Texture, a Material and a shader)
-                var dict = new Dictionary<GUID, List<PackedAssetInfo>>();
                 foreach (var content in packedAsset.contents)
                 {
                     var assetPath = content.sourceAssetPath;
+
                     if (!Path.HasExtension(assetPath))
                         continue;
-
-                    if (Path.GetExtension(assetPath).Equals(".cs"))
-                        continue;
-
-                    if (!dict.ContainsKey(content.sourceAssetGUID))
-                    {
-                        dict.Add(content.sourceAssetGUID, new List<PackedAssetInfo>());
-                    }
-
-                    dict[content.sourceAssetGUID].Add(content);
-                }
-
-                foreach (var entry in dict)
-                {
-                    var content = entry.Value[0]; // sourceAssets are the same for all entries
-                    var assetPath = content.sourceAssetPath;
-
-                    ulong sum = 0;
-                    foreach (var v in entry.Value)
-                    {
-                        sum += v.packedSize;
-                    }
-
-                    var assetName = Path.GetFileNameWithoutExtension(assetPath);
-                    string description;
-                    if (entry.Value.Count > 1)
-                        description = string.Format("{0} ({1})", assetName, entry.Value.Count);
-                    else
-                        description = assetName;
 
                     ProblemDescriptor descriptor = null;
 
@@ -417,11 +390,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                             descriptor = k_OtherTypeDescriptor;
                         }
                     }
+
+                    var description = Path.GetFileNameWithoutExtension(assetPath);
                     var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
                     issue.SetCustomProperties(new object[(int)BuildReportFileProperty.Num]
                     {
                         content.type,
-                        sum,
+                        content.packedSize,
                         packedAsset.shortPath
                     });
                     onIssueFound(issue);

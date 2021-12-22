@@ -56,10 +56,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
     class ShaderVariantData
     {
+        public string passType;
         public string passName;
         public ShaderType shaderType;
 #if VARIANTS_ANALYSIS_SUPPORT
-        public ShaderCompilerData compilerData;
+        public string[] keywords;
+        public ShaderRequirements[] requirements;
+        public GraphicsTier graphicsTier;
+        public ShaderCompilerPlatform compilerPlatform;
 #endif
     }
 
@@ -313,28 +317,18 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             foreach (var shaderVariantData in shaderVariants)
             {
-                var compilerData = shaderVariantData.compilerData;
-                var keywords = GetShaderKeywords(shader, compilerData.shaderKeywordSet.GetShaderKeywords());
                 var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariant, new Location(assetPath));
-
-                var shaderRequirements = compilerData.shaderRequirements;
-                var shaderRequirementsList = new List<ShaderRequirements>();
-                foreach (ShaderRequirements value in Enum.GetValues(shaderRequirements.GetType()))
-                    if ((shaderRequirements & value) != 0)
-                        shaderRequirementsList.Add(value);
-
-                if (shaderRequirementsList.Count > 1)
-                    shaderRequirementsList.Remove(ShaderRequirements.None);
 
                 issue.SetCustomProperties(new object[(int)ShaderVariantProperty.Num]
                 {
                     k_NoRuntimeData,
-                    compilerData.shaderCompilerPlatform,
+                    shaderVariantData.compilerPlatform,
                     shaderVariantData.shaderType.ToString(),
+                    shaderVariantData.passType,
                     shaderVariantData.passName,
-                    KeywordsToString(keywords),
+                    KeywordsToString(shaderVariantData.keywords),
                     PlatformKeywordsToString(compilerData.platformKeywordSet),
-                    string.Join(" ", shaderRequirementsList.Select(r => r.ToString()).ToArray())
+                    string.Join(" ", shaderVariantData.requirements.Select(r => r.ToString()).ToArray())
                 });
 
                 onIssueFound(issue);
@@ -356,11 +350,24 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             foreach (var shaderCompilerData in data)
             {
+                var shaderRequirements = shaderCompilerData.shaderRequirements;
+                var shaderRequirementsList = new List<ShaderRequirements>();
+                foreach (ShaderRequirements value in Enum.GetValues(shaderRequirements.GetType()))
+                    if ((shaderRequirements & value) != 0)
+                        shaderRequirementsList.Add(value);
+
+                if (shaderRequirementsList.Count > 1)
+                    shaderRequirementsList.Remove(ShaderRequirements.None);
+
                 s_ShaderVariantData[shader].Add(new ShaderVariantData
                 {
-                    passName = string.Format("{0}: {1}", snippet.passType, snippet.passName),
+                    passType = snippet.passType,
+                    passName =  snippet.passName,
                     shaderType = snippet.shaderType,
-                    compilerData = shaderCompilerData
+                    keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
+                    requirements = shaderRequirementsList.ToArray(),
+                    graphicsTier = shaderCompilerData.graphicsTier,
+                    compilerPlatform = shaderCompilerData.shaderCompilerPlatform
                 });
             }
         }

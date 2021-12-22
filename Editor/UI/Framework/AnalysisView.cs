@@ -122,6 +122,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
             var issues = allIssues.Where(i => i.category == m_Desc.category).ToArray();
+            if (issues.Length == 0)
+                return;
+
             m_Issues.AddRange(issues);
             m_Table.AddIssues(issues);
         }
