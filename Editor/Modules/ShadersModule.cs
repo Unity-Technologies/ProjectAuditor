@@ -40,6 +40,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         Compiled = 0,
         Platform,
         Stage,
+        PassType,
         PassName,
         Keywords,
         PlatformKeywords,
@@ -56,11 +57,12 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
     class ShaderVariantData
     {
-        public string passType;
+        public PassType passType;
         public string passName;
         public ShaderType shaderType;
 #if VARIANTS_ANALYSIS_SUPPORT
         public string[] keywords;
+        public string[] platformKeywords;
         public ShaderRequirements[] requirements;
         public GraphicsTier graphicsTier;
         public ShaderCompilerPlatform compilerPlatform;
@@ -105,6 +107,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Compiled), format = PropertyFormat.Bool, name = "Compiled", longName = "Compiled at runtime by the player" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Platform), format = PropertyFormat.String, name = "Graphics API" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Stage), format = PropertyFormat.String, name = "Stage" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PassType), format = PropertyFormat.String, name = "Pass Type" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PassName), format = PropertyFormat.String, name = "Pass Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Keywords), format = PropertyFormat.String, name = "Keywords" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PlatformKeywords), format = PropertyFormat.String, name = "Platform Keywords" },
@@ -123,7 +126,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         internal const string k_NoPassName = "<unnamed>";
         internal const string k_UnamedPassPrefix = "Pass ";
-        internal const string k_NoKeywords = "<no keywords>";
+        internal const string k_None = "<none>";
         internal const string k_NoRuntimeData = "?";
         internal const string k_NotAvailable = "N/A";
         const int k_ShaderVariantFirstId = 400001;
@@ -324,10 +327,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     k_NoRuntimeData,
                     shaderVariantData.compilerPlatform,
                     shaderVariantData.shaderType.ToString(),
-                    shaderVariantData.passType,
+                    shaderVariantData.passType.ToString(),
                     shaderVariantData.passName,
-                    KeywordsToString(shaderVariantData.keywords),
-                    PlatformKeywordsToString(compilerData.platformKeywordSet),
+                    CombineStrings(shaderVariantData.keywords),
+                    CombineStrings(shaderVariantData.platformKeywords),
                     string.Join(" ", shaderVariantData.requirements.Select(r => r.ToString()).ToArray())
                 });
 
@@ -365,6 +368,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     passName =  snippet.passName,
                     shaderType = snippet.shaderType,
                     keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
+                    platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
                     requirements = shaderRequirementsList.ToArray(),
                     graphicsTier = shaderCompilerData.graphicsTier,
                     compilerPlatform = shaderCompilerData.shaderCompilerPlatform
@@ -509,20 +513,20 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static string[] StringToKeywords(string keywordsString)
         {
-            if (keywordsString.Equals(k_NoKeywords))
+            if (keywordsString.Equals(k_None))
                 return new string[] {};
             return keywordsString.Split(' ');
         }
 
-        static string KeywordsToString(string[] keywords)
+        static string CombineStrings(string[] strings)
         {
-            var keywordString = String.Join(" ", keywords);
-            if (string.IsNullOrEmpty(keywordString))
-                keywordString = k_NoKeywords;
-            return keywordString;
+            var combinedString = String.Join(" ", strings);
+            if (string.IsNullOrEmpty(combinedString))
+                combinedString = k_None;
+            return combinedString;
         }
 
-        static string PlatformKeywordsToString(PlatformKeywordSet platformKeywordSet)
+        static string[] PlatformKeywordSetToStrings(PlatformKeywordSet platformKeywordSet)
         {
             var builtinShaderDefines = new List<BuiltinShaderDefine>();
 
@@ -530,7 +534,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 if (platformKeywordSet.IsEnabled(value))
                     builtinShaderDefines.Add(value);
 
-            return string.Join(" ", builtinShaderDefines.Select(d => d.ToString()).ToArray());
+            return builtinShaderDefines.Select(d => d.ToString()).ToArray();
         }
     }
 }

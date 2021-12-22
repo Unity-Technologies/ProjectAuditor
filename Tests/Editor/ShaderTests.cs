@@ -353,10 +353,14 @@ Shader ""Custom/MyEditorShader""
                 var variantsForPlatform = variants.Where(v => v.GetCustomProperty(ShaderVariantProperty.Platform).Equals(plat)).ToArray();
                 Assert.AreEqual((int)ShaderVariantProperty.Num, variantsForPlatform[0].GetNumCustomProperties());
 
+                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Stage).Equals("Vertex")));
+                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Stage).Equals("Fragment")));
+                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.PassType).Equals("Normal")));
                 // "#pragma multi_compile __ KEYWORD_A KEYWORD_B" should produce 3 variants for each graphics API
-                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals(ShadersModule.k_NoKeywords)));
+                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals(ShadersModule.k_None)));
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("KEYWORD_A")));
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("KEYWORD_B")));
+                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.PlatformKeywords).Contains("UNITY_COLORSPACE_GAMMA")));
                 Assert.True(variantsForPlatform.All(v => v.GetCustomProperty(ShaderVariantProperty.Compiled).Equals(ShadersModule.k_NoRuntimeData)));
                 Assert.True(variantsForPlatform.All(v => v.GetCustomProperty(ShaderVariantProperty.Requirements).Contains(ShaderRequirements.BaseShaders.ToString())));
 
@@ -475,7 +479,7 @@ Shader ""Custom/MyEditorShader""
 #else
                 Assert.True(unusedVariantsForPlatform[1].GetCustomProperty(ShaderVariantProperty.PassName).Equals(string.Empty));
 #endif
-                Assert.True(unusedVariantsForPlatform[1].GetCustomProperty(ShaderVariantProperty.Keywords).Equals(ShadersModule.k_NoKeywords));
+                Assert.True(unusedVariantsForPlatform[1].GetCustomProperty(ShaderVariantProperty.Keywords).Equals(ShadersModule.k_None));
             }
         }
 
