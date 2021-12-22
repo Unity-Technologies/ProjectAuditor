@@ -218,7 +218,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var buildReport = BuildReportModule.BuildReportProvider.GetBuildReport();
             if (buildReport != null)
             {
-                packetAssetInfos = buildReport.packedAssets.SelectMany(packedAsset => packedAsset.contents).ToArray();
+                packetAssetInfos = buildReport.packedAssets.SelectMany(packedAsset => packedAsset.contents).Where(c => c.type == typeof(UnityEngine.Shader)).ToArray();
             }
 
             var sortedShaders = shaderPathMap.Keys.ToList().OrderBy(shader => shader.name);
@@ -230,7 +230,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 {
                     var builtAssets = packetAssetInfos.Where(p => p.sourceAssetPath.Equals(assetPath)).ToArray();
                     ulong packedSize = 0;
-                    if (builtAssets.Length > 1)
+                    if (builtAssets.Length > 0)
                     {
                         packedSize = builtAssets[0].packedSize;
                     }
