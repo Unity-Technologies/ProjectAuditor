@@ -272,6 +272,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 groupByDescriptor = true,
                 showFilters = true,
                 showInfoPanel = true,
+                showRightPanels = true,
                 onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbarDataOptions = (viewManager) =>
                 {

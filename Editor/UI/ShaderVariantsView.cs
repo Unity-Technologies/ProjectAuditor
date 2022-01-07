@@ -41,6 +41,35 @@ The number of Variants contributes to the build size, however, there might be Va
         bool m_ShowCompiledVariants = true;
         bool m_ShowUncompiledVariants = true;
 
+        struct PropertyFoldout
+        {
+            public ShaderVariantProperty id;
+            public bool enabled;
+            public GUIContent content;
+        }
+
+        readonly PropertyFoldout[] m_PropertyFoldouts =
+        {
+            new PropertyFoldout
+            {
+                id = ShaderVariantProperty.Keywords,
+                enabled = true,
+                content = new GUIContent("Keywords")
+            },
+            new PropertyFoldout
+            {
+                id = ShaderVariantProperty.PlatformKeywords,
+                enabled = true,
+                content = new GUIContent("Platform Keywords")
+            },
+            new PropertyFoldout
+            {
+                id = ShaderVariantProperty.Requirements,
+                enabled = true,
+                content = new GUIContent("Requirements")
+            }
+        };
+
         void ParsePlayerLog(string logFilename)
         {
             if (string.IsNullOrEmpty(logFilename))
@@ -90,6 +119,31 @@ The number of Variants contributes to the build size, however, there might be Va
             EditorGUILayout.EndHorizontal();
 
             GUI.enabled = true;
+        }
+
+        public override void DrawFoldouts(ProjectIssue[] selectedIssues)
+        {
+            EditorGUILayout.BeginVertical(GUILayout.Width(300));
+
+            foreach (var t in m_PropertyFoldouts)
+            {
+                var propertyFoldout = t;
+
+                EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300));
+                propertyFoldout.enabled = Utility.BoldFoldout(propertyFoldout.enabled, propertyFoldout.content);
+                if (propertyFoldout.enabled)
+                {
+                    if (selectedIssues.Length == 0)
+                        GUILayout.TextArea("<No selection>", SharedStyles.TextArea, GUILayout.MaxHeight(220));
+                    else if (selectedIssues.Length > 1)
+                        GUILayout.TextArea("<Multiple selection>", SharedStyles.TextArea, GUILayout.MaxHeight(220));
+                    else // if (selectedDescriptors.Length == 1)
+                        GUILayout.TextArea(selectedIssues[0].GetCustomProperty(propertyFoldout.id).Replace(" ", "\n"), SharedStyles.TextArea, GUILayout.MaxHeight(220));
+                }
+                EditorGUILayout.EndVertical();
+            }
+
+            EditorGUILayout.EndVertical();
         }
 
         protected override void OnDrawInfo()
