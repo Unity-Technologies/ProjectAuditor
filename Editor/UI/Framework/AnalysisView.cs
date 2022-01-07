@@ -158,7 +158,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             var selectedItems = m_Table.GetSelectedItems();
             var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
-            var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor).Distinct().ToArray();
 
             EditorGUILayout.BeginHorizontal();
 
@@ -166,7 +165,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             if (m_Desc.showRightPanels)
             {
-                DrawFoldouts(selectedDescriptors);
+                DrawFoldouts(selectedIssues);
             }
 
             EditorGUILayout.EndHorizontal();
@@ -257,8 +256,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndHorizontal();
         }
 
-        void DrawFoldouts(ProblemDescriptor[] selectedDescriptors)
+        public virtual void DrawFoldouts(ProjectIssue[] selectedIssues)
         {
+            var selectedDescriptors = selectedIssues.Select(i => i.descriptor).Distinct().ToArray();
+
             EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
 
             DrawDetailsFoldout(selectedDescriptors);
