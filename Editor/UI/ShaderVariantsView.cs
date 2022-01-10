@@ -46,6 +46,7 @@ The number of Variants contributes to the build size, however, there might be Va
             public ShaderVariantProperty id;
             public bool enabled;
             public GUIContent content;
+            public Vector2 scroll;
         }
 
         readonly PropertyFoldout[] m_PropertyFoldouts =
@@ -125,22 +126,24 @@ The number of Variants contributes to the build size, however, there might be Va
         {
             EditorGUILayout.BeginVertical(GUILayout.Width(300));
 
-            foreach (var t in m_PropertyFoldouts)
+            for (int i = 0; i < m_PropertyFoldouts.Length; i++)
             {
-                var propertyFoldout = t;
+                ref var propertyFoldout = ref m_PropertyFoldouts[i];
 
-                EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(300));
                 propertyFoldout.enabled = Utility.BoldFoldout(propertyFoldout.enabled, propertyFoldout.content);
                 if (propertyFoldout.enabled)
                 {
+                    const int maxHeight = 120;
+                    propertyFoldout.scroll = GUILayout.BeginScrollView(propertyFoldout.scroll, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.MaxHeight(maxHeight));
+
                     if (selectedIssues.Length == 0)
-                        GUILayout.TextArea("<No selection>", SharedStyles.TextArea, GUILayout.MaxHeight(220));
+                        GUILayout.TextArea("<No selection>", SharedStyles.TextArea, GUILayout.ExpandHeight(true));
                     else if (selectedIssues.Length > 1)
-                        GUILayout.TextArea("<Multiple selection>", SharedStyles.TextArea, GUILayout.MaxHeight(220));
+                        GUILayout.TextArea("<Multiple selection>", SharedStyles.TextArea, GUILayout.ExpandHeight(true));
                     else // if (selectedDescriptors.Length == 1)
-                        GUILayout.TextArea(selectedIssues[0].GetCustomProperty(propertyFoldout.id).Replace(" ", "\n"), SharedStyles.TextArea, GUILayout.MaxHeight(220));
+                        GUILayout.TextArea(selectedIssues[0].GetCustomProperty(propertyFoldout.id).Replace(" ", "\n"), SharedStyles.TextArea, GUILayout.ExpandHeight(true));
+                    GUILayout.EndScrollView();
                 }
-                EditorGUILayout.EndVertical();
             }
 
             EditorGUILayout.EndVertical();
