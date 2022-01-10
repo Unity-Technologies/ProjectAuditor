@@ -332,6 +332,21 @@ Shader ""Custom/MyEditorShader""
         }
 
         [Test]
+        public void ShaderSizesAreReported()
+        {
+            var shaders = Utility.AnalyzeBuild().GetIssues(IssueCategory.Shader);
+            Assert.True(ShadersModule.BuildDataAvailable());
+
+            var builtInShader = shaders.FirstOrDefault(s => s.description.Equals("Hidden/BlitCopy"));
+            Assert.NotNull(builtInShader);
+            Assert.True(builtInShader.GetCustomProperty(ShaderProperty.Size).Equals(ShadersModule.k_NotAvailable));
+
+            var testShader = shaders.FirstOrDefault(s => s.description.Equals(k_ShaderName));
+            Assert.NotNull(testShader);
+            Assert.True(testShader.GetCustomPropertyAsLong(ShaderProperty.Size) > 0);
+        }
+
+        [Test]
         public void ShaderVariantsAreReported()
         {
             var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.ShaderVariant);
