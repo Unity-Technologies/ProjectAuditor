@@ -111,10 +111,39 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         };
 
+        static readonly IssueLayout k_ShaderCompilerMessageLayout = new IssueLayout
+        {
+            category = IssueCategory.ShaderCompilerMessage,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Severity},
+                new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
+                new PropertyDefinition { type = PropertyType.Path, name = "Path"},
+            }
+        };
+
         static readonly ProblemDescriptor k_ParseErrorDescriptor = new ProblemDescriptor
             (
             400000,
             "Parse Error"
+            )
+        {
+            severity = Rule.Severity.Error
+        };
+
+        static readonly ProblemDescriptor k_CompilerWarningDescriptor = new ProblemDescriptor
+            (
+            400001,
+            "Shader Compiler Warning"
+            )
+        {
+            severity = Rule.Severity.Warning
+        };
+
+        static readonly ProblemDescriptor k_CompilerErrorDescriptor = new ProblemDescriptor
+            (
+            400002,
+            "Shader Compiler Error"
             )
         {
             severity = Rule.Severity.Error
@@ -125,7 +154,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         internal const string k_None = "<none>";
         internal const string k_NoRuntimeData = "?";
         internal const string k_NotAvailable = "N/A";
-        const int k_ShaderVariantFirstId = 400001;
+        const int k_ShaderVariantFirstId = 400003;
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData = new Dictionary<Shader, List<ShaderVariantData>>();
 
@@ -139,6 +168,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             yield return k_ShaderLayout;
 #if VARIANTS_ANALYSIS_SUPPORT
             yield return k_ShaderVariantLayout;
+#endif
+
+#if UNITY_2019_4_OR_NEWER
+            yield return k_ShaderCompilerMessageLayout;
 #endif
         }
 
@@ -264,7 +297,16 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var shaderName = shader.name;
             var shaderHasError = false;
 
-#if UNITY_2019_4_OR_NEWER
+#if UNITY_2019_1_OR_NEWER
+            var shaderMessages = ShaderUtil.GetShaderMessages(shader);
+            foreach (var message in shaderMessages)
+            {
+                var description = string.Format("{0}: {1}", shaderName, message.message);
+                var messageDescriptor = message.severity == ShaderCompilerMessageSeverity.Error ? k_CompilerErrorDescriptor : k_CompilerWarningDescriptor;
+                var messageIssue = new ProjectIssue(messageDescriptor, description, IssueCategory.ShaderCompilerMessage, new Location(assetPath, message.line));
+                onIssueFound(messageIssue);
+            }
+
             shaderHasError = ShaderUtil.ShaderHasError(shader);
 #endif
 

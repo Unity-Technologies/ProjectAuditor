@@ -104,7 +104,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
                         fixed4 frag (v2f i) : SV_Target
                         {
-                            return tex2D(_MainTex, i.uv);
+                            return tex2D(_MainTex, i.uv) / 0.0f; // intentionally divide by zero
                         }
                         ENDCG
                     }
@@ -539,6 +539,17 @@ Shader ""Custom/MyEditorShader""
             Assert.NotNull(shaderIssue);
         }
 
+        [Test]
+        public void ShaderCompilerMessageIsReported()
+        {
+            var compilerMessages = Utility.Analyze(IssueCategory.ShaderCompilerMessage);
+            var message = compilerMessages.FirstOrDefault(i => i.description.Contains(k_ShaderName));
+            Assert.NotNull(message);
+
+            Assert.True(message.description.Equals(string.Format("{0}: floating point division by zero", k_ShaderName)));
+            Assert.AreEqual(Rule.Severity.Warning, message.severity);
+            Assert.AreEqual(40, message.line);
+        }
 #endif
 
         [Test]

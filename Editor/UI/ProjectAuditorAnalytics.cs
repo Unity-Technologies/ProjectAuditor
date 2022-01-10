@@ -54,6 +54,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             BuildFiles,
             BuildSteps,
             Assemblies,
+            ShaderCompilerMessages,
         }
 
         // -------------------------------------------------------------------------------------------------------------
