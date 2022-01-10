@@ -227,7 +227,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 var assetPath = shaderPathMap[shader];
                 var assetSize = k_NotAvailable;
-                if (packetAssetInfos.Length > 0)
+                if (packetAssetInfos.Length > 0 && !assetPath.Equals("Resources/unity_builtin_extra"))
                 {
                     var builtAssets = packetAssetInfos.Where(p => p.sourceAssetPath.Equals(assetPath)).ToArray();
                     ulong packedSize = 0;
