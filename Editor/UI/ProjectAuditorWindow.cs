@@ -300,7 +300,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.ShaderCompilerMessage,
-                name = "Assets/Shader Compiler Messages",
+                name = "Shader Messages",
+                menuLabel = "Experimental/Shader Compiler Messages",
                 menuOrder = 4,
                 descriptionWithIcon = true,
                 onDoubleClick = EditorUtil.OpenTextFile<Shader>,
