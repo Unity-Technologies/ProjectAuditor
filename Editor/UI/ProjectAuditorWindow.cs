@@ -283,12 +283,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     GUILayout.FlexibleSpace();
                     if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
-                        GUILayout.Width(80)))
+                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
                     {
                         Instance.AnalyzeShaderVariants();
                     }
                     if (GUILayout.Button("Clear", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
-                        GUILayout.Width(80)))
+                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
                     {
                         Instance.ClearShaderVariants();
                     }
