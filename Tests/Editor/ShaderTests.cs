@@ -368,9 +368,9 @@ Shader ""Custom/MyEditorShader""
                 var variantsForPlatform = variants.Where(v => v.GetCustomProperty(ShaderVariantProperty.Platform).Equals(plat)).ToArray();
                 Assert.AreEqual((int)ShaderVariantProperty.Num, variantsForPlatform[0].GetNumCustomProperties());
 
-                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Stage).Equals("Vertex")));
-                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Stage).Equals("Fragment")));
-                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.PassType).Equals("Normal")));
+                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Stage).Equals("Vertex")), "No Vertex shader variant found");
+                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Stage).Equals("Fragment")), "No Fragment shader variant found");
+                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.PassType).Equals("Normal")), "No shader variant with Normal pass found");
                 // "#pragma multi_compile __ KEYWORD_A KEYWORD_B" should produce 3 variants for each graphics API
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals(ShadersModule.k_NoKeywords)));
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("KEYWORD_A")));
@@ -494,7 +494,7 @@ Shader ""Custom/MyEditorShader""
 #else
                 Assert.True(unusedVariantsForPlatform[2].GetCustomProperty(ShaderVariantProperty.PassName).Equals(string.Empty));
 #endif
-                Assert.True(unusedVariantsForPlatform[1].GetCustomProperty(ShaderVariantProperty.Keywords).Equals(ShadersModule.k_NoKeywords));
+                Assert.True(unusedVariantsForPlatform[2].GetCustomProperty(ShaderVariantProperty.Keywords).Equals(ShadersModule.k_NoKeywords));
             }
         }
 
