@@ -49,6 +49,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void Create(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueLayout layout, Unity.ProjectAuditor.Editor.ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.UI.Framework.Preferences prefs, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
         public virtual void DrawContent();
         public virtual void DrawFilters();
+        public virtual void DrawFoldouts(Unity.ProjectAuditor.Editor.ProjectIssue[] selectedIssues);
         public void DrawInfo();
         public virtual void DrawTextSearch();
         protected Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
@@ -65,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static void OpenCodeDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
         public static void OpenCompilerMessageDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
         public static void OpenProjectSettings(Unity.ProjectAuditor.Editor.Utils.Location location);
-        public static void OpenTextFile(Unity.ProjectAuditor.Editor.Utils.Location location);
+        public static void OpenTextFile<T>(Unity.ProjectAuditor.Editor.Utils.Location location) where T : UnityEngine.Object;
     }
 
     public class IssueTableItem : UnityEditor.IMGUI.Controls.TreeViewItem
