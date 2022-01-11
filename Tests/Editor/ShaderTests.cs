@@ -479,14 +479,18 @@ Shader ""Custom/MyEditorShader""
             var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty(ShaderVariantProperty.Platform)).Distinct().ToArray();
             var numShaderCompilerPlatforms = shaderCompilerPlatforms.Count();
 
-            Assert.AreEqual(10 * numShaderCompilerPlatforms, variants.Length, "Compiler Platforms: " + string.Join(", ", shaderCompilerPlatforms));
+            if (!shaderCompilerPlatforms.Contains("OpenGLCore"))
+                Assert.AreEqual(10 * numShaderCompilerPlatforms, variants.Length, "Compiler Platforms: " + string.Join(", ", shaderCompilerPlatforms));
 
             var unusedVariants = variants.Where(i => !i.GetCustomPropertyAsBool(ShaderVariantProperty.Compiled)).ToArray();
             foreach (var plat in shaderCompilerPlatforms)
             {
+                if (plat.Equals("OpenGLCore"))
+                    continue;
+
                 var unusedVariantsForPlatform = unusedVariants.Where(v => v.GetCustomProperty(ShaderVariantProperty.Platform).Equals(plat)).ToArray();
 
-                Assert.AreEqual(4, unusedVariantsForPlatform.Length);
+                Assert.AreEqual(4, unusedVariantsForPlatform.Length, "Unexpected number of variants for {0}", plat);
                 Assert.True(unusedVariantsForPlatform[0].GetCustomProperty(ShaderVariantProperty.PassName).Equals("MyTestShader/Pass"));
                 Assert.True(unusedVariantsForPlatform[0].GetCustomProperty(ShaderVariantProperty.Keywords).Equals("KEYWORD_B"));
 #if UNITY_2019_1_OR_NEWER
