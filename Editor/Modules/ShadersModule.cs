@@ -80,7 +80,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             category = IssueCategory.Shader,
             properties = new[]
             {
-//                new PropertyDefinition { type = PropertyType.Severity},
+                new PropertyDefinition { type = PropertyType.Severity},
                 new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size of the variants in the build" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumVariants), format = PropertyFormat.Integer, name = "Actual Variants", longName = "Number of variants in the build" },
@@ -303,7 +303,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var shaderName = shader.name;
             var shaderHasError = false;
-
+            var severity = Rule.Severity.None;
 #if UNITY_2019_1_OR_NEWER
             var shaderMessages = ShaderUtil.GetShaderMessages(shader);
             foreach (var message in shaderMessages)
@@ -315,6 +315,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
 
             shaderHasError = ShaderUtil.ShaderHasError(shader);
+
+            if (shaderHasError)
+                severity = Rule.Severity.Error;
+            else if (shaderMessages.Length > 0)
+                severity = Rule.Severity.Warning;
 #endif
 
             if (shaderHasError)
@@ -334,6 +339,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 id++,
                 shaderName
                 );
+            descriptor.severity = severity;
 
 /*
             var usedBySceneOnly = false;
