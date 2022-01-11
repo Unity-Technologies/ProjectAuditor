@@ -150,8 +150,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         };
 
         internal const string k_NoPassName = "<unnamed>";
-        internal const string k_UnamedPassPrefix = "Pass ";
-        internal const string k_None = "<none>";
+        internal const string k_UnnamedPassPrefix = "Pass ";
+        internal const string k_NoKeywords = "<no keywords>";
         internal const string k_NoRuntimeData = "?";
         internal const string k_NotAvailable = "N/A";
         internal const string k_Unknown = "Unknown";
@@ -575,7 +575,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         static string[] StringToKeywords(string keywordsString)
         {
-            if (keywordsString.Equals(k_None))
+            if (keywordsString.Equals(k_NoKeywords))
                 return new string[] {};
             return keywordsString.Split(' ');
         }
@@ -584,7 +584,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
             var combinedString = String.Join(" ", strings);
             if (string.IsNullOrEmpty(combinedString))
-                combinedString = k_None;
+                combinedString = k_NoKeywords;
             return combinedString;
         }
 
