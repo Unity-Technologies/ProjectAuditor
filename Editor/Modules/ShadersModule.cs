@@ -466,9 +466,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var keywordsString = parts[3];
                 var keywords = StringToKeywords(keywordsString);
 
-                if (!stage.Equals("fragment") && !stage.Equals("pixel") && !stage.Equals("all"))
-                    continue;
-
                 if (!compiledVariants.ContainsKey(shaderName))
                 {
                     compiledVariants.Add(shaderName, new List<CompiledVariantData>());
@@ -500,6 +497,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 }
 
                 var shaderName = shader.name;
+                var stage = builtVariant.GetCustomProperty(ShaderVariantProperty.Stage);
                 var passName = builtVariant.GetCustomProperty(ShaderVariantProperty.PassName);
                 var keywordsString = builtVariant.GetCustomProperty(ShaderVariantProperty.Keywords);
                 var keywords = StringToKeywords(keywordsString);
@@ -508,7 +506,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 if (compiledVariants.ContainsKey(shaderName))
                 {
                     // note that we are not checking pass name since there is an inconsistency regarding "unnamed" passes between build vs compiled
-                    var matchingVariants = compiledVariants[shaderName].Where(cv => ShaderVariantsMatch(cv, keywords, passName));
+                    var matchingVariants = compiledVariants[shaderName].Where(cv => ShaderVariantsMatch(cv, stage, passName, keywords));
                     isVariantCompiled = matchingVariants.Count() > 0;
                 }
 
@@ -543,14 +541,17 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
-        static bool ShaderVariantsMatch(CompiledVariantData cv, string[] secondSet, string passName)
+        static bool ShaderVariantsMatch(CompiledVariantData cv, string stage, string passName, string[] secondSet)
         {
+            if (!cv.stage.Equals(stage, StringComparison.InvariantCultureIgnoreCase))
+                return false;
+
             var passMatch = cv.pass.Equals(passName);
             if (!passMatch)
             {
 #if UNITY_2019_1_OR_NEWER
                 var pass = 0;
-                passMatch = cv.pass.Equals(k_NoPassName) && passName.StartsWith(k_UnamedPassPrefix) && int.TryParse(passName.Substring(k_UnamedPassPrefix.Length), out pass);
+                passMatch = cv.pass.Equals(k_NoPassName) && passName.StartsWith(k_UnnamedPassPrefix) && int.TryParse(passName.Substring(k_UnnamedPassPrefix.Length), out pass);
 #else
                 passMatch = cv.pass.Equals(k_NoPassName) && string.IsNullOrEmpty(passName);
 #endif

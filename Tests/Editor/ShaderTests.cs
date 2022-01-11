@@ -339,7 +339,7 @@ Shader ""Custom/MyEditorShader""
 
             var builtInShader = shaders.FirstOrDefault(s => s.description.Equals("Hidden/BlitCopy"));
             Assert.NotNull(builtInShader);
-            Assert.True(builtInShader.GetCustomProperty(ShaderProperty.Size).Equals(ShadersModule.k_NotAvailable));
+            Assert.True(builtInShader.GetCustomProperty(ShaderProperty.Size).Equals(ShadersModule.k_Unknown));
 
             var testShader = shaders.FirstOrDefault(s => s.description.Equals(k_ShaderName));
             Assert.NotNull(testShader);
@@ -479,20 +479,20 @@ Shader ""Custom/MyEditorShader""
             var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty(ShaderVariantProperty.Platform)).Distinct().ToArray();
             var numShaderCompilerPlatforms = shaderCompilerPlatforms.Count();
 
-            Assert.AreEqual(5 * numShaderCompilerPlatforms, variants.Length, "Compiler Platforms: " + string.Join(", ", shaderCompilerPlatforms));
+            Assert.AreEqual(10 * numShaderCompilerPlatforms, variants.Length, "Compiler Platforms: " + string.Join(", ", shaderCompilerPlatforms));
 
             var unusedVariants = variants.Where(i => !i.GetCustomPropertyAsBool(ShaderVariantProperty.Compiled)).ToArray();
             foreach (var plat in shaderCompilerPlatforms)
             {
                 var unusedVariantsForPlatform = unusedVariants.Where(v => v.GetCustomProperty(ShaderVariantProperty.Platform).Equals(plat)).ToArray();
 
-                Assert.AreEqual(2, unusedVariantsForPlatform.Length);
+                Assert.AreEqual(4, unusedVariantsForPlatform.Length);
                 Assert.True(unusedVariantsForPlatform[0].GetCustomProperty(ShaderVariantProperty.PassName).Equals("MyTestShader/Pass"));
                 Assert.True(unusedVariantsForPlatform[0].GetCustomProperty(ShaderVariantProperty.Keywords).Equals("KEYWORD_B"));
 #if UNITY_2019_1_OR_NEWER
-                Assert.True(unusedVariantsForPlatform[1].GetCustomProperty(ShaderVariantProperty.PassName).Equals("Pass 1"));
+                Assert.True(unusedVariantsForPlatform[2].GetCustomProperty(ShaderVariantProperty.PassName).Equals("Pass 1"));
 #else
-                Assert.True(unusedVariantsForPlatform[1].GetCustomProperty(ShaderVariantProperty.PassName).Equals(string.Empty));
+                Assert.True(unusedVariantsForPlatform[2].GetCustomProperty(ShaderVariantProperty.PassName).Equals(string.Empty));
 #endif
                 Assert.True(unusedVariantsForPlatform[1].GetCustomProperty(ShaderVariantProperty.Keywords).Equals(ShadersModule.k_NoKeywords));
             }
