@@ -154,6 +154,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         internal const string k_None = "<none>";
         internal const string k_NoRuntimeData = "?";
         internal const string k_NotAvailable = "N/A";
+        internal const string k_Unknown = "Unknown";
         const int k_ShaderVariantFirstId = 400003;
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData = new Dictionary<Shader, List<ShaderVariantData>>();
@@ -259,16 +260,19 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             foreach (var shader in sortedShaders)
             {
                 var assetPath = shaderPathMap[shader];
-                var assetSize = k_NotAvailable;
-                if (packetAssetInfos.Length > 0 && !assetPath.Equals("Resources/unity_builtin_extra"))
+                var assetSize = (packetAssetInfos.Length > 0) ? k_Unknown : k_NotAvailable;
+                if (!assetPath.Equals("Resources/unity_builtin_extra"))
                 {
                     var builtAssets = packetAssetInfos.Where(p => p.sourceAssetPath.Equals(assetPath)).ToArray();
-                    ulong packedSize = 0;
                     if (builtAssets.Length > 0)
                     {
-                        packedSize = builtAssets[0].packedSize;
+                        assetSize = builtAssets[0].packedSize.ToString();
                     }
-                    assetSize = packedSize.ToString();
+                    else if (!s_ShaderVariantData.ContainsKey(shader))
+                    {
+                        // if not processed, it was not built into either player data or AssetBundles.
+                        assetSize = "0";
+                    }
                 }
 
                 AddShader(shader, assetPath, assetSize, id++, alwaysIncludedShaders.Contains(shader), onIssueFound);
