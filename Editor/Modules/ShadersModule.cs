@@ -248,19 +248,22 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 #endif
 
             var id = k_ShaderVariantFirstId;
-
+            var buildReportInfoAvailable = false;
+#if BUILD_REPORT_API_SUPPORT
             var packetAssetInfos = new PackedAssetInfo[0];
             var buildReport = BuildReportModule.BuildReportProvider.GetBuildReport();
             if (buildReport != null)
             {
                 packetAssetInfos = buildReport.packedAssets.SelectMany(packedAsset => packedAsset.contents).Where(c => c.type == typeof(UnityEngine.Shader)).ToArray();
             }
-
+            buildReportInfoAvailable = packetAssetInfos.Length > 0;
+#endif
             var sortedShaders = shaderPathMap.Keys.ToList().OrderBy(shader => shader.name);
             foreach (var shader in sortedShaders)
             {
                 var assetPath = shaderPathMap[shader];
-                var assetSize = (packetAssetInfos.Length > 0) ? k_Unknown : k_NotAvailable;
+                var assetSize = buildReportInfoAvailable ? k_Unknown : k_NotAvailable;
+#if BUILD_REPORT_API_SUPPORT
                 if (!assetPath.Equals("Resources/unity_builtin_extra"))
                 {
                     var builtAssets = packetAssetInfos.Where(p => p.sourceAssetPath.Equals(assetPath)).ToArray();
@@ -274,7 +277,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         assetSize = "0";
                     }
                 }
-
+#endif
                 AddShader(shader, assetPath, assetSize, id++, alwaysIncludedShaders.Contains(shader), onIssueFound);
             }
 
