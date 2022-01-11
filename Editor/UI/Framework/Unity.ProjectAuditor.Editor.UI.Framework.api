@@ -43,6 +43,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected Unity.ProjectAuditor.Editor.UI.Framework.ViewManager m_ViewManager;
         public Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor desc { get; }
         protected int numIssues { get; }
+        public static int toolbarButtonSize { get; }
         public AnalysisView(Unity.ProjectAuditor.Editor.UI.Framework.ViewManager viewManager) {}
         public virtual void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
         public virtual void Clear();
