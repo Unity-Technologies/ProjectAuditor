@@ -303,7 +303,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Assets/Shader Compiler Messages",
                 menuOrder = 4,
                 descriptionWithIcon = true,
-                onDoubleClick = EditorUtil.OpenTextFile,
+                onDoubleClick = EditorUtil.OpenTextFile<Shader>,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -333,7 +333,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showMuteOptions = true,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
-                onDoubleClick = EditorUtil.OpenTextFile,
+                onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenDescriptor = EditorUtil.OpenCodeDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ApiCalls
             });
@@ -347,7 +347,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 groupByDescriptor = true,
                 showFilters = true,
                 showInfoPanel = true,
-                onDoubleClick = EditorUtil.OpenTextFile,
+                onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenDescriptor = EditorUtil.OpenCompilerMessageDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.CodeCompilerMessages
             });
@@ -362,7 +362,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showDependencyView = true,
                 showFilters = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
-                onDoubleClick = EditorUtil.OpenTextFile,
+                onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Generics
             });
             ViewDescriptor.Register(new ViewDescriptor
