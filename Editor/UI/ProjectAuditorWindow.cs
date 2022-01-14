@@ -254,8 +254,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbarDataOptions = (viewManager) =>
                 {
-                    if (GUILayout.Button(Contents.ShaderVariantsButton, EditorStyles.toolbarButton,
-                        GUILayout.Width(80)))
+                    if (GUILayout.Button(Contents.ShaderCompilerMessages, EditorStyles.toolbarButton,
+                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
+                    {
+                        viewManager.ChangeView(IssueCategory.ShaderCompilerMessage);
+                    }
+                    if (GUILayout.Button(Contents.ShaderVariants, EditorStyles.toolbarButton,
+                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
                     {
                         viewManager.ChangeView(IssueCategory.ShaderVariant);
                     }
@@ -272,29 +277,58 @@ namespace Unity.ProjectAuditor.Editor.UI
                 groupByDescriptor = true,
                 showFilters = true,
                 showInfoPanel = true,
+                showRightPanels = true,
                 onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbarDataOptions = (viewManager) =>
                 {
                     GUILayout.FlexibleSpace();
                     if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
-                        GUILayout.Width(100)))
+                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
                     {
                         Instance.AnalyzeShaderVariants();
                     }
                     if (GUILayout.Button("Clear", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
-                        GUILayout.Width(100)))
+                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
                     {
                         Instance.ClearShaderVariants();
                     }
                     GUILayout.FlexibleSpace();
 
+                    if (GUILayout.Button(Contents.ShaderCompilerMessages, EditorStyles.toolbarButton,
+                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
+                    {
+                        viewManager.ChangeView(IssueCategory.ShaderCompilerMessage);
+                    }
                     if (GUILayout.Button(Contents.Shaders, EditorStyles.toolbarButton,
-                        GUILayout.Width(80)))
+                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
                     {
                         viewManager.ChangeView(IssueCategory.Shader);
                     }
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderVariants
+            });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.ShaderCompilerMessage,
+                name = "Shader Messages",
+                menuLabel = "Experimental/Shader Compiler Messages",
+                menuOrder = 4,
+                descriptionWithIcon = true,
+                onDoubleClick = EditorUtil.OpenTextFile<Shader>,
+                onDrawToolbarDataOptions = (viewManager) =>
+                {
+                    if (GUILayout.Button(Contents.Shaders, EditorStyles.toolbarButton,
+                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
+                    {
+                        viewManager.ChangeView(IssueCategory.Shader);
+                    }
+                    if (GUILayout.Button(Contents.ShaderVariants, EditorStyles.toolbarButton,
+                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
+                    {
+                        viewManager.ChangeView(IssueCategory.ShaderVariant);
+                    }
+                },
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
@@ -323,7 +357,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showMuteOptions = true,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
-                onDoubleClick = EditorUtil.OpenTextFile,
+                onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenDescriptor = EditorUtil.OpenCodeDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ApiCalls
             });
@@ -337,7 +371,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 groupByDescriptor = true,
                 showFilters = true,
                 showInfoPanel = true,
-                onDoubleClick = EditorUtil.OpenTextFile,
+                onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenDescriptor = EditorUtil.OpenCompilerMessageDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.CodeCompilerMessages
             });
@@ -352,7 +386,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showDependencyView = true,
                 showFilters = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
-                onDoubleClick = EditorUtil.OpenTextFile,
+                onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Generics
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -381,7 +415,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onDrawToolbarDataOptions = (viewManager) =>
                 {
                     if (GUILayout.Button(Contents.BuildFiles, EditorStyles.toolbarButton,
-                        GUILayout.Width(80)))
+                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
                     {
                         viewManager.ChangeView(IssueCategory.BuildFile);
                     }
@@ -403,7 +437,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onDrawToolbarDataOptions = (viewManager) =>
                 {
                     if (GUILayout.Button(Contents.BuildSteps, EditorStyles.toolbarButton,
-                        GUILayout.Width(80)))
+                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
                     {
                         viewManager.ChangeView(IssueCategory.BuildStep);
                     }
@@ -1106,7 +1140,8 @@ A view allows the user to browse through the listed items and filter by string o
             );
 
             public static readonly GUIContent Shaders = new GUIContent("Shaders", "Inspect Shaders");
-            public static readonly GUIContent ShaderVariantsButton = new GUIContent("Variants", "Inspect Shader Variants");
+            public static readonly GUIContent ShaderCompilerMessages = new GUIContent("Messages", "Show Shader Compiler Messages");
+            public static readonly GUIContent ShaderVariants = new GUIContent("Variants", "Inspect Shader Variants");
 
             public static readonly GUIContent BuildFiles = new GUIContent("Build Size");
             public static readonly GUIContent BuildSteps = new GUIContent("Build Steps");

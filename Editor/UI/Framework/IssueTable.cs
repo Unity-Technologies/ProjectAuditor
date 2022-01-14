@@ -48,6 +48,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Layout = layout;
             m_FlatView = !desc.groupByDescriptor;
             multicolumnHeader.sortingChanged += OnSortingChanged;
+            showAlternatingRowBackgrounds = true;
 
             Clear();
         }
@@ -569,7 +570,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             case PropertyType.Filename:
                             case PropertyType.Path:
                             case PropertyType.FileType:
+                                firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.GetProperty(property.type) : string.Empty;
+                                secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.GetProperty(property.type) : string.Empty;
+                                break;
                             case PropertyType.Severity:
+                                if (firstItem.ProjectIssue != null && secondItem.ProjectIssue != null)
+                                    return secondItem.ProjectIssue.severity - firstItem.ProjectIssue.severity;
                                 firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.GetProperty(property.type) : string.Empty;
                                 secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.GetProperty(property.type) : string.Empty;
                                 break;

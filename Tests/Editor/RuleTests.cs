@@ -26,7 +26,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ShouldNotReportMutedIssue()
+        public void Rule_MutedIssue_IsNotReported()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectAuditorSettings = projectAuditor.config;
@@ -59,7 +59,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void RuleTestPass()
+        public void Rule_Test_CanBeAddedAndRemoved()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var settingsAuditor = projectAuditor.GetModule<SettingsModule>();

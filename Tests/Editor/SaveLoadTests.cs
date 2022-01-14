@@ -8,7 +8,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         private const string k_ReportPath = "report.json";
 
         [Test]
-        public void CanSaveAndLoadReport()
+        public void SaveLoad_Report_CanSaveAndLoad()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 

@@ -6,10 +6,10 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    class AreaNameTests
+    class AreaTests
     {
         [Test]
-        public void AreaNameIsValid()
+        public void Area_Name_IsValid()
         {
             // disabling stripUnusedMeshComponents will be reported as an issue
             var stripUnusedMeshComponents = PlayerSettings.stripUnusedMeshComponents;

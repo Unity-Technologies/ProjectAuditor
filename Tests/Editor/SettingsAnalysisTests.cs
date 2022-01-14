@@ -11,10 +11,10 @@ using UnityEngine.Rendering;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    class SettingIssueTests
+    class SettingsAnalysisTests
     {
         [Test]
-        public void SettingIssuesIsReported()
+        public void SettingsAnalysis_Issue_IsReported()
         {
             var savedSetting = PlayerSettings.bakeCollisionMeshes;
             PlayerSettings.bakeCollisionMeshes = false;
@@ -34,7 +34,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void SettingIssuesIsNotReportedOnceFixed()
+        public void SettingsAnalysis_Issue_IsNotReportedOnceFixed()
         {
             var savedFixedDeltaTime = Time.fixedDeltaTime;
             // 0.02f is the default Time.fixedDeltaTime value and will be reported as an issue
@@ -59,7 +59,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         [TestCase(false)]
         [TestCase(true)]
-        public void  SplashScreenIsEnabledAndCanBeDisabled(bool splashScreenEnabled)
+        public void SettingsAnalysis_SplashScreen_IsEnabledAndCanBeDisabled(bool splashScreenEnabled)
         {
             var prevSplashScreenEnabled = PlayerSettings.SplashScreen.show;
             PlayerSettings.SplashScreen.show = splashScreenEnabled;
@@ -71,7 +71,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
         [TestCase(false)]
         [TestCase(true)]
-        public void GraphicsMixedStandardShaderQualityIsReported(bool isMixed)
+        public void SettingsAnalysis_GraphicsMixedStandardShaderQuality_IsReported(bool isMixed)
         {
             var buildGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
             var savedTier1settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier1);
@@ -99,7 +99,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
         [TestCase(RenderingPath.Forward)]
         [TestCase(RenderingPath.DeferredShading)]
-        public void GraphicsUsingRenderingPathIsReported(RenderingPath renderingPath)
+        public void SettingsAnalysis_GraphicsUsingRenderingPath_IsReported(RenderingPath renderingPath)
         {
             var buildGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
             var savedTier1settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier1);

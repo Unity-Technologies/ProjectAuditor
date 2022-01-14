@@ -30,7 +30,7 @@ class StringConcat
         }
 
         [Test]
-        public void StringConcatIssueIsFound()
+        public void CodeAnalysis_StringConcat_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetStringConcat);
 

@@ -11,7 +11,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
     class ProblemDescriptorTests
     {
         [Test]
-        public void ProblemDescriptorsAreEqual()
+        public void ProblemDescriptor_Comparison_Works()
         {
             var a = new ProblemDescriptor
                 (
@@ -40,7 +40,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptorHashIsId()
+        public void ProblemDescriptor_Hash_IsId()
         {
             var p = new ProblemDescriptor
                 (
@@ -55,7 +55,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptorVersionIsCompatible()
+        public void ProblemDescriptor_Version_IsCompatible()
         {
             var desc = new ProblemDescriptor
                 (
@@ -105,7 +105,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptorWithDefaultArea()
+        public void ProblemDescriptor_Area_IsDefault()
         {
             var desc = new ProblemDescriptor
                 (
@@ -117,7 +117,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptorWithMultipleAreas()
+        public void ProblemDescriptor_MultipleAreas_AreCorrect()
         {
             var desc = new ProblemDescriptor
                 (
@@ -133,7 +133,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptorAnyPlatform()
+        public void ProblemDescriptor_AnyPlatform_IsCompatible()
         {
             var desc = new ProblemDescriptor
                 (
@@ -146,7 +146,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptorSupportedPlatform()
+        public void ProblemDescriptor_Platform_IsCompatible()
         {
             var desc = new ProblemDescriptor
                 (
@@ -166,7 +166,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptorUnsupportedPlatform()
+        public void ProblemDescriptor_Platform_IsNotCompatible()
         {
             var desc = new ProblemDescriptor
                 (

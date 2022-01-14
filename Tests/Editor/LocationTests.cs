@@ -8,14 +8,14 @@ namespace UnityEditor.ProjectAuditor.EditorTests
     class LocationTests
     {
         [Test]
-        public void NoExtensionIsValid()
+        public void Location_NoExtension_IsValid()
         {
             var location = new Location("some/path/file");
             Assert.True(location.Extension.Equals(String.Empty));
         }
 
         [Test]
-        public void AssetLocationIsValid()
+        public void Location_AssetPath_IsValid()
         {
             const int lineNumber = 6;
             var location = new Location("some/path/file.cs", lineNumber);
@@ -27,7 +27,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void SettingLocationIsValid()
+        public void Location_SettingPath_IsValid()
         {
             var location = new Location("Project/Player");
             Assert.IsTrue(location.IsValid());

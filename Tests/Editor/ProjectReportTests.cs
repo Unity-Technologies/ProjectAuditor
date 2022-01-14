@@ -36,7 +36,7 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void NewReportIsValid()
+        public void ProjectReport_NewReport_IsValid()
         {
             var projectReport = new ProjectReport();
             Assert.Zero(projectReport.NumTotalIssues);
@@ -45,7 +45,7 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void IssueIsAddedToReport()
+        public void ProjectReport_Issue_IsAdded()
         {
             var projectReport = new ProjectReport();
             var p = new ProblemDescriptor
@@ -87,7 +87,7 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void CodesIssuesAreExportedAndFormatted()
+        public void ProjectReport_CodeIssues_AreExportedAndFormatted()
         {
             var category = IssueCategory.Code;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
@@ -111,7 +111,7 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void CodesIssuesAreFilteredAndExported()
+        public void ProjectReport_CodeIssues_AreFilteredAndExported()
         {
             var category = IssueCategory.Code;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
@@ -138,7 +138,7 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void SettingsIssuesAreExportedAndFormatted()
+        public void ProjectReport_SettingsIssues_AreExportedAndFormatted()
         {
             var bakeCollisionMeshes = PlayerSettings.bakeCollisionMeshes;
             PlayerSettings.bakeCollisionMeshes = false;

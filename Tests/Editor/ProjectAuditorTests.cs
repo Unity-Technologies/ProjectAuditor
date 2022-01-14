@@ -3,10 +3,10 @@ using NUnit.Framework;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    class PreprocessBuildTests
+    class ProjectAuditorTests
     {
         [Test]
-        public void ProjectAuditorCanBeInstantiated()
+        public void ProjectAuditor_IsInstantiated()
         {
             Activator.CreateInstance(typeof(Unity.ProjectAuditor.Editor.ProjectAuditor));
         }

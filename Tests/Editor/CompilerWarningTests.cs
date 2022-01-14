@@ -35,7 +35,7 @@ class ScriptWithWarning {
         }
 
         [Test]
-        public void CompilerWarningIssueIsReported()
+        public void CompilerWarning_Issue_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_ScriptWithWarning, IssueCategory.CodeCompilerMessage);
 

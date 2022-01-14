@@ -43,7 +43,7 @@ class ScriptWithError {
 
         [Test]
         [ExplicitAttribute]
-        public void CompilerMessageIsReported()
+        public void CompilerError_IsReported()
         {
             LogAssert.ignoreFailingMessages = true;
 
@@ -75,7 +75,7 @@ class ScriptWithError {
 
         [Test]
         [ExplicitAttribute]
-        public void CompilerErrorIssueIsReported()
+        public void CompilerError_Issue_IsReported()
         {
             LogAssert.ignoreFailingMessages = true;
 

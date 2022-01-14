@@ -41,6 +41,36 @@ The number of Variants contributes to the build size, however, there might be Va
         bool m_ShowCompiledVariants = true;
         bool m_ShowUncompiledVariants = true;
 
+        struct PropertyFoldout
+        {
+            public ShaderVariantProperty id;
+            public bool enabled;
+            public GUIContent content;
+            public Vector2 scroll;
+        }
+
+        readonly PropertyFoldout[] m_PropertyFoldouts =
+        {
+            new PropertyFoldout
+            {
+                id = ShaderVariantProperty.Keywords,
+                enabled = true,
+                content = new GUIContent("Keywords")
+            },
+            new PropertyFoldout
+            {
+                id = ShaderVariantProperty.PlatformKeywords,
+                enabled = true,
+                content = new GUIContent("Platform Keywords")
+            },
+            new PropertyFoldout
+            {
+                id = ShaderVariantProperty.Requirements,
+                enabled = true,
+                content = new GUIContent("Requirements")
+            }
+        };
+
         void ParsePlayerLog(string logFilename)
         {
             if (string.IsNullOrEmpty(logFilename))
@@ -90,6 +120,35 @@ The number of Variants contributes to the build size, however, there might be Va
             EditorGUILayout.EndHorizontal();
 
             GUI.enabled = true;
+        }
+
+        public override void DrawFoldouts(ProjectIssue[] selectedIssues)
+        {
+            EditorGUILayout.BeginVertical(GUILayout.Width(300));
+
+            for (int i = 0; i < m_PropertyFoldouts.Length; i++)
+            {
+                m_PropertyFoldouts[i].enabled = Utility.BoldFoldout(m_PropertyFoldouts[i].enabled, m_PropertyFoldouts[i].content);
+                if (m_PropertyFoldouts[i].enabled)
+                {
+                    const int maxHeight = 120;
+                    m_PropertyFoldouts[i].scroll = GUILayout.BeginScrollView(m_PropertyFoldouts[i].scroll, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.MaxHeight(maxHeight));
+
+                    if (selectedIssues.Length == 0)
+                        GUILayout.TextArea("<No selection>", SharedStyles.TextArea, GUILayout.ExpandHeight(true));
+                    else if (selectedIssues.Length > 1)
+                        GUILayout.TextArea("<Multiple selection>", SharedStyles.TextArea, GUILayout.ExpandHeight(true));
+                    else // if (selectedDescriptors.Length == 1)
+                    {
+                        var keywords = selectedIssues[0].GetCustomProperty(m_PropertyFoldouts[i].id);
+                        var text = keywords.Equals(ShadersModule.k_NoKeywords) ? keywords : keywords.Replace(" ", "\n");
+                        GUILayout.TextArea(text, SharedStyles.TextArea, GUILayout.ExpandHeight(true));
+                    }
+                    GUILayout.EndScrollView();
+                }
+            }
+
+            EditorGUILayout.EndVertical();
         }
 
         protected override void OnDrawInfo()

@@ -34,7 +34,7 @@ class MyClass
         }
 
         [Test]
-        public void LinqIssueIsReported()
+        public void CodeAnalysis_LinqIssue_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAsset);
 

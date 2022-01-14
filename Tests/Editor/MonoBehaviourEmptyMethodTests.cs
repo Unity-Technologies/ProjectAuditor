@@ -34,7 +34,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         [TestCase(CodeOptimization.Debug)]
         [TestCase(CodeOptimization.Release)]
-        public void MonoBehaviourWithEmptyEventMethodIsReported(CodeOptimization codeOptimization)
+        public void CodeAnalysis_MonoBehaviourWithEmptyEventMethod_IsReported(CodeOptimization codeOptimization)
         {
             var prevCodeOptimization = AssemblyCompilationPipeline.CodeOptimization;
             AssemblyCompilationPipeline.CodeOptimization = codeOptimization;
@@ -64,7 +64,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void MonoBehaviourWithEmptyMethodIsNotReported()
+        public void CodeAnalysis_MonoBehaviourWithEmptyMethod_IsNotReported()
         {
             var scriptIssues = Utility.AnalyzeAndFindAssetIssues(m_MonoBehaviourWithEmptyMethod);
 
@@ -72,7 +72,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void NotMonoBehaviourWithEmptyMethodIsNotReported()
+        public void CodeAnalysis_NotMonoBehaviourWithEmptyMethod_IsNotReported()
         {
             var scriptIssues = Utility.AnalyzeAndFindAssetIssues(m_NotMonoBehaviourWithEmptyMethod);
 

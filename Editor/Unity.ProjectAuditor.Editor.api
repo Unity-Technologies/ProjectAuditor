@@ -59,11 +59,12 @@ namespace Unity.ProjectAuditor.Editor
         public const Unity.ProjectAuditor.Editor.IssueCategory BuildSummary = 10;
         public const Unity.ProjectAuditor.Editor.IssueCategory Code = 4;
         public const Unity.ProjectAuditor.Editor.IssueCategory CodeCompilerMessage = 5;
-        public const Unity.ProjectAuditor.Editor.IssueCategory FirstCustomCategory = 12;
+        public const Unity.ProjectAuditor.Editor.IssueCategory FirstCustomCategory = 13;
         public const Unity.ProjectAuditor.Editor.IssueCategory GenericInstance = 6;
         public const Unity.ProjectAuditor.Editor.IssueCategory MetaData = 0;
         public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSetting = 7;
         public const Unity.ProjectAuditor.Editor.IssueCategory Shader = 2;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ShaderCompilerMessage = 12;
         public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariant = 3;
         public int value__;
     }
@@ -310,35 +311,39 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         public int value__;
     }
 
-    public enum ShaderKeywordProperty
+    public enum ShaderMessageProperty
     {
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderKeywordProperty BuildSize = 2;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderKeywordProperty Num = 3;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderKeywordProperty NumShaders = 0;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderKeywordProperty NumVariants = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderMessageProperty Num = 2;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderMessageProperty Platform = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderMessageProperty ShaderName = 0;
         public int value__;
     }
 
     public enum ShaderProperty
     {
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty Instancing = 4;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty Num = 6;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumKeywords = 2;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumPasses = 1;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumVariants = 0;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty RenderQueue = 3;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty SrpBatcher = 5;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty AlwaysIncluded = 7;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty Instancing = 5;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty Num = 8;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumKeywords = 3;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumPasses = 2;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty NumVariants = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty RenderQueue = 4;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty Size = 0;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderProperty SrpBatcher = 6;
         public int value__;
     }
 
     public enum ShaderVariantProperty
     {
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Compiled = 0;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Keywords = 3;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Num = 5;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PassName = 2;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Keywords = 5;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Num = 8;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PassName = 4;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PassType = 3;
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Platform = 1;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Requirements = 4;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PlatformKeywords = 6;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Requirements = 7;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Stage = 2;
         public int value__;
     }
 }

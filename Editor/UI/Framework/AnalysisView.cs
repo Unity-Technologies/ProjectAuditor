@@ -158,7 +158,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             var selectedItems = m_Table.GetSelectedItems();
             var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
-            var selectedDescriptors = selectedItems.Select(i => i.ProblemDescriptor).Distinct().ToArray();
 
             EditorGUILayout.BeginHorizontal();
 
@@ -166,7 +165,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             if (m_Desc.showRightPanels)
             {
-                DrawFoldouts(selectedDescriptors);
+                DrawFoldouts(selectedIssues);
             }
 
             EditorGUILayout.EndHorizontal();
@@ -257,8 +256,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndHorizontal();
         }
 
-        void DrawFoldouts(ProblemDescriptor[] selectedDescriptors)
+        public virtual void DrawFoldouts(ProjectIssue[] selectedIssues)
         {
+            var selectedDescriptors = selectedIssues.Select(i => i.descriptor).Distinct().ToArray();
+
             EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
 
             DrawDetailsFoldout(selectedDescriptors);
@@ -286,7 +287,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         void DrawViewOptions()
         {
             EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
-            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(80));
+            m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(AnalysisView.toolbarButtonSize));
             m_Table.SetFontSize(m_Preferences.fontSize);
 
             SharedStyles.Label.fontSize = m_Preferences.fontSize;
@@ -296,14 +297,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 // (optional) collapse/expand buttons
                 GUI.enabled = !m_Table.flatView;
-                if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(AnalysisView.toolbarButtonSize)))
                     SetRowsExpanded(false);
-                if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(AnalysisView.toolbarButtonSize)))
                     SetRowsExpanded(true);
                 GUI.enabled = true;
 
                 EditorGUI.BeginChangeCheck();
-                m_Table.flatView = GUILayout.Toggle(m_Table.flatView, "Flat View", EditorStyles.toolbarButton, GUILayout.Width(100));
+                m_Table.flatView = GUILayout.Toggle(m_Table.flatView, "Flat View", EditorStyles.toolbarButton, GUILayout.Width(AnalysisView.toolbarButtonSize));
                 if (EditorGUI.EndChangeCheck())
                 {
                     Refresh();
@@ -336,7 +337,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             });
                             return;
                     }
-                }, GUILayout.Width(80)))
+                }, GUILayout.Width(toolbarButtonSize)))
             {
                 Export();
 
@@ -485,6 +486,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         const string k_MultipleSelectionText = "<Multiple selection>";
 
+        public static int toolbarButtonSize
+        {
+            get
+            {
+                return LayoutSize.ToolbarButtonSize;
+            }
+        }
+
         static readonly string[] k_ExportModeStrings =
         {
             "All",
@@ -497,6 +506,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int FoldoutWidth = 300;
             public static readonly int FoldoutMaxHeight = 220;
             public static readonly int DependencyViewHeight = 200;
+            public static readonly int ToolbarButtonSize = 80;
         }
 
         static class Contents

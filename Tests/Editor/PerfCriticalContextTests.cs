@@ -106,7 +106,7 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void IssueInSimpleClass()
+        public void CodeAnalysis_IssueInSimpleClass_IsNotCritical()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInSimpleClass);
             var issue = issues.First();
@@ -114,7 +114,7 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void IssueInMonoBehaviourUpdateIsCritical()
+        public void CodeAnalysis_IssueInMonoBehaviourUpdate_IsCritical()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourUpdate);
             var issue = issues.First();
@@ -122,7 +122,7 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void IssueInMonoBehaviourOnAnimatorMoveIsCritical()
+        public void CodeAnalysis_IssueInMonoBehaviourOnAnimatorMove_IsCritical()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnAnimatorMove);
             var issue = issues.First();
@@ -130,7 +130,7 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void IssueInClassMethodCalledFromMonoBehaviourUpdate()
+        public void CodeAnalysis_IssueInClassMethodCalledFromMonoBehaviourUpdate_IsCritical()
         {
             var issues =
                 Utility.AnalyzeAndFindAssetIssues(
@@ -140,7 +140,7 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void IssueInClassInheritedFromMonoBehaviour()
+        public void CodeAnalysis_IssueInClassInheritedFromMonoBehaviour_IsCritical()
         {
             var issues =
                 Utility.AnalyzeAndFindAssetIssues(
@@ -150,7 +150,7 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void ShaderWarmupIssueIsCritical()
+        public void CodeAnalysis_ShaderWarmupIssue_IsCritical()
         {
             var issues =
                 Utility.AnalyzeAndFindAssetIssues(

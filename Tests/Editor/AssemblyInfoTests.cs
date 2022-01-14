@@ -34,7 +34,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 #else
         [TestCase("/Managed/UnityEditor.dll")]
 #endif
-        public void UnityEditorAssemblyPathIsFound(string assemblyRelativePath)
+        public void AssemblyInfo_UnityEditorAssemblyPath_IsFound(string assemblyRelativePath)
         {
             var paths = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.UnityEditor);
             var expectedPath = EditorApplication.applicationContentsPath + assemblyRelativePath;
@@ -46,7 +46,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [Test]
         [TestCase("/Managed/UnityEngine/UnityEngine.dll")]
         [TestCase("/Managed/UnityEngine/UnityEngine.CoreModule.dll")]
-        public void UnityEngineAssemblyPathIsFound(string assemblyRelativePath)
+        public void AssemblyInfo_UnityEngineAssemblyPath_IsFound(string assemblyRelativePath)
         {
             var paths = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.UnityEngine);
             var expectedPath = EditorApplication.applicationContentsPath + assemblyRelativePath;
@@ -60,7 +60,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [TestCase("UnityEditor.Networking.dll")]
         [TestCase("UnityEditor.UI.dll")]
         [TestCase("UnityEditor.Timeline.dll")]
-        public void UnityEditorExtensionAssemblyPathIsFound(string assemblyName)
+        public void AssemblyInfo_UnityEditorExtensionAssemblyPath_IsFound(string assemblyName)
         {
             var paths = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All);
             var result = paths.FirstOrDefault(path => path.EndsWith(assemblyName));
@@ -72,7 +72,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         [TestCase("UnityEngine.Networking.dll")]
         [TestCase("UnityEngine.UI.dll")]
         [TestCase("UnityEngine.Timeline.dll")]
-        public void UnityEngineExtensionAssemblyPathIsFound(string assemblyName)
+        public void AssemblyInfo_UnityEngineExtensionAssemblyPath_IsFound(string assemblyName)
         {
             var paths = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.UnityEngine);
             var result = paths.FirstOrDefault(path => path.EndsWith(assemblyName));
@@ -83,7 +83,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 #endif
 
         [Test]
-        public void PackageAssemblyPathIsFound()
+        public void AssemblyInfo_PackageAssemblyPath_IsFound()
         {
             // check mono cecil is found
             var paths = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.UserAssembly);
@@ -94,7 +94,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
 #if UNITY_2018_1_OR_NEWER
         [Test]
-        public void CanResolveDefaultAssemblyAssetPath()
+        public void AssemblyInfo_DefaultAssembly_AssetPathCanBeResolved()
         {
             var assembly = CompilationPipeline.GetAssemblies(AssembliesType.Player).FirstOrDefault(a => a.name.Equals(Path.GetFileNameWithoutExtension(AssemblyInfo.DefaultAssemblyFileName)));
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
@@ -105,7 +105,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void DefaultAssemblyInfoIsCorrect()
+        public void AssemblyInfo_DefaultAssembly_IsCorrect()
         {
             var assembly = CompilationPipeline.GetAssemblies(AssembliesType.Player).FirstOrDefault(a => a.name.Equals(Path.GetFileNameWithoutExtension(AssemblyInfo.DefaultAssemblyFileName)));
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
@@ -116,7 +116,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void PackageAssemblyInfoIsCorrect()
+        public void AssemblyInfo_LocalPackageAssemblyInfo_IsCorrect()
         {
             var assembly = CompilationPipeline.GetAssemblies(AssembliesType.Editor).FirstOrDefault(a => a.name.Equals("Unity.ProjectAuditor.Editor"));
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
@@ -130,7 +130,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
 #if UNITY_2019_1_OR_NEWER
         [Test]
-        public void RegistryPackageAssemblyIsReadOnly()
+        public void AssemblyInfo_RegistryPackageAssembly_IsReadOnly()
         {
             Assert.IsTrue(AssemblyInfoProvider.IsReadOnlyAssembly("UnityEngine.TestRunner"));
         }

@@ -4,6 +4,16 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+* Added shader *Size*, *Source Asset* and *Always Included* info to Shaders view
+* Added shader *Severity* column to indicate any compiler message
+* Added *Stage*, *Pass Type* and *Platform Keywords* to Shader Variants view
+* Added Shader Variants view right scrollable panels
+* Added Shader Compiler Messages reporting
+* Fixed usage of deprecated shader API
+* Fixed shader compilation log parsing in 2021 or newer
+* Fixed cleanup of Shader Variants builds data in 2021 or newer
+
 ## [0.7.1-preview] - 2021-12-15
 * Added option to enable creation of BuildReport asset after each build
 * Fixed UWP compilation issues

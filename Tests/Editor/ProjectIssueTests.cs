@@ -17,7 +17,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
             );
 
         [Test]
-        public void UninitializedIssueTestPasses()
+        public void ProjectIssue_NewIssue_IsInitialized()
         {
             var uninitialised = new ProjectIssue(s_Descriptor, "dummy issue", IssueCategory.Code);
             Assert.AreEqual(string.Empty, uninitialised.filename);
@@ -28,7 +28,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void CustomPropertiesAreSet()
+        public void ProjectIssue_CustomProperties_AreSet()
         {
             string[] properties =
             {

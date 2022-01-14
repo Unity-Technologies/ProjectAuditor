@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Auditors;
+using Unity.ProjectAuditor.Editor.Utils;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
@@ -48,11 +50,21 @@ namespace UnityEditor.ProjectAuditor.EditorTests
         }
     }
 
-    public class CustomAuditorTest
+
+    class ModuleTests
     {
         [Test]
+        public void Module_BuiltinTypes_Exist()
+        {
+            var types = TypeCache.GetTypesDerivedFrom(typeof(ProjectAuditorModule));
+
+            Assert.NotNull(types.FirstOrDefault(type => type == typeof(CodeModule)));
+            Assert.NotNull(types.FirstOrDefault(type => type == typeof(SettingsModule)));
+        }
+
+        [Test]
         [Ignore("Work in progress")]
-        public void CustomAuditorIsCreated()
+        public void Module_Custom_IsCreated()
         {
             //var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             //Assert.NotNull(projectAuditor.GetAuditor<CustomAuditor>());
@@ -60,7 +72,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
         [Test]
         [Ignore("Work in progress")]
-        public void CustomAuditorIssueIsReported()
+        public void Module_CustomIssue_IsReported()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var report = projectAuditor.Audit();

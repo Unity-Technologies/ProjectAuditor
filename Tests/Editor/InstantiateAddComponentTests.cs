@@ -46,7 +46,7 @@ class AddComponentToGameObject : MonoBehaviour
         }
 
         [Test]
-        public void InstantiateIssueIsFound()
+        public void CodeAnalysis_Instantiate_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInstantiate);
 
@@ -56,7 +56,7 @@ class AddComponentToGameObject : MonoBehaviour
         }
 
         [Test]
-        public void AddComponentIssueIsFound()
+        public void CodeAnalysis_AddComponent_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetAddComponent);
 

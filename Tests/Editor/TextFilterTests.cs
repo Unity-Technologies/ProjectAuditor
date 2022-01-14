@@ -7,7 +7,7 @@ using Assert = UnityEngine.Assertions.Assert;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    class FilterTests
+    class TextFilterTests
     {
 #pragma warning disable 0414
         TempAsset m_TempAsset;
@@ -45,7 +45,7 @@ class InternalClass
         }
 
         [Test]
-        public void EmptyStringMatchesAllIssues()
+        public void TextFilter_EmptyString_MatchesAll()
         {
             // disabling stripEngineCode will be reported as an issue
             PlayerSettings.stripEngineCode = false;
@@ -64,7 +64,7 @@ class InternalClass
         }
 
         [Test]
-        public void CaseSensitiveMatch()
+        public void TextFilter_CaseSensitive_Matches()
         {
             // disabling stripEngineCode will be reported as an issue
             PlayerSettings.stripEngineCode = false;
@@ -88,7 +88,7 @@ class InternalClass
         }
 
         [Test]
-        public void CaseInsensitiveMatch()
+        public void TextFilter_CaseInsensitive_Matches()
         {
             // disabling stripEngineCode will be reported as an issue
             PlayerSettings.stripEngineCode = false;
@@ -105,7 +105,7 @@ class InternalClass
         }
 
         [Test]
-        public void FilenameMatch()
+        public void TextFilter_Filename_Matches()
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             config.AnalyzeEditorCode = false;
@@ -125,7 +125,7 @@ class InternalClass
         }
 
         [Test]
-        public void RecursiveSearchMatch()
+        public void TextFilter_RecursiveSearch_Matches()
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             config.AnalyzeEditorCode = false;

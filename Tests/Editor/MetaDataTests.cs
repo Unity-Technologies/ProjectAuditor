@@ -9,7 +9,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
     class MetaDataTests
     {
         [Test]
-        public void MetaDataIsReported()
+        public void MetaData_IsReported()
         {
             var issues = Utility.Analyze(IssueCategory.MetaData);
             var matchingIssue = issues.FirstOrDefault(i => i.description.Equals("Unity Version"));

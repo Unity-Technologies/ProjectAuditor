@@ -5,10 +5,11 @@ using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEngine;
 
 namespace UnityEditor.ProjectAuditor.EditorTests
 {
-    class ScriptIssueTests
+    class CodeAnalysisTests
     {
         TempAsset m_TempAsset;
         TempAsset m_TempAssetDerivedClassMethod;
@@ -205,7 +206,38 @@ class AnyApiInNamespace
         }
 
         [Test]
-        public void IssueIsFound()
+        public void CodeAnalysis_IssueInEditorCode_IsNotReported()
+        {
+            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            config.AnalyzeEditorCode = false;
+
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
+
+            var projectReport = projectAuditor.Audit();
+            var issues = projectReport.GetIssues(IssueCategory.Code);
+            var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TempAssetInEditorCode.relativePath));
+
+            Assert.Null(codeIssue);
+        }
+
+        [Test]
+        [Ignore("Known failure because the script is not recompiled by the editor")]
+        public void CodeAnalysis_IssueInEditorCode_IsReported()
+        {
+            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            config.AnalyzeEditorCode = true;
+
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
+            var projectReport = projectAuditor.Audit();
+
+            var issues = projectReport.GetIssues(IssueCategory.Code);
+            var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TempAssetInEditorCode.relativePath));
+
+            Assert.NotNull(codeIssue);
+        }
+
+        [Test]
+        public void CodeAnalysis_Issue_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAsset);
 
@@ -234,7 +266,7 @@ class AnyApiInNamespace
         }
 
         [Test]
-        public void DerivedClassMethodIssueIsFound()
+        public void CodeAnalysis_DerivedClassMethodIssue_IsReported()
         {
             var filteredIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetDerivedClassMethod);
 
@@ -248,7 +280,7 @@ class AnyApiInNamespace
         }
 
         [Test]
-        public void IssueInPluginIsFound()
+        public void CodeAnalysis_IssueInPlugin_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInPlugin);
 
@@ -258,7 +290,7 @@ class AnyApiInNamespace
         }
 
         [Test]
-        public void IssueInPlayerCodeIsFound()
+        public void CodeAnalysis_IssueInPlayerCode_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInPlayerCode);
 
@@ -268,15 +300,7 @@ class AnyApiInNamespace
         }
 
         [Test]
-        public void IssueInEditorCodeIsNotFound()
-        {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInEditorCode);
-
-            Assert.AreEqual(0, issues.Count());
-        }
-
-        [Test]
-        public void IssueInNestedClassIsFound()
+        public void CodeAnalysis_IssueInNestedClass_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInNestedClass);
 
@@ -286,7 +310,7 @@ class AnyApiInNamespace
         }
 
         [Test]
-        public void IssueInGenericClassIsFound()
+        public void CodeAnalysis_IssueInGenericClass_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInGenericClass);
 
@@ -296,7 +320,7 @@ class AnyApiInNamespace
         }
 
         [Test]
-        public void IssueInVirtualMethodIsFound()
+        public void CodeAnalysis_IssueInVirtualMethod_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInVirtualMethod);
 
@@ -306,7 +330,7 @@ class AnyApiInNamespace
         }
 
         [Test]
-        public void IssueInOverrideMethodIsFound()
+        public void CodeAnalysis_IssueInOverrideMethod_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInOverrideMethod);
 
@@ -316,7 +340,7 @@ class AnyApiInNamespace
         }
 
         [Test]
-        public void IssueInMonoBehaviourIsFound()
+        public void CodeAnalysis_IssueInMonoBehaviour_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviour);
 
@@ -326,7 +350,7 @@ class AnyApiInNamespace
         }
 
         [Test]
-        public void IssueInCoroutineIsFound()
+        public void CodeAnalysis_IssueInCoroutine_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInCoroutine);
 
@@ -337,7 +361,7 @@ class AnyApiInNamespace
         }
 
         [Test]
-        public void IssueInDelegateIsFound()
+        public void CodeAnalysis_IssueInDelegate_IsReported()
         {
             var allScriptIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInDelegate);
             var issue = allScriptIssues.FirstOrDefault(i => i.name.Equals("Camera.get_allCameras"));
@@ -346,7 +370,7 @@ class AnyApiInNamespace
         }
 
         [Test]
-        public void IssueInNamespaceIsFound()
+        public void CodeAnalysis_IssueInNamespace_IsReported()
         {
             var allScriptIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetAnyApiInNamespace);
             var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("System.Linq.Enumerable.Sum"));
