@@ -254,16 +254,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbarDataOptions = (viewManager) =>
                 {
-                    if (GUILayout.Button(Contents.ShaderCompilerMessages, EditorStyles.toolbarButton,
-                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
-                    {
-                        viewManager.ChangeView(IssueCategory.ShaderCompilerMessage);
-                    }
-                    if (GUILayout.Button(Contents.ShaderVariants, EditorStyles.toolbarButton,
-                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
-                    {
-                        viewManager.ChangeView(IssueCategory.ShaderVariant);
-                    }
+                    ChangeViewButton(viewManager, IssueCategory.ShaderCompilerMessage, Contents.ShaderCompilerMessages);
+                    ChangeViewButton(viewManager, IssueCategory.ShaderVariant, Contents.ShaderVariants);
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Shaders
             });
@@ -294,16 +286,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                     GUILayout.FlexibleSpace();
 
-                    if (GUILayout.Button(Contents.ShaderCompilerMessages, EditorStyles.toolbarButton,
-                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
-                    {
-                        viewManager.ChangeView(IssueCategory.ShaderCompilerMessage);
-                    }
-                    if (GUILayout.Button(Contents.Shaders, EditorStyles.toolbarButton,
-                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
-                    {
-                        viewManager.ChangeView(IssueCategory.Shader);
-                    }
+                    ChangeViewButton(viewManager, IssueCategory.ShaderCompilerMessage, Contents.ShaderCompilerMessages);
+                    ChangeViewButton(viewManager, IssueCategory.Shader, Contents.Shaders);
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderVariants
             });
@@ -317,16 +301,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onDoubleClick = EditorUtil.OpenTextFile<Shader>,
                 onDrawToolbarDataOptions = (viewManager) =>
                 {
-                    if (GUILayout.Button(Contents.Shaders, EditorStyles.toolbarButton,
-                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
-                    {
-                        viewManager.ChangeView(IssueCategory.Shader);
-                    }
-                    if (GUILayout.Button(Contents.ShaderVariants, EditorStyles.toolbarButton,
-                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
-                    {
-                        viewManager.ChangeView(IssueCategory.ShaderVariant);
-                    }
+                    ChangeViewButton(viewManager, IssueCategory.Shader, Contents.Shaders);
+                    ChangeViewButton(viewManager, IssueCategory.ShaderVariant, Contents.ShaderVariants);
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
             });
@@ -414,11 +390,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showInfoPanel = true,
                 onDrawToolbarDataOptions = (viewManager) =>
                 {
-                    if (GUILayout.Button(Contents.BuildFiles, EditorStyles.toolbarButton,
-                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
-                    {
-                        viewManager.ChangeView(IssueCategory.BuildFile);
-                    }
+                    ChangeViewButton(viewManager, IssueCategory.BuildFile, Contents.BuildFiles);
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildSteps
             });
@@ -436,14 +408,20 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbarDataOptions = (viewManager) =>
                 {
-                    if (GUILayout.Button(Contents.BuildSteps, EditorStyles.toolbarButton,
-                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
-                    {
-                        viewManager.ChangeView(IssueCategory.BuildStep);
-                    }
+                    ChangeViewButton(viewManager, IssueCategory.BuildStep, Contents.BuildSteps);
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
             });
+        }
+
+        static void ChangeViewButton(ViewManager viewManager, IssueCategory category, GUIContent guiContent)
+        {
+            if (GUILayout.Button(
+                guiContent, EditorStyles.toolbarButton,
+                GUILayout.Width(AnalysisView.toolbarButtonSize)))
+            {
+                viewManager.ChangeView(category);
+            }
         }
 
         void OnToggleDeveloperMode()
