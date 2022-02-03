@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -16,7 +17,7 @@ using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 #endif
 
-namespace UnityEditor.ProjectAuditor.EditorTests
+namespace Unity.ProjectAuditor.EditorTests
 {
     class ShadersAnalysisTests
     {

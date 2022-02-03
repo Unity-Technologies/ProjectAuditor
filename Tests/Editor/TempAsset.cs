@@ -1,8 +1,9 @@
 using System;
 using System.IO;
 using NUnit.Framework;
+using UnityEditor;
 
-namespace UnityEditor.ProjectAuditor.EditorTests
+namespace Unity.ProjectAuditor.EditorTests
 {
     public class TempAsset
     {

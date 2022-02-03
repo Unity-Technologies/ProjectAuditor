@@ -3,10 +3,11 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
 
-namespace UnityEditor.ProjectAuditor.EditorTests
+namespace Unity.ProjectAuditor.EditorTests
 {
     class AssemblyInfoTests
     {

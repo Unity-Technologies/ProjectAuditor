@@ -7,7 +7,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace UnityEditor.ProjectAuditor.EditorTests
+namespace Unity.ProjectAuditor.EditorTests
 {
     class CompilerWarningTests
     {

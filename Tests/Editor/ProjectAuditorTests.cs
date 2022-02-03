@@ -1,7 +1,7 @@
 using System;
 using NUnit.Framework;
 
-namespace UnityEditor.ProjectAuditor.EditorTests
+namespace Unity.ProjectAuditor.EditorTests
 {
     class ProjectAuditorTests
     {

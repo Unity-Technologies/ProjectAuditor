@@ -2,11 +2,12 @@ using System;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace UnityEditor.ProjectAuditor.EditorTests
+namespace Unity.ProjectAuditor.EditorTests
 {
     class ProblemDescriptorTests
     {

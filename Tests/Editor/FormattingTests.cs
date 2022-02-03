@@ -2,7 +2,7 @@ using System;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.Utils;
 
-namespace UnityEditor.ProjectAuditor.EditorTests
+namespace Unity.ProjectAuditor.EditorTests
 {
     class FormattingTests
     {

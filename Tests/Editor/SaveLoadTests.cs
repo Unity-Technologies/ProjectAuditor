@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 
-namespace UnityEditor.ProjectAuditor.EditorTests
+namespace Unity.ProjectAuditor.EditorTests
 {
     class SaveLoadTests
     {

@@ -2,10 +2,11 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using UnityEditor;
 using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;
 
-namespace UnityEditor.ProjectAuditor.EditorTests
+namespace Unity.ProjectAuditor.EditorTests
 {
     class TextFilterTests
     {
