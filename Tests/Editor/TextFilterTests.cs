@@ -14,6 +14,8 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAsset;
 #pragma warning restore 0414
 
+        bool m_PrevStripEngineCode;
+
         [OneTimeSetUp]
         public void SetUp()
         {
@@ -37,20 +39,23 @@ class InternalClass
     }
 }
 ");
+            // disabling stripEngineCode will be reported as an issue
+            m_PrevStripEngineCode = PlayerSettings.stripEngineCode;
+            PlayerSettings.stripEngineCode = false;
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
             TempAsset.Cleanup();
+
+            // restore stripEngineCode
+            PlayerSettings.stripEngineCode = m_PrevStripEngineCode;
         }
 
         [Test]
         public void TextFilter_EmptyString_MatchesAll()
         {
-            // disabling stripEngineCode will be reported as an issue
-            PlayerSettings.stripEngineCode = false;
-
             var stringFilter = new TextFilter
             {
                 ignoreCase = false,
@@ -67,9 +72,6 @@ class InternalClass
         [Test]
         public void TextFilter_CaseSensitive_Matches()
         {
-            // disabling stripEngineCode will be reported as an issue
-            PlayerSettings.stripEngineCode = false;
-
             var issues = Utility.Analyze(IssueCategory.ProjectSetting);
             var stringFilter = new TextFilter
             {
@@ -91,9 +93,6 @@ class InternalClass
         [Test]
         public void TextFilter_CaseInsensitive_Matches()
         {
-            // disabling stripEngineCode will be reported as an issue
-            PlayerSettings.stripEngineCode = false;
-
             var issues = Utility.Analyze(IssueCategory.ProjectSetting);
             var stringFilter = new TextFilter
             {
