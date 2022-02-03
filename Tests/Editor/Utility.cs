@@ -38,8 +38,9 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
         public static ProjectReport AnalyzeBuild()
         {
+            const string tempSceneFilename = "Assets/TestScene.unity";
             // We must save the scene or the build will fail https://unity.slack.com/archives/C3F85MBDL/p1615991512002200
-            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/UntitledScene.unity");
+            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), tempSceneFilename);
 
             var buildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(buildPath);
@@ -57,7 +58,7 @@ namespace UnityEditor.ProjectAuditor.EditorTests
 
             Directory.Delete(buildPath, true);
 
-            AssetDatabase.DeleteAsset("Assets/UntitledScene.unity");
+            AssetDatabase.DeleteAsset(tempSceneFilename);
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit();
