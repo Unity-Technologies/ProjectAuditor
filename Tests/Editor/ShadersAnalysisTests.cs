@@ -389,11 +389,14 @@ Shader ""Custom/MyEditorShader""
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals(ShadersModule.k_NoKeywords)));
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("KEYWORD_A")));
                 Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("KEYWORD_B")));
-#if UNITY_2021_1_OR_NEWER
-                Assert.False(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.PlatformKeywords).Contains("UNITY_COLORSPACE_GAMMA")), "Keyword UNITY_COLORSPACE_GAMMA not found");
-#else
-                Assert.True(variantsForPlatform.Any(v => v.GetCustomProperty(ShaderVariantProperty.PlatformKeywords).Contains("UNITY_COLORSPACE_GAMMA")), "Keyword UNITY_COLORSPACE_GAMMA not found");
-#endif
+
+                var colorSpaceGammaKeywordFound = variantsForPlatform.Any(v =>
+                    v.GetCustomProperty(ShaderVariantProperty.PlatformKeywords).Contains("UNITY_COLORSPACE_GAMMA"));
+                if (PlayerSettings.colorSpace == ColorSpace.Linear)
+                    Assert.False(colorSpaceGammaKeywordFound, "ColorSpace is Linear but keyword UNITY_COLORSPACE_GAMMA was found");
+
+                else
+                    Assert.True(colorSpaceGammaKeywordFound, "ColorSpace is Gamma but keyword UNITY_COLORSPACE_GAMMA was not found");
                 Assert.True(variantsForPlatform.All(v => v.GetCustomProperty(ShaderVariantProperty.Compiled).Equals(ShadersModule.k_NoRuntimeData)));
                 Assert.True(variantsForPlatform.All(v => v.GetCustomProperty(ShaderVariantProperty.Requirements).Contains(ShaderRequirements.BaseShaders.ToString())));
 
@@ -554,11 +557,10 @@ Shader ""Custom/MyEditorShader""
 
             Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty(ShaderProperty.RenderQueue));
             Assert.False(shaderIssue.GetCustomPropertyAsBool(ShaderProperty.Instancing), "Instancing is supported but it should not be.");
-#if UNITY_2021_1_OR_NEWER
-            Assert.True(shaderIssue.GetCustomPropertyAsBool(ShaderProperty.SrpBatcher), "SRP Batcher is not supported.");
-#else
-            Assert.False(shaderIssue.GetCustomPropertyAsBool(ShaderProperty.SrpBatcher), "SRP Batcher is supported.");
-#endif
+
+            // assume SrpBatcher is supported when not using Built-in Render Pipeline
+//            var isSrpBatcherSupported = RenderPipelineManager.currentPipeline != null;
+//            Assert.AreEqual(isSrpBatcherSupported, shaderIssue.GetCustomPropertyAsBool(ShaderProperty.SrpBatcher), "SRP Batcher {0} supported but the SrpBatcher property does not match.", isSrpBatcherSupported ? "is" : "is not");
         }
 
 #if UNITY_2019_1_OR_NEWER
