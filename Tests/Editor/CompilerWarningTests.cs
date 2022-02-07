@@ -50,6 +50,7 @@ class ScriptWithWarning {
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
             Assert.True(issue.description.Equals("The variable 'i' is assigned but its value is never used"));
+            Assert.True(issue.relativePath.StartsWith("Assets/"), "Relative path: " + issue.relativePath);
             Assert.That(issue.line, Is.EqualTo(5));
             Assert.That(issue.severity, Is.EqualTo(Rule.Severity.Warning));
 
