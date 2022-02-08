@@ -165,6 +165,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "assets_tab";
                 case UIButton.Shaders:
                     return "shaders_tab";
+                case UIButton.ShaderCompilerMessages:
+                    return "shader_compiler_messages_tab";
                 case UIButton.ShaderVariants:
                     return "shader_variants_tab";
                 case UIButton.ProjectSettings:
