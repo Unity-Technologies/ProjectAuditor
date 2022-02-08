@@ -135,7 +135,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var compilationPipeline = new AssemblyCompilationPipeline
             {
-                AssemblyCompilationFinished = (assemblyName, compilerMessages) => ProcessCompilerMessages(assemblyName, compilerMessages, onIssueFound)
+                AssemblyCompilationFinished = (assemblyInfo, compilerMessages) => ProcessCompilerMessages(assemblyInfo, compilerMessages, onIssueFound)
             };
 
             Profiler.BeginSample("CodeModule.Audit.Compilation");
@@ -144,15 +144,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var callCrawler = new CallCrawler();
             var issues = new List<ProjectIssue>();
-            var localAssemblyInfos = assemblyInfos.Where(info => !info.readOnly).ToArray();
-            var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.readOnly).ToArray();
+            var localAssemblyInfos = assemblyInfos.Where(info => !info.packageReadOnly).ToArray();
+            var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.packageReadOnly).ToArray();
 
             foreach (var assemblyInfo in assemblyInfos)
             {
                 onIssueFound(new ProjectIssue(k_AssemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath,
                     new object[(int)AssemblyProperty.Num]
                     {
-                        assemblyInfo.readOnly
+                        assemblyInfo.packageReadOnly
                     }));
             }
 
@@ -349,7 +349,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_OpCodes.AddRange(analyzer.GetOpCodes());
         }
 
-        void ProcessCompilerMessages(string assemblyName, CompilerMessage[] compilerMessages, Action<ProjectIssue> onIssueFound)
+        void ProcessCompilerMessages(AssemblyInfo assemblyInfo, CompilerMessage[] compilerMessages, Action<ProjectIssue> onIssueFound)
         {
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
 
@@ -357,7 +357,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 if (message.code == null)
                 {
-                    Debug.LogWarningFormat("Missing information in compiler message for {0} assembly", assemblyName);
+                    Debug.LogWarningFormat("Missing information in compiler message for {0} assembly", assemblyInfo.name);
                     continue;
                 }
 
@@ -391,13 +391,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     m_RuntimeDescriptors.Add(message.code, descriptor);
                 }
 
+                var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.file);
                 var issue = new ProjectIssue(descriptor, message.message,
                     IssueCategory.CodeCompilerMessage,
-                    new Location(message.file.Replace("\\", "/"), message.line),
+                    new Location(relativePath, message.line),
                     new object[(int)CompilerMessageProperty.Num]
                     {
                         message.code,
-                        assemblyName
+                        assemblyInfo.name
                     });
                 onIssueFound(issue);
             }

@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.EditorTests
         const string k_ExpectedMessage = "Assets/ProjectAuditor-Temp/ScriptWithError.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration";
 #endif
         const string k_ExpectedCode = "CS1519";
-        const string k_ExpectedDescription = "Invalid token '}' in class, struct, or interface member declaration";
+        const string k_ExpectedDescription = "Invalid token '}' in class, record, struct, or interface member declaration";
 
         [OneTimeSetUp]
         public void SetUp()
@@ -50,9 +50,9 @@ class ScriptWithError {
             CompilerMessage[] defaultAssemblyCompilerMessages = null;
             using (var compilationPipeline = new AssemblyCompilationPipeline
                {
-                   AssemblyCompilationFinished = (assemblyName, messages) =>
+                   AssemblyCompilationFinished = (assemblyInfo, messages) =>
                    {
-                       if (assemblyName.Equals(AssemblyInfo.DefaultAssemblyName))
+                       if (assemblyInfo.name.Equals(AssemblyInfo.DefaultAssemblyName))
                        {
                            defaultAssemblyCompilerMessages = messages;
                        }
@@ -92,7 +92,7 @@ class ScriptWithError {
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
-            Assert.True(issue.description.Equals(k_ExpectedDescription));
+            Assert.True(issue.description.Equals(k_ExpectedDescription), "Description: " + issue.description);
             Assert.That(issue.line, Is.EqualTo(6));
             Assert.That(issue.severity, Is.EqualTo(Rule.Severity.Error));
 

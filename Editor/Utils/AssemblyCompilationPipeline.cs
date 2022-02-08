@@ -118,7 +118,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         string[] m_RoslynAnalyzers;
 #endif
 
-        public Action<string, CompilerMessage[]> AssemblyCompilationFinished;
+        public Action<AssemblyInfo, CompilerMessage[]> AssemblyCompilationFinished;
 
         public static CodeOptimization CodeOptimization = CodeOptimization.Release;
 
@@ -168,18 +168,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             compiledAssemblyPaths = CompileEditorAssemblies(assemblies, !editorAssemblies);
 #endif
 
-            var assemblyInfos = new List<AssemblyInfo>();
-            foreach (var compiledAssemblyPath in compiledAssemblyPaths)
-            {
-                var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compiledAssemblyPath);
-                var assembly = assemblies.First(a => a.name.Equals(assemblyInfo.name));
-                var sourcePaths = assembly.sourceFiles.Select(file => file.Remove(0, assemblyInfo.relativePath.Length + 1));
-
-                assemblyInfo.sourcePaths = sourcePaths.ToArray();
-                assemblyInfos.Add(assemblyInfo);
-            }
-
-            return assemblyInfos;
+            return compiledAssemblyPaths.Select(AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath);
         }
 
         IEnumerable<string> CompileEditorAssemblies(IEnumerable<Assembly> assemblies)
@@ -206,14 +195,15 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             PrepareAssemblyBuilders(assemblies, (assemblyPath, messages) =>
             {
-                var assemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
+                var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assemblyPath);
+                var assemblyName = assemblyInfo.name;
                 m_AssemblyCompilationUnits[assemblyName].messages = messages;
 
                 if (progress != null)
                     progress.Advance(assemblyName);
 
                 if (AssemblyCompilationFinished != null)
-                    AssemblyCompilationFinished(assemblyName, messages);
+                    AssemblyCompilationFinished(assemblyInfo, messages);
             });
             UpdateAssemblyBuilders();
 

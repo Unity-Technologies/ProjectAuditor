@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
     static class AssemblyInfoProvider
     {
-        const string k_BuiltInPackagesFolder = "BuiltInPackages";
+        const string k_VirtualPackagesRoot = "Packages";
 
         internal static IEnumerable<string> GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes flags)
         {
@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
             assemblyPaths.AddRange(extensions.Select(ext => Path.Combine(EditorApplication.applicationContentsPath, ext)));
 #endif
-            return assemblyPaths.Select(path => path.Replace("\\", "/"));
+            return assemblyPaths.Select(PathUtils.ReplaceSeparators);
         }
 
         public static IEnumerable<string> GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes flags)
@@ -98,7 +98,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static bool IsReadOnlyAssembly(string assemblyName)
         {
             var info = GetAssemblyInfoFromAssemblyName(assemblyName);
-            return info.readOnly;
+            return info.packageReadOnly;
         }
 
         public static AssemblyInfo GetAssemblyInfoFromAssemblyPath(string assemblyPath)
@@ -115,25 +115,26 @@ namespace Unity.ProjectAuditor.Editor.Utils
             {
                 name = assemblyName,
                 relativePath = "Assets",
-                readOnly = false
+                packageReadOnly = false
             };
 
             var asmDefPath = CompilationPipeline.GetAssemblyDefinitionFilePathFromAssemblyName(assemblyInfo.name);
             if (asmDefPath != null)
             {
                 assemblyInfo.asmDefPath = asmDefPath;
-                var folders = asmDefPath.Split('/');
-                if (folders.Length > 2 && folders[0].Equals("Packages"))
+                var folders = PathUtils.Split(asmDefPath);
+                if (folders.Length > 2 && folders[0].Equals(k_VirtualPackagesRoot))
                 {
-                    assemblyInfo.relativePath = Path.Combine(folders[0], folders[1]).Replace("\\", "/");
+                    assemblyInfo.relativePath = PathUtils.Combine(folders[0], folders[1]);
 #if UNITY_2019_3_OR_NEWER
                     var info =  UnityEditor.PackageManager.PackageInfo.FindForAssetPath(asmDefPath);
                     if (info != null)
                     {
-                        assemblyInfo.readOnly = info.source != PackageSource.Embedded && info.source != PackageSource.Local;
+                        assemblyInfo.packageReadOnly = info.source != PackageSource.Embedded && info.source != PackageSource.Local;
+                        assemblyInfo.packageResolvedPath = PathUtils.ReplaceSeparators(info.resolvedPath);
                     }
 #else
-                    assemblyInfo.readOnly = true;
+                    assemblyInfo.packageReadOnly = true;
 #endif
                 }
                 else
@@ -150,34 +151,16 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return assemblyInfo;
         }
 
+        // Known issue: packageResolvedPath is not available on 2018 so the path of package assets will remain Library/PackageCache/<package name>@version/...
         public static string ResolveAssetPath(AssemblyInfo assemblyInfo, string path)
         {
-            // sanitize path
-            path = path.Replace("\\", "/");
+            var fullPath = PathUtils.GetFullPath(path);
+            // if it's a package, resolve from absolute+physical to logical+relative path
+            if (!string.IsNullOrEmpty(assemblyInfo.packageResolvedPath))
+                return fullPath.Replace(assemblyInfo.packageResolvedPath, assemblyInfo.relativePath);
 
-            if (!string.IsNullOrEmpty(assemblyInfo.asmDefPath) && assemblyInfo.asmDefPath.StartsWith("Packages"))
-            {
-                var asmDefFolder = Path.GetDirectoryName(assemblyInfo.asmDefPath.Remove(0, assemblyInfo.relativePath.Length + 1));
-                if (path.IndexOf(asmDefFolder) < 0)
-                {
-                    // handle source files that are not located with asmdef
-                    var sourcePath = assemblyInfo.sourcePaths.FirstOrDefault(p => path.Contains(p));
-                    if (sourcePath != null)
-                        return Path.Combine(assemblyInfo.relativePath, sourcePath);
-
-                    Debug.LogWarningFormat("Could not find asmdef for {0} when analyzing {1}", path, assemblyInfo.name);
-                    return path; // Could not resolve path
-                }
-                return Path.Combine(assemblyInfo.relativePath, path.Substring(path.IndexOf(asmDefFolder)));
-            }
-            if (path.Contains(k_BuiltInPackagesFolder))
-            {
-                return path.Remove(0, path.IndexOf(k_BuiltInPackagesFolder) + k_BuiltInPackagesFolder.Length);
-            }
-
-            // remove Assets folder
-            var projectPath = Path.GetDirectoryName(Application.dataPath);
-            return path.Remove(0, projectPath.Length + 1);
+            // if it lives in Assets/... convert to relative path
+            return fullPath.Replace(ProjectAuditor.ProjectPath + PathUtils.Separator, "");
         }
     }
 }

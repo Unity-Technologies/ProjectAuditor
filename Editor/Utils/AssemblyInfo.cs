@@ -15,7 +15,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public string path;            // absolute path
         public string asmDefPath;
         public string relativePath;
-        public bool readOnly;
-        public string[] sourcePaths;
+
+        public bool packageReadOnly;
+        public string packageResolvedPath;
     }
 }

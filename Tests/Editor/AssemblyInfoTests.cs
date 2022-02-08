@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Compilation;
@@ -19,7 +20,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void SetUp()
         {
             // this is required so the default assembly is generated when testing on an empty project (i.e: on Yamato)
-            m_TempAsset = new TempAsset("MyClass.cs", "class MyClass { }");
+            m_TempAsset = new TempAsset("MyClass.cs", "class MyClass { void MyMethod() { UnityEngine.Debug.Log(666); } }");
         }
 
         [OneTimeTearDown]
@@ -95,36 +96,76 @@ namespace Unity.ProjectAuditor.EditorTests
 
 #if UNITY_2018_1_OR_NEWER
         [Test]
-        public void AssemblyInfo_DefaultAssembly_AssetPathCanBeResolved()
+        public void AssemblyInfo_AssetPaths_CanBeResolved()
+        {
+            var acceptablePrefixes = new[]
+            {
+#if !UNITY_2019_1_OR_NEWER
+                "Library/PackageCache/",
+#endif
+                "Assets/",
+                "Packages/",
+                "Resources/unity_builtin_extra"
+            };
+
+            var report = Utility.AnalyzeBuild();
+            foreach (var issue in report.GetAllIssues().Where(i => i.category != IssueCategory.ProjectSetting))
+            {
+                var relativePath = issue.relativePath;
+                Assert.True(string.IsNullOrEmpty(relativePath) || acceptablePrefixes.Any(prefix => relativePath.StartsWith(prefix)), "Path: " + relativePath);
+            }
+        }
+
+        [Test]
+        public void AssemblyInfo_DefaultAssemblyPath_CanBeResolved()
         {
             var assembly = CompilationPipeline.GetAssemblies(AssembliesType.Player).FirstOrDefault(a => a.name.Equals(Path.GetFileNameWithoutExtension(AssemblyInfo.DefaultAssemblyFileName)));
-            var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
+            Assert.NotNull(assembly);
+
+            var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
             var path = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, Path.Combine(Application.dataPath, "somefile"));
 
-            Assert.True(path.Equals("Assets/somefile"));
+            Assert.True(path.Equals("Assets/somefile"), "Resolved Path is: " + path);
         }
 
         [Test]
         public void AssemblyInfo_DefaultAssembly_IsCorrect()
         {
             var assembly = CompilationPipeline.GetAssemblies(AssembliesType.Player).FirstOrDefault(a => a.name.Equals(Path.GetFileNameWithoutExtension(AssemblyInfo.DefaultAssemblyFileName)));
+
+            Assert.NotNull(assembly);
+
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
             Assert.IsTrue(assemblyInfo.path.Equals("Library/ScriptAssemblies/Assembly-CSharp.dll"));
             Assert.IsNull(assemblyInfo.asmDefPath);
-            Assert.IsFalse(assemblyInfo.readOnly);
+            Assert.IsFalse(assemblyInfo.packageReadOnly);
         }
 
         [Test]
         public void AssemblyInfo_LocalPackageAssemblyInfo_IsCorrect()
         {
             var assembly = CompilationPipeline.GetAssemblies(AssembliesType.Editor).FirstOrDefault(a => a.name.Equals("Unity.ProjectAuditor.Editor"));
+
+            Assert.NotNull(assembly);
+
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
             Assert.IsTrue(assemblyInfo.path.Equals("Library/ScriptAssemblies/Unity.ProjectAuditor.Editor.dll"));
             Assert.IsTrue(assemblyInfo.asmDefPath.Equals(Unity.ProjectAuditor.Editor.ProjectAuditor.PackagePath + "/Editor/Unity.ProjectAuditor.Editor.asmdef"));
             Assert.IsTrue(assemblyInfo.relativePath.Equals(Unity.ProjectAuditor.Editor.ProjectAuditor.PackagePath));
+        }
+
+        [Test]
+        [Ignore("Library\\PackageCache should only be used in 2018 so it's safe to ignore")]
+        public void AssemblyInfo_PackageAssemblyPath_CanBeResolved()
+        {
+            var assembly = CompilationPipeline.GetAssemblies(AssembliesType.Player).FirstOrDefault(a => a.name.Contains("UnityEngine.UI"));
+            var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
+            var path = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, Path.Combine(Application.dataPath, "Library\\PackageCache\\com.unity.ugui@1.0.0\\Runtime\\UI\\Core\\AnimationTriggers.cs"));
+
+            Assert.True(path.Equals("Packages/com.unity.ugui/Runtime/UI/Core/AnimationTriggers.cs"), "Resolved Path is: " + path);
         }
 
 #endif
