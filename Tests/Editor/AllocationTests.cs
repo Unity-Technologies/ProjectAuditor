@@ -96,7 +96,7 @@ class ParamsArrayAllocation
 
             var allocationIssue = issues.First();
 
-            Assert.True(allocationIssue.description.Equals("'ObjectAllocation' allocation"));
+            Assert.AreEqual("'ObjectAllocation' allocation", allocationIssue.description);
             Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
         }
 
@@ -110,8 +110,8 @@ class ParamsArrayAllocation
             var issue = issues.First();
 
             Assert.AreNotEqual(16707566, issue.line);
-            Assert.True(issue.description.Equals("'ClosureAllocation' closure allocation"));
-            Assert.True(issue.name.Equals("ClosureAllocation.Dummy"));
+            Assert.AreEqual("'ClosureAllocation' closure allocation", issue.description);
+            Assert.AreEqual("ClosureAllocation.Dummy", issue.name);
             Assert.AreEqual(IssueCategory.Code, issue.category);
         }
 
@@ -123,7 +123,7 @@ class ParamsArrayAllocation
 
             var allocationIssue = issues.First();
 
-            Assert.True(allocationIssue.description.Equals("'Int32' array allocation"));
+            Assert.AreEqual("'Int32' array allocation", allocationIssue.description);
             Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
         }
 
@@ -135,7 +135,7 @@ class ParamsArrayAllocation
 
             var allocationIssue = issues.First();
 
-            Assert.True(allocationIssue.description.Equals("'System.Int32[0...,0...]' allocation"));
+            Assert.AreEqual("'System.Int32[0...,0...]' allocation", allocationIssue.description);
             Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
         }
 
@@ -147,7 +147,7 @@ class ParamsArrayAllocation
 
             var allocationIssue = issues.First();
 
-            Assert.True(allocationIssue.description.Equals("'Object' array allocation"));
+            Assert.AreEqual("'Object' array allocation", allocationIssue.description);
             Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
         }
     }

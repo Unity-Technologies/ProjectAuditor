@@ -51,8 +51,7 @@ class AddComponentToGameObject : MonoBehaviour
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInstantiate);
 
             Assert.AreEqual(1, issues.Count());
-
-            Assert.True(issues.First().GetCallingMethod().Equals("System.Void InstantiateObject::Start()"));
+            Assert.AreEqual("System.Void InstantiateObject::Start()", issues.First().GetCallingMethod());
         }
 
         [Test]
@@ -61,8 +60,7 @@ class AddComponentToGameObject : MonoBehaviour
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetAddComponent);
 
             Assert.AreEqual(1, issues.Count());
-
-            Assert.True(issues.First().GetCallingMethod().Equals("System.Void AddComponentToGameObject::Start()"));
+            Assert.AreEqual("System.Void AddComponentToGameObject::Start()", issues.First().GetCallingMethod());
         }
     }
 }

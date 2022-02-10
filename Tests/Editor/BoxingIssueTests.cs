@@ -43,10 +43,10 @@ namespace Unity.ProjectAuditor.EditorTests
 
             // check issue
             Assert.NotNull(boxingInt);
-            Assert.True(boxingInt.name.Equals("BoxingIntTest.Dummy"));
-            Assert.True(boxingInt.filename.Equals(m_TempAssetBoxingInt.fileName));
-            Assert.True(boxingInt.description.Equals("Conversion from value type 'Int32' to ref type"));
-            Assert.True(boxingInt.GetCallingMethod().Equals("System.Object BoxingIntTest::Dummy()"));
+            Assert.AreEqual("BoxingIntTest.Dummy", boxingInt.name);
+            Assert.AreEqual(m_TempAssetBoxingInt.fileName, boxingInt.filename);
+            Assert.AreEqual("Conversion from value type 'Int32' to ref type", boxingInt.description);
+            Assert.AreEqual("System.Object BoxingIntTest::Dummy()", boxingInt.GetCallingMethod());
             Assert.AreEqual(1, boxingInt.line);
             Assert.AreEqual(IssueCategory.Code, boxingInt.category);
 
@@ -57,7 +57,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.type));
             Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.method));
             Assert.False(string.IsNullOrEmpty(boxingInt.descriptor.description));
-            Assert.True(boxingInt.descriptor.description.Equals("Boxing Allocation"));
+            Assert.AreEqual("Boxing Allocation", boxingInt.descriptor.description);
         }
 
         [Test]
@@ -71,10 +71,10 @@ namespace Unity.ProjectAuditor.EditorTests
 
             // check issue
             Assert.NotNull(boxingFloat);
-            Assert.True(boxingFloat.name.Equals("BoxingFloatTest.Dummy"));
-            Assert.True(boxingFloat.filename.Equals(m_TempAssetBoxingFloat.fileName));
-            Assert.True(boxingFloat.description.Equals("Conversion from value type 'float' to ref type"));
-            Assert.True(boxingFloat.GetCallingMethod().Equals("System.Object BoxingFloatTest::Dummy()"));
+            Assert.AreEqual("BoxingFloatTest.Dummy", boxingFloat.name);
+            Assert.AreEqual(m_TempAssetBoxingFloat.fileName, boxingFloat.filename);
+            Assert.AreEqual("Conversion from value type 'float' to ref type", boxingFloat.description);
+            Assert.AreEqual("System.Object BoxingFloatTest::Dummy()", boxingFloat.GetCallingMethod());
             Assert.AreEqual(1, boxingFloat.line);
             Assert.AreEqual(IssueCategory.Code, boxingFloat.category);
 
@@ -85,7 +85,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.type));
             Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.method));
             Assert.False(string.IsNullOrEmpty(boxingFloat.descriptor.description));
-            Assert.True(boxingFloat.descriptor.description.Equals("Boxing Allocation"));
+            Assert.AreEqual("Boxing Allocation", boxingFloat.descriptor.description);
         }
 
         [Test]

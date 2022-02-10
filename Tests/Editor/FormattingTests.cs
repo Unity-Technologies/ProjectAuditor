@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase((ulong)1024 * 1024 * 1024, "1.00 GB")]
         public void Formatting_Size_IsFormatted(ulong asNumber, string asString)
         {
-            Assert.True(Formatting.FormatSize(asNumber).Equals(asString));
+            Assert.AreEqual(asString, Formatting.FormatSize(asNumber));
         }
 
         [Test]
@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var time = new TimeSpan(10, 24, 30);
             const string formatted = "10:24:30";
 
-            Assert.True(Formatting.FormatTime(time).Equals(formatted));
+            Assert.AreEqual(formatted, Formatting.FormatTime(time));
         }
     }
 }

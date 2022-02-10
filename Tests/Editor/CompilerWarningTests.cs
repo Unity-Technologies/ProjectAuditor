@@ -49,15 +49,15 @@ class ScriptWithWarning {
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
-            Assert.True(issue.description.Equals("The variable 'i' is assigned but its value is never used"));
+            Assert.AreEqual("The variable 'i' is assigned but its value is never used", issue.description);
             Assert.True(issue.relativePath.StartsWith("Assets/"), "Relative path: " + issue.relativePath);
             Assert.That(issue.line, Is.EqualTo(5));
             Assert.That(issue.severity, Is.EqualTo(Rule.Severity.Warning));
 
             // check properties
             Assert.AreEqual((int)CompilerMessageProperty.Num, issue.GetNumCustomProperties());
-            Assert.True(issue.GetCustomProperty(CompilerMessageProperty.Code).Equals("CS0219"));
-            Assert.True(issue.GetCustomProperty(CompilerMessageProperty.Assembly).Equals(AssemblyInfo.DefaultAssemblyName));
+            Assert.AreEqual("CS0219", issue.GetCustomProperty(CompilerMessageProperty.Code));
+            Assert.AreEqual(AssemblyInfo.DefaultAssemblyName, issue.GetCustomProperty(CompilerMessageProperty.Assembly));
         }
     }
 }

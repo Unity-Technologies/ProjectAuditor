@@ -68,8 +68,8 @@ class ScriptWithError {
 
             Assert.NotNull(defaultAssemblyCompilerMessages);
             Assert.AreEqual(1, defaultAssemblyCompilerMessages.Length);
-            Assert.True(defaultAssemblyCompilerMessages[0].code.Equals(k_ExpectedCode));
-            Assert.True(defaultAssemblyCompilerMessages[0].message.Equals(k_ExpectedDescription));
+            Assert.AreEqual(k_ExpectedCode, defaultAssemblyCompilerMessages[0].code);
+            Assert.AreEqual(k_ExpectedDescription, defaultAssemblyCompilerMessages[0].message);
             Assert.AreEqual(CompilerMessageType.Error, defaultAssemblyCompilerMessages[0].type);
         }
 
@@ -92,14 +92,14 @@ class ScriptWithError {
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
-            Assert.True(issue.description.Equals(k_ExpectedDescription), "Description: " + issue.description);
+            Assert.AreEqual(k_ExpectedDescription, issue.description, "Description: " + issue.description);
             Assert.That(issue.line, Is.EqualTo(6));
             Assert.That(issue.severity, Is.EqualTo(Rule.Severity.Error));
 
             // check properties
             Assert.AreEqual((int)CompilerMessageProperty.Num, issue.GetNumCustomProperties());
-            Assert.True(issue.GetCustomProperty(CompilerMessageProperty.Code).Equals(k_ExpectedCode));
-            Assert.True(issue.GetCustomProperty(CompilerMessageProperty.Assembly).Equals(AssemblyInfo.DefaultAssemblyName));
+            Assert.AreEqual(k_ExpectedCode, issue.GetCustomProperty(CompilerMessageProperty.Code));
+            Assert.AreEqual(AssemblyInfo.DefaultAssemblyName, issue.GetCustomProperty(CompilerMessageProperty.Assembly));
         }
     }
 }

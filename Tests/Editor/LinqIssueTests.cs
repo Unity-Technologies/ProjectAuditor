@@ -47,15 +47,13 @@ class MyClass
 
             Assert.AreEqual(Rule.Severity.Default, myIssue.descriptor.severity);
             Assert.AreEqual(101049, myIssue.descriptor.id);
-            Assert.True(myIssue.descriptor.type.Equals("System.Linq"));
-            Assert.True(myIssue.descriptor.method.Equals("*"));
+            Assert.AreEqual("System.Linq", myIssue.descriptor.type);
+            Assert.AreEqual("*", myIssue.descriptor.method);
 
-            Assert.True(myIssue.name.Equals("Enumerable.Count"));
-            Assert.True(myIssue.filename.Equals(m_TempAsset.fileName));
-            Assert.True(myIssue.description.Equals("System.Linq.Enumerable.Count"), "Description: {0}", myIssue.description);
-            Assert.True(
-                myIssue.GetCallingMethod().Equals(
-                    "System.Int32 MyClass::Dummy(System.Collections.Generic.List`1<System.Int32>)"));
+            Assert.AreEqual("Enumerable.Count", myIssue.name);
+            Assert.AreEqual(m_TempAsset.fileName, myIssue.filename);
+            Assert.AreEqual("System.Linq.Enumerable.Count", myIssue.description, "Description: {0}", myIssue.description);
+            Assert.AreEqual("System.Int32 MyClass::Dummy(System.Collections.Generic.List`1<System.Int32>)", myIssue.GetCallingMethod());
             Assert.AreEqual(9, myIssue.line);
             Assert.AreEqual(IssueCategory.Code, myIssue.category);
         }

@@ -11,11 +11,10 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void MetaData_IsReported()
         {
-            var issues = Utility.Analyze(IssueCategory.MetaData);
-            var matchingIssue = issues.FirstOrDefault(i => i.description.Equals("Unity Version"));
+            var matchingIssue = Utility.Analyze(IssueCategory.MetaData, issue => issue.description.Equals("Unity Version")).FirstOrDefault();
 
             Assert.NotNull(matchingIssue);
-            Assert.True(matchingIssue.GetCustomProperty(MetaDataProperty.Value).Equals(Application.unityVersion));
+            Assert.AreEqual(Application.unityVersion, matchingIssue.GetCustomProperty(MetaDataProperty.Value));
         }
     }
 }

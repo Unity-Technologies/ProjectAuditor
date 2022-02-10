@@ -43,15 +43,15 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
         public void BuildReport_Files_AreReported()
         {
-            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.BuildFile);
-            var matchingIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TempAsset.relativePath));
+            var issues = Utility.AnalyzeBuild(IssueCategory.BuildFile, i => i.relativePath.Equals(m_TempAsset.relativePath));
+            var matchingIssue = issues.FirstOrDefault();
 
             Assert.NotNull(matchingIssue);
-            Assert.True(matchingIssue.description.Equals(Path.GetFileNameWithoutExtension(m_TempAsset.relativePath)));
+            Assert.AreEqual(Path.GetFileNameWithoutExtension(m_TempAsset.relativePath), matchingIssue.description);
             Assert.That(matchingIssue.GetNumCustomProperties(), Is.EqualTo((int)BuildReportFileProperty.Num));
-            Assert.True(matchingIssue.GetCustomProperty(BuildReportFileProperty.BuildFile).Equals("resources.assets"));
+            Assert.AreEqual("resources.assets", matchingIssue.GetCustomProperty(BuildReportFileProperty.BuildFile));
+            Assert.AreEqual(typeof(Material).ToString(), matchingIssue.GetCustomProperty(BuildReportFileProperty.Type));
             Assert.That(matchingIssue.GetCustomPropertyAsInt(BuildReportFileProperty.Size), Is.Positive);
-            Assert.True(matchingIssue.GetCustomProperty(BuildReportFileProperty.Type).Equals(typeof(Material).ToString()));
         }
 
         [Test]
@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
         public void BuildReport_Steps_AreReported()
         {
-            var issues = Utility.AnalyzeBuild().GetIssues(IssueCategory.BuildStep);
+            var issues = Utility.AnalyzeBuild(IssueCategory.BuildStep);
             var step = issues.FirstOrDefault(i => i.description.Equals("Build player"));
             Assert.NotNull(step);
             Assert.That(step.depth, Is.EqualTo(0));

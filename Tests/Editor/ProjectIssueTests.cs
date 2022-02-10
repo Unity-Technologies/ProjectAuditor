@@ -42,8 +42,8 @@ namespace Unity.ProjectAuditor.EditorTests
             issue.SetCustomProperties(properties);
 
             Assert.AreEqual(2, issue.GetNumCustomProperties());
-            Assert.True(issue.GetCustomProperty(0).Equals(properties[0]));
-            Assert.True(issue.GetCustomProperty(1).Equals(properties[1]));
+            Assert.AreEqual(properties[0], issue.GetCustomProperty(0));
+            Assert.AreEqual(properties[1], issue.GetCustomProperty(1));
         }
     }
 }

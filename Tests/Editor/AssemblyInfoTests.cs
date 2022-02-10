@@ -108,8 +108,8 @@ namespace Unity.ProjectAuditor.EditorTests
                 "Resources/unity_builtin_extra"
             };
 
-            var report = Utility.AnalyzeBuild();
-            foreach (var issue in report.GetAllIssues().Where(i => i.category != IssueCategory.ProjectSetting))
+            var issues = Utility.AnalyzeBuild(i => i.category != IssueCategory.ProjectSetting);
+            foreach (var issue in issues)
             {
                 var relativePath = issue.relativePath;
                 Assert.True(string.IsNullOrEmpty(relativePath) || acceptablePrefixes.Any(prefix => relativePath.StartsWith(prefix)), "Path: " + relativePath);
@@ -126,7 +126,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
             var path = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, Path.Combine(Application.dataPath, "somefile"));
 
-            Assert.True(path.Equals("Assets/somefile"), "Resolved Path is: " + path);
+            Assert.AreEqual("Assets/somefile", path, "Resolved Path is: " + path);
         }
 
         [Test]
@@ -138,7 +138,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
-            Assert.IsTrue(assemblyInfo.path.Equals("Library/ScriptAssemblies/Assembly-CSharp.dll"));
+            Assert.AreEqual("Library/ScriptAssemblies/Assembly-CSharp.dll", assemblyInfo.path);
             Assert.IsNull(assemblyInfo.asmDefPath);
             Assert.IsFalse(assemblyInfo.packageReadOnly);
         }
@@ -152,9 +152,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
-            Assert.IsTrue(assemblyInfo.path.Equals("Library/ScriptAssemblies/Unity.ProjectAuditor.Editor.dll"));
-            Assert.IsTrue(assemblyInfo.asmDefPath.Equals(Unity.ProjectAuditor.Editor.ProjectAuditor.PackagePath + "/Editor/Unity.ProjectAuditor.Editor.asmdef"));
-            Assert.IsTrue(assemblyInfo.relativePath.Equals(Unity.ProjectAuditor.Editor.ProjectAuditor.PackagePath));
+            Assert.AreEqual("Library/ScriptAssemblies/Unity.ProjectAuditor.Editor.dll", assemblyInfo.path);
+            Assert.AreEqual(Unity.ProjectAuditor.Editor.ProjectAuditor.PackagePath + "/Editor/Unity.ProjectAuditor.Editor.asmdef", assemblyInfo.asmDefPath);
+            Assert.AreEqual(Unity.ProjectAuditor.Editor.ProjectAuditor.PackagePath, assemblyInfo.relativePath);
         }
 
         [Test]
@@ -165,7 +165,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
             var path = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, Path.Combine(Application.dataPath, "Library\\PackageCache\\com.unity.ugui@1.0.0\\Runtime\\UI\\Core\\AnimationTriggers.cs"));
 
-            Assert.True(path.Equals("Packages/com.unity.ugui/Runtime/UI/Core/AnimationTriggers.cs"), "Resolved Path is: " + path);
+            Assert.AreEqual("Packages/com.unity.ugui/Runtime/UI/Core/AnimationTriggers.cs", path, "Resolved Path is: " + path);
         }
 
 #endif

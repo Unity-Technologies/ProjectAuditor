@@ -173,6 +173,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 callCrawler.BuildCallHierarchies(issues, bar);
                 Profiler.EndSample();
 
+                // workaround for empty 'relativePath' strings which are not all available when 'onIssueFoundInternal' is called
+                foreach (var issue in issues)
+                    onIssueFound(issue);
+
                 if (onComplete != null)
                     onComplete();
             });
@@ -181,7 +185,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 if (issue.category == IssueCategory.Code)
                     issues.Add(issue);
-                onIssueFound(issue);
             });
 
             Profiler.BeginSample("CodeModule.Audit.Analysis");

@@ -14,30 +14,65 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     public static class Utility
     {
-        public static ProjectIssue[] Analyze(IssueCategory category)
+        public static ProjectIssue[] Analyze(Func<ProjectIssue, bool> predicate = null)
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var module = projectAuditor.GetModule(category);
+            var foundIssues = new List<ProjectIssue>();
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             config.AnalyzeInBackground = false;
+
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
+
+            projectAuditor.Audit(issue => {
+                if (predicate == null || predicate(issue))
+                    foundIssues.Add(issue);
+            }, b => {});
+
+            return foundIssues.ToArray();
+        }
+
+        public static ProjectIssue[] Analyze(IssueCategory category, Func<ProjectIssue, bool> predicate = null)
+        {
+            var foundIssues = new List<ProjectIssue>();
+            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            config.AnalyzeInBackground = false;
+
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
+
+            var module = projectAuditor.GetModule(category);
             module.Initialize(config);
 
-            var foundIssues = new List<ProjectIssue>();
             module.Audit(issue => {
-                foundIssues.Add(issue);
+                if (issue.category != category)
+                    return;
+
+                if (predicate == null || predicate(issue))
+                    foundIssues.Add(issue);
             });
 
-            return foundIssues.Where(i => i.category == category).ToArray();
+            return foundIssues.ToArray();
         }
 
-        public static ProjectIssue[] AnalyzeAndFindAssetIssues(TempAsset tempAsset, IssueCategory category = IssueCategory.Code)
+        public static ProjectIssue[] AnalyzeAndFindAssetIssues(TempAsset tempAsset,
+            IssueCategory category = IssueCategory.Code)
         {
-            var foundIssues = Analyze(category);
-
-            return foundIssues.Where(i => i.relativePath.Equals(tempAsset.relativePath)).ToArray();
+            return Analyze(category, i => i.relativePath.Equals(tempAsset.relativePath));
         }
 
-        public static ProjectReport AnalyzeBuild()
+        public static ProjectIssue[] AnalyzeBuild(Func<ProjectIssue, bool> predicate = null)
+        {
+            Build();
+
+            return Analyze(predicate);
+        }
+
+        public static ProjectIssue[] AnalyzeBuild(IssueCategory category, Func<ProjectIssue, bool> predicate = null)
+        {
+            Build();
+
+            return Analyze(category, predicate);
+        }
+
+        static void Build()
         {
             const string tempSceneFilename = "Assets/TestScene.unity";
             // We must save the scene or the build will fail https://unity.slack.com/archives/C3F85MBDL/p1615991512002200
@@ -60,10 +95,6 @@ namespace Unity.ProjectAuditor.EditorTests
             Directory.Delete(buildPath, true);
 
             AssetDatabase.DeleteAsset(tempSceneFilename);
-
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit();
-            return projectReport;
         }
     }
 }

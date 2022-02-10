@@ -206,6 +206,18 @@ class AnyApiInNamespace
         }
 
         [Test]
+        public void CodeAnalysis_Paths_CanBeResolved()
+        {
+            var issues = Utility.Analyze(i => i.category == IssueCategory.Code);
+            foreach (var issue in issues)
+            {
+                var relativePath = issue.relativePath;
+
+                Assert.False(string.IsNullOrEmpty(relativePath));
+            }
+        }
+
+        [Test]
         public void CodeAnalysis_IssueInEditorCode_IsNotReported()
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
@@ -250,19 +262,19 @@ class AnyApiInNamespace
 
             Assert.AreEqual(Rule.Severity.Default, myIssue.descriptor.severity);
             Assert.AreEqual(101066, myIssue.descriptor.id);
-            Assert.True(myIssue.descriptor.type.Equals("UnityEngine.Camera"));
-            Assert.True(myIssue.descriptor.method.Equals("allCameras"));
+            Assert.AreEqual("UnityEngine.Camera", myIssue.descriptor.type);
+            Assert.AreEqual("allCameras", myIssue.descriptor.method);
 
-            Assert.True(myIssue.name.Equals("Camera.get_allCameras"));
-            Assert.True(myIssue.filename.Equals(m_TempAsset.fileName));
-            Assert.True(myIssue.description.Equals("UnityEngine.Camera.allCameras"));
-            Assert.True(myIssue.GetCallingMethod().Equals("System.Void MyClass::Dummy()"));
+            Assert.AreEqual("Camera.get_allCameras", myIssue.name);
+            Assert.AreEqual(m_TempAsset.fileName, myIssue.filename);
+            Assert.AreEqual("UnityEngine.Camera.allCameras", myIssue.description);
+            Assert.AreEqual("System.Void MyClass::Dummy()", myIssue.GetCallingMethod());
             Assert.AreEqual(7, myIssue.line);
             Assert.AreEqual(IssueCategory.Code, myIssue.category);
 
             // check custom property
             Assert.AreEqual((int)CodeProperty.Num, myIssue.GetNumCustomProperties());
-            Assert.True(myIssue.GetCustomProperty(CodeProperty.Assembly).Equals(AssemblyInfo.DefaultAssemblyName));
+            Assert.AreEqual(AssemblyInfo.DefaultAssemblyName, myIssue.GetCustomProperty(CodeProperty.Assembly));
         }
 
         [Test]
@@ -276,7 +288,7 @@ class AnyApiInNamespace
 
             Assert.NotNull(myIssue);
             Assert.NotNull(myIssue.descriptor);
-            Assert.True(myIssue.description.Equals("UnityEngine.Component.tag"));
+            Assert.AreEqual("UnityEngine.Component.tag", myIssue.description);
         }
 
         [Test]
@@ -285,8 +297,7 @@ class AnyApiInNamespace
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInPlugin);
 
             Assert.AreEqual(1, issues.Count());
-
-            Assert.True(issues.First().GetCallingMethod().Equals("System.Void MyPlugin::Dummy()"));
+            Assert.AreEqual("System.Void MyPlugin::Dummy()", issues.First().GetCallingMethod());
         }
 
         [Test]
@@ -295,8 +306,7 @@ class AnyApiInNamespace
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInPlayerCode);
 
             Assert.AreEqual(1, issues.Count());
-
-            Assert.True(issues.First().GetCallingMethod().Equals("System.Void MyClassWithPlayerOnlyCode::Dummy()"));
+            Assert.AreEqual("System.Void MyClassWithPlayerOnlyCode::Dummy()", issues.First().GetCallingMethod());
         }
 
         [Test]
@@ -305,8 +315,7 @@ class AnyApiInNamespace
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInNestedClass);
 
             Assert.AreEqual(1, issues.Count());
-
-            Assert.True(issues.First().GetCallingMethod().Equals("System.Void MyClassWithNested/NestedClass::Dummy()"));
+            Assert.AreEqual("System.Void MyClassWithNested/NestedClass::Dummy()", issues.First().GetCallingMethod());
         }
 
         [Test]
@@ -315,8 +324,7 @@ class AnyApiInNamespace
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInGenericClass);
 
             Assert.AreEqual(1, issues.Count());
-
-            Assert.True(issues.First().GetCallingMethod().Equals("System.Void GenericClass`1::Dummy()"));
+            Assert.AreEqual("System.Void GenericClass`1::Dummy()", issues.First().GetCallingMethod());
         }
 
         [Test]
@@ -325,8 +333,7 @@ class AnyApiInNamespace
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInVirtualMethod);
 
             Assert.AreEqual(1, issues.Count());
-
-            Assert.True(issues.First().GetCallingMethod().Equals("System.Void AbstractClass::Dummy()"));
+            Assert.AreEqual("System.Void AbstractClass::Dummy()", issues.First().GetCallingMethod());
         }
 
         [Test]
@@ -335,8 +342,7 @@ class AnyApiInNamespace
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInOverrideMethod);
 
             Assert.AreEqual(1, issues.Count());
-
-            Assert.True(issues.First().GetCallingMethod().Equals("System.Void DerivedClass::Dummy()"));
+            Assert.AreEqual("System.Void DerivedClass::Dummy()", issues.First().GetCallingMethod());
         }
 
         [Test]
@@ -345,8 +351,7 @@ class AnyApiInNamespace
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviour);
 
             Assert.AreEqual(1, issues.Count());
-
-            Assert.True(issues.First().GetCallingMethod().Equals("System.Void MyMonoBehaviour::Start()"));
+            Assert.AreEqual("System.Void MyMonoBehaviour::Start()", issues.First().GetCallingMethod());
         }
 
         [Test]
@@ -355,9 +360,7 @@ class AnyApiInNamespace
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInCoroutine);
 
             Assert.AreEqual(1, issues.Count());
-
-            Assert.True(issues.First().GetCallingMethod()
-                .Equals("System.Boolean MyMonoBehaviourWithCoroutine/<MyCoroutine>d__1::MoveNext()"));
+            Assert.AreEqual("System.Boolean MyMonoBehaviourWithCoroutine/<MyCoroutine>d__1::MoveNext()", issues.First().GetCallingMethod());
         }
 
         [Test]
@@ -366,7 +369,7 @@ class AnyApiInNamespace
             var allScriptIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInDelegate);
             var issue = allScriptIssues.FirstOrDefault(i => i.name.Equals("Camera.get_allCameras"));
             Assert.NotNull(issue);
-            Assert.True(issue.GetCallingMethod().Equals("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()"));
+            Assert.AreEqual("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()", issue.GetCallingMethod());
         }
 
         [Test]
@@ -374,9 +377,9 @@ class AnyApiInNamespace
         {
             var allScriptIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetAnyApiInNamespace);
             var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("System.Linq.Enumerable.Sum"));
-            Assert.NotNull(issue);
 
-            Assert.True(issue.descriptor.description.Equals("System.Linq.*"));
+            Assert.NotNull(issue);
+            Assert.AreEqual("System.Linq.*", issue.descriptor.description);
         }
     }
 }

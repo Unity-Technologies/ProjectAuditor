@@ -97,7 +97,7 @@ class MyClass : MonoBehaviour
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.True(line.Equals("Issue,Critical,Area,Filename,Assembly"));
+                Assert.AreEqual("Issue,Critical,Area,Filename,Assembly", line);
 
                 var expectedIssueLine = "\"UnityEngine.Camera.allCameras\",\"True\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\"";
                 while (file.Peek() >= 0)
@@ -124,7 +124,7 @@ class MyClass : MonoBehaviour
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.True(line.Equals("Issue,Critical,Area,Filename,Assembly"));
+                Assert.AreEqual("Issue,Critical,Area,Filename,Assembly", line);
 
                 var expectedIssueLine = "\"Conversion from value type 'Int32' to ref type\",\"True\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\"";
                 while (file.Peek() >= 0)
@@ -154,7 +154,7 @@ class MyClass : MonoBehaviour
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.True(line.Equals("Issue,Area"), "Header was: " + line);
+                Assert.AreEqual("Issue,Area", line, "Header was: " + line);
 
                 while (file.Peek() >= 0)
                 {

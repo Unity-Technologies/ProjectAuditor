@@ -20,12 +20,12 @@ namespace Unity.ProjectAuditor.EditorTests
             var savedSetting = PlayerSettings.bakeCollisionMeshes;
             PlayerSettings.bakeCollisionMeshes = false;
 
-            var issues = Utility.Analyze(IssueCategory.ProjectSetting);
-            var playerSettingIssue = issues.FirstOrDefault(i => i.descriptor.method.Equals("bakeCollisionMeshes"));
+            var issues = Utility.Analyze(IssueCategory.ProjectSetting, i => i.descriptor.method.Equals("bakeCollisionMeshes"));
+            var playerSettingIssue = issues.FirstOrDefault();
 
             Assert.NotNull(playerSettingIssue);
-            Assert.True(playerSettingIssue.description.Equals("Player: Prebake Collision Meshes"));
-            Assert.True(playerSettingIssue.location.Path.Equals("Project/Player"));
+            Assert.AreEqual("Player: Prebake Collision Meshes", playerSettingIssue.description);
+            Assert.AreEqual("Project/Player", playerSettingIssue.location.Path);
             Assert.AreEqual(2, playerSettingIssue.descriptor.GetAreas().Length);
             Assert.Contains(Area.BuildSize, playerSettingIssue.descriptor.GetAreas());
             Assert.Contains(Area.LoadTime, playerSettingIssue.descriptor.GetAreas());
@@ -41,17 +41,17 @@ namespace Unity.ProjectAuditor.EditorTests
             // 0.02f is the default Time.fixedDeltaTime value and will be reported as an issue
             Time.fixedDeltaTime = 0.02f;
 
-            var issues = Utility.Analyze(IssueCategory.ProjectSetting);
-            var fixedDeltaTimeIssue = issues.FirstOrDefault(i => i.descriptor.method.Equals("fixedDeltaTime"));
+            var issues = Utility.Analyze(IssueCategory.ProjectSetting, i => i.descriptor.method.Equals("fixedDeltaTime"));
+            var fixedDeltaTimeIssue = issues.FirstOrDefault();
             Assert.NotNull(fixedDeltaTimeIssue);
-            Assert.True(fixedDeltaTimeIssue.description.Equals("Time: Fixed Timestep"));
-            Assert.True(fixedDeltaTimeIssue.location.Path.Equals("Project/Time"));
+            Assert.AreEqual("Time: Fixed Timestep", fixedDeltaTimeIssue.description);
+            Assert.AreEqual("Project/Time", fixedDeltaTimeIssue.location.Path);
 
             // "fix" fixedDeltaTime so it's not reported anymore
             Time.fixedDeltaTime = 0.021f;
 
-            issues = Utility.Analyze(IssueCategory.ProjectSetting);
-            Assert.Null(issues.FirstOrDefault(i => i.descriptor.method.Equals("fixedDeltaTime")));
+            issues = Utility.Analyze(IssueCategory.ProjectSetting, i => i.descriptor.method.Equals("fixedDeltaTime"));
+            Assert.Null(issues.FirstOrDefault());
 
             // restore Time.fixedDeltaTime
             Time.fixedDeltaTime = savedFixedDeltaTime;
