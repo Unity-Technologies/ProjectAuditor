@@ -111,7 +111,7 @@ class ParamsArrayAllocation
             var issue = issues.First();
 
             Assert.AreNotEqual(MonoCecilHelper.HiddenLine, issue.line);
-            Assert.AreEqual("Closure allocation in ClosureAllocation.Dummy", issue.description);
+            Assert.AreEqual("Closure allocation in 'ClosureAllocation.Dummy'", issue.description);
             Assert.AreEqual(IssueCategory.Code, issue.category);
         }
 

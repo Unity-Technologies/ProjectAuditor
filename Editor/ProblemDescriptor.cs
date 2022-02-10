@@ -55,6 +55,7 @@ namespace Unity.ProjectAuditor.Editor
         public string customevaluator;
 
         public string description;
+        public string messageFormat;
 
         // TODO: remove auditor-specific fields: method, type and customevaluator
         public int id;

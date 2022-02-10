@@ -394,6 +394,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     descriptor = m_RuntimeDescriptors[message.code];
                 else
                 {
+                    // do we need different descriptors?
                     descriptor = new ProblemDescriptor
                         (
                         k_CompilerMessageFirstId + m_RuntimeDescriptors.Count,
