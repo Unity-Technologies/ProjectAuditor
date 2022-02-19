@@ -1850,6 +1850,14 @@
           "areas": ["CPU"],
           "problem": "System.DateTime.Now is expensive because it needs to figure out the current timezone and daylight saving time information.",
           "solution": "Try to avoid using this method in frequently-updated code. Prefer UnityEngine.Time.time or, if precise time is needed, use DateTime.UtcNow."
+        },
+        {
+          "id": 101231,
+          "type": "UnityEngine.Object",
+          "method": "name",
+          "area": "Memory",
+          "problem": "The Object.name property allocates managed memory.",
+          "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         }
     ]
 }
