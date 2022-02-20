@@ -1855,7 +1855,7 @@
           "id": 101231,
           "type": "UnityEngine.Object",
           "method": "name",
-          "area": "Memory",
+          "areas": ["Memory"],
           "problem": "The Object.name property allocates managed memory.",
           "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         }
