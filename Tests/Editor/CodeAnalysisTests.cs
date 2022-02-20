@@ -24,6 +24,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAssetIssueInOverrideMethod;
         TempAsset m_TempAssetIssueInVirtualMethod;
         TempAsset m_TempAssetAnyApiInNamespace;
+        TempAsset m_TempAssetObjectName;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -194,6 +195,19 @@ class AnyApiInNamespace
     int SumAllValues(List<int> list)
     {
         return list.Sum();
+    }
+}
+");
+
+            m_TempAssetObjectName = new TempAsset("ObjectNameTest.cs", @"
+using UnityEngine;
+class ObjectNameTest : MonoBehaviour
+{
+    void Start()
+    {
+        Debug.Log(gameObject.name);
+        Debug.Log(transform.name);
+        Debug.Log(this.name);
     }
 }
 ");
@@ -380,6 +394,16 @@ class AnyApiInNamespace
 
             Assert.NotNull(issue);
             Assert.AreEqual("System.Linq.*", issue.descriptor.description);
+        }
+
+        [Test]
+        public void CodeAnalysis_ObjectName_IsReported()
+        {
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetObjectName);
+
+            Assert.AreEqual(3, issues.Length);
+            Assert.True(issues.All(i => i.name.Equals("Object.get_name")));
+            Assert.True(issues.All(i => i.description.Equals("UnityEngine.Object.name")));
         }
     }
 }
