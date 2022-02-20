@@ -217,35 +217,32 @@ class ObjectNameTest : MonoBehaviour
 using UnityEngine;
 class RendererMaterialTest
 {
-    void Start()
+    void Test()
     {
-        Material test = null;
-        UnityEngine.SpriteRenderer spriteRenderer = null;
-        test = spriteRenderer.material;
+        Material material = null;
+        Material[] materials;
+        Material[] sharedMaterials;
 
-        UnityEngine.TrailRenderer trailRenderer = null;
-        test = trailRenderer.material;
+        Renderer baseClassRenderer = null;
+        material = baseClassRenderer.material;
+        materials = baseClassRenderer.materials;
+        sharedMaterials = baseClassRenderer.sharedMaterials;
 
-        UnityEngine.LineRenderer lineRenderer = null;
-        test = lineRenderer.material;
+        LineRenderer subClassRenderer = null;
+        material = subClassRenderer.material;
+        materials = subClassRenderer.materials;
+        sharedMaterials = subClassRenderer.sharedMaterials;
 
-        UnityEngine.SkinnedMeshRenderer skinnedMeshRenderer = null;
-        test = skinnedMeshRenderer.material;
-
-        UnityEngine.MeshRenderer meshRenderer = null;
-        test = meshRenderer.material;
-
-        UnityEngine.ParticleSystemRenderer particleSystemRenderer = null;
-        test = particleSystemRenderer.material;
-
-        UnityEngine.SpriteMask spriteMask = null;
-        test = spriteMask.material;
-
-        UnityEngine.U2D.SpriteShapeRenderer spriteShapeRenderer = null;
-        test = spriteShapeRenderer.material;
-
-        UnityEngine.Tilemaps.TilemapRenderer tilemapRenderer = null;
-        test = tilemapRenderer.material;
+        // for reference, Renderer derived classes:
+        // - LineRenderer
+        // - MeshRenderer
+        // - ParticleSystemRenderer
+        // - SkinnedMeshRenderer
+        // - SpriteMask
+        // - SpriteRenderer
+        // - UnityEngine.U2D.SpriteShapeRenderer
+        // - UnityEngine.Tilemaps.TilemapRenderer
+        // - TrailRenderer
     }
 }
 ");
@@ -449,14 +446,7 @@ class RendererMaterialTest
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetRendererMaterial);
 
-            // test that 9 Renderer derived types
-            Assert.AreEqual(9, issues.Length);
-
-            foreach (var issue in issues)
-            {
-                Assert.True(issue.name.Equals("Renderer.get_material"), issue.name);
-                Assert.True(issue.description.Equals("UnityEngine.Renderer.material"), issue.description);
-            }
+            Assert.AreEqual(6, issues.Length);
         }
     }
 }
