@@ -181,5 +181,18 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.False(ProblemDescriptorLoader.IsPlatformCompatible(desc));
         }
+
+        [Test]
+        [TestCase("ApiDatabase")]
+        [TestCase("ProjectSettings")]
+        public void ProblemDescriptor_Descriptors_AreCorrect(string jsonFilename)
+        {
+            var descriptors = ProblemDescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, jsonFilename);
+            foreach (var descriptor in descriptors)
+            {
+                Assert.Positive(descriptor.id);
+                Assert.NotNull(descriptor.areas);
+            }
+        }
     }
 }
