@@ -306,14 +306,6 @@
             "solution": "If a CPU-accessible copy of the texture is not required, ensure that the markNonReadable flag passed into the method is set to true."
         },
         {
-            "id": 101038,
-            "type": "UnityEngine.BillboardRenderer",
-            "method": "material",
-            "areas": ["GPU"],
-            "problem": "BillboardRenderer.material: this property creates a unique copy of the Renderer's material. This breaks draw call batching and results in a higher number of draw calls, impacting rendering performance.",
-            "solution": "If possible, use BillboardRenderer.sharedMaterial instead."
-        },
-        {
             "id": 101039,
             "type": "UnityEngine.Renderer",
             "method": "material",
@@ -440,22 +432,6 @@
             "areas": ["Memory"],
             "problem": "The property AnimationCurve.keys allocates managed memory.",
             "solution": "Use AnimationCurve.AddKey()/MoveKey()/RemoveKey() instead."
-        },
-        {
-            "id": 101064,
-            "type": "UnityEngine.BillboardRenderer",
-            "method": "materials",
-            "areas": ["Memory"],
-            "problem": "The property BillboardRenderer.materials allocates managed memory.",
-            "solution": "Use BillboardRenderer.GetMaterials() instead."
-        },
-        {
-            "id": 101065,
-            "type": "UnityEngine.BillboardRenderer",
-            "method": "sharedMaterials",
-            "areas": ["Memory"],
-            "problem": "The property BillboardRenderer.sharedMaterials allocates managed memory.",
-            "solution": "Use BillboardRenderer.GetSharedMaterials() instead."
         },
         {
             "id": 101066,
@@ -618,70 +594,6 @@
             "solution": "Use Renderer.GetSharedMaterials() instead."
         },
         {
-            "id": 101086,
-            "type": "UnityEngine.TrailRenderer",
-            "method": "materials",
-            "areas": ["Memory"],
-            "problem": "The property TrailRenderer.materials allocates managed memory.",
-            "solution": "Use TrailRenderer.GetMaterials() instead."
-        },
-        {
-            "id": 101087,
-            "type": "UnityEngine.TrailRenderer",
-            "method": "sharedMaterials",
-            "areas": ["Memory"],
-            "problem": "The property TrailRenderer.sharedMaterials allocates managed memory.",
-            "solution": "Use TrailRenderer.GetSharedMaterials() instead."
-        },
-        {
-            "id": 101088,
-            "type": "UnityEngine.LineRenderer",
-            "method": "materials",
-            "areas": ["Memory"],
-            "problem": "The property LineRenderer.materials allocates managed memory.",
-            "solution": "Use LineRenderer.GetMaterials() instead."
-        },
-        {
-            "id": 101089,
-            "type": "UnityEngine.LineRenderer",
-            "method": "sharedMaterials",
-            "areas": ["Memory"],
-            "problem": "The property LineRenderer.sharedMaterials allocates managed memory.",
-            "solution": "Use LineRenderer.GetShared() instead."
-        },
-        {
-            "id": 101090,
-            "type": "UnityEngine.SkinnedMeshRenderer",
-            "method": "materials",
-            "areas": ["Memory"],
-            "problem": "The property SkinnedMeshRenderer.materials allocates managed memory.",
-            "solution": "Use SkinnedMeshRenderer.GetMaterials() instead."
-        },
-        {
-            "id": 101091,
-            "type": "UnityEngine.SkinnedMeshRenderer",
-            "method": "sharedMaterials",
-            "areas": ["Memory"],
-            "problem": "The property SkinnedMeshRenderer.sharedMaterials allocates managed memory.",
-            "solution": "Use SkinnedMeshRenderer.GetSharedMaterials() instead."
-        },
-        {
-            "id": 101092,
-            "type": "UnityEngine.MeshRenderer",
-            "method": "materials",
-            "areas": ["Memory"],
-            "problem": "The property MeshRenderer.materials allocates managed memory.",
-            "solution": "Use MeshRenderer.GetMaterials() instead."
-        },
-        {
-            "id": 101093,
-            "type": "UnityEngine.MeshRenderer",
-            "method": "sharedMaterials",
-            "areas": ["Memory"],
-            "problem": "The property MeshRenderer.sharedMaterials allocates managed memory.",
-            "solution": "Use MeshRenderer.GetSharedMaterials() instead."
-        },
-        {
             "id": 101094,
             "type": "UnityEngine.Input",
             "method": "touches",
@@ -714,44 +626,12 @@
             "solution": "Use iOS.NotificationServices.GetRemoteNotification() instead."
         },
         {
-            "id": 101098,
-            "type": "UnityEngine.SpriteRenderer",
-            "method": "materials",
-            "areas": ["Memory"],
-            "problem": "The property SpriteRenderer.materials allocates managed memory.",
-            "solution": "Use SpriteRenderer.GetMaterials() instead."
-        },
-        {
-            "id": 101099,
-            "type": "UnityEngine.SpriteRenderer",
-            "method": "sharedMaterials",
-            "areas": ["Memory"],
-            "problem": "The property SpriteRenderer.sharedMaterials allocates managed memory.",
-            "solution": "Use SpriteRenderer.GetSharedMaterials() instead."
-        },
-        {
             "id": 101100,
             "type": "UnityEngine.GUISkin",
             "method": "customStyles",
             "areas": ["Memory"],
             "problem": "The property GUISkin.customStyles allocates managed memory.",
             "solution": "Use GUISkin.GetStyle() or GUISkin.FindStyle() instead."
-        },
-        {
-            "id": 101101,
-            "type": "UnityEngine.ParticleSystemRenderer",
-            "method": "materials",
-            "areas": ["Memory"],
-            "problem": "The property ParticleSystemRenderer.materials allocates managed memory.",
-            "solution": "Use ParticleSystemRenderer.GetMaterials() instead."
-        },
-        {
-            "id": 101102,
-            "type": "UnityEngine.ParticleSystemRenderer",
-            "method": "sharedMaterials",
-            "areas": ["Memory"],
-            "problem": "The property ParticleSystemRenderer.sharedMaterials allocates managed memory.",
-            "solution": "Use ParticleSystemRenderer.GetSharedMaterials() instead."
         },
         {
             "id": 101103,
@@ -768,38 +648,6 @@
             "areas": ["Memory"],
             "problem": "The property Collision2D.contacts allocates managed memory.",
             "solution": "Use Collision2D.GetContacts() instead."
-        },
-        {
-            "id": 101105,
-            "type": "UnityEngine.SpriteMask",
-            "method": "materials",
-            "areas": ["Memory"],
-            "problem": "The property SpriteMask.materials allocates managed memory.",
-            "solution": "Use SpriteMask.GetMaterials() instead."
-        },
-        {
-            "id": 101106,
-            "type": "UnityEngine.SpriteMask",
-            "method": "sharedMaterials",
-            "areas": ["Memory"],
-            "problem": "The property SpriteMask.sharedMaterials allocates managed memory.",
-            "solution": "Use SpriteMask.GetSharedMaterials() instead."
-        },
-        {
-            "id": 101107,
-            "type": "UnityEngine.Experimental.U2D.SpriteShapeRenderer",
-            "method": "materials",
-            "areas": ["Memory"],
-            "problem": "The property Experimental.U2D.SpriteShapeRenderer.materials allocates managed memory.",
-            "solution": "Use Experimental.U2D.SpriteShapeRenderer.GetMaterials() instead."
-        },
-        {
-            "id": 101108,
-            "type": "UnityEngine.Experimental.U2D.SpriteShapeRenderer",
-            "method": "sharedMaterials",
-            "areas": ["Memory"],
-            "problem": "The property Experimental.U2D.SpriteShapeRenderer.sharedMaterials allocates managed memory.",
-            "solution": "Use Experimental.U2D.SpriteShapeRenderer.GetSharedMaterials() instead."
         },
         {
             "id": 101109,
@@ -832,22 +680,6 @@
             "areas": ["Memory"],
             "problem": "The property Font.characterInfo allocates managed memory.",
             "solution": "Use Font.GetCharacterInfo() instead."
-        },
-        {
-            "id": 101113,
-            "type": "UnityEngine.Tilemaps.TilemapRenderer",
-            "method": "materials",
-            "areas": ["Memory"],
-            "problem": "The property Tilemaps.TilemapRenderer.materials allocates managed memory.",
-            "solution": "Use Tilemaps.TilemapRenderer.GetMaterials() instead."
-        },
-        {
-            "id": 101114,
-            "type": "UnityEngine.Tilemaps.TilemapRenderer",
-            "method": "sharedMaterials",
-            "areas": ["Memory"],
-            "problem": "The property Tilemaps.TilemapRenderer.sharedMaterials allocates managed memory.",
-            "solution": "Use Tilemaps.TilemapRenderer.GetSharedMaterials() instead."
         },
         {
             "id": 101115,
