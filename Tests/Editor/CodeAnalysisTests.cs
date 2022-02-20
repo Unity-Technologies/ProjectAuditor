@@ -25,6 +25,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAssetIssueInVirtualMethod;
         TempAsset m_TempAssetAnyApiInNamespace;
         TempAsset m_TempAssetObjectName;
+        TempAsset m_TempAssetRendererMaterial;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -208,6 +209,43 @@ class ObjectNameTest : MonoBehaviour
         Debug.Log(gameObject.name);
         Debug.Log(transform.name);
         Debug.Log(this.name);
+    }
+}
+");
+
+            m_TempAssetRendererMaterial = new TempAsset("RendererMaterialTest.cs", @"
+using UnityEngine;
+class RendererMaterialTest
+{
+    void Start()
+    {
+        Material test = null;
+        UnityEngine.SpriteRenderer spriteRenderer = null;
+        test = spriteRenderer.material;
+
+        UnityEngine.TrailRenderer trailRenderer = null;
+        test = trailRenderer.material;
+
+        UnityEngine.LineRenderer lineRenderer = null;
+        test = lineRenderer.material;
+
+        UnityEngine.SkinnedMeshRenderer skinnedMeshRenderer = null;
+        test = skinnedMeshRenderer.material;
+
+        UnityEngine.MeshRenderer meshRenderer = null;
+        test = meshRenderer.material;
+
+        UnityEngine.ParticleSystemRenderer particleSystemRenderer = null;
+        test = particleSystemRenderer.material;
+
+        UnityEngine.SpriteMask spriteMask = null;
+        test = spriteMask.material;
+
+        UnityEngine.U2D.SpriteShapeRenderer spriteShapeRenderer = null;
+        test = spriteShapeRenderer.material;
+
+        UnityEngine.Tilemaps.TilemapRenderer tilemapRenderer = null;
+        test = tilemapRenderer.material;
     }
 }
 ");
@@ -404,6 +442,21 @@ class ObjectNameTest : MonoBehaviour
             Assert.AreEqual(3, issues.Length);
             Assert.True(issues.All(i => i.name.Equals("Object.get_name")));
             Assert.True(issues.All(i => i.description.Equals("UnityEngine.Object.name")));
+        }
+
+        [Test]
+        public void CodeAnalysis_RendererMaterial_IsReported()
+        {
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetRendererMaterial);
+
+            // test that 9 Renderer derived types
+            Assert.AreEqual(9, issues.Length);
+
+            foreach (var issue in issues)
+            {
+                Assert.True(issue.name.Equals("Renderer.get_material"), issue.name);
+                Assert.True(issue.description.Equals("UnityEngine.Renderer.material"), issue.description);
+            }
         }
     }
 }
