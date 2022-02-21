@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -192,6 +194,41 @@ namespace Unity.ProjectAuditor.EditorTests
             {
                 Assert.Positive(descriptor.id);
                 Assert.NotNull(descriptor.areas);
+            }
+        }
+
+        [Test]
+        public void ProblemDescriptor_TypeAndMethods_Exist()
+        {
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var types = assemblies.SelectMany(a => a.GetTypes());
+            var allowedMethodExceptions = new[]
+            {
+                "*",
+                "OnGUI",
+                "OnTriggerStay",
+                "OnTriggerStay2D",
+                "OnCollisionStay"
+            };
+
+            var descriptors = ProblemDescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, "ApiDatabase");
+            foreach (var desc in descriptors)
+            {
+                var type = types.FirstOrDefault(t => t.FullName.Equals(desc.type));
+
+                Assert.True(desc.method.Equals("*") || type != null, desc.type);
+
+                if (allowedMethodExceptions.Contains(desc.method))
+                    continue;
+
+                try
+                {
+                    Assert.True(type.GetMethod(desc.method) != null || type.GetProperty(desc.method) != null, "{0} does not belong to {1}", desc.method, desc.type);
+                }
+                catch (System.Reflection.AmbiguousMatchException e)
+                {
+                    // ambiguous match is fine
+                }
             }
         }
     }
