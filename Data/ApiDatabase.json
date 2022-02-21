@@ -291,7 +291,7 @@
         },
         {
             "id": 101036,
-            "type": "UnityEngine.RigidBody",
+            "type": "UnityEngine.Rigidbody",
             "method": "OnCollisionStay",
             "areas": ["CPU"],
             "problem": "OnCollisionStay() methods can detrimentally affect performance if they perform a lot of processing or if there are many RigidBodies which implement this method.",
@@ -379,11 +379,11 @@
         },
         {
             "id": 101047,
-            "type": "UnityEngine.Experimental.U2D.SpriteShapeRenderer",
+            "type": "UnityEngine.U2D.SpriteShapeRenderer",
             "method": "material",
             "areas": ["GPU"],
-            "problem": "Experimental.U2D.SpriteShapeRenderer.material: this property creates a unique copy of the Renderer's material. This breaks draw call batching and results in a higher number of draw calls, impacting rendering performance.",
-            "solution": "If possible, use Experimental.U2D.SpriteShapeRenderer.sharedMaterial instead."
+            "problem": "U2D.SpriteShapeRenderer.material: this property creates a unique copy of the Renderer's material. This breaks draw call batching and results in a higher number of draw calls, impacting rendering performance.",
+            "solution": "If possible, use U2D.SpriteShapeRenderer.sharedMaterial instead."
         },
         {
             "id": 101048,
@@ -859,27 +859,19 @@
         },
         {
             "id": 101107,
-            "type": "UnityEngine.Experimental.U2D.SpriteShapeRenderer",
+            "type": "UnityEngine.U2D.SpriteShapeRenderer",
             "method": "materials",
             "areas": ["Memory"],
-            "problem": "The property Experimental.U2D.SpriteShapeRenderer.materials allocates managed memory.",
-            "solution": "Use Experimental.U2D.SpriteShapeRenderer.GetMaterials() instead."
+            "problem": "The property U2D.SpriteShapeRenderer.materials allocates managed memory.",
+            "solution": "Use U2D.SpriteShapeRenderer.GetMaterials() instead."
         },
         {
             "id": 101108,
-            "type": "UnityEngine.Experimental.U2D.SpriteShapeRenderer",
+            "type": "UnityEngine.U2D.SpriteShapeRenderer",
             "method": "sharedMaterials",
             "areas": ["Memory"],
-            "problem": "The property Experimental.U2D.SpriteShapeRenderer.sharedMaterials allocates managed memory.",
-            "solution": "Use Experimental.U2D.SpriteShapeRenderer.GetSharedMaterials() instead."
-        },
-        {
-            "id": 101109,
-            "type": "UnityEngine.ProceduralMaterial",
-            "method": "shaderKeywords",
-            "areas": ["Memory"],
-            "problem": "The property ProceduralMaterial.shaderKeywords allocates managed memory.",
-            "solution": "Use ProceduralMaterial.EnableKeyword()/DisableKeyword() or IsKeywordEnable() instead."
+            "problem": "The property U2D.SpriteShapeRenderer.sharedMaterials allocates managed memory.",
+            "solution": "Use U2D.SpriteShapeRenderer.GetSharedMaterials() instead."
         },
         {
             "id": 101110,
@@ -923,7 +915,7 @@
         },
         {
             "id": 101115,
-            "type": "UnityEngine.Animator.GetCurrentAnimationClipState",
+            "type": "UnityEngine.Animator",
             "method": "GetCurrentAnimationClipState",
             "areas": ["Memory"],
             "problem": "Animator.GetCurrentAnimationClipState() allocates managed memory.",
@@ -931,7 +923,7 @@
         },
         {
             "id": 101116,
-            "type": "UnityEngine.Animator.GetBehaviours",
+            "type": "UnityEngine.Animator",
             "method": "GetBehaviours",
             "areas": ["Memory"],
             "problem": "Animator.GetBehaviours() allocates managed memory.",
@@ -1091,18 +1083,10 @@
         },
         {
             "id": 101136,
-            "type": "UnityEngine.Experimental.U2D.SpriteShapeUtility",
+            "type": "UnityEngine.U2D.SpriteShapeUtility",
             "method": "Generate",
             "areas": ["Memory"],
-            "problem": "Experimental.U2D.SpriteShapeUtility.Generate() allocates managed memory.",
-            "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
-        },
-        {
-            "id": 101137,
-            "type": "UnityEngine.ProceduralMaterial",
-            "method": "GetProceduralPropertyDescriptions",
-            "areas": ["Memory"],
-            "problem": "ProceduralMaterial. GetProceduralPropertyDescriptions() allocates managed memory.",
+            "problem": "U2D.SpriteShapeUtility.Generate() allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1367,7 +1351,8 @@
             "method": "connections",
             "areas": ["Memory"],
             "problem": "The property Network.connections allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
+            "maximumVersion": "2018.4"
         },
         {
             "id": 101171,
@@ -1375,7 +1360,8 @@
             "method": "ip",
             "areas": ["Memory"],
             "problem": "The property HostData.ip allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
+            "maximumVersion": "2018.4"
         },
         {
             "id": 101172,
@@ -1391,14 +1377,6 @@
             "method": "bytes",
             "areas": ["Memory"],
             "problem": "The property TextAsset.bytes allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
-        },
-        {
-            "id": 101174,
-            "type": "UnityEngine.Experimental.Rendering.RenderPass",
-            "method": "colorAttachments",
-            "areas": ["Memory"],
-            "problem": "The property Experimental.Rendering.RenderPass.colorAttachments allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1523,7 +1501,7 @@
         },
         {
             "id": 101190,
-            "type": "UnityEngine.Tilemaps.TileAnimationData.animatedSprites",
+            "type": "UnityEngine.Tilemaps.TileAnimationData",
             "method": "animatedSprites",
             "areas": ["Memory"],
             "problem": "The property Tilemaps.TileAnimationData.animatedSprites allocates managed memory.",
@@ -1531,7 +1509,7 @@
         },
         {
             "id": 101191,
-            "type": "UnityEngine.Experimental.UIElements.UxmlAttributeDescription.obsoleteNames",
+            "type": "UnityEngine.UIElements.UxmlAttributeDescription",
             "method": "obsoleteNames",
             "areas": ["Memory"],
             "problem": "The property Experimental.UIElements.UxmlAttributeDescription.obsoleteNames allocates managed memory.",
@@ -1539,15 +1517,15 @@
         },
         {
             "id": 101192,
-            "type": "UnityEngine.Experimental.UIElements.UxmlStringAttributeDescription.obsoleteNames",
+            "type": "UnityEngine.UIElements.UxmlStringAttributeDescription",
             "method": "obsoleteNames",
             "areas": ["Memory"],
-            "problem": "The property Experimental.UIElements.UxmlStringAttributeDescription.obsoleteNames allocates managed memory.",
+            "problem": "The property.UIElements.UxmlStringAttributeDescription.obsoleteNames allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
             "id": 101193,
-            "type": "UnityEngine.Experimental.UIElements.UxmlFloatAttributeDescription.obsoleteNames",
+            "type": "UnityEngine.UIElements.UxmlFloatAttributeDescription",
             "method": "obsoleteNames",
             "areas": ["Memory"],
             "problem": "The property Experimental.UIElements.UxmlFloatAttributeDescription.obsoleteNames allocates managed memory.",
@@ -1555,7 +1533,7 @@
         },
         {
             "id": 101194,
-            "type": "UnityEngine.Experimental.UIElements.UxmlDoubleAttributeDescription.obsoleteNames",
+            "type": "UnityEngine.UIElements.UxmlDoubleAttributeDescription",
             "method": "obsoleteNames",
             "areas": ["Memory"],
             "problem": "The property Experimental.UIElements.UxmlDoubleAttributeDescription.obsoleteNames allocates managed memory.",
@@ -1563,7 +1541,7 @@
         },
         {
             "id": 101195,
-            "type": "UnityEngine.Experimental.UIElements.UxmlIntAttributeDescription.obsoleteNames",
+            "type": "UnityEngine.UIElements.UxmlIntAttributeDescription",
             "method": "obsoleteNames",
             "areas": ["Memory"],
             "problem": "The property Experimental.UIElements.UxmlIntAttributeDescription.obsoleteNames allocates managed memory.",
@@ -1571,7 +1549,7 @@
         },
         {
             "id": 101196,
-            "type": "UnityEngine.Experimental.UIElements.UxmlLongAttributeDescription.obsoleteNames",
+            "type": "UnityEngine.UIElements.UxmlLongAttributeDescription",
             "method": "obsoleteNames",
             "areas": ["Memory"],
             "problem": "The property Experimental.UIElements.UxmlLongAttributeDescription.obsoleteNames allocates managed memory.",
@@ -1579,7 +1557,7 @@
         },
         {
             "id": 101197,
-            "type": "UnityEngine.Experimental.UIElements.UxmlBoolAttributeDescription.obsoleteNames",
+            "type": "UnityEngine.UIElements.UxmlBoolAttributeDescription",
             "method": "obsoleteNames",
             "areas": ["Memory"],
             "problem": "The property Experimental.UIElements.UxmlBoolAttributeDescription.obsoleteNames allocates managed memory.",
@@ -1587,7 +1565,7 @@
         },
         {
             "id": 101198,
-            "type": "UnityEngine.Experimental.UIElements.UxmlColorAttributeDescription.obsoleteNames",
+            "type": "UnityEngine.UIElements.UxmlColorAttributeDescription",
             "method": "obsoleteNames",
             "areas": ["Memory"],
             "problem": "The property Experimental.UIElements.UxmlColorAttributeDescription.obsoleteNames allocates managed memory.",
@@ -1595,7 +1573,7 @@
         },
         {
             "id": 101199,
-            "type": "UnityEngine.Experimental.UIElements.UxmlEnumAttributeDescription`1[T].obsoleteNames",
+            "type": "UnityEngine.UIElements.UxmlEnumAttributeDescription`1",
             "method": "obsoleteNames",
             "areas": ["Memory"],
             "problem": "The property Experimental.UIElements.UxmlEnumAttributeDescription`1[T].obsoleteNames allocates managed memory.",
@@ -1603,7 +1581,7 @@
         },
         {
             "id": 101200,
-            "type": "UnityEngine.Networking.IMultipartFormSection.sectionData",
+            "type": "UnityEngine.Networking.IMultipartFormSection",
             "method": "sectionData",
             "areas": ["Memory"],
             "problem": "The property Networking.IMultipartFormSection.sectionData allocates managed memory.",
@@ -1611,7 +1589,7 @@
         },
         {
             "id": 101201,
-            "type": "UnityEngine.Networking.MultipartFormDataSection.sectionData",
+            "type": "UnityEngine.Networking.MultipartFormDataSection",
             "method": "sectionData",
             "areas": ["Memory"],
             "problem": "The property Networking.MultipartFormDataSection.sectionData allocates managed memory.",
@@ -1619,7 +1597,7 @@
         },
         {
             "id": 101202,
-            "type": "UnityEngine.Networking.MultipartFormFileSection.sectionData",
+            "type": "UnityEngine.Networking.MultipartFormFileSection",
             "method": "sectionData",
             "areas": ["Memory"],
             "problem": "The property Networking.MultipartFormFileSection.sectionData allocates managed memory.",
@@ -1627,7 +1605,7 @@
         },
         {
             "id": 101203,
-            "type": "UnityEngine.WWWForm.data",
+            "type": "UnityEngine.WWWForm",
             "method": "data",
             "areas": ["Memory"],
             "problem": "The property WWWForm.data allocates managed memory.",
@@ -1635,127 +1613,49 @@
         },
         {
             "id": 101204,
-            "type": "UnityEngine.Networking.DownloadHandler.data",
+            "type": "UnityEngine.Networking.DownloadHandler",
             "method": "data",
             "areas": ["Memory"],
             "problem": "The property Networking.DownloadHandler.data allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101205,
-            "type": "UnityEngine.Networking.DownloadHandlerBuffer.data",
-            "method": "data",
-            "areas": ["Memory"],
-            "problem": "The property Networking.DownloadHandlerBuffer.data allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
-        },
-        {
-            "id": 101206,
-            "type": "UnityEngine.Networking.DownloadHandlerScript.data",
-            "method": "data",
-            "areas": ["Memory"],
-            "problem": "The property Networking.DownloadHandlerScript.data allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
-        },
-        {
-            "id": 101207,
-            "type": "UnityEngine.Networking.DownloadHandlerFile.data",
-            "method": "data",
-            "areas": ["Memory"],
-            "problem": "The property Networking.DownloadHandlerFile.data allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
-        },
-        {
             "id": 101208,
-            "type": "UnityEngine.Networking.UploadHandler.data",
+            "type": "UnityEngine.Networking.UploadHandler",
             "method": "data",
             "areas": ["Memory"],
             "problem": "The property Networking.UploadHandler.data allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101209,
-            "type": "UnityEngine.Networking.UploadHandlerRaw.data",
-            "method": "data",
-            "areas": ["Memory"],
-            "problem": "The property Networking.UploadHandlerRaw.data allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
-        },
-        {
-            "id": 101210,
-            "type": "UnityEngine.Networking.UploadHandlerFile.data",
-            "method": "data",
-            "areas": ["Memory"],
-            "problem": "The property Networking.UploadHandlerFile.data allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
-        },
-        {
-            "id": 101211,
-            "type": "UnityEngine.Networking.DownloadHandlerAssetBundle.data",
-            "method": "data",
-            "areas": ["Memory"],
-            "problem": "The property Networking.DownloadHandlerAssetBundle.data allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
-        },
-        {
-            "id": 101212,
-            "type": "UnityEngine.Networking.DownloadHandlerAudioClip.data",
-            "method": "data",
-            "areas": ["Memory"],
-            "problem": "The property Networking.DownloadHandlerAudioClip.data allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
-        },
-        {
-            "id": 101213,
-            "type": "UnityEngine.Networking.DownloadHandlerMovieTexture.data",
-            "method": "data",
-            "areas": ["Memory"],
-            "problem": "The property Networking.DownloadHandlerMovieTexture.data allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
-        },
-        {
-            "id": 101214,
-            "type": "UnityEngine.Networking.DownloadHandlerTexture.data",
-            "method": "data",
-            "areas": ["Memory"],
-            "problem": "The property Networking.DownloadHandlerTexture.data allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
-        },
-        {
             "id": 101215,
-            "type": "UnityEngine.Networking.NetworkMigrationManager.peers",
+            "type": "UnityEngine.Networking.NetworkMigrationManager",
             "method": "peers",
             "areas": ["Memory"],
             "problem": "The property Networking.NetworkMigrationManager.peers allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
+            "maximumVersion": "2018.4"
         },
         {
             "id": 101216,
-            "type": "UnityEngine.Networking.NetworkServerSimple.messageBuffer",
+            "type": "UnityEngine.Networking.NetworkServerSimple",
             "method": "messageBuffer",
             "areas": ["Memory"],
             "problem": "The property Networking.NetworkServerSimple.messageBuffer allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
+            "maximumVersion": "2018.4"
         },
         {
             "id": 101217,
-            "type": "UnityEngine.WWW.bytes",
+            "type": "UnityEngine.WWW",
             "method": "bytes",
             "areas": ["Memory"],
             "problem": "The property WWW.bytes allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101218,
-            "type": "UnityEngine.VR.VRSettings.supportedDevices",
-            "method": "supportedDevices",
-            "areas": ["Memory"],
-            "problem": "The property VR.VRSettings.supportedDevices allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
-        },
-        {
             "id": 101219,
-            "type": "UnityEngine.XR.XRSettings.supportedDevices",
+            "type": "UnityEngine.XR.XRSettings",
             "method": "supportedDevices",
             "areas": ["Memory"],
             "problem": "The property XR.XRSettings.supportedDevices allocates managed memory.",
@@ -1763,7 +1663,7 @@
         },
         {
             "id": 101220,
-            "type": "UnityEngine.TestTools.Constraints.AllocatingGCMemoryConstraint.Arguments",
+            "type": "UnityEngine.TestTools.Constraints.AllocatingGCMemoryConstraint",
             "method": "Arguments",
             "areas": ["Memory"],
             "problem": "The property TestTools.Constraints.AllocatingGCMemoryConstraint.Arguments allocates managed memory.",
@@ -1771,7 +1671,7 @@
         },
         {
             "id": 101221,
-            "type": "UnityEngine.TestTools.UnityPlatformAttribute.include",
+            "type": "UnityEngine.TestTools.UnityPlatformAttribute",
             "method": "include",
             "areas": ["Memory"],
             "problem": "The property TestTools.UnityPlatformAttribute.include allocates managed memory.",
@@ -1779,7 +1679,7 @@
         },
         {
             "id": 101222,
-            "type": "UnityEngine.TestTools.UnityPlatformAttribute.exclude",
+            "type": "UnityEngine.TestTools.UnityPlatformAttribute",
             "method": "exclude",
             "areas": ["Memory"],
             "problem": "The property TestTools.UnityPlatformAttribute.exclude allocates managed memory.",
