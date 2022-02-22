@@ -422,7 +422,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     shaderVariantData.passName,
                     CombineStrings(shaderVariantData.keywords),
                     CombineStrings(shaderVariantData.platformKeywords),
-                    string.Join(" ", shaderVariantData.requirements.Select(r => r.ToString()).ToArray())
+                    CombineStrings(shaderVariantData.requirements.Select(r => r.ToString()).ToArray())
                 });
 
                 onIssueFound(issue);
@@ -497,7 +497,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var pass = parts[1];
                 var stage = parts[2];
                 var keywordsString = parts[3];
-                var keywords = StringToKeywords(keywordsString);
+                var keywords = StringToKeywords(keywordsString, " ");
 
                 // fix-up stage to be consistent with built variants stage
                 if (k_StageNameMap.ContainsKey(stage))
@@ -615,19 +615,18 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
 #endif
 
-        static string[] StringToKeywords(string keywordsString)
+        static string[] StringToKeywords(string keywordsString, string separator = null)
         {
             if (keywordsString.Equals(k_NoKeywords))
                 return new string[] {};
-            return keywordsString.Split(' ');
+            return Formatting.SplitStrings(keywordsString, separator);
         }
 
-        static string CombineStrings(string[] strings)
+        static string CombineStrings(string[] strings, string separator = null)
         {
-            var combinedString = String.Join(" ", strings);
-            if (string.IsNullOrEmpty(combinedString))
-                combinedString = k_NoKeywords;
-            return combinedString;
+            if (strings.Length > 0)
+                return Formatting.CombineStrings(strings, separator);
+            return k_NoKeywords;
         }
 
         static string[] PlatformKeywordSetToStrings(PlatformKeywordSet platformKeywordSet)
