@@ -200,9 +200,8 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProblemDescriptor_TypeAndMethods_Exist()
         {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var types = assemblies.SelectMany(a => a.GetTypes());
-            var allowedMethodExceptions = new[]
+            var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes()).ToArray();
+            var skippableMethodNames = new[]
             {
                 "*",
                 "OnGUI",
@@ -218,16 +217,16 @@ namespace Unity.ProjectAuditor.EditorTests
 
                 Assert.True(desc.method.Equals("*") || type != null, desc.type);
 
-                if (allowedMethodExceptions.Contains(desc.method))
+                if (skippableMethodNames.Contains(desc.method))
                     continue;
 
                 try
                 {
                     Assert.True(type.GetMethod(desc.method) != null || type.GetProperty(desc.method) != null, "{0} does not belong to {1}", desc.method, desc.type);
                 }
-                catch (System.Reflection.AmbiguousMatchException e)
+                catch (AmbiguousMatchException)
                 {
-                    // ambiguous match is fine
+                    // as long as there is a match, this is fine
                 }
             }
         }

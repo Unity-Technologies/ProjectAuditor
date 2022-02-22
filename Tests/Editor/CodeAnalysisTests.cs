@@ -223,26 +223,17 @@ class RendererMaterialTest
         Material[] materials;
         Material[] sharedMaterials;
 
+        // check base class Renderer
         Renderer baseClassRenderer = null;
         material = baseClassRenderer.material;
         materials = baseClassRenderer.materials;
         sharedMaterials = baseClassRenderer.sharedMaterials;
 
+        // check derived class LineRenderer
         LineRenderer subClassRenderer = null;
         material = subClassRenderer.material;
         materials = subClassRenderer.materials;
         sharedMaterials = subClassRenderer.sharedMaterials;
-
-        // for reference, Renderer derived classes:
-        // - LineRenderer
-        // - MeshRenderer
-        // - ParticleSystemRenderer
-        // - SkinnedMeshRenderer
-        // - SpriteMask
-        // - SpriteRenderer
-        // - UnityEngine.U2D.SpriteShapeRenderer
-        // - UnityEngine.Tilemaps.TilemapRenderer
-        // - TrailRenderer
     }
 }
 ");
