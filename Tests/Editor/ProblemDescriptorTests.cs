@@ -198,7 +198,9 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptor_TypeAndMethods_Exist()
+        [TestCase("ApiDatabase")]
+        [TestCase("ProjectSettings")]
+        public void ProblemDescriptor_TypeAndMethods_Exist(string jsonFilename)
         {
             var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes()).ToArray();
             var skippableMethodNames = new[]
@@ -210,7 +212,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "OnCollisionStay"
             };
 
-            var descriptors = ProblemDescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, "ApiDatabase");
+            var descriptors = ProblemDescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, jsonFilename);
             foreach (var desc in descriptors)
             {
                 var type = types.FirstOrDefault(t => t.FullName.Equals(desc.type));
