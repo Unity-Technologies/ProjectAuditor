@@ -419,7 +419,7 @@ Shader ""Custom/MyEditorShader""
             Assert.Positive(variants.Length, "No shader variants found");
 
             // check custom properties
-            Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("<no keywords>")), "No shader variants found without keywords");
+            Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals(ShadersModule.k_NoKeywords)), "No shader variants found without keywords");
 
             var expectedRequirements = Formatting.CombineStrings(new[] {ShaderRequirements.BaseShaders, ShaderRequirements.Derivatives}.Select(r => r.ToString()).ToArray());
             Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Requirements).Equals(expectedRequirements)), "No shader variants found with {0} requirements", expectedRequirements);
