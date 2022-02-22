@@ -307,7 +307,7 @@
         {
           "id": 201029,
           "description": "Player: Splash Screen",
-          "type": "UnityEditor.PlayerSettings.SplashScreen",
+          "type": "UnityEditor.PlayerSettings+SplashScreen",
           "method": "show",
           "customevaluator": "PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled",
           "areas": ["LoadTime"],
