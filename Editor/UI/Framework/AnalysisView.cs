@@ -22,6 +22,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Selected
         }
 
+        protected Draw2D m_2D;
         protected ProjectAuditorConfig m_Config;
         protected Preferences m_Preferences;
         protected ViewDescriptor m_Desc;
@@ -58,6 +59,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public AnalysisView(ViewManager viewManager)
         {
+            m_2D = new Draw2D("Unlit/ProjectAuditor");
             m_ShowInfo = m_ShowWarn = m_ShowError = true;
 
             m_ViewManager = viewManager;

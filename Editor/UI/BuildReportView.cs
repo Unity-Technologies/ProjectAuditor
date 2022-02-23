@@ -11,8 +11,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     class BuildReportView : AnalysisView
     {
-        readonly Draw2D m_2D;
-
         struct GroupStats
         {
             public string assetGroup;
@@ -26,7 +24,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         public BuildReportView(ViewManager viewManager) :
             base(viewManager)
         {
-            m_2D = new Draw2D("Unlit/ProjectAuditor");
         }
 
         public override void AddIssues(IEnumerable<ProjectIssue> allIssues)

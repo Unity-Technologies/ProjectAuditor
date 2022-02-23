@@ -34,6 +34,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class AnalysisView : Unity.ProjectAuditor.Editor.IProjectIssueFilter
     {
+        protected Unity.ProjectAuditor.Editor.UI.Draw2D m_2D;
         protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_BaseFilter;
         protected Unity.ProjectAuditor.Editor.ProjectAuditorConfig m_Config;
         protected Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor m_Desc;
