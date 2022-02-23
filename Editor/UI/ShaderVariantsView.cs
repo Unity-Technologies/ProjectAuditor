@@ -136,14 +136,20 @@ The number of Variants contributes to the build size, however, there might be Va
 
                     if (selectedIssues.Length == 0)
                         GUILayout.TextArea("<No selection>", SharedStyles.TextArea, GUILayout.ExpandHeight(true));
-                    else if (selectedIssues.Length > 1)
-                        GUILayout.TextArea("<Multiple selection>", SharedStyles.TextArea, GUILayout.ExpandHeight(true));
-                    else // if (selectedDescriptors.Length == 1)
+                    else
                     {
-                        var prop = selectedIssues[0].GetCustomProperty(m_PropertyFoldouts[i].id);
-                        var text = Formatting.ReplaceStringSeparators(prop, "\n");
-                        GUILayout.TextArea(text, SharedStyles.TextArea, GUILayout.ExpandHeight(true));
+                        // check if they are all the same
+                        var props = selectedIssues.Select(issue =>
+                            issue.GetCustomProperty(m_PropertyFoldouts[i].id)).Distinct().ToArray();
+                        if (props.Length > 1)
+                            GUILayout.TextArea("<Multiple values>", SharedStyles.TextArea, GUILayout.ExpandHeight(true));
+                        else // if (props.Length == 1)
+                        {
+                            var text = Formatting.ReplaceStringSeparators(props[0], "\n");
+                            GUILayout.TextArea(text, SharedStyles.TextArea, GUILayout.ExpandHeight(true));
+                        }
                     }
+
                     GUILayout.EndScrollView();
                 }
             }
