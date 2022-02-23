@@ -225,6 +225,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool showInfoPanel;
         public bool showMuteOptions;
         public bool showRightPanels;
+        public bool showSeverityFilters;
         public System.Type type;
         public ViewDescriptor() {}
         public static Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor[] GetAll();

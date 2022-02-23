@@ -346,6 +346,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuLabel = "Code/C# Compiler Messages",
                 groupByDescriptor = true,
                 showFilters = true,
+                showSeverityFilters = true,
                 showInfoPanel = true,
                 onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenDescriptor = EditorUtil.OpenCompilerMessageDescriptor,

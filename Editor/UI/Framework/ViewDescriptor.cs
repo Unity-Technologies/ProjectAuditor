@@ -22,6 +22,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool showCritical;
         public bool showDependencyView;
         public bool showFilters;
+        public bool showSeverityFilters;
         public bool showInfoPanel;
         public bool showMuteOptions;
         public bool showRightPanels;
