@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added *UnityEngine.Object.name* code diagnostic
 * Added *Severity* filters support
 * Fixed unreported assemblies that failed to compile
+* Fixed view switching if any module is unsupported
 
 ## [0.7.2-preview] - 2022-01-21
 * Added shader *Size*, *Source Asset* and *Always Included* info to Shaders view

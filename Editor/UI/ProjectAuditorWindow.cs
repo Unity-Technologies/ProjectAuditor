@@ -125,7 +125,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             UpdateAssemblySelection();
             Profiler.EndSample();
 
-            var viewDescriptors = ViewDescriptor.GetAll();
+            var viewDescriptors = ViewDescriptor.GetAll().Where(descriptor => m_ProjectAuditor.IsModuleSupported(descriptor.category)).ToArray();
             Array.Sort(viewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
 
             m_ViewDropdownItems = new Utility.DropdownItem[viewDescriptors.Length];
