@@ -310,8 +310,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.Assembly,
                 name = "Assemblies",
-                menuLabel = "Experimental/Assemblies",
+                menuLabel = "Code/Assemblies",
                 menuOrder = 99,
+                showFilters = true,
                 onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assemblies
             });
