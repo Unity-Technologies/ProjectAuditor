@@ -42,6 +42,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             "Assembly"
             );
 
+        static readonly ProblemDescriptor k_AssemblyWithErrorsDescriptor = new ProblemDescriptor
+            (
+            700002,
+            "Assembly"
+            )
+        {
+            severity = Rule.Severity.Error
+        };
+
         const int k_CompilerMessageFirstId = 800000;
 
         static readonly IssueLayout k_AssemblyLayout = new IssueLayout
@@ -49,6 +58,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             category = IssueCategory.Assembly,
             properties = new[]
             {
+                new PropertyDefinition { type = PropertyType.Severity},
                 new PropertyDefinition { type = PropertyType.Description, name = "Assembly Name"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.ReadOnly), format = PropertyFormat.Bool, name = "Read Only"},
                 new PropertyDefinition { type = PropertyType.Path, name = "asmdef Path"},
@@ -356,6 +366,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
 
+            if (compilerMessages.Any(m => m.type == CompilerMessageType.Error))
+            {
+                onIssueFound(new ProjectIssue(k_AssemblyWithErrorsDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath,
+                    new object[(int)AssemblyProperty.Num]
+                    {
+                        assemblyInfo.packageReadOnly
+                    }));
+            }
+
             foreach (var message in compilerMessages)
             {
                 if (message.code == null)
@@ -370,26 +389,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     descriptor = m_RuntimeDescriptors[message.code];
                 else
                 {
-                    var severity = Rule.Severity.Info;
-                    switch (message.type)
-                    {
-                        case CompilerMessageType.Error:
-                            severity = Rule.Severity.Error;
-                            break;
-                        case CompilerMessageType.Warning:
-                            severity = Rule.Severity.Warning;
-                            break;
-                        case CompilerMessageType.Info:
-                            severity = Rule.Severity.Info;
-                            break;
-                    }
                     descriptor = new ProblemDescriptor
                         (
                         k_CompilerMessageFirstId + m_RuntimeDescriptors.Count,
                         message.code
                         )
                     {
-                        severity = severity
+                        severity = CompilerMessageTypeToSeverity(message.type)
                     };
                     m_RuntimeDescriptors.Add(message.code, descriptor);
                 }
@@ -407,6 +413,21 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
 
             Profiler.EndSample();
+        }
+
+        static Rule.Severity CompilerMessageTypeToSeverity(CompilerMessageType compilerMessageType)
+        {
+            switch (compilerMessageType)
+            {
+                case CompilerMessageType.Error:
+                    return Rule.Severity.Error;
+                case CompilerMessageType.Warning:
+                    return Rule.Severity.Warning;
+                case CompilerMessageType.Info:
+                    return Rule.Severity.Info;
+            }
+
+            return Rule.Severity.Info;
         }
 
         static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)

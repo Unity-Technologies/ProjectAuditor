@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 * Added *UnityEngine.Object.name* code diagnostic
+* Fixed unreported assemblies that failed to compile 
 
 ## [0.7.2-preview] - 2022-01-21
 * Added shader *Size*, *Source Asset* and *Always Included* info to Shaders view
