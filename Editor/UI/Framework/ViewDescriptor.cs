@@ -31,17 +31,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Action<ProblemDescriptor> onOpenDescriptor;
         public int analyticsEvent;
 
-        static Dictionary<int, ViewDescriptor> s_AnalysisViewDescriptors = new Dictionary<int, ViewDescriptor>();
+        static Dictionary<int, ViewDescriptor> s_ViewDescriptorsRegistry = new Dictionary<int, ViewDescriptor>();
 
         public static void Register(ViewDescriptor descriptor)
         {
-            if (!s_AnalysisViewDescriptors.ContainsKey((int)descriptor.category))
-                s_AnalysisViewDescriptors.Add((int)descriptor.category, descriptor);
+            if (!s_ViewDescriptorsRegistry.ContainsKey((int)descriptor.category))
+                s_ViewDescriptorsRegistry.Add((int)descriptor.category, descriptor);
         }
 
         public static ViewDescriptor[] GetAll()
         {
-            return s_AnalysisViewDescriptors.Select(pair => pair.Value).ToArray();
+            return s_ViewDescriptorsRegistry.Select(pair => pair.Value).ToArray();
         }
     }
 }
