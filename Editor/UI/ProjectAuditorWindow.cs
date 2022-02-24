@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Profiler.BeginSample("MatchAssembly");
             var matchAssembly = !activeView.desc.showAssemblySelection ||
                 m_AssemblySelection != null &&
-                (m_AssemblySelection.Contains(issue.GetCustomProperty(CodeProperty.Assembly)) ||
+                (m_AssemblySelection.Contains(activeView.desc.getAssemblyName(issue)) ||
                     m_AssemblySelection.ContainsGroup("All"));
             Profiler.EndSample();
             if (!matchAssembly)
@@ -312,7 +312,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Assemblies",
                 menuLabel = "Code/Assemblies",
                 menuOrder = 99,
+                showAssemblySelection = true,
                 showFilters = true,
+                getAssemblyName = issue => issue.description,
                 onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assemblies
             });
@@ -334,6 +336,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showMuteOptions = true,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
+                getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
                 onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenDescriptor = EditorUtil.OpenCodeDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ApiCalls
@@ -346,9 +349,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 98,
                 menuLabel = "Code/C# Compiler Messages",
                 groupByDescriptor = true,
+                showAssemblySelection = true,
                 showFilters = true,
                 showSeverityFilters = true,
                 showInfoPanel = true,
+                getAssemblyName = issue => issue.GetCustomProperty(CompilerMessageProperty.Assembly),
                 onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenDescriptor = EditorUtil.OpenCompilerMessageDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.CodeCompilerMessages
@@ -838,8 +843,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         void UpdateAssemblyNames()
         {
             // update list of assembly names
-            var scriptIssues = m_ProjectReport.GetIssues(IssueCategory.Code);
-            m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty(CodeProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
+            var assemblyNames = m_ProjectReport.GetIssues(IssueCategory.Assembly).Select(i => i.description).ToArray();
+            m_AssemblyNames = assemblyNames.Distinct().OrderBy(str => str).ToArray();
         }
 
         void UpdateAssemblySelection()

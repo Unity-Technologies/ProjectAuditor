@@ -27,6 +27,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool showMuteOptions;
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
+        public Func<ProjectIssue, string> getAssemblyName;
         public Action<Location> onDoubleClick;
         public Action<ViewManager> onDrawToolbarDataOptions;
         public Action<ProblemDescriptor> onOpenDescriptor;
