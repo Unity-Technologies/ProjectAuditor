@@ -369,6 +369,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showDependencyView = true,
                 showFilters = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
+                getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
                 onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Generics
             });

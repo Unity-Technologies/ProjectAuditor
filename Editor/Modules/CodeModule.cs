@@ -153,7 +153,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Profiler.EndSample();
 
             var callCrawler = new CallCrawler();
-            var issues = new List<ProjectIssue>();
             var localAssemblyInfos = assemblyInfos.Where(info => !info.packageReadOnly).ToArray();
             var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.packageReadOnly).ToArray();
 
@@ -176,26 +175,24 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 callCrawler.Add(pair);
             });
 
+            var foundIssues = new List<ProjectIssue>();
+            var onIssueFoundInternal = new Action<ProjectIssue>(foundIssues.Add);
             var onCompleteInternal = new Action<IProgress>(bar =>
             {
+                var diagnostics = foundIssues.Where(i => i.category != IssueCategory.GenericInstance).ToList();
                 Profiler.BeginSample("CodeModule.Audit.BuildCallHierarchies");
                 compilationPipeline.Dispose();
-                callCrawler.BuildCallHierarchies(issues, bar);
+                callCrawler.BuildCallHierarchies(diagnostics, bar);
                 Profiler.EndSample();
 
                 // workaround for empty 'relativePath' strings which are not all available when 'onIssueFoundInternal' is called
-                foreach (var issue in issues)
+                foreach (var issue in foundIssues)
                     onIssueFound(issue);
 
                 if (onComplete != null)
                     onComplete();
             });
 
-            var onIssueFoundInternal = new Action<ProjectIssue>(issue =>
-            {
-                if (issue.category == IssueCategory.Code)
-                    issues.Add(issue);
-            });
 
             Profiler.BeginSample("CodeModule.Audit.Analysis");
 
