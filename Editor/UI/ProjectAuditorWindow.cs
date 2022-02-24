@@ -698,41 +698,46 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 activeView.DrawTextSearch();
 
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                GUI.enabled = activeView.desc.showCritical;
-
-                bool wasShowingCritical = m_Preferences.onlyCriticalIssues;
-                m_Preferences.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
-                    m_Preferences.onlyCriticalIssues, GUILayout.Width(180));
-                GUI.enabled = true;
-
-                if (wasShowingCritical != m_Preferences.onlyCriticalIssues)
+                // this is specific to diagnostics
+                if (activeView.desc.showCritical || activeView.desc.showMuteOptions)
                 {
-                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                    var payload = new Dictionary<string, string>();
-                    payload["selected"] = activeView.desc.showCritical ? "true" : "false";
-                    ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues,
-                        analytic);
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+
+                    if (activeView.desc.showCritical)
+                    {
+                        bool wasShowingCritical = m_Preferences.onlyCriticalIssues;
+                        m_Preferences.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
+                            m_Preferences.onlyCriticalIssues, GUILayout.Width(180));
+
+                        if (wasShowingCritical != m_Preferences.onlyCriticalIssues)
+                        {
+                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                            var payload = new Dictionary<string, string>();
+                            payload["selected"] = activeView.desc.showCritical ? "true" : "false";
+                            ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues,
+                                analytic);
+                        }
+                    }
+
+                    if (activeView.desc.showMuteOptions)
+                    {
+                        bool wasDisplayingMuted = m_Preferences.mutedIssues;
+                        m_Preferences.mutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
+                            m_Preferences.mutedIssues, GUILayout.Width(127));
+
+                        if (wasDisplayingMuted != m_Preferences.mutedIssues)
+                        {
+                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                            var payload = new Dictionary<string, string>();
+                            payload["selected"] = m_Preferences.mutedIssues ? "true" : "false";
+                            ProjectAuditorAnalytics.SendEventWithKeyValues(ProjectAuditorAnalytics.UIButton.ShowMuted,
+                                analytic, payload);
+                        }
+                    }
+
+                    EditorGUILayout.EndHorizontal();
                 }
-
-                GUI.enabled = activeView.desc.showMuteOptions;
-                bool wasDisplayingMuted = m_Preferences.mutedIssues;
-                m_Preferences.mutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
-                    m_Preferences.mutedIssues, GUILayout.Width(127));
-
-                if (wasDisplayingMuted != m_Preferences.mutedIssues)
-                {
-                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                    var payload = new Dictionary<string, string>();
-                    payload["selected"] = m_Preferences.mutedIssues ? "true" : "false";
-                    ProjectAuditorAnalytics.SendEventWithKeyValues(ProjectAuditorAnalytics.UIButton.ShowMuted,
-                        analytic, payload);
-                }
-
-                GUI.enabled = true;
-
-                EditorGUILayout.EndHorizontal();
 
                 if (EditorGUI.EndChangeCheck())
                     m_ShouldRefresh = true;
