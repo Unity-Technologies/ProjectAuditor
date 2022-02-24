@@ -25,6 +25,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAssetIssueInVirtualMethod;
         TempAsset m_TempAssetAnyApiInNamespace;
         TempAsset m_TempAssetObjectName;
+        TempAsset m_TempAssetGenericInstantiation;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -208,6 +209,18 @@ class ObjectNameTest : MonoBehaviour
         Debug.Log(gameObject.name);
         Debug.Log(transform.name);
         Debug.Log(this.name);
+    }
+}
+");
+
+            m_TempAssetGenericInstantiation = new TempAsset("GenericInstantiation.cs", @"
+using System.Collections.Generic;
+class GenericInstantiation
+{
+    HashSet<string> m_GenericInstance;
+    void Dummy()
+    {
+        m_GenericInstance = new HashSet<string>();
     }
 }
 ");
@@ -404,6 +417,15 @@ class ObjectNameTest : MonoBehaviour
             Assert.AreEqual(3, issues.Length);
             Assert.True(issues.All(i => i.name.Equals("Object.get_name")));
             Assert.True(issues.All(i => i.description.Equals("UnityEngine.Object.name")));
+        }
+
+        [Test]
+        public void CodeAnalysis_GenericInstantiation_IsReported()
+        {
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetGenericInstantiation, IssueCategory.GenericInstance);
+
+            Assert.AreEqual(1, issues.Length);
+            Assert.AreEqual("System.Collections.Generic.HashSet`1<System.String>", issues.First().description);
         }
     }
 }
