@@ -25,7 +25,8 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAssetIssueInVirtualMethod;
         TempAsset m_TempAssetAnyApiInNamespace;
         TempAsset m_TempAssetObjectName;
-        TempAsset m_TempAssetGenericInstantiation;
+		TempAsset m_TempAssetGenericInstantiation;
+		TempAsset m_TempAssetRendererMaterial;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -221,6 +222,31 @@ class GenericInstantiation
     void Dummy()
     {
         m_GenericInstance = new HashSet<string>();
+    }
+}
+");
+
+            m_TempAssetRendererMaterial = new TempAsset("RendererMaterialTest.cs", @"
+using UnityEngine;
+class RendererMaterialTest
+{
+    void Test()
+    {
+        Material material = null;
+        Material[] materials;
+        Material[] sharedMaterials;
+
+        // check base class Renderer
+        Renderer baseClassRenderer = null;
+        material = baseClassRenderer.material;
+        materials = baseClassRenderer.materials;
+        sharedMaterials = baseClassRenderer.sharedMaterials;
+
+        // check derived class LineRenderer
+        LineRenderer subClassRenderer = null;
+        material = subClassRenderer.material;
+        materials = subClassRenderer.materials;
+        sharedMaterials = subClassRenderer.sharedMaterials;
     }
 }
 ");
@@ -426,6 +452,14 @@ class GenericInstantiation
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("System.Collections.Generic.HashSet`1<System.String>", issues.First().description);
+        }
+		
+		[Test]
+        public void CodeAnalysis_RendererMaterial_IsReported()
+        {
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetRendererMaterial);
+
+            Assert.AreEqual(6, issues.Length);
         }
     }
 }
