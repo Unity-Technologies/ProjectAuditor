@@ -68,7 +68,8 @@ namespace Unity.ProjectAuditor.Editor
         public string minimumVersion;
         public string maximumVersion;
 
-        public ProblemDescriptor(int id, string description, string[] areas, string problem = null, string solution = null)
+
+        internal ProblemDescriptor(int id, string description, string[] areas, string problem = null, string solution = null)
         {
             this.id = id;
             this.description = description;

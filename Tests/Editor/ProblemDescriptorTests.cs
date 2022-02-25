@@ -232,5 +232,24 @@ namespace Unity.ProjectAuditor.EditorTests
                 }
             }
         }
+
+#if UNITY_2019_1_OR_NEWER
+        [Test]
+        [TestCase("ApiDatabase")]
+        [TestCase("ProjectSettings")]
+        public void ProblemDescriptor_Areas_Exist(string jsonFilename)
+        {
+            var descriptors = ProblemDescriptorLoader.LoadFromJson_Internal(Editor.ProjectAuditor.DataPath, jsonFilename);
+            foreach (var desc in descriptors)
+            {
+                for (int i = 0; i < desc.areas.Length; i++)
+                {
+                    Area area;
+                    Assert.True(Enum.TryParse(desc.areas[i], out area), "Invalid area {0} for descriptor {1}", desc.areas[i], desc.id);
+                }
+            }
+        }
+
+#endif
     }
 }
