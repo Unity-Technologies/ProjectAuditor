@@ -25,8 +25,8 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAssetIssueInVirtualMethod;
         TempAsset m_TempAssetAnyApiInNamespace;
         TempAsset m_TempAssetObjectName;
-		TempAsset m_TempAssetGenericInstantiation;
-		TempAsset m_TempAssetRendererMaterial;
+        TempAsset m_TempAssetGenericInstantiation;
+        TempAsset m_TempAssetRendererMaterial;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -453,8 +453,8 @@ class RendererMaterialTest
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("System.Collections.Generic.HashSet`1<System.String>", issues.First().description);
         }
-		
-		[Test]
+
+        [Test]
         public void CodeAnalysis_RendererMaterial_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetRendererMaterial);
