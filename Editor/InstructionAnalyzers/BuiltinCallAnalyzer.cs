@@ -71,6 +71,13 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
                 // by default use descriptor issue description
                 description = descriptor.description;
+
+                var genericInstanceMethod = callee as GenericInstanceMethod;
+                if (genericInstanceMethod != null && genericInstanceMethod.HasGenericArguments)
+                {
+                    var genericTypeNames = genericInstanceMethod.GenericArguments.Select(a => a.FullName).ToArray();
+                    description = string.Format("{0} with generic argument {1}", descriptor.description, string.Join(", ", genericTypeNames));
+                }
             }
 
             return new ProjectIssue
