@@ -27,6 +27,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAssetObjectName;
         TempAsset m_TempAssetGenericInstantiation;
         TempAsset m_TempAssetRendererMaterial;
+        TempAsset m_TempAssetBaseTypePropertyUsage;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -250,6 +251,24 @@ class RendererMaterialTest
     }
 }
 ");
+
+            m_TempAssetBaseTypePropertyUsage = new TempAsset("BaseTypePropertyUsage.cs", @"
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+class BaseTypePropertyUsage
+{
+    UxmlFloatAttributeDescription desc;
+    IEnumerable<string> names;
+
+    void Test()
+    {
+        names = desc.obsoleteNames;
+    }
+}
+");
         }
 
         [OneTimeTearDown]
@@ -460,6 +479,15 @@ class RendererMaterialTest
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetRendererMaterial);
 
             Assert.AreEqual(6, issues.Length);
+        }
+
+        [Test]
+        public void CodeAnalysis_BaseTypePropertyUsage_IsReported()
+        {
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetBaseTypePropertyUsage);
+
+            Assert.AreEqual(1, issues.Length);
+            Assert.AreEqual("UnityEngine.UIElements.UxmlAttributeDescription.obsoleteNames", issues[0].description);
         }
     }
 }
