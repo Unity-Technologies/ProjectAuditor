@@ -64,7 +64,7 @@ class AddComponentGeneric : MonoBehaviour
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("System.Void InstantiateObject::Test()", issues[0].GetCallingMethod());
-            Assert.AreEqual("UnityEngine.Object.Instantiate", issues[0].description);
+            Assert.AreEqual("UnityEngine.Object.Instantiate with generic argument UnityEngine.GameObject", issues[0].description);
         }
 
         [Test]
