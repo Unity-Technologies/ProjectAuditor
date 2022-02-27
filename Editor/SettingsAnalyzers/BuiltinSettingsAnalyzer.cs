@@ -49,42 +49,32 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
             foreach (var descriptor in m_ProblemDescriptors)
             {
-                var issue = SearchAndEval(descriptor);
+                var issue = Evaluate(descriptor);
                 if (issue != null)
                     yield return issue;
             }
         }
 
-        ProjectIssue SearchAndEval(ProblemDescriptor descriptor)
+        ProjectIssue Evaluate(ProblemDescriptor descriptor)
         {
             if (string.IsNullOrEmpty(descriptor.customevaluator))
             {
+                var assembly = m_Assemblies.First(a => a.GetType(descriptor.type) != null);
+                var type = assembly.GetType(descriptor.type);
+
+                var methodName = descriptor.method;
+                var property = type.GetProperty(descriptor.method);
+                if (property != null)
+                    methodName = "get_" + descriptor.method;
+
                 var paramTypes = new Type[] {};
                 var args = new object[] {};
-                var found = false;
-                // do we actually need to look in all assemblies? Maybe we can find a way to only evaluate on the right assembly
-                foreach (var assembly in m_Assemblies)
-                    try
-                    {
-                        var value = MethodEvaluator.Eval(assembly.Location,
-                            descriptor.type, "get_" + descriptor.method, paramTypes, args);
 
-                        if (value.ToString() == descriptor.value)
-                        {
-                            return NewIssue(descriptor, descriptor.description);
-                        }
+                var value = MethodEvaluator.Eval(assembly.Location,
+                    descriptor.type, methodName, paramTypes, args);
 
-                        // Eval did not throw exception so we can stop iterating assemblies
-                        found = true;
-                        break;
-                    }
-                    catch (Exception)
-                    {
-                        // this is safe to ignore
-                    }
-
-                if (!found)
-                    Debug.Log(descriptor.method + " not found in any assembly");
+                if (value.ToString() == descriptor.value)
+                    return NewIssue(descriptor, descriptor.description);
             }
             else
             {
