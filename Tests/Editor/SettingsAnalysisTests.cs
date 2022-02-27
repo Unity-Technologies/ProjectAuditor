@@ -15,6 +15,17 @@ namespace Unity.ProjectAuditor.EditorTests
     class SettingsAnalysisTests
     {
         [Test]
+        public void SettingsAnalysis_Evaluators_Exist(string jsonFilename)
+        {
+            var descriptors = ProblemDescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, "ProjectSettings").Where(d => !string.IsNullOrEmpty(d.customevaluator));
+            foreach (var desc in descriptors)
+            {
+                var evalType = typeof(Evaluators);
+                Assert.NotNull(evalType.GetMethod(desc.customevaluator), desc.customevaluator + " not found.");
+            }
+        }
+
+        [Test]
         public void SettingsAnalysis_Issue_IsReported()
         {
             var savedSetting = PlayerSettings.bakeCollisionMeshes;
