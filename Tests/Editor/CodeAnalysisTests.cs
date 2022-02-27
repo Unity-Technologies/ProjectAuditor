@@ -486,8 +486,12 @@ class BaseTypePropertyUsage
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetBaseTypePropertyUsage);
 
+#if UNITY_2019_1_OR_NEWER
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("UnityEngine.UIElements.UxmlAttributeDescription.obsoleteNames", issues[0].description);
+#else
+            Assert.Zero(issues.Length);
+#endif
         }
     }
 }
