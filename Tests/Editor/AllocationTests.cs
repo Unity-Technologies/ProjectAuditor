@@ -110,7 +110,7 @@ class ParamsArrayAllocation
             var issue = issues.First();
 
             Assert.AreNotEqual(16707566, issue.line);
-            Assert.AreEqual("'ClosureAllocation' closure allocation", issue.description);
+            Assert.AreEqual("'Closure allocation in ClosureAllocation.System.Void ClosureAllocation::Dummy()'", issue.description);
             Assert.AreEqual("ClosureAllocation.Dummy", issue.name);
             Assert.AreEqual(IssueCategory.Code, issue.category);
         }
