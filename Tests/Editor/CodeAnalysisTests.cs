@@ -26,8 +26,10 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAssetAnyApiInNamespace;
         TempAsset m_TempAssetObjectName;
         TempAsset m_TempAssetGenericInstantiation;
-        TempAsset m_TempAssetRendererMaterial;
         TempAsset m_TempAssetBaseTypePropertyUsage;
+#if UNITY_2019_1_OR_NEWER
+        TempAsset m_TempAssetUxmlAttributeDescriptionPropertyUsage;
+#endif
 
         [OneTimeSetUp]
         public void SetUp()
@@ -227,9 +229,9 @@ class GenericInstantiation
 }
 ");
 
-            m_TempAssetRendererMaterial = new TempAsset("RendererMaterialTest.cs", @"
+            m_TempAssetBaseTypePropertyUsage = new TempAsset("BaseTypePropertyUsage.cs", @"
 using UnityEngine;
-class RendererMaterialTest
+class BaseTypePropertyUsage
 {
     void Test()
     {
@@ -252,13 +254,14 @@ class RendererMaterialTest
 }
 ");
 
-            m_TempAssetBaseTypePropertyUsage = new TempAsset("BaseTypePropertyUsage.cs", @"
+#if UNITY_2019_1_OR_NEWER
+            m_TempAssetUxmlAttributeDescriptionPropertyUsage = new TempAsset("UxmlAttributeDescriptionPropertyUsage.cs", @"
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-class BaseTypePropertyUsage
+class UxmlAttributeDescriptionPropertyUsage
 {
     UxmlFloatAttributeDescription desc;
     IEnumerable<string> names;
@@ -269,6 +272,7 @@ class BaseTypePropertyUsage
     }
 }
 ");
+#endif
         }
 
         [OneTimeTearDown]
@@ -474,24 +478,23 @@ class BaseTypePropertyUsage
         }
 
         [Test]
-        public void CodeAnalysis_RendererMaterial_IsReported()
-        {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetRendererMaterial);
-
-            Assert.AreEqual(6, issues.Length);
-        }
-
-        [Test]
         public void CodeAnalysis_BaseTypePropertyUsage_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetBaseTypePropertyUsage);
 
+            Assert.AreEqual(6, issues.Length);
+        }
+
 #if UNITY_2019_1_OR_NEWER
+        [Test]
+        public void CodeAnalysis_UxmlAttributeDescriptionPropertyUsage_IsReported()
+        {
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetUxmlAttributeDescriptionPropertyUsage);
+
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("UnityEngine.UIElements.UxmlAttributeDescription.obsoleteNames", issues[0].description);
-#else
-            Assert.Zero(issues.Length);
-#endif
         }
+
+#endif
     }
 }
