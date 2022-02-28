@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     if (string.IsNullOrEmpty(desc.type) || string.IsNullOrEmpty(desc.method))
                         desc.description = string.Empty;
                     else
-                        desc.description = desc.type + "." + desc.method;
+                        desc.description = desc.GetFullTypeName();
                 }
 
                 descriptors.Add(desc);

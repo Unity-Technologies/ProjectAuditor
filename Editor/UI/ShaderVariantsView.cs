@@ -28,6 +28,8 @@ To clear the recorded variants use the Clear button";
 - Run the build on the target platform. Make sure to go through all scenes.
 - Drag & Drop the Player.log file on this window";
 
+        const string k_PlayerLogParsingDialogTitle = "Shader Variants";
+
         const string k_PlayerLogParsingUnsupported =
 @"This view shows the built Shader Variants.
 
@@ -37,6 +39,9 @@ The number of Variants contributes to the build size, however, there might be Va
         const string k_NoCompiledVariantWarningLogDisabled = "No compiled shader variants found in player log. Shader compilation logging is disabled. Would you like to enable it? (Shader compilation will not appear in the log until the project is rebuilt)";
         const string k_PlayerLogProcessed = "Player log file successfully processed.";
         const string k_PlayerLogReadError = "Player log file could not be opened. Make sure the Player application has been closed.";
+        const string k_Ok = "Ok";
+        const string k_Yes = "Yes";
+        const string k_No = "No";
 
         bool m_ShowCompiledVariants = true;
         bool m_ShowUncompiledVariants = true;
@@ -76,13 +81,12 @@ The number of Variants contributes to the build size, however, there might be Va
             if (string.IsNullOrEmpty(logFilename))
                 return;
 
-            const string dialogTitle = "Shader Variants";
             var variants = GetIssues().Where(i => i.category == IssueCategory.ShaderVariant).ToArray();
             var result = ShadersModule.ParsePlayerLog(logFilename, variants, new ProgressBar());
             switch (result)
             {
                 case ParseLogResult.Success:
-                    EditorUtility.DisplayDialog(dialogTitle, k_PlayerLogProcessed, "Ok");
+                    EditorUtility.DisplayDialog(k_PlayerLogParsingDialogTitle, k_PlayerLogProcessed, k_Ok);
                     Refresh();
                     break;
                 case ParseLogResult.NoCompiledVariants:
@@ -90,16 +94,16 @@ The number of Variants contributes to the build size, however, there might be Va
                     {
                         if (GraphicsSettingsProxy.logWhenShaderIsCompiled)
                         {
-                            EditorUtility.DisplayDialog(dialogTitle, k_NoCompiledVariantWarning, "Ok");
+                            EditorUtility.DisplayDialog(k_PlayerLogParsingDialogTitle, k_NoCompiledVariantWarning, k_Ok);
                         }
                         else
                         {
-                            GraphicsSettingsProxy.logWhenShaderIsCompiled = EditorUtility.DisplayDialog(dialogTitle, k_NoCompiledVariantWarningLogDisabled, "Yes", "No");
+                            GraphicsSettingsProxy.logWhenShaderIsCompiled = EditorUtility.DisplayDialog(k_PlayerLogParsingDialogTitle, k_NoCompiledVariantWarningLogDisabled, k_Yes, k_No);
                         }
                     }
                     break;
                 case ParseLogResult.ReadError:
-                    EditorUtility.DisplayDialog(dialogTitle, k_PlayerLogReadError, "Ok");
+                    EditorUtility.DisplayDialog(k_PlayerLogParsingDialogTitle, k_PlayerLogReadError, k_Ok);
                     break;
             }
         }
@@ -136,14 +140,20 @@ The number of Variants contributes to the build size, however, there might be Va
 
                     if (selectedIssues.Length == 0)
                         GUILayout.TextArea("<No selection>", SharedStyles.TextArea, GUILayout.ExpandHeight(true));
-                    else if (selectedIssues.Length > 1)
-                        GUILayout.TextArea("<Multiple selection>", SharedStyles.TextArea, GUILayout.ExpandHeight(true));
-                    else // if (selectedDescriptors.Length == 1)
+                    else
                     {
-                        var keywords = selectedIssues[0].GetCustomProperty(m_PropertyFoldouts[i].id);
-                        var text = keywords.Equals(ShadersModule.k_NoKeywords) ? keywords : keywords.Replace(" ", "\n");
-                        GUILayout.TextArea(text, SharedStyles.TextArea, GUILayout.ExpandHeight(true));
+                        // check if they are all the same
+                        var props = selectedIssues.Select(issue =>
+                            issue.GetCustomProperty(m_PropertyFoldouts[i].id)).Distinct().ToArray();
+                        if (props.Length > 1)
+                            GUILayout.TextArea("<Multiple values>", SharedStyles.TextArea, GUILayout.ExpandHeight(true));
+                        else // if (props.Length == 1)
+                        {
+                            var text = Formatting.ReplaceStringSeparators(props[0], "\n");
+                            GUILayout.TextArea(text, SharedStyles.TextArea, GUILayout.ExpandHeight(true));
+                        }
                     }
+
                     GUILayout.EndScrollView();
                 }
             }

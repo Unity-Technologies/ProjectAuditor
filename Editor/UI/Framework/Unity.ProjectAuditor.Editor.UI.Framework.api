@@ -209,6 +209,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Unity.ProjectAuditor.Editor.IssueCategory category;
         public UnityEngine.GUIContent dependencyViewGuiContent;
         public bool descriptionWithIcon;
+        public System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, string> getAssemblyName;
         public bool groupByDescriptor;
         public string menuLabel;
         public int menuOrder;
@@ -225,6 +226,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool showInfoPanel;
         public bool showMuteOptions;
         public bool showRightPanels;
+        public bool showSeverityFilters;
         public System.Type type;
         public ViewDescriptor() {}
         public static Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor[] GetAll();

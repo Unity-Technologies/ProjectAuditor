@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Profiler.BeginSample("MatchAssembly");
             var matchAssembly = !activeView.desc.showAssemblySelection ||
                 m_AssemblySelection != null &&
-                (m_AssemblySelection.Contains(issue.GetCustomProperty(CodeProperty.Assembly)) ||
+                (m_AssemblySelection.Contains(activeView.desc.getAssemblyName(issue)) ||
                     m_AssemblySelection.ContainsGroup("All"));
             Profiler.EndSample();
             if (!matchAssembly)
@@ -125,7 +125,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             UpdateAssemblySelection();
             Profiler.EndSample();
 
-            var viewDescriptors = ViewDescriptor.GetAll();
+            var viewDescriptors = ViewDescriptor.GetAll().Where(descriptor => m_ProjectAuditor.IsModuleSupported(descriptor.category)).ToArray();
             Array.Sort(viewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
 
             m_ViewDropdownItems = new Utility.DropdownItem[viewDescriptors.Length];
@@ -310,8 +310,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.Assembly,
                 name = "Assemblies",
-                menuLabel = "Experimental/Assemblies",
+                menuLabel = "Code/Assemblies",
                 menuOrder = 99,
+                showAssemblySelection = true,
+                showFilters = true,
+                getAssemblyName = issue => issue.description,
                 onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assemblies
             });
@@ -333,6 +336,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showMuteOptions = true,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
+                getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
                 onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenDescriptor = EditorUtil.OpenCodeDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ApiCalls
@@ -345,8 +349,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 98,
                 menuLabel = "Code/C# Compiler Messages",
                 groupByDescriptor = true,
+                showAssemblySelection = true,
                 showFilters = true,
+                showSeverityFilters = true,
                 showInfoPanel = true,
+                getAssemblyName = issue => issue.GetCustomProperty(CompilerMessageProperty.Assembly),
                 onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenDescriptor = EditorUtil.OpenCompilerMessageDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.CodeCompilerMessages
@@ -362,6 +369,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showDependencyView = true,
                 showFilters = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
+                getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
                 onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Generics
             });
@@ -691,41 +699,46 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 activeView.DrawTextSearch();
 
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                GUI.enabled = activeView.desc.showCritical;
-
-                bool wasShowingCritical = m_Preferences.onlyCriticalIssues;
-                m_Preferences.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
-                    m_Preferences.onlyCriticalIssues, GUILayout.Width(180));
-                GUI.enabled = true;
-
-                if (wasShowingCritical != m_Preferences.onlyCriticalIssues)
+                // this is specific to diagnostics
+                if (activeView.desc.showCritical || activeView.desc.showMuteOptions)
                 {
-                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                    var payload = new Dictionary<string, string>();
-                    payload["selected"] = activeView.desc.showCritical ? "true" : "false";
-                    ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues,
-                        analytic);
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+
+                    if (activeView.desc.showCritical)
+                    {
+                        bool wasShowingCritical = m_Preferences.onlyCriticalIssues;
+                        m_Preferences.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
+                            m_Preferences.onlyCriticalIssues, GUILayout.Width(180));
+
+                        if (wasShowingCritical != m_Preferences.onlyCriticalIssues)
+                        {
+                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                            var payload = new Dictionary<string, string>();
+                            payload["selected"] = activeView.desc.showCritical ? "true" : "false";
+                            ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues,
+                                analytic);
+                        }
+                    }
+
+                    if (activeView.desc.showMuteOptions)
+                    {
+                        bool wasDisplayingMuted = m_Preferences.mutedIssues;
+                        m_Preferences.mutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
+                            m_Preferences.mutedIssues, GUILayout.Width(127));
+
+                        if (wasDisplayingMuted != m_Preferences.mutedIssues)
+                        {
+                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                            var payload = new Dictionary<string, string>();
+                            payload["selected"] = m_Preferences.mutedIssues ? "true" : "false";
+                            ProjectAuditorAnalytics.SendEventWithKeyValues(ProjectAuditorAnalytics.UIButton.ShowMuted,
+                                analytic, payload);
+                        }
+                    }
+
+                    EditorGUILayout.EndHorizontal();
                 }
-
-                GUI.enabled = activeView.desc.showMuteOptions;
-                bool wasDisplayingMuted = m_Preferences.mutedIssues;
-                m_Preferences.mutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
-                    m_Preferences.mutedIssues, GUILayout.Width(127));
-
-                if (wasDisplayingMuted != m_Preferences.mutedIssues)
-                {
-                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                    var payload = new Dictionary<string, string>();
-                    payload["selected"] = m_Preferences.mutedIssues ? "true" : "false";
-                    ProjectAuditorAnalytics.SendEventWithKeyValues(ProjectAuditorAnalytics.UIButton.ShowMuted,
-                        analytic, payload);
-                }
-
-                GUI.enabled = true;
-
-                EditorGUILayout.EndHorizontal();
 
                 if (EditorGUI.EndChangeCheck())
                     m_ShouldRefresh = true;
@@ -821,7 +834,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                     else if (m_AreaSelectionSummary != "None")
                     {
-                        var areas = m_AreaSelectionSummary.Split(new[] {", "}, StringSplitOptions.None);
+                        var areas = Formatting.SplitStrings(m_AreaSelectionSummary);
                         foreach (var area in areas)
                             m_AreaSelection.selection.Add(area);
                     }
@@ -836,8 +849,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         void UpdateAssemblyNames()
         {
             // update list of assembly names
-            var scriptIssues = m_ProjectReport.GetIssues(IssueCategory.Code);
-            m_AssemblyNames = scriptIssues.Select(i => i.GetCustomProperty(CodeProperty.Assembly)).Distinct().OrderBy(str => str).ToArray();
+            var assemblyNames = m_ProjectReport.GetIssues(IssueCategory.Assembly).Select(i => i.description).ToArray();
+            m_AssemblyNames = assemblyNames.Distinct().OrderBy(str => str).ToArray();
         }
 
         void UpdateAssemblySelection()
@@ -857,7 +870,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
                 else if (m_AssemblySelectionSummary != "None")
                 {
-                    var assemblies = m_AssemblySelectionSummary.Split(new[] {", "}, StringSplitOptions.None)
+                    var assemblies = Formatting.SplitStrings(m_AssemblySelectionSummary)
                         .Where(assemblyName => m_AssemblyNames.Contains(assemblyName));
                     if (assemblies.Count() > 0)
                         foreach (var assembly in assemblies)

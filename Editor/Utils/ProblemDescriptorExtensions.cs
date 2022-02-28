@@ -12,7 +12,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static string GetAreasSummary(this ProblemDescriptor descriptor)
         {
-            return string.Join(", ", descriptor.areas);
+            return Formatting.CombineStrings(descriptor.areas);
+        }
+
+        public static string GetFullTypeName(this ProblemDescriptor descriptor)
+        {
+            return descriptor.type + "." + descriptor.method;
         }
     }
 }

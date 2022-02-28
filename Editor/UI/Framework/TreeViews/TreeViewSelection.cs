@@ -33,7 +33,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 if (nameWithIndex != allIdentifier.nameWithIndex)
                 {
                     var identifier = new TreeItemIdentifier(nameWithIndex);
-                    if (identifier.index != TreeItemIdentifier.kAll) selection.Add(nameWithIndex);
+                    if (identifier.index != TreeItemIdentifier.kAll)
+                        selection.Add(nameWithIndex);
                 }
         }
 

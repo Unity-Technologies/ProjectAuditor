@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var module = projectAuditor.GetModule<BuildReportModule>();
             var isSupported = module.IsSupported();
-#if UNITY_2019_4_OR_NEWER
+#if BUILD_REPORT_API_SUPPORT
             Assert.True(isSupported);
 #else
             Assert.False(isSupported);
@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-#if !UNITY_2019_4_OR_NEWER
+#if !BUILD_REPORT_API_SUPPORT
         [Ignore("Not Supported in this version of Unity")]
 #endif
         public void BuildReport_Files_AreReported()
@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-#if !UNITY_2019_4_OR_NEWER
+#if !BUILD_REPORT_API_SUPPORT
         [Ignore("Not Supported in this version of Unity")]
 #endif
         public void BuildReport_Steps_AreReported()

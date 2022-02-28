@@ -75,7 +75,7 @@ class ScriptWithError {
 
         [Test]
         [ExplicitAttribute]
-        public void CompilerError_Issue_IsReported()
+        public void CompilerError_Message_IsReported()
         {
             LogAssert.ignoreFailingMessages = true;
 
@@ -100,6 +100,28 @@ class ScriptWithError {
             Assert.AreEqual((int)CompilerMessageProperty.Num, issue.GetNumCustomProperties());
             Assert.AreEqual(k_ExpectedCode, issue.GetCustomProperty(CompilerMessageProperty.Code));
             Assert.AreEqual(AssemblyInfo.DefaultAssemblyName, issue.GetCustomProperty(CompilerMessageProperty.Assembly));
+        }
+
+        [Test]
+        [ExplicitAttribute]
+        public void CompilerError_Assembly_IsReported()
+        {
+            LogAssert.ignoreFailingMessages = true;
+
+            var issues = Utility.Analyze(IssueCategory.Assembly, i => i.severity == Rule.Severity.Error);
+
+            LogAssert.ignoreFailingMessages = false;
+
+            Assert.AreEqual(1, issues.Count());
+
+            var issue = issues.First();
+
+            // check descriptor
+            Assert.Contains(Area.Info, issue.descriptor.GetAreas());
+
+            // check issue
+            Assert.That(issue.category, Is.EqualTo(IssueCategory.Assembly));
+            Assert.That(issue.severity, Is.EqualTo(Rule.Severity.Error));
         }
     }
 }

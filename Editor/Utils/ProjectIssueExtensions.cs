@@ -4,7 +4,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 {
     public static class ProjectIssueExtensions
     {
-        const string k_NotAvailable = "N/A";
+        internal const string k_NotAvailable = "N/A";
 
         public static string GetProperty(this ProjectIssue issue, PropertyType propertyType)
         {
@@ -15,6 +15,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 case PropertyType.Area:
                     return issue.descriptor.GetAreasSummary();
                 case PropertyType.FileType:
+                    if (issue.location == null)
+                        return k_NotAvailable;
                     var ext = issue.location.Extension;
                     if (ext.StartsWith("."))
                         ext = ext.Substring(1);

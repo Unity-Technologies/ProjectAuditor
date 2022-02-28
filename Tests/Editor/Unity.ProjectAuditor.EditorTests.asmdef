@@ -16,5 +16,10 @@
         "Mono.Cecil.dll"        
     ],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [ {
+        "name": "Unity",
+        "expression": "2019.4",
+        "define": "BUILD_REPORT_API_SUPPORT"
+    }]
 }

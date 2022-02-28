@@ -201,6 +201,11 @@ namespace Unity.ProjectAuditor.Editor
             return m_Modules.FirstOrDefault(a => a.IsSupported() && a.GetLayouts().FirstOrDefault(l => l.category == category) != null);
         }
 
+        internal bool IsModuleSupported(IssueCategory category)
+        {
+            return m_Modules.Any(a => a.IsSupported() && a.GetLayouts().FirstOrDefault(l => l.category == category) != null);
+        }
+
         public IssueLayout GetLayout(IssueCategory category)
         {
             var layouts = m_Modules.Where(a => a.IsSupported()).SelectMany(module => module.GetLayouts()).Where(l => l.category == category);

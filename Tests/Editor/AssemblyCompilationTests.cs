@@ -9,7 +9,9 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     class AssemblyCompilationTests
     {
+#pragma warning disable 0414
         TempAsset m_TempAsset; // this is required to generate Assembly-CSharp.dll
+#pragma warning restore 0414
 
         [OneTimeSetUp]
         public void SetUp()

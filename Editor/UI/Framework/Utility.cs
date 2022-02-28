@@ -1,4 +1,5 @@
 using System;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -148,7 +149,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (numStrings == 1)
                 return selectedStrings[0];
 
-            return string.Join(", ", selectedStrings);
+            return Formatting.CombineStrings(selectedStrings);
         }
 
         public static GUIContent GetIcon(string name)

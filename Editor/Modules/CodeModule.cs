@@ -42,6 +42,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             "Assembly"
             );
 
+        static readonly ProblemDescriptor k_AssemblyWithErrorsDescriptor = new ProblemDescriptor
+            (
+            700002,
+            "Assembly"
+            )
+        {
+            severity = Rule.Severity.Error
+        };
+
         const int k_CompilerMessageFirstId = 800000;
 
         static readonly IssueLayout k_AssemblyLayout = new IssueLayout
@@ -49,6 +58,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             category = IssueCategory.Assembly,
             properties = new[]
             {
+                new PropertyDefinition { type = PropertyType.Severity},
                 new PropertyDefinition { type = PropertyType.Description, name = "Assembly Name"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.ReadOnly), format = PropertyFormat.Bool, name = "Read Only"},
                 new PropertyDefinition { type = PropertyType.Path, name = "asmdef Path"},
@@ -143,7 +153,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Profiler.EndSample();
 
             var callCrawler = new CallCrawler();
-            var issues = new List<ProjectIssue>();
             var localAssemblyInfos = assemblyInfos.Where(info => !info.packageReadOnly).ToArray();
             var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.packageReadOnly).ToArray();
 
@@ -166,26 +175,24 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 callCrawler.Add(pair);
             });
 
+            var foundIssues = new List<ProjectIssue>();
+            var onIssueFoundInternal = new Action<ProjectIssue>(foundIssues.Add);
             var onCompleteInternal = new Action<IProgress>(bar =>
             {
+                var diagnostics = foundIssues.Where(i => i.category != IssueCategory.GenericInstance).ToList();
                 Profiler.BeginSample("CodeModule.Audit.BuildCallHierarchies");
                 compilationPipeline.Dispose();
-                callCrawler.BuildCallHierarchies(issues, bar);
+                callCrawler.BuildCallHierarchies(diagnostics, bar);
                 Profiler.EndSample();
 
                 // workaround for empty 'relativePath' strings which are not all available when 'onIssueFoundInternal' is called
-                foreach (var issue in issues)
+                foreach (var issue in foundIssues)
                     onIssueFound(issue);
 
                 if (onComplete != null)
                     onComplete();
             });
 
-            var onIssueFoundInternal = new Action<ProjectIssue>(issue =>
-            {
-                if (issue.category == IssueCategory.Code)
-                    issues.Add(issue);
-            });
 
             Profiler.BeginSample("CodeModule.Audit.Analysis");
 
@@ -356,6 +363,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
 
+            if (compilerMessages.Any(m => m.type == CompilerMessageType.Error))
+            {
+                onIssueFound(new ProjectIssue(k_AssemblyWithErrorsDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath,
+                    new object[(int)AssemblyProperty.Num]
+                    {
+                        assemblyInfo.packageReadOnly
+                    }));
+            }
+
             foreach (var message in compilerMessages)
             {
                 if (message.code == null)
@@ -370,26 +386,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     descriptor = m_RuntimeDescriptors[message.code];
                 else
                 {
-                    var severity = Rule.Severity.Info;
-                    switch (message.type)
-                    {
-                        case CompilerMessageType.Error:
-                            severity = Rule.Severity.Error;
-                            break;
-                        case CompilerMessageType.Warning:
-                            severity = Rule.Severity.Warning;
-                            break;
-                        case CompilerMessageType.Info:
-                            severity = Rule.Severity.Info;
-                            break;
-                    }
                     descriptor = new ProblemDescriptor
                         (
                         k_CompilerMessageFirstId + m_RuntimeDescriptors.Count,
                         message.code
                         )
                     {
-                        severity = severity
+                        severity = CompilerMessageTypeToSeverity(message.type)
                     };
                     m_RuntimeDescriptors.Add(message.code, descriptor);
                 }
@@ -407,6 +410,21 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
 
             Profiler.EndSample();
+        }
+
+        static Rule.Severity CompilerMessageTypeToSeverity(CompilerMessageType compilerMessageType)
+        {
+            switch (compilerMessageType)
+            {
+                case CompilerMessageType.Error:
+                    return Rule.Severity.Error;
+                case CompilerMessageType.Warning:
+                    return Rule.Severity.Warning;
+                case CompilerMessageType.Info:
+                    return Rule.Severity.Info;
+            }
+
+            return Rule.Severity.Info;
         }
 
         static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)

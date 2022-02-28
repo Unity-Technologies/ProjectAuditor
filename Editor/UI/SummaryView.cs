@@ -10,12 +10,19 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     class SummaryView : AnalysisView
     {
-        int m_NumBuildSteps;
-        int m_NumCodeIssues;
-        int m_NumCompilerErrors;
-        int m_NumSettingIssues;
-        int m_NumResources;
-        int m_NumShaders;
+        struct Stats
+        {
+            public int numBuildSteps;
+            public int numCodeIssues;
+            public int numCompiledAssemblies;
+            public int numCompilerErrors;
+            public int numSettingIssues;
+            public int numTotalAssemblies;
+            public int numResources;
+            public int numShaders;
+        }
+
+        Stats m_Stats;
 
         public SummaryView(ViewManager viewManager) : base(viewManager)
         {
@@ -25,26 +32,24 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             base.AddIssues(allIssues);
 
-            m_NumBuildSteps += allIssues.Count(i => i.category == IssueCategory.BuildStep);
-            m_NumCodeIssues += allIssues.Count(i => i.category == IssueCategory.Code);
-            m_NumSettingIssues += allIssues.Count(i => i.category == IssueCategory.ProjectSetting);
-            m_NumResources += allIssues.Count(i => i.category == IssueCategory.Asset);
-            m_NumShaders += allIssues.Count(i => i.category == IssueCategory.Shader);
+            m_Stats.numBuildSteps += allIssues.Count(i => i.category == IssueCategory.BuildStep);
+            m_Stats.numCodeIssues += allIssues.Count(i => i.category == IssueCategory.Code);
+            m_Stats.numSettingIssues += allIssues.Count(i => i.category == IssueCategory.ProjectSetting);
+            m_Stats.numResources += allIssues.Count(i => i.category == IssueCategory.Asset);
+            m_Stats.numShaders += allIssues.Count(i => i.category == IssueCategory.Shader);
 
             var compilerMessages = allIssues.Where(i => i.category == IssueCategory.CodeCompilerMessage);
-            m_NumCompilerErrors += compilerMessages.Count(i => i.severity == Rule.Severity.Error);
+            m_Stats.numCompilerErrors += compilerMessages.Count(i => i.severity == Rule.Severity.Error);
+
+            m_Stats.numCompiledAssemblies += allIssues.Count(i => i.category == IssueCategory.Assembly && i.severity != Rule.Severity.Error);
+            m_Stats.numTotalAssemblies += allIssues.Count(i => i.category == IssueCategory.Assembly);
         }
 
         public override void Clear()
         {
             base.Clear();
 
-            m_NumBuildSteps = 0;
-            m_NumCodeIssues = 0;
-            m_NumCompilerErrors = 0;
-            m_NumSettingIssues = 0;
-            m_NumResources = 0;
-            m_NumShaders = 0;
+            m_Stats = new Stats();
         }
 
         protected override void OnDrawInfo()
@@ -52,15 +57,16 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField("Analysis overview", EditorStyles.boldLabel);
 
             EditorGUI.indentLevel++;
-            DrawSummaryItem("Code Issues: ", m_NumCodeIssues, IssueCategory.Code);
-            if (m_NumCompilerErrors > 0)
+            DrawSummaryItem("Code Issues: ", m_Stats.numCodeIssues, IssueCategory.Code);
+            DrawSummaryItem("Compiled Assemblies: ", string.Format("{0} / {1}", m_Stats.numCompiledAssemblies, m_Stats.numTotalAssemblies), IssueCategory.Assembly);
+            if (m_Stats.numCompilerErrors > 0)
             {
-                DrawSummaryItem("Compilation Errors: ", m_NumCompilerErrors, IssueCategory.CodeCompilerMessage, Utility.ErrorIcon);
+                DrawSummaryItem("Compilation Errors: ", m_Stats.numCompilerErrors, IssueCategory.CodeCompilerMessage, Utility.ErrorIcon);
             }
-            DrawSummaryItem("Settings Issues:", m_NumSettingIssues, IssueCategory.ProjectSetting);
-            DrawSummaryItem("Assets in Resources folders:", m_NumResources, IssueCategory.Asset);
-            DrawSummaryItem("Shaders in the project:", m_NumShaders, IssueCategory.Shader);
-            var buildAvailable = m_NumBuildSteps > 0;
+            DrawSummaryItem("Settings Issues:", m_Stats.numSettingIssues, IssueCategory.ProjectSetting);
+            DrawSummaryItem("Assets in Resources folders:", m_Stats.numResources, IssueCategory.Asset);
+            DrawSummaryItem("Shaders in the project:", m_Stats.numShaders, IssueCategory.Shader);
+            var buildAvailable = m_Stats.numBuildSteps > 0;
             DrawSummaryItem("Build Report available:", buildAvailable, IssueCategory.BuildStep);
             EditorGUI.indentLevel--;
 

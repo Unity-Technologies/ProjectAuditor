@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 * Added *UnityEngine.Object.name* code diagnostic
+* Added *Severity* filters support
+* Fixed unreported assemblies that failed to compile
+* Fixed view switching if any module is unsupported
 * Fixed database of API usage descriptors
 * Removed redundant API usage descriptors
 

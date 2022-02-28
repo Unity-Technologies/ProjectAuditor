@@ -22,26 +22,28 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool showCritical;
         public bool showDependencyView;
         public bool showFilters;
+        public bool showSeverityFilters;
         public bool showInfoPanel;
         public bool showMuteOptions;
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
+        public Func<ProjectIssue, string> getAssemblyName;
         public Action<Location> onDoubleClick;
         public Action<ViewManager> onDrawToolbarDataOptions;
         public Action<ProblemDescriptor> onOpenDescriptor;
         public int analyticsEvent;
 
-        static Dictionary<int, ViewDescriptor> s_AnalysisViewDescriptors = new Dictionary<int, ViewDescriptor>();
+        static Dictionary<int, ViewDescriptor> s_ViewDescriptorsRegistry = new Dictionary<int, ViewDescriptor>();
 
         public static void Register(ViewDescriptor descriptor)
         {
-            if (!s_AnalysisViewDescriptors.ContainsKey((int)descriptor.category))
-                s_AnalysisViewDescriptors.Add((int)descriptor.category, descriptor);
+            if (!s_ViewDescriptorsRegistry.ContainsKey((int)descriptor.category))
+                s_ViewDescriptorsRegistry.Add((int)descriptor.category, descriptor);
         }
 
         public static ViewDescriptor[] GetAll()
         {
-            return s_AnalysisViewDescriptors.Select(pair => pair.Value).ToArray();
+            return s_ViewDescriptorsRegistry.Select(pair => pair.Value).ToArray();
         }
     }
 }
