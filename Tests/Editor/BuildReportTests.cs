@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Auditors;
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
@@ -55,17 +56,21 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void BuildReport_Script_IsReported()
+        public void BuildReportSize_Font_IsReported()
         {
-            var issues = Utility.AnalyzeBuild(IssueCategory.BuildFile, i => i.relativePath.Equals("Packages/com.unity.ugui/Runtime/UI/Core/Dropdown.cs"));
+            Assert.AreEqual("Font", BuildReportModule.GetDescriptor("font.ttf", typeof(Font)).description);
+        }
 
-            Assert.AreEqual(1, issues.Length);
+        [Test]
+        public void BuildReportSize_Script_IsReported()
+        {
+            Assert.AreEqual("Script", BuildReportModule.GetDescriptor("script.cs", typeof(MonoScript)).description);
+        }
 
-            var scriptIssue = issues.First();
-
-            Assert.AreEqual("Script", scriptIssue.descriptor.description);
-            Assert.AreEqual("UnityEditor.MonoScript", scriptIssue.GetCustomProperty(BuildReportFileProperty.Type));
-            Assert.AreEqual("globalgamemanagers.assets", scriptIssue.GetCustomProperty(BuildReportFileProperty.BuildFile));
+        [Test]
+        public void BuildReportSize_Sprite_IsReported()
+        {
+            Assert.AreEqual("Texture", BuildReportModule.GetDescriptor("sprite.png", typeof(Sprite)).description);
         }
 
         [Test]
