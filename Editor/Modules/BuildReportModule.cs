@@ -201,6 +201,13 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             Area.BuildSize
             );
 
+        static readonly ProblemDescriptor k_ScriptDescriptor = new ProblemDescriptor
+            (
+            600017,
+            "Script",
+            Area.BuildSize
+            );
+
 #pragma warning disable 0414
         readonly Dictionary<Type, ProblemDescriptor> m_DescriptorsMap = new Dictionary<Type, ProblemDescriptor>()
         {
@@ -215,6 +222,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             { typeof(Mesh), k_ModelDescriptor },
             { typeof(MonoBehaviour), k_MonoBehaviourDescriptor },
             { typeof(GameObject), k_PrefabDescriptor },
+            { typeof(MonoScript), k_ScriptDescriptor },
             { typeof(Sprite), k_TextureDescriptor },
             { typeof(Texture), k_TextureDescriptor },
             { typeof(TextAsset), k_TextDescriptor },
@@ -276,6 +284,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             yield return k_ModelDescriptor;
             yield return k_MonoBehaviourDescriptor;
             yield return k_PrefabDescriptor;
+            yield return k_ScriptDescriptor;
             yield return k_ShaderDescriptor;
             yield return k_TextDescriptor;
             yield return k_TextureDescriptor;
@@ -366,31 +375,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     if (!Path.HasExtension(assetPath))
                         continue;
 
-                    ProblemDescriptor descriptor = null;
-
-                    // special case for raw bytes data as they use TextAsset at runtime
-                    if (Path.GetExtension(assetPath).Equals(".bytes", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        descriptor = k_ByteDataDescriptor;
-                    }
-                    else if (m_DescriptorsMap.ContainsKey(content.type))
-                        descriptor = m_DescriptorsMap[content.type];
-                    {
-                        foreach (var pair in m_DescriptorsMap)
-                        {
-                            if (content.type.IsSubclassOf(pair.Key))
-                            {
-                                descriptor = pair.Value;
-                                break;
-                            }
-                        }
-
-                        if (descriptor == null)
-                        {
-                            descriptor = k_OtherTypeDescriptor;
-                        }
-                    }
-
+                    var descriptor = GetDescriptor(assetPath, content.type);
                     var description = Path.GetFileNameWithoutExtension(assetPath);
                     var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
                     issue.SetCustomProperties(new object[(int)BuildReportFileProperty.Num]
@@ -402,6 +387,24 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     onIssueFound(issue);
                 }
             }
+        }
+
+        ProblemDescriptor GetDescriptor(string assetPath, Type type)
+        {
+            // special case for raw bytes data as they use TextAsset at runtime
+            if (Path.GetExtension(assetPath).Equals(".bytes", StringComparison.InvariantCultureIgnoreCase))
+                return k_ByteDataDescriptor;
+
+            if (m_DescriptorsMap.ContainsKey(type))
+                return m_DescriptorsMap[type];
+
+            foreach (var pair in m_DescriptorsMap)
+            {
+                if (type.IsSubclassOf(pair.Key))
+                    return pair.Value;
+            }
+
+            return k_OtherTypeDescriptor;
         }
 
         void NewMetaData(string key, object value, Action<ProjectIssue> onIssueFound)
