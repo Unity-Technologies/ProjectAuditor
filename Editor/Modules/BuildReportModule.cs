@@ -209,13 +209,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             );
 
 #pragma warning disable 0414
-        readonly Dictionary<Type, ProblemDescriptor> m_DescriptorsMap = new Dictionary<Type, ProblemDescriptor>()
+        static readonly Dictionary<Type, ProblemDescriptor> s_DescriptorsMap = new Dictionary<Type, ProblemDescriptor>()
         {
             { typeof(AudioClip), k_AudioDescriptor },
             { typeof(AudioMixer), k_AudioDescriptor },
             { typeof(AnimationClip), k_AnimationDescriptor },
             { typeof(UnityEditor.Animations.AnimatorController), k_AnimationDescriptor },
             { typeof(ComputeShader), k_ShaderDescriptor },
+            { typeof(Font), k_FontDescriptor },
             { typeof(Shader), k_ShaderDescriptor },
             { typeof(ShaderVariantCollection), k_ShaderDescriptor },
             { typeof(Material), k_MaterialDescriptor },
@@ -389,16 +390,16 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
-        ProblemDescriptor GetDescriptor(string assetPath, Type type)
+        static internal ProblemDescriptor GetDescriptor(string assetPath, Type type)
         {
             // special case for raw bytes data as they use TextAsset at runtime
             if (Path.GetExtension(assetPath).Equals(".bytes", StringComparison.InvariantCultureIgnoreCase))
                 return k_ByteDataDescriptor;
 
-            if (m_DescriptorsMap.ContainsKey(type))
-                return m_DescriptorsMap[type];
+            if (s_DescriptorsMap.ContainsKey(type))
+                return s_DescriptorsMap[type];
 
-            foreach (var pair in m_DescriptorsMap)
+            foreach (var pair in s_DescriptorsMap)
             {
                 if (type.IsSubclassOf(pair.Key))
                     return pair.Value;
