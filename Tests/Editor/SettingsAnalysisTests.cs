@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.EditorTests
     class SettingsAnalysisTests
     {
         [Test]
-        public void SettingsAnalysis_Evaluators_Exist(string jsonFilename)
+        public void SettingsAnalysis_Evaluators_Exist()
         {
             var descriptors = ProblemDescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, "ProjectSettings").Where(d => !string.IsNullOrEmpty(d.customevaluator));
             foreach (var desc in descriptors)
