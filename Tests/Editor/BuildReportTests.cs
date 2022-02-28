@@ -55,6 +55,20 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+        public void BuildReport_Script_IsReported()
+        {
+            var issues = Utility.AnalyzeBuild(IssueCategory.BuildFile, i => i.relativePath.Equals("Packages/com.unity.ugui/Runtime/UI/Core/Dropdown.cs"));
+
+            Assert.AreEqual(1, issues.Length);
+
+            var scriptIssue = issues.First();
+
+            Assert.AreEqual("Script", scriptIssue.descriptor.description);
+            Assert.AreEqual("UnityEditor.MonoScript", scriptIssue.GetCustomProperty(BuildReportFileProperty.Type));
+            Assert.AreEqual("globalgamemanagers.assets", scriptIssue.GetCustomProperty(BuildReportFileProperty.BuildFile));
+        }
+
+        [Test]
 #if !BUILD_REPORT_API_SUPPORT
         [Ignore("Not Supported in this version of Unity")]
 #endif
