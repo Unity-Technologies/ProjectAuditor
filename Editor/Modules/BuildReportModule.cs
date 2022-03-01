@@ -390,7 +390,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         }
 
-        static internal ProblemDescriptor GetDescriptor(string assetPath, Type type)
+        void NewMetaData(string key, object value, Action<ProjectIssue> onIssueFound)
+        {
+            onIssueFound(new ProjectIssue(k_Descriptor, key, IssueCategory.BuildSummary, new object[(int)BuildReportMetaData.Num] {value}));
+        }
+
+#endif
+
+        internal static ProblemDescriptor GetDescriptor(string assetPath, Type type)
         {
             // special case for raw bytes data as they use TextAsset at runtime
             if (Path.GetExtension(assetPath).Equals(".bytes", StringComparison.InvariantCultureIgnoreCase))
@@ -407,12 +414,5 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             return k_OtherTypeDescriptor;
         }
-
-        void NewMetaData(string key, object value, Action<ProjectIssue> onIssueFound)
-        {
-            onIssueFound(new ProjectIssue(k_Descriptor, key, IssueCategory.BuildSummary, new object[(int)BuildReportMetaData.Num] {value}));
-        }
-
-#endif
     }
 }
