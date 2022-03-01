@@ -50,7 +50,7 @@ class ScriptWithError {
             CompilerMessage[] defaultAssemblyCompilerMessages = null;
             using (var compilationPipeline = new AssemblyCompilationPipeline
                {
-                   AssemblyCompilationFinished = (assemblyInfo, messages) =>
+                   AssemblyCompilationFinished = (assemblyInfo, messages, compileTime) =>
                    {
                        if (assemblyInfo.name.Equals(AssemblyInfo.DefaultAssemblyName))
                        {

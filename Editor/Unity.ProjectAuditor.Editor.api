@@ -251,7 +251,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public enum AssemblyProperty
     {
-        public const Unity.ProjectAuditor.Editor.Auditors.AssemblyProperty Num = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.AssemblyProperty CompileTime = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.AssemblyProperty Num = 2;
         public const Unity.ProjectAuditor.Editor.Auditors.AssemblyProperty ReadOnly = 0;
         public int value__;
     }

@@ -18,6 +18,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     public enum AssemblyProperty
     {
         ReadOnly = 0,
+        CompileTime,
         Num
     }
 
@@ -60,6 +61,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 new PropertyDefinition { type = PropertyType.Severity},
                 new PropertyDefinition { type = PropertyType.Description, name = "Assembly Name"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.CompileTime), format = PropertyFormat.String, name = "Compile Time"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.ReadOnly), format = PropertyFormat.Bool, name = "Read Only"},
                 new PropertyDefinition { type = PropertyType.Path, name = "asmdef Path"},
             }
@@ -145,37 +147,34 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var compilationPipeline = new AssemblyCompilationPipeline
             {
-                AssemblyCompilationFinished = (assemblyInfo, compilerMessages) => ProcessCompilerMessages(assemblyInfo, compilerMessages, onIssueFound)
+                AssemblyCompilationFinished = (assemblyInfo, compilerMessages, compileTime) => ProcessCompilerMessages(assemblyInfo, compilerMessages, compileTime, onIssueFound)
             };
 
             Profiler.BeginSample("CodeModule.Audit.Compilation");
             var assemblyInfos = compilationPipeline.Compile(m_Config.AnalyzeEditorCode, progress);
             Profiler.EndSample();
 
-            var callCrawler = new CallCrawler();
-            var localAssemblyInfos = assemblyInfos.Where(info => !info.packageReadOnly).ToArray();
-            var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.packageReadOnly).ToArray();
-
-            foreach (var assemblyInfo in assemblyInfos)
+            if (m_Config.AnalyzeEditorCode)
             {
-                onIssueFound(new ProjectIssue(k_AssemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath,
-                    new object[(int)AssemblyProperty.Num]
-                    {
-                        assemblyInfo.packageReadOnly
-                    }));
+                foreach (var assemblyInfo in assemblyInfos)
+                {
+                    onIssueFound(new ProjectIssue(k_AssemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath,
+                        new object[(int)AssemblyProperty.Num]
+                        {
+                            assemblyInfo.packageReadOnly,
+                            "N/A"
+                        }));
+                }
             }
 
-            var assemblyDirectories = new List<string>();
-            assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UserAssembly | PrecompiledAssemblyTypes.UnityEngine));
-            if (m_Config.AnalyzeEditorCode)
-                assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UnityEditor));
-
+            var localAssemblyInfos = assemblyInfos.Where(info => !info.packageReadOnly).ToArray();
+            var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.packageReadOnly).ToArray();
+            var foundIssues = new List<ProjectIssue>();
+            var callCrawler = new CallCrawler();
             var onCallFound = new Action<CallInfo>(pair =>
             {
                 callCrawler.Add(pair);
             });
-
-            var foundIssues = new List<ProjectIssue>();
             var onIssueFoundInternal = new Action<ProjectIssue>(foundIssues.Add);
             var onCompleteInternal = new Action<IProgress>(bar =>
             {
@@ -193,6 +192,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     onComplete();
             });
 
+            var assemblyDirectories = new List<string>();
+
+            assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UserAssembly | PrecompiledAssemblyTypes.UnityEngine));
+            if (m_Config.AnalyzeEditorCode)
+                assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UnityEditor));
 
             Profiler.BeginSample("CodeModule.Audit.Analysis");
 
@@ -359,18 +363,20 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_OpCodes.AddRange(analyzer.GetOpCodes());
         }
 
-        void ProcessCompilerMessages(AssemblyInfo assemblyInfo, CompilerMessage[] compilerMessages, Action<ProjectIssue> onIssueFound)
+        void ProcessCompilerMessages(AssemblyInfo assemblyInfo, CompilerMessage[] compilerMessages, long compileTime, Action<ProjectIssue> onIssueFound)
         {
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
 
-            if (compilerMessages.Any(m => m.type == CompilerMessageType.Error))
-            {
-                onIssueFound(new ProjectIssue(k_AssemblyWithErrorsDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath,
-                    new object[(int)AssemblyProperty.Num]
-                    {
-                        assemblyInfo.packageReadOnly
-                    }));
-            }
+            var assemblyDescriptor = compilerMessages.Any(m => m.type == CompilerMessageType.Error)
+                ? k_AssemblyWithErrorsDescriptor
+                : k_AssemblyDescriptor;
+
+            onIssueFound(new ProjectIssue(assemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath,
+                new object[(int)AssemblyProperty.Num]
+                {
+                    assemblyInfo.packageReadOnly,
+                    Formatting.FormatTime(TimeSpan.FromMilliseconds(compileTime))
+                }));
 
             foreach (var message in compilerMessages)
             {
