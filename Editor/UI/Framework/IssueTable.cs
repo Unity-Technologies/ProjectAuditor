@@ -382,20 +382,20 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return;
             if (item.hasChildren)
             {
-                if (m_Desc.onOpenDescriptor != null)
+                if (m_Desc.onOpenManual != null)
                 {
-                    m_Desc.onOpenDescriptor(tableItem.ProblemDescriptor);
+                    m_Desc.onOpenManual(tableItem.ProblemDescriptor);
                 }
                 return;
             }
 
-            if (m_Desc.onDoubleClick == null)
+            if (m_Desc.onOpenIssue == null)
                 return;
 
             var issue = tableItem.ProjectIssue;
             if (issue.location != null && issue.location.IsValid())
             {
-                m_Desc.onDoubleClick(issue.location);
+                m_Desc.onOpenIssue(issue.location);
             }
         }
 
@@ -436,12 +436,29 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void ShowContextMenu(Rect cellRect, IssueTableItem item)
         {
-            Event current = Event.current;
+            var current = Event.current;
             if (cellRect.Contains(current.mousePosition) && current.type == EventType.ContextClick)
             {
-                GenericMenu menu = new GenericMenu();
+                var menu = new GenericMenu();
 
                 menu.AddItem(Utility.CopyToClipboard, false, () => CopyToClipboard(item.GetDisplayName()));
+
+                if (m_Desc.onOpenIssue != null && item.ProjectIssue != null && item.ProjectIssue.location != null)
+                {
+                    menu.AddItem(Utility.OpenIssue, false, () =>
+                    {
+                        m_Desc.onOpenIssue(item.ProjectIssue.location);
+                    });
+                }
+
+                var desc = item.ProjectIssue != null && item.ProjectIssue.descriptor != null ? item.ProjectIssue.descriptor : null;
+                if (m_Desc.onOpenManual != null && desc != null && desc.type.StartsWith("UnityEngine."))
+                {
+                    menu.AddItem(Utility.OpenScriptReference, false, () =>
+                    {
+                        m_Desc.onOpenManual(item.ProjectIssue.descriptor);
+                    });
+                }
                 menu.ShowAsContext();
 
                 current.Use();

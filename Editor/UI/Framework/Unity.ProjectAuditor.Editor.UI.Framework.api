@@ -184,6 +184,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     public static class Utility
     {
         public static readonly UnityEngine.GUIContent CopyToClipboard;
+        public static readonly UnityEngine.GUIContent OpenIssue;
+        public static readonly UnityEngine.GUIContent OpenScriptReference;
         public static UnityEngine.GUIContent ErrorIcon { get; }
         public static UnityEngine.GUIContent InfoIcon { get; }
         public static UnityEngine.GUIContent WarnIcon { get; }
@@ -215,9 +217,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public string menuLabel;
         public int menuOrder;
         public string name;
-        public System.Action<Unity.ProjectAuditor.Editor.Utils.Location> onDoubleClick;
         public System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewManager> onDrawToolbarDataOptions;
-        public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenDescriptor;
+        public System.Action<Unity.ProjectAuditor.Editor.Utils.Location> onOpenIssue;
+        public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenManual;
         public bool showActions;
         public bool showAreaSelection;
         public bool showAssemblySelection;

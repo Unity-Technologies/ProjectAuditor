@@ -28,9 +28,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
         public Func<ProjectIssue, string> getAssemblyName;
-        public Action<Location> onDoubleClick;
+        public Action<Location> onOpenIssue;
         public Action<ViewManager> onDrawToolbarDataOptions;
-        public Action<ProblemDescriptor> onOpenDescriptor;
+        public Action<ProblemDescriptor> onOpenManual;
         public int analyticsEvent;
 
         static Dictionary<int, ViewDescriptor> s_ViewDescriptorsRegistry = new Dictionary<int, ViewDescriptor>();

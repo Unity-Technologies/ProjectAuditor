@@ -113,7 +113,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 this);
 
             if (m_Desc.showDependencyView)
-                m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onDoubleClick);
+                m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onOpenIssue);
 
             if (m_TextFilter == null)
                 m_TextFilter = new TextFilter();
