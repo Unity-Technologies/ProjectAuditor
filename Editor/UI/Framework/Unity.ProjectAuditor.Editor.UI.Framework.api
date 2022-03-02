@@ -186,15 +186,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static readonly UnityEngine.GUIContent CopyToClipboard;
         public static readonly UnityEngine.GUIContent OpenIssue;
         public static readonly UnityEngine.GUIContent OpenScriptReference;
-        public static UnityEngine.GUIContent ErrorIcon { get; }
-        public static UnityEngine.GUIContent InfoIcon { get; }
-        public static UnityEngine.GUIContent WarnIcon { get; }
         public static bool BoldFoldout(bool toggle, UnityEngine.GUIContent content);
         public static void DrawHelpButton(UnityEngine.GUIContent content, string page);
         public static void DrawSelectedText(string text);
         public static UnityEngine.GUIContent GetIcon(string name);
+        public static UnityEngine.GUIContent GetSeverityIcon(Unity.ProjectAuditor.Editor.Rule.Severity severity, string tooltip = default(string));
         public static UnityEngine.GUIContent GetStatusWheel();
         public static UnityEngine.GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath);
+        public static UnityEngine.GUIContent GetTextWithSeverityIcon(string text, string tooltip, Unity.ProjectAuditor.Editor.Rule.Severity severity);
         public static string GetTreeViewSelectedSummary(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection, string[] names);
         public static void ToolbarDropdownList(Unity.ProjectAuditor.Editor.UI.Framework.Utility.DropdownItem[] items, int selectionIndex, UnityEditor.GenericMenu.MenuFunction2 callback, params UnityEngine.GUILayoutOption[] options);
         public class DropdownItem

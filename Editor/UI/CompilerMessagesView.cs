@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(k_NotAvailable, GUILayout.MaxWidth(380));
-                EditorGUILayout.LabelField(Utility.WarnIcon);
+                EditorGUILayout.LabelField(Utility.GetSeverityIcon(Rule.Severity.Warning));
                 EditorGUILayout.EndHorizontal();
             }
         }

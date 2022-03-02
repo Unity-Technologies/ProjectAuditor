@@ -249,21 +249,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     // use all available space to display description
                     cellRect.xMax = args.rowRect.xMax;
-                    switch (descriptor.severity)
-                    {
-                        case Rule.Severity.Info:
-                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.infoicon"), labelStyle);
-                            break;
-                        case Rule.Severity.Warning:
-                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.warnicon"), labelStyle);
-                            break;
-                        case Rule.Severity.Error:
-                            EditorGUI.LabelField(cellRect, EditorGUIUtility.TrTextContentWithIcon(item.GetDisplayName(), item.GetDisplayName(), "console.erroricon"), labelStyle);
-                            break;
-                        default:
-                            EditorGUI.LabelField(cellRect, new GUIContent(item.GetDisplayName(), item.GetDisplayName()), labelStyle);
-                            break;
-                    }
+                    EditorGUI.LabelField(cellRect, Utility.GetTextWithSeverityIcon(item.GetDisplayName(), item.GetDisplayName(), descriptor.severity), labelStyle);
                 }
             }
             else
@@ -275,24 +261,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     case PropertyType.CriticalContext:
                     {
                         if (issue.isPerfCriticalContext)
-                            EditorGUI.LabelField(cellRect, Utility.WarnIcon, labelStyle);
+                            EditorGUI.LabelField(cellRect, Utility.GetSeverityIcon(Rule.Severity.Warning, "Potential hot-path"), labelStyle);
                     }
                     break;
                     case PropertyType.Severity:
                     {
-                        GUIContent icon = null;
-                        switch (issue.descriptor.severity)
-                        {
-                            case Rule.Severity.Info:
-                                icon = Utility.InfoIcon;
-                                break;
-                            case Rule.Severity.Warning:
-                                icon = Utility.WarnIcon;
-                                break;
-                            case Rule.Severity.Error:
-                                icon = Utility.ErrorIcon;
-                                break;
-                        }
+                        var icon = Utility.GetSeverityIcon(issue.severity);
                         if (icon != null)
                         {
                             EditorGUI.LabelField(cellRect, icon, labelStyle);
