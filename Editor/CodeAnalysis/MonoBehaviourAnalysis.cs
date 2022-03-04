@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         static readonly string[] k_EventNames =
         {"Awake", "Start", "OnEnable", "OnDisable", "Update", "LateUpdate", "FixedUpdate"};
 
-        static readonly string[] k_UpdateMethodNames = {"Update", "LateUpdate", "FixedUpdate", "OnAnimatorIK", "OnAnimatorMove"};
+        static readonly string[] k_UpdateMethodNames = {"Update", "LateUpdate", "FixedUpdate", "OnAnimatorIK", "OnAnimatorMove", "OnWillRenderObject", "OnRenderObject"};
 
         public static bool IsMonoBehaviour(TypeReference typeReference)
         {
