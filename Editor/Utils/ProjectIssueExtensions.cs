@@ -83,18 +83,17 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     var filenameBIndex = GetFilenameIndexFromPath(filenameB);
 
                     var cf = string.CompareOrdinal(filenameA, filenameAIndex, filenameB, filenameBIndex, Math.Max(filenameA.Length, filenameB.Length));
-
-                    // TODO:Endswith is slow
-                    //if (cf == 0 && issueA.relativePath.EndsWith(".cs", StringComparison.Ordinal))
-                    if (cf == 0) // HACK: Skip type check. Assume that line means codefile. && issueA.relativePath.EndsWith(".cs", StringComparison.Ordinal))
+					
+					// If it's the same filename, see if the lines are different
+                    if (cf == 0)
                         return issueA.line.CompareTo(issueB.line);
 
                     return cf;
                 case PropertyType.Path:
                     var cp = string.CompareOrdinal(issueA.relativePath ?? string.Empty, issueB.relativePath ?? string.Empty);
 
-                    // TODO:Endswith is slow
-                    if (cp == 0) // HACK: Skip line check. Assume that line means codefile. && issueA.relativePath.EndsWith(".cs", StringComparison.Ordinal))
+                    // If it's the same path, see if the lines are different
+                    if (cp == 0)
                         return issueA.line.CompareTo(issueB.line);
 
                     return cp;
