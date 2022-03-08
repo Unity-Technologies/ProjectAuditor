@@ -553,58 +553,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             secondItem = a.m_Item;
                         }
 
-                        string firstString;
-                        string secondString;
-
                         var property = m_Layout.properties[columnSortOrder[i]];
-                        switch (property.type)
-                        {
-                            case PropertyType.Description:
-                                firstString = firstItem.GetDisplayName();
-                                secondString = secondItem.GetDisplayName();
-                                break;
-                            case PropertyType.Area:
-                                firstString = firstItem.ProblemDescriptor.GetAreasSummary();
-                                secondString = secondItem.ProblemDescriptor.GetAreasSummary();
-                                break;
-                            case PropertyType.Filename:
-                            case PropertyType.Path:
-                            case PropertyType.FileType:
-                                firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.GetProperty(property.type) : string.Empty;
-                                secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.GetProperty(property.type) : string.Empty;
-                                break;
-                            case PropertyType.Severity:
-                                if (firstItem.ProjectIssue != null && secondItem.ProjectIssue != null)
-                                    return secondItem.ProjectIssue.severity - firstItem.ProjectIssue.severity;
-                                firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.GetProperty(property.type) : string.Empty;
-                                secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.GetProperty(property.type) : string.Empty;
-                                break;
-                            default:
-                                if (property.format == PropertyFormat.Integer || property.format == PropertyFormat.Bytes)
-                                {
-                                    int first;
-                                    int second;
-                                    if (firstItem.ProjectIssue == null || !int.TryParse(firstItem.ProjectIssue.GetProperty(property.type), out first))
-                                        first = -999999;
-                                    if (secondItem.ProjectIssue == null || !int.TryParse(secondItem.ProjectIssue.GetProperty(property.type), out second))
-                                        second = -999999;
-                                    return first - second;
-                                }
-
-                                firstString = firstItem.ProjectIssue != null
-                                    ? firstItem.ProjectIssue.GetProperty(property.type)
-                                    : string.Empty;
-                                secondString = secondItem.ProjectIssue != null
-                                    ? secondItem.ProjectIssue.GetProperty(property.type)
-                                    : string.Empty;
-
-                                break;
-                        }
-
-                        rtn = string.Compare(firstString, secondString, StringComparison.Ordinal);
-                        if (rtn == 0)
-                            continue;
-                        return rtn;
+                        return firstItem.ProjectIssue.CompareTo(secondItem.ProjectIssue, property.type);
                     }
 
                     return rtn;
