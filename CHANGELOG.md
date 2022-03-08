@@ -4,6 +4,9 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+[Unreleased]
+* Added *OnRenderObject* and *OnWillRenderObject* to list of MonoBehavior critical contexts
+
 ## [0.7.3-preview] - 2022-03-01
 * Added *UnityEngine.Object.name* code diagnostic
 * Added *Severity* filters support
