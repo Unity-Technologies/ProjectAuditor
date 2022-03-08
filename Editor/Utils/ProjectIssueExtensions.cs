@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 case PropertyType.Description:
                     return issue.description;
                 case PropertyType.Filename:
-                    var filename = string.Format("{0}", issue.filename);
+                    var filename = issue.filename;
                     if (string.IsNullOrEmpty(filename))
                         return k_NotAvailable;
                     if (filename.EndsWith(".cs"))
@@ -43,6 +43,119 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     var propertyIndex = propertyType - PropertyType.Num;
                     return issue.GetCustomProperty(propertyIndex);
             }
+        }
+
+        public static int CompareTo(this ProjectIssue issueA, ProjectIssue issueB, PropertyType propertyType)
+        {
+            switch (propertyType)
+            {
+                case PropertyType.Severity:
+                    return issueA.severity.CompareTo(issueB.severity);
+                case PropertyType.Area:
+                    var areasA = issueA.descriptor.areas;
+                    var areasB = issueB.descriptor.areas;
+                    var minLength = Math.Min(areasA.Length, areasB.Length);
+
+                    for (int i = 0; i < minLength; i++)
+                    {
+                        var ca = string.CompareOrdinal(areasA[i], areasB[i]);
+                        if (ca != 0)
+                            return ca;
+                    }
+
+                    return areasA.Length.CompareTo(areasB.Length);
+                case PropertyType.Description:
+                    return string.CompareOrdinal(issueA.description, issueB.description);
+                case PropertyType.FileType:
+
+                    var pathA = issueA?.location?.Path ?? string.Empty;
+                    var pathB = issueB?.location?.Path ?? string.Empty;
+
+                    var extAIndex = GetExtensionIndexFromPath(pathA);
+                    var extBIndex = GetExtensionIndexFromPath(pathB);
+
+                    return string.CompareOrdinal(pathA, extAIndex, pathB, extBIndex, Math.Max(pathA.Length, pathB.Length));
+                case PropertyType.Filename:
+                    var filenameA = issueA?.location?.Path ?? string.Empty;
+                    var filenameB = issueB?.location?.Path ?? string.Empty;
+
+                    var filenameAIndex = GetFilenameIndexFromPath(filenameA);
+                    var filenameBIndex = GetFilenameIndexFromPath(filenameB);
+
+                    var cf = string.CompareOrdinal(filenameA, filenameAIndex, filenameB, filenameBIndex, Math.Max(filenameA.Length, filenameB.Length));
+
+                    // TODO:Endswith is slow
+                    //if (cf == 0 && issueA.relativePath.EndsWith(".cs", StringComparison.Ordinal))
+                    if (cf == 0) // HACK: Skip type check. Assume that line means codefile. && issueA.relativePath.EndsWith(".cs", StringComparison.Ordinal))
+                        return issueA.line.CompareTo(issueB.line);
+
+                    return cf;
+                case PropertyType.Path:
+                    var cp = string.CompareOrdinal(issueA.relativePath ?? string.Empty, issueB.relativePath ?? string.Empty);
+
+                    // TODO:Endswith is slow
+                    if (cp == 0) // HACK: Skip line check. Assume that line means codefile. && issueA.relativePath.EndsWith(".cs", StringComparison.Ordinal))
+                        return issueA.line.CompareTo(issueB.line);
+
+                    return cp;
+                case PropertyType.CriticalContext:
+                    return issueA.isPerfCriticalContext.CompareTo(issueB.isPerfCriticalContext);
+                default:
+                    var propertyIndex = propertyType - PropertyType.Num;
+
+                    var propA = issueA.GetCustomProperty(propertyIndex);
+                    var propB = issueB.GetCustomProperty(propertyIndex);
+
+                    // Maybe instead of parsing, just assume the values are numbers and do it inplace?
+                    if (int.TryParse(propA, out var intA) && int.TryParse(propB, out var intB))
+                        return intA.CompareTo(intB);
+
+                    return string.CompareOrdinal(propA, propB);
+            }
+        }
+
+        static char DirectorySeparatorChar = System.IO.Path.DirectorySeparatorChar;
+        static char AltDirectorySeparatorChar = System.IO.Path.AltDirectorySeparatorChar;
+        static char VolumeSeparatorChar = System.IO.Path.VolumeSeparatorChar;
+
+        private static int GetExtensionIndexFromPath(string path)
+        {
+            int length = path.Length;
+            int num = length;
+            while (--num >= 0)
+            {
+                char c = path[num];
+                if (c == '.')
+                {
+                    if (num != length - 1)
+                    {
+                        return num;
+                    }
+
+                    return -1;
+                }
+
+                if (c == System.IO.Path.DirectorySeparatorChar || c == System.IO.Path.AltDirectorySeparatorChar || c == System.IO.Path.VolumeSeparatorChar)
+                {
+                    return -1;
+                }
+            }
+            return length - 1;
+        }
+
+        private static int GetFilenameIndexFromPath(string path)
+        {
+            int length = path.Length;
+            int num = length;
+            while (--num >= 0)
+            {
+                char c = path[num];
+                if (c == DirectorySeparatorChar || c == AltDirectorySeparatorChar || c == VolumeSeparatorChar)
+                {
+                    return num + 1;
+                }
+            }
+            return 0;
         }
     }
 }
