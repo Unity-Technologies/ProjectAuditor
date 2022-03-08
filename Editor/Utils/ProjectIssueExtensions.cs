@@ -131,12 +131,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
                         return num;
                     }
 
-                    return -1;
+                    return length - 1;
                 }
 
                 if (c == System.IO.Path.DirectorySeparatorChar || c == System.IO.Path.AltDirectorySeparatorChar || c == System.IO.Path.VolumeSeparatorChar)
                 {
-                    return -1;
+                    return length - 1;
                 }
             }
             return length - 1;
