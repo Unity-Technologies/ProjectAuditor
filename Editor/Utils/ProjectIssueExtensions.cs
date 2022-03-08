@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
@@ -83,8 +84,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     var filenameBIndex = GetFilenameIndexFromPath(filenameB);
 
                     var cf = string.CompareOrdinal(filenameA, filenameAIndex, filenameB, filenameBIndex, Math.Max(filenameA.Length, filenameB.Length));
-					
-					// If it's the same filename, see if the lines are different
+
+                    // If it's the same filename, see if the lines are different
                     if (cf == 0)
                         return issueA.line.CompareTo(issueB.line);
 
@@ -106,10 +107,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     var propB = issueB.GetCustomProperty(propertyIndex);
 
                     // Maybe instead of parsing, just assume the values are numbers and do it inplace?
-                    if (int.TryParse(propA, out var intA) && int.TryParse(propB, out var intB))
-                        return intA.CompareTo(intB);
+                    //if (int.TryParse(propA, out var intA) && int.TryParse(propB, out var intB))
+                    //    return intA.CompareTo(intB);
 
-                    return string.CompareOrdinal(propA, propB);
+                    //return string.CompareOrdinal(propA, propB);
+                    return UnsafeIntStringComparison(propA, propB);
             }
         }
 
@@ -155,6 +157,19 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 }
             }
             return 0;
+        }
+
+        /// <summary>
+        /// Compares two strings, assuming they are both containing numerical characters only, skipping a lot of safety checks 
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int UnsafeIntStringComparison(string stringA, string stringB)
+        {
+            // Compare string length (simple and fast comparisson)
+            var c = stringA.Length.CompareTo(stringB.Length);
+
+            // If length is same, compare char-by-char, else use result of previous comparisson
+            return c == 0 ? string.CompareOrdinal(stringA, stringB) : c;
         }
     }
 }
