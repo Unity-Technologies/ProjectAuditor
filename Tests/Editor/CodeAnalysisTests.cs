@@ -18,6 +18,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAssetInPlayerCode;
         TempAsset m_TempAssetIssueInCoroutine;
         TempAsset m_TempAssetIssueInDelegate;
+        TempAsset m_TempAssetIssueInProperty;
         TempAsset m_TempAssetIssueInGenericClass;
         TempAsset m_TempAssetIssueInMonoBehaviour;
         TempAsset m_TempAssetIssueInNestedClass;
@@ -191,6 +192,16 @@ class ClassWithDelegate
     }
 }
 ");
+
+            m_TempAssetIssueInProperty = new TempAsset("IssueInProperty.cs", @"
+class IssueInProperty
+{
+    object property
+    {
+        get { return 6; }
+    }
+}
+ ");
 
             m_TempAssetAnyApiInNamespace = new TempAsset("AnyApiInNamespace.cs", @"
 using System.Linq;
@@ -446,6 +457,15 @@ class UxmlAttributeDescriptionPropertyUsage
             var issue = allScriptIssues.FirstOrDefault(i => i.name.Equals("Camera.get_allCameras"));
             Assert.NotNull(issue);
             Assert.AreEqual("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()", issue.GetCallingMethod());
+        }
+
+        [Test]
+        public void CodeAnalysis_IssueInProperty_IsReported()
+        {
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInProperty, IssueCategory.Code);
+
+            Assert.AreEqual(1, issues.Length);
+            Assert.AreEqual("IssueInProperty.get_property", issues[0].name);
         }
 
         [Test]
