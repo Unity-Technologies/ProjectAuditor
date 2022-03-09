@@ -35,5 +35,14 @@ class MyClass
             Assert.AreEqual(1, issues.Length);
             Assert.False(issues[0].GetCustomPropertyAsBool(AssemblyProperty.ReadOnly));
         }
+
+        [Test]
+        public void AssemblyAnalysis_BuiltinPackage_IsReported()
+        {
+            var issues = Utility.Analyze(IssueCategory.Assembly, issue => issue.description.Equals("UnityEngine.UI"));
+
+            Assert.AreEqual(1, issues.Length);
+            Assert.True(issues[0].GetCustomPropertyAsBool(AssemblyProperty.ReadOnly));
+        }
     }
 }
