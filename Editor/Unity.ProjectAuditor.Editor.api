@@ -36,6 +36,7 @@ namespace Unity.ProjectAuditor.Editor
         public bool HasChildren();
         public bool HasValidChildren();
         public abstract bool IsPerfCritical();
+        public void SortChildren();
     }
 
     public interface IProgress
