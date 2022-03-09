@@ -28,12 +28,12 @@ class MyClass
         }
 
         [Test]
-        public void Assembly_Issue_IsReported()
+        public void AssemblyAnalysis_DefaultAssembly_IsReported()
         {
             var issues = Utility.Analyze(IssueCategory.Assembly, issue => issue.description.Equals(AssemblyInfo.DefaultAssemblyName));
 
             Assert.AreEqual(1, issues.Length);
-            Assert.True(issues[0].GetCustomPropertyAsBool(AssemblyProperty.ReadOnly));
+            Assert.False(issues[0].GetCustomPropertyAsBool(AssemblyProperty.ReadOnly));
         }
     }
 }
