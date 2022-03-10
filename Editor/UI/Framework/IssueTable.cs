@@ -537,24 +537,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_Children.Sort(delegate(ItemTree a, ItemTree b)
                 {
                     var rtn = 0;
+
                     for (var i = 0; i < columnSortOrder.Length; i++)
                     {
-                        IssueTableItem firstItem;
-                        IssueTableItem secondItem;
+                        var order = isColumnAscending[i] ? 1 : -1;
+                        rtn = order * ProjectIssueExtensions.CompareTo(a.m_Item?.ProjectIssue, b.m_Item?.ProjectIssue, m_Layout.properties[columnSortOrder[i]].type);
 
-                        if (isColumnAscending[i])
-                        {
-                            firstItem = a.m_Item;
-                            secondItem = b.m_Item;
-                        }
-                        else
-                        {
-                            firstItem = b.m_Item;
-                            secondItem = a.m_Item;
-                        }
+                        if (rtn == 0)
+                            continue;
 
-                        var property = m_Layout.properties[columnSortOrder[i]];
-                        return firstItem.ProjectIssue.CompareTo(secondItem.ProjectIssue, property.type);
+                        return rtn;
                     }
 
                     return rtn;
