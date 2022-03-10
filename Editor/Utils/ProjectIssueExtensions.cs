@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                         filename += string.Format(":{0}", issue.line);
                     return filename;
                 case PropertyType.Path:
-                    var path = string.Format("{0}", issue.relativePath);
+                    var path = issue.relativePath;
                     if (string.IsNullOrEmpty(path))
                         return k_NotAvailable;
                     if (path.EndsWith(".cs"))
@@ -122,11 +122,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
         }
 
-        static char DirectorySeparatorChar = System.IO.Path.DirectorySeparatorChar;
-        static char AltDirectorySeparatorChar = System.IO.Path.AltDirectorySeparatorChar;
-        static char VolumeSeparatorChar = System.IO.Path.VolumeSeparatorChar;
+        static readonly char k_DirectorySeparatorChar = System.IO.Path.DirectorySeparatorChar;
+        static readonly char k_AltDirectorySeparatorChar = System.IO.Path.AltDirectorySeparatorChar;
+        static readonly char k_VolumeSeparatorChar = System.IO.Path.VolumeSeparatorChar;
 
-        private static int GetExtensionIndexFromPath(string path)
+        static int GetExtensionIndexFromPath(string path)
         {
             int length = path.Length;
 
@@ -155,14 +155,14 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return length - 1;
         }
 
-        private static int GetFilenameIndexFromPath(string path)
+        static int GetFilenameIndexFromPath(string path)
         {
             int length = path.Length;
             int num = length;
             while (--num >= 0)
             {
                 char c = path[num];
-                if (c == DirectorySeparatorChar || c == AltDirectorySeparatorChar || c == VolumeSeparatorChar)
+                if (c == k_DirectorySeparatorChar || c == k_AltDirectorySeparatorChar || c == k_VolumeSeparatorChar)
                 {
                     return num + 1;
                 }
@@ -171,10 +171,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
         }
 
         /// <summary>
-        /// Compares two strings, assuming they are both containing numerical characters only, skipping a lot of safety checks 
+        /// Compares two strings, assuming they are both containing numerical characters only, skipping a lot of safety checks
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int UnsafeIntStringComparison(string stringA, string stringB)
+        static int UnsafeIntStringComparison(string stringA, string stringB)
         {
             // Compare string length (simple and fast comparisson)
             var c = stringA.Length.CompareTo(stringB.Length);

@@ -412,6 +412,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
     [System.Runtime.CompilerServices.Extension] public static class ProjectIssueExtensions
     {
+        [System.Runtime.CompilerServices.Extension] public static int CompareTo(Unity.ProjectAuditor.Editor.ProjectIssue issueA, Unity.ProjectAuditor.Editor.ProjectIssue issueB, Unity.ProjectAuditor.Editor.PropertyType propertyType);
         [System.Runtime.CompilerServices.Extension] public static string GetProperty(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyType propertyType);
     }
 }
