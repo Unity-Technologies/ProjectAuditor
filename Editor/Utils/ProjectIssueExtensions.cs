@@ -25,19 +25,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 case PropertyType.Description:
                     return issue.description;
                 case PropertyType.Filename:
-                    var filename = issue.filename;
-                    if (string.IsNullOrEmpty(filename))
+                    if (string.IsNullOrEmpty(issue.filename))
                         return k_NotAvailable;
-                    if (filename.EndsWith(".cs"))
-                        filename += string.Format(":{0}", issue.line);
-                    return filename;
+                    return issue.location.FormattedFilename;
                 case PropertyType.Path:
-                    var path = issue.relativePath;
-                    if (string.IsNullOrEmpty(path))
+                    if (string.IsNullOrEmpty(issue.relativePath))
                         return k_NotAvailable;
-                    if (path.EndsWith(".cs"))
-                        path += string.Format(":{0}", issue.line);
-                    return path;
+                    return issue.location.FormattedPath;
                 case PropertyType.CriticalContext:
                     return issue.isPerfCriticalContext.ToString();
                 default:
