@@ -427,9 +427,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void SetRowsExpanded(bool expanded)
         {
-            var rows = m_Table.GetRows();
-            foreach (var row in rows)
-                m_Table.SetExpanded(row.id, expanded);
+            if (expanded)
+            {
+                var rows = m_Table.GetRows();
+
+                m_Table.SetExpanded(rows.Select(r => r.id).ToList());
+            }
+            else
+            {
+                m_Table.SetExpanded(new List<int>());
+            }
         }
 
         void Export(Func<ProjectIssue, bool> predicate = null)
