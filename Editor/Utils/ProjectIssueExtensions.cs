@@ -129,6 +129,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
         private static int GetExtensionIndexFromPath(string path)
         {
             int length = path.Length;
+
+            if (length == 0)
+                return 0;
+
             int num = length;
             while (--num >= 0)
             {
