@@ -48,6 +48,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static int CompareTo(this ProjectIssue issueA, ProjectIssue issueB, PropertyType propertyType)
         {
+            if (issueA == null && issueB == null)
+                return 0;
+            if (issueA == null)
+                return -1;
+            if (issueB == null)
+                return 1;
+
             switch (propertyType)
             {
                 case PropertyType.Severity:
