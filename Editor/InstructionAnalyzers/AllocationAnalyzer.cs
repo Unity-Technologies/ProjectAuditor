@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                     return new ProjectIssue
                     (
                         k_ClosureAllocationDescriptor,
-                        string.Format("'Closure allocation in {0}.{1}'", typeReference.DeclaringType.FullName, methodDefinition.FullName),
+                        string.Format("'Closure allocation in {0}.{1}'", typeReference.DeclaringType.FullName, methodDefinition.Name),
                         IssueCategory.Code,
                         calleeNode
                     );
