@@ -80,14 +80,12 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                         progress.Advance();
 
                     const int depth = 0;
-                    var callTree = issue.dependencies;
-                    BuildHierarchy(callTree.GetChild() as CallTreeNode, depth);
+                    var root = issue.dependencies;
+                    BuildHierarchy(root as CallTreeNode, depth);
 
-                    // temp fix for null location (ScriptAuditor was unable to get sequence point)
-                    if (issue.location == null && callTree.HasChildren())
-                    {
-                        issue.location = callTree.GetChild().location;
-                    }
+                    // temp fix for null location (code analysis was unable to get sequence point)
+                    if (issue.location == null)
+                        issue.location = root.location;
                 }
                 if (progress != null)
                     progress.Clear();

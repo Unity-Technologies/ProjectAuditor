@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;// TODO: remove dependency on CodeAnalysis
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
@@ -59,15 +59,6 @@ namespace Unity.ProjectAuditor.Editor
         {
             if (customProperties != null)
                 this.customProperties = customProperties.Select(p => p.ToString()).ToArray();
-        }
-
-        public ProjectIssue(ProblemDescriptor descriptor,
-                            string description,
-                            IssueCategory category,
-                            CallTreeNode dependenciesNode)
-            : this(descriptor, description, category)
-        {
-            dependencies = dependenciesNode;
         }
 
         public int depth = 0;

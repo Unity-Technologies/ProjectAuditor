@@ -52,7 +52,6 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 if (typeReference.IsValueType)
                     return null;
 
-                var calleeNode = new CallTreeNode(methodDefinition);
                 var isClosure = typeReference.Name.StartsWith("<>c__DisplayClass");
                 if (isClosure)
                 {
@@ -60,8 +59,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                     (
                         k_ClosureAllocationDescriptor,
                         string.Format("Closure allocation in {0}.{1}", typeReference.DeclaringType.FullName, methodDefinition.Name),
-                        IssueCategory.Code,
-                        calleeNode
+                        IssueCategory.Code
                     );
                 }
 
@@ -69,8 +67,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 (
                     k_ObjectAllocationDescriptor,
                     string.Format("'{0}' allocation", typeReference.FullName),
-                    IssueCategory.Code,
-                    calleeNode
+                    IssueCategory.Code
                 );
             }
             else // OpCodes.Newarr
@@ -78,14 +75,11 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 var typeReference = (TypeReference)inst.Operand;
                 var description = string.Format("'{0}' array allocation", typeReference.Name);
 
-                var calleeNode = new CallTreeNode(methodDefinition);
-
                 return new ProjectIssue
                 (
                     k_ArrayAllocationDescriptor,
                     description,
-                    IssueCategory.Code,
-                    calleeNode
+                    IssueCategory.Code
                 );
             }
         }

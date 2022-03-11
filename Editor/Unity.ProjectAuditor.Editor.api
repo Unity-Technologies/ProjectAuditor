@@ -158,7 +158,6 @@ namespace Unity.ProjectAuditor.Editor
         public string relativePath { get; }
         public Unity.ProjectAuditor.Editor.Rule.Severity severity { get; }
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, object[] customProperties) {}
-        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode dependenciesNode) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, string path, object[] customProperties) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location = default(Unity.ProjectAuditor.Editor.Utils.Location), object[] customProperties = default(object[])) {}
         public string GetCustomProperty<T>(T propertyEnum) where T : System.ValueType, new();

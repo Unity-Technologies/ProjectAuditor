@@ -8,12 +8,8 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         {
             if (issue.dependencies == null)
                 return string.Empty;
-            if (!issue.dependencies.HasChildren())
-                return string.Empty;
 
-            var callTree = issue.dependencies.GetChild() as CallTreeNode;
-            if (callTree == null)
-                return string.Empty;
+            var callTree = (CallTreeNode)issue.dependencies;
             return callTree.name;
         }
     }
