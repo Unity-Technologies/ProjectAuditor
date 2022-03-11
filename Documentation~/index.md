@@ -24,16 +24,28 @@ The Project Auditor editor window can be opened via *Window => Analysis => Proje
 
 For more information, check the [Getting started](GettingStarted.md) guide.
 
-For information on a specific view, check the corresponding page:
-* [Code](Code.md) (Diagnostics)
-* [Settings](Settings.md) (Diagnostics)
+For information on a specific view, check the corresponding page.
+
+### Diagnostics
+* [Code](Code.md)
+* [Settings](Settings.md)
+
+### Compiler Messages
+* [C# Compiler Messages](CompilerMessages.md)
+* [Shader Compiler Messages](ShaderMessages.md)
+
+### Code and Assemblies Information
 * [Assemblies](Assemblies.md)
 * [Generics](Generics.md)
+
+### Assets Information
 * [Resources](Resources.md)
 * [Shaders](Shaders.md)
 * [Shader Variants](Variants.md)
-* [Build Steps](BuildSteps.md) (Build Report - Requires Unity 2019.4 or newer)
-* [Build Size](BuildSize.md) (Build Report - Requires Unity 2019.4 or newer)
+
+### Build Information (Requires Unity 2019.4 or newer)
+* [Build Steps](BuildSteps.md)
+* [Build Size](BuildSize.md)
 
 ## Reporting issues
 If you have issues running Project Auditor in your Unity project, please report them on the [GitHub repository](https://github.com/Unity-Technologies/ProjectAuditor/issues).
@@ -52,6 +64,7 @@ The following table indicates the package directory structure:
 ## Document revision history
 |Date|Reason|
 |---|---|
+|Mar 11, 2022|Updated links to view-specific pages|
 |Jul 23, 2021|Added view-specific pages|
 |Apr 9, 2021|Updated index page with more detail|
 |Feb 15, 2021|Updated documentation|
