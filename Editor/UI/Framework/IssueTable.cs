@@ -558,7 +558,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     for (var i = 0; i < columnSortOrder.Length; i++)
                     {
                         var order = isColumnAscending[i] ? 1 : -1;
-                        rtn = order * ProjectIssueExtensions.CompareTo(a.m_Item?.ProjectIssue, b.m_Item?.ProjectIssue, m_Layout.properties[columnSortOrder[i]].type);
+                        rtn = order * ProjectIssueExtensions.CompareTo(a.m_Item.ProjectIssue != null ? a.m_Item.ProjectIssue : null, b.m_Item.ProjectIssue != null ? b.m_Item.ProjectIssue : null, m_Layout.properties[columnSortOrder[i]].type);
 
                         if (rtn == 0)
                             continue;
