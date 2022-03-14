@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 [Unreleased]
 * Added *OnRenderObject* and *OnWillRenderObject* to list of MonoBehavior critical contexts
-* Fixed closure allocation message
+* Added Compilation Time property to Assemblies view
+* Fixed closure allocation diagnostic message
+* Added context menu item to open selected issue 
+* Fixed sorting of call hierarchy nodes
+* Optimized viewing and sorting UI performance
 
 ## [0.7.3-preview] - 2022-03-01
 * Added *UnityEngine.Object.name* code diagnostic

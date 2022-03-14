@@ -345,6 +345,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             {
                                 EditorGUI.LabelField(cellRect, Formatting.FormatSize(ulongValue));
                             }
+                            else if (property.format == PropertyFormat.Time && ulong.TryParse(customProperty, out ulongValue))
+                            {
+                                EditorGUI.LabelField(cellRect, Formatting.FormatTime(ulongValue));
+                            }
                             else
                                 EditorGUI.LabelField(cellRect, new GUIContent(customProperty), labelStyle);
                         }
@@ -382,20 +386,20 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return;
             if (item.hasChildren)
             {
-                if (m_Desc.onOpenDescriptor != null)
+                if (m_Desc.onOpenManual != null)
                 {
-                    m_Desc.onOpenDescriptor(tableItem.ProblemDescriptor);
+                    m_Desc.onOpenManual(tableItem.ProblemDescriptor);
                 }
                 return;
             }
 
-            if (m_Desc.onDoubleClick == null)
+            if (m_Desc.onOpenIssue == null)
                 return;
 
             var issue = tableItem.ProjectIssue;
             if (issue.location != null && issue.location.IsValid())
             {
-                m_Desc.onDoubleClick(issue.location);
+                m_Desc.onOpenIssue(issue.location);
             }
         }
 
@@ -436,12 +440,29 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void ShowContextMenu(Rect cellRect, IssueTableItem item)
         {
-            Event current = Event.current;
+            var current = Event.current;
             if (cellRect.Contains(current.mousePosition) && current.type == EventType.ContextClick)
             {
-                GenericMenu menu = new GenericMenu();
+                var menu = new GenericMenu();
 
                 menu.AddItem(Utility.CopyToClipboard, false, () => CopyToClipboard(item.GetDisplayName()));
+
+                if (m_Desc.onOpenIssue != null && item.ProjectIssue != null && item.ProjectIssue.location != null)
+                {
+                    menu.AddItem(Utility.OpenIssue, false, () =>
+                    {
+                        m_Desc.onOpenIssue(item.ProjectIssue.location);
+                    });
+                }
+
+                var desc = item.ProjectIssue != null && item.ProjectIssue.descriptor != null ? item.ProjectIssue.descriptor : null;
+                if (m_Desc.onOpenManual != null && desc != null && desc.type.StartsWith("UnityEngine."))
+                {
+                    menu.AddItem(Utility.OpenScriptReference, false, () =>
+                    {
+                        m_Desc.onOpenManual(item.ProjectIssue.descriptor);
+                    });
+                }
                 menu.ShowAsContext();
 
                 current.Use();
@@ -537,73 +558,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_Children.Sort(delegate(ItemTree a, ItemTree b)
                 {
                     var rtn = 0;
+
                     for (var i = 0; i < columnSortOrder.Length; i++)
                     {
-                        IssueTableItem firstItem;
-                        IssueTableItem secondItem;
+                        var order = isColumnAscending[i] ? 1 : -1;
+                        rtn = order * ProjectIssueExtensions.CompareTo(a.m_Item.ProjectIssue != null ? a.m_Item.ProjectIssue : null, b.m_Item.ProjectIssue != null ? b.m_Item.ProjectIssue : null, m_Layout.properties[columnSortOrder[i]].type);
 
-                        if (isColumnAscending[i])
-                        {
-                            firstItem = a.m_Item;
-                            secondItem = b.m_Item;
-                        }
-                        else
-                        {
-                            firstItem = b.m_Item;
-                            secondItem = a.m_Item;
-                        }
-
-                        string firstString;
-                        string secondString;
-
-                        var property = m_Layout.properties[columnSortOrder[i]];
-                        switch (property.type)
-                        {
-                            case PropertyType.Description:
-                                firstString = firstItem.GetDisplayName();
-                                secondString = secondItem.GetDisplayName();
-                                break;
-                            case PropertyType.Area:
-                                firstString = firstItem.ProblemDescriptor.GetAreasSummary();
-                                secondString = secondItem.ProblemDescriptor.GetAreasSummary();
-                                break;
-                            case PropertyType.Filename:
-                            case PropertyType.Path:
-                            case PropertyType.FileType:
-                                firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.GetProperty(property.type) : string.Empty;
-                                secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.GetProperty(property.type) : string.Empty;
-                                break;
-                            case PropertyType.Severity:
-                                if (firstItem.ProjectIssue != null && secondItem.ProjectIssue != null)
-                                    return secondItem.ProjectIssue.severity - firstItem.ProjectIssue.severity;
-                                firstString = firstItem.ProjectIssue != null ? firstItem.ProjectIssue.GetProperty(property.type) : string.Empty;
-                                secondString = secondItem.ProjectIssue != null ? secondItem.ProjectIssue.GetProperty(property.type) : string.Empty;
-                                break;
-                            default:
-                                if (property.format == PropertyFormat.Integer || property.format == PropertyFormat.Bytes)
-                                {
-                                    int first;
-                                    int second;
-                                    if (firstItem.ProjectIssue == null || !int.TryParse(firstItem.ProjectIssue.GetProperty(property.type), out first))
-                                        first = -999999;
-                                    if (secondItem.ProjectIssue == null || !int.TryParse(secondItem.ProjectIssue.GetProperty(property.type), out second))
-                                        second = -999999;
-                                    return first - second;
-                                }
-
-                                firstString = firstItem.ProjectIssue != null
-                                    ? firstItem.ProjectIssue.GetProperty(property.type)
-                                    : string.Empty;
-                                secondString = secondItem.ProjectIssue != null
-                                    ? secondItem.ProjectIssue.GetProperty(property.type)
-                                    : string.Empty;
-
-                                break;
-                        }
-
-                        rtn = string.Compare(firstString, secondString, StringComparison.Ordinal);
                         if (rtn == 0)
                             continue;
+
                         return rtn;
                     }
 

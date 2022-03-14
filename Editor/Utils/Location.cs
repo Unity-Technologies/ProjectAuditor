@@ -9,9 +9,27 @@ namespace Unity.ProjectAuditor.Editor.Utils
         [SerializeField] int m_Line;
         [SerializeField] string m_Path; // path relative to the project folder
 
+        public string Extension
+        {
+            get
+            {
+                return System.IO.Path.GetExtension(m_Path) ?? string.Empty;
+            }
+        }
+
         public string Filename
         {
             get { return string.IsNullOrEmpty(m_Path) ? string.Empty : System.IO.Path.GetFileName(m_Path); }
+        }
+
+        public string FormattedFilename
+        {
+            get { return GetFormattedPath(Filename); }
+        }
+
+        public string FormattedPath
+        {
+            get { return GetFormattedPath(Path); }
         }
 
         public int Line
@@ -19,23 +37,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
             get { return m_Line; }
         }
 
-        public string Extension
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(m_Path))
-                    return string.Empty;
-                return System.IO.Path.GetExtension(m_Path);
-            }
-        }
-
         public string Path
         {
             get
             {
-                if (string.IsNullOrEmpty(m_Path))
-                    return string.Empty;
-                return m_Path;
+                return m_Path ?? string.Empty;
             }
         }
 
@@ -53,6 +59,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public bool IsValid()
         {
             return !string.IsNullOrEmpty(m_Path);
+        }
+
+        string GetFormattedPath(string path)
+        {
+            if (path.EndsWith(".cs"))
+                return string.Format("{0}:{1}", path, m_Line);
+            return path;
         }
     }
 }

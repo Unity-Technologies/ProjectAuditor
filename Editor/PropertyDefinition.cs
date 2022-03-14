@@ -27,7 +27,8 @@ namespace Unity.ProjectAuditor.Editor
         Bool = 0,
         Integer,
         String,
-        Bytes
+        Bytes,
+        Time
     }
 
     public struct PropertyDefinition

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -64,6 +65,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public AssemblyBuilder builder;
         public AssemblyCompilationUnit[] dependencies;
         public CompilerMessage[] messages;
+        public Stopwatch stopWatch;
 
         bool m_Done = false;
 
@@ -88,7 +90,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     if (dependencies.All(dep => dep.IsDone()))
                     {
                         if (dependencies.All(dep => dep.Success()))
+                        {
+                            stopWatch = Stopwatch.StartNew();
                             builder.Build(); // all references are built, we can kick off this builder
+                        }
                         else
                             m_Done = true; // this assembly won't be built since it's missing dependencies
                     }
@@ -118,7 +123,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         string[] m_RoslynAnalyzers;
 #endif
 
-        public Action<AssemblyInfo, CompilerMessage[]> AssemblyCompilationFinished;
+        public Action<AssemblyInfo, CompilerMessage[], long> AssemblyCompilationFinished;
 
         public static CodeOptimization CodeOptimization = CodeOptimization.Release;
 
@@ -147,7 +152,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             m_OutputFolder = string.Empty;
         }
 
-        public IEnumerable<AssemblyInfo> Compile(bool editorAssemblies = false, IProgress progress = null)
+        public AssemblyInfo[] Compile(bool editorAssemblies = false, IProgress progress = null)
         {
 #if UNITY_2019_3_OR_NEWER
             var assemblies = CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.PlayerWithoutTestAssemblies);
@@ -168,7 +173,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             compiledAssemblyPaths = CompileEditorAssemblies(assemblies, !editorAssemblies);
 #endif
 
-            return compiledAssemblyPaths.Select(AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath);
+            return compiledAssemblyPaths.Select(AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath).ToArray();
         }
 
         IEnumerable<string> CompileEditorAssemblies(IEnumerable<Assembly> assemblies)
@@ -202,8 +207,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 if (progress != null)
                     progress.Advance(assemblyName);
 
+                var elapsedTime = m_AssemblyCompilationUnits[assemblyName].stopWatch != null
+                    ? m_AssemblyCompilationUnits[assemblyName].stopWatch.ElapsedMilliseconds
+                    : 0;
                 if (AssemblyCompilationFinished != null)
-                    AssemblyCompilationFinished(assemblyInfo, messages);
+                    AssemblyCompilationFinished(assemblyInfo, messages, elapsedTime);
             });
             UpdateAssemblyBuilders();
 

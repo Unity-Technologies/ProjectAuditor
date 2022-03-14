@@ -68,6 +68,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             else
             {
                 namesStack.Push(name);
+
+                node.SortChildren();
                 for (int i = 0; i < node.GetNumChildren(); i++)
                 {
                     AddNode(items, namesStack, node.GetChild(i), depth + 1);

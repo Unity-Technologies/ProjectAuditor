@@ -4,9 +4,19 @@ namespace Unity.ProjectAuditor.Editor.Utils
 {
     static class Formatting
     {
-        public static string FormatTime(TimeSpan t)
+        public static string FormatBuildTime(TimeSpan t)
         {
             return t.Hours + ":" + t.Minutes.ToString("D2") + ":" + t.Seconds.ToString("D2");
+        }
+
+        static string FormatTime(TimeSpan t)
+        {
+            return t.TotalMinutes.ToString("F0") + ":" + t.Seconds.ToString("D2");
+        }
+
+        public static string FormatTime(ulong timeMs)
+        {
+            return FormatTime(TimeSpan.FromMilliseconds(timeMs));
         }
 
         public static string FormatSize(ulong size)

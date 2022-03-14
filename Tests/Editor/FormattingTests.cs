@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var time = new TimeSpan(10, 24, 30);
             const string formatted = "10:24:30";
 
-            Assert.AreEqual(formatted, Formatting.FormatTime(time));
+            Assert.AreEqual(formatted, Formatting.FormatBuildTime(time));
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor
@@ -39,6 +40,11 @@ namespace Unity.ProjectAuditor.Editor
         public int GetNumChildren()
         {
             return m_Children.Count;
+        }
+
+        public void SortChildren()
+        {
+            m_Children = m_Children.OrderBy(c => c.prettyName).ToList();
         }
 
         public abstract string GetPrettyName();

@@ -14,6 +14,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static GUIContent[] s_StatusWheel;
 
         public static readonly GUIContent CopyToClipboard = new GUIContent("Copy to Clipboard");
+        public static readonly GUIContent OpenIssue = new GUIContent("Open Issue");
+        public static readonly GUIContent OpenScriptReference = new GUIContent("Open Script Reference");
 
         public static GUIContent InfoIcon
         {

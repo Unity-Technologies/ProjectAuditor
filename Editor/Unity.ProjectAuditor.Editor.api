@@ -36,6 +36,7 @@ namespace Unity.ProjectAuditor.Editor
         public bool HasChildren();
         public bool HasValidChildren();
         public abstract bool IsPerfCritical();
+        public void SortChildren();
     }
 
     public interface IProgress
@@ -193,6 +194,7 @@ namespace Unity.ProjectAuditor.Editor
         public const Unity.ProjectAuditor.Editor.PropertyFormat Bytes = 3;
         public const Unity.ProjectAuditor.Editor.PropertyFormat Integer = 1;
         public const Unity.ProjectAuditor.Editor.PropertyFormat String = 2;
+        public const Unity.ProjectAuditor.Editor.PropertyFormat Time = 4;
         public int value__;
     }
 
@@ -251,7 +253,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 {
     public enum AssemblyProperty
     {
-        public const Unity.ProjectAuditor.Editor.Auditors.AssemblyProperty Num = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.AssemblyProperty CompileTime = 1;
+        public const Unity.ProjectAuditor.Editor.Auditors.AssemblyProperty Num = 2;
         public const Unity.ProjectAuditor.Editor.Auditors.AssemblyProperty ReadOnly = 0;
         public int value__;
     }
@@ -394,6 +397,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
     {
         public string Extension { get; }
         public string Filename { get; }
+        public string FormattedFilename { get; }
+        public string FormattedPath { get; }
         public int Line { get; }
         public string Path { get; }
         public Location(string path) {}

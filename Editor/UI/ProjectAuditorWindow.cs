@@ -240,7 +240,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Asset Dependencies"),
-                onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
+                onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assets
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -251,7 +251,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuLabel = "Assets/Shaders",
                 descriptionWithIcon = true,
                 showFilters = true,
-                onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
+                onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbarDataOptions = (viewManager) =>
                 {
                     ChangeViewButton(viewManager, IssueCategory.ShaderCompilerMessage, Contents.ShaderCompilerMessages);
@@ -270,7 +270,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showInfoPanel = true,
                 showRightPanels = true,
-                onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
+                onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbarDataOptions = (viewManager) =>
                 {
                     GUILayout.FlexibleSpace();
@@ -298,7 +298,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuLabel = "Experimental/Shader Compiler Messages",
                 menuOrder = 4,
                 descriptionWithIcon = true,
-                onDoubleClick = EditorUtil.OpenTextFile<Shader>,
+                onOpenIssue = EditorUtil.OpenTextFile<Shader>,
                 onDrawToolbarDataOptions = (viewManager) =>
                 {
                     ChangeViewButton(viewManager, IssueCategory.Shader, Contents.Shaders);
@@ -315,7 +315,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAssemblySelection = true,
                 showFilters = true,
                 getAssemblyName = issue => issue.description,
-                onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
+                onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assemblies
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -337,8 +337,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
-                onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
-                onOpenDescriptor = EditorUtil.OpenCodeDescriptor,
+                onOpenIssue = EditorUtil.OpenTextFile<TextAsset>,
+                onOpenManual = EditorUtil.OpenCodeDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ApiCalls
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -354,8 +354,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showSeverityFilters = true,
                 showInfoPanel = true,
                 getAssemblyName = issue => issue.GetCustomProperty(CompilerMessageProperty.Assembly),
-                onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
-                onOpenDescriptor = EditorUtil.OpenCompilerMessageDescriptor,
+                onOpenIssue = EditorUtil.OpenTextFile<TextAsset>,
+                onOpenManual = EditorUtil.OpenCompilerMessageDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.CodeCompilerMessages
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -370,7 +370,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
-                onDoubleClick = EditorUtil.OpenTextFile<TextAsset>,
+                onOpenIssue = EditorUtil.OpenTextFile<TextAsset>,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Generics
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -384,7 +384,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showMuteOptions = true,
                 showRightPanels = true,
-                onDoubleClick = EditorUtil.OpenProjectSettings,
+                onOpenIssue = EditorUtil.OpenProjectSettings,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ProjectSettings
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -413,7 +413,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 descriptionWithIcon = true,
                 showFilters = true,
                 showInfoPanel = true,
-                onDoubleClick = EditorUtil.FocusOnAssetInProjectWindow,
+                onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbarDataOptions = (viewManager) =>
                 {
                     ChangeViewButton(viewManager, IssueCategory.BuildStep, Contents.BuildSteps);
