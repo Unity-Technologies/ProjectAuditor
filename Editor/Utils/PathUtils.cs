@@ -8,6 +8,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
     {
         public static readonly char Separator = '/';
 
+        static readonly char k_DirectorySeparatorChar = SystemPath.DirectorySeparatorChar;
+        static readonly char k_AltDirectorySeparatorChar = SystemPath.AltDirectorySeparatorChar;
+        static readonly char k_VolumeSeparatorChar = SystemPath.VolumeSeparatorChar;
+
         public static string Combine(string[] parts)
         {
             return string.Join(Char.ToString(Separator), parts);
@@ -26,6 +30,50 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static string GetFullPath(string path)
         {
             return ReplaceSeparators(SystemPath.GetFullPath(path));
+        }
+
+        public static int GetExtensionIndexFromPath(string path)
+        {
+            int length = path.Length;
+
+            if (length == 0)
+                return 0;
+
+            int num = length;
+            while (--num >= 0)
+            {
+                char c = path[num];
+                if (c == '.')
+                {
+                    if (num != length - 1)
+                    {
+                        return num;
+                    }
+
+                    return length - 1;
+                }
+
+                if (c == k_DirectorySeparatorChar || c == k_AltDirectorySeparatorChar || c == k_VolumeSeparatorChar)
+                {
+                    return length - 1;
+                }
+            }
+            return length - 1;
+        }
+
+        public static int GetFilenameIndexFromPath(string path)
+        {
+            int length = path.Length;
+            int num = length;
+            while (--num >= 0)
+            {
+                char c = path[num];
+                if (c == k_DirectorySeparatorChar || c == k_AltDirectorySeparatorChar || c == k_VolumeSeparatorChar)
+                {
+                    return num + 1;
+                }
+            }
+            return 0;
         }
 
         public static string ReplaceSeparators(string path)

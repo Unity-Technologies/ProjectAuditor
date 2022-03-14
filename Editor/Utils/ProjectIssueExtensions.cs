@@ -69,28 +69,31 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 case PropertyType.Description:
                     return string.CompareOrdinal(issueA.description, issueB.description);
                 case PropertyType.FileType:
+                {
+                    var pathA = issueA.relativePath;
+                    var pathB = issueB.relativePath;
 
-                    var pathA = issueA?.location?.Path ?? string.Empty;
-                    var pathB = issueB?.location?.Path ?? string.Empty;
-
-                    var extAIndex = GetExtensionIndexFromPath(pathA);
-                    var extBIndex = GetExtensionIndexFromPath(pathB);
+                    var extAIndex = PathUtils.GetExtensionIndexFromPath(pathA);
+                    var extBIndex = PathUtils.GetExtensionIndexFromPath(pathB);
 
                     return string.CompareOrdinal(pathA, extAIndex, pathB, extBIndex, Math.Max(pathA.Length, pathB.Length));
+                }
                 case PropertyType.Filename:
-                    var filenameA = issueA?.location?.Path ?? string.Empty;
-                    var filenameB = issueB?.location?.Path ?? string.Empty;
+                {
+                    var pathA = issueA.relativePath;
+                    var pathB = issueB.relativePath;
 
-                    var filenameAIndex = GetFilenameIndexFromPath(filenameA);
-                    var filenameBIndex = GetFilenameIndexFromPath(filenameB);
+                    var filenameAIndex = PathUtils.GetFilenameIndexFromPath(pathA);
+                    var filenameBIndex = PathUtils.GetFilenameIndexFromPath(pathB);
 
-                    var cf = string.CompareOrdinal(filenameA, filenameAIndex, filenameB, filenameBIndex, Math.Max(filenameA.Length, filenameB.Length));
+                    var cf = string.CompareOrdinal(pathA, filenameAIndex, pathB, filenameBIndex, Math.Max(pathA.Length, pathB.Length));
 
                     // If it's the same filename, see if the lines are different
                     if (cf == 0)
                         return issueA.line.CompareTo(issueB.line);
 
                     return cf;
+                }
                 case PropertyType.Path:
                     var cp = string.CompareOrdinal(issueA.relativePath ?? string.Empty, issueB.relativePath ?? string.Empty);
 
@@ -116,58 +119,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
         }
 
-        static readonly char k_DirectorySeparatorChar = System.IO.Path.DirectorySeparatorChar;
-        static readonly char k_AltDirectorySeparatorChar = System.IO.Path.AltDirectorySeparatorChar;
-        static readonly char k_VolumeSeparatorChar = System.IO.Path.VolumeSeparatorChar;
-
-        static int GetExtensionIndexFromPath(string path)
-        {
-            int length = path.Length;
-
-            if (length == 0)
-                return 0;
-
-            int num = length;
-            while (--num >= 0)
-            {
-                char c = path[num];
-                if (c == '.')
-                {
-                    if (num != length - 1)
-                    {
-                        return num;
-                    }
-
-                    return length - 1;
-                }
-
-                if (c == System.IO.Path.DirectorySeparatorChar || c == System.IO.Path.AltDirectorySeparatorChar || c == System.IO.Path.VolumeSeparatorChar)
-                {
-                    return length - 1;
-                }
-            }
-            return length - 1;
-        }
-
-        static int GetFilenameIndexFromPath(string path)
-        {
-            int length = path.Length;
-            int num = length;
-            while (--num >= 0)
-            {
-                char c = path[num];
-                if (c == k_DirectorySeparatorChar || c == k_AltDirectorySeparatorChar || c == k_VolumeSeparatorChar)
-                {
-                    return num + 1;
-                }
-            }
-            return 0;
-        }
-
+#if NET_4_6
         /// <summary>
         /// Compares two strings, assuming they are both containing numerical characters only, skipping a lot of safety checks
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         static int UnsafeIntStringComparison(string stringA, string stringB)
         {
             // Compare string length (simple and fast comparisson)
