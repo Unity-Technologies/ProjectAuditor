@@ -345,6 +345,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             {
                                 EditorGUI.LabelField(cellRect, Formatting.FormatSize(ulongValue));
                             }
+                            else if (property.format == PropertyFormat.Time && ulong.TryParse(customProperty, out ulongValue))
+                            {
+                                EditorGUI.LabelField(cellRect, Formatting.FormatTime(ulongValue));
+                            }
                             else
                                 EditorGUI.LabelField(cellRect, new GUIContent(customProperty), labelStyle);
                         }

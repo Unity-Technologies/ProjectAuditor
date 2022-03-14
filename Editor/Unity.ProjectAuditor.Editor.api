@@ -194,6 +194,7 @@ namespace Unity.ProjectAuditor.Editor
         public const Unity.ProjectAuditor.Editor.PropertyFormat Bytes = 3;
         public const Unity.ProjectAuditor.Editor.PropertyFormat Integer = 1;
         public const Unity.ProjectAuditor.Editor.PropertyFormat String = 2;
+        public const Unity.ProjectAuditor.Editor.PropertyFormat Time = 4;
         public int value__;
     }
 

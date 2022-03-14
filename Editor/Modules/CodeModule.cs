@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 new PropertyDefinition { type = PropertyType.Severity},
                 new PropertyDefinition { type = PropertyType.Description, name = "Assembly Name"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.CompileTime), format = PropertyFormat.String, name = "Compile Time"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.CompileTime), format = PropertyFormat.Time, name = "Compile Time"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.ReadOnly), format = PropertyFormat.Bool, name = "Read Only"},
                 new PropertyDefinition { type = PropertyType.Path, name = "asmdef Path"},
             }
@@ -375,7 +375,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new object[(int)AssemblyProperty.Num]
                 {
                     assemblyInfo.packageReadOnly,
-                    Formatting.FormatTime(TimeSpan.FromMilliseconds(compileTime))
+                    compileTime
                 }));
 
             foreach (var message in compilerMessages)

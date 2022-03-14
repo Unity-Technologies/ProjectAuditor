@@ -317,7 +317,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 NewMetaData(k_KeyResult, buildReport.summary.result, onIssueFound);
                 NewMetaData(k_KeyStartTime, buildReport.summary.buildStartedAt, onIssueFound);
                 NewMetaData(k_KeyEndTime, buildReport.summary.buildEndedAt, onIssueFound);
-                NewMetaData(k_KeyTotalTime, Formatting.FormatTime(buildReport.summary.totalTime), onIssueFound);
+                NewMetaData(k_KeyTotalTime, Formatting.FormatBuildTime(buildReport.summary.totalTime), onIssueFound);
                 NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize), onIssueFound);
 
                 AnalyzeBuildSteps(onIssueFound, buildReport);
@@ -336,7 +336,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var depth = step.depth;
                 onIssueFound(new ProjectIssue(k_InfoDescriptor, step.name, IssueCategory.BuildStep, new object[(int)BuildReportStepProperty.Num]
                 {
-                    Formatting.FormatTime(step.duration)
+                    Formatting.FormatBuildTime(step.duration)
                 })
                     {
                         depth = depth
