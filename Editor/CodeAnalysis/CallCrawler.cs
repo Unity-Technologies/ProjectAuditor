@@ -63,9 +63,14 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         {
             foreach (var callInfo in m_Calls)
             {
-                if (!m_BucketedCalls.ContainsKey(callInfo.callee.FullName))
-                    m_BucketedCalls.Add(callInfo.callee.FullName, new List<CallInfo>());
-                m_BucketedCalls[callInfo.callee.FullName].Add(callInfo);
+                var key = callInfo.callee.FullName;
+                List<CallInfo> calls;
+                if (!m_BucketedCalls.TryGetValue(key, out calls))
+                {
+                    calls = new List<CallInfo>();
+                    m_BucketedCalls.Add(key, calls);
+                }
+                calls.Add(callInfo);
             }
 
             if (issues.Count > 0)
@@ -103,11 +108,13 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                 return;
 
             // let's find all callers with matching callee
-            if (m_BucketedCalls.ContainsKey(callee.name))
+            List<CallInfo> callPairs;
+            if (m_BucketedCalls.TryGetValue(callee.name, out callPairs))
             {
-                var callPairs = m_BucketedCalls[callee.name];
-
-                foreach (var call in callPairs)
+                var childrenCount = callPairs.Count;
+                for (int i = 0; i < childrenCount; i++)
+                {
+                    var call = callPairs[i];
                     // ignore recursive calls
                     if (!call.caller.FullName.Equals(callee.name))
                     {
@@ -127,6 +134,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                             call.hierarchy = hierarchy;
                         }
                     }
+                }
             }
         }
     }
