@@ -32,6 +32,11 @@ namespace Unity.ProjectAuditor.Editor
             m_Children.Add(child);
         }
 
+        internal void AddChildren(DependencyNode[] children)
+        {
+            m_Children.AddRange(children);
+        }
+
         public DependencyNode GetChild(int index = 0)
         {
             return m_Children[index];

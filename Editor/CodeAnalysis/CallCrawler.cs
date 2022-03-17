@@ -98,6 +98,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         void BuildHierarchy(CallTreeNode callee, int depth)
         {
+            // this check should be removed. Instead, the deep callstacks should be built on-demand
             if (depth++ == k_MaxDepth)
                 return;
 
@@ -106,29 +107,31 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             if (m_BucketedCalls.TryGetValue(callee.name, out callPairs))
             {
                 var childrenCount = callPairs.Count;
+                var children = new DependencyNode[childrenCount];
+
                 for (int i = 0; i < childrenCount; i++)
                 {
                     var call = callPairs[i];
-                    // ignore recursive calls
-                    if (!call.caller.FullName.Equals(callee.name))
+                    if (call.hierarchy != null)
                     {
-                        if (call.hierarchy != null)
-                        {
-                            // use previously built hierarchy
-                            callee.AddChild(call.hierarchy);
-                        }
-                        else
-                        {
-                            var hierarchy = new CallTreeNode(call.caller);
-                            hierarchy.location = call.location;
-                            hierarchy.perfCriticalContext = call.perfCriticalContext;
-
-                            BuildHierarchy(hierarchy, depth);
-                            callee.AddChild(hierarchy);
-                            call.hierarchy = hierarchy;
-                        }
+                        // use previously built hierarchy
+                        children[i] = call.hierarchy;
+                        continue;
                     }
+
+                    var callerName = call.caller.FullName;
+                    var hierarchy = new CallTreeNode(call.caller);
+                    hierarchy.location = call.location;
+                    hierarchy.perfCriticalContext = call.perfCriticalContext;
+
+                    // stop recursion, if applicable (note that this only prevents recursion when a method calls itself)
+                    if (!callerName.Equals(callee.name))
+                        BuildHierarchy(hierarchy, depth);
+
+                    children[i] = hierarchy;
+                    call.hierarchy = hierarchy;
                 }
+                callee.AddChildren(children);
             }
         }
     }
