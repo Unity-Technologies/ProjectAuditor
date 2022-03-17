@@ -103,20 +103,6 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        public string name
-        {
-            get
-            {
-                if (dependencies == null)
-                    return string.Empty;
-                var prettyName = dependencies.prettyName;
-                if (prettyName.Equals(descriptor.description))
-                    // if name matches the descriptor's name, use caller's name instead
-                    return string.IsNullOrEmpty(this.GetCallingMethod()) ? string.Empty : dependencies.GetChild().prettyName;
-                return prettyName;
-            }
-        }
-
         public int GetNumCustomProperties()
         {
             return customProperties != null ? customProperties.Length : 0;

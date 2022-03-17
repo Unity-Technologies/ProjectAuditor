@@ -55,7 +55,6 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(string.IsNullOrEmpty(issue.descriptor.type));
             Assert.True(string.IsNullOrEmpty(issue.descriptor.method));
 
-            Assert.AreEqual("MonoBehaviourWithEmptyEventMethod.Update", issue.name);
             Assert.AreEqual(m_MonoBehaviourWithEmptyEventMethod.fileName, issue.filename);
             Assert.AreEqual("System.Void MonoBehaviourWithEmptyEventMethod::Update()", issue.description);
             Assert.AreEqual("System.Void MonoBehaviourWithEmptyEventMethod::Update()", issue.GetCallingMethod());

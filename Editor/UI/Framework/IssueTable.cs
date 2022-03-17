@@ -75,7 +75,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 var depth = issue.depth;
                 if (m_Desc.groupByDescriptor)
                     depth++;
-                var item = new IssueTableItem(m_NextId++, depth, issue.name, issue.descriptor, issue);
+                var item = new IssueTableItem(m_NextId++, depth, issue.description, issue.descriptor, issue);
                 itemsList.Add(item);
             }
 

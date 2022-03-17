@@ -154,7 +154,6 @@ namespace Unity.ProjectAuditor.Editor
         public string filename { get; }
         public bool isPerfCriticalContext { get; }
         public int line { get; }
-        public string name { get; }
         public string relativePath { get; }
         public Unity.ProjectAuditor.Editor.Rule.Severity severity { get; }
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, object[] customProperties) {}

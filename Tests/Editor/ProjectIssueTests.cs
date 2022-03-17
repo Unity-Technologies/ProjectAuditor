@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(string.Empty, uninitialised.filename);
             Assert.AreEqual(string.Empty, uninitialised.relativePath);
             Assert.AreEqual(string.Empty, uninitialised.GetCallingMethod());
-            Assert.AreEqual(string.Empty, uninitialised.name);
+            Assert.AreEqual(string.Empty, uninitialised.description);
             Assert.False(uninitialised.isPerfCriticalContext);
         }
 

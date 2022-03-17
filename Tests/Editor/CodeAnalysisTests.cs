@@ -352,7 +352,6 @@ class UxmlAttributeDescriptionPropertyUsage
             Assert.AreEqual("UnityEngine.Camera", myIssue.descriptor.type);
             Assert.AreEqual("allCameras", myIssue.descriptor.method);
 
-            Assert.AreEqual("Camera.get_allCameras", myIssue.name);
             Assert.AreEqual(m_TempAsset.fileName, myIssue.filename);
             Assert.AreEqual("UnityEngine.Camera.allCameras", myIssue.description);
             Assert.AreEqual("System.Void MyClass::Dummy()", myIssue.GetCallingMethod());
@@ -454,7 +453,7 @@ class UxmlAttributeDescriptionPropertyUsage
         public void CodeAnalysis_IssueInDelegate_IsReported()
         {
             var allScriptIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInDelegate);
-            var issue = allScriptIssues.FirstOrDefault(i => i.name.Equals("Camera.get_allCameras"));
+            var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("UnityEngine.Camera.allCameras"));
             Assert.NotNull(issue);
             Assert.AreEqual("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()", issue.GetCallingMethod());
         }
@@ -465,7 +464,7 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInProperty, IssueCategory.Code);
 
             Assert.AreEqual(1, issues.Length);
-            Assert.AreEqual("IssueInProperty.get_property", issues[0].name);
+            Assert.AreEqual("IssueInProperty.property", issues[0].description);
         }
 
         [Test]
@@ -484,7 +483,6 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetObjectName);
 
             Assert.AreEqual(3, issues.Length);
-            Assert.True(issues.All(i => i.name.Equals("Object.get_name")));
             Assert.True(issues.All(i => i.description.Equals("UnityEngine.Object.name")));
         }
 

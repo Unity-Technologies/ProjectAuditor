@@ -50,7 +50,6 @@ class MyClass
             Assert.AreEqual("System.Linq", myIssue.descriptor.type);
             Assert.AreEqual("*", myIssue.descriptor.method);
 
-            Assert.AreEqual("Enumerable.Count", myIssue.name);
             Assert.AreEqual(m_TempAsset.fileName, myIssue.filename);
             Assert.AreEqual("System.Linq.Enumerable.Count", myIssue.description, "Description: {0}", myIssue.description);
             Assert.AreEqual("System.Int32 MyClass::Dummy(System.Collections.Generic.List`1<System.Int32>)", myIssue.GetCallingMethod());
