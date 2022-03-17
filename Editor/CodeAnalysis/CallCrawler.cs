@@ -12,6 +12,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         public readonly MethodReference caller;
         public readonly Location location;
         public readonly bool perfCriticalContext;
+        public CallTreeNode hierarchy;
 
         public CallInfo(
             MethodReference callee,
@@ -110,12 +111,21 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                     // ignore recursive calls
                     if (!call.caller.FullName.Equals(callee.name))
                     {
-                        var callerInstance = new CallTreeNode(call.caller);
-                        callerInstance.location = call.location;
-                        callerInstance.perfCriticalContext = call.perfCriticalContext;
+                        if (call.hierarchy != null)
+                        {
+                            // use previously built hierarchy
+                            callee.AddChild(call.hierarchy);
+                        }
+                        else
+                        {
+                            var hierarchy = new CallTreeNode(call.caller);
+                            hierarchy.location = call.location;
+                            hierarchy.perfCriticalContext = call.perfCriticalContext;
 
-                        BuildHierarchy(callerInstance, depth);
-                        callee.AddChild(callerInstance);
+                            BuildHierarchy(hierarchy, depth);
+                            callee.AddChild(hierarchy);
+                            call.hierarchy = hierarchy;
+                        }
                     }
             }
         }
