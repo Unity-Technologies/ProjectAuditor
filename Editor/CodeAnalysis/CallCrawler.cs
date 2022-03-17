@@ -49,30 +49,24 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
     {
         const int k_MaxDepth = 10;
 
+        // key: callee name, value: lists of all callers
         readonly Dictionary<string, List<CallInfo>> m_BucketedCalls =
             new Dictionary<string, List<CallInfo>>();
 
-        readonly HashSet<CallInfo> m_Calls = new HashSet<CallInfo>();
-
         public void Add(CallInfo callInfo)
         {
-            m_Calls.Add(callInfo);
+            var key = callInfo.callee.FullName;
+            List<CallInfo> calls;
+            if (!m_BucketedCalls.TryGetValue(key, out calls))
+            {
+                calls = new List<CallInfo>();
+                m_BucketedCalls.Add(key, calls);
+            }
+            calls.Add(callInfo);
         }
 
         public void BuildCallHierarchies(List<ProjectIssue> issues, IProgress progress = null)
         {
-            foreach (var callInfo in m_Calls)
-            {
-                var key = callInfo.callee.FullName;
-                List<CallInfo> calls;
-                if (!m_BucketedCalls.TryGetValue(key, out calls))
-                {
-                    calls = new List<CallInfo>();
-                    m_BucketedCalls.Add(key, calls);
-                }
-                calls.Add(callInfo);
-            }
-
             if (issues.Count > 0)
             {
                 Profiler.BeginSample("CallCrawler.BuildCallHierarchies");
