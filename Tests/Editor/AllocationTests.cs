@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -109,7 +110,7 @@ class ParamsArrayAllocation
 
             var issue = issues.First();
 
-            Assert.AreNotEqual(16707566, issue.line);
+            Assert.AreNotEqual(MonoCecilHelper.HiddenLine, issue.line);
             Assert.AreEqual("Closure allocation in ClosureAllocation.Dummy", issue.description);
             Assert.AreEqual(IssueCategory.Code, issue.category);
         }
