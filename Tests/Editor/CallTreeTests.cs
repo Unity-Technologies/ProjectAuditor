@@ -7,6 +7,7 @@ namespace Unity.ProjectAuditor.EditorTests
     {
         TempAsset m_TempAsset;
         TempAsset m_TempAssetHierarchy;
+        TempAsset m_TempAssetRecursive;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -21,6 +22,16 @@ class RootTest
     }
 }");
 
+            m_TempAssetRecursive = new TempAsset("RecursiveTest.cs", @"
+using System;
+class RecursiveTest
+{
+    Object X()
+    {
+        X();
+        return 5;
+    }
+}");
 
 // the same sub-hierarchy should only be computed once
 // Issue:     X      Y
@@ -75,6 +86,19 @@ class HierarchyTest
             Assert.AreEqual("RootTest", root.typeName);
             Assert.AreEqual(1, root.GetNumChildren());
             Assert.AreEqual(0, root.GetChild().GetNumChildren());
+        }
+
+        [Test]
+        public void CallTree_Hierarchy_IsNotRecursive()
+        {
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetRecursive);
+
+            var root = issues[0].dependencies as CallTreeNode;
+
+            Assert.NotNull(root);
+            Assert.AreEqual("X", root.methodName);
+            Assert.AreEqual("RecursiveTest", root.typeName);
+            Assert.AreEqual(0, root.GetChild().GetChild().GetNumChildren());
         }
 
         [Test]
