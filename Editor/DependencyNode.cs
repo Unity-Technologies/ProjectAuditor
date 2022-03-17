@@ -7,7 +7,7 @@ namespace Unity.ProjectAuditor.Editor
 {
     public abstract class DependencyNode
     {
-        protected List<DependencyNode> m_Children = new List<DependencyNode>();
+        protected List<DependencyNode> m_Children = new List<DependencyNode>(1);
 
         public Location location;
         public bool perfCriticalContext;
