@@ -34,6 +34,10 @@ namespace Unity.ProjectAuditor.Editor
 
         internal void AddChildren(DependencyNode[] children)
         {
+            // if any child is critical, make parent critical too
+            // this is to propagate perfCriticalContext up to the root of the hierarchy
+            if (children.Any(c => c.perfCriticalContext))
+                perfCriticalContext = true;
             m_Children.AddRange(children);
         }
 
