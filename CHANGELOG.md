@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added context menu item to open selected issue 
 * Fixed sorting of call hierarchy nodes
 * Optimized viewing and sorting UI performance
+* Optimized call tree building and visualization
 
 ## [0.7.3-preview] - 2022-03-01
 * Added *UnityEngine.Object.name* code diagnostic
