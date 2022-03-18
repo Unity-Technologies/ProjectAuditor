@@ -84,8 +84,7 @@ class HierarchyTest
             Assert.AreEqual("Assembly-CSharp.dll", root.assemblyName);
             Assert.AreEqual("CallerMethod", root.methodName);
             Assert.AreEqual("RootTest", root.typeName);
-            Assert.AreEqual(1, root.GetNumChildren());
-            Assert.AreEqual(0, root.GetChild().GetNumChildren());
+            Assert.AreEqual(0, root.GetNumChildren());
         }
 
         [Test]
@@ -98,7 +97,7 @@ class HierarchyTest
             Assert.NotNull(root);
             Assert.AreEqual("X", root.methodName);
             Assert.AreEqual("RecursiveTest", root.typeName);
-            Assert.AreEqual(0, root.GetChild().GetChild().GetNumChildren());
+            Assert.AreEqual(0, root.GetChild().GetNumChildren());
         }
 
         [Test]
@@ -114,11 +113,11 @@ class HierarchyTest
             Assert.NotNull(rootX);
             Assert.NotNull(rootY);
 
-            var A2X = rootX.GetChild().GetChild();
-            var B2Y = rootY.GetChild().GetChild();
+            var A2X = rootX.GetChild();
+            var B2Y = rootY.GetChild();
 
             // check C=>B nodes are the same
-            Assert.True(ReferenceEquals(A2X.GetChild().GetChild(), B2Y.GetChild()));
+            Assert.True(ReferenceEquals(A2X.GetChild(), B2Y));
         }
     }
 }
