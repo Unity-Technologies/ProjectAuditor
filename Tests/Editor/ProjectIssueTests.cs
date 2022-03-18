@@ -20,11 +20,12 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectIssue_NewIssue_IsInitialized()
         {
-            var uninitialised = new ProjectIssue(s_Descriptor, "dummy issue", IssueCategory.Code);
+            var description = "dummy issue";
+            var uninitialised = new ProjectIssue(s_Descriptor, description, IssueCategory.Code);
             Assert.AreEqual(string.Empty, uninitialised.filename);
             Assert.AreEqual(string.Empty, uninitialised.relativePath);
             Assert.AreEqual(string.Empty, uninitialised.GetCallingMethod());
-            Assert.AreEqual(string.Empty, uninitialised.description);
+            Assert.AreEqual(description, uninitialised.description);
             Assert.False(uninitialised.isPerfCriticalContext);
         }
 

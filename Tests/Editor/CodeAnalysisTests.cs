@@ -464,7 +464,8 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInProperty, IssueCategory.Code);
 
             Assert.AreEqual(1, issues.Length);
-            Assert.AreEqual("IssueInProperty.property", issues[0].description);
+            Assert.AreEqual("Conversion from value type 'Int32' to ref type", issues[0].description);
+            Assert.AreEqual("IssueInProperty.get_property", issues[0].dependencies.prettyName);
         }
 
         [Test]

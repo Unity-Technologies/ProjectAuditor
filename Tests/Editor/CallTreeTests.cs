@@ -101,7 +101,7 @@ class HierarchyTest
         }
 
         [Test]
-        public void CallTree_SubHierarchy_IsSame()
+        public void CallTree_SameSubHierarchy_IsUnique()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetHierarchy);
 
@@ -117,7 +117,7 @@ class HierarchyTest
             var B2Y = rootY.GetChild();
 
             // check C=>B nodes are the same
-            Assert.True(ReferenceEquals(A2X.GetChild(), B2Y));
+            Assert.True(ReferenceEquals(A2X.GetChild().GetChild(), B2Y.GetChild()));
         }
     }
 }
