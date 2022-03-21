@@ -168,13 +168,13 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
-        internal float GetCustomPropertyAsFloat<T>(T propertyEnum) where T : struct
+        public float GetCustomPropertyAsFloat<T>(T propertyEnum) where T : struct
         {
             float value;
             return float.TryParse(GetCustomProperty((propertyEnum)), out value) ? value : float.NaN;
         }
 
-        internal double GetCustomPropertyAsDouble<T>(T propertyEnum) where T : struct
+        public double GetCustomPropertyAsDouble<T>(T propertyEnum) where T : struct
         {
             double value;
             return double.TryParse(GetCustomProperty((propertyEnum)), out value) ? value : double.NaN;

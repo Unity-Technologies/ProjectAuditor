@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Unreleased]
 * Added *OnRenderObject* and *OnWillRenderObject* to list of MonoBehavior critical contexts
 * Added Compilation Time property to Assemblies view
+* Added public API to get float/double custom property 
 * Fixed closure allocation diagnostic message
 * Added context menu item to open selected issue 
 * Fixed sorting of call hierarchy nodes
