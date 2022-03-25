@@ -210,31 +210,28 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             var property = m_Layout.properties[columnIndex];
             var columnType = property.type;
+            var labelStyle = SharedStyles.Label;
             var item = treeViewItem as IssueTableItem;
+
+            if (item == null)
+            {
+                if (columnType == PropertyType.Description)
+                    EditorGUI.LabelField(cellRect, new GUIContent(treeViewItem.displayName, treeViewItem.displayName), labelStyle);
+                return;
+            }
 
             // indent first column, if necessary
             if (columnIndex == 0 && !hasSearch && !m_FlatView)
             {
-                if (item.IsGroup())
-                {
-                    var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
-                    cellRect.xMin += indent;
-                    CenterRectUsingSingleLineHeight(ref cellRect);
-                }
+                var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
+                cellRect.xMin += indent;
+                CenterRectUsingSingleLineHeight(ref cellRect);
             }
             else if (m_Layout.hierarchy && property.type == PropertyType.Description)
             {
                 var indent = GetContentIndent(treeViewItem);
                 cellRect.xMin += indent;
                 CenterRectUsingSingleLineHeight(ref cellRect);
-            }
-
-            var labelStyle = SharedStyles.Label;
-            if (item == null)
-            {
-                if (columnType == PropertyType.Description)
-                    EditorGUI.LabelField(cellRect, new GUIContent(treeViewItem.displayName, treeViewItem.displayName), labelStyle);
-                return;
             }
 
             var issue = item.ProjectIssue;
