@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor
         public ProblemDescriptor descriptor;
         public Location location;
 
-        [SerializeField] string[] customProperties;
+        [SerializeField] string[] m_CustomProperties;
 
         /// <summary>
         /// ProjectIssue constructor
@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor
             : this(descriptor, description, category)
         {
             if (customProperties != null)
-                this.customProperties = customProperties.Select(p => p.ToString()).ToArray();
+                this.m_CustomProperties = customProperties.Select(p => p.ToString()).ToArray();
         }
 
         public ProjectIssue(ProblemDescriptor descriptor,
@@ -128,7 +128,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public int GetNumCustomProperties()
         {
-            return customProperties != null ? customProperties.Length : 0;
+            return m_CustomProperties != null ? m_CustomProperties.Length : 0;
         }
 
         public string GetCustomProperty<T>(T propertyEnum) where T : struct
@@ -138,7 +138,7 @@ namespace Unity.ProjectAuditor.Editor
 
         internal string GetCustomProperty(int index)
         {
-            return customProperties != null && customProperties.Length > 0 ? customProperties[index] : string.Empty;
+            return m_CustomProperties != null && m_CustomProperties.Length > 0 ? m_CustomProperties[index] : string.Empty;
         }
 
         internal bool GetCustomPropertyAsBool<T>(T propertyEnum) where T : struct
@@ -182,7 +182,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct
         {
-            customProperties[Convert.ToUInt32(propertyEnum)] = property.ToString();
+            m_CustomProperties[Convert.ToUInt32(propertyEnum)] = property.ToString();
         }
 
         /// <summary>
@@ -192,17 +192,17 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="property"> value the properties will be set to </param>
         public void SetCustomProperties(int numProperties, object property)
         {
-            customProperties = new string[numProperties];
+            m_CustomProperties = new string[numProperties];
             for (var i = 0; i < numProperties; i++)
-                customProperties[i] = property.ToString();
+                m_CustomProperties[i] = property.ToString();
         }
 
         public void SetCustomProperties(object[] properties)
         {
             if (properties != null)
-                this.customProperties = properties.Select(p => p != null ? p.ToString() : string.Empty).ToArray();
+                this.m_CustomProperties = properties.Select(p => p != null ? p.ToString() : string.Empty).ToArray();
             else
-                this.customProperties = null;
+                this.m_CustomProperties = null;
         }
     }
 }
