@@ -299,11 +299,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         break;
 
                     case PropertyType.Path:
-                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(PropertyType.Path)), labelStyle);
-                        break;
-
                     case PropertyType.FileType:
-                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(PropertyType.FileType)), labelStyle);
+                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(columnType)), labelStyle);
                         break;
 
                     default:
