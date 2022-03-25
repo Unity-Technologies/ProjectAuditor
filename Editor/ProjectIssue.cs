@@ -20,6 +20,7 @@ namespace Unity.ProjectAuditor.Editor
         public Location location;
 
         [SerializeField] string[] m_CustomProperties;
+        [SerializeField] Rule.Severity m_Severity;
 
         /// <summary>
         /// ProjectIssue constructor
@@ -40,6 +41,8 @@ namespace Unity.ProjectAuditor.Editor
             this.category = category;
             this.location = location;
             this.SetCustomProperties(customProperties);
+
+            m_Severity = Rule.Severity.Default;
         }
 
         public ProjectIssue(ProblemDescriptor descriptor,
@@ -108,7 +111,11 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                return descriptor.severity;
+                return m_Severity == Rule.Severity.Default && descriptor != null ? descriptor.severity : m_Severity;
+            }
+            set
+            {
+                m_Severity = value;
             }
         }
 
