@@ -156,7 +156,7 @@ namespace Unity.ProjectAuditor.Editor
         public int line { get; }
         public string name { get; }
         public string relativePath { get; }
-        public Unity.ProjectAuditor.Editor.Rule.Severity severity { get; }
+        public Unity.ProjectAuditor.Editor.Rule.Severity severity { get; set; }
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, object[] customProperties) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.CodeAnalysis.CallTreeNode dependenciesNode) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, string path, object[] customProperties) {}

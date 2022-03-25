@@ -134,7 +134,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         static readonly ProblemDescriptor k_ParseErrorDescriptor = new ProblemDescriptor
             (
             400000,
-            "Parse Error"
+            "Shaders with errors"
             )
         {
             severity = Rule.Severity.Error
@@ -173,6 +173,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         const int k_ShaderVariantFirstId = 400003;
 
+        static Dictionary<string, ProblemDescriptor> s_ShaderGroupDescriptor = new Dictionary<string, ProblemDescriptor>();
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData = new Dictionary<Shader, List<ShaderVariantData>>();
 
         public override IEnumerable<ProblemDescriptor> GetDescriptors()
@@ -344,22 +345,29 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             if (shaderHasError)
             {
-                shaderName = Path.GetFileNameWithoutExtension(assetPath) + ": Parse Error";
-
-                var issueWithError = new ProjectIssue(k_ParseErrorDescriptor, shaderName, IssueCategory.Shader, new Location(assetPath));
+                var issueWithError = new ProjectIssue(k_ParseErrorDescriptor, Path.GetFileNameWithoutExtension(assetPath), IssueCategory.Shader, new Location(assetPath));
                 issueWithError.SetCustomProperties((int)ShaderProperty.Num, k_NotAvailable);
+                issueWithError.severity = severity;
 
                 onIssueFound(issueWithError);
 
                 return;
             }
 
-            var descriptor = new ProblemDescriptor
-                (
-                id++,
-                shaderName
-                );
-            descriptor.severity = severity;
+            var groupName =  PathUtils.GetDirectoryName(shaderName);
+            if (string.IsNullOrEmpty(groupName))
+                groupName = shaderName;
+
+            ProblemDescriptor descriptor;
+            if (!s_ShaderGroupDescriptor.TryGetValue(groupName, out descriptor))
+            {
+                descriptor = new ProblemDescriptor
+                    (
+                    id++,
+                    groupName
+                    );
+                s_ShaderGroupDescriptor.Add(groupName, descriptor);
+            }
 
 /*
             var usedBySceneOnly = false;
@@ -391,6 +399,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 isSrpBatcherCompatible,
                 isAlwaysIncluded
             });
+            issue.severity = severity;
+
             onIssueFound(issue);
         }
 

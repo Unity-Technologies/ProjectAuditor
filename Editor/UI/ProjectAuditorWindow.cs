@@ -250,6 +250,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 2,
                 menuLabel = "Assets/Shaders",
                 descriptionWithIcon = true,
+                groupByDescriptor = true,
                 showFilters = true,
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbarDataOptions = (viewManager) =>
