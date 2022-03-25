@@ -236,8 +236,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             var issue = item.ProjectIssue;
             var descriptor = item.ProblemDescriptor;
-            var areaNames = descriptor.GetAreasSummary();
-            var areaLongDescription = "Areas that this issue might have an impact on";
 
             var rule = m_Config.GetRule(descriptor, issue != null ? issue.GetCallingMethod() : string.Empty);
             if (rule == null && issue != null)
@@ -269,6 +267,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
             }
             else
+            {
+                var areaNames = descriptor.GetAreasSummary();
+                var areaLongDescription = "Areas that this issue might have an impact on";
                 switch (columnType)
                 {
                     case PropertyType.CriticalContext:
@@ -355,6 +356,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                         break;
                 }
+            }
+
 
             if (rule != null && rule.severity == Rule.Severity.None)
                 GUI.enabled = true;
