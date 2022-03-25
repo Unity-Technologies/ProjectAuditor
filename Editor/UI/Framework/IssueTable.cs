@@ -249,6 +249,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 if (columnIndex == 0)
                 {
+                    // use all available space to display description
+                    cellRect.xMax = args.rowRect.xMax;
                     switch (descriptor.severity)
                     {
                         case Rule.Severity.Info:
@@ -265,8 +267,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             break;
                     }
                 }
-                else if (columnType == PropertyType.Area)
-                    EditorGUI.LabelField(cellRect, new GUIContent(areaNames, areaLongDescription), labelStyle);
             }
             else
                 switch (columnType)
