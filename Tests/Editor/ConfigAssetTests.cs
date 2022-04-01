@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using NUnit.Framework;
+using UnityEditor;
+using UnityEditor.VersionControl;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -18,7 +20,10 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var assetPath = "Assets/Editor/MyConfig.asset";
             new Unity.ProjectAuditor.Editor.ProjectAuditor(assetPath);
-            Assert.IsTrue(File.Exists(assetPath));
+            Assert.True(File.Exists(assetPath));
+
+            AssetDatabase.DeleteAsset(assetPath);
+            Assert.False(File.Exists(assetPath));
         }
     }
 }
