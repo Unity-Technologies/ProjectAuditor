@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.CodeAnalysis;// TODO: remove dependency on CodeAnalysis
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
