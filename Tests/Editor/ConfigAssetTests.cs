@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using UnityEditor;
-using UnityEditor.VersionControl;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
