@@ -207,8 +207,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 if (progress != null)
                     progress.Advance(assemblyName);
 
-                var elapsedTime = m_AssemblyCompilationUnits[assemblyName].stopWatch != null
-                    ? m_AssemblyCompilationUnits[assemblyName].stopWatch.ElapsedMilliseconds
+                var stopWatch = m_AssemblyCompilationUnits[assemblyName].stopWatch;
+                var elapsedTime = stopWatch != null
+                    ? stopWatch.ElapsedMilliseconds
                     : 0;
                 if (AssemblyCompilationFinished != null)
                     AssemblyCompilationFinished(assemblyInfo, messages, elapsedTime);
