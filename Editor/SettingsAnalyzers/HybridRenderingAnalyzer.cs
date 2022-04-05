@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
@@ -24,30 +23,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
         public IEnumerable<ProjectIssue> Analyze()
         {
-            if (IsStaticBatchingEnabled(EditorUserBuildSettings.activeBuildTarget))
+            if (Evaluators.PlayerSettingsIsStaticBatchingEnabled(EditorUserBuildSettings.activeBuildTarget))
             {
                 yield return new ProjectIssue(k_Descriptor, k_Descriptor.description, IssueCategory.ProjectSetting);
             }
-        }
-
-        static bool IsStaticBatchingEnabled(BuildTarget platform)
-        {
-            var method = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
-                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
-            if (method == null)
-                throw new NotSupportedException("Getting batching per platform is not supported");
-
-            const int staticBatching = 0;
-            const int dynamicBatching = 0;
-            var args = new object[]
-            {
-                platform,
-                staticBatching,
-                dynamicBatching
-            };
-
-            method.Invoke(null, args);
-            return (int)args[1] > 0;
         }
     }
 }
