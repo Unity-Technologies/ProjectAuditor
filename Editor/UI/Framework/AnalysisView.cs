@@ -398,18 +398,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 else// if (issues.Length == 1)
                 {
                     var selection = issues[0];
-                    DependencyNode dependencies = null;
-                    if (selection != null && selection.dependencies != null)
-                    {
-                        if (selection.dependencies as CallTreeNode != null)
-                            dependencies = selection.dependencies.GetChild(); // skip self
-                        else
-                            dependencies = selection.dependencies;
-                    }
 
-                    m_DependencyView.SetRoot(dependencies);
+                    m_DependencyView.SetRoot(selection.dependencies);
 
-                    if (dependencies != null)
+                    if (selection.dependencies != null)
                     {
                         var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
 

@@ -19,10 +19,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
-            return AnalyzeType(methodDefinition, inst.OpCode == OpCodes.Newobj ? ((MethodReference)inst.Operand).DeclaringType : (TypeReference)inst.Operand);
+            return AnalyzeType(inst.OpCode == OpCodes.Newobj ? ((MethodReference)inst.Operand).DeclaringType : (TypeReference)inst.Operand);
         }
 
-        ProjectIssue AnalyzeType(MethodDefinition methodDefinition, TypeReference typeReference)
+        ProjectIssue AnalyzeType(TypeReference typeReference)
         {
             if (!typeReference.IsGenericInstance)
                 return null;
@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                     m_GenericDescriptors.Add(typeDefinition.FullName, desc);
                 }
 
-                return new ProjectIssue(m_GenericDescriptors[genericTypeName], typeReference.FullName, IssueCategory.GenericInstance, new CallTreeNode(methodDefinition));
+                return new ProjectIssue(m_GenericDescriptors[genericTypeName], typeReference.FullName, IssueCategory.GenericInstance);
             }
             catch (AssemblyResolutionException e)
             {

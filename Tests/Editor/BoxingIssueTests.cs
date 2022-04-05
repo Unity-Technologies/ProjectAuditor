@@ -43,7 +43,6 @@ namespace Unity.ProjectAuditor.EditorTests
 
             // check issue
             Assert.NotNull(boxingInt);
-            Assert.AreEqual("BoxingIntTest.Dummy", boxingInt.name);
             Assert.AreEqual(m_TempAssetBoxingInt.fileName, boxingInt.filename);
             Assert.AreEqual("Conversion from value type 'Int32' to ref type", boxingInt.description);
             Assert.AreEqual("System.Object BoxingIntTest::Dummy()", boxingInt.GetCallingMethod());
@@ -71,7 +70,6 @@ namespace Unity.ProjectAuditor.EditorTests
 
             // check issue
             Assert.NotNull(boxingFloat);
-            Assert.AreEqual("BoxingFloatTest.Dummy", boxingFloat.name);
             Assert.AreEqual(m_TempAssetBoxingFloat.fileName, boxingFloat.filename);
             Assert.AreEqual("Conversion from value type 'float' to ref type", boxingFloat.description);
             Assert.AreEqual("System.Object BoxingFloatTest::Dummy()", boxingFloat.GetCallingMethod());

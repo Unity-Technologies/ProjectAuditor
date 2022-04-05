@@ -295,11 +295,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             Profiler.BeginSample("CodeModule.AnalyzeMethodBody");
 
-            var callerNode = new CallTreeNode(caller);
-
             Profiler.BeginSample("CodeModule.IsPerformanceCriticalContext");
             var perfCriticalContext = IsPerformanceCriticalContext(caller);
             Profiler.EndSample();
+
+            var callerNode = new CallTreeNode(caller)
+            {
+                perfCriticalContext = perfCriticalContext
+            };
 
             foreach (var inst in caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode)))
             {
@@ -342,8 +345,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                         var projectIssue = analyzer.Analyze(caller, inst);
                         if (projectIssue != null)
                         {
-                            projectIssue.dependencies.perfCriticalContext = perfCriticalContext;
-                            projectIssue.dependencies.AddChild(callerNode);
+                            projectIssue.dependencies = callerNode; // set root
                             projectIssue.location = location;
                             projectIssue.SetCustomProperties(new string[(int)CodeProperty.Num] {assemblyInfo.name});
 
