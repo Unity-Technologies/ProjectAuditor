@@ -212,11 +212,24 @@ namespace Unity.ProjectAuditor.Editor
             return layouts.FirstOrDefault();
         }
 
+        /// <summary>
+        /// Get or Register a category by name. If the name argument does match an existing category, a new category is registered.
+        /// </summary>
+        /// <returns> Returns the category enum</returns>
         public static IssueCategory GetOrRegisterCategory(string name)
         {
             if (!s_CustomCategories.ContainsKey(name))
                 s_CustomCategories.Add(name, IssueCategory.FirstCustomCategory + s_CustomCategories.Count);
             return s_CustomCategories[name];
+        }
+
+        /// <summary>
+        /// Number of available built-in and registered categories
+        /// </summary>
+        /// <returns> Returns the number of available categories</returns>
+        public static int NumCategories()
+        {
+            return (int)IssueCategory.FirstCustomCategory + s_CustomCategories.Count;
         }
 
 #if UNITY_2018_1_OR_NEWER

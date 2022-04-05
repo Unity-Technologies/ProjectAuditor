@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 [Unreleased]
+* Added *ProjectAuditor.NumCategories* API
 * Optimized call tree building and visualization
 
 ## [0.7.4-preview] - 2022-03-25
