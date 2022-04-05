@@ -26,6 +26,42 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+        public void SettingsAnalysis_Default_AccelerometerFrequency()
+        {
+            Assert.True(Evaluators.PlayerSettingsAccelerometerFrequency());
+        }
+
+        [Test]
+        public void SettingsAnalysis_Default_PhysicsLayerCollisionMatrix()
+        {
+            Assert.True(Evaluators.PhysicsLayerCollisionMatrix());
+        }
+
+        [Test]
+        public void SettingsAnalysis_Default_Physics2DLayerCollisionMatrix()
+        {
+            Assert.True(Evaluators.Physics2DLayerCollisionMatrix());
+        }
+
+        [Test]
+        public void SettingsAnalysis_Default_QualitySettings()
+        {
+            Assert.True(Evaluators.QualityUsingDefaultSettings());
+        }
+
+        [Test]
+        public void SettingsAnalysis_Default_QualityAsyncUploadTimeSlice()
+        {
+            Assert.True(Evaluators.QualityDefaultAsyncUploadTimeSlice());
+        }
+
+        [Test]
+        public void SettingsAnalysis_Default_QualityAsyncUploadBufferSize()
+        {
+            Assert.True(Evaluators.QualityDefaultAsyncUploadBufferSize());
+        }
+
+        [Test]
         public void SettingsAnalysis_Issue_IsReported()
         {
             var savedSetting = PlayerSettings.bakeCollisionMeshes;
