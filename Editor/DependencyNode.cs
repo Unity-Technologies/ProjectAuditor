@@ -7,7 +7,7 @@ namespace Unity.ProjectAuditor.Editor
 {
     public abstract class DependencyNode
     {
-        protected List<DependencyNode> m_Children = new List<DependencyNode>();
+        protected List<DependencyNode> m_Children = new List<DependencyNode>(1);
 
         public Location location;
         public bool perfCriticalContext;
@@ -30,6 +30,15 @@ namespace Unity.ProjectAuditor.Editor
         public void AddChild(DependencyNode child)
         {
             m_Children.Add(child);
+        }
+
+        internal void AddChildren(DependencyNode[] children)
+        {
+            // if any child is critical, make parent critical too
+            // this is to propagate perfCriticalContext up to the root of the hierarchy
+            if (children.Any(c => c.perfCriticalContext))
+                perfCriticalContext = true;
+            m_Children.AddRange(children);
         }
 
         public DependencyNode GetChild(int index = 0)

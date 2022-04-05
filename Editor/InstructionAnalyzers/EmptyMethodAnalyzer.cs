@@ -43,8 +43,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
                 k_Descriptor,
                 methodDefinition.FullName,
-                IssueCategory.Code,
-                new CallTreeNode(methodDefinition)
+                IssueCategory.Code
             );
         }
 

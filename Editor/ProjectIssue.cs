@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;// TODO: remove dependency on CodeAnalysis
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
@@ -64,15 +64,6 @@ namespace Unity.ProjectAuditor.Editor
                 this.m_CustomProperties = customProperties.Select(p => p.ToString()).ToArray();
         }
 
-        public ProjectIssue(ProblemDescriptor descriptor,
-                            string description,
-                            IssueCategory category,
-                            CallTreeNode dependenciesNode)
-            : this(descriptor, description, category)
-        {
-            dependencies = dependenciesNode;
-        }
-
         public int depth = 0;
 
         public string filename
@@ -116,20 +107,6 @@ namespace Unity.ProjectAuditor.Editor
             set
             {
                 m_Severity = value;
-            }
-        }
-
-        public string name
-        {
-            get
-            {
-                if (dependencies == null)
-                    return string.Empty;
-                var prettyName = dependencies.prettyName;
-                if (prettyName.Equals(descriptor.description))
-                    // if name matches the descriptor's name, use caller's name instead
-                    return string.IsNullOrEmpty(this.GetCallingMethod()) ? string.Empty : dependencies.GetChild().prettyName;
-                return prettyName;
             }
         }
 

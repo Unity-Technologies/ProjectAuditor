@@ -84,8 +84,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
                 descriptor,
                 description,
-                IssueCategory.Code,
-                new CallTreeNode(callee)
+                IssueCategory.Code
             );
         }
 

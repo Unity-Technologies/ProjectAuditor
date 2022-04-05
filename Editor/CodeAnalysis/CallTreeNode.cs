@@ -69,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         public override bool IsPerfCritical()
         {
-            return perfCriticalContext || (HasChildren() && m_Children.Any(child => child.IsPerfCritical()));
+            return perfCriticalContext;
         }
     }
 }

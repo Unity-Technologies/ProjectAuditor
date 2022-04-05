@@ -12,6 +12,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         public readonly MethodReference caller;
         public readonly Location location;
         public readonly bool perfCriticalContext;
+        public CallTreeNode hierarchy;
 
         public CallInfo(
             MethodReference callee,
@@ -48,25 +49,24 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
     {
         const int k_MaxDepth = 10;
 
+        // key: callee name, value: lists of all callers
         readonly Dictionary<string, List<CallInfo>> m_BucketedCalls =
             new Dictionary<string, List<CallInfo>>();
 
-        readonly HashSet<CallInfo> m_Calls = new HashSet<CallInfo>();
-
         public void Add(CallInfo callInfo)
         {
-            m_Calls.Add(callInfo);
+            var key = callInfo.callee.FullName;
+            List<CallInfo> calls;
+            if (!m_BucketedCalls.TryGetValue(key, out calls))
+            {
+                calls = new List<CallInfo>();
+                m_BucketedCalls.Add(key, calls);
+            }
+            calls.Add(callInfo);
         }
 
         public void BuildCallHierarchies(List<ProjectIssue> issues, IProgress progress = null)
         {
-            foreach (var callInfo in m_Calls)
-            {
-                if (!m_BucketedCalls.ContainsKey(callInfo.callee.FullName))
-                    m_BucketedCalls.Add(callInfo.callee.FullName, new List<CallInfo>());
-                m_BucketedCalls[callInfo.callee.FullName].Add(callInfo);
-            }
-
             if (issues.Count > 0)
             {
                 Profiler.BeginSample("CallCrawler.BuildCallHierarchies");
@@ -80,14 +80,12 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                         progress.Advance();
 
                     const int depth = 0;
-                    var callTree = issue.dependencies;
-                    BuildHierarchy(callTree.GetChild() as CallTreeNode, depth);
+                    var root = issue.dependencies;
+                    BuildHierarchy(root as CallTreeNode, depth);
 
-                    // temp fix for null location (ScriptAuditor was unable to get sequence point)
-                    if (issue.location == null && callTree.HasChildren())
-                    {
-                        issue.location = callTree.GetChild().location;
-                    }
+                    // temp fix for null location (code analysis was unable to get sequence point)
+                    if (issue.location == null)
+                        issue.location = root.location;
                 }
                 if (progress != null)
                     progress.Clear();
@@ -98,25 +96,40 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         void BuildHierarchy(CallTreeNode callee, int depth)
         {
+            // this check should be removed. Instead, the deep callstacks should be built on-demand
             if (depth++ == k_MaxDepth)
                 return;
 
             // let's find all callers with matching callee
-            if (m_BucketedCalls.ContainsKey(callee.name))
+            List<CallInfo> callPairs;
+            if (m_BucketedCalls.TryGetValue(callee.name, out callPairs))
             {
-                var callPairs = m_BucketedCalls[callee.name];
+                var childrenCount = callPairs.Count;
+                var children = new DependencyNode[childrenCount];
 
-                foreach (var call in callPairs)
-                    // ignore recursive calls
-                    if (!call.caller.FullName.Equals(callee.name))
+                for (int i = 0; i < childrenCount; i++)
+                {
+                    var call = callPairs[i];
+                    if (call.hierarchy != null)
                     {
-                        var callerInstance = new CallTreeNode(call.caller);
-                        callerInstance.location = call.location;
-                        callerInstance.perfCriticalContext = call.perfCriticalContext;
-
-                        BuildHierarchy(callerInstance, depth);
-                        callee.AddChild(callerInstance);
+                        // use previously built hierarchy
+                        children[i] = call.hierarchy;
+                        continue;
                     }
+
+                    var callerName = call.caller.FullName;
+                    var hierarchy = new CallTreeNode(call.caller);
+                    hierarchy.location = call.location;
+                    hierarchy.perfCriticalContext = call.perfCriticalContext;
+
+                    // stop recursion, if applicable (note that this only prevents recursion when a method calls itself)
+                    if (!callerName.Equals(callee.name))
+                        BuildHierarchy(hierarchy, depth);
+
+                    children[i] = hierarchy;
+                    call.hierarchy = hierarchy;
+                }
+                callee.AddChildren(children);
             }
         }
     }
