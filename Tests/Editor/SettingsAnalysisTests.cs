@@ -62,6 +62,12 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+        public void SettingsAnalysis_Default_StaticBatchingEnabled()
+        {
+            Assert.True(Evaluators.PlayerSettingsIsStaticBatchingEnabled(EditorUserBuildSettings.activeBuildTarget));
+        }
+
+        [Test]
         public void SettingsAnalysis_Issue_IsReported()
         {
             var savedSetting = PlayerSettings.bakeCollisionMeshes;
