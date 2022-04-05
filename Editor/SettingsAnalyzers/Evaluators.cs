@@ -68,7 +68,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 #endif
         }
 
-
         public static bool PlayerSettingsIsStaticBatchingEnabled(BuildTarget platform)
         {
             var method = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
