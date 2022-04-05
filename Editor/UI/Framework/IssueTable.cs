@@ -319,7 +319,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             }
                             else if (property.format == PropertyFormat.Time && ulong.TryParse(customProperty, out ulongValue))
                             {
-                                EditorGUI.LabelField(cellRect, Formatting.FormatTime(ulongValue));
+                                EditorGUI.LabelField(cellRect, Formatting.FormatTimeInSeconds(ulongValue));
                             }
                             else
                                 EditorGUI.LabelField(cellRect, new GUIContent(customProperty), labelStyle);
