@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Action<ProblemDescriptor> onOpenManual;
         public int analyticsEvent;
 
-        static Dictionary<int, ViewDescriptor> s_ViewDescriptorsRegistry = new Dictionary<int, ViewDescriptor>();
+        static readonly Dictionary<int, ViewDescriptor> s_ViewDescriptorsRegistry = new Dictionary<int, ViewDescriptor>();
 
         public static void Register(ViewDescriptor descriptor)
         {
