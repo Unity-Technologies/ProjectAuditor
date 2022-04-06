@@ -183,6 +183,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
     public static class Utility
     {
+        public static readonly UnityEngine.GUIContent ClearSelection;
         public static readonly UnityEngine.GUIContent CopyToClipboard;
         public static readonly UnityEngine.GUIContent OpenIssue;
         public static readonly UnityEngine.GUIContent OpenScriptReference;

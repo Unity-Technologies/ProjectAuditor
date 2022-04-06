@@ -419,8 +419,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 var menu = new GenericMenu();
 
+                menu.AddItem(Utility.ClearSelection, false, ClearSelection);
                 menu.AddItem(Utility.CopyToClipboard, false, () => CopyToClipboard(item.GetDisplayName()));
 
+                menu.AddSeparator("");
                 if (m_Desc.onOpenIssue != null && item.ProjectIssue != null && item.ProjectIssue.location != null)
                 {
                     menu.AddItem(Utility.OpenIssue, false, () =>
@@ -441,6 +443,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 current.Use();
             }
+        }
+
+        void ClearSelection()
+        {
+            state.selectedIDs.Clear();
         }
 
         void CopyToClipboard(string text)
