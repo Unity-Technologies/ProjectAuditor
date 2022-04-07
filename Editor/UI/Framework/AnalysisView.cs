@@ -13,8 +13,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class AnalysisView : IProjectIssueFilter
     {
-        static string s_ExportDirectory = string.Empty;
-
         enum ExportMode
         {
             All = 0,
@@ -450,7 +448,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void Export(Func<ProjectIssue, bool> predicate = null)
         {
-            var path = EditorUtility.SaveFilePanel("Save to CSV file", s_ExportDirectory, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
+            var path = EditorUtility.SaveFilePanel("Save to CSV file", m_Config.SavePath, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
                 "csv");
             if (path.Length != 0)
             {
@@ -468,7 +466,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 if (m_ViewManager.onViewExported != null)
                     m_ViewManager.onViewExported();
 
-                s_ExportDirectory = Path.GetDirectoryName(path);
+                m_Config.SavePath = Path.GetDirectoryName(path);
             }
         }
 
