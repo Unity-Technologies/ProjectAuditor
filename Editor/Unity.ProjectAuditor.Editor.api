@@ -86,6 +86,7 @@ namespace Unity.ProjectAuditor.Editor
         public string description;
         public int id;
         public string maximumVersion;
+        public string messageFormat;
         public string method;
         public string minimumVersion;
         public string[] platforms;
@@ -162,6 +163,7 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, object[] customProperties) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, string path, object[] customProperties) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location = default(Unity.ProjectAuditor.Editor.Utils.Location), object[] customProperties = default(object[])) {}
+        public static Unity.ProjectAuditor.Editor.ProjectIssue Create(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location, params object[] args);
         public string GetCustomProperty<T>(T propertyEnum) where T : System.ValueType, new();
         public double GetCustomPropertyAsDouble<T>(T propertyEnum) where T : System.ValueType, new();
         public float GetCustomPropertyAsFloat<T>(T propertyEnum) where T : System.ValueType, new();

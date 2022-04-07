@@ -11,6 +11,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     {
         const int k_FirstDescriptorId = 500000;
 
+// TODO: replace with single descriptor
         Dictionary<string, ProblemDescriptor> m_GenericDescriptors = new Dictionary<string, ProblemDescriptor>();
 
         public void Initialize(ProjectAuditorModule module)
