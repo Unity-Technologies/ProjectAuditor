@@ -299,6 +299,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         void DrawViewOptions()
         {
             EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
+            EditorGUILayout.LabelField(Contents.Zoom, EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
             m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(AnalysisView.toolbarButtonSize));
             m_Table.SetFontSize(m_Preferences.fontSize);
 
@@ -560,6 +561,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
+            public static readonly GUIContent Zoom = new GUIContent("Zoom");
 
             public static readonly GUIContent InfoFoldout = new GUIContent("Information");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
