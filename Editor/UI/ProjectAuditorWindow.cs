@@ -135,6 +135,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 ProjectAuditorAnalytics.SendEvent((ProjectAuditorAnalytics.UIButton)m_ViewManager.GetView(i).desc.analyticsEvent, ProjectAuditorAnalytics.BeginAnalytic());
             };
+
+            m_ViewManager.onAnalyze += IncrementalAudit;
             m_ViewManager.onViewExported += () =>
             {
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Export, ProjectAuditorAnalytics.BeginAnalytic());
@@ -503,12 +505,17 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void IncrementalAudit<T>() where T : ProjectAuditorModule
         {
-            if (m_ProjectReport == null)
-                m_ProjectReport = new ProjectReport();
-
             var module = m_ProjectAuditor.GetModule<T>();
             if (!module.IsSupported())
                 return;
+
+            IncrementalAudit(module);
+        }
+
+        void IncrementalAudit(ProjectAuditorModule module)
+        {
+            if (m_ProjectReport == null)
+                m_ProjectReport = new ProjectReport();
 
             var layouts = module.GetLayouts().ToArray();
             foreach (var layout in layouts)

@@ -24,6 +24,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected Draw2D m_2D;
         protected ProjectAuditorConfig m_Config;
+        protected ProjectAuditorModule m_Module;
         protected Preferences m_Preferences;
         protected ViewDescriptor m_Desc;
         protected IProjectIssueFilter m_BaseFilter;
@@ -70,10 +71,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_ViewManager = viewManager;
         }
 
-        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ProjectAuditorModule module, Preferences prefs, IProjectIssueFilter filter)
         {
             m_Desc = descriptor;
             m_Config = config;
+            m_Module = module;
             m_Preferences = prefs;
             m_BaseFilter = filter;
             m_Layout = layout;
@@ -298,7 +300,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawViewOptions()
         {
-            EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
+            if (!m_Module.IsEnabledByDefault() && m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeCurrent, EditorStyles.toolbarButton, GUILayout.Width(120)))
+            {
+                m_ViewManager.onAnalyze(m_Module);
+            }
+
             EditorGUILayout.LabelField(Contents.Zoom, EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
             m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(AnalysisView.toolbarButtonSize));
             m_Table.SetFontSize(m_Preferences.fontSize);
@@ -558,6 +564,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         static class Contents
         {
+            public static readonly GUIContent AnalyzeCurrent = new GUIContent("Analyze Current");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
