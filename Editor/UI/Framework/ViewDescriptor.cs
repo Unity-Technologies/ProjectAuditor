@@ -30,8 +30,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public GUIContent dependencyViewGuiContent;
         public Func<ProjectIssue, string> getAssemblyName;
         public Action<GenericMenu, ViewManager, ProjectIssue> onContextMenu;
+        public Action<ViewManager> onDrawToolbar;
         public Action<Location> onOpenIssue;
-        public Action<ViewManager> onDrawToolbarDataOptions;
         public Action<ProblemDescriptor> onOpenManual;
         public int analyticsEvent;
 

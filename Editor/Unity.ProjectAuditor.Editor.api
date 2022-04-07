@@ -124,6 +124,7 @@ namespace Unity.ProjectAuditor.Editor
         public bool FailBuildOnIssues;
         public bool LogTimingsInfo;
         public bool SaveBuildReports;
+        public string SavePath;
         public int NumRules { get; }
         public ProjectAuditorConfig() {}
         public void AddRule(Unity.ProjectAuditor.Editor.Rule ruleToAdd);
