@@ -252,6 +252,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 descriptionWithIcon = true,
                 groupByDescriptor = true,
                 showFilters = true,
+                onContextMenu = (menu, viewManager, issue) =>
+                {
+                    menu.AddItem(Contents.ShaderVariants, false, () =>
+                    {
+                        viewManager.ChangeView(IssueCategory.ShaderVariant);
+                        viewManager.GetActiveView().SetSearch(issue.description);
+                    });
+                },
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbarDataOptions = (viewManager) =>
                 {

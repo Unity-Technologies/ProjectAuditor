@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         readonly ProjectAuditorConfig m_Config;
         readonly ViewDescriptor m_Desc;
-        readonly IProjectIssueFilter m_Filter;
+        readonly AnalysisView m_View;
         readonly IssueLayout m_Layout;
         readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
 
@@ -39,11 +39,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
                           ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config,
-                          IProjectIssueFilter filter) : base(state,
-                                                             multicolumnHeader)
+                          AnalysisView view) : base(state,
+                                                    multicolumnHeader)
         {
             m_Config = config;
-            m_Filter = filter;
+            m_View = view;
             m_Desc = desc;
             m_Layout = layout;
             m_FlatView = !desc.groupByDescriptor;
@@ -121,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Profiler.BeginSample("IssueTable.Match");
             var filteredItems = m_TreeViewItemIssues.Where(item =>
             {
-                return m_Filter.Match(item.ProjectIssue);
+                return m_View.Match(item.ProjectIssue);
             }).ToArray();
 
             Profiler.EndSample();
@@ -420,9 +420,22 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 var menu = new GenericMenu();
 
                 menu.AddItem(Utility.ClearSelection, false, ClearSelection);
-                menu.AddItem(Utility.CopyToClipboard, false, () => CopyToClipboard(item.GetDisplayName()));
 
-                menu.AddSeparator("");
+                if (item.ProjectIssue != null)
+                {
+                    if (m_Desc.onOpenIssue != null && item.ProjectIssue.location != null)
+                    {
+                        menu.AddItem(Utility.OpenIssue, false, () =>
+                        {
+                            m_Desc.onOpenIssue(item.ProjectIssue.location);
+                        });
+                    }
+                    menu.AddItem(new GUIContent("Filter by " + item.ProjectIssue.description.Replace("/", "\u2215")) , false, () =>
+                    {
+                        m_View.SetSearch(item.ProjectIssue.description);
+                    });
+                }
+
                 if (m_Desc.onOpenIssue != null && item.ProjectIssue != null && item.ProjectIssue.location != null)
                 {
                     menu.AddItem(Utility.OpenIssue, false, () =>
@@ -439,6 +452,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         m_Desc.onOpenManual(item.ProjectIssue.descriptor);
                     });
                 }
+
+                if (m_Desc.onContextMenu != null)
+                {
+                    menu.AddSeparator("");
+                    m_Desc.onContextMenu(menu, m_View.viewManager, item.ProjectIssue);
+                }
+
+                menu.AddSeparator("");
+                menu.AddItem(Utility.CopyToClipboard, false, () => CopyToClipboard(item.GetDisplayName()));
+
                 menu.ShowAsContext();
 
                 current.Use();

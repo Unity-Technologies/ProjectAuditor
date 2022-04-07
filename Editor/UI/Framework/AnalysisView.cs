@@ -57,6 +57,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get { return m_Table; }
         }
 
+        internal ViewManager viewManager
+        {
+            get { return m_ViewManager; }
+        }
+
         public AnalysisView(ViewManager viewManager)
         {
             m_2D = new Draw2D("Unlit/ProjectAuditor");
@@ -415,6 +420,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
 
             EditorGUILayout.EndVertical();
+        }
+
+        public void SetSearch(string filter)
+        {
+            m_TextFilter.searchText = filter;
         }
 
         void SetRowsExpanded(bool expanded)
