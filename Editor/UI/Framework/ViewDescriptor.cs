@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
@@ -28,6 +29,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
         public Func<ProjectIssue, string> getAssemblyName;
+        public Action<GenericMenu, ViewManager, ProjectIssue> onContextMenu;
         public Action<Location> onOpenIssue;
         public Action<ViewManager> onDrawToolbarDataOptions;
         public Action<ProblemDescriptor> onOpenManual;

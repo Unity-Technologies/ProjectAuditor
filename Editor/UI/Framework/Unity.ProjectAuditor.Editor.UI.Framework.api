@@ -60,6 +60,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
         protected virtual void OnDrawInfo();
         public void Refresh();
+        public void SetSearch(string filter);
     }
 
     public static class EditorUtil
@@ -183,6 +184,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
     public static class Utility
     {
+        public static readonly UnityEngine.GUIContent ClearSelection;
         public static readonly UnityEngine.GUIContent CopyToClipboard;
         public static readonly UnityEngine.GUIContent OpenIssue;
         public static readonly UnityEngine.GUIContent OpenScriptReference;
@@ -216,6 +218,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public string menuLabel;
         public int menuOrder;
         public string name;
+        public System.Action<UnityEditor.GenericMenu, Unity.ProjectAuditor.Editor.UI.Framework.ViewManager, Unity.ProjectAuditor.Editor.ProjectIssue> onContextMenu;
         public System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewManager> onDrawToolbarDataOptions;
         public System.Action<Unity.ProjectAuditor.Editor.Utils.Location> onOpenIssue;
         public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenManual;
