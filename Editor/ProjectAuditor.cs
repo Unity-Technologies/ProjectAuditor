@@ -127,7 +127,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Runs all available modules (code, project settings) and generate a report of all found issues.
+        /// Runs all modules that are both supported and enabled.
         /// </summary>
         /// <param name="progress"> Progress bar, if applicable </param>
         /// <returns> Generated report </returns>
@@ -144,14 +144,14 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Runs all available modules (code, project settings) and generate a report of all found issues.
+        /// Runs all modules that are both supported and enabled.
         /// </summary>
         /// <param name="onIssueFound"> Action called whenever a new issue is found </param>
         /// <param name="onUpdate"> Action called whenever a module completes </param>
         /// <param name="progress"> Progress bar, if applicable </param>
         public void Audit(Action<ProjectIssue> onIssueFound, Action<bool> onUpdate, IProgress progress = null)
         {
-            var supportedModules = m_Modules.Where(m => m.IsSupported()).ToArray();
+            var supportedModules = m_Modules.Where(m => m.IsSupported() && m.IsEnabledByDefault()).ToArray();
             var numModules = supportedModules.Length;
             if (numModules == 0)
             {
