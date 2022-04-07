@@ -338,8 +338,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawDataOptions()
         {
-            if (m_Desc.onDrawToolbarDataOptions != null)
-                m_Desc.onDrawToolbarDataOptions(m_ViewManager);
+            if (m_Desc.onDrawToolbar != null)
+                m_Desc.onDrawToolbar(m_ViewManager);
 
             if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
                 (data) =>

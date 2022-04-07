@@ -261,7 +261,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     });
                 },
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
-                onDrawToolbarDataOptions = (viewManager) =>
+                onDrawToolbar = (viewManager) =>
                 {
                     ChangeViewButton(viewManager, IssueCategory.ShaderCompilerMessage, Contents.ShaderCompilerMessages);
                     ChangeViewButton(viewManager, IssueCategory.ShaderVariant, Contents.ShaderVariants);
@@ -280,7 +280,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showInfoPanel = true,
                 showRightPanels = true,
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
-                onDrawToolbarDataOptions = (viewManager) =>
+                onDrawToolbar = (viewManager) =>
                 {
                     GUILayout.FlexibleSpace();
                     if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
@@ -308,7 +308,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 4,
                 descriptionWithIcon = true,
                 onOpenIssue = EditorUtil.OpenTextFile<Shader>,
-                onDrawToolbarDataOptions = (viewManager) =>
+                onDrawToolbar = (viewManager) =>
                 {
                     ChangeViewButton(viewManager, IssueCategory.Shader, Contents.Shaders);
                     ChangeViewButton(viewManager, IssueCategory.ShaderVariant, Contents.ShaderVariants);
@@ -405,7 +405,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 100,
                 showFilters = true,
                 showInfoPanel = true,
-                onDrawToolbarDataOptions = (viewManager) =>
+                onDrawToolbar = (viewManager) =>
                 {
                     ChangeViewButton(viewManager, IssueCategory.BuildFile, Contents.BuildFiles);
                 },
@@ -423,7 +423,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showInfoPanel = true,
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
-                onDrawToolbarDataOptions = (viewManager) =>
+                onDrawToolbar = (viewManager) =>
                 {
                     ChangeViewButton(viewManager, IssueCategory.BuildStep, Contents.BuildSteps);
                 },

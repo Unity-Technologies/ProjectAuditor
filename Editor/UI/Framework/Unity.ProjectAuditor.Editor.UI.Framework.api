@@ -219,7 +219,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public int menuOrder;
         public string name;
         public System.Action<UnityEditor.GenericMenu, Unity.ProjectAuditor.Editor.UI.Framework.ViewManager, Unity.ProjectAuditor.Editor.ProjectIssue> onContextMenu;
-        public System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewManager> onDrawToolbarDataOptions;
+        public System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewManager> onDrawToolbar;
         public System.Action<Unity.ProjectAuditor.Editor.Utils.Location> onOpenIssue;
         public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenManual;
         public bool showActions;
