@@ -5,12 +5,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 [in-progress]
-* Added groups support to Shaders view
 * Added *ProjectAuditor.NumCategories* API
+* Added module-specific incremental analysis support
+* Added support to disable a module by default
 * Added diagnostic message formatting support
+* Added 'Clear Selection' and 'Filter by Description' options to context menu
+* Added SavePath to configuration asset
 * Improved code diagnostic messages
 
 [Unreleased]
+* Added groups support to Shaders view
 * Optimized call tree building and visualization
 
 ## [0.7.4-preview] - 2022-03-25
