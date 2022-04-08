@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             if (!MonoBehaviourAnalysis.IsMonoBehaviourEvent(methodDefinition))
                 return null;
 
-            return ProjectIssue.Create(k_Descriptor, IssueCategory.Code, null, methodDefinition.Name);
+            return new ProjectIssue(k_Descriptor, IssueCategory.Code, methodDefinition.Name);
         }
 
         public IEnumerable<OpCode> GetOpCodes()

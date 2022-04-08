@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             else if (type.FullName.Equals("System.Double"))
                 typeName = "double";
 
-            return ProjectIssue.Create(k_Descriptor, IssueCategory.Code, null, typeName);
+            return new ProjectIssue(k_Descriptor, IssueCategory.Code, typeName);
         }
 
         public IEnumerable<OpCode> GetOpCodes()

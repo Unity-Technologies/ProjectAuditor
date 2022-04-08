@@ -66,18 +66,18 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 var isClosure = typeReference.Name.StartsWith("<>c__DisplayClass");
                 if (isClosure)
                 {
-                    issue = ProjectIssue.Create(k_ClosureAllocationDescriptor, IssueCategory.Code, null, callerMethodDefinition.DeclaringType.Name, callerMethodDefinition.Name);
+                    issue = new ProjectIssue(k_ClosureAllocationDescriptor, IssueCategory.Code, callerMethodDefinition.DeclaringType.Name, callerMethodDefinition.Name);
                 }
                 else
                 {
-                    issue = ProjectIssue.Create(k_ObjectAllocationDescriptor, IssueCategory.Code, null, typeReference.FullName);
+                    issue = new ProjectIssue(k_ObjectAllocationDescriptor, IssueCategory.Code, typeReference.FullName);
                 }
             }
             else // OpCodes.Newarr
             {
                 var typeReference = (TypeReference)inst.Operand;
 
-                issue = ProjectIssue.Create(k_ArrayAllocationDescriptor, IssueCategory.Code, null, typeReference.Name);
+                issue = new ProjectIssue(k_ArrayAllocationDescriptor, IssueCategory.Code, typeReference.Name);
             }
 
             return issue;

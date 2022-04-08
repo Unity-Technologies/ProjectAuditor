@@ -69,6 +69,17 @@ namespace Unity.ProjectAuditor.Editor
                 this.m_CustomProperties = customProperties.Select(p => p.ToString()).ToArray();
         }
 
+        /// <summary>
+        /// Diagnostics-specific constructor
+        /// </summary>
+        /// <param name="descriptor"> Diagnostic descriptor </param>
+        /// <param name="category"> Issue category </param>
+        /// <param name="args"> Arguments to be used in the message formatting</param>
+        public ProjectIssue(ProblemDescriptor descriptor, IssueCategory category, params object[] args)
+            : this(descriptor, string.IsNullOrEmpty(descriptor.messageFormat) ? descriptor.description : string.Format(descriptor.messageFormat, args), category)
+        {
+        }
+
         public int depth = 0;
 
         public string filename

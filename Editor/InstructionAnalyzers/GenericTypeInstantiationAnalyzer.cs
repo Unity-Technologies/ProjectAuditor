@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                     m_GenericDescriptors.Add(typeDefinition.FullName, desc);
                 }
 
-                return ProjectIssue.Create(m_GenericDescriptors[genericTypeName], IssueCategory.GenericInstance, null, typeReference.FullName);
+                return new ProjectIssue(m_GenericDescriptors[genericTypeName], IssueCategory.GenericInstance, typeReference.FullName);
             }
             catch (AssemblyResolutionException e)
             {
