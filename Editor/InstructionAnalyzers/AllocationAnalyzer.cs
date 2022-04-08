@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Try to avoid allocating objects in frequently-updated code."
             )
         {
-            messageFormat = "Closure allocation in '{0}'"
+            messageFormat = "Closure allocation in '{0}.{1}'"
         };
 
 
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_ArrayAllocationDescriptor);
         }
 
-        public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public ProjectIssue Analyze(MethodDefinition callerMethodDefinition, Instruction inst)
         {
             ProjectIssue issue;
 
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 var isClosure = typeReference.Name.StartsWith("<>c__DisplayClass");
                 if (isClosure)
                 {
-                    issue = ProjectIssue.Create(k_ClosureAllocationDescriptor, IssueCategory.Code, null, typeReference.DeclaringType.FullName);
+                    issue = ProjectIssue.Create(k_ClosureAllocationDescriptor, IssueCategory.Code, null, callerMethodDefinition.DeclaringType.Name, callerMethodDefinition.Name);
                 }
                 else
                 {

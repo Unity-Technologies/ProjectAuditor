@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [in-progress]
 * Added groups support to Shaders view
 * Added *ProjectAuditor.NumCategories* API
+* Added diagnostic message formatting support
+* Improved code diagnostic messages
 
 [Unreleased]
 * Optimized call tree building and visualization
