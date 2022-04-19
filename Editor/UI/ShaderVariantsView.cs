@@ -174,7 +174,12 @@ The number of Variants contributes to the build size, however, there might be Va
                     : k_PlayerLogParsingUnsupported, SharedStyles.TextArea);
 
                 if (GraphicsSettingsProxy.logShaderCompilationSupported)
-                    GraphicsSettingsProxy.logWhenShaderIsCompiled = EditorGUILayout.Toggle(k_LogShaderCompilation, GraphicsSettingsProxy.logWhenShaderIsCompiled, GUILayout.Width(320));
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField(k_LogShaderCompilation, GUILayout.Width(270));
+                    GraphicsSettingsProxy.logWhenShaderIsCompiled = EditorGUILayout.Toggle(GraphicsSettingsProxy.logWhenShaderIsCompiled);
+                    EditorGUILayout.EndHorizontal();
+                }
 
                 var evt = Event.current;
 
