@@ -18,6 +18,7 @@ namespace Unity.ProjectAuditor.Editor
     public class AssetDependencyNode : Unity.ProjectAuditor.Editor.DependencyNode
     {
         public AssetDependencyNode() {}
+        public virtual string GetName();
         public virtual string GetPrettyName();
         public virtual bool IsPerfCritical();
     }
@@ -27,10 +28,12 @@ namespace Unity.ProjectAuditor.Editor
         public Unity.ProjectAuditor.Editor.Utils.Location location;
         protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.DependencyNode> m_Children;
         public bool perfCriticalContext;
+        public string name { get; }
         public string prettyName { get; }
         protected DependencyNode() {}
         public void AddChild(Unity.ProjectAuditor.Editor.DependencyNode child);
         public Unity.ProjectAuditor.Editor.DependencyNode GetChild(int index = 0);
+        public abstract string GetName();
         public int GetNumChildren();
         public abstract string GetPrettyName();
         public bool HasChildren();
@@ -354,13 +357,9 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         public string methodName;
         public string name;
         public string typeName;
+        public virtual string GetName();
         public virtual string GetPrettyName();
         public virtual bool IsPerfCritical();
-    }
-
-    [System.Runtime.CompilerServices.Extension] public static class CodeIssueExtensions
-    {
-        [System.Runtime.CompilerServices.Extension] public static string GetCallingMethod(Unity.ProjectAuditor.Editor.ProjectIssue issue);
     }
 }
 
@@ -415,6 +414,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
     [System.Runtime.CompilerServices.Extension] public static class ProjectIssueExtensions
     {
+        [System.Runtime.CompilerServices.Extension] public static string GetContext(Unity.ProjectAuditor.Editor.ProjectIssue issue);
         [System.Runtime.CompilerServices.Extension] public static string GetProperty(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyType propertyType);
     }
 }

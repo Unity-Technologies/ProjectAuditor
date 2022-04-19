@@ -441,7 +441,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     exporter.WriteHeader();
 
-                    var matchingIssues = m_Issues.Where(issue => m_Config.GetAction(issue.descriptor, issue.GetCallingMethod()) !=
+                    var matchingIssues = m_Issues.Where(issue => m_Config.GetAction(issue.descriptor, issue.GetContext()) !=
                         Rule.Severity.None && (predicate == null || predicate(issue)));
                     exporter.WriteIssues(matchingIssues.ToArray());
                 }

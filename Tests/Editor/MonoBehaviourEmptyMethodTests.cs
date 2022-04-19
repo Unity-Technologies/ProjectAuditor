@@ -57,7 +57,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.AreEqual(m_MonoBehaviourWithEmptyEventMethod.fileName, issue.filename);
             Assert.AreEqual("System.Void MonoBehaviourWithEmptyEventMethod::Update()", issue.description);
-            Assert.AreEqual("System.Void MonoBehaviourWithEmptyEventMethod::Update()", issue.GetCallingMethod());
+            Assert.AreEqual("System.Void MonoBehaviourWithEmptyEventMethod::Update()", issue.GetContext());
             Assert.AreEqual(1, issue.line);
             Assert.AreEqual(IssueCategory.Code, issue.category);
         }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -237,7 +236,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var issue = item.ProjectIssue;
             var descriptor = item.ProblemDescriptor;
 
-            var rule = m_Config.GetRule(descriptor, issue != null ? issue.GetCallingMethod() : string.Empty);
+            var rule = m_Config.GetRule(descriptor, issue != null ? issue.GetContext() : string.Empty);
             if (rule == null && issue != null)
                 rule = m_Config.GetRule(descriptor); // try to find non-specific rule
             if (rule != null && rule.severity == Rule.Severity.None)

@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -52,7 +53,7 @@ class MyClass
 
             Assert.AreEqual(m_TempAsset.fileName, myIssue.filename);
             Assert.AreEqual("System.Linq.Enumerable.Count", myIssue.description, "Description: {0}", myIssue.description);
-            Assert.AreEqual("System.Int32 MyClass::Dummy(System.Collections.Generic.List`1<System.Int32>)", myIssue.GetCallingMethod());
+            Assert.AreEqual("System.Int32 MyClass::Dummy(System.Collections.Generic.List`1<System.Int32>)", myIssue.GetContext());
             Assert.AreEqual(9, myIssue.line);
             Assert.AreEqual(IssueCategory.Code, myIssue.category);
         }

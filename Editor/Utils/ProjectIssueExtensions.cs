@@ -7,6 +7,15 @@ namespace Unity.ProjectAuditor.Editor.Utils
     {
         internal const string k_NotAvailable = "N/A";
 
+        public static string GetContext(this ProjectIssue issue)
+        {
+            if (issue.dependencies == null)
+                return string.Empty;
+
+            var root = issue.dependencies;
+            return root.name;
+        }
+
         public static string GetProperty(this ProjectIssue issue, PropertyType propertyType)
         {
             switch (propertyType)
