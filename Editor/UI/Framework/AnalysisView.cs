@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -535,7 +534,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             "All",
             "Filtered",
-            "SVC",
             "Selected"
         };
 
