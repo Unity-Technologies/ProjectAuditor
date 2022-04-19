@@ -19,6 +19,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             All = 0,
             Filtered = 1,
+            SVC,
             Selected
         }
 
@@ -348,6 +349,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         case ExportMode.Filtered:
                             Export(Match);
                             return;
+                        case ExportMode.SVC:
+                            ExportSVC(Match);
+                            return;
                         case ExportMode.Selected:
                             var selectedItems = table.GetSelectedItems();
                             Export(issue =>
@@ -428,6 +432,78 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             else
             {
                 m_Table.SetExpanded(new List<int>());
+            }
+        }
+
+        private void ExportSVC(Func<ProjectIssue, bool> predicate = null)
+        {
+            var path = EditorUtility.SaveFilePanelInProject("Save to SVC file", "NewShaderVariants.shadervariants",
+                "shadervariants", "Save SVC");
+
+            string svcName = Path.GetFileNameWithoutExtension(path);
+            if (path.Length != 0)
+            {
+                var matchingIssues = m_Issues.Where(issue => m_Config.GetAction(issue.descriptor, issue.GetContext()) !=
+                    Rule.Severity.None && (predicate == null || predicate(issue)));
+
+                ShaderVariantCollection svc = new ShaderVariantCollection();
+                svc.name = svcName;
+
+                AssetDatabase.CreateAsset(svc, path);
+
+                foreach (ProjectIssue issue in matchingIssues)
+                {
+                    Shader shader = null;
+                    string[] keywords = new string[0];
+                    string pType = String.Empty;
+
+                    for (int i = 0; i < m_Layout.properties.Length; i++)
+                    {
+                        var columnType = m_Layout.properties[i].type;
+                        var prop = issue.GetProperty(columnType);
+                        string collum = columnType.ToString();
+
+                        if (collum == "Description")
+                        {
+                            shader = Shader.Find(prop);
+                        }
+                        if (collum == "10")//Pass Type
+                        {
+                            pType = prop;
+                        }
+                        if (collum == "12")//Keywords
+                        {
+                            if (prop.Equals("<no keywords>"))
+                            {
+                                keywords = new string[1];
+                                keywords[0] = prop;
+                            }
+                            else
+                            {
+                                keywords = prop.Split(',');
+                            }
+                        }
+                    }
+
+                    if (shader != null && !pType.Equals(string.Empty) && keywords.Length > 0)
+                    {
+                        UnityEngine.Rendering.PassType passtype = (UnityEngine.Rendering.PassType)Enum.Parse(typeof(UnityEngine.Rendering.PassType), pType);
+
+                        if (keywords[0].Equals("<no keywords>"))
+                        {
+                            keywords = new string[0];
+                        }
+
+                        ShaderVariantCollection.ShaderVariant shaderVariant = new ShaderVariantCollection.ShaderVariant();
+                        shaderVariant.shader = shader;
+                        shaderVariant.passType = passtype;
+                        shaderVariant.keywords = keywords;
+                        svc.Add(shaderVariant);
+                    }
+                }
+                EditorUtility.RevealInFinder(path);
+
+                s_ExportDirectory = Path.GetDirectoryName(path);
             }
         }
 
@@ -534,6 +610,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             "All",
             "Filtered",
+            "SVC",
             "Selected"
         };
 
