@@ -42,6 +42,7 @@ The number of Variants contributes to the build size, however, there might be Va
         const string k_Ok = "Ok";
         const string k_Yes = "Yes";
         const string k_No = "No";
+        const string k_LogShaderCompilation = "Log Shader Compilation (requires Build&Run)";
 
         bool m_ShowCompiledVariants = true;
         bool m_ShowUncompiledVariants = true;
@@ -173,7 +174,7 @@ The number of Variants contributes to the build size, however, there might be Va
                     : k_PlayerLogParsingUnsupported, SharedStyles.TextArea);
 
                 if (GraphicsSettingsProxy.logShaderCompilationSupported)
-                    GraphicsSettingsProxy.logWhenShaderIsCompiled = EditorGUILayout.Toggle("Log Shader Compilation (requires Build&Run)", GraphicsSettingsProxy.logWhenShaderIsCompiled, GUILayout.Width(320));
+                    GraphicsSettingsProxy.logWhenShaderIsCompiled = EditorGUILayout.Toggle(k_LogShaderCompilation, GraphicsSettingsProxy.logWhenShaderIsCompiled, GUILayout.Width(320));
 
                 var evt = Event.current;
 
