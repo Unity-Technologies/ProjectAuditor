@@ -14,13 +14,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class AnalysisView : IProjectIssueFilter
     {
-        static string s_ExportDirectory = string.Empty;
+        internal static string s_ExportDirectory = string.Empty;
 
         enum ExportMode
         {
             All = 0,
             Filtered = 1,
-            SVC,
             Selected
         }
 
@@ -350,9 +349,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         case ExportMode.Filtered:
                             Export(Match);
                             return;
-                        case ExportMode.SVC:
-                            ExportSVC(Match);
-                            return;
                         case ExportMode.Selected:
                             var selectedItems = table.GetSelectedItems();
                             Export(issue =>
@@ -436,60 +432,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        void ExportSVC(Func<ProjectIssue, bool> predicate = null)
-        {
-            var path = EditorUtility.SaveFilePanelInProject("Save to SVC file", "NewShaderVariants.shadervariants",
-                "shadervariants", "Save SVC");
-
-            var svcName = Path.GetFileNameWithoutExtension(path);
-            if (path.Length != 0)
-            {
-                var matchingIssues = m_Issues.Where(issue => m_Config.GetAction(issue.descriptor, issue.GetContext()) !=
-                    Rule.Severity.None && (predicate == null || predicate(issue)));
-
-                var svc = new ShaderVariantCollection();
-                svc.name = svcName;
-
-                AssetDatabase.CreateAsset(svc, path);
-
-                foreach (var issue in matchingIssues)
-                {
-                    var shader = Shader.Find(issue.GetProperty(PropertyType.Description));
-                    var passType = issue.GetCustomProperty(ShaderVariantProperty.PassType);
-                    var prop = issue.GetCustomProperty(ShaderVariantProperty.Keywords);
-
-                    string[] keywords;
-                    if (prop.Equals("<no keywords>"))
-                    {
-                        keywords = new string[1];
-                        keywords[0] = prop;
-                    }
-                    else
-                    {
-                        keywords = prop.Split(',');
-                    }
-
-                    if (shader != null && !passType.Equals(string.Empty) && keywords.Length > 0)
-                    {
-                        if (keywords[0].Equals("<no keywords>"))
-                        {
-                            keywords = new string[0];
-                        }
-
-                        var shaderVariant = new ShaderVariantCollection.ShaderVariant();
-                        shaderVariant.shader = shader;
-                        shaderVariant.passType = (UnityEngine.Rendering.PassType)Enum.Parse(typeof(UnityEngine.Rendering.PassType), passType);
-                        shaderVariant.keywords = keywords;
-                        svc.Add(shaderVariant);
-                    }
-                }
-                EditorUtility.RevealInFinder(path);
-
-                s_ExportDirectory = Path.GetDirectoryName(path);
-            }
-        }
-
-        void Export(Func<ProjectIssue, bool> predicate = null)
+        protected virtual void Export(Func<ProjectIssue, bool> predicate = null)
         {
             var path = EditorUtility.SaveFilePanel("Save to CSV file", s_ExportDirectory, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
                 "csv");
