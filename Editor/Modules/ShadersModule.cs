@@ -430,9 +430,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     shaderVariantData.shaderType.ToString(),
                     shaderVariantData.passType.ToString(),
                     shaderVariantData.passName,
-                    CombineStrings(shaderVariantData.keywords),
-                    CombineStrings(shaderVariantData.platformKeywords),
-                    CombineStrings(shaderVariantData.requirements.Select(r => r.ToString()).ToArray())
+                    CombineKeywords(shaderVariantData.keywords),
+                    CombineKeywords(shaderVariantData.platformKeywords),
+                    CombineKeywords(shaderVariantData.requirements.Select(r => r.ToString()).ToArray())
                 });
 
                 onIssueFound(issue);
@@ -507,7 +507,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var pass = parts[1];
                 var stage = parts[2];
                 var keywordsString = parts[3];
-                var keywords = StringToKeywords(keywordsString, " ");
+                var keywords = SplitKeywords(keywordsString, " ");
 
                 // fix-up stage to be consistent with built variants stage
                 if (k_StageNameMap.ContainsKey(stage))
@@ -547,7 +547,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var stage = builtVariant.GetCustomProperty(ShaderVariantProperty.Stage);
                 var passName = builtVariant.GetCustomProperty(ShaderVariantProperty.PassName);
                 var keywordsString = builtVariant.GetCustomProperty(ShaderVariantProperty.Keywords);
-                var keywords = StringToKeywords(keywordsString);
+                var keywords = SplitKeywords(keywordsString);
                 var isVariantCompiled = false;
 
                 if (compiledVariants.ContainsKey(shaderName))
@@ -625,14 +625,14 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
 #endif
 
-        static string[] StringToKeywords(string keywordsString, string separator = null)
+        static string[] SplitKeywords(string keywordsString, string separator = null)
         {
             if (keywordsString.Equals(k_NoKeywords))
                 return new string[] {};
             return Formatting.SplitStrings(keywordsString, separator);
         }
 
-        static string CombineStrings(string[] strings, string separator = null)
+        static string CombineKeywords(string[] strings, string separator = null)
         {
             if (strings.Length > 0)
                 return Formatting.CombineStrings(strings, separator);
