@@ -354,7 +354,7 @@ class UxmlAttributeDescriptionPropertyUsage
 
             Assert.AreEqual(m_TempAsset.fileName, myIssue.filename);
             Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.description);
-            Assert.AreEqual("System.Void MyClass::Dummy()", myIssue.GetCallingMethod());
+            Assert.AreEqual("System.Void MyClass::Dummy()", myIssue.GetContext());
             Assert.AreEqual(7, myIssue.line);
             Assert.AreEqual(IssueCategory.Code, myIssue.category);
 
@@ -383,7 +383,7 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInPlugin);
 
             Assert.AreEqual(1, issues.Count());
-            Assert.AreEqual("System.Void MyPlugin::Dummy()", issues.First().GetCallingMethod());
+            Assert.AreEqual("System.Void MyPlugin::Dummy()", issues[0].GetContext());
         }
 
         [Test]
@@ -392,7 +392,7 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInPlayerCode);
 
             Assert.AreEqual(1, issues.Count());
-            Assert.AreEqual("System.Void MyClassWithPlayerOnlyCode::Dummy()", issues.First().GetCallingMethod());
+            Assert.AreEqual("System.Void MyClassWithPlayerOnlyCode::Dummy()", issues[0].GetContext());
         }
 
         [Test]
@@ -401,7 +401,7 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInNestedClass);
 
             Assert.AreEqual(1, issues.Count());
-            Assert.AreEqual("System.Void MyClassWithNested/NestedClass::Dummy()", issues.First().GetCallingMethod());
+            Assert.AreEqual("System.Void MyClassWithNested/NestedClass::Dummy()", issues[0].GetContext());
         }
 
         [Test]
@@ -410,7 +410,7 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInGenericClass);
 
             Assert.AreEqual(1, issues.Count());
-            Assert.AreEqual("System.Void GenericClass`1::Dummy()", issues.First().GetCallingMethod());
+            Assert.AreEqual("System.Void GenericClass`1::Dummy()", issues[0].GetContext());
         }
 
         [Test]
@@ -419,7 +419,7 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInVirtualMethod);
 
             Assert.AreEqual(1, issues.Count());
-            Assert.AreEqual("System.Void AbstractClass::Dummy()", issues.First().GetCallingMethod());
+            Assert.AreEqual("System.Void AbstractClass::Dummy()", issues[0].GetContext());
         }
 
         [Test]
@@ -428,7 +428,7 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInOverrideMethod);
 
             Assert.AreEqual(1, issues.Count());
-            Assert.AreEqual("System.Void DerivedClass::Dummy()", issues.First().GetCallingMethod());
+            Assert.AreEqual("System.Void DerivedClass::Dummy()", issues[0].GetContext());
         }
 
         [Test]
@@ -437,7 +437,7 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviour);
 
             Assert.AreEqual(1, issues.Count());
-            Assert.AreEqual("System.Void MyMonoBehaviour::Start()", issues.First().GetCallingMethod());
+            Assert.AreEqual("System.Void MyMonoBehaviour::Start()", issues[0].GetContext());
         }
 
         [Test]
@@ -446,7 +446,7 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInCoroutine);
 
             Assert.AreEqual(1, issues.Count());
-            Assert.AreEqual("System.Boolean MyMonoBehaviourWithCoroutine/<MyCoroutine>d__1::MoveNext()", issues.First().GetCallingMethod());
+            Assert.AreEqual("System.Boolean MyMonoBehaviourWithCoroutine/<MyCoroutine>d__1::MoveNext()", issues[0].GetContext());
         }
 
         [Test]
@@ -455,7 +455,7 @@ class UxmlAttributeDescriptionPropertyUsage
             var allScriptIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInDelegate);
             var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'UnityEngine.Camera.allCameras' usage"));
             Assert.NotNull(issue);
-            Assert.AreEqual("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()", issue.GetCallingMethod());
+            Assert.AreEqual("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()", issue.GetContext());
         }
 
         [Test]

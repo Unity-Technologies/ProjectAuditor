@@ -12,6 +12,11 @@ namespace Unity.ProjectAuditor.Editor
         public Location location;
         public bool perfCriticalContext;
 
+        public string name
+        {
+            get { return GetName(); }
+        }
+
         public string prettyName
         {
             get { return GetPrettyName(); }
@@ -56,6 +61,7 @@ namespace Unity.ProjectAuditor.Editor
             m_Children = m_Children.OrderBy(c => c.prettyName).ToList();
         }
 
+        public abstract string GetName();
         public abstract string GetPrettyName();
         public abstract bool IsPerfCritical();
     }

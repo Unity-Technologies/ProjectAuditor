@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -63,7 +64,7 @@ class AddComponentGeneric : MonoBehaviour
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInstantiate);
 
             Assert.AreEqual(1, issues.Length);
-            Assert.AreEqual("System.Void InstantiateObject::Test()", issues[0].GetCallingMethod());
+            Assert.AreEqual("System.Void InstantiateObject::Test()", issues[0].GetContext());
             Assert.AreEqual("'UnityEngine.Object.Instantiate' usage (with generic argument 'UnityEngine.GameObject')", issues[0].description);
         }
 
@@ -73,7 +74,7 @@ class AddComponentGeneric : MonoBehaviour
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetAddComponent);
 
             Assert.AreEqual(1, issues.Length);
-            Assert.AreEqual("System.Void AddComponentToGameObject::Test()", issues[0].GetCallingMethod());
+            Assert.AreEqual("System.Void AddComponentToGameObject::Test()", issues[0].GetContext());
             Assert.AreEqual("'UnityEngine.GameObject.AddComponent' usage", issues[0].description);
         }
 
@@ -83,7 +84,7 @@ class AddComponentGeneric : MonoBehaviour
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetAddComponentGeneric);
 
             Assert.AreEqual(1, issues.Length);
-            Assert.AreEqual("System.Void AddComponentGeneric::Test()", issues[0].GetCallingMethod());
+            Assert.AreEqual("System.Void AddComponentGeneric::Test()", issues[0].GetContext());
             Assert.AreEqual("'UnityEngine.GameObject.AddComponent' usage (with generic argument 'UnityEngine.Rigidbody')", issues[0].description);
         }
     }

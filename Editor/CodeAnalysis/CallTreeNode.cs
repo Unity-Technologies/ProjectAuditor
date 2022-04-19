@@ -59,7 +59,11 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             perfCriticalContext = false;
         }
 
-        // string GetPrettyName(bool withAssembly = false)
+        public override string GetName()
+        {
+            return name;
+        }
+
         public override string GetPrettyName()
         {
             if (string.IsNullOrEmpty(typeName))

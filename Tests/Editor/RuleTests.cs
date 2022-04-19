@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
@@ -38,7 +39,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             projectAuditorSettings.ClearAllRules();
 
-            var callingMethod = issue.GetCallingMethod();
+            var callingMethod = issue.GetContext();
             var action = projectAuditorSettings.GetAction(issue.descriptor, callingMethod);
 
             // expect default action specified in descriptor

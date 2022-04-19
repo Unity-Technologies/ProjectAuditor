@@ -95,7 +95,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!m_Preferences.mutedIssues && activeView.desc.showMuteOptions)
             {
                 Profiler.BeginSample("IsMuted");
-                var muted = m_ProjectAuditor.config.GetAction(issue.descriptor, issue.GetCallingMethod()) ==
+                var muted = m_ProjectAuditor.config.GetAction(issue.descriptor, issue.GetContext()) ==
                     Rule.Severity.None;
                 Profiler.EndSample();
                 if (muted)
@@ -922,7 +922,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             var descriptor = item.ProblemDescriptor;
 
-            var callingMethod = "";
+            var context = "";
             Rule rule;
             if (item.hasChildren)
             {
@@ -930,15 +930,15 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
             else
             {
-                callingMethod = item.ProjectIssue.GetCallingMethod();
-                rule = m_ProjectAuditor.config.GetRule(descriptor, callingMethod);
+                context = item.ProjectIssue.GetContext();
+                rule = m_ProjectAuditor.config.GetRule(descriptor, context);
             }
 
             if (rule == null)
                 m_ProjectAuditor.config.AddRule(new Rule
                 {
                     id = descriptor.id,
-                    filter = callingMethod,
+                    filter = context,
                     severity = ruleSeverity
                 });
             else
@@ -948,7 +948,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         void ClearRulesForItem(IssueTableItem item)
         {
             m_ProjectAuditor.config.ClearRules(item.ProblemDescriptor,
-                item.hasChildren ? string.Empty : item.ProjectIssue.GetCallingMethod());
+                item.hasChildren ? string.Empty : item.ProjectIssue.GetContext());
         }
 
         void DrawToolbar()
