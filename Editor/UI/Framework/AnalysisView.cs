@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Auditors;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -435,68 +436,49 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        private void ExportSVC(Func<ProjectIssue, bool> predicate = null)
+        void ExportSVC(Func<ProjectIssue, bool> predicate = null)
         {
             var path = EditorUtility.SaveFilePanelInProject("Save to SVC file", "NewShaderVariants.shadervariants",
                 "shadervariants", "Save SVC");
 
-            string svcName = Path.GetFileNameWithoutExtension(path);
+            var svcName = Path.GetFileNameWithoutExtension(path);
             if (path.Length != 0)
             {
                 var matchingIssues = m_Issues.Where(issue => m_Config.GetAction(issue.descriptor, issue.GetContext()) !=
                     Rule.Severity.None && (predicate == null || predicate(issue)));
 
-                ShaderVariantCollection svc = new ShaderVariantCollection();
+                var svc = new ShaderVariantCollection();
                 svc.name = svcName;
 
                 AssetDatabase.CreateAsset(svc, path);
 
-                foreach (ProjectIssue issue in matchingIssues)
+                foreach (var issue in matchingIssues)
                 {
-                    Shader shader = null;
-                    string[] keywords = new string[0];
-                    string pType = String.Empty;
+                    var shader = Shader.Find(issue.GetProperty(PropertyType.Description));
+                    var passType = issue.GetCustomProperty(ShaderVariantProperty.PassType);
+                    var prop = issue.GetCustomProperty(ShaderVariantProperty.Keywords);
 
-                    for (int i = 0; i < m_Layout.properties.Length; i++)
+                    string[] keywords;
+                    if (prop.Equals("<no keywords>"))
                     {
-                        var columnType = m_Layout.properties[i].type;
-                        var prop = issue.GetProperty(columnType);
-                        string collum = columnType.ToString();
-
-                        if (collum == "Description")
-                        {
-                            shader = Shader.Find(prop);
-                        }
-                        if (collum == "10")//Pass Type
-                        {
-                            pType = prop;
-                        }
-                        if (collum == "12")//Keywords
-                        {
-                            if (prop.Equals("<no keywords>"))
-                            {
-                                keywords = new string[1];
-                                keywords[0] = prop;
-                            }
-                            else
-                            {
-                                keywords = prop.Split(',');
-                            }
-                        }
+                        keywords = new string[1];
+                        keywords[0] = prop;
+                    }
+                    else
+                    {
+                        keywords = prop.Split(',');
                     }
 
-                    if (shader != null && !pType.Equals(string.Empty) && keywords.Length > 0)
+                    if (shader != null && !passType.Equals(string.Empty) && keywords.Length > 0)
                     {
-                        UnityEngine.Rendering.PassType passtype = (UnityEngine.Rendering.PassType)Enum.Parse(typeof(UnityEngine.Rendering.PassType), pType);
-
                         if (keywords[0].Equals("<no keywords>"))
                         {
                             keywords = new string[0];
                         }
 
-                        ShaderVariantCollection.ShaderVariant shaderVariant = new ShaderVariantCollection.ShaderVariant();
+                        var shaderVariant = new ShaderVariantCollection.ShaderVariant();
                         shaderVariant.shader = shader;
-                        shaderVariant.passType = passtype;
+                        shaderVariant.passType = (UnityEngine.Rendering.PassType)Enum.Parse(typeof(UnityEngine.Rendering.PassType), passType);
                         shaderVariant.keywords = keywords;
                         svc.Add(shaderVariant);
                     }
