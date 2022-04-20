@@ -361,7 +361,6 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
     {
         public string assemblyName;
         public string methodName;
-        public string name;
         public string typeName;
         public virtual string GetName();
         public virtual string GetPrettyName();

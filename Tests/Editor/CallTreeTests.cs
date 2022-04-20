@@ -80,7 +80,7 @@ class HierarchyTest
             var root = issues[0].dependencies as CallTreeNode;
 
             Assert.NotNull(root);
-            Assert.AreEqual("System.Object RootTest::CallerMethod()", root.name);
+            Assert.AreEqual("System.Object RootTest::CallerMethod()", root.m_Name);
             Assert.AreEqual("Assembly-CSharp.dll", root.assemblyName);
             Assert.AreEqual("CallerMethod", root.methodName);
             Assert.AreEqual("RootTest", root.typeName);
