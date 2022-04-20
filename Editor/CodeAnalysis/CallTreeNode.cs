@@ -7,14 +7,15 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     public class CallTreeNode : DependencyNode
     {
+        internal readonly string m_Name;
+
         public string assemblyName;
         public string methodName;
-        public string name;
         public string typeName;
 
         internal CallTreeNode(MethodReference methodReference, CallTreeNode caller = null)
         {
-            name = methodReference.FullName;
+            m_Name = methodReference.FullName;
             methodName = "(anonymous)"; // default value
             assemblyName = methodReference.Module.Name;
 
@@ -34,11 +35,11 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                     else
                     {
                         // handle example: System.Int32 DelegateTest/<>c::<Update>b__1_0()
-                        methodStartIndex = name.LastIndexOf("<") + 1;
+                        methodStartIndex = m_Name.LastIndexOf("<") + 1;
                         if (methodStartIndex > 0)
                         {
-                            length = name.LastIndexOf(">") - methodStartIndex;
-                            methodName = name.Substring(methodStartIndex, length) + ".(anonymous)";
+                            length = m_Name.LastIndexOf(">") - methodStartIndex;
+                            methodName = m_Name.Substring(methodStartIndex, length) + ".(anonymous)";
                         }
                     }
                 }
@@ -61,13 +62,13 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         public override string GetName()
         {
-            return name;
+            return m_Name;
         }
 
         public override string GetPrettyName()
         {
             if (string.IsNullOrEmpty(typeName))
-                return name;
+                return m_Name;
             return string.Format("{0}.{1}", typeName, methodName);
         }
 
