@@ -43,7 +43,9 @@ The number of Variants contributes to the build size, however, there might be Va
         const string k_Yes = "Yes";
         const string k_No = "No";
         const string k_LogShaderCompilation = "Log Shader Compilation (requires Build&Run)";
+        const string k_ExportAsVariantCollection = "Export as Shader Variant Collection";
 
+        bool m_ExportAsVariantCollection = true;
         bool m_ShowCompiledVariants = true;
         bool m_ShowUncompiledVariants = true;
 
@@ -181,6 +183,11 @@ The number of Variants contributes to the build size, however, there might be Va
                     EditorGUILayout.EndHorizontal();
                 }
 
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField(k_ExportAsVariantCollection, GUILayout.Width(270));
+                m_ExportAsVariantCollection = EditorGUILayout.Toggle(m_ExportAsVariantCollection);
+                EditorGUILayout.EndHorizontal();
+
                 var evt = Event.current;
 
                 switch (evt.type)
@@ -209,6 +216,30 @@ The number of Variants contributes to the build size, however, there might be Va
             foreach (var path in paths)
             {
                 ParsePlayerLog(path);
+            }
+        }
+
+        protected override void Export(Func<ProjectIssue, bool> predicate = null)
+        {
+            if (!m_ExportAsVariantCollection)
+            {
+                base.Export(predicate);
+                return;
+            }
+
+            var path = EditorUtility.SaveFilePanelInProject("Save to SVC file", "NewShaderVariants.shadervariants",
+                "shadervariants", "Save SVC");
+
+            var svcName = Path.GetFileNameWithoutExtension(path);
+            if (path.Length != 0)
+            {
+                var variants = m_Issues.Where(issue => predicate == null || predicate(issue));
+
+                ShadersModule.ExportSVC(svcName, path, variants.ToArray());
+
+                EditorUtility.RevealInFinder(path);
+
+                s_ExportDirectory = Path.GetDirectoryName(path);
             }
         }
 

@@ -54,6 +54,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void DrawFoldouts(Unity.ProjectAuditor.Editor.ProjectIssue[] selectedIssues);
         public void DrawInfo();
         public virtual void DrawTextSearch();
+        protected virtual void Export(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool> predicate = default(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool>));
         protected Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
         protected string GetPrefKey(string key);
         public bool IsValid();
