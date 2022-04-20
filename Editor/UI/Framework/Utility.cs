@@ -155,7 +155,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static GUIContent GetTextWithSeverityIcon(string text, string tooltip, Rule.Severity severity)
         {
-            MessageType messageType;
             switch (severity)
             {
                 case Rule.Severity.Info:
