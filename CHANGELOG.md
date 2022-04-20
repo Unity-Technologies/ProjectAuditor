@@ -4,6 +4,9 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+[Unreleased]
+* Added support for exporting Shader Variants as [Shader Variant Collection](https://docs.unity3d.com/ScriptReference/ShaderVariantCollection.html)
+
 ## [0.7.5-preview] - 2022-04-20
 * Added groups support to Shaders view
 * Optimized call tree building and visualization
