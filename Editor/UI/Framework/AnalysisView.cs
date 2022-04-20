@@ -446,7 +446,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        void Export(Func<ProjectIssue, bool> predicate = null)
+        protected virtual void Export(Func<ProjectIssue, bool> predicate = null)
         {
             var path = EditorUtility.SaveFilePanel("Save to CSV file", m_Config.SavePath, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
                 "csv");

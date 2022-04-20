@@ -4,16 +4,17 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-[in-progress]
+[Unreleased]
 * Added *ProjectAuditor.NumCategories* API
 * Added module-specific incremental analysis support
 * Added support to disable a module by default
-* Added diagnostic message formatting support
 * Added 'Clear Selection' and 'Filter by Description' options to context menu
 * Added SavePath to configuration asset
+* Added support for exporting Shader Variants as [Shader Variant Collection](https://docs.unity3d.com/ScriptReference/ShaderVariantCollection.html)
+* Added diagnostic message formatting support
 * Improved code diagnostic messages
 
-[Unreleased]
+## [0.7.5-preview] - 2022-04-20
 * Added groups support to Shaders view
 * Optimized call tree building and visualization
 
@@ -21,8 +22,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added *OnRenderObject* and *OnWillRenderObject* to list of MonoBehavior critical contexts
 * Added Compilation Time property to Assemblies view
 * Added public API to get float/double custom property 
-* Fixed closure allocation diagnostic message
 * Added context menu item to open selected issue 
+* Fixed closure allocation diagnostic message
 * Fixed sorting of call hierarchy nodes
 * Optimized viewing and sorting UI performance
 
