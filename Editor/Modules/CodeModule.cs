@@ -52,6 +52,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             severity = Rule.Severity.Error
         };
 
+        static readonly ProblemDescriptor k_ObsoleteMethodDescriptor = new ProblemDescriptor
+            (
+            102005,
+            "Obsolete method",
+            Area.Info,
+            "This method is obsolete",
+            "Do not use if possible"
+            );
+
         const int k_CompilerMessageFirstId = 800000;
 
         static readonly IssueLayout k_AssemblyLayout = new IssueLayout
@@ -72,6 +81,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             category = IssueCategory.Code,
             properties = new[]
             {
+                new PropertyDefinition { type = PropertyType.Severity},
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
                 new PropertyDefinition { type = PropertyType.CriticalContext, format = PropertyFormat.Bool, name = "Critical", longName = "Critical code path"},
                 new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
@@ -303,6 +313,37 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 perfCriticalContext = perfCriticalContext
             };
+
+            var obsoleteAttribute =
+                caller.CustomAttributes.FirstOrDefault(a =>
+                    a.AttributeType.FullName.Equals("System.ObsoleteAttribute"));
+
+            if (obsoleteAttribute != null)
+            {
+                var description = string.Format("Method '{0}' is obsolete", caller.Name);
+                var stringArguments = obsoleteAttribute.ConstructorArguments.Where(a => a.Value is string).ToArray();
+                if (stringArguments.Length > 0)
+                    description += ": " + stringArguments[0].Value;
+
+                var boolArguments = obsoleteAttribute.ConstructorArguments.Where(a => a.Value is bool).ToArray();
+                var isError = (boolArguments.Length > 0) && (bool)boolArguments[0].Value;
+
+                var projectIssue = new ProjectIssue
+                    (
+                    k_ObsoleteMethodDescriptor,
+                    description,
+                    IssueCategory.Code
+                    )
+                {
+                    severity = isError ? Rule.Severity.Error : Rule.Severity.Warning
+                };
+
+                projectIssue.dependencies = callerNode; // set root
+                //  projectIssue.location = location;
+                projectIssue.SetCustomProperties(new string[(int)CodeProperty.Num] {assemblyInfo.name});
+
+                onIssueFound(projectIssue);
+            }
 
             foreach (var inst in caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode)))
             {
