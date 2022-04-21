@@ -19,5 +19,14 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                     typeDefs.AddRange(AggregateAllTypeDefinitions(typeDefinition.NestedTypes));
             return typeDefs;
         }
+
+        public static CustomAttribute GetCustomAttribute<T>(IMemberDefinition memberDefinition)
+        {
+            if (!memberDefinition.HasCustomAttributes)
+                return null;
+
+            var attrNameHash = typeof(T).FullName.GetHashCode();
+            return memberDefinition.CustomAttributes.SingleOrDefault(attr => attr.AttributeType.FullName.GetHashCode() == attrNameHash);
+        }
     }
 }
