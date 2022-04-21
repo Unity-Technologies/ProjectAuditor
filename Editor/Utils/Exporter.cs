@@ -26,7 +26,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
             var stringBuilder = new StringBuilder();
             for (int i = 0; i < m_Layout.properties.Length; i++)
             {
-                stringBuilder.Append(m_Layout.properties[i].name);
+                var property = m_Layout.properties[i];
+                var name = property.name != null ? property.name : property.longName;
+                stringBuilder.Append(name);
                 if (i + 1 < m_Layout.properties.Length)
                     stringBuilder.Append(",");
             }

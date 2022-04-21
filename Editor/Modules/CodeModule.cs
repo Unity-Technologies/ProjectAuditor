@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             category = IssueCategory.Code,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Severity},
+                new PropertyDefinition { type = PropertyType.Severity, longName = "Severity"},
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
                 new PropertyDefinition { type = PropertyType.CriticalContext, format = PropertyFormat.Bool, name = "Critical", longName = "Critical code path"},
                 new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
