@@ -4,7 +4,7 @@ using SystemPath = System.IO.Path;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    internal class PathUtils
+    internal static class PathUtils
     {
         public static readonly char Separator = '/';
 
@@ -96,6 +96,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static bool Exists(string path)
         {
             return File.Exists(path);
+        }
+
+        public static string ReplaceInvalidChars(string path)
+        {
+            return path.Replace('|', '_');
         }
 
         public static string[] Split(string path)

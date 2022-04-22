@@ -371,13 +371,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 // note that there can be several entries for each source asset (for example, a prefab can reference a Texture, a Material and a shader)
                 foreach (var content in packedAsset.contents)
                 {
-                    var assetPath = content.sourceAssetPath;
-
-                    if (!Path.HasExtension(assetPath))
-                        continue;
-
+                    // sourceAssetPath might contain '|' which is invalid. This is due to compressed texture format names in the asset name such as DXT1|BC1
+                    var assetPath = PathUtils.ReplaceInvalidChars(content.sourceAssetPath);
                     var descriptor = GetDescriptor(assetPath, content.type);
                     var description = Path.GetFileNameWithoutExtension(assetPath);
+
                     var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
                     issue.SetCustomProperties(new object[(int)BuildReportFileProperty.Num]
                     {

@@ -537,6 +537,7 @@ Shader ""Custom/MyEditorShader""
             Assert.NotNull(shaderIssue);
 
             // check descriptor
+            Assert.AreEqual("Assets/ProjectAuditor-Temp/Resources", shaderIssue.descriptor.description);
             Assert.AreEqual(1, shaderIssue.descriptor.GetAreas().Length);
             Assert.Contains(Area.Info, shaderIssue.descriptor.GetAreas());
 
