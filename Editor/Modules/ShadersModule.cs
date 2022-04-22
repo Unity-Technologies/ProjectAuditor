@@ -496,7 +496,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var passType = issue.GetCustomProperty(ShaderVariantProperty.PassType);
                 var keywords = SplitKeywords(issue.GetCustomProperty(ShaderVariantProperty.Keywords));
 
-                if (shader != null && !passType.Equals(string.Empty) && keywords.Length > 0)
+                if (shader != null && !passType.Equals(string.Empty))
                 {
                     var shaderVariant = new ShaderVariantCollection.ShaderVariant();
                     shaderVariant.shader = shader;
