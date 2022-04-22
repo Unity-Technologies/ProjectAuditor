@@ -55,10 +55,10 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         static readonly ProblemDescriptor k_ObsoleteMethodDescriptor = new ProblemDescriptor
             (
             102005,
-            "Obsolete method",
+            "Obsolete method call",
             Area.Info,
-            "This method is obsolete",
-            "Do not use if possible"
+            "This method is marked as obsolete",
+            "Do not call this method if possible"
             );
 
         const int k_CompilerMessageFirstId = 800000;
@@ -314,35 +314,6 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 perfCriticalContext = perfCriticalContext
             };
 
-
-            var attr = MonoCecilHelper.GetCustomAttribute<ObsoleteAttribute>(caller);
-            if (attr != null
-                && attr.HasConstructorArguments
-                && attr.ConstructorArguments.Count > 0)
-            {
-                var description = string.Format("Method '{0}' is obsolete", caller.Name);
-                var stringArguments = attr.ConstructorArguments.Where(a => a.Value is string).ToArray();
-                if (stringArguments.Length > 0)
-                    description += ": " + stringArguments[0].Value;
-
-                var boolArguments = attr.ConstructorArguments.Where(a => a.Value is bool).ToArray();
-                var isError = (boolArguments.Length > 0) && (bool)boolArguments[0].Value;
-                var projectIssue = new ProjectIssue
-                    (
-                    k_ObsoleteMethodDescriptor,
-                    description,
-                    IssueCategory.Code
-                    )
-                {
-                    severity = isError ? Rule.Severity.Error : Rule.Severity.Warning
-                };
-
-                projectIssue.dependencies = callerNode; // self
-                projectIssue.SetCustomProperties(new string[(int)CodeProperty.Num] {assemblyInfo.name});
-
-                onIssueFound(projectIssue);
-            }
-
             foreach (var inst in caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode)))
             {
                 SequencePoint s = null;
@@ -366,14 +337,53 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
                 if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
                 {
+                    var calleeReference = (MethodReference)inst.Operand;
+
                     Profiler.BeginSample("CodeModule.OnCallFound");
                     onCallFound(new CallInfo(
-                        (MethodReference)inst.Operand,
+                        calleeReference,
                         caller,
                         location,
                         perfCriticalContext
                     ));
                     Profiler.EndSample();
+
+                    try
+                    {
+                        var calleeDefinition = calleeReference.Resolve();
+                        var attr = MonoCecilHelper.GetCustomAttribute<ObsoleteAttribute>(calleeDefinition);
+                        if (attr != null
+                            && attr.HasConstructorArguments
+                            && attr.ConstructorArguments.Count > 0)
+                        {
+                            var description = string.Format("Call to '{0}' obsolete method", calleeDefinition.Name);
+                            var stringArguments = attr.ConstructorArguments.Where(a => a.Value is string).ToArray();
+                            if (stringArguments.Length > 0)
+                                description += ": " + stringArguments[0].Value;
+
+                            var boolArguments = attr.ConstructorArguments.Where(a => a.Value is bool).ToArray();
+                            var isError = (boolArguments.Length > 0) && (bool)boolArguments[0].Value;
+                            var projectIssue = new ProjectIssue
+                                (
+                                k_ObsoleteMethodDescriptor,
+                                description,
+                                IssueCategory.Code
+                                )
+                            {
+                                severity = isError ? Rule.Severity.Error : Rule.Severity.Warning
+                            };
+
+                            projectIssue.dependencies = callerNode;
+                            projectIssue.location = location;
+                            projectIssue.SetCustomProperties(new string[(int)CodeProperty.Num] {assemblyInfo.name});
+
+                            onIssueFound(projectIssue);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogWarning(e);
+                    }
                 }
 
                 Profiler.BeginSample("CodeModule.Analyzing " + inst.OpCode.Name);

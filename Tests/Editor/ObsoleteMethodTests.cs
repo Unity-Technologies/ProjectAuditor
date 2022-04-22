@@ -10,24 +10,19 @@ namespace Unity.ProjectAuditor.EditorTests
     class ObsoleteMethodTests
     {
         TempAsset m_TempAssetWarning;
-        TempAsset m_TempAssetError;
 
         [SetUp]
         public void SetUp()
         {
-            m_TempAssetWarning = new TempAsset("ClassWithObsoleteMethodWarning.cs", @"
-class ClassWithObsoleteMethodWarning
+            m_TempAssetWarning = new TempAsset("ClassWithCallToObsoleteMethod.cs", @"
+class ClassWithCallToObsoleteMethod
 {
-    [System.Obsolete(""Try not to use me"")]
-    void LegacyMethod()
-    {}
-}"
-            );
+    void Caller()
+    {
+        LegacyMethod();
+    }
 
-            m_TempAssetError = new TempAsset("ClassWithObsoleteMethodError.cs", @"
-class ClassWithObsoleteMethodError
-{
-    [System.Obsolete(""Do not use me, ever!"", true)]
+    [System.Obsolete(""Try not to use me"")]
     void LegacyMethod()
     {}
 }"
@@ -54,30 +49,11 @@ class ClassWithObsoleteMethodError
 
             Assert.AreEqual(Rule.Severity.Default, diag.descriptor.severity);
             Assert.AreEqual(Rule.Severity.Warning, diag.severity);
-            Assert.AreEqual("Obsolete method", diag.descriptor.description);
+            Assert.AreEqual("Obsolete method call", diag.descriptor.description);
 
-            Assert.AreEqual("Method 'LegacyMethod' is obsolete: Try not to use me", diag.description);
-            Assert.AreEqual("System.Void ClassWithObsoleteMethodWarning::LegacyMethod()", diag.GetContext());
-        }
-
-        [Test]
-        public void CodeAnalysis_ObsoleteMethod_ErrorIsReported()
-        {
-            var diagnostics = Utility.AnalyzeAndFindAssetIssues(m_TempAssetError);
-
-            Assert.AreEqual(1, diagnostics.Length);
-
-            var diag = diagnostics[0];
-
-            Assert.NotNull(diag);
-            Assert.NotNull(diag.descriptor);
-
-            Assert.AreEqual(Rule.Severity.Default, diag.descriptor.severity);
-            Assert.AreEqual(Rule.Severity.Error, diag.severity);
-            Assert.AreEqual("Obsolete method", diag.descriptor.description);
-
-            Assert.AreEqual("Method 'LegacyMethod' is obsolete: Do not use me, ever!", diag.description);
-            Assert.AreEqual("System.Void ClassWithObsoleteMethodError::LegacyMethod()", diag.GetContext());
+            Assert.AreEqual("Call to 'LegacyMethod' obsolete method: Try not to use me", diag.description);
+            Assert.AreEqual("System.Void ClassWithCallToObsoleteMethod::Caller()", diag.GetContext());
+            Assert.AreEqual(6, diag.line);
         }
     }
 }
