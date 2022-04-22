@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Unreleased]
 * Fixed Build Report analysis 'Illegal characters in path' exception
 * Fixed Shaders analysis 'Illegal characters in path' exception
+* Fixed compilation warnings
 
 ## [0.7.5-preview] - 2022-04-20
 * Added groups support to Shaders view
