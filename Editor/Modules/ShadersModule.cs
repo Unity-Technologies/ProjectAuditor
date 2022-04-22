@@ -354,9 +354,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 return;
             }
 
-            var groupName =  PathUtils.GetDirectoryName(shaderName);
-            if (string.IsNullOrEmpty(groupName))
-                groupName = shaderName;
+            // group shaders by containing directory
+            var groupName = PathUtils.GetDirectoryName(assetPath);
 
             ProblemDescriptor descriptor;
             if (!s_ShaderGroupDescriptor.TryGetValue(groupName, out descriptor))
