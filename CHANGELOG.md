@@ -7,10 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Unreleased]
 * Fixed Build Report analysis 'Illegal characters in path' exception
 * Fixed Shaders analysis 'Illegal characters in path' exception
-* Added support for exporting Shader Variants as [Shader Variant Collection](https://docs.unity3d.com/ScriptReference/ShaderVariantCollection.html)
 
 ## [0.7.5-preview] - 2022-04-20
 * Added groups support to Shaders view
+* Added support for exporting Shader Variants as [Shader Variant Collection](https://docs.unity3d.com/ScriptReference/ShaderVariantCollection.html)
 * Optimized call tree building and visualization
 
 ## [0.7.4-preview] - 2022-03-25
