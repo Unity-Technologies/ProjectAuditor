@@ -354,9 +354,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 return;
             }
 
-            var groupName =  PathUtils.GetDirectoryName(shaderName);
-            if (string.IsNullOrEmpty(groupName))
-                groupName = shaderName;
+            // group shaders by containing directory
+            var groupName = PathUtils.GetDirectoryName(assetPath);
 
             ProblemDescriptor descriptor;
             if (!s_ShaderGroupDescriptor.TryGetValue(groupName, out descriptor))
@@ -497,7 +496,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 var passType = issue.GetCustomProperty(ShaderVariantProperty.PassType);
                 var keywords = SplitKeywords(issue.GetCustomProperty(ShaderVariantProperty.Keywords));
 
-                if (shader != null && !passType.Equals(string.Empty) && keywords.Length > 0)
+                if (shader != null && !passType.Equals(string.Empty))
                 {
                     var shaderVariant = new ShaderVariantCollection.ShaderVariant();
                     shaderVariant.shader = shader;
