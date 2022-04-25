@@ -19,6 +19,9 @@ namespace Unity.ProjectAuditor.EditorTests
             m_TempAsset = new TempAsset("MyClass.cs", @"
 class MyClass
 {
+#if DEVELOPMENT_BUILD
+this is to ensure assemblies are compiled in non-development mode
+#endif
 }
 ");
         }

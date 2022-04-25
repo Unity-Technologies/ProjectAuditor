@@ -295,7 +295,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #else
                 assemblyBuilder.compilerOptions = assembly.compilerOptions;
 #endif
-                assemblyBuilder.flags = editorAssemblies ? AssemblyBuilderFlags.EditorAssembly : AssemblyBuilderFlags.DevelopmentBuild;
+                assemblyBuilder.flags = editorAssemblies ? AssemblyBuilderFlags.EditorAssembly : AssemblyBuilderFlags.None;
 
                 // add asmdef-specific defines
                 var additionalDefines = new List<string>(assembly.defines.Except(assemblyBuilder.defaultDefines));
