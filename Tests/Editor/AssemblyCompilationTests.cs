@@ -19,8 +19,16 @@ namespace Unity.ProjectAuditor.EditorTests
             m_TempAsset = new TempAsset("MyClass.cs", @"
 class MyClass
 {
-#if DEVELOPMENT_BUILD
-this is to ensure assemblies are compiled in non-development mode
+    object myObj;
+#if UNITY_EDITOR
+    void EditorMethod()
+    { myObj = 9; }
+#elif DEVELOPMENT_BUILD
+    void DevelopmentPlayerMethod()
+    { myObj = 9; }
+#else
+    void NonDevelopmentPlayerMethod()
+    { myObj = 9; }
 #endif
 }
 ");
@@ -42,6 +50,26 @@ this is to ensure assemblies are compiled in non-development mode
                 Assert.Positive(assemblyInfos.Count());
                 Assert.NotNull(assemblyInfos.FirstOrDefault(info => info.name.Equals(AssemblyInfo.DefaultAssemblyName)));
             }
+        }
+
+        [Test]
+        [TestCase(CompilationMode.Player, "PlayerMethod")]
+        [TestCase(CompilationMode.DevelopmentPlayer, "DevelopmentPlayerMethod")]
+        //Known failure because the script is not recompiled by the editor
+        //[TestCase(CompilationMode.Editor, "Editor")]
+        public void AssemblyCompilation_Player_IsCompiled(CompilationMode mode, string methodName)
+        {
+            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            config.CompilationMode = mode;
+
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
+            var projectReport = projectAuditor.Audit();
+
+            var issues = projectReport.GetIssues(IssueCategory.Code);
+            var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TempAsset.relativePath));
+
+            Assert.NotNull(codeIssue);
+            Assert.AreEqual("MyClass." + methodName, codeIssue.dependencies.prettyName);
         }
     }
 }

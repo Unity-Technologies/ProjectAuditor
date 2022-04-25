@@ -147,14 +147,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
             var compilationPipeline = new AssemblyCompilationPipeline
             {
-                AssemblyCompilationFinished = (assemblyInfo, compilerMessages, compileTime) => ProcessCompilerMessages(assemblyInfo, compilerMessages, compileTime, onIssueFound)
+                AssemblyCompilationFinished = (assemblyInfo, compilerMessages, compileTime) => ProcessCompilerMessages(assemblyInfo, compilerMessages, compileTime, onIssueFound),
+                CompilationMode = m_Config.CompilationMode
             };
 
             Profiler.BeginSample("CodeModule.Audit.Compilation");
-            var assemblyInfos = compilationPipeline.Compile(m_Config.AnalyzeEditorCode, progress);
+            var assemblyInfos = compilationPipeline.Compile(progress);
             Profiler.EndSample();
 
-            if (m_Config.AnalyzeEditorCode)
+            if (m_Config.CompilationMode == CompilationMode.Editor)
             {
                 foreach (var assemblyInfo in assemblyInfos)
                 {
@@ -195,7 +196,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             var assemblyDirectories = new List<string>();
 
             assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UserAssembly | PrecompiledAssemblyTypes.UnityEngine));
-            if (m_Config.AnalyzeEditorCode)
+            if (m_Config.CompilationMode == CompilationMode.Editor)
                 assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UnityEditor));
 
             Profiler.BeginSample("CodeModule.Audit.Analysis");
