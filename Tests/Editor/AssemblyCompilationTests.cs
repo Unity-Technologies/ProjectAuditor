@@ -27,7 +27,7 @@ class MyClass
     void DevelopmentPlayerMethod()
     { myObj = 9; }
 #else
-    void NonDevelopmentPlayerMethod()
+    void PlayerMethod()
     { myObj = 9; }
 #endif
 }
