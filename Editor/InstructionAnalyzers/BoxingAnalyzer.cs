@@ -15,7 +15,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             Area.Memory,
             "Boxing happens where a value type, such as an integer, is converted into an object of reference type. This causes an allocation on the heap, which might increase the size of the managed heap and the frequency of Garbage Collection.",
             "Try to avoid Boxing when possible."
-            );
+            )
+        {
+            messageFormat = "Conversion from value type '{0}' to ref type"
+        };
 
         public void Initialize(ProjectAuditorModule module)
         {
@@ -47,14 +50,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             else if (type.FullName.Equals("System.Double"))
                 typeName = "double";
 
-            var description = string.Format("Conversion from value type '{0}' to ref type", typeName);
-
-            return new ProjectIssue
-            (
-                k_Descriptor,
-                description,
-                IssueCategory.Code
-            );
+            return new ProjectIssue(k_Descriptor, IssueCategory.Code, typeName);
         }
 
         public IEnumerable<OpCode> GetOpCodes()

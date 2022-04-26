@@ -127,7 +127,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Runs all available modules (code, project settings) and generate a report of all found issues.
+        /// Runs all modules that are both supported and enabled.
         /// </summary>
         /// <param name="progress"> Progress bar, if applicable </param>
         /// <returns> Generated report </returns>
@@ -144,14 +144,14 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Runs all available modules (code, project settings) and generate a report of all found issues.
+        /// Runs all modules that are both supported and enabled.
         /// </summary>
         /// <param name="onIssueFound"> Action called whenever a new issue is found </param>
         /// <param name="onUpdate"> Action called whenever a module completes </param>
         /// <param name="progress"> Progress bar, if applicable </param>
         public void Audit(Action<ProjectIssue> onIssueFound, Action<bool> onUpdate, IProgress progress = null)
         {
-            var supportedModules = m_Modules.Where(m => m.IsSupported()).ToArray();
+            var supportedModules = m_Modules.Where(m => m.IsSupported() && m.IsEnabledByDefault()).ToArray();
             var numModules = supportedModules.Length;
             if (numModules == 0)
             {
@@ -212,11 +212,24 @@ namespace Unity.ProjectAuditor.Editor
             return layouts.FirstOrDefault();
         }
 
+        /// <summary>
+        /// Get or Register a category by name. If the name argument does match an existing category, a new category is registered.
+        /// </summary>
+        /// <returns> Returns the category enum</returns>
         public static IssueCategory GetOrRegisterCategory(string name)
         {
             if (!s_CustomCategories.ContainsKey(name))
                 s_CustomCategories.Add(name, IssueCategory.FirstCustomCategory + s_CustomCategories.Count);
             return s_CustomCategories[name];
+        }
+
+        /// <summary>
+        /// Number of available built-in and registered categories
+        /// </summary>
+        /// <returns> Returns the number of available categories</returns>
+        public static int NumCategories()
+        {
+            return (int)IssueCategory.FirstCustomCategory + s_CustomCategories.Count;
         }
 
 #if UNITY_2018_1_OR_NEWER

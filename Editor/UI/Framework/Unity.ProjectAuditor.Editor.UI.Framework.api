@@ -39,6 +39,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected Unity.ProjectAuditor.Editor.ProjectAuditorConfig m_Config;
         protected Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor m_Desc;
         protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.ProjectIssue> m_Issues;
+        protected Unity.ProjectAuditor.Editor.ProjectAuditorModule m_Module;
         protected Unity.ProjectAuditor.Editor.UI.Framework.Preferences m_Preferences;
         protected Unity.ProjectAuditor.Editor.TextFilter m_TextFilter;
         protected Unity.ProjectAuditor.Editor.UI.Framework.ViewManager m_ViewManager;
@@ -48,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public AnalysisView(Unity.ProjectAuditor.Editor.UI.Framework.ViewManager viewManager) {}
         public virtual void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
         public virtual void Clear();
-        public virtual void Create(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueLayout layout, Unity.ProjectAuditor.Editor.ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.UI.Framework.Preferences prefs, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
+        public virtual void Create(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueLayout layout, Unity.ProjectAuditor.Editor.ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.ProjectAuditorModule module, Unity.ProjectAuditor.Editor.UI.Framework.Preferences prefs, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
         public virtual void DrawContent();
         public virtual void DrawFilters();
         public virtual void DrawFoldouts(Unity.ProjectAuditor.Editor.ProjectIssue[] selectedIssues);
@@ -61,6 +62,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
         protected virtual void OnDrawInfo();
         public void Refresh();
+        public void SetSearch(string filter);
     }
 
     public static class EditorUtil
@@ -184,6 +186,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
     public static class Utility
     {
+        public static readonly UnityEngine.GUIContent ClearSelection;
         public static readonly UnityEngine.GUIContent CopyToClipboard;
         public static readonly UnityEngine.GUIContent OpenIssue;
         public static readonly UnityEngine.GUIContent OpenScriptReference;
@@ -217,7 +220,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public string menuLabel;
         public int menuOrder;
         public string name;
-        public System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewManager> onDrawToolbarDataOptions;
+        public System.Action<UnityEditor.GenericMenu, Unity.ProjectAuditor.Editor.UI.Framework.ViewManager, Unity.ProjectAuditor.Editor.ProjectIssue> onContextMenu;
+        public System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewManager> onDrawToolbar;
         public System.Action<Unity.ProjectAuditor.Editor.Utils.Location> onOpenIssue;
         public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenManual;
         public bool showActions;
@@ -238,6 +242,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
     public class ViewManager
     {
+        public System.Action<Unity.ProjectAuditor.Editor.ProjectAuditorModule> onAnalyze;
         public System.Action<int> onViewChanged;
         public System.Action onViewExported;
         public int activeViewIndex { get; set; }

@@ -42,7 +42,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         bool m_ShouldRefresh;
         ProjectAuditorAnalytics.Analytic m_AnalyzeButtonAnalytic;
         ProjectAuditorAnalytics.Analytic m_LoadButtonAnalytic;
-        string m_SaveLoadDirectory;
 
         // UI
         TreeViewSelection m_AreaSelection;
@@ -135,6 +134,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 ProjectAuditorAnalytics.SendEvent((ProjectAuditorAnalytics.UIButton)m_ViewManager.GetView(i).desc.analyticsEvent, ProjectAuditorAnalytics.BeginAnalytic());
             };
+
+            m_ViewManager.onAnalyze += IncrementalAudit;
             m_ViewManager.onViewExported += () =>
             {
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Export, ProjectAuditorAnalytics.BeginAnalytic());
@@ -252,8 +253,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                 descriptionWithIcon = true,
                 groupByDescriptor = true,
                 showFilters = true,
+                onContextMenu = (menu, viewManager, issue) =>
+                {
+                    menu.AddItem(Contents.ShaderVariants, false, () =>
+                    {
+                        viewManager.ChangeView(IssueCategory.ShaderVariant);
+                        viewManager.GetActiveView().SetSearch(issue.description);
+                    });
+                },
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
-                onDrawToolbarDataOptions = (viewManager) =>
+                onDrawToolbar = (viewManager) =>
                 {
                     ChangeViewButton(viewManager, IssueCategory.ShaderCompilerMessage, Contents.ShaderCompilerMessages);
                     ChangeViewButton(viewManager, IssueCategory.ShaderVariant, Contents.ShaderVariants);
@@ -272,7 +281,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showInfoPanel = true,
                 showRightPanels = true,
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
-                onDrawToolbarDataOptions = (viewManager) =>
+                onDrawToolbar = (viewManager) =>
                 {
                     GUILayout.FlexibleSpace();
                     if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
@@ -300,7 +309,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 4,
                 descriptionWithIcon = true,
                 onOpenIssue = EditorUtil.OpenTextFile<Shader>,
-                onDrawToolbarDataOptions = (viewManager) =>
+                onDrawToolbar = (viewManager) =>
                 {
                     ChangeViewButton(viewManager, IssueCategory.Shader, Contents.Shaders);
                     ChangeViewButton(viewManager, IssueCategory.ShaderVariant, Contents.ShaderVariants);
@@ -397,7 +406,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 100,
                 showFilters = true,
                 showInfoPanel = true,
-                onDrawToolbarDataOptions = (viewManager) =>
+                onDrawToolbar = (viewManager) =>
                 {
                     ChangeViewButton(viewManager, IssueCategory.BuildFile, Contents.BuildFiles);
                 },
@@ -415,7 +424,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showInfoPanel = true,
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
-                onDrawToolbarDataOptions = (viewManager) =>
+                onDrawToolbar = (viewManager) =>
                 {
                     ChangeViewButton(viewManager, IssueCategory.BuildStep, Contents.BuildSteps);
                 },
@@ -495,12 +504,17 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void IncrementalAudit<T>() where T : ProjectAuditorModule
         {
-            if (m_ProjectReport == null)
-                m_ProjectReport = new ProjectReport();
-
             var module = m_ProjectAuditor.GetModule<T>();
             if (!module.IsSupported())
                 return;
+
+            IncrementalAudit(module);
+        }
+
+        void IncrementalAudit(ProjectAuditorModule module)
+        {
+            if (m_ProjectReport == null)
+                m_ProjectReport = new ProjectReport();
 
             var layouts = module.GetLayouts().ToArray();
             foreach (var layout in layouts)
@@ -1008,11 +1022,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void Save()
         {
-            var path = EditorUtility.SaveFilePanel(k_SaveToFile, m_SaveLoadDirectory, "project-auditor-report.json", "json");
+            var path = EditorUtility.SaveFilePanel(k_SaveToFile, m_ProjectAuditor.config.SavePath, "project-auditor-report.json", "json");
             if (path.Length != 0)
             {
                 m_ProjectReport.Save(path);
-                m_SaveLoadDirectory = Path.GetDirectoryName(path);
+                m_ProjectAuditor.config.SavePath = Path.GetDirectoryName(path);
 
                 EditorUtility.RevealInFinder(path);
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Save, ProjectAuditorAnalytics.BeginAnalytic());
@@ -1021,7 +1035,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void Load()
         {
-            var path = EditorUtility.OpenFilePanel(k_LoadFromFile, m_SaveLoadDirectory, "json");
+            var path = EditorUtility.OpenFilePanel(k_LoadFromFile, m_ProjectAuditor.config.SavePath, "json");
             if (path.Length != 0)
             {
                 m_ProjectReport = ProjectReport.Load(path);
@@ -1033,7 +1047,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
                 m_AnalysisState = AnalysisState.Valid;
-                m_SaveLoadDirectory = Path.GetDirectoryName(path);
+                m_ProjectAuditor.config.SavePath = Path.GetDirectoryName(path);
 
                 OnEnable();
 
