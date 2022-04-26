@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added support to disable a module by default
 * Added 'Clear Selection' and 'Filter by Description' options to context menu
 * Added SavePath to configuration asset
+* Added [Graphics Tier](https://docs.unity3d.com/ScriptReference/Rendering.GraphicsTier.html) information to reported Shader Variants
 * Added support for exporting Shader Variants as [Shader Variant Collection](https://docs.unity3d.com/ScriptReference/ShaderVariantCollection.html)
 * Added diagnostic message formatting support
 * Improved code diagnostic messages

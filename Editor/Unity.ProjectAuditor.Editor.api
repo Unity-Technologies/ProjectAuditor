@@ -343,14 +343,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     public enum ShaderVariantProperty
     {
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Compiled = 0;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Keywords = 5;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Num = 8;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PassName = 4;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PassType = 3;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Keywords = 6;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Num = 9;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PassName = 5;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PassType = 4;
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Platform = 1;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PlatformKeywords = 6;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Requirements = 7;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Stage = 2;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PlatformKeywords = 7;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Requirements = 8;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Stage = 3;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Tier = 2;
         public int value__;
     }
 }

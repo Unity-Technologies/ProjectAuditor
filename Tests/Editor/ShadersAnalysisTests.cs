@@ -373,6 +373,8 @@ Shader ""Custom/MyEditorShader""
             var variants = issues.Where(i => i.description.Equals(k_ShaderName)).ToArray();
             Assert.Positive(variants.Length);
 
+            Assert.True(variants.All(v => v.GetCustomProperty(ShaderVariantProperty.Tier).Equals("Tier1")));
+
             var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty(ShaderVariantProperty.Platform)).Distinct();
             var compilerPlatformNames = ShaderUtilProxy.GetCompilerPlatformNames();
 
