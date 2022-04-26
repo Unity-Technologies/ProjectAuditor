@@ -19,6 +19,11 @@ namespace Unity.ProjectAuditor.Editor
         {
         }
 
+        public virtual bool IsEnabledByDefault()
+        {
+            return true;
+        }
+
         public virtual bool IsSupported()
         {
             return true;

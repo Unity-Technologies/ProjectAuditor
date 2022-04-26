@@ -9,14 +9,14 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return t.Hours + ":" + t.Minutes.ToString("D2") + ":" + t.Seconds.ToString("D2");
         }
 
-        static string FormatTime(TimeSpan t)
+        public static string FormatTimeInSeconds(TimeSpan timeSpan)
         {
-            return t.TotalMinutes.ToString("F0") + ":" + t.Seconds.ToString("D2");
+            return timeSpan.TotalSeconds.ToString("F2");
         }
 
-        public static string FormatTime(ulong timeMs)
+        public static string FormatTimeInSeconds(ulong timeMs)
         {
-            return FormatTime(TimeSpan.FromMilliseconds(timeMs));
+            return FormatTimeInSeconds(TimeSpan.FromMilliseconds(timeMs));
         }
 
         public static string FormatSize(ulong size)

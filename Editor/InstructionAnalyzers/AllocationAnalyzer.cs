@@ -15,7 +15,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             Area.Memory,
             "An object is allocated in managed memory",
             "Try to avoid allocating objects in frequently-updated code."
-            );
+            )
+        {
+            messageFormat = "'{0}' allocation"
+        };
 
         static readonly ProblemDescriptor k_ClosureAllocationDescriptor = new ProblemDescriptor
             (
@@ -24,7 +27,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             Area.Memory,
             "An object is allocated in managed memory",
             "Try to avoid allocating objects in frequently-updated code."
-            );
+            )
+        {
+            messageFormat = "Closure allocation in '{0}.{1}'"
+        };
 
 
         static readonly ProblemDescriptor k_ArrayAllocationDescriptor = new ProblemDescriptor
@@ -34,7 +40,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             Area.Memory,
             "An array is allocated in managed memory",
             "Try to avoid allocating arrays in frequently-updated code."
-            );
+            )
+        {
+            messageFormat = "'{0}' array allocation"
+        };
 
         public void Initialize(ProjectAuditorModule module)
         {
@@ -43,8 +52,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_ArrayAllocationDescriptor);
         }
 
-        public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public ProjectIssue Analyze(MethodDefinition callerMethodDefinition, Instruction inst)
         {
+            ProjectIssue issue;
+
             if (inst.OpCode == OpCodes.Newobj)
             {
                 var methodReference = (MethodReference)inst.Operand;
@@ -55,33 +66,21 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 var isClosure = typeReference.Name.StartsWith("<>c__DisplayClass");
                 if (isClosure)
                 {
-                    return new ProjectIssue
-                    (
-                        k_ClosureAllocationDescriptor,
-                        string.Format("Closure allocation in {0}.{1}", typeReference.DeclaringType.FullName, methodDefinition.Name),
-                        IssueCategory.Code
-                    );
+                    issue = new ProjectIssue(k_ClosureAllocationDescriptor, IssueCategory.Code, callerMethodDefinition.DeclaringType.Name, callerMethodDefinition.Name);
                 }
-
-                return new ProjectIssue
-                (
-                    k_ObjectAllocationDescriptor,
-                    string.Format("'{0}' allocation", typeReference.FullName),
-                    IssueCategory.Code
-                );
+                else
+                {
+                    issue = new ProjectIssue(k_ObjectAllocationDescriptor, IssueCategory.Code, typeReference.FullName);
+                }
             }
             else // OpCodes.Newarr
             {
                 var typeReference = (TypeReference)inst.Operand;
-                var description = string.Format("'{0}' array allocation", typeReference.Name);
 
-                return new ProjectIssue
-                (
-                    k_ArrayAllocationDescriptor,
-                    description,
-                    IssueCategory.Code
-                );
+                issue = new ProjectIssue(k_ArrayAllocationDescriptor, IssueCategory.Code, typeReference.Name);
             }
+
+            return issue;
         }
 
         public IEnumerable<OpCode> GetOpCodes()

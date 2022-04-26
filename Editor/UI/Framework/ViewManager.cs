@@ -20,6 +20,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             set { m_ActiveViewIndex = value;  }
         }
 
+        public Action<ProjectAuditorModule> onAnalyze;
         public Action onViewExported;
         public Action<int> onViewChanged;
 
@@ -72,7 +73,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
 
                 var view = desc.type != null ? (AnalysisView)Activator.CreateInstance(desc.type, this) : new AnalysisView(this);
-                view.Create(desc, layout, projectAuditor.config, preferences, filter);
+                view.Create(desc, layout, projectAuditor.config, projectAuditor.GetModule(category), preferences, filter);
                 view.OnEnable();
                 views.Add(view);
             }
