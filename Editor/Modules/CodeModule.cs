@@ -128,6 +128,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Initialize(ProjectAuditorConfig config)
         {
+            if (m_Config != null)
+                throw new Exception("Module is already initialized.");
+
             m_Config = config;
             m_Analyzers = new List<IInstructionAnalyzer>();
             m_OpCodes = new List<OpCode>();

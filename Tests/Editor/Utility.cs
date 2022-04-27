@@ -37,9 +37,7 @@ namespace Unity.ProjectAuditor.EditorTests
             config.AnalyzeInBackground = false;
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-
             var module = projectAuditor.GetModule(category);
-            module.Initialize(config);
 
             module.Audit(issue => {
                 if (issue.category != category)
