@@ -89,6 +89,7 @@ namespace Unity.ProjectAuditor.Editor
         public string description;
         public int id;
         public string maximumVersion;
+        public string messageFormat;
         public string method;
         public string minimumVersion;
         public string[] platforms;
@@ -115,6 +116,7 @@ namespace Unity.ProjectAuditor.Editor
         public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<bool> onUpdate, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
         public Unity.ProjectAuditor.Editor.IssueLayout GetLayout(Unity.ProjectAuditor.Editor.IssueCategory category);
         public static Unity.ProjectAuditor.Editor.IssueCategory GetOrRegisterCategory(string name);
+        public static int NumCategories();
         public virtual void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
     }
 
@@ -126,6 +128,7 @@ namespace Unity.ProjectAuditor.Editor
         public bool FailBuildOnIssues;
         public bool LogTimingsInfo;
         public bool SaveBuildReports;
+        public string SavePath;
         public int NumRules { get; }
         public ProjectAuditorConfig() {}
         public void AddRule(Unity.ProjectAuditor.Editor.Rule ruleToAdd);
@@ -142,6 +145,7 @@ namespace Unity.ProjectAuditor.Editor
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.ProjectAuditorModule.<GetDescriptors>d__0))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
         public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
         public virtual void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
+        public virtual bool IsEnabledByDefault();
         public virtual bool IsSupported();
         public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
     }
@@ -159,9 +163,11 @@ namespace Unity.ProjectAuditor.Editor
         public int line { get; }
         public string relativePath { get; }
         public Unity.ProjectAuditor.Editor.Rule.Severity severity { get; set; }
+        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueCategory category, params object[] args) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, object[] customProperties) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, string path, object[] customProperties) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location = default(Unity.ProjectAuditor.Editor.Utils.Location), object[] customProperties = default(object[])) {}
+        public static Unity.ProjectAuditor.Editor.ProjectIssue Create(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location, params object[] args);
         public string GetCustomProperty<T>(T propertyEnum) where T : System.ValueType, new();
         public double GetCustomPropertyAsDouble<T>(T propertyEnum) where T : System.ValueType, new();
         public float GetCustomPropertyAsFloat<T>(T propertyEnum) where T : System.ValueType, new();
@@ -337,14 +343,15 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     public enum ShaderVariantProperty
     {
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Compiled = 0;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Keywords = 5;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Num = 8;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PassName = 4;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PassType = 3;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Keywords = 6;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Num = 9;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PassName = 5;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PassType = 4;
         public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Platform = 1;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PlatformKeywords = 6;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Requirements = 7;
-        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Stage = 2;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty PlatformKeywords = 7;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Requirements = 8;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Stage = 3;
+        public const Unity.ProjectAuditor.Editor.Auditors.ShaderVariantProperty Tier = 2;
         public int value__;
     }
 }

@@ -41,6 +41,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public bool SaveBuildReports;
 
+        public string SavePath;
 
         readonly List<Rule> m_Rules = new List<Rule>();
 

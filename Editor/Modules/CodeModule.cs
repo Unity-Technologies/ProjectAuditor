@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             {
                 new PropertyDefinition { type = PropertyType.Severity},
                 new PropertyDefinition { type = PropertyType.Description, name = "Assembly Name"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.CompileTime), format = PropertyFormat.Time, name = "Compile Time"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.CompileTime), format = PropertyFormat.Time, name = "Compile Time (seconds)"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.ReadOnly), format = PropertyFormat.Bool, name = "Read Only"},
                 new PropertyDefinition { type = PropertyType.Path, name = "asmdef Path"},
             }
@@ -395,6 +395,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                     descriptor = m_RuntimeDescriptors[message.code];
                 else
                 {
+                    // do we need different descriptors?
                     descriptor = new ProblemDescriptor
                         (
                         k_CompilerMessageFirstId + m_RuntimeDescriptors.Count,

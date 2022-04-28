@@ -13,8 +13,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class AnalysisView : IProjectIssueFilter
     {
-        internal static string s_ExportDirectory = string.Empty;
-
         enum ExportMode
         {
             All = 0,
@@ -24,6 +22,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected Draw2D m_2D;
         protected ProjectAuditorConfig m_Config;
+        protected ProjectAuditorModule m_Module;
         protected Preferences m_Preferences;
         protected ViewDescriptor m_Desc;
         protected IProjectIssueFilter m_BaseFilter;
@@ -57,6 +56,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get { return m_Table; }
         }
 
+        internal ViewManager viewManager
+        {
+            get { return m_ViewManager; }
+        }
+
         public AnalysisView(ViewManager viewManager)
         {
             m_2D = new Draw2D("Unlit/ProjectAuditor");
@@ -65,10 +69,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_ViewManager = viewManager;
         }
 
-        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Preferences prefs, IProjectIssueFilter filter)
+        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ProjectAuditorModule module, Preferences prefs, IProjectIssueFilter filter)
         {
             m_Desc = descriptor;
             m_Config = config;
+            m_Module = module;
             m_Preferences = prefs;
             m_BaseFilter = filter;
             m_Layout = layout;
@@ -293,7 +298,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawViewOptions()
         {
-            EditorGUILayout.LabelField("Zoom", EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
+            if (!m_Module.IsEnabledByDefault() && m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeCurrent, EditorStyles.toolbarButton, GUILayout.Width(120)))
+            {
+                m_ViewManager.onAnalyze(m_Module);
+            }
+
+            EditorGUILayout.LabelField(Contents.Zoom, EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
             m_Preferences.fontSize = (int)GUILayout.HorizontalSlider(m_Preferences.fontSize, Preferences.k_MinFontSize, Preferences.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(AnalysisView.toolbarButtonSize));
             m_Table.SetFontSize(m_Preferences.fontSize);
 
@@ -333,8 +343,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawDataOptions()
         {
-            if (m_Desc.onDrawToolbarDataOptions != null)
-                m_Desc.onDrawToolbarDataOptions(m_ViewManager);
+            if (m_Desc.onDrawToolbar != null)
+                m_Desc.onDrawToolbar(m_ViewManager);
 
             if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
                 (data) =>
@@ -417,6 +427,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndVertical();
         }
 
+        public void SetSearch(string filter)
+        {
+            m_TextFilter.searchText = filter;
+        }
+
         void SetRowsExpanded(bool expanded)
         {
             if (expanded)
@@ -433,7 +448,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected virtual void Export(Func<ProjectIssue, bool> predicate = null)
         {
-            var path = EditorUtility.SaveFilePanel("Save to CSV file", s_ExportDirectory, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
+            var path = EditorUtility.SaveFilePanel("Save to CSV file", m_Config.SavePath, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
                 "csv");
             if (path.Length != 0)
             {
@@ -451,7 +466,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 if (m_ViewManager.onViewExported != null)
                     m_ViewManager.onViewExported();
 
-                s_ExportDirectory = Path.GetDirectoryName(path);
+                m_Config.SavePath = Path.GetDirectoryName(path);
             }
         }
 
@@ -547,9 +562,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         static class Contents
         {
+            public static readonly GUIContent AnalyzeCurrent = new GUIContent("Analyze Current");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
+            public static readonly GUIContent Zoom = new GUIContent("Zoom");
 
             public static readonly GUIContent InfoFoldout = new GUIContent("Information");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");

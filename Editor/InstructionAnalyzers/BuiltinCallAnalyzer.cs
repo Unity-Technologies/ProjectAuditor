@@ -51,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             // Are we trying to warn about a whole namespace?
             if (m_WholeNamespaceDescriptors.TryGetValue(declaringType.Namespace, out descriptor))
             {
-                description = string.Format("{0}.{1}", declaringType, methodName);
+                description = string.Format("'{0}.{1}' usage", declaringType, methodName);
             }
             else
             {
@@ -70,13 +70,13 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                     return null;
 
                 // by default use descriptor issue description
-                description = descriptor.description;
+                description = string.Format("'{0}' usage", descriptor.description);
 
                 var genericInstanceMethod = callee as GenericInstanceMethod;
                 if (genericInstanceMethod != null && genericInstanceMethod.HasGenericArguments)
                 {
                     var genericTypeNames = genericInstanceMethod.GenericArguments.Select(a => a.FullName).ToArray();
-                    description = string.Format("{0} with generic argument {1}", descriptor.description, string.Join(", ", genericTypeNames));
+                    description = string.Format("'{0}' usage (with generic argument '{1}')", descriptor.description, string.Join(", ", genericTypeNames));
                 }
             }
 

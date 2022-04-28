@@ -52,7 +52,7 @@ class MyClass
             Assert.AreEqual("*", myIssue.descriptor.method);
 
             Assert.AreEqual(m_TempAsset.fileName, myIssue.filename);
-            Assert.AreEqual("System.Linq.Enumerable.Count", myIssue.description, "Description: {0}", myIssue.description);
+            Assert.AreEqual("'System.Linq.Enumerable.Count' usage", myIssue.description, "Description: {0}", myIssue.description);
             Assert.AreEqual("System.Int32 MyClass::Dummy(System.Collections.Generic.List`1<System.Int32>)", myIssue.GetContext());
             Assert.AreEqual(9, myIssue.line);
             Assert.AreEqual(IssueCategory.Code, myIssue.category);

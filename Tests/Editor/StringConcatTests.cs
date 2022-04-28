@@ -35,7 +35,7 @@ class StringConcat
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetStringConcat);
 
             Assert.AreEqual(1, issues.Count());
-            Assert.AreEqual("System.String.Concat", issues.First().description);
+            Assert.AreEqual("'System.String.Concat' usage", issues.First().description);
         }
     }
 }

@@ -33,6 +33,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
     {
         Compiled = 0,
         Platform,
+        Tier,
         Stage,
         PassType,
         PassName,
@@ -109,6 +110,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Compiled), format = PropertyFormat.Bool, name = "Compiled", longName = "Compiled at runtime by the player" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Platform), format = PropertyFormat.String, name = "Graphics API" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Tier), format = PropertyFormat.String, name = "Tier" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Stage), format = PropertyFormat.String, name = "Stage" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PassType), format = PropertyFormat.String, name = "Pass Type" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PassName), format = PropertyFormat.String, name = "Pass Name" },
@@ -426,8 +428,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 {
                     k_NoRuntimeData,
                     shaderVariantData.compilerPlatform,
-                    shaderVariantData.shaderType.ToString(),
-                    shaderVariantData.passType.ToString(),
+                    shaderVariantData.graphicsTier,
+                    shaderVariantData.shaderType,
+                    shaderVariantData.passType,
                     shaderVariantData.passName,
                     CombineKeywords(shaderVariantData.keywords),
                     CombineKeywords(shaderVariantData.platformKeywords),

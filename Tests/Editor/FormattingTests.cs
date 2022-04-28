@@ -24,5 +24,14 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.AreEqual(formatted, Formatting.FormatBuildTime(time));
         }
+
+        [Test]
+        public void Formatting_TimeInSeconds_IsFormatted()
+        {
+            var time = new TimeSpan(0, 0, 0, 6, 123);
+            const string formatted = "6.12"; // truncated to 2 decimals
+
+            Assert.AreEqual(formatted, Formatting.FormatTimeInSeconds(time));
+        }
     }
 }

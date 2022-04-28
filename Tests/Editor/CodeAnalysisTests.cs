@@ -294,7 +294,7 @@ class UxmlAttributeDescriptionPropertyUsage
             Assert.AreEqual("allCameras", myIssue.descriptor.method);
 
             Assert.AreEqual(m_TempAsset.fileName, myIssue.filename);
-            Assert.AreEqual("UnityEngine.Camera.allCameras", myIssue.description);
+            Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.description);
             Assert.AreEqual("System.Void MyClass::Dummy()", myIssue.GetContext());
             Assert.AreEqual(7, myIssue.line);
             Assert.AreEqual(IssueCategory.Code, myIssue.category);
@@ -315,7 +315,7 @@ class UxmlAttributeDescriptionPropertyUsage
 
             Assert.NotNull(myIssue);
             Assert.NotNull(myIssue.descriptor);
-            Assert.AreEqual("UnityEngine.Component.tag", myIssue.description);
+            Assert.AreEqual("'UnityEngine.Component.tag' usage", myIssue.description);
         }
 
         [Test]
@@ -385,7 +385,7 @@ class UxmlAttributeDescriptionPropertyUsage
         public void CodeAnalysis_IssueInDelegate_IsReported()
         {
             var allScriptIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInDelegate);
-            var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("UnityEngine.Camera.allCameras"));
+            var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'UnityEngine.Camera.allCameras' usage"));
             Assert.NotNull(issue);
             Assert.AreEqual("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()", issue.GetContext());
         }
@@ -404,7 +404,7 @@ class UxmlAttributeDescriptionPropertyUsage
         public void CodeAnalysis_IssueInNamespace_IsReported()
         {
             var allScriptIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetAnyApiInNamespace);
-            var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("System.Linq.Enumerable.Sum"));
+            var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'System.Linq.Enumerable.Sum' usage"));
 
             Assert.NotNull(issue);
             Assert.AreEqual("System.Linq.*", issue.descriptor.description);
@@ -416,7 +416,7 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetObjectName);
 
             Assert.AreEqual(3, issues.Length);
-            Assert.True(issues.All(i => i.description.Equals("UnityEngine.Object.name")));
+            Assert.True(issues.All(i => i.description.Equals("'UnityEngine.Object.name' usage")));
         }
 
         [Test]
@@ -425,7 +425,7 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetGenericInstantiation, IssueCategory.GenericInstance);
 
             Assert.AreEqual(1, issues.Length);
-            Assert.AreEqual("System.Collections.Generic.HashSet`1<System.String>", issues.First().description);
+            Assert.AreEqual("'System.Collections.Generic.HashSet`1<System.String>' generic instance", issues[0].description);
         }
 
         [Test]
@@ -443,7 +443,7 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetUxmlAttributeDescriptionPropertyUsage);
 
             Assert.AreEqual(1, issues.Length);
-            Assert.AreEqual("UnityEngine.UIElements.UxmlAttributeDescription.obsoleteNames", issues[0].description);
+            Assert.AreEqual("'UnityEngine.UIElements.UxmlAttributeDescription.obsoleteNames' usage", issues[0].description);
         }
 
 #endif

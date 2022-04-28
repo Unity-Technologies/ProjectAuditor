@@ -22,5 +22,22 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.False(projectAuditor.IsModuleSupported(IssueCategory.BuildFile));
 #endif
         }
+
+        [Test]
+        public void ProjectAuditor_Category_IsRegistered()
+        {
+            var testCategoryName = "TestCategory";
+            var numCategories = Unity.ProjectAuditor.Editor.ProjectAuditor.NumCategories();
+            var category = Unity.ProjectAuditor.Editor.ProjectAuditor.GetOrRegisterCategory(testCategoryName);
+
+            // check category is registered
+            Assert.True(category >= IssueCategory.FirstCustomCategory);
+
+            // check num category increased by 1
+            Assert.AreEqual(numCategories + 1, Unity.ProjectAuditor.Editor.ProjectAuditor.NumCategories());
+
+            // check category is still the same
+            Assert.AreEqual(category, Unity.ProjectAuditor.Editor.ProjectAuditor.GetOrRegisterCategory(testCategoryName));
+        }
     }
 }

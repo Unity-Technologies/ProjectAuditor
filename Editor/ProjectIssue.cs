@@ -21,6 +21,12 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField] string[] m_CustomProperties;
         [SerializeField] Rule.Severity m_Severity;
 
+        public static ProjectIssue Create(ProblemDescriptor descriptor, IssueCategory category, Location location, params object[] args)
+        {
+            var description = string.IsNullOrEmpty(descriptor.messageFormat) ? descriptor.description : string.Format(descriptor.messageFormat, args);
+            return new ProjectIssue(descriptor, description, category, location);
+        }
+
         /// <summary>
         /// ProjectIssue constructor
         /// </summary>
@@ -61,6 +67,17 @@ namespace Unity.ProjectAuditor.Editor
         {
             if (customProperties != null)
                 this.m_CustomProperties = customProperties.Select(p => p.ToString()).ToArray();
+        }
+
+        /// <summary>
+        /// Diagnostics-specific constructor
+        /// </summary>
+        /// <param name="descriptor"> Diagnostic descriptor </param>
+        /// <param name="category"> Issue category </param>
+        /// <param name="args"> Arguments to be used in the message formatting</param>
+        public ProjectIssue(ProblemDescriptor descriptor, IssueCategory category, params object[] args)
+            : this(descriptor, string.IsNullOrEmpty(descriptor.messageFormat) ? descriptor.description : string.Format(descriptor.messageFormat, args), category)
+        {
         }
 
         public int depth = 0;

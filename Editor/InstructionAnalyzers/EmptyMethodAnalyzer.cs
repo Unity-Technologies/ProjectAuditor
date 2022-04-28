@@ -15,7 +15,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             Area.CPU,
             "Any empty MonoBehaviour magic method will be included in the build and executed anyway.",
             "Remove any empty MonoBehaviour methods."
-            );
+            )
+        {
+            messageFormat = "MonoBehaviour method '{0}' is empty"
+        };
 
         public void Initialize(ProjectAuditorModule module)
         {
@@ -39,12 +42,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             if (!MonoBehaviourAnalysis.IsMonoBehaviourEvent(methodDefinition))
                 return null;
 
-            return new ProjectIssue
-            (
-                k_Descriptor,
-                methodDefinition.FullName,
-                IssueCategory.Code
-            );
+            return new ProjectIssue(k_Descriptor, IssueCategory.Code, methodDefinition.Name);
         }
 
         public IEnumerable<OpCode> GetOpCodes()

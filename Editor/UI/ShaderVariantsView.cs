@@ -238,8 +238,6 @@ The number of Variants contributes to the build size, however, there might be Va
                 ShadersModule.ExportSVC(svcName, path, variants.ToArray());
 
                 EditorUtility.RevealInFinder(path);
-
-                s_ExportDirectory = Path.GetDirectoryName(path);
             }
         }
 
