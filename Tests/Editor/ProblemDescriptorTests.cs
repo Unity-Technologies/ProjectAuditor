@@ -217,7 +217,7 @@ namespace Unity.ProjectAuditor.EditorTests
             {
                 var type = types.FirstOrDefault(t => t.FullName.Equals(desc.type));
 
-                Assert.True(desc.method.Equals("*") || type != null, desc.type);
+                Assert.True(desc.method.Equals("*") || type != null, "Invalid Type : " + desc.type);
 
                 if (skippableMethodNames.Contains(desc.method))
                     continue;
