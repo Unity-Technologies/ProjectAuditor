@@ -29,6 +29,8 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             }
         };
 
+        ProjectAuditorConfig m_Config;
+
         public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             yield return k_Descriptor;
@@ -39,6 +41,11 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             yield return k_IssueLayout;
         }
 
+        public override void Initialize(ProjectAuditorConfig config)
+        {
+            m_Config = config;
+        }
+
         public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
         {
             NewMetaData("Date and Time", DateTime.Now, onIssueFound);
@@ -47,6 +54,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             NewMetaData("Company Name", Application.companyName, onIssueFound);
             NewMetaData("Product Name", Application.productName, onIssueFound);
             NewMetaData("Build Target", EditorUserBuildSettings.activeBuildTarget, onIssueFound);
+            NewMetaData("Compilation Mode", m_Config.CompilationMode, onIssueFound);
             NewMetaData("Project Auditor Version", ProjectAuditor.PackageVersion, onIssueFound);
             NewMetaData("Unity Version", Application.unityVersion, onIssueFound);
 
