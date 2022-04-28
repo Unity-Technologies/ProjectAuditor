@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.Auditors
+namespace Unity.ProjectAuditor.Editor.Modules
 {
     public enum MetaDataProperty
     {

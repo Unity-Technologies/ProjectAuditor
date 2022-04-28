@@ -13,7 +13,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 using ThreadPriority = System.Threading.ThreadPriority;
 
-namespace Unity.ProjectAuditor.Editor.Auditors
+namespace Unity.ProjectAuditor.Editor.Modules
 {
     public enum AssemblyProperty
     {

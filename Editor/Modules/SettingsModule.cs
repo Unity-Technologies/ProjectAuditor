@@ -5,7 +5,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.Auditors
+namespace Unity.ProjectAuditor.Editor.Modules
 {
     class SettingsModule : ProjectAuditorModule
     {

@@ -7,7 +7,7 @@ using UnityEditor.Build.Reporting;
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace Unity.ProjectAuditor.Editor.Auditors
+namespace Unity.ProjectAuditor.Editor.Modules
 {
     public enum BuildReportMetaData
     {
