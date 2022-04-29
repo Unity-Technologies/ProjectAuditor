@@ -105,14 +105,17 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
                 "Assets/",
                 "Packages/",
-                "Resources/unity_builtin_extra"
+                "Resources/unity_builtin_extra",
+                "Unity.SourceGenerators/",
+                PathUtils.Combine(Editor.ProjectAuditor.ProjectPath, "Unity.SourceGenerators"),
+                "Built-in",                        // prefix for built-in resources such as textures (not a real prefix path)
             };
 
             var issues = Utility.AnalyzeBuild(i => i.category != IssueCategory.ProjectSetting);
             foreach (var issue in issues)
             {
                 var relativePath = issue.relativePath;
-                Assert.True(string.IsNullOrEmpty(relativePath) || acceptablePrefixes.Any(prefix => relativePath.StartsWith(prefix)), "Path: " + relativePath);
+                Assert.True(string.IsNullOrEmpty(relativePath) || acceptablePrefixes.Any(prefix => relativePath.StartsWith(prefix)), "Path: " + relativePath + " Category: " + issue.category);
             }
         }
 
