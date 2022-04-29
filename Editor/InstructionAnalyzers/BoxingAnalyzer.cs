@@ -35,10 +35,15 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 if (genericType.HasReferenceTypeConstraint)
                     isValueType = false;
                 else
+#if UNITY_2022_2_OR_NEWER
+                    foreach (var constraint in genericType.Constraints)
+                        if (!constraint.ConstraintType.IsValueType)
+                            isValueType = false;
+#else
                     foreach (var constraint in genericType.Constraints)
                         if (!constraint.IsValueType)
                             isValueType = false;
-
+#endif
                 if (!isValueType)
                     // boxing on ref types are no-ops, so not a problem
                     return null;
