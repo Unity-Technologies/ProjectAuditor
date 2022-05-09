@@ -350,17 +350,5 @@ namespace Unity.ProjectAuditor.Editor.Utils
         }
 
 #endif
-        public IEnumerable<string> GetCompiledAssemblyDirectories()
-        {
-#if UNITY_2018_2_OR_NEWER
-            yield return m_OutputFolder;
-#else
-            foreach (var dir in CompilationPipeline.GetAssemblies()
-                     .Where(a => a.flags != AssemblyFlags.EditorAssembly).Select(assembly => Path.GetDirectoryName(assembly.outputPath)).Distinct())
-            {
-                yield return dir;
-            }
-#endif
-        }
     }
 }
