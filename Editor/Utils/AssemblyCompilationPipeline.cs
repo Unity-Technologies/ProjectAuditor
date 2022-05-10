@@ -243,7 +243,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         void PrepareAssemblyBuilders(Assembly[] assemblies, Action<string, CompilerMessage[]> assemblyCompilationFinished)
         {
-            var editorAssemblies = false; // for future use
             m_AssemblyCompilationUnits = new Dictionary<string, AssemblyCompilationUnit>();
             // first pass: create all AssemblyCompilationUnits
             foreach (var assembly in assemblies)
