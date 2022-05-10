@@ -489,28 +489,8 @@ Shader ""Custom/MyEditorShader""
 #endif
         public void ShadersAnalysis_UnusedVariants_AreReported()
         {
-            EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), "Assets/UntitledScene.unity");
-
-            var buildPath = FileUtil.GetUniqueTempPathInProject();
-            Directory.CreateDirectory(buildPath);
-
             ShadersModule.ClearBuildData(); // clear previously built variants, if any
-            var buildReport = BuildPipeline.BuildPlayer(new BuildPlayerOptions
-            {
-                scenes = new string[] {},
-                locationPathName = Path.Combine(buildPath, "test"),
-                target = EditorUserBuildSettings.activeBuildTarget,
-                targetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget),
-                options = BuildOptions.Development
-            });
-
-            Assert.True(buildReport.summary.result == BuildResult.Succeeded);
-
-            Directory.Delete(buildPath, true);
-
-            AssetDatabase.DeleteAsset("Assets/UntitledScene.unity");
-
-            var allVariants = Utility.Analyze(IssueCategory.ShaderVariant);
+            var allVariants = Utility.AnalyzeBuild(IssueCategory.ShaderVariant);
             ShadersModule.ClearBuildData(); // cleanup
 
             var variants = allVariants.Where(i => i.description.Equals(k_ShaderName) && i.category == IssueCategory.ShaderVariant).ToArray();

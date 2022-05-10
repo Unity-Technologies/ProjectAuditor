@@ -9,6 +9,7 @@ using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -74,7 +75,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             const string tempSceneFilename = "Assets/TestScene.unity";
             // We must save the scene or the build will fail https://unity.slack.com/archives/C3F85MBDL/p1615991512002200
-            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), tempSceneFilename);
+            EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), tempSceneFilename);
 
             var buildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(buildPath);
