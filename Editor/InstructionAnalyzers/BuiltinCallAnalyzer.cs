@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             }
             catch (AssemblyResolutionException e)
             {
-                Debug.LogWarning(e);
+                Debug.LogWarningFormat("Could not resolve {0}: {1}", typeReference.Name, e.Message);
             }
 
             return false;
