@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor
         : IPreprocessBuildWithReport
 #endif
     {
-        static Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
+        static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
         static string s_DataPath;
 
         internal static string DataPath
