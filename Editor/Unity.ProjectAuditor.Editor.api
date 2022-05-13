@@ -265,10 +265,6 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         public const Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode DevelopmentPlayer = 1;
         public const Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode Editor = 2;
         public const Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode Player = 0;
-        public int value__;
-    }
-}
-
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     public class CallTreeNode : Unity.ProjectAuditor.Editor.DependencyNode
