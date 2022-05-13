@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Modules;
-using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -324,6 +324,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 99,
                 showAssemblySelection = true,
                 showFilters = true,
+                showDependencyView = true,
                 getAssemblyName = issue => issue.description,
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assemblies

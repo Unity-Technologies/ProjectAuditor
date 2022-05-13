@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Unity.ProjectAuditor.Editor.Utils
+namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
     class AssemblyInfo
     {
