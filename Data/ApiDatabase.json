@@ -615,7 +615,9 @@
             "method": "localNotifications",
             "areas": ["Memory"],
             "problem": "The property iOS.NotificationServices.localNotifications allocates managed memory.",
-            "solution": "Use iOS.NotificationServices.GetLocalNotification() instead."
+            "solution": "Use iOS.NotificationServices.GetLocalNotification() instead.",
+            "maximumVersion": "2021.3",
+            "platforms": ["iOS"]
         },
         {
             "id": 101097,
@@ -623,7 +625,9 @@
             "method": "remoteNotifications",
             "areas": ["Memory"],
             "problem": "The property iOS.NotificationServices.remoteNotifications allocates managed memory.",
-            "solution": "Use iOS.NotificationServices.GetRemoteNotification() instead."
+            "solution": "Use iOS.NotificationServices.GetRemoteNotification() instead.",
+            "maximumVersion": "2021.3",
+            "platforms": ["iOS"]
         },
         {
             "id": 101100,
@@ -1147,7 +1151,9 @@
             "method": "deviceToken",
             "areas": ["Memory"],
             "problem": "The property iOS.NotificationServices.deviceToken allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
+            "maximumVersion": "2021.3",
+            "platforms": ["iOS"]
         },
         {
             "id": 101176,
@@ -1155,7 +1161,9 @@
             "method": "scheduledLocalNotifications",
             "areas": ["Memory"],
             "problem": "The property iOS.NotificationServices.scheduledLocalNotifications allocates managed memory.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+            "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
+            "maximumVersion": "2021.3",
+            "platforms": ["iOS"]
         },
         {
             "id": 101177,

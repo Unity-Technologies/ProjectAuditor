@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using UnityEditor;
 using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;

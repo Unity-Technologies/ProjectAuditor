@@ -4,11 +4,12 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.Auditors;
+using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -37,9 +38,7 @@ namespace Unity.ProjectAuditor.EditorTests
             config.AnalyzeInBackground = false;
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-
             var module = projectAuditor.GetModule(category);
-            module.Initialize(config);
 
             module.Audit(issue => {
                 if (issue.category != category)
@@ -76,7 +75,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             const string tempSceneFilename = "Assets/TestScene.unity";
             // We must save the scene or the build will fail https://unity.slack.com/archives/C3F85MBDL/p1615991512002200
-            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), tempSceneFilename);
+            EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), tempSceneFilename);
 
             var buildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(buildPath);

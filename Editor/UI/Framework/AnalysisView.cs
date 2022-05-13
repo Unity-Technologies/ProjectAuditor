@@ -394,7 +394,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Height(LayoutSize.DependencyViewHeight));
 
-            m_Preferences.dependencies = Utility.BoldFoldout(m_Preferences.dependencies, m_Desc.dependencyViewGuiContent);
+            m_Preferences.dependencies = Utility.BoldFoldout(m_Preferences.dependencies, m_Desc.dependencyViewGuiContent != null ? m_Desc.dependencyViewGuiContent : Contents.Dependencies);
             if (m_Preferences.dependencies)
             {
                 if (issues.Length == 0)
@@ -574,6 +574,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 new GUIContent("Recommendation", "Recommendation on how to solve the issue");
             public static readonly GUIContent TextSearchLabel = new GUIContent("Search : ", "Text search options");
             public static readonly GUIContent TextSearchCaseSensitive = new GUIContent("Match Case", "Case-sensitive search");
+            public static readonly GUIContent Dependencies = new GUIContent("Dependencies");
         }
     }
 }

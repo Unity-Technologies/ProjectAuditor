@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -13,7 +14,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 using ThreadPriority = System.Threading.ThreadPriority;
 
-namespace Unity.ProjectAuditor.Editor.Auditors
+namespace Unity.ProjectAuditor.Editor.Modules
 {
     public enum AssemblyProperty
     {
@@ -51,6 +52,16 @@ namespace Unity.ProjectAuditor.Editor.Auditors
         {
             severity = Rule.Severity.Error
         };
+
+        static readonly ProblemDescriptor k_AssemblyMissingDependenciesDescriptor = new ProblemDescriptor
+            (
+            700003,
+            "Assembly"
+            )
+        {
+            severity = Rule.Severity.Error
+        };
+
 
         const int k_CompilerMessageFirstId = 800000;
 
@@ -128,6 +139,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
 
         public override void Initialize(ProjectAuditorConfig config)
         {
+            if (m_Config != null)
+                throw new Exception("Module is already initialized.");
+
             m_Config = config;
             m_Analyzers = new List<IInstructionAnalyzer>();
             m_OpCodes = new List<OpCode>();
@@ -145,9 +159,9 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
-            var compilationPipeline = new AssemblyCompilationPipeline
+            var compilationPipeline = new AssemblyCompilation
             {
-                AssemblyCompilationFinished = (assemblyInfo, compilerMessages, compileTime) => ProcessCompilerMessages(assemblyInfo, compilerMessages, compileTime, onIssueFound),
+                AssemblyCompilationFinished = (compilationTask, compilerMessages) => ProcessCompilerMessages(compilationTask, compilerMessages, onIssueFound),
                 CompilationMode = m_Config.CompilationMode
             };
 
@@ -168,6 +182,7 @@ namespace Unity.ProjectAuditor.Editor.Auditors
                 }
             }
 
+            // process successfully compiled assemblies
             var localAssemblyInfos = assemblyInfos.Where(info => !info.packageReadOnly).ToArray();
             var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.packageReadOnly).ToArray();
             var foundIssues = new List<ProjectIssue>();
@@ -366,20 +381,27 @@ namespace Unity.ProjectAuditor.Editor.Auditors
             m_OpCodes.AddRange(analyzer.GetOpCodes());
         }
 
-        void ProcessCompilerMessages(AssemblyInfo assemblyInfo, CompilerMessage[] compilerMessages, long compileTime, Action<ProjectIssue> onIssueFound)
+        void ProcessCompilerMessages(AssemblyCompilationTask compilationTask, CompilerMessage[] compilerMessages, Action<ProjectIssue> onIssueFound)
         {
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
 
-            var assemblyDescriptor = compilerMessages.Any(m => m.type == CompilerMessageType.Error)
-                ? k_AssemblyWithErrorsDescriptor
-                : k_AssemblyDescriptor;
+            var assemblyDescriptor = k_AssemblyDescriptor;
+            if (compilationTask.status == CompilationStatus.MissingDependency)
+                assemblyDescriptor = k_AssemblyMissingDependenciesDescriptor;
+            else if (compilerMessages.Any(m => m.type == CompilerMessageType.Error))
+                assemblyDescriptor = k_AssemblyWithErrorsDescriptor;
+
+            var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.assemblyPath);
 
             onIssueFound(new ProjectIssue(assemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath,
                 new object[(int)AssemblyProperty.Num]
                 {
                     assemblyInfo.packageReadOnly,
-                    compileTime
-                }));
+                    compilationTask.durationInMs
+                })
+                {
+                    dependencies = new AssemblyDependencyNode(assemblyInfo.name, compilationTask.dependencies.Select(d => d.assemblyName).ToArray())
+                });
 
             foreach (var message in compilerMessages)
             {

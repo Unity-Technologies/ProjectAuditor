@@ -4,18 +4,19 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-[Unreleased]
+## [Unreleased]
 * Added *ProjectAuditor.NumCategories* API
 * Added module-specific incremental analysis support
 * Added support to disable a module by default
 * Added 'Clear Selection' and 'Filter by Description' options to context menu
 * Added SavePath to configuration asset
 * Added [Graphics Tier](https://docs.unity3d.com/ScriptReference/Rendering.GraphicsTier.html) information to reported Shader Variants
-* Added support for exporting Shader Variants as [Shader Variant Collection](https://docs.unity3d.com/ScriptReference/ShaderVariantCollection.html)
 * Added diagnostic message formatting support
+* Added dependencies panel to assembly view
 * Changed default compilation mode to Non-Development
+* Fixed reporting of assemblies not compiled due to dependencies
 * Improved code diagnostic messages
-* Replaced *AnalyzeEditorCode* with *CompilationMode* setting 
+* Replaced *AnalyzeEditorCode* with *CompilationMode* setting
 
 ## [0.7.6-preview] - 2022-04-22
 * Fixed Build Report analysis 'Illegal characters in path' exception

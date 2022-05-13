@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
@@ -43,7 +44,7 @@ class MyClass
         [Test]
         public void AssemblyCompilation_DefaultAssembly_IsCompiled()
         {
-            using (var compilationHelper = new AssemblyCompilationPipeline())
+            using (var compilationHelper = new AssemblyCompilation())
             {
                 var assemblyInfos = compilationHelper.Compile();
 

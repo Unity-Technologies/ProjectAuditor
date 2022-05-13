@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -12,7 +11,7 @@ using UnityEditor.Build.Player;
 
 #endif
 
-namespace Unity.ProjectAuditor.Editor.Utils
+namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
     public enum CompilationMode
     {
@@ -77,75 +76,29 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public int line;
     }
 
-    class AssemblyCompilationUnit
+    enum CompilationStatus
     {
-        public AssemblyBuilder builder;
-        public AssemblyCompilationUnit[] dependencies;
-        public CompilerMessage[] messages;
-        public Stopwatch stopWatch;
-
-        bool m_Done = false;
-
-        public string assemblyPath
-        {
-            get
-            {
-                return builder.assemblyPath;
-            }
-        }
-
-        public bool IsDone()
-        {
-            return m_Done;
-        }
-
-        public void Update()
-        {
-            switch (builder.status)
-            {
-                case AssemblyBuilderStatus.NotStarted:
-                    if (dependencies.All(dep => dep.IsDone()))
-                    {
-                        if (dependencies.All(dep => dep.Success()))
-                        {
-                            stopWatch = Stopwatch.StartNew();
-                            builder.Build(); // all references are built, we can kick off this builder
-                        }
-                        else
-                            m_Done = true; // this assembly won't be built since it's missing dependencies
-                    }
-                    break;
-                case AssemblyBuilderStatus.IsCompiling:
-                    return; // nothing to do
-                case AssemblyBuilderStatus.Finished:
-                    m_Done = true;
-                    break;
-            }
-        }
-
-        public bool Success()
-        {
-            if (messages == null)
-                return false;
-            return messages.All(message => message.type != CompilerMessageType.Error);
-        }
+        NotStarted,
+        IsCompiling,
+        Compiled,
+        MissingDependency
     }
 
-    class AssemblyCompilationPipeline : IDisposable
+    class AssemblyCompilation : IDisposable
     {
         string m_OutputFolder = string.Empty;
 
-        Dictionary<string, AssemblyCompilationUnit> m_AssemblyCompilationUnits;
+        Dictionary<string, AssemblyCompilationTask> m_AssemblyCompilationTasks;
 #if UNITY_2020_2_OR_NEWER
         string[] m_RoslynAnalyzers;
 #endif
 
-        public Action<AssemblyInfo, CompilerMessage[], long> AssemblyCompilationFinished;
+        public Action<AssemblyCompilationTask, CompilerMessage[]> AssemblyCompilationFinished;
         public CompilationMode CompilationMode;
 
         public static CodeOptimization CodeOptimization = CodeOptimization.Release;
 
-        public AssemblyCompilationPipeline()
+        public AssemblyCompilation()
         {
 #if UNITY_2020_2_OR_NEWER
             m_RoslynAnalyzers = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath).ToArray();
@@ -156,13 +109,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
             if (!string.IsNullOrEmpty(m_OutputFolder) && Directory.Exists(m_OutputFolder))
             {
-                foreach (var unit in m_AssemblyCompilationUnits.Select(pair => pair.Value).Where(u => u.Success()))
+                foreach (var task in m_AssemblyCompilationTasks.Select(pair => pair.Value).Where(u => u.Success()))
                 {
-                    File.Delete(unit.assemblyPath);
-                    File.Delete(Path.ChangeExtension(unit.assemblyPath, ".pdb"));
+                    File.Delete(task.assemblyPath);
+                    File.Delete(Path.ChangeExtension(task.assemblyPath, ".pdb"));
                 }
 
-                m_AssemblyCompilationUnits.Clear();
+                m_AssemblyCompilationTasks.Clear();
 
                 // We can't delete the folder because of the CompilationLog.txt created by the AssemblyBuilder compilationTask
                 //Directory.Delete(m_OutputFolder, true);
@@ -221,30 +174,38 @@ namespace Unity.ProjectAuditor.Editor.Utils
             {
                 var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assemblyPath);
                 var assemblyName = assemblyInfo.name;
-                m_AssemblyCompilationUnits[assemblyName].messages = messages;
+                var compilationTask = m_AssemblyCompilationTasks[assemblyName];
+
+                compilationTask.messages = messages;
 
                 if (progress != null)
                     progress.Advance(assemblyName);
 
-                var stopWatch = m_AssemblyCompilationUnits[assemblyName].stopWatch;
-                var elapsedTime = stopWatch != null
-                    ? stopWatch.ElapsedMilliseconds
-                    : 0;
+                var stopWatch = compilationTask.stopWatch;
+                if (stopWatch != null)
+                    stopWatch.Stop();
+
                 if (AssemblyCompilationFinished != null)
-                    AssemblyCompilationFinished(assemblyInfo, messages, elapsedTime);
+                    AssemblyCompilationFinished(compilationTask, messages);
             });
             UpdateAssemblyBuilders();
 
             if (progress != null)
                 progress.Clear();
 
-            return m_AssemblyCompilationUnits.Where(pair => pair.Value.Success()).Select(unit => unit.Value.assemblyPath);
+            if (AssemblyCompilationFinished != null)
+                foreach (var compilationTask in m_AssemblyCompilationTasks.Where(pair => pair.Value.status == CompilationStatus.MissingDependency).Select(p => p.Value))
+                {
+                    AssemblyCompilationFinished(compilationTask, new CompilerMessage[] {});
+                }
+
+            return m_AssemblyCompilationTasks.Where(pair => pair.Value.Success()).Select(task => task.Value.assemblyPath);
         }
 
         void PrepareAssemblyBuilders(Assembly[] assemblies, Action<string, CompilerMessage[]> assemblyCompilationFinished)
         {
-            m_AssemblyCompilationUnits = new Dictionary<string, AssemblyCompilationUnit>();
-            // first pass: create all AssemblyCompilationUnits
+            m_AssemblyCompilationTasks = new Dictionary<string, AssemblyCompilationTask>();
+            // first pass: create all compilation tasks
             foreach (var assembly in assemblies)
             {
                 var filename = Path.GetFileName(assembly.outputPath);
@@ -347,19 +308,19 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #if UNITY_2019_1_OR_NEWER
                 assemblyBuilder.referencesOptions = ReferencesOptions.UseEngineModules;
 #endif
-                m_AssemblyCompilationUnits.Add(assemblyName, new AssemblyCompilationUnit { builder = assemblyBuilder });
+                m_AssemblyCompilationTasks.Add(assemblyName, new AssemblyCompilationTask { builder = assemblyBuilder });
             }
 
             // second pass: find all assembly reference builders
             foreach (var assembly in assemblies)
             {
-                var dependencies = new List<AssemblyCompilationUnit>();
+                var dependencies = new List<AssemblyCompilationTask>();
                 foreach (var referenceName in assembly.assemblyReferences.Select(r => Path.GetFileNameWithoutExtension(r.outputPath)))
                 {
-                    dependencies.Add(m_AssemblyCompilationUnits[referenceName]);
+                    dependencies.Add(m_AssemblyCompilationTasks[referenceName]);
                 }
 
-                m_AssemblyCompilationUnits[Path.GetFileName(assembly.name)].dependencies =
+                m_AssemblyCompilationTasks[Path.GetFileName(assembly.name)].dependencies =
                     dependencies.ToArray();
             }
         }
@@ -368,29 +329,17 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
             while (true)
             {
-                var pendingUnits = m_AssemblyCompilationUnits.Select(pair => pair.Value).Where(unit => !unit.IsDone());
-                if (!pendingUnits.Any())
+                var pendingTasks = m_AssemblyCompilationTasks.Select(pair => pair.Value).Where(task => !task.IsDone());
+                if (!pendingTasks.Any())
                     break;
-                foreach (var unit in pendingUnits)
+                foreach (var task in pendingTasks)
                 {
-                    unit.Update();
+                    task.Update();
                 }
                 System.Threading.Thread.Sleep(10);
             }
         }
 
 #endif
-        public IEnumerable<string> GetCompiledAssemblyDirectories()
-        {
-#if UNITY_2018_2_OR_NEWER
-            yield return m_OutputFolder;
-#else
-            foreach (var dir in CompilationPipeline.GetAssemblies()
-                     .Where(a => a.flags != AssemblyFlags.EditorAssembly).Select(assembly => Path.GetDirectoryName(assembly.outputPath)).Distinct())
-            {
-                yield return dir;
-            }
-#endif
-        }
     }
 }

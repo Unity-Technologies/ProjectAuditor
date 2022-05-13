@@ -1,5 +1,5 @@
 using Unity.ProjectAuditor.Editor.UI.Framework;
-using Unity.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using UnityEditor;
 using UnityEngine;
 
