@@ -175,7 +175,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         const int k_ShaderVariantFirstId = 400003;
 
-        static Dictionary<string, ProblemDescriptor> s_ShaderGroupDescriptor = new Dictionary<string, ProblemDescriptor>();
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData = new Dictionary<Shader, List<ShaderVariantData>>();
 
         public override IEnumerable<ProblemDescriptor> GetDescriptors()
@@ -356,20 +355,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 return;
             }
 
-            // group shaders by containing directory
-            var groupName = PathUtils.GetDirectoryName(assetPath);
-
-            ProblemDescriptor descriptor;
-            if (!s_ShaderGroupDescriptor.TryGetValue(groupName, out descriptor))
-            {
-                descriptor = new ProblemDescriptor
-                    (
-                    id++,
-                    groupName
-                    );
-                s_ShaderGroupDescriptor.Add(groupName, descriptor);
-            }
-
 /*
             var usedBySceneOnly = false;
             if (m_GetShaderVariantCountMethod != null)
@@ -388,7 +373,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #if UNITY_2019_1_OR_NEWER
             passCount = shader.passCount;
 #endif
-            var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.Shader, new Location(assetPath));
+            var issue = new ProjectIssue(null, shaderName, IssueCategory.Shader, new Location(assetPath));
             issue.SetCustomProperties(new object[(int)ShaderProperty.Num]
             {
                 assetSize,
