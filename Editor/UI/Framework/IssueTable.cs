@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get { return m_FlatView; }
             set
             {
-                if (m_Desc.groupByDescriptor || m_Desc.getGroupName != null)
+                if (m_Desc.getGroupName != null)
                     m_FlatView = value;
             }
         }
@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_View = view;
             m_Desc = desc;
             m_Layout = layout;
-            m_FlatView = !(desc.groupByDescriptor || m_Desc.getGroupName != null);
+            m_FlatView = m_Desc.getGroupName == null;
             multicolumnHeader.sortingChanged += OnSortingChanged;
             showAlternatingRowBackgrounds = true;
 
@@ -66,16 +66,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         m_TreeViewItemGroups.Add((new IssueTableItem(m_NextId++, 0, name)));
                 }
             }
-            else if (m_Desc.groupByDescriptor)
-            {
-                var descriptors = issues.Select(i => i.descriptor).Distinct().ToArray();
-                foreach (var d in descriptors)
-                {
-                    // if necessary, create a group
-                    if (m_TreeViewItemGroups.All(g => g.ProblemDescriptor.id != d.id))
-                        m_TreeViewItemGroups.Add((new IssueTableItem(m_NextId++, 0, d)));
-                }
-            }
 
             var itemsList = new List<IssueTableItem>(issues.Length);
             if (m_TreeViewItemIssues != null)
@@ -83,7 +73,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             foreach (var issue in issues)
             {
                 var depth = issue.depth;
-                if (m_Desc.groupByDescriptor || m_Desc.getGroupName != null)
+                if (m_Desc.getGroupName != null)
                     depth++;
                 IssueTableItem item;
                 if (m_Desc.getGroupName != null)
@@ -109,7 +99,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var depthForHiddenRoot = -1;
             var root = new TreeViewItem(idForHiddenRoot, depthForHiddenRoot, "root");
 
-            if (m_Desc.groupByDescriptor || m_Desc.getGroupName != null)
+            if (m_Desc.getGroupName != null)
             {
                 foreach (var item in m_TreeViewItemGroups)
                 {
@@ -208,11 +198,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     if (m_Desc.getGroupName != null)
                     {
                         var group = m_TreeViewItemGroups.Find(g => g.GroupName.Equals(item.GroupName));
-                        group.AddChild(item);
-                    }
-                    else if (m_Desc.groupByDescriptor)
-                    {
-                        var group = m_TreeViewItemGroups.Find(g => g.ProblemDescriptor.Equals(item.ProblemDescriptor));
                         group.AddChild(item);
                     }
 

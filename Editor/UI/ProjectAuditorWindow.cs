@@ -238,7 +238,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 1,
                 descriptionWithIcon = true,
                 getGroupName = issue => PathUtils.GetDirectoryName(issue.relativePath),
-                groupByDescriptor = true,
                 showDependencyView = true,
                 showFilters = true,
                 showRightPanels = true,
@@ -254,7 +253,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuLabel = "Assets/Shaders",
                 descriptionWithIcon = true,
                 getGroupName = issue => PathUtils.GetDirectoryName(issue.relativePath),
-                groupByDescriptor = true,
                 showFilters = true,
                 onContextMenu = (menu, viewManager, issue) =>
                 {
@@ -279,11 +277,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Variants",
                 menuOrder = 3,
                 menuLabel = "Assets/Shader Variants",
-                getGroupName = (issue) =>
-                {
-                    return issue.description;
-                },
-                groupByDescriptor = true,
+                getGroupName = issue => issue.description,
                 showFilters = true,
                 showInfoPanel = true,
                 showRightPanels = true,
@@ -334,7 +328,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showDependencyView = true,
                 getAssemblyName = issue => issue.description,
                 getGroupName = issue => issue.description.Split('.')[0],
-                groupByDescriptor = true,
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assemblies
             });
@@ -345,7 +338,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Code",
                 menuLabel = "Code/Diagnostics",
                 menuOrder = 0,
-                groupByDescriptor = true,
+                getGroupName = issue => issue.descriptor.description,
                 showActions = true,
                 showAreaSelection = true,
                 showAssemblySelection = true,
@@ -369,7 +362,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 98,
                 menuLabel = "Code/C# Compiler Messages",
                 getGroupName = issue => issue.GetCustomProperty(CompilerMessageProperty.Code),
-                groupByDescriptor = true,
                 showAssemblySelection = true,
                 showFilters = true,
                 showSeverityFilters = true,
@@ -385,7 +377,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Generics",
                 menuLabel = "Code/Generic Types Instantiation",
                 menuOrder = 99,
-                groupByDescriptor = true,
                 showAssemblySelection = true,
                 showDependencyView = true,
                 showFilters = true,
@@ -430,7 +421,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Build Size",
                 menuLabel = "Build Report/Size",
                 menuOrder = 101,
-                groupByDescriptor = true,
+                getGroupName = issue => issue.GetCustomProperty(BuildReportFileProperty.GroupType),
                 descriptionWithIcon = true,
                 showFilters = true,
                 showInfoPanel = true,

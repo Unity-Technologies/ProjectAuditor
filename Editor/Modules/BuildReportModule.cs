@@ -18,6 +18,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     public enum BuildReportFileProperty
     {
         Type = 0,
+        GroupType,
         Size,
         BuildFile,
         Num
@@ -373,6 +374,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     // sourceAssetPath might contain '|' which is invalid. This is due to compressed texture format names in the asset name such as DXT1|BC1
                     var assetPath = PathUtils.ReplaceInvalidChars(content.sourceAssetPath);
+                    var assetImporter = AssetImporter.GetAtPath(assetPath);
                     var descriptor = GetDescriptor(assetPath, content.type);
                     var description = Path.GetFileNameWithoutExtension(assetPath);
 
@@ -380,6 +382,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     issue.SetCustomProperties(new object[(int)BuildReportFileProperty.Num]
                     {
                         content.type,
+                        assetImporter != null ? assetImporter.GetType().Name : "Unknown",
                         content.packedSize,
                         packedAsset.shortPath
                     });

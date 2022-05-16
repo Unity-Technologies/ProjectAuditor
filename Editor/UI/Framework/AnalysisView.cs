@@ -310,7 +310,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             SharedStyles.Label.fontSize = m_Preferences.fontSize;
             SharedStyles.TextArea.fontSize = m_Preferences.fontSize;
 
-            if (m_Desc.groupByDescriptor)
+            if (m_Desc.getGroupName != null)
             {
                 // (optional) collapse/expand buttons
                 GUI.enabled = !m_Table.flatView;
