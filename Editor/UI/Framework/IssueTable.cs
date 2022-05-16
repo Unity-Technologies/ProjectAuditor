@@ -321,7 +321,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                 EditorGUI.LabelField(cellRect, Formatting.FormatTimeInSeconds(ulongValue));
                             }
                             else
-                                EditorGUI.LabelField(cellRect, new GUIContent(customProperty), labelStyle);
+                                EditorGUI.LabelField(cellRect, new GUIContent(customProperty, customProperty), labelStyle);
                         }
 
                         break;
