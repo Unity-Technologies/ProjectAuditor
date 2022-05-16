@@ -122,9 +122,9 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectAuditorConfig : UnityEngine.ScriptableObject
     {
-        public bool AnalyzeEditorCode;
         public bool AnalyzeInBackground;
         public bool AnalyzeOnBuild;
+        public Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode CompilationMode;
         public bool FailBuildOnIssues;
         public bool LogTimingsInfo;
         public bool SaveBuildReports;
@@ -255,6 +255,17 @@ namespace Unity.ProjectAuditor.Editor
         public string searchText;
         public TextFilter() {}
         public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
+    }
+}
+
+namespace Unity.ProjectAuditor.Editor.AssemblyUtils
+{
+    public enum CompilationMode
+    {
+        public const Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode DevelopmentPlayer = 1;
+        public const Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode Editor = 2;
+        public const Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode Player = 0;
+        public int value__;
     }
 }
 

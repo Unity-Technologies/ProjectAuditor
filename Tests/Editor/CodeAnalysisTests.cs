@@ -15,8 +15,6 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAsset;
         TempAsset m_TempAssetDerivedClassMethod;
         TempAsset m_TempAssetInPlugin;
-        TempAsset m_TempAssetInEditorCode;
-        TempAsset m_TempAssetInPlayerCode;
         TempAsset m_TempAssetIssueInCoroutine;
         TempAsset m_TempAssetIssueInDelegate;
         TempAsset m_TempAssetIssueInProperty;
@@ -65,32 +63,6 @@ class MyPlugin
     void Dummy()
     {
         Debug.Log(Camera.allCameras.Length.ToString());
-    }
-}
-");
-
-            m_TempAssetInPlayerCode = new TempAsset("IssueInPlayerCode.cs", @"
-using UnityEngine;
-class MyClassWithPlayerOnlyCode
-{
-    void Dummy()
-    {
-#if !UNITY_EDITOR
-        Debug.Log(Camera.allCameras.Length.ToString());
-#endif
-    }
-}
-");
-
-            m_TempAssetInEditorCode = new TempAsset("IssueInEditorCode.cs", @"
-using UnityEngine;
-class MyClassWithEditorOnlyCode
-{
-    void Dummy()
-    {
-#if UNITY_EDITOR
-        Debug.Log(Camera.allCameras.Length.ToString());
-#endif
     }
 }
 ");
@@ -306,37 +278,6 @@ class UxmlAttributeDescriptionPropertyUsage
         }
 
         [Test]
-        public void CodeAnalysis_IssueInEditorCode_IsNotReported()
-        {
-            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.AnalyzeEditorCode = false;
-
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Code);
-            var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TempAssetInEditorCode.relativePath));
-
-            Assert.Null(codeIssue);
-        }
-
-        [Test]
-        [Ignore("Known failure because the script is not recompiled by the editor")]
-        public void CodeAnalysis_IssueInEditorCode_IsReported()
-        {
-            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.AnalyzeEditorCode = true;
-
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-            var projectReport = projectAuditor.Audit();
-
-            var issues = projectReport.GetIssues(IssueCategory.Code);
-            var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TempAssetInEditorCode.relativePath));
-
-            Assert.NotNull(codeIssue);
-        }
-
-        [Test]
         public void CodeAnalysis_Issue_IsReported()
         {
             var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAsset);
@@ -385,15 +326,6 @@ class UxmlAttributeDescriptionPropertyUsage
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void MyPlugin::Dummy()", issues[0].GetContext());
-        }
-
-        [Test]
-        public void CodeAnalysis_IssueInPlayerCode_IsReported()
-        {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInPlayerCode);
-
-            Assert.AreEqual(1, issues.Count());
-            Assert.AreEqual("System.Void MyClassWithPlayerOnlyCode::Dummy()", issues[0].GetContext());
         }
 
         [Test]

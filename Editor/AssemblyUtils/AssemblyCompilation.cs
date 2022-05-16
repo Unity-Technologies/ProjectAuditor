@@ -13,6 +13,23 @@ using UnityEditor.Build.Player;
 
 namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
+    public enum CompilationMode
+    {
+        /// <summary>
+        ///   <para>Non-Development player (default)</para>
+        /// </summary>
+        Player,
+        /// <summary>
+        ///   <para>Development player</para>
+        /// </summary>
+        DevelopmentPlayer,
+
+        /// <summary>
+        ///   <para>Editor</para>
+        /// </summary>
+        Editor
+    }
+
     enum CodeOptimization
     {
         Debug,
@@ -77,6 +94,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 #endif
 
         public Action<AssemblyCompilationTask, CompilerMessage[]> AssemblyCompilationFinished;
+        public CompilationMode CompilationMode;
 
         public static CodeOptimization CodeOptimization = CodeOptimization.Release;
 
@@ -105,8 +123,9 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             m_OutputFolder = string.Empty;
         }
 
-        public AssemblyInfo[] Compile(bool editorAssemblies = false, IProgress progress = null)
+        public AssemblyInfo[] Compile(IProgress progress = null)
         {
+            var editorAssemblies = CompilationMode == CompilationMode.Editor;
 #if UNITY_2019_3_OR_NEWER
             var assemblies = CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.PlayerWithoutTestAssemblies);
 #elif UNITY_2018_1_OR_NEWER
@@ -120,7 +139,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             if (editorAssemblies)
                 compiledAssemblyPaths = CompileEditorAssemblies(assemblies);
             else
-                compiledAssemblyPaths = CompileAssemblies(assemblies, progress);
+                compiledAssemblyPaths = CompilePlayerAssemblies(assemblies, progress);
 #else
             // fallback to CompilationPipeline assemblies
             compiledAssemblyPaths = CompileEditorAssemblies(assemblies, !editorAssemblies);
@@ -137,7 +156,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         }
 
 #if UNITY_2018_2_OR_NEWER
-        IEnumerable<string> CompileAssemblies(Assembly[] assemblies, IProgress progress = null)
+        IEnumerable<string> CompilePlayerAssemblies(Assembly[] assemblies, IProgress progress = null)
         {
             if (progress != null)
             {
@@ -185,7 +204,6 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         void PrepareAssemblyBuilders(Assembly[] assemblies, Action<string, CompilerMessage[]> assemblyCompilationFinished)
         {
-            var editorAssemblies = false; // for future use
             m_AssemblyCompilationTasks = new Dictionary<string, AssemblyCompilationTask>();
             // first pass: create all compilation tasks
             foreach (var assembly in assemblies)
@@ -256,7 +274,19 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 #else
                 assemblyBuilder.compilerOptions = assembly.compilerOptions;
 #endif
-                assemblyBuilder.flags = editorAssemblies ? AssemblyBuilderFlags.EditorAssembly : AssemblyBuilderFlags.DevelopmentBuild;
+
+                switch (CompilationMode)
+                {
+                    case CompilationMode.Player:
+                        assemblyBuilder.flags = AssemblyBuilderFlags.None;
+                        break;
+                    case CompilationMode.DevelopmentPlayer:
+                        assemblyBuilder.flags = AssemblyBuilderFlags.DevelopmentBuild;
+                        break;
+                    case CompilationMode.Editor:
+                        assemblyBuilder.flags = AssemblyBuilderFlags.EditorAssembly;
+                        break;
+                }
 
                 // add asmdef-specific defines
                 var additionalDefines = new List<string>(assembly.defines.Except(assemblyBuilder.defaultDefines));

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using UnityEditor;
 using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;
@@ -108,7 +109,7 @@ class InternalClass
         public void TextFilter_Filename_Matches()
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.AnalyzeEditorCode = false;
+            config.CompilationMode = CompilationMode.Player;
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 
@@ -128,7 +129,7 @@ class InternalClass
         public void TextFilter_RecursiveSearch_Matches()
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.AnalyzeEditorCode = false;
+            config.CompilationMode = CompilationMode.Player;
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 

@@ -13,8 +13,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added [Graphics Tier](https://docs.unity3d.com/ScriptReference/Rendering.GraphicsTier.html) information to reported Shader Variants
 * Added diagnostic message formatting support
 * Added dependencies panel to assembly view
+* Changed default compilation mode to Non-Development
 * Fixed reporting of assemblies not compiled due to dependencies
 * Improved code diagnostic messages
+* Replaced *AnalyzeEditorCode* with *CompilationMode* setting
 
 ## [0.7.6-preview] - 2022-04-22
 * Fixed Build Report analysis 'Illegal characters in path' exception
