@@ -280,6 +280,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Variants",
                 menuOrder = 3,
                 menuLabel = "Assets/Shader Variants",
+                getGroupName = (issue) =>
+                {
+                    return issue.description;
+                },
                 groupByDescriptor = true,
                 showFilters = true,
                 showInfoPanel = true,
