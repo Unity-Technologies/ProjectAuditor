@@ -65,7 +65,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         //if (m_TreeViewItemGroups.All(g => g.GroupName.id != d.id))
                         m_TreeViewItemGroups.Add((new IssueTableItem(m_NextId++, 0, name)));
                 }
-
             }
             else if (m_Desc.groupByDescriptor)
             {
@@ -200,7 +199,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             group.AddChild(child);
                         }
                     }
-
                 }
             }
             else

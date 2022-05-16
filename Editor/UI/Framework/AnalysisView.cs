@@ -474,7 +474,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             if (m_Desc.showSeverityFilters)
             {
-                switch (issue.descriptor.severity)
+                switch (issue.severity)
                 {
                     case Rule.Severity.Info:
                         if (!m_ShowInfo)

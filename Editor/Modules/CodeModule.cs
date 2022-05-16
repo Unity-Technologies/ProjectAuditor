@@ -62,9 +62,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             severity = Rule.Severity.Error
         };
 
-
-        const int k_CompilerMessageFirstId = 800000;
-
         static readonly IssueLayout k_AssemblyLayout = new IssueLayout
         {
             category = IssueCategory.Assembly,
@@ -120,7 +117,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         List<IInstructionAnalyzer> m_Analyzers;
         List<OpCode> m_OpCodes;
         List<ProblemDescriptor> m_ProblemDescriptors;
-        Dictionary<string, ProblemDescriptor> m_RuntimeDescriptors = new Dictionary<string, ProblemDescriptor>();
 
         Thread m_AssemblyAnalysisThread;
 
@@ -410,33 +406,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     continue;
                 }
 
-                var descriptor = (ProblemDescriptor)null;
-
-                if (m_RuntimeDescriptors.ContainsKey(message.code))
-                    descriptor = m_RuntimeDescriptors[message.code];
-                else
-                {
-                    // do we need different descriptors?
-                    descriptor = new ProblemDescriptor
-                        (
-                        k_CompilerMessageFirstId + m_RuntimeDescriptors.Count,
-                        message.code
-                        )
-                    {
-                        severity = CompilerMessageTypeToSeverity(message.type)
-                    };
-                    m_RuntimeDescriptors.Add(message.code, descriptor);
-                }
-
                 var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.file);
-                var issue = new ProjectIssue(descriptor, message.message,
+                var issue = new ProjectIssue(null, message.message,
                     IssueCategory.CodeCompilerMessage,
                     new Location(relativePath, message.line),
                     new object[(int)CompilerMessageProperty.Num]
                     {
                         message.code,
                         assemblyInfo.name
-                    });
+                    })
+                {
+                    severity = CompilerMessageTypeToSeverity(message.type)
+                };
                 onIssueFound(issue);
             }
 

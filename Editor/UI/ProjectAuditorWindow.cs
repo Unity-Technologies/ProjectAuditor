@@ -237,6 +237,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuLabel = "Assets/Resources",
                 menuOrder = 1,
                 descriptionWithIcon = true,
+                getGroupName = issue => PathUtils.GetDirectoryName(issue.relativePath),
+                groupByDescriptor = true,
                 showDependencyView = true,
                 showFilters = true,
                 showRightPanels = true,
@@ -251,10 +253,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 2,
                 menuLabel = "Assets/Shaders",
                 descriptionWithIcon = true,
-                getGroupName = (issue) =>
-                {
-                    return PathUtils.GetDirectoryName(issue.relativePath);
-                },
+                getGroupName = issue => PathUtils.GetDirectoryName(issue.relativePath),
                 groupByDescriptor = true,
                 showFilters = true,
                 onContextMenu = (menu, viewManager, issue) =>
@@ -334,6 +333,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showDependencyView = true,
                 getAssemblyName = issue => issue.description,
+                getGroupName = issue => issue.description.Split('.')[0],
+                groupByDescriptor = true,
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assemblies
             });
@@ -367,6 +368,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Compiler Messages",
                 menuOrder = 98,
                 menuLabel = "Code/C# Compiler Messages",
+                getGroupName = issue => issue.GetCustomProperty(CompilerMessageProperty.Code),
                 groupByDescriptor = true,
                 showAssemblySelection = true,
                 showFilters = true,

@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
 
         public IssueTableItem(int id, int depth, string displayName, string groupName,
-            ProjectIssue projectIssue) : base(id, depth, displayName)
+                              ProjectIssue projectIssue) : base(id, depth, displayName)
         {
             GroupName = groupName;
             ProjectIssue = projectIssue;

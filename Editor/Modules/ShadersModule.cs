@@ -336,7 +336,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (shaderHasError)
             {
-                var issueWithError = new ProjectIssue(null,Path.GetFileNameWithoutExtension(assetPath), IssueCategory.Shader, new Location(assetPath));
+                var issueWithError = new ProjectIssue(null, Path.GetFileNameWithoutExtension(assetPath), IssueCategory.Shader, new Location(assetPath));
                 issueWithError.SetCustomProperties((int)ShaderProperty.Num, k_NotAvailable);
                 issueWithError.severity = severity;
 
