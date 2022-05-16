@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
@@ -21,9 +22,9 @@ namespace Unity.ProjectAuditor.Editor
         public bool AnalyzeInBackground = true;
 
         /// <summary>
-        /// If enabled, Editor assemblies will be analyzed (as opposed to the currently selected platform assemblies)
+        /// Compilation mode
         /// </summary>
-        public bool AnalyzeEditorCode;
+        public CompilationMode CompilationMode;
 
         /// <summary>
         /// If enabled, any issue reported by ProjectAuditor will cause the build to fail.

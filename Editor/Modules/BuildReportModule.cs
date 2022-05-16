@@ -17,8 +17,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public enum BuildReportFileProperty
     {
-        Type = 0,
-        GroupType,
+        ImporterType = 0,
+        RuntimeType,
         Size,
         BuildFile,
         Num
@@ -76,6 +76,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         const string k_KeyEndTime = "End Time";
         const string k_KeyTotalTime = "Total Time";
         const string k_KeyTotalSize = "Total Size";
+        const string k_Unknown = "Unknown";
 
         static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
             (
@@ -238,7 +239,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Source Asset"},
                 new PropertyDefinition { type = PropertyType.FileType, name = "Ext"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.Type), format = PropertyFormat.String, name = "Type"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.ImporterType), format = PropertyFormat.String, name = "Importer Type"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.RuntimeType), format = PropertyFormat.String, name = "Runtime Type"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size in the Build"},
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.BuildFile), format = PropertyFormat.String, name = "Build File"}
@@ -376,13 +378,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     var assetPath = PathUtils.ReplaceInvalidChars(content.sourceAssetPath);
                     var assetImporter = AssetImporter.GetAtPath(assetPath);
                     var descriptor = GetDescriptor(assetPath, content.type);
-                    var description = Path.GetFileNameWithoutExtension(assetPath);
+                    var description = string.IsNullOrEmpty(assetPath) ? k_Unknown : Path.GetFileNameWithoutExtension(assetPath);
 
                     var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
                     issue.SetCustomProperties(new object[(int)BuildReportFileProperty.Num]
                     {
+                        assetImporter != null ? assetImporter.GetType().Name : k_Unknown,
                         content.type,
-                        assetImporter != null ? assetImporter.GetType().Name : "Unknown",
                         content.packedSize,
                         packedAsset.shortPath
                     });

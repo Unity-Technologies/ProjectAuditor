@@ -292,7 +292,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     case PropertyType.CriticalContext:
                     {
                         if (issue.isPerfCriticalContext)
-                            EditorGUI.LabelField(cellRect, Utility.GetSeverityIcon(Rule.Severity.Warning, "Potential hot-path"), labelStyle);
+                            EditorGUI.LabelField(cellRect, Utility.GetSeverityIcon(Rule.Severity.Warning, Tooltip.HotPath), labelStyle);
                     }
                     break;
                     case PropertyType.Severity:
@@ -307,8 +307,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                     case PropertyType.Area:
                         var areaNames = descriptor.GetAreasSummary();
-                        var areaLongDescription = "Areas that this issue might have an impact on";
-                        EditorGUI.LabelField(cellRect, new GUIContent(areaNames, areaLongDescription), labelStyle);
+                        EditorGUI.LabelField(cellRect, new GUIContent(areaNames, Tooltip.Area), labelStyle);
                         break;
 
                     case PropertyType.Description:
@@ -621,6 +620,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 foreach (var child in m_Children)
                     child.ToList(list);
             }
+        }
+
+        static class Tooltip
+        {
+            public static string Area = "Areas that this issue might have an impact on";
+            public static string HotPath = "Potential hot-path";
         }
     }
 }
