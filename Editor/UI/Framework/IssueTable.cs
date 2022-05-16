@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get { return m_FlatView; }
             set
             {
-                if (m_Desc.groupByDescriptor)
+                if (m_Desc.groupByDescriptor || m_Desc.getGroupName != null)
                     m_FlatView = value;
             }
         }
@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_View = view;
             m_Desc = desc;
             m_Layout = layout;
-            m_FlatView = !desc.groupByDescriptor;
+            m_FlatView = !(desc.groupByDescriptor || m_Desc.getGroupName != null);
             multicolumnHeader.sortingChanged += OnSortingChanged;
             showAlternatingRowBackgrounds = true;
 
@@ -55,7 +55,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void AddIssues(ProjectIssue[] issues)
         {
             // update groups, if applicable
-            if (m_Desc.groupByDescriptor)
+            if (m_Desc.getGroupName != null)
+            {
+                var groupNames = issues.Select(i => m_Desc.getGroupName(i)).Distinct().ToArray();
+                foreach (var name in groupNames)
+                {
+                    // if necessary, create a group
+                    if (!m_TreeViewItemGroups.Exists(g => g.GroupName.Equals(name)))
+                        //if (m_TreeViewItemGroups.All(g => g.GroupName.id != d.id))
+                        m_TreeViewItemGroups.Add((new IssueTableItem(m_NextId++, 0, name)));
+                }
+
+            }
+            else if (m_Desc.groupByDescriptor)
             {
                 var descriptors = issues.Select(i => i.descriptor).Distinct().ToArray();
                 foreach (var d in descriptors)
@@ -72,9 +84,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             foreach (var issue in issues)
             {
                 var depth = issue.depth;
-                if (m_Desc.groupByDescriptor)
+                if (m_Desc.groupByDescriptor || m_Desc.getGroupName != null)
                     depth++;
-                var item = new IssueTableItem(m_NextId++, depth, issue.description, issue.descriptor, issue);
+                IssueTableItem item;
+                if (m_Desc.getGroupName != null)
+                    item = new IssueTableItem(m_NextId++, depth, issue.description, m_Desc.getGroupName(issue), issue);
+                else
+                    item = new IssueTableItem(m_NextId++, depth, issue.description, issue.descriptor, issue);
                 itemsList.Add(item);
             }
 
@@ -94,7 +110,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var depthForHiddenRoot = -1;
             var root = new TreeViewItem(idForHiddenRoot, depthForHiddenRoot, "root");
 
-            if (m_Desc.groupByDescriptor)
+            if (m_Desc.groupByDescriptor || m_Desc.getGroupName != null)
             {
                 foreach (var item in m_TreeViewItemGroups)
                 {
@@ -141,30 +157,62 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Profiler.BeginSample("IssueTable.BuildRows");
             if (!hasSearch && !m_FlatView)
             {
-                var descriptors = filteredItems.Select(i => i.ProblemDescriptor).Distinct();
-                foreach (var descriptor in descriptors)
+                if (m_Desc.getGroupName != null)
                 {
-                    var group = m_TreeViewItemGroups.Find(g => g.ProblemDescriptor.Equals(descriptor));
-                    m_Rows.Add(group);
-
-                    var groupIsExpanded = state.expandedIDs.Contains(group.id);
-                    var children = filteredItems.Where(item => item.ProblemDescriptor.Equals(descriptor));
-
-                    group.displayName = string.Format("{0} ({1})", descriptor.description, children.Count());
-
-                    foreach (var child in children)
+                    //var descriptors = filteredItems.Select(i => m_Desc.getGroupName(i.ProjectIssue)).Distinct();
+                    var groupedItemQuery = filteredItems.GroupBy(i => m_Desc.getGroupName(i.ProjectIssue));
+                    foreach (var groupedItems in groupedItemQuery)
                     {
-                        if (groupIsExpanded)
-                            m_Rows.Add(child);
-                        group.AddChild(child);
+                        var groupName = groupedItems.Key;
+                        var group = m_TreeViewItemGroups.Find(g => g.GroupName.Equals(groupName));
+                        m_Rows.Add(group);
+
+                        var groupIsExpanded = state.expandedIDs.Contains(group.id);
+                        var children = filteredItems.Where(item => item.GroupName.Equals(groupName));
+
+                        group.displayName = string.Format("{0} ({1})", groupName, children.Count());
+
+                        foreach (var child in children)
+                        {
+                            if (groupIsExpanded)
+                                m_Rows.Add(child);
+                            group.AddChild(child);
+                        }
                     }
+                }
+                else
+                {
+                    var descriptors = filteredItems.Select(i => i.ProblemDescriptor).Distinct();
+                    foreach (var descriptor in descriptors)
+                    {
+                        var group = m_TreeViewItemGroups.Find(g => g.ProblemDescriptor.Equals(descriptor));
+                        m_Rows.Add(group);
+
+                        var groupIsExpanded = state.expandedIDs.Contains(group.id);
+                        var children = filteredItems.Where(item => item.ProblemDescriptor.Equals(descriptor));
+
+                        group.displayName = string.Format("{0} ({1})", descriptor.description, children.Count());
+
+                        foreach (var child in children)
+                        {
+                            if (groupIsExpanded)
+                                m_Rows.Add(child);
+                            group.AddChild(child);
+                        }
+                    }
+
                 }
             }
             else
             {
                 foreach (var item in filteredItems)
                 {
-                    if (m_Desc.groupByDescriptor)
+                    if (m_Desc.getGroupName != null)
+                    {
+                        var group = m_TreeViewItemGroups.Find(g => g.GroupName.Equals(item.GroupName));
+                        group.AddChild(item);
+                    }
+                    else if (m_Desc.groupByDescriptor)
                     {
                         var group = m_TreeViewItemGroups.Find(g => g.ProblemDescriptor.Equals(item.ProblemDescriptor));
                         group.AddChild(item);
@@ -248,13 +296,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     // use all available space to display description
                     cellRect.xMax = args.rowRect.xMax;
-                    EditorGUI.LabelField(cellRect, Utility.GetTextWithSeverityIcon(item.GetDisplayName(), item.GetDisplayName(), descriptor.severity), labelStyle);
+                    if (descriptor != null)
+                        EditorGUI.LabelField(cellRect, Utility.GetTextWithSeverityIcon(item.GetDisplayName(), item.GetDisplayName(), descriptor.severity), labelStyle);
+                    else
+                        EditorGUI.LabelField(cellRect, item.GetDisplayName(), labelStyle); // // NEEDS severity icon?
                 }
             }
             else
             {
-                var areaNames = descriptor.GetAreasSummary();
-                var areaLongDescription = "Areas that this issue might have an impact on";
                 switch (columnType)
                 {
                     case PropertyType.CriticalContext:
@@ -274,6 +323,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     break;
 
                     case PropertyType.Area:
+                        var areaNames = descriptor.GetAreasSummary();
+                        var areaLongDescription = "Areas that this issue might have an impact on";
                         EditorGUI.LabelField(cellRect, new GUIContent(areaNames, areaLongDescription), labelStyle);
                         break;
 

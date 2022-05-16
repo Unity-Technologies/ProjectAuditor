@@ -29,6 +29,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
         public Func<ProjectIssue, string> getAssemblyName;
+        public Func<ProjectIssue, string> getGroupName;
         public Action<GenericMenu, ViewManager, ProjectIssue> onContextMenu;
         public Action<ViewManager> onDrawToolbar;
         public Action<Location> onOpenIssue;

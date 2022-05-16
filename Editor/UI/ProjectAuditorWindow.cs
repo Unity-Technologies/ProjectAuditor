@@ -251,6 +251,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 2,
                 menuLabel = "Assets/Shaders",
                 descriptionWithIcon = true,
+                getGroupName = (issue) =>
+                {
+                    return PathUtils.GetDirectoryName(issue.relativePath);
+                },
                 groupByDescriptor = true,
                 showFilters = true,
                 onContextMenu = (menu, viewManager, issue) =>
