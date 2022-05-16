@@ -133,15 +133,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        static readonly ProblemDescriptor k_ParseErrorDescriptor = new ProblemDescriptor
-            (
-            400000,
-            "Shaders with errors"
-            )
-        {
-            severity = Rule.Severity.Error
-        };
-
         static readonly ProblemDescriptor k_CompilerWarningDescriptor = new ProblemDescriptor
             (
             400001,
@@ -265,7 +256,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 #endif
 
-            var id = k_ShaderVariantFirstId;
             var buildReportInfoAvailable = false;
 #if BUILD_REPORT_API_SUPPORT
             var packetAssetInfos = new PackedAssetInfo[0];
@@ -296,14 +286,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     }
                 }
 #endif
-                AddShader(shader, assetPath, assetSize, id++, alwaysIncludedShaders.Contains(shader), onIssueFound);
+                AddShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader), onIssueFound);
             }
 
             if (onComplete != null)
                 onComplete();
         }
 
-        void AddShader(Shader shader, string assetPath, string assetSize, int id, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)
+        void AddShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)
         {
             // set initial state (-1: info not available)
             var variantCount = s_ShaderVariantData.Count > 0 ? 0 : -1;
@@ -315,7 +305,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var variants = s_ShaderVariantData[shader];
                 variantCount = variants.Count;
 
-                AddVariants(shader, assetPath, id++, variants, onIssueFound);
+                AddVariants(shader, assetPath, variants, onIssueFound);
             }
 #endif
 
@@ -346,7 +336,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (shaderHasError)
             {
-                var issueWithError = new ProjectIssue(k_ParseErrorDescriptor, Path.GetFileNameWithoutExtension(assetPath), IssueCategory.Shader, new Location(assetPath));
+                var issueWithError = new ProjectIssue(null,Path.GetFileNameWithoutExtension(assetPath), IssueCategory.Shader, new Location(assetPath));
                 issueWithError.SetCustomProperties((int)ShaderProperty.Num, k_NotAvailable);
                 issueWithError.severity = severity;
 
@@ -396,18 +386,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
         }
 
 #if VARIANTS_ANALYSIS_SUPPORT
-        void AddVariants(Shader shader, string assetPath, int id, List<ShaderVariantData> shaderVariants, Action<ProjectIssue> onIssueFound)
+        void AddVariants(Shader shader, string assetPath, List<ShaderVariantData> shaderVariants, Action<ProjectIssue> onIssueFound)
         {
-            var shaderName = shader.name;
-            var descriptor = new ProblemDescriptor
-                (
-                id++,
-                shaderName
-                );
-
             foreach (var shaderVariantData in shaderVariants)
             {
-                var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariant, new Location(assetPath));
+                var issue = new ProjectIssue(null, shader.name, IssueCategory.ShaderVariant, new Location(assetPath));
 
                 issue.SetCustomProperties(new object[(int)ShaderVariantProperty.Num]
                 {
