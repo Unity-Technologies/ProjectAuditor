@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -74,7 +75,7 @@ class MyClass : MonoBehaviour
         ProjectIssue[] AnalyzeAndExport(IssueCategory category, string path, Func<ProjectIssue, bool> predicate = null)
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.AnalyzeEditorCode = false;
+            config.CompilationMode = CompilationMode.Player;
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var projectReport = projectAuditor.Audit();
