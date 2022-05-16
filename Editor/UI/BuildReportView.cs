@@ -31,9 +31,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             base.AddIssues(allIssues);
             if (m_Desc.category == IssueCategory.BuildFile)
             {
-                var list = m_Issues.GroupBy(i => i.descriptor).Select(g => new GroupStats
+                var list = m_Issues.GroupBy(i => i.GetCustomProperty(BuildReportFileProperty.ImporterType)).Select(g => new GroupStats
                 {
-                    assetGroup = g.Key.description,
+                    assetGroup = g.Key,
                     count = g.Count(),
                     size = g.Sum(s => s.GetCustomPropertyAsLong(BuildReportFileProperty.Size))
                 }).ToList();
@@ -71,7 +71,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField("Size of Data (Uncompressed)", GUILayout.Width(width));
                 EditorGUILayout.LabelField(Formatting.FormatSize((ulong)dataSize));
                 EditorGUILayout.EndHorizontal();
-                EditorGUILayout.LabelField("Size By Asset Group", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("Size By Asset Importer", EditorStyles.boldLabel);
                 EditorGUI.indentLevel++;
 
                 EditorGUILayout.BeginVertical();
