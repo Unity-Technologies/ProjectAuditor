@@ -112,126 +112,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             severity = Rule.Severity.Error
         };
 
-        static readonly ProblemDescriptor k_AnimationDescriptor = new ProblemDescriptor
-            (
-            600004,
-            "Animation",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_AssetDescriptor = new ProblemDescriptor
-            (
-            600005,
-            "Asset",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_AudioDescriptor = new ProblemDescriptor
-            (
-            600006,
-            "Audio",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_ByteDataDescriptor = new ProblemDescriptor
-            (
-            600007,
-            "Byte data",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_FontDescriptor = new ProblemDescriptor
-            (
-            600008,
-            "Font",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_MaterialDescriptor = new ProblemDescriptor
-            (
-            600009,
-            "Material",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_ModelDescriptor = new ProblemDescriptor
-            (
-            600010,
-            "Model",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_MonoBehaviourDescriptor = new ProblemDescriptor
-            (
-            600011,
-            "MonoBehaviour",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_PrefabDescriptor = new ProblemDescriptor
-            (
-            600012,
-            "Prefab",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_ShaderDescriptor = new ProblemDescriptor
-            (
-            600013,
-            "Shader",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_TextDescriptor = new ProblemDescriptor
-            (
-            600014,
-            "Text",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_TextureDescriptor = new ProblemDescriptor
-            (
-            600015,
-            "Texture",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_OtherTypeDescriptor = new ProblemDescriptor
-            (
-            600016,
-            "Other Type",
-            Area.BuildSize
-            );
-
-        static readonly ProblemDescriptor k_ScriptDescriptor = new ProblemDescriptor
-            (
-            600017,
-            "Script",
-            Area.BuildSize
-            );
-
-#pragma warning disable 0414
-        static readonly Dictionary<Type, ProblemDescriptor> s_DescriptorsMap = new Dictionary<Type, ProblemDescriptor>()
-        {
-            { typeof(AudioClip), k_AudioDescriptor },
-            { typeof(AudioMixer), k_AudioDescriptor },
-            { typeof(AnimationClip), k_AnimationDescriptor },
-            { typeof(UnityEditor.Animations.AnimatorController), k_AnimationDescriptor },
-            { typeof(ComputeShader), k_ShaderDescriptor },
-            { typeof(Font), k_FontDescriptor },
-            { typeof(Shader), k_ShaderDescriptor },
-            { typeof(ShaderVariantCollection), k_ShaderDescriptor },
-            { typeof(Material), k_MaterialDescriptor },
-            { typeof(Mesh), k_ModelDescriptor },
-            { typeof(MonoBehaviour), k_MonoBehaviourDescriptor },
-            { typeof(GameObject), k_PrefabDescriptor },
-            { typeof(MonoScript), k_ScriptDescriptor },
-            { typeof(Sprite), k_TextureDescriptor },
-            { typeof(Texture), k_TextureDescriptor },
-            { typeof(TextAsset), k_TextDescriptor },
-        };
-#pragma warning restore 0414
-
         static readonly IssueLayout k_FileLayout = new IssueLayout
         {
             category = IssueCategory.BuildFile,
@@ -278,21 +158,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             yield return k_InfoDescriptor;
             yield return k_WarnDescriptor;
             yield return k_ErrorDescriptor;
-
-            yield return k_AnimationDescriptor;
-            yield return k_AssetDescriptor;
-            yield return k_AudioDescriptor;
-            yield return k_ByteDataDescriptor;
-            yield return k_FontDescriptor;
-            yield return k_MaterialDescriptor;
-            yield return k_ModelDescriptor;
-            yield return k_MonoBehaviourDescriptor;
-            yield return k_PrefabDescriptor;
-            yield return k_ScriptDescriptor;
-            yield return k_ShaderDescriptor;
-            yield return k_TextDescriptor;
-            yield return k_TextureDescriptor;
-            yield return k_OtherTypeDescriptor;
         }
 
         public override IEnumerable<IssueLayout> GetLayouts()
@@ -377,13 +242,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     // sourceAssetPath might contain '|' which is invalid. This is due to compressed texture format names in the asset name such as DXT1|BC1
                     var assetPath = PathUtils.ReplaceInvalidChars(content.sourceAssetPath);
                     var assetImporter = AssetImporter.GetAtPath(assetPath);
-                    var descriptor = GetDescriptor(assetPath, content.type);
                     var description = string.IsNullOrEmpty(assetPath) ? k_Unknown : Path.GetFileNameWithoutExtension(assetPath);
 
-                    var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
+                    var issue = new ProjectIssue(null, description, IssueCategory.BuildFile, new Location(assetPath));
                     issue.SetCustomProperties(new object[(int)BuildReportFileProperty.Num]
                     {
-                        assetImporter != null ? assetImporter.GetType().Name : k_Unknown,
+                        assetImporter != null ? assetImporter.GetType().FullName : k_Unknown,
                         content.type,
                         content.packedSize,
                         packedAsset.shortPath
@@ -399,23 +263,5 @@ namespace Unity.ProjectAuditor.Editor.Modules
         }
 
 #endif
-
-        internal static ProblemDescriptor GetDescriptor(string assetPath, Type type)
-        {
-            // special case for raw bytes data as they use TextAsset at runtime
-            if (Path.GetExtension(assetPath).Equals(".bytes", StringComparison.InvariantCultureIgnoreCase))
-                return k_ByteDataDescriptor;
-
-            if (s_DescriptorsMap.ContainsKey(type))
-                return s_DescriptorsMap[type];
-
-            foreach (var pair in s_DescriptorsMap)
-            {
-                if (type.IsSubclassOf(pair.Key))
-                    return pair.Value;
-            }
-
-            return k_OtherTypeDescriptor;
-        }
     }
 }

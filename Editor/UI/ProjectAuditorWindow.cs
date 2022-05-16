@@ -421,7 +421,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Build Size",
                 menuLabel = "Build Report/Size",
                 menuOrder = 101,
-                getGroupName = issue => issue.GetCustomProperty(BuildReportFileProperty.GroupType),
+                getGroupName = issue => issue.GetCustomProperty(BuildReportFileProperty.ImporterType),
                 descriptionWithIcon = true,
                 showFilters = true,
                 showInfoPanel = true,

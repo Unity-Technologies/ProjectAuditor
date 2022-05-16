@@ -51,27 +51,9 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(Path.GetFileNameWithoutExtension(m_TempAsset.relativePath), matchingIssue.description);
             Assert.That(matchingIssue.GetNumCustomProperties(), Is.EqualTo((int)BuildReportFileProperty.Num));
             Assert.AreEqual("resources.assets", matchingIssue.GetCustomProperty(BuildReportFileProperty.BuildFile));
-            Assert.AreEqual(typeof(AssetImporter).ToString(), matchingIssue.GetCustomProperty(BuildReportFileProperty.ImporterType));
-            Assert.AreEqual(typeof(Material).ToString(), matchingIssue.GetCustomProperty(BuildReportFileProperty.RuntimeType));
+            Assert.AreEqual(typeof(AssetImporter).FullName, matchingIssue.GetCustomProperty(BuildReportFileProperty.ImporterType));
+            Assert.AreEqual(typeof(Material).FullName, matchingIssue.GetCustomProperty(BuildReportFileProperty.RuntimeType));
             Assert.That(matchingIssue.GetCustomPropertyAsInt(BuildReportFileProperty.Size), Is.Positive);
-        }
-
-        [Test]
-        public void BuildReportSize_Font_IsReported()
-        {
-            Assert.AreEqual("Font", BuildReportModule.GetDescriptor("font.ttf", typeof(Font)).description);
-        }
-
-        [Test]
-        public void BuildReportSize_Script_IsReported()
-        {
-            Assert.AreEqual("Script", BuildReportModule.GetDescriptor("script.cs", typeof(MonoScript)).description);
-        }
-
-        [Test]
-        public void BuildReportSize_Sprite_IsReported()
-        {
-            Assert.AreEqual("Texture", BuildReportModule.GetDescriptor("sprite.png", typeof(Sprite)).description);
         }
 
         [Test]
