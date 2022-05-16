@@ -62,7 +62,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     // if necessary, create a group
                     if (!m_TreeViewItemGroups.Exists(g => g.GroupName.Equals(name)))
-                        //if (m_TreeViewItemGroups.All(g => g.GroupName.id != d.id))
                         m_TreeViewItemGroups.Add((new IssueTableItem(m_NextId++, 0, name)));
                 }
             }
@@ -148,7 +147,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 if (m_Desc.getGroupName != null)
                 {
-                    //var descriptors = filteredItems.Select(i => m_Desc.getGroupName(i.ProjectIssue)).Distinct();
                     var groupedItemQuery = filteredItems.GroupBy(i => m_Desc.getGroupName(i.ProjectIssue));
                     foreach (var groupedItems in groupedItemQuery)
                     {
@@ -282,7 +280,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     if (descriptor != null)
                         EditorGUI.LabelField(cellRect, Utility.GetTextWithSeverityIcon(item.GetDisplayName(), item.GetDisplayName(), descriptor.severity), labelStyle);
                     else
-                        EditorGUI.LabelField(cellRect, item.GetDisplayName(), labelStyle); // // NEEDS severity icon?
+                        EditorGUI.LabelField(cellRect, item.GetDisplayName(), labelStyle); // TODO: add severity icon?
                 }
             }
             else
