@@ -12,6 +12,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
+using Object = System.Object;
 using ThreadPriority = System.Threading.ThreadPriority;
 
 namespace Unity.ProjectAuditor.Editor.Modules
@@ -120,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         List<IInstructionAnalyzer> m_Analyzers;
         List<OpCode> m_OpCodes;
         List<ProblemDescriptor> m_ProblemDescriptors;
-        Dictionary<string, ProblemDescriptor> m_RuntimeDescriptors = new Dictionary<string, ProblemDescriptor>();
+        readonly Dictionary<string, ProblemDescriptor> m_RuntimeDescriptors = new Dictionary<string, ProblemDescriptor>();
 
         Thread m_AssemblyAnalysisThread;
 
@@ -363,7 +364,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         {
                             projectIssue.dependencies = callerNode; // set root
                             projectIssue.location = location;
-                            projectIssue.SetCustomProperties(new string[(int)CodeProperty.Num] {assemblyInfo.name});
+                            projectIssue.SetCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.name});
 
                             onIssueFound(projectIssue);
                         }

@@ -13,15 +13,13 @@ namespace Unity.ProjectAuditor.Editor.Serialize
 
         public static string To<T>(T[] array)
         {
-            var wrapper = new Wrapper<T>();
-            wrapper.Items = array;
+            var wrapper = new Wrapper<T> {Items = array};
             return JsonUtility.ToJson(wrapper);
         }
 
         public static string To<T>(T[] array, bool prettyPrint)
         {
-            var wrapper = new Wrapper<T>();
-            wrapper.Items = array;
+            var wrapper = new Wrapper<T> {Items = array};
             return JsonUtility.ToJson(wrapper, prettyPrint);
         }
 

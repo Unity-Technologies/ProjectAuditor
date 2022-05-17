@@ -211,7 +211,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             );
 
 #pragma warning disable 0414
-        static readonly Dictionary<Type, ProblemDescriptor> s_DescriptorsMap = new Dictionary<Type, ProblemDescriptor>()
+        static readonly Dictionary<Type, ProblemDescriptor> s_DescriptorsMap = new Dictionary<Type, ProblemDescriptor>
         {
             { typeof(AudioClip), k_AudioDescriptor },
             { typeof(AudioMixer), k_AudioDescriptor },
@@ -361,7 +361,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     }
                     onIssueFound(new ProjectIssue(descriptor, message.content, IssueCategory.BuildStep)
                     {
-                        depth = depth + 1,
+                        depth = depth + 1
                     });
                 }
             }

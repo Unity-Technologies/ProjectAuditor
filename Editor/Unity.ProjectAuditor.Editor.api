@@ -272,9 +272,9 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     public class CallTreeNode : Unity.ProjectAuditor.Editor.DependencyNode
     {
-        public string assemblyName;
-        public string methodName;
-        public string typeName;
+        public readonly string assemblyName;
+        public readonly string methodName;
+        public readonly string typeName;
         public virtual string GetName();
         public virtual string GetPrettyName();
         public virtual bool IsPerfCritical();

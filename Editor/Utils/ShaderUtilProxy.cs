@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             var platformMask = (int)s_MethodGetAvailableShaderCompilerPlatforms.Invoke(null, new object[] {});
             var names = new List<string>();
-            for (int i = 0; i < 32; ++i)
+            for (var i = 0; i < 32; ++i)
             {
                 if ((platformMask & (1 << i)) == 0)
                     continue;

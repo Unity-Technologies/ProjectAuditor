@@ -1,5 +1,3 @@
-using System;
-
 namespace Unity.ProjectAuditor.Editor
 {
     public interface IProgress

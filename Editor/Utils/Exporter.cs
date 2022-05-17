@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public void WriteHeader()
         {
             var stringBuilder = new StringBuilder();
-            for (int i = 0; i < m_Layout.properties.Length; i++)
+            for (var i = 0; i < m_Layout.properties.Length; i++)
             {
                 stringBuilder.Append(m_Layout.properties[i].name);
                 if (i + 1 < m_Layout.properties.Length)
@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         void WriteIssue(ProjectIssue issue)
         {
             var stringBuilder = new StringBuilder();
-            for (int i = 0; i < m_Layout.properties.Length; i++)
+            for (var i = 0; i < m_Layout.properties.Length; i++)
             {
                 var columnType = m_Layout.properties[i].type;
                 var prop = issue.GetProperty(columnType);

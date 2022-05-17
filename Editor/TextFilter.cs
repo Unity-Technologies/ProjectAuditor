@@ -1,6 +1,5 @@
 using System;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
-using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {

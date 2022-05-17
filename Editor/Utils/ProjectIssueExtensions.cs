@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     var areasB = issueB.descriptor.areas;
                     var minLength = Math.Min(areasA.Length, areasB.Length);
 
-                    for (int i = 0; i < minLength; i++)
+                    for (var i = 0; i < minLength; i++)
                     {
                         var ca = string.CompareOrdinal(areasA[i], areasB[i]);
                         if (ca != 0)
@@ -136,10 +136,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #endif
         static int UnsafeIntStringComparison(string stringA, string stringB)
         {
-            // Compare string length (simple and fast comparisson)
+            // Compare string length (simple and fast comparison)
             var c = stringA.Length.CompareTo(stringB.Length);
 
-            // If length is same, compare char-by-char, else use result of previous comparisson
+            // If length is same, compare char-by-char, else use result of previous comparison
             return c == 0 ? string.CompareOrdinal(stringA, stringB) : c;
         }
     }

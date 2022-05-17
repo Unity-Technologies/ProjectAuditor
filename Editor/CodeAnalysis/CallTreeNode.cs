@@ -9,9 +9,9 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
     {
         internal readonly string m_Name;
 
-        public string assemblyName;
-        public string methodName;
-        public string typeName;
+        public readonly string assemblyName;
+        public readonly string methodName;
+        public readonly string typeName;
 
         internal CallTreeNode(MethodReference methodReference, CallTreeNode caller = null)
         {

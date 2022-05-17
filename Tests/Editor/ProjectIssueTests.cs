@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectIssue_CustomProperties_AreSet()
         {
-            string[] properties =
+            object[] properties =
             {
                 "property #0",
                 "property #1"

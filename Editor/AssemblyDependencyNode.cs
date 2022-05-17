@@ -1,11 +1,10 @@
 using System.Linq;
-using Unity.ProjectAuditor.Editor.AssemblyUtils;
 
 namespace Unity.ProjectAuditor.Editor
 {
     class AssemblyDependencyNode : DependencyNode
     {
-        string m_Name;
+        readonly string m_Name;
 
         public AssemblyDependencyNode(string name, string[] deps = null)
         {
