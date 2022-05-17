@@ -383,7 +383,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     var issue = new ProjectIssue(descriptor, description, IssueCategory.BuildFile, new Location(assetPath));
                     issue.SetCustomProperties(new object[(int)BuildReportFileProperty.Num]
                     {
-                        assetImporter != null ? assetImporter.GetType().Name : k_Unknown,
+                        assetImporter != null ? assetImporter.GetType().FullName : k_Unknown,
                         content.type,
                         content.packedSize,
                         packedAsset.shortPath
