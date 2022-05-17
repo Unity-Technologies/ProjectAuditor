@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectIssue(ProblemDescriptor descriptor, IssueCategory category, params object[] args)
         {
             this.descriptor = descriptor;
-            this.description = string.IsNullOrEmpty(descriptor.messageFormat) ? descriptor.description : string.Format(descriptor.messageFormat, args);
+            this.description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.description;
             this.category = category;
         }
 

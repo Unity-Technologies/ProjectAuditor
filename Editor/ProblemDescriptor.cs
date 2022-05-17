@@ -75,6 +75,7 @@ namespace Unity.ProjectAuditor.Editor
             this.id = id;
             this.description = description;
             this.areas = areas;
+            this.messageFormat = "{0}";
             this.problem = problem;
             this.solution = solution;
 
