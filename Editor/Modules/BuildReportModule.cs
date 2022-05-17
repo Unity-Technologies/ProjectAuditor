@@ -77,22 +77,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         const string k_KeyTotalTime = "Total Time";
         const string k_KeyTotalSize = "Total Size";
         const string k_Unknown = "Unknown";
-
-        static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
-            (
-            600000,
-            "Build Meta Data"
-            );
 #endif
-
-        static readonly ProblemDescriptor k_InfoDescriptor = new ProblemDescriptor
-            (
-            600001,
-            "Build step info"
-            )
-        {
-            severity = Rule.Severity.Info
-        };
 
         static readonly ProblemDescriptor k_WarnDescriptor = new ProblemDescriptor
             (
@@ -155,9 +140,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
-            yield return k_InfoDescriptor;
-            yield return k_WarnDescriptor;
-            yield return k_ErrorDescriptor;
+            yield return null;
         }
 
         public override IEnumerable<IssueLayout> GetLayouts()
@@ -202,31 +185,21 @@ namespace Unity.ProjectAuditor.Editor.Modules
             foreach (var step in buildReport.steps)
             {
                 var depth = step.depth;
-                onIssueFound(new ProjectIssue(k_InfoDescriptor, step.name, IssueCategory.BuildStep, new object[(int)BuildReportStepProperty.Num]
+                onIssueFound(new ProjectIssue(step.name, IssueCategory.BuildStep, new object[(int)BuildReportStepProperty.Num]
                 {
                     Formatting.FormatBuildTime(step.duration)
                 })
                     {
-                        depth = depth
+                        depth = depth,
+                        severity = Rule.Severity.Info
                     });
 
                 foreach (var message in step.messages)
                 {
-                    var descriptor = k_InfoDescriptor;
-                    switch (message.type)
-                    {
-                        case LogType.Assert:
-                        case LogType.Error:
-                        case LogType.Exception:
-                            descriptor = k_ErrorDescriptor;
-                            break;
-                        case LogType.Warning:
-                            descriptor = k_WarnDescriptor;
-                            break;
-                    }
-                    onIssueFound(new ProjectIssue(descriptor, message.content, IssueCategory.BuildStep)
+                    onIssueFound(new ProjectIssue(message.content, IssueCategory.BuildStep)
                     {
                         depth = depth + 1,
+                        severity = LogTypeToSeverity(message.type)
                     });
                 }
             }
@@ -244,7 +217,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     var assetImporter = AssetImporter.GetAtPath(assetPath);
                     var description = string.IsNullOrEmpty(assetPath) ? k_Unknown : Path.GetFileNameWithoutExtension(assetPath);
 
-                    var issue = new ProjectIssue(null, description, IssueCategory.BuildFile, new Location(assetPath));
+                    var issue = new ProjectIssue(description, IssueCategory.BuildFile)
+                    {
+                        location = new Location(assetPath)
+                    };
                     issue.SetCustomProperties(new object[(int)BuildReportFileProperty.Num]
                     {
                         assetImporter != null ? assetImporter.GetType().FullName : k_Unknown,
@@ -259,7 +235,23 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void NewMetaData(string key, object value, Action<ProjectIssue> onIssueFound)
         {
-            onIssueFound(new ProjectIssue(k_Descriptor, key, IssueCategory.BuildSummary, new object[(int)BuildReportMetaData.Num] {value}));
+            onIssueFound(new ProjectIssue(key, IssueCategory.BuildSummary, new object[(int)BuildReportMetaData.Num] {value}));
+        }
+
+        Rule.Severity LogTypeToSeverity(LogType logType)
+        {
+            switch (logType)
+            {
+                case LogType.Assert:
+                case LogType.Error:
+                case LogType.Exception:
+                    return Rule.Severity.Error;
+                    break;
+                case LogType.Warning:
+                    return Rule.Severity.Warning;
+                default:
+                    return Rule.Severity.Info;
+            }
         }
 
 #endif

@@ -24,49 +24,7 @@ namespace Unity.ProjectAuditor.Editor
         public static ProjectIssue Create(ProblemDescriptor descriptor, IssueCategory category, Location location, params object[] args)
         {
             var description = string.IsNullOrEmpty(descriptor.messageFormat) ? descriptor.description : string.Format(descriptor.messageFormat, args);
-            return new ProjectIssue(descriptor, description, category, location);
-        }
-
-        /// <summary>
-        /// ProjectIssue constructor
-        /// </summary>
-        /// <param name="descriptor"> descriptor </param>
-        /// <param name="description"> human-readable description </param>
-        /// <param name="category"> Issue category </param>
-        /// <param name="location"> Issue address: path and, if applicable, line number </param>
-        /// <param name="customProperties"> Issue-specific properties </param>
-        public ProjectIssue(ProblemDescriptor descriptor,
-                            string description,
-                            IssueCategory category,
-                            Location location = null,
-                            object[] customProperties = null)
-        {
-            this.descriptor = descriptor;
-            this.description = description;
-            this.category = category;
-            this.location = location;
-            this.SetCustomProperties(customProperties);
-
-            m_Severity = Rule.Severity.Default;
-        }
-
-        public ProjectIssue(ProblemDescriptor descriptor,
-                            string description,
-                            IssueCategory category,
-                            string path,
-                            object[] customProperties)
-            : this(descriptor, description, category, new Location(path), customProperties)
-        {
-        }
-
-        public ProjectIssue(ProblemDescriptor descriptor,
-                            string description,
-                            IssueCategory category,
-                            object[] customProperties)
-            : this(descriptor, description, category)
-        {
-            if (customProperties != null)
-                this.m_CustomProperties = customProperties.Select(p => p.ToString()).ToArray();
+            return new ProjectIssue(descriptor, category, location);
         }
 
         /// <summary>
@@ -76,8 +34,28 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="category"> Issue category </param>
         /// <param name="args"> Arguments to be used in the message formatting</param>
         public ProjectIssue(ProblemDescriptor descriptor, IssueCategory category, params object[] args)
-            : this(descriptor, string.IsNullOrEmpty(descriptor.messageFormat) ? descriptor.description : string.Format(descriptor.messageFormat, args), category)
         {
+            this.descriptor = descriptor;
+            this.description = string.IsNullOrEmpty(descriptor.messageFormat) ? descriptor.description : string.Format(descriptor.messageFormat, args);
+            this.category = category;
+        }
+
+        /// <summary>
+        /// General-purpose constructor
+        /// </summary>
+        /// <param name="description"> Diagnostic descriptor </param>
+        /// <param name="category"> Issue category </param>
+        /// <param name="customProperties"> Issue-specific properties </param>
+        public ProjectIssue(
+            string description,
+            IssueCategory category,
+            object[] customProperties = null)
+        {
+            this.description = description;
+            this.category = category;
+            this.SetCustomProperties(customProperties);
+
+            m_Severity = Rule.Severity.Default;
         }
 
         public int depth = 0;

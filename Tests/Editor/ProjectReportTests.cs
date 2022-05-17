@@ -62,8 +62,8 @@ class MyClass : MonoBehaviour
             projectReport.AddIssue(new ProjectIssue
                 (
                     p,
-                    "dummy issue",
-                    IssueCategory.Code
+                    IssueCategory.Code,
+                    "dummy issue"
                 )
             );
 

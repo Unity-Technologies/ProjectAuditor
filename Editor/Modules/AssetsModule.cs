@@ -111,13 +111,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             onIssueFound(new ProjectIssue
                 (
-                    k_Descriptor,
                     Path.GetFileNameWithoutExtension(location.Path),
-                    IssueCategory.Asset,
-                    location
-                )
-                {
-                    dependencies = dependencyNode
+                    IssueCategory.Asset
+                ) {
+                    dependencies = dependencyNode,
+                    location = location
                 }
             );
 

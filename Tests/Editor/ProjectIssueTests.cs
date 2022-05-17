@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void ProjectIssue_NewIssue_IsInitialized()
         {
             var description = "dummy issue";
-            var uninitialised = new ProjectIssue(s_Descriptor, description, IssueCategory.Code);
+            var uninitialised = new ProjectIssue(s_Descriptor, IssueCategory.Code, description);
             Assert.AreEqual(string.Empty, uninitialised.filename);
             Assert.AreEqual(string.Empty, uninitialised.relativePath);
             Assert.AreEqual(string.Empty, uninitialised.GetContext());
@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "property #0",
                 "property #1"
             };
-            var issue = new ProjectIssue(s_Descriptor, "dummy issue", IssueCategory.Code);
+            var issue = new ProjectIssue(s_Descriptor, IssueCategory.Code, "dummy issue");
 
             Assert.AreEqual(0, issue.GetNumCustomProperties());
 
@@ -56,7 +56,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "property #0",
                 "property #1"
             };
-            var issue = new ProjectIssue(s_Descriptor, "dummy issue", IssueCategory.Code)
+            var issue = new ProjectIssue(s_Descriptor, IssueCategory.Code, "dummy issue")
             {
                 location = new Location("Assets/Dummy.cs")
             };
@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectIssue_NoFileProperties_AreSet()
         {
-            var issue = new ProjectIssue(s_Descriptor, "dummy issue", IssueCategory.Code);
+            var issue = new ProjectIssue(s_Descriptor, IssueCategory.Code, "dummy issue");
 
             Assert.AreEqual(ProjectIssueExtensions.k_NotAvailable, issue.GetProperty(PropertyType.Path));
             Assert.AreEqual(ProjectIssueExtensions.k_NotAvailable, issue.GetProperty(PropertyType.Filename));

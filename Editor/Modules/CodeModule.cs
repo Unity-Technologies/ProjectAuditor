@@ -38,30 +38,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class CodeModule : ProjectAuditorModule
     {
-        static readonly ProblemDescriptor k_AssemblyDescriptor = new ProblemDescriptor
-            (
-            700001,
-            "Assembly"
-            );
-
-        static readonly ProblemDescriptor k_AssemblyWithErrorsDescriptor = new ProblemDescriptor
-            (
-            700002,
-            "Assembly"
-            )
-        {
-            severity = Rule.Severity.Error
-        };
-
-        static readonly ProblemDescriptor k_AssemblyMissingDependenciesDescriptor = new ProblemDescriptor
-            (
-            700003,
-            "Assembly"
-            )
-        {
-            severity = Rule.Severity.Error
-        };
-
         static readonly IssueLayout k_AssemblyLayout = new IssueLayout
         {
             category = IssueCategory.Assembly,
@@ -169,12 +145,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 foreach (var assemblyInfo in assemblyInfos)
                 {
-                    onIssueFound(new ProjectIssue(k_AssemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath,
+                    onIssueFound(new ProjectIssue(assemblyInfo.name, IssueCategory.Assembly,
                         new object[(int)AssemblyProperty.Num]
                         {
                             assemblyInfo.packageReadOnly,
                             "N/A"
-                        }));
+                        })
+                        {
+                            location = new Location(assemblyInfo.asmDefPath)
+                        });
                 }
             }
 
@@ -381,22 +360,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
 
-            var assemblyDescriptor = k_AssemblyDescriptor;
+            var severity = Rule.Severity.None;
             if (compilationTask.status == CompilationStatus.MissingDependency)
-                assemblyDescriptor = k_AssemblyMissingDependenciesDescriptor;
+                severity = Rule.Severity.Warning;
             else if (compilerMessages.Any(m => m.type == CompilerMessageType.Error))
-                assemblyDescriptor = k_AssemblyWithErrorsDescriptor;
+                severity = Rule.Severity.Error;
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.assemblyPath);
 
-            onIssueFound(new ProjectIssue(assemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath,
+            onIssueFound(new ProjectIssue(assemblyInfo.name, IssueCategory.Assembly,
                 new object[(int)AssemblyProperty.Num]
                 {
                     assemblyInfo.packageReadOnly,
                     compilationTask.durationInMs
                 })
                 {
-                    dependencies = new AssemblyDependencyNode(assemblyInfo.name, compilationTask.dependencies.Select(d => d.assemblyName).ToArray())
+                    dependencies = new AssemblyDependencyNode(assemblyInfo.name, compilationTask.dependencies.Select(d => d.assemblyName).ToArray()),
+                    location = new Location(assemblyInfo.asmDefPath),
+                    severity = severity
                 });
 
             foreach (var message in compilerMessages)
@@ -408,15 +389,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 
                 var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.file);
-                var issue = new ProjectIssue(null, message.message,
+                var issue = new ProjectIssue(message.message,
                     IssueCategory.CodeCompilerMessage,
-                    new Location(relativePath, message.line),
                     new object[(int)CompilerMessageProperty.Num]
                     {
                         message.code,
                         assemblyInfo.name
                     })
                 {
+                    location = new Location(relativePath, message.line),
                     severity = CompilerMessageTypeToSeverity(message.type)
                 };
                 onIssueFound(issue);

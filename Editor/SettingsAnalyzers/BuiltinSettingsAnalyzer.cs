@@ -90,16 +90,18 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         ProjectIssue NewIssue(ProblemDescriptor descriptor, string description)
         {
             var projectWindowPath = string.Empty;
-            var mappings = m_ProjectSettingsMapping.Where(p => descriptor.type.StartsWith(p.Key));
+            var mappings = m_ProjectSettingsMapping.Where(p => descriptor.type.StartsWith(p.Key)).ToArray();
             if (mappings.Any())
                 projectWindowPath = mappings.First().Value;
             return new ProjectIssue
             (
                 descriptor,
-                description,
                 IssueCategory.ProjectSetting,
-                new Location(projectWindowPath)
-            );
+                description
+            )
+            {
+                location = new Location(projectWindowPath)
+            };
         }
     }
 }

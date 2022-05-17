@@ -163,10 +163,8 @@ namespace Unity.ProjectAuditor.Editor
         public int line { get; }
         public string relativePath { get; }
         public Unity.ProjectAuditor.Editor.Rule.Severity severity { get; set; }
+        public ProjectIssue(string description, Unity.ProjectAuditor.Editor.IssueCategory category, object[] customProperties = default(object[])) {}
         public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueCategory category, params object[] args) {}
-        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, object[] customProperties) {}
-        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, string path, object[] customProperties) {}
-        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, string description, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location = default(Unity.ProjectAuditor.Editor.Utils.Location), object[] customProperties = default(object[])) {}
         public static Unity.ProjectAuditor.Editor.ProjectIssue Create(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.Utils.Location location, params object[] args);
         public string GetCustomProperty<T>(T propertyEnum) where T : System.ValueType, new();
         public double GetCustomPropertyAsDouble<T>(T propertyEnum) where T : System.ValueType, new();
