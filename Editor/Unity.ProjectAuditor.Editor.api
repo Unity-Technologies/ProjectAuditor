@@ -191,6 +191,7 @@ namespace Unity.ProjectAuditor.Editor
 
     public struct PropertyDefinition
     {
+        public bool defaultGroup;
         public Unity.ProjectAuditor.Editor.PropertyFormat format;
         public string longName;
         public string name;
@@ -199,10 +200,10 @@ namespace Unity.ProjectAuditor.Editor
 
     public enum PropertyFormat
     {
-        public const Unity.ProjectAuditor.Editor.PropertyFormat Bool = 0;
+        public const Unity.ProjectAuditor.Editor.PropertyFormat Bool = 1;
         public const Unity.ProjectAuditor.Editor.PropertyFormat Bytes = 3;
-        public const Unity.ProjectAuditor.Editor.PropertyFormat Integer = 1;
-        public const Unity.ProjectAuditor.Editor.PropertyFormat String = 2;
+        public const Unity.ProjectAuditor.Editor.PropertyFormat Integer = 2;
+        public const Unity.ProjectAuditor.Editor.PropertyFormat String = 0;
         public const Unity.ProjectAuditor.Editor.PropertyFormat Time = 4;
         public int value__;
     }
@@ -210,11 +211,12 @@ namespace Unity.ProjectAuditor.Editor
     public enum PropertyType
     {
         public const Unity.ProjectAuditor.Editor.PropertyType Area = 2;
-        public const Unity.ProjectAuditor.Editor.PropertyType CriticalContext = 6;
+        public const Unity.ProjectAuditor.Editor.PropertyType CriticalContext = 7;
         public const Unity.ProjectAuditor.Editor.PropertyType Description = 0;
-        public const Unity.ProjectAuditor.Editor.PropertyType Filename = 4;
-        public const Unity.ProjectAuditor.Editor.PropertyType FileType = 5;
-        public const Unity.ProjectAuditor.Editor.PropertyType Num = 7;
+        public const Unity.ProjectAuditor.Editor.PropertyType Directory = 4;
+        public const Unity.ProjectAuditor.Editor.PropertyType Filename = 5;
+        public const Unity.ProjectAuditor.Editor.PropertyType FileType = 6;
+        public const Unity.ProjectAuditor.Editor.PropertyType Num = 8;
         public const Unity.ProjectAuditor.Editor.PropertyType Path = 3;
         public const Unity.ProjectAuditor.Editor.PropertyType Severity = 1;
         public int value__;
@@ -434,5 +436,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
     {
         [System.Runtime.CompilerServices.Extension] public static string GetContext(Unity.ProjectAuditor.Editor.ProjectIssue issue);
         [System.Runtime.CompilerServices.Extension] public static string GetProperty(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyType propertyType);
+        [System.Runtime.CompilerServices.Extension] public static string GetPropertyGroup(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyType propertyType);
     }
 }

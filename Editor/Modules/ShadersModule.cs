@@ -98,7 +98,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.Instancing), format = PropertyFormat.Bool, name = "Instancing", longName = "GPU Instancing Support" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.SrpBatcher), format = PropertyFormat.Bool, name = "SRP Batcher", longName = "SRP Batcher Compatible" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.AlwaysIncluded), format = PropertyFormat.Bool, name = "Always Included", longName = "Always Included in Build" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Source Asset"}
+                new PropertyDefinition { type = PropertyType.Path, name = "Source Asset"},
+                new PropertyDefinition { type = PropertyType.Directory, name = "Directory", defaultGroup = true}
             }
         };
 
@@ -107,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.ShaderVariant,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
+                new PropertyDefinition { type = PropertyType.Description, name = "Shader Name", defaultGroup = true},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Compiled), format = PropertyFormat.Bool, name = "Compiled", longName = "Compiled at runtime by the player" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Platform), format = PropertyFormat.String, name = "Graphics API" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Tier), format = PropertyFormat.String, name = "Tier" },
@@ -127,7 +128,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 new PropertyDefinition { type = PropertyType.Severity},
                 new PropertyDefinition { type = PropertyType.Description, name = "Message"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.ShaderName), format = PropertyFormat.String, name = "Shader Name"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.ShaderName), format = PropertyFormat.String, name = "Shader Name", defaultGroup = true},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.Platform), format = PropertyFormat.String, name = "Platform"},
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"},
             }

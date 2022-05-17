@@ -25,14 +25,25 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         int m_NextId;
         int m_NumMatchingIssues;
         bool m_FlatView;
+        int m_GroupPropertyIndex;
 
         public bool flatView
         {
             get { return m_FlatView; }
             set
             {
-                if (m_Desc.getGroupName != null)
+                if (m_Desc.enableGroupProperty)
                     m_FlatView = value;
+            }
+        }
+
+        public int groupPropertyIndex
+        {
+            get { return m_GroupPropertyIndex; }
+            set
+            {
+                if (m_Desc.enableGroupProperty)
+                    m_GroupPropertyIndex = value;
             }
         }
 
@@ -45,7 +56,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_View = view;
             m_Desc = desc;
             m_Layout = layout;
-            m_FlatView = m_Desc.getGroupName == null;
+            m_FlatView = !m_Desc.enableGroupProperty;
+
+            for (int i = 0; i < m_Layout.properties.Length; i++)
+            {
+                if (m_Layout.properties[i].defaultGroup)
+                {
+                    m_GroupPropertyIndex = i;
+                    break;
+                }
+            }
             multicolumnHeader.sortingChanged += OnSortingChanged;
             showAlternatingRowBackgrounds = true;
 
@@ -55,9 +75,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void AddIssues(ProjectIssue[] issues)
         {
             // update groups, if applicable
-            if (m_Desc.getGroupName != null)
+            if (m_Desc.enableGroupProperty)
             {
-                var groupNames = issues.Select(i => m_Desc.getGroupName(i)).Distinct().ToArray();
+                var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex].type)).Distinct().ToArray();
                 foreach (var name in groupNames)
                 {
                     // if necessary, create a group
@@ -72,9 +92,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             foreach (var issue in issues)
             {
                 var depth = issue.depth;
-                if (m_Desc.getGroupName != null)
+                if (m_Desc.enableGroupProperty)
                     depth++;
-                var item = new IssueTableItem(m_NextId++, depth, issue.description, issue, m_Desc.getGroupName != null ? m_Desc.getGroupName(issue) : string.Empty);
+                var item = new IssueTableItem(m_NextId++, depth, issue.description, issue, m_Desc.enableGroupProperty ? issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex].type) : string.Empty);
                 itemsList.Add(item);
             }
 
@@ -94,7 +114,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var depthForHiddenRoot = -1;
             var root = new TreeViewItem(idForHiddenRoot, depthForHiddenRoot, "root");
 
-            if (m_Desc.getGroupName != null)
+            if (m_Desc.enableGroupProperty)
             {
                 foreach (var item in m_TreeViewItemGroups)
                 {
@@ -141,9 +161,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Profiler.BeginSample("IssueTable.BuildRows");
             if (!hasSearch && !m_FlatView)
             {
-                if (m_Desc.getGroupName != null)
+                if (m_Desc.enableGroupProperty)
                 {
-                    var groupedItemQuery = filteredItems.GroupBy(i => m_Desc.getGroupName(i.ProjectIssue));
+                    var groupedItemQuery = filteredItems.GroupBy(i => i.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex].type));
                     foreach (var groupedItems in groupedItemQuery)
                     {
                         var groupName = groupedItems.Key;
@@ -168,7 +188,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 foreach (var item in filteredItems)
                 {
-                    if (m_Desc.getGroupName != null)
+                    if (m_Desc.enableGroupProperty)
                     {
                         var group = m_TreeViewItemGroups.Find(g => g.GroupName.Equals(item.GroupName));
                         group.AddChild(item);

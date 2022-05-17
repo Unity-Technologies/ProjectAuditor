@@ -215,8 +215,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Unity.ProjectAuditor.Editor.IssueCategory category;
         public UnityEngine.GUIContent dependencyViewGuiContent;
         public bool descriptionWithIcon;
+        public bool enableGroupProperty;
         public System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, string> getAssemblyName;
-        public System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, string> getGroupName;
         public string menuLabel;
         public int menuOrder;
         public string name;

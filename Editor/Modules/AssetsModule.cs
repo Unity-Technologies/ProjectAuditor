@@ -17,7 +17,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Asset Name"},
                 new PropertyDefinition { type = PropertyType.FileType, name = "File Type", longName = "File extension"},
-                new PropertyDefinition { type = PropertyType.Path, name = "Path"}
+                new PropertyDefinition { type = PropertyType.Path, name = "Path"},
+                new PropertyDefinition { type = PropertyType.Directory, name = "Directory", defaultGroup = true}
             }
         };
 

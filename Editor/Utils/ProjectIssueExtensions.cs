@@ -41,11 +41,34 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     if (string.IsNullOrEmpty(issue.relativePath))
                         return k_NotAvailable;
                     return issue.location.FormattedPath;
+                case PropertyType.Directory:
+                    if (string.IsNullOrEmpty(issue.relativePath))
+                        return k_NotAvailable;
+                    return PathUtils.GetDirectoryName(issue.location.Path);
                 case PropertyType.CriticalContext:
                     return issue.isPerfCriticalContext.ToString();
                 default:
                     var propertyIndex = propertyType - PropertyType.Num;
                     return issue.GetCustomProperty(propertyIndex);
+            }
+        }
+
+        public static string GetPropertyGroup(this ProjectIssue issue, PropertyType propertyType)
+        {
+            switch (propertyType)
+            {
+                case PropertyType.Filename:
+                    if (string.IsNullOrEmpty(issue.filename))
+                        return k_NotAvailable;
+                    return issue.location.Filename;
+                case PropertyType.Path:
+                    if (string.IsNullOrEmpty(issue.relativePath))
+                        return k_NotAvailable;
+                    return issue.location.Path;
+                case PropertyType.CriticalContext:
+                    return string.Format("{0}: {1}", PropertyType.CriticalContext, issue.GetProperty(propertyType));
+                default:
+                    return issue.GetProperty(propertyType);
             }
         }
 

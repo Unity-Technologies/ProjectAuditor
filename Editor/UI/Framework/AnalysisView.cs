@@ -37,6 +37,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         GUIContent m_HelpButtonContent;
         IssueTable m_Table;
         IssueLayout m_Layout;
+        Utility.DropdownItem[] m_GroupDropdownItems;
 
         public ViewDescriptor desc
         {
@@ -77,6 +78,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Preferences = prefs;
             m_BaseFilter = filter;
             m_Layout = layout;
+
+            m_GroupDropdownItems = m_Layout.properties.Select(p => new Utility.DropdownItem
+            {
+                Content = new GUIContent(p.name),
+                SelectionContent = new GUIContent("Group"),
+                Enabled = p.format == PropertyFormat.String || p.format == PropertyFormat.Bool
+            }).ToArray();
 
             if (m_Table != null)
                 return;
@@ -310,7 +318,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             SharedStyles.Label.fontSize = m_Preferences.fontSize;
             SharedStyles.TextArea.fontSize = m_Preferences.fontSize;
 
-            if (m_Desc.getGroupName != null)
+            if (m_Desc.enableGroupProperty)
             {
                 // (optional) collapse/expand buttons
                 GUI.enabled = !m_Table.flatView;
@@ -321,11 +329,28 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 GUI.enabled = true;
 
                 EditorGUI.BeginChangeCheck();
-                m_Table.flatView = GUILayout.Toggle(m_Table.flatView, "Flat View", EditorStyles.toolbarButton, GUILayout.Width(AnalysisView.toolbarButtonSize));
+                m_Table.flatView = GUILayout.Toggle(m_Table.flatView, Contents.FlatModeButton, EditorStyles.toolbarButton, GUILayout.Width(AnalysisView.toolbarButtonSize));
                 if (EditorGUI.EndChangeCheck())
                 {
                     Refresh();
                 }
+
+                GUI.enabled = !m_Table.flatView;
+
+                Utility.ToolbarDropdownList(m_GroupDropdownItems, m_Table.groupPropertyIndex,
+                    (data) =>
+                    {
+                        var index = (int)data;
+                        if (index != m_Table.groupPropertyIndex)
+                        {
+                            m_Table.groupPropertyIndex = index;
+                            m_Table.Clear();
+                            m_Table.AddIssues(m_Issues.ToArray());
+                            m_Table.Reload();
+                        }
+                    }, GUILayout.Width(toolbarButtonSize));
+
+                GUI.enabled = true;
             }
 
             if (m_Desc.showSeverityFilters)
@@ -566,6 +591,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
+            public static readonly GUIContent FlatModeButton = new GUIContent("Flat View");
+            public static readonly GUIContent GroupButton = new GUIContent("Group");
             public static readonly GUIContent Zoom = new GUIContent("Zoom");
 
             public static readonly GUIContent InfoFoldout = new GUIContent("Information");
