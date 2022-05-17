@@ -4,7 +4,7 @@ using UnityEditor.IMGUI.Controls;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public class IssueTableItem : TreeViewItem
+    class IssueTableItem : TreeViewItem
     {
         public readonly string GroupName;
         public readonly ProjectIssue ProjectIssue;

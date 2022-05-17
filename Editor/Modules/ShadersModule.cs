@@ -219,7 +219,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var graphicsSettingsSerializedObject = new SerializedObject(graphicsSettings);
             var alwaysIncludedShadersSerializedProperty = graphicsSettingsSerializedObject.FindProperty("m_AlwaysIncludedShaders");
 
-            for (int i = 0; i < alwaysIncludedShadersSerializedProperty.arraySize; i++)
+            for (var i = 0; i < alwaysIncludedShadersSerializedProperty.arraySize; i++)
             {
                 var shader = (Shader)alwaysIncludedShadersSerializedProperty.GetArrayElementAtIndex(i).objectReferenceValue;
 

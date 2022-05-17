@@ -6,7 +6,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 {
     internal static class PathUtils
     {
-        public static readonly char Separator = '/';
+        public const char Separator = '/';
 
         static readonly char k_DirectorySeparatorChar = SystemPath.DirectorySeparatorChar;
         static readonly char k_AltDirectorySeparatorChar = SystemPath.AltDirectorySeparatorChar;
@@ -34,15 +34,15 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static int GetExtensionIndexFromPath(string path)
         {
-            int length = path.Length;
+            var length = path.Length;
 
             if (length == 0)
                 return 0;
 
-            int num = length;
+            var num = length;
             while (--num >= 0)
             {
-                char c = path[num];
+                var c = path[num];
                 if (c == '.')
                 {
                     if (num != length - 1)
@@ -63,11 +63,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static int GetFilenameIndexFromPath(string path)
         {
-            int length = path.Length;
-            int num = length;
+            var length = path.Length;
+            var num = length;
             while (--num >= 0)
             {
-                char c = path[num];
+                var c = path[num];
                 if (c == k_DirectorySeparatorChar || c == k_AltDirectorySeparatorChar || c == k_VolumeSeparatorChar)
                 {
                     return num + 1;
@@ -78,11 +78,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static string ReplaceSeparators(string path)
         {
-            int length = path.Length;
+            var length = path.Length;
 
             var chars = new char[length];
 
-            for (int i = 0; i < length; ++i)
+            for (var i = 0; i < length; ++i)
             {
                 if (path[i] == '\\')
                     chars[i] = Separator;

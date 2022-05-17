@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return (size / (1024.0 * 1024.0 * 1024.0)).ToString("F2") + " GB";
         }
 
-        static string k_StringSeparator = ", ";
+        static readonly string k_StringSeparator = ", ";
 
         public static string CombineStrings(string[] strings, string separator = null)
         {

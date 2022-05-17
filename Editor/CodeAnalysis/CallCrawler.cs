@@ -107,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                 var childrenCount = callPairs.Count;
                 var children = new DependencyNode[childrenCount];
 
-                for (int i = 0; i < childrenCount; i++)
+                for (var i = 0; i < childrenCount; i++)
                 {
                     var call = callPairs[i];
                     if (call.hierarchy != null)
@@ -118,9 +118,10 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                     }
 
                     var callerName = call.caller.FullName;
-                    var hierarchy = new CallTreeNode(call.caller);
-                    hierarchy.location = call.location;
-                    hierarchy.perfCriticalContext = call.perfCriticalContext;
+                    var hierarchy = new CallTreeNode(call.caller)
+                    {
+                        location = call.location, perfCriticalContext = call.perfCriticalContext
+                    };
 
                     // stop recursion, if applicable (note that this only prevents recursion when a method calls itself)
                     if (!callerName.Equals(callee.m_Name))

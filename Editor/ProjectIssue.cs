@@ -21,12 +21,6 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField] string[] m_CustomProperties;
         [SerializeField] Rule.Severity m_Severity;
 
-        public static ProjectIssue Create(ProblemDescriptor descriptor, IssueCategory category, Location location, params object[] args)
-        {
-            var description = string.IsNullOrEmpty(descriptor.messageFormat) ? descriptor.description : string.Format(descriptor.messageFormat, args);
-            return new ProjectIssue(descriptor, category, location);
-        }
-
         /// <summary>
         /// Diagnostics-specific constructor
         /// </summary>

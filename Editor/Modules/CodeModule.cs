@@ -12,6 +12,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
+using Object = System.Object;
 using ThreadPriority = System.Threading.ThreadPriority;
 
 namespace Unity.ProjectAuditor.Editor.Modules
@@ -338,7 +339,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         {
                             projectIssue.dependencies = callerNode; // set root
                             projectIssue.location = location;
-                            projectIssue.SetCustomProperties(new string[(int)CodeProperty.Num] {assemblyInfo.name});
+                            projectIssue.SetCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.name});
 
                             onIssueFound(projectIssue);
                         }
