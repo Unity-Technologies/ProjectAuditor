@@ -240,7 +240,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 enableGroupProperty = true,
                 showDependencyView = true,
                 showFilters = true,
-                showRightPanels = true,
+                //showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Asset Dependencies"),
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assets
