@@ -77,12 +77,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     public class IssueTableItem : UnityEditor.IMGUI.Controls.TreeViewItem
     {
         public readonly string GroupName;
-        public readonly Unity.ProjectAuditor.Editor.ProblemDescriptor ProblemDescriptor;
         public readonly Unity.ProjectAuditor.Editor.ProjectIssue ProjectIssue;
         public IssueTableItem(int id, int depth, string groupName) {}
-        public IssueTableItem(int id, int depth, Unity.ProjectAuditor.Editor.ProblemDescriptor problemDescriptor) {}
-        public IssueTableItem(int id, int depth, string displayName, string groupName, Unity.ProjectAuditor.Editor.ProjectIssue projectIssue) {}
-        public IssueTableItem(int id, int depth, string displayName, Unity.ProjectAuditor.Editor.ProblemDescriptor problemDescriptor, Unity.ProjectAuditor.Editor.ProjectIssue projectIssue) {}
+        public IssueTableItem(int id, int depth, string displayName, Unity.ProjectAuditor.Editor.ProjectIssue projectIssue, string groupName = default(string)) {}
         public bool Find(Unity.ProjectAuditor.Editor.ProjectIssue issue);
         public string GetDisplayName();
         public bool IsGroup();

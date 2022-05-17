@@ -922,19 +922,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void SetRuleForItem(IssueTableItem item, Rule.Severity ruleSeverity)
         {
-            var descriptor = item.ProblemDescriptor;
+            if (item.ProjectIssue == null)
+                return;
 
-            var context = "";
-            Rule rule;
-            if (item.hasChildren)
-            {
-                rule = m_ProjectAuditor.config.GetRule(descriptor);
-            }
-            else
-            {
-                context = item.ProjectIssue.GetContext();
-                rule = m_ProjectAuditor.config.GetRule(descriptor, context);
-            }
+            var descriptor = item.ProjectIssue.descriptor;
+            var context = item.ProjectIssue.GetContext();
+            var rule = m_ProjectAuditor.config.GetRule(descriptor, context);
 
             if (rule == null)
                 m_ProjectAuditor.config.AddRule(new Rule
@@ -949,7 +942,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void ClearRulesForItem(IssueTableItem item)
         {
-            m_ProjectAuditor.config.ClearRules(item.ProblemDescriptor,
+            var descriptor = item.ProjectIssue.descriptor;
+            m_ProjectAuditor.config.ClearRules(descriptor,
                 item.hasChildren ? string.Empty : item.ProjectIssue.GetContext());
         }
 

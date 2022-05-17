@@ -74,11 +74,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 var depth = issue.depth;
                 if (m_Desc.getGroupName != null)
                     depth++;
-                IssueTableItem item;
-                if (m_Desc.getGroupName != null)
-                    item = new IssueTableItem(m_NextId++, depth, issue.description, m_Desc.getGroupName(issue), issue);
-                else
-                    item = new IssueTableItem(m_NextId++, depth, issue.description, issue.descriptor, issue);
+                var item = new IssueTableItem(m_NextId++, depth, issue.description, issue, m_Desc.getGroupName != null ? m_Desc.getGroupName(issue) : string.Empty);
                 itemsList.Add(item);
             }
 
@@ -167,27 +163,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         }
                     }
                 }
-                else
-                {
-                    var descriptors = filteredItems.Select(i => i.ProblemDescriptor).Distinct();
-                    foreach (var descriptor in descriptors)
-                    {
-                        var group = m_TreeViewItemGroups.Find(g => g.ProblemDescriptor.Equals(descriptor));
-                        m_Rows.Add(group);
-
-                        var groupIsExpanded = state.expandedIDs.Contains(group.id);
-                        var children = filteredItems.Where(item => item.ProblemDescriptor.Equals(descriptor));
-
-                        group.displayName = string.Format("{0} ({1})", descriptor.description, children.Count());
-
-                        foreach (var child in children)
-                        {
-                            if (groupIsExpanded)
-                                m_Rows.Add(child);
-                            group.AddChild(child);
-                        }
-                    }
-                }
             }
             else
             {
@@ -262,29 +237,29 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 CenterRectUsingSingleLineHeight(ref cellRect);
             }
 
-            var issue = item.ProjectIssue;
-            var descriptor = item.ProblemDescriptor;
-
-            var rule = m_Config.GetRule(descriptor, issue != null ? issue.GetContext() : string.Empty);
-            if (rule == null && issue != null)
-                rule = m_Config.GetRule(descriptor); // try to find non-specific rule
-            if (rule != null && rule.severity == Rule.Severity.None)
-                GUI.enabled = false;
-
             if (item.IsGroup())
             {
                 if (columnIndex == 0)
                 {
                     // use all available space to display description
                     cellRect.xMax = args.rowRect.xMax;
-                    if (descriptor != null)
-                        EditorGUI.LabelField(cellRect, Utility.GetTextWithSeverityIcon(item.GetDisplayName(), item.GetDisplayName(), descriptor.severity), labelStyle);
-                    else
-                        EditorGUI.LabelField(cellRect, item.GetDisplayName(), labelStyle); // TODO: add severity icon?
+                    EditorGUI.LabelField(cellRect, item.GetDisplayName(), labelStyle);
                 }
             }
             else
             {
+                Rule rule = null;
+                var issue = item.ProjectIssue;
+                if (issue.descriptor != null)
+                {
+                    var descriptor = issue.descriptor;
+                    rule = m_Config.GetRule(descriptor, issue.GetContext());
+                    if (rule == null)
+                        rule = m_Config.GetRule(descriptor); // try to find non-specific rule
+                    if (rule != null && rule.severity == Rule.Severity.None)
+                        GUI.enabled = false;
+                }
+
                 switch (columnType)
                 {
                     case PropertyType.CriticalContext:
@@ -304,7 +279,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     break;
 
                     case PropertyType.Area:
-                        var areaNames = descriptor.GetAreasSummary();
+                        var areaNames = issue.descriptor.GetAreasSummary();
                         EditorGUI.LabelField(cellRect, new GUIContent(areaNames, Tooltip.Area), labelStyle);
                         break;
 
@@ -356,11 +331,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                         break;
                 }
+                if (rule != null && rule.severity == Rule.Severity.None)
+                    GUI.enabled = true;
             }
-
-
-            if (rule != null && rule.severity == Rule.Severity.None)
-                GUI.enabled = true;
 
             ShowContextMenu(cellRect, item);
         }
@@ -377,6 +350,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected override void DoubleClickedItem(int id)
         {
+            if (m_Desc.onOpenIssue == null)
+                return;
+
             var rows = FindRows(new[] {id});
             var item = rows.FirstOrDefault();
 
@@ -387,6 +363,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             if (tableItem == null)
                 return;
+            /*
             if (item.hasChildren)
             {
                 if (m_Desc.onOpenManual != null)
@@ -395,12 +372,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
                 return;
             }
-
-            if (m_Desc.onOpenIssue == null)
-                return;
+            */
 
             var issue = tableItem.ProjectIssue;
-            if (issue.location != null && issue.location.IsValid())
+            if (issue != null && issue.location != null && issue.location.IsValid())
             {
                 m_Desc.onOpenIssue(issue.location);
             }
