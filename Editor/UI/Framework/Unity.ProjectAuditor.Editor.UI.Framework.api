@@ -74,17 +74,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static void OpenTextFile<T>(Unity.ProjectAuditor.Editor.Utils.Location location) where T : UnityEngine.Object;
     }
 
-    public class IssueTableItem : UnityEditor.IMGUI.Controls.TreeViewItem
-    {
-        public readonly Unity.ProjectAuditor.Editor.ProblemDescriptor ProblemDescriptor;
-        public readonly Unity.ProjectAuditor.Editor.ProjectIssue ProjectIssue;
-        public IssueTableItem(int id, int depth, Unity.ProjectAuditor.Editor.ProblemDescriptor problemDescriptor) {}
-        public IssueTableItem(int id, int depth, string displayName, Unity.ProjectAuditor.Editor.ProblemDescriptor problemDescriptor, Unity.ProjectAuditor.Editor.ProjectIssue projectIssue) {}
-        public bool Find(Unity.ProjectAuditor.Editor.ProjectIssue issue);
-        public string GetDisplayName();
-        public bool IsGroup();
-    }
-
     public class MultiSelectionTable : UnityEditor.IMGUI.Controls.TreeView
     {
         public MultiSelectionTable(UnityEditor.IMGUI.Controls.TreeViewState state, UnityEditor.IMGUI.Controls.MultiColumnHeader multicolumnHeader, string[] names, Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection) {}
