@@ -228,7 +228,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 case LogType.Error:
                 case LogType.Exception:
                     return Rule.Severity.Error;
-                    break;
                 case LogType.Warning:
                     return Rule.Severity.Warning;
                 default:
