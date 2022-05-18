@@ -81,9 +81,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             m_GroupDropdownItems = m_Layout.properties.Select(p => new Utility.DropdownItem
             {
-                Content = new GUIContent(p.name),
+                Content = new GUIContent(p.defaultGroup ? p.name + " (default)" : p.name),
                 SelectionContent = new GUIContent("Group"),
-                Enabled = p.format == PropertyFormat.String || p.format == PropertyFormat.Bool
+                Enabled = p.format == PropertyFormat.String || p.format == PropertyFormat.Bool || p.format == PropertyFormat.Integer
             }).ToArray();
 
             if (m_Table != null)

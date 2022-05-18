@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             // update groups, if applicable
             if (m_Desc.enableGroupProperty)
             {
-                var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex].type)).Distinct().ToArray();
+                var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex])).Distinct().ToArray();
                 foreach (var name in groupNames)
                 {
                     // if necessary, create a group
@@ -94,7 +94,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 var depth = issue.depth;
                 if (m_Desc.enableGroupProperty)
                     depth++;
-                var item = new IssueTableItem(m_NextId++, depth, issue.description, issue, m_Desc.enableGroupProperty ? issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex].type) : string.Empty);
+                var item = new IssueTableItem(m_NextId++, depth, issue.description, issue, m_Desc.enableGroupProperty ? issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]) : string.Empty);
                 itemsList.Add(item);
             }
 
@@ -163,7 +163,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 if (m_Desc.enableGroupProperty)
                 {
-                    var groupedItemQuery = filteredItems.GroupBy(i => i.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex].type));
+                    var groupedItemQuery = filteredItems.GroupBy(i => i.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
                     foreach (var groupedItems in groupedItemQuery)
                     {
                         var groupName = groupedItems.Key;

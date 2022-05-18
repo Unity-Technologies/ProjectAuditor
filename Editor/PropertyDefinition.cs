@@ -5,6 +5,7 @@ namespace Unity.ProjectAuditor.Editor
     public enum PropertyType
     {
         Description = 0,
+        Descriptor,
         Severity,
         Area,
         Path,
