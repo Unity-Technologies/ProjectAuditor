@@ -13,12 +13,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class MetaDataModule : ProjectAuditorModule
     {
-        static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
-            (
-            700000,
-            "Meta Data"
-            );
-
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
             category = IssueCategory.MetaData,
@@ -33,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
-            yield return k_Descriptor;
+            yield return null;
         }
 
         public override IEnumerable<IssueLayout> GetLayouts()
@@ -64,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void NewMetaData(string key, object value, Action<ProjectIssue> onIssueFound)
         {
-            onIssueFound(new ProjectIssue(k_Descriptor, key, IssueCategory.MetaData, new object[(int)MetaDataProperty.Num] {value}));
+            onIssueFound(new ProjectIssue(key, IssueCategory.MetaData, new object[(int)MetaDataProperty.Num] {value}));
         }
     }
 }

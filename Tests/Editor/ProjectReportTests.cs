@@ -62,8 +62,8 @@ class MyClass : MonoBehaviour
             projectReport.AddIssue(new ProjectIssue
                 (
                     p,
-                    "dummy issue",
-                    IssueCategory.Code
+                    IssueCategory.Code,
+                    "dummy issue"
                 )
             );
 
@@ -98,9 +98,9 @@ class MyClass : MonoBehaviour
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.AreEqual("Issue,Critical,Area,Filename,Assembly", line);
+                Assert.AreEqual("Issue,Critical,Area,Filename,Assembly,Descriptor", line);
 
-                var expectedIssueLine = "\"'UnityEngine.Camera.allCameras' usage\",\"True\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\"";
+                var expectedIssueLine = "\"'UnityEngine.Camera.allCameras' usage\",\"True\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\",\"UnityEngine.Camera.allCameras\"";
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();
@@ -125,9 +125,9 @@ class MyClass : MonoBehaviour
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.AreEqual("Issue,Critical,Area,Filename,Assembly", line);
+                Assert.AreEqual("Issue,Critical,Area,Filename,Assembly,Descriptor", line);
 
-                var expectedIssueLine = "\"Conversion from value type 'Int32' to ref type\",\"True\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\"";
+                var expectedIssueLine = "\"Conversion from value type 'Int32' to ref type\",\"True\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\",\"Boxing Allocation\"";
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();

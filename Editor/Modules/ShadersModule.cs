@@ -98,7 +98,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.Instancing), format = PropertyFormat.Bool, name = "Instancing", longName = "GPU Instancing Support" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.SrpBatcher), format = PropertyFormat.Bool, name = "SRP Batcher", longName = "SRP Batcher Compatible" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.AlwaysIncluded), format = PropertyFormat.Bool, name = "Always Included", longName = "Always Included in Build" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Source Asset"}
+                new PropertyDefinition { type = PropertyType.Path, name = "Source Asset"},
+                new PropertyDefinition { type = PropertyType.Directory, name = "Directory", defaultGroup = true}
             }
         };
 
@@ -107,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.ShaderVariant,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
+                new PropertyDefinition { type = PropertyType.Description, name = "Shader Name", defaultGroup = true},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Compiled), format = PropertyFormat.Bool, name = "Compiled", longName = "Compiled at runtime by the player" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Platform), format = PropertyFormat.String, name = "Graphics API" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Tier), format = PropertyFormat.String, name = "Tier" },
@@ -127,37 +128,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 new PropertyDefinition { type = PropertyType.Severity},
                 new PropertyDefinition { type = PropertyType.Description, name = "Message"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.ShaderName), format = PropertyFormat.String, name = "Shader Name"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.ShaderName), format = PropertyFormat.String, name = "Shader Name", defaultGroup = true},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.Platform), format = PropertyFormat.String, name = "Platform"},
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"},
             }
-        };
-
-        static readonly ProblemDescriptor k_ParseErrorDescriptor = new ProblemDescriptor
-            (
-            400000,
-            "Shaders with errors"
-            )
-        {
-            severity = Rule.Severity.Error
-        };
-
-        static readonly ProblemDescriptor k_CompilerWarningDescriptor = new ProblemDescriptor
-            (
-            400001,
-            "Shader Compiler Warning"
-            )
-        {
-            severity = Rule.Severity.Warning
-        };
-
-        static readonly ProblemDescriptor k_CompilerErrorDescriptor = new ProblemDescriptor
-            (
-            400002,
-            "Shader Compiler Error"
-            )
-        {
-            severity = Rule.Severity.Error
         };
 
         // k_NoPassNames and k_NoKeywords must be consistent with values assigned in SubProgram::Compile()
@@ -173,9 +147,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string k_NotAvailable = "N/A";
         internal const string k_Unknown = "Unknown";
 
-        const int k_ShaderVariantFirstId = 400003;
-
-        static Dictionary<string, ProblemDescriptor> s_ShaderGroupDescriptor = new Dictionary<string, ProblemDescriptor>();
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData = new Dictionary<Shader, List<ShaderVariantData>>();
 
         public override IEnumerable<ProblemDescriptor> GetDescriptors()
@@ -266,7 +237,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 #endif
 
-            var id = k_ShaderVariantFirstId;
             var buildReportInfoAvailable = false;
 #if BUILD_REPORT_API_SUPPORT
             var packetAssetInfos = new PackedAssetInfo[0];
@@ -297,14 +267,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     }
                 }
 #endif
-                AddShader(shader, assetPath, assetSize, id++, alwaysIncludedShaders.Contains(shader), onIssueFound);
+                AddShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader), onIssueFound);
             }
 
             if (onComplete != null)
                 onComplete();
         }
 
-        void AddShader(Shader shader, string assetPath, string assetSize, int id, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)
+        void AddShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)
         {
             // set initial state (-1: info not available)
             var variantCount = s_ShaderVariantData.Count > 0 ? 0 : -1;
@@ -316,7 +286,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var variants = s_ShaderVariantData[shader];
                 variantCount = variants.Count;
 
-                AddVariants(shader, assetPath, id++, variants, onIssueFound);
+                AddVariants(shader, assetPath, variants, onIssueFound);
             }
 #endif
 
@@ -327,13 +297,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var shaderMessages = ShaderUtil.GetShaderMessages(shader);
             foreach (var message in shaderMessages)
             {
-                var messageDescriptor = message.severity == ShaderCompilerMessageSeverity.Error ? k_CompilerErrorDescriptor : k_CompilerWarningDescriptor;
-                var messageIssue = new ProjectIssue(messageDescriptor, message.message, IssueCategory.ShaderCompilerMessage, new Location(assetPath, message.line));
-                messageIssue.SetCustomProperties(new object[(int)ShaderMessageProperty.Num]
+                var messageIssue = new ProjectIssue(message.message, IssueCategory.ShaderCompilerMessage, new object[(int)ShaderMessageProperty.Num]
                 {
                     shaderName,
                     message.platform
-                });
+                })
+                {
+                    location = new Location(assetPath, message.line),
+                    severity = message.severity == ShaderCompilerMessageSeverity.Error ? Rule.Severity.Error : Rule.Severity.Warning
+                };
                 onIssueFound(messageIssue);
             }
 
@@ -347,27 +319,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (shaderHasError)
             {
-                var issueWithError = new ProjectIssue(k_ParseErrorDescriptor, Path.GetFileNameWithoutExtension(assetPath), IssueCategory.Shader, new Location(assetPath));
+                var issueWithError = new ProjectIssue(Path.GetFileNameWithoutExtension(assetPath), IssueCategory.Shader)
+                {
+                    location = new Location(assetPath)
+                };
                 issueWithError.SetCustomProperties((int)ShaderProperty.Num, k_NotAvailable);
                 issueWithError.severity = severity;
 
                 onIssueFound(issueWithError);
 
                 return;
-            }
-
-            // group shaders by containing directory
-            var groupName = PathUtils.GetDirectoryName(assetPath);
-
-            ProblemDescriptor descriptor;
-            if (!s_ShaderGroupDescriptor.TryGetValue(groupName, out descriptor))
-            {
-                descriptor = new ProblemDescriptor
-                    (
-                    id++,
-                    groupName
-                    );
-                s_ShaderGroupDescriptor.Add(groupName, descriptor);
             }
 
 /*
@@ -388,7 +349,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #if UNITY_2019_1_OR_NEWER
             passCount = shader.passCount;
 #endif
-            var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.Shader, new Location(assetPath));
+            var issue = new ProjectIssue(shaderName, IssueCategory.Shader)
+            {
+                location = new Location(assetPath)
+            };
             issue.SetCustomProperties(new object[(int)ShaderProperty.Num]
             {
                 assetSize,
@@ -411,18 +375,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
         }
 
 #if VARIANTS_ANALYSIS_SUPPORT
-        void AddVariants(Shader shader, string assetPath, int id, List<ShaderVariantData> shaderVariants, Action<ProjectIssue> onIssueFound)
+        void AddVariants(Shader shader, string assetPath, List<ShaderVariantData> shaderVariants, Action<ProjectIssue> onIssueFound)
         {
-            var shaderName = shader.name;
-            var descriptor = new ProblemDescriptor
-                (
-                id++,
-                shaderName
-                );
-
             foreach (var shaderVariantData in shaderVariants)
             {
-                var issue = new ProjectIssue(descriptor, shaderName, IssueCategory.ShaderVariant, new Location(assetPath));
+                var issue = new ProjectIssue(shader.name, IssueCategory.ShaderVariant)
+                {
+                    location = new Location(assetPath)
+                };
 
                 issue.SetCustomProperties(new object[(int)ShaderVariantProperty.Num]
                 {

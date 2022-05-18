@@ -5,9 +5,11 @@ namespace Unity.ProjectAuditor.Editor
     public enum PropertyType
     {
         Description = 0,
+        Descriptor,
         Severity,
         Area,
         Path,
+        Directory,
         Filename,
         FileType,
         CriticalContext,
@@ -24,9 +26,9 @@ namespace Unity.ProjectAuditor.Editor
 
     public enum PropertyFormat
     {
-        Bool = 0,
+        String = 0,
+        Bool,
         Integer,
-        String,
         Bytes,
         Time
     }
@@ -37,6 +39,7 @@ namespace Unity.ProjectAuditor.Editor
         public PropertyFormat format;
         public string name;
         public string longName;
+        public bool defaultGroup;
     }
 
     public class IssueLayout

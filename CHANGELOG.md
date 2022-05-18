@@ -18,7 +18,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Changed default compilation mode to Non-Development
 * Fixed reporting of assemblies not compiled due to dependencies
 * Improved code diagnostic messages
+* Improved UI groups to support arbitrary grouping criteria 
 * Replaced *AnalyzeEditorCode* with *CompilationMode* setting
+* Removed the need to have a Descriptor associated with non-diagnostic issues
 
 ## [0.7.6-preview] - 2022-04-22
 * Fixed Build Report analysis 'Illegal characters in path' exception

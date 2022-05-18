@@ -57,24 +57,6 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void BuildReportSize_Font_IsReported()
-        {
-            Assert.AreEqual("Font", BuildReportModule.GetDescriptor("font.ttf", typeof(Font)).description);
-        }
-
-        [Test]
-        public void BuildReportSize_Script_IsReported()
-        {
-            Assert.AreEqual("Script", BuildReportModule.GetDescriptor("script.cs", typeof(MonoScript)).description);
-        }
-
-        [Test]
-        public void BuildReportSize_Sprite_IsReported()
-        {
-            Assert.AreEqual("Texture", BuildReportModule.GetDescriptor("sprite.png", typeof(Sprite)).description);
-        }
-
-        [Test]
 #if !BUILD_REPORT_API_SUPPORT
         [Ignore("Not Supported in this version of Unity")]
 #endif

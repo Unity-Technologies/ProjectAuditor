@@ -227,33 +227,11 @@ namespace Unity.ProjectAuditor.Editor.UI
         static IssueStats[] CollectSelectionStats(IssueTableItem[] selectedItems)
         {
             var selectionsDict = new Dictionary<int, IssueStats>();
-            var selectedRoots = selectedItems.Where(item => item.hasChildren);
             var selectedChildren = selectedItems.Where(item => item.parent != null);
-
-            foreach (var rootItem in selectedRoots)
-            {
-                var id = rootItem.ProblemDescriptor.id;
-                IssueStats issueStats;
-                if (!selectionsDict.TryGetValue(id, out issueStats))
-                {
-                    issueStats = new IssueStats { id = id, numOccurrences = rootItem.children.Count };
-                    selectionsDict[id] = issueStats;
-                }
-
-                foreach (var child in rootItem.children)
-                {
-                    if (((IssueTableItem)child).ProjectIssue.isPerfCriticalContext)
-                    {
-                        ++issueStats.numHotPathOccurrences;
-                    }
-                }
-
-                selectionsDict[id] = issueStats;
-            }
 
             foreach (var childItem in selectedChildren)
             {
-                var id = childItem.ProblemDescriptor.id;
+                var id = childItem.ProjectIssue.descriptor.id;
                 IssueStats summary;
                 if (!selectionsDict.TryGetValue(id, out summary))
                 {
@@ -262,18 +240,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                         id = id
                     };
                     selectionsDict[id] = summary;
-                }
-
-                // Ensure that if an issue is selected AND its root/parent issue has been selected
-                // that we don't count the child one. Otherwise we over-report.
-                if (!selectedRoots.Any(item => item.ProblemDescriptor.id == id))
-                {
-                    ++summary.numOccurrences;
-
-                    if (childItem.ProjectIssue.isPerfCriticalContext)
-                    {
-                        ++summary.numHotPathOccurrences;
-                    }
                 }
 
                 selectionsDict[id] = summary;

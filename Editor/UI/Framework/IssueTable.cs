@@ -25,14 +25,23 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         int m_NextId;
         int m_NumMatchingIssues;
         bool m_FlatView;
+        int m_GroupPropertyIndex;
 
         public bool flatView
         {
             get { return m_FlatView; }
             set
             {
-                if (m_Desc.groupByDescriptor)
-                    m_FlatView = value;
+                m_FlatView = value;
+            }
+        }
+
+        public int groupPropertyIndex
+        {
+            get { return m_GroupPropertyIndex; }
+            set
+            {
+                m_GroupPropertyIndex = value;
             }
         }
 
@@ -45,7 +54,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_View = view;
             m_Desc = desc;
             m_Layout = layout;
-            m_FlatView = !desc.groupByDescriptor;
+            m_FlatView = true; // by default, don't use groups
+
+            for (int i = 0; i < m_Layout.properties.Length; i++)
+            {
+                if (m_Layout.properties[i].defaultGroup)
+                {
+                    m_FlatView = false;
+                    m_GroupPropertyIndex = i;
+                    break;
+                }
+            }
             multicolumnHeader.sortingChanged += OnSortingChanged;
             showAlternatingRowBackgrounds = true;
 
@@ -54,16 +73,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void AddIssues(ProjectIssue[] issues)
         {
-            // update groups, if applicable
-            if (m_Desc.groupByDescriptor)
+            // update groups
+            var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex])).Distinct().ToArray();
+            foreach (var name in groupNames)
             {
-                var descriptors = issues.Select(i => i.descriptor).Distinct().ToArray();
-                foreach (var d in descriptors)
-                {
-                    // if necessary, create a group
-                    if (m_TreeViewItemGroups.All(g => g.ProblemDescriptor.id != d.id))
-                        m_TreeViewItemGroups.Add((new IssueTableItem(m_NextId++, 0, d)));
-                }
+                // if necessary, create a group
+                if (!m_TreeViewItemGroups.Exists(g => g.GroupName.Equals(name)))
+                    m_TreeViewItemGroups.Add((new IssueTableItem(m_NextId++, 0, name)));
             }
 
             var itemsList = new List<IssueTableItem>(issues.Length);
@@ -72,9 +88,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             foreach (var issue in issues)
             {
                 var depth = issue.depth;
-                if (m_Desc.groupByDescriptor)
-                    depth++;
-                var item = new IssueTableItem(m_NextId++, depth, issue.description, issue.descriptor, issue);
+                depth++;
+                var item = new IssueTableItem(m_NextId++, depth, issue.description, issue, issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
                 itemsList.Add(item);
             }
 
@@ -86,6 +101,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_NextId = k_FirstId;
             m_TreeViewItemGroups.Clear();
             m_TreeViewItemIssues = new IssueTableItem[] {};
+            ClearSelection();
         }
 
         protected override TreeViewItem BuildRoot()
@@ -94,19 +110,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var depthForHiddenRoot = -1;
             var root = new TreeViewItem(idForHiddenRoot, depthForHiddenRoot, "root");
 
-            if (m_Desc.groupByDescriptor)
+            foreach (var item in m_TreeViewItemGroups)
             {
-                foreach (var item in m_TreeViewItemGroups)
-                {
-                    root.AddChild(item);
-                }
-            }
-            else
-            {
-                foreach (var item in m_TreeViewItemIssues)
-                {
-                    root.AddChild(item);
-                }
+                root.AddChild(item);
             }
 
             return root;
@@ -141,16 +147,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Profiler.BeginSample("IssueTable.BuildRows");
             if (!hasSearch && !m_FlatView)
             {
-                var descriptors = filteredItems.Select(i => i.ProblemDescriptor).Distinct();
-                foreach (var descriptor in descriptors)
+                var groupedItemQuery = filteredItems.GroupBy(i => i.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
+                foreach (var groupedItems in groupedItemQuery)
                 {
-                    var group = m_TreeViewItemGroups.Find(g => g.ProblemDescriptor.Equals(descriptor));
+                    var groupName = groupedItems.Key;
+                    var group = m_TreeViewItemGroups.Find(g => g.GroupName.Equals(groupName));
                     m_Rows.Add(group);
 
                     var groupIsExpanded = state.expandedIDs.Contains(group.id);
-                    var children = filteredItems.Where(item => item.ProblemDescriptor.Equals(descriptor));
+                    var children = filteredItems.Where(item => item.GroupName.Equals(groupName));
 
-                    group.displayName = string.Format("{0} ({1})", descriptor.description, children.Count());
+                    group.displayName = string.Format("{0} ({1})", groupName, children.Count());
 
                     foreach (var child in children)
                     {
@@ -164,11 +171,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 foreach (var item in filteredItems)
                 {
-                    if (m_Desc.groupByDescriptor)
-                    {
-                        var group = m_TreeViewItemGroups.Find(g => g.ProblemDescriptor.Equals(item.ProblemDescriptor));
-                        group.AddChild(item);
-                    }
+                    var group = m_TreeViewItemGroups.Find(g => g.GroupName.Equals(item.GroupName));
+                    group.AddChild(item);
 
                     m_Rows.Add(item);
                 }
@@ -233,26 +237,29 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 CenterRectUsingSingleLineHeight(ref cellRect);
             }
 
-            var issue = item.ProjectIssue;
-            var descriptor = item.ProblemDescriptor;
-
-            var rule = m_Config.GetRule(descriptor, issue != null ? issue.GetContext() : string.Empty);
-            if (rule == null && issue != null)
-                rule = m_Config.GetRule(descriptor); // try to find non-specific rule
-            if (rule != null && rule.severity == Rule.Severity.None)
-                GUI.enabled = false;
-
             if (item.IsGroup())
             {
                 if (columnIndex == 0)
                 {
                     // use all available space to display description
                     cellRect.xMax = args.rowRect.xMax;
-                    EditorGUI.LabelField(cellRect, Utility.GetTextWithSeverityIcon(item.GetDisplayName(), item.GetDisplayName(), descriptor.severity), labelStyle);
+                    EditorGUI.LabelField(cellRect, item.GetDisplayName(), labelStyle);
                 }
             }
             else
             {
+                Rule rule = null;
+                var issue = item.ProjectIssue;
+                if (issue.descriptor != null)
+                {
+                    var descriptor = issue.descriptor;
+                    rule = m_Config.GetRule(descriptor, issue.GetContext());
+                    if (rule == null)
+                        rule = m_Config.GetRule(descriptor); // try to find non-specific rule
+                    if (rule != null && rule.severity == Rule.Severity.None)
+                        GUI.enabled = false;
+                }
+
                 switch (columnType)
                 {
                     case PropertyType.CriticalContext:
@@ -272,7 +279,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     break;
 
                     case PropertyType.Area:
-                        var areaNames = descriptor.GetAreasSummary();
+                        var areaNames = issue.descriptor.GetAreasSummary();
                         EditorGUI.LabelField(cellRect, new GUIContent(areaNames, Tooltip.Area), labelStyle);
                         break;
 
@@ -324,11 +331,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                         break;
                 }
+                if (rule != null && rule.severity == Rule.Severity.None)
+                    GUI.enabled = true;
             }
-
-
-            if (rule != null && rule.severity == Rule.Severity.None)
-                GUI.enabled = true;
 
             ShowContextMenu(cellRect, item);
         }
@@ -345,6 +350,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected override void DoubleClickedItem(int id)
         {
+            if (m_Desc.onOpenIssue == null)
+                return;
+
             var rows = FindRows(new[] {id});
             var item = rows.FirstOrDefault();
 
@@ -355,20 +363,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             if (tableItem == null)
                 return;
-            if (item.hasChildren)
-            {
-                if (m_Desc.onOpenManual != null)
-                {
-                    m_Desc.onOpenManual(tableItem.ProblemDescriptor);
-                }
-                return;
-            }
-
-            if (m_Desc.onOpenIssue == null)
-                return;
 
             var issue = tableItem.ProjectIssue;
-            if (issue.location != null && issue.location.IsValid())
+            if (issue != null && issue.location != null && issue.location.IsValid())
             {
                 m_Desc.onOpenIssue(issue.location);
             }

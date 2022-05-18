@@ -239,7 +239,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 descriptionWithIcon = true,
                 showDependencyView = true,
                 showFilters = true,
-                showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Asset Dependencies"),
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assets
@@ -251,7 +250,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 2,
                 menuLabel = "Assets/Shaders",
                 descriptionWithIcon = true,
-                groupByDescriptor = true,
                 showFilters = true,
                 onContextMenu = (menu, viewManager, issue) =>
                 {
@@ -276,7 +274,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Variants",
                 menuOrder = 3,
                 menuLabel = "Assets/Shader Variants",
-                groupByDescriptor = true,
                 showFilters = true,
                 showInfoPanel = true,
                 showRightPanels = true,
@@ -326,6 +323,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showDependencyView = true,
                 getAssemblyName = issue => issue.description,
+                //defaultGroupProperty = issue => issue.description.Split('.')[0],
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assemblies
             });
@@ -336,7 +334,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Code",
                 menuLabel = "Code/Diagnostics",
                 menuOrder = 0,
-                groupByDescriptor = true,
                 showActions = true,
                 showAreaSelection = true,
                 showAssemblySelection = true,
@@ -359,7 +356,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Compiler Messages",
                 menuOrder = 98,
                 menuLabel = "Code/C# Compiler Messages",
-                groupByDescriptor = true,
                 showAssemblySelection = true,
                 showFilters = true,
                 showSeverityFilters = true,
@@ -375,7 +371,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Generics",
                 menuLabel = "Code/Generic Types Instantiation",
                 menuOrder = 99,
-                groupByDescriptor = true,
                 showAssemblySelection = true,
                 showDependencyView = true,
                 showFilters = true,
@@ -420,7 +415,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Build Size",
                 menuLabel = "Build Report/Size",
                 menuOrder = 101,
-                groupByDescriptor = true,
                 descriptionWithIcon = true,
                 showFilters = true,
                 showInfoPanel = true,
@@ -921,19 +915,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void SetRuleForItem(IssueTableItem item, Rule.Severity ruleSeverity)
         {
-            var descriptor = item.ProblemDescriptor;
+            if (item.ProjectIssue == null)
+                return;
 
-            var context = "";
-            Rule rule;
-            if (item.hasChildren)
-            {
-                rule = m_ProjectAuditor.config.GetRule(descriptor);
-            }
-            else
-            {
-                context = item.ProjectIssue.GetContext();
-                rule = m_ProjectAuditor.config.GetRule(descriptor, context);
-            }
+            var descriptor = item.ProjectIssue.descriptor;
+            var context = item.ProjectIssue.GetContext();
+            var rule = m_ProjectAuditor.config.GetRule(descriptor, context);
 
             if (rule == null)
                 m_ProjectAuditor.config.AddRule(new Rule
@@ -948,7 +935,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void ClearRulesForItem(IssueTableItem item)
         {
-            m_ProjectAuditor.config.ClearRules(item.ProblemDescriptor,
+            var descriptor = item.ProjectIssue.descriptor;
+            m_ProjectAuditor.config.ClearRules(descriptor,
                 item.hasChildren ? string.Empty : item.ProjectIssue.GetContext());
         }
 

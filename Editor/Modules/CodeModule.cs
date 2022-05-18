@@ -39,33 +39,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class CodeModule : ProjectAuditorModule
     {
-        static readonly ProblemDescriptor k_AssemblyDescriptor = new ProblemDescriptor
-            (
-            700001,
-            "Assembly"
-            );
-
-        static readonly ProblemDescriptor k_AssemblyWithErrorsDescriptor = new ProblemDescriptor
-            (
-            700002,
-            "Assembly"
-            )
-        {
-            severity = Rule.Severity.Error
-        };
-
-        static readonly ProblemDescriptor k_AssemblyMissingDependenciesDescriptor = new ProblemDescriptor
-            (
-            700003,
-            "Assembly"
-            )
-        {
-            severity = Rule.Severity.Error
-        };
-
-
-        const int k_CompilerMessageFirstId = 800000;
-
         static readonly IssueLayout k_AssemblyLayout = new IssueLayout
         {
             category = IssueCategory.Assembly,
@@ -74,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyType.Severity},
                 new PropertyDefinition { type = PropertyType.Description, name = "Assembly Name"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.CompileTime), format = PropertyFormat.Time, name = "Compile Time (seconds)"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.ReadOnly), format = PropertyFormat.Bool, name = "Read Only"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.ReadOnly), format = PropertyFormat.Bool, name = "Read Only", defaultGroup = true},
                 new PropertyDefinition { type = PropertyType.Path, name = "asmdef Path"},
             }
         };
@@ -88,7 +61,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyType.CriticalContext, format = PropertyFormat.Bool, name = "Critical", longName = "Critical code path"},
                 new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" }
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" },
+                new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true},
             }
         };
 
@@ -98,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Severity, name = "Type"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Code), format = PropertyFormat.String, name = "Code"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Code), format = PropertyFormat.String, name = "Code", defaultGroup = true},
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Message", longName = "Compiler Message"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Assembly), format = PropertyFormat.String, name = "Target Assembly", longName = "Managed Assembly name" },
@@ -121,7 +95,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         List<IInstructionAnalyzer> m_Analyzers;
         List<OpCode> m_OpCodes;
         List<ProblemDescriptor> m_ProblemDescriptors;
-        readonly Dictionary<string, ProblemDescriptor> m_RuntimeDescriptors = new Dictionary<string, ProblemDescriptor>();
 
         Thread m_AssemblyAnalysisThread;
 
@@ -174,12 +147,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 foreach (var assemblyInfo in assemblyInfos)
                 {
-                    onIssueFound(new ProjectIssue(k_AssemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath,
+                    onIssueFound(new ProjectIssue(assemblyInfo.name, IssueCategory.Assembly,
                         new object[(int)AssemblyProperty.Num]
                         {
                             assemblyInfo.packageReadOnly,
                             "N/A"
-                        }));
+                        })
+                        {
+                            location = new Location(assemblyInfo.asmDefPath)
+                        });
                 }
             }
 
@@ -386,22 +362,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
 
-            var assemblyDescriptor = k_AssemblyDescriptor;
+            var severity = Rule.Severity.None;
             if (compilationTask.status == CompilationStatus.MissingDependency)
-                assemblyDescriptor = k_AssemblyMissingDependenciesDescriptor;
+                severity = Rule.Severity.Warning;
             else if (compilerMessages.Any(m => m.type == CompilerMessageType.Error))
-                assemblyDescriptor = k_AssemblyWithErrorsDescriptor;
+                severity = Rule.Severity.Error;
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.assemblyPath);
 
-            onIssueFound(new ProjectIssue(assemblyDescriptor, assemblyInfo.name, IssueCategory.Assembly, assemblyInfo.asmDefPath,
+            onIssueFound(new ProjectIssue(assemblyInfo.name, IssueCategory.Assembly,
                 new object[(int)AssemblyProperty.Num]
                 {
                     assemblyInfo.packageReadOnly,
                     compilationTask.durationInMs
                 })
                 {
-                    dependencies = new AssemblyDependencyNode(assemblyInfo.name, compilationTask.dependencies.Select(d => d.assemblyName).ToArray())
+                    dependencies = new AssemblyDependencyNode(assemblyInfo.name, compilationTask.dependencies.Select(d => d.assemblyName).ToArray()),
+                    location = new Location(assemblyInfo.asmDefPath),
+                    severity = severity
                 });
 
             foreach (var message in compilerMessages)
@@ -412,33 +390,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     continue;
                 }
 
-                var descriptor = (ProblemDescriptor)null;
-
-                if (m_RuntimeDescriptors.ContainsKey(message.code))
-                    descriptor = m_RuntimeDescriptors[message.code];
-                else
-                {
-                    // do we need different descriptors?
-                    descriptor = new ProblemDescriptor
-                        (
-                        k_CompilerMessageFirstId + m_RuntimeDescriptors.Count,
-                        message.code
-                        )
-                    {
-                        severity = CompilerMessageTypeToSeverity(message.type)
-                    };
-                    m_RuntimeDescriptors.Add(message.code, descriptor);
-                }
-
                 var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.file);
-                var issue = new ProjectIssue(descriptor, message.message,
+                var issue = new ProjectIssue(message.message,
                     IssueCategory.CodeCompilerMessage,
-                    new Location(relativePath, message.line),
                     new object[(int)CompilerMessageProperty.Num]
                     {
                         message.code,
                         assemblyInfo.name
-                    });
+                    })
+                {
+                    location = new Location(relativePath, message.line),
+                    severity = CompilerMessageTypeToSeverity(message.type)
+                };
                 onIssueFound(issue);
             }
 

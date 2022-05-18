@@ -6,19 +6,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     class IssueTableItem : TreeViewItem
     {
-        public readonly ProblemDescriptor ProblemDescriptor;
+        public readonly string GroupName;
         public readonly ProjectIssue ProjectIssue;
 
-        public IssueTableItem(int id, int depth, string displayName, ProblemDescriptor problemDescriptor,
-                              ProjectIssue projectIssue) : base(id, depth, displayName)
+        public IssueTableItem(int id, int depth, string displayName,
+                              ProjectIssue projectIssue, string groupName = null) : base(id, depth, displayName)
         {
-            ProblemDescriptor = problemDescriptor;
+            GroupName = groupName;
             ProjectIssue = projectIssue;
         }
 
-        public IssueTableItem(int id, int depth, ProblemDescriptor problemDescriptor) : base(id, depth)
+        public IssueTableItem(int id, int depth, string groupName) : base(id, depth)
         {
-            ProblemDescriptor = problemDescriptor;
+            GroupName = groupName;
         }
 
         public bool IsGroup()

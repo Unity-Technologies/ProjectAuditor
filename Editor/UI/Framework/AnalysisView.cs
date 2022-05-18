@@ -37,6 +37,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         GUIContent m_HelpButtonContent;
         IssueTable m_Table;
         IssueLayout m_Layout;
+        Utility.DropdownItem[] m_GroupDropdownItems;
 
         public ViewDescriptor desc
         {
@@ -77,6 +78,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Preferences = prefs;
             m_BaseFilter = filter;
             m_Layout = layout;
+
+            m_GroupDropdownItems = m_Layout.properties.Select(p => new Utility.DropdownItem
+            {
+                Content = new GUIContent(p.defaultGroup ? p.name + " (default)" : p.name),
+                SelectionContent = new GUIContent("Group By: " + p.name),
+                Enabled = p.format == PropertyFormat.String || p.format == PropertyFormat.Bool || p.format == PropertyFormat.Integer
+            }).ToArray();
 
             if (m_Table != null)
                 return;
@@ -310,7 +318,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             SharedStyles.Label.fontSize = m_Preferences.fontSize;
             SharedStyles.TextArea.fontSize = m_Preferences.fontSize;
 
-            if (m_Desc.groupByDescriptor)
+            if (!m_Layout.hierarchy)
             {
                 // (optional) collapse/expand buttons
                 GUI.enabled = !m_Table.flatView;
@@ -321,11 +329,30 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 GUI.enabled = true;
 
                 EditorGUI.BeginChangeCheck();
-                m_Table.flatView = GUILayout.Toggle(m_Table.flatView, "Flat View", EditorStyles.toolbarButton, GUILayout.Width(AnalysisView.toolbarButtonSize));
+                m_Table.flatView = GUILayout.Toggle(m_Table.flatView, Contents.FlatModeButton, EditorStyles.toolbarButton, GUILayout.Width(AnalysisView.toolbarButtonSize));
                 if (EditorGUI.EndChangeCheck())
                 {
                     Refresh();
                 }
+
+                GUI.enabled = !m_Table.flatView;
+
+                Utility.ToolbarDropdownList(m_GroupDropdownItems, m_Table.groupPropertyIndex,
+                    (data) =>
+                    {
+                        var index = (int)data;
+                        if (index != m_Table.groupPropertyIndex)
+                        {
+                            SetRowsExpanded(false);
+
+                            m_Table.groupPropertyIndex = index;
+                            m_Table.Clear();
+                            m_Table.AddIssues(m_Issues.ToArray());
+                            m_Table.Reload();
+                        }
+                    }, GUILayout.Width(toolbarButtonSize*2));
+
+                GUI.enabled = true;
             }
 
             if (m_Desc.showSeverityFilters)
@@ -474,7 +501,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             if (m_Desc.showSeverityFilters)
             {
-                switch (issue.descriptor.severity)
+                switch (issue.severity)
                 {
                     case Rule.Severity.Info:
                         if (!m_ShowInfo)
@@ -501,6 +528,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 columns[i].width = EditorPrefs.GetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width);
             }
             m_Table.flatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey), false);
+            m_Table.groupPropertyIndex = EditorPrefs.GetInt(GetPrefKey(k_GroupPropertyIndexKey), 0);
             m_TextFilter.searchDependencies = EditorPrefs.GetBool(GetPrefKey(k_SearchDepsKey), false);
             m_TextFilter.ignoreCase = EditorPrefs.GetBool(GetPrefKey(k_SearchIgnoreCaseKey), true);
             m_TextFilter.searchText = EditorPrefs.GetString(GetPrefKey(k_SearchStringKey));
@@ -514,6 +542,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 EditorPrefs.SetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width);
             }
             EditorPrefs.SetBool(GetPrefKey(k_FlatModeKey), m_Table.flatView);
+            EditorPrefs.SetInt(GetPrefKey(k_GroupPropertyIndexKey), m_Table.groupPropertyIndex);
             EditorPrefs.SetBool(GetPrefKey(k_SearchDepsKey), m_TextFilter.searchDependencies);
             EditorPrefs.SetBool(GetPrefKey(k_SearchIgnoreCaseKey), m_TextFilter.ignoreCase);
             EditorPrefs.SetString(GetPrefKey(k_SearchStringKey), m_TextFilter.searchText);
@@ -528,6 +557,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         const string k_PrefKeyPrefix = "ProjectAuditor.AnalysisView.";
         const string k_ColumnSizeKey = "ColumnSize";
         const string k_FlatModeKey = "FlatMode";
+        const string k_GroupPropertyIndexKey = "GroupPropertyIndex";
         const string k_SearchDepsKey = "SearchDeps";
         const string k_SearchIgnoreCaseKey = "SearchIgnoreCase";
         const string k_SearchStringKey = "SearchString";
@@ -566,6 +596,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
+            public static readonly GUIContent FlatModeButton = new GUIContent("Flat View");
             public static readonly GUIContent Zoom = new GUIContent("Zoom");
 
             public static readonly GUIContent InfoFoldout = new GUIContent("Information");

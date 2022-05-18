@@ -80,12 +80,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 }
             }
 
-            return new ProjectIssue
-            (
-                descriptor,
-                description,
-                IssueCategory.Code
-            );
+            return new ProjectIssue(descriptor, IssueCategory.Code)
+            {
+                description = description
+            };
         }
 
         public IEnumerable<OpCode> GetOpCodes()

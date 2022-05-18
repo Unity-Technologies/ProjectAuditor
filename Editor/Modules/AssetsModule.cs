@@ -16,24 +16,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Asset Name"},
                 new PropertyDefinition { type = PropertyType.FileType, name = "File Type", longName = "File extension"},
-                new PropertyDefinition { type = PropertyType.Path, name = "Path"}
+                new PropertyDefinition { type = PropertyType.Path, name = "Path"},
+                new PropertyDefinition { type = PropertyType.Directory, name = "Directory", defaultGroup = true}
             }
         };
 
-        static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
-            (
-            302000,
-            "Resources folder asset & dependencies",
-            Area.BuildSize,
-            "The Resources folder is a common source of many problems in Unity projects. Improper use of the Resources folder can bloat the size of a project’s build, lead to uncontrollable excessive memory utilization, and significantly increase application startup times.",
-            "Use AssetBundles when possible"
-            );
-
-        List<ProblemDescriptor> m_ProblemDescriptors;
-
         public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
-            return m_ProblemDescriptors;
+            yield return null;
         }
 
         public override IEnumerable<IssueLayout> GetLayouts()
@@ -43,13 +33,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Initialize(ProjectAuditorConfig config)
         {
-            m_ProblemDescriptors = new List<ProblemDescriptor>();
-            RegisterDescriptor(k_Descriptor);
-        }
-
-        public override void RegisterDescriptor(ProblemDescriptor descriptor)
-        {
-            m_ProblemDescriptors.Add(descriptor);
         }
 
         public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
@@ -109,13 +92,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             onIssueFound(new ProjectIssue
                 (
-                    k_Descriptor,
                     Path.GetFileNameWithoutExtension(location.Path),
-                    IssueCategory.Asset,
-                    location
-                )
-                {
-                    dependencies = dependencyNode
+                    IssueCategory.Asset
+                ) {
+                    dependencies = dependencyNode,
+                    location = location
                 }
             );
 

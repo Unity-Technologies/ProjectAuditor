@@ -33,6 +33,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     return ext;
                 case PropertyType.Description:
                     return issue.description;
+                case PropertyType.Descriptor:
+                    return issue.descriptor.description;
                 case PropertyType.Filename:
                     if (string.IsNullOrEmpty(issue.filename))
                         return k_NotAvailable;
@@ -41,11 +43,34 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     if (string.IsNullOrEmpty(issue.relativePath))
                         return k_NotAvailable;
                     return issue.location.FormattedPath;
+                case PropertyType.Directory:
+                    if (string.IsNullOrEmpty(issue.relativePath))
+                        return k_NotAvailable;
+                    return PathUtils.GetDirectoryName(issue.location.Path);
                 case PropertyType.CriticalContext:
                     return issue.isPerfCriticalContext.ToString();
                 default:
                     var propertyIndex = propertyType - PropertyType.Num;
                     return issue.GetCustomProperty(propertyIndex);
+            }
+        }
+
+        public static string GetPropertyGroup(this ProjectIssue issue, PropertyDefinition propertyDefinition)
+        {
+            switch (propertyDefinition.type)
+            {
+                case PropertyType.Filename:
+                    if (string.IsNullOrEmpty(issue.filename))
+                        return k_NotAvailable;
+                    return issue.location.Filename;
+                case PropertyType.Path:
+                    if (string.IsNullOrEmpty(issue.relativePath))
+                        return k_NotAvailable;
+                    return issue.location.Path;
+                default:
+                    if (propertyDefinition.format != PropertyFormat.String)
+                        return string.Format("{0}: {1}", propertyDefinition.name, issue.GetProperty(propertyDefinition.type));
+                    return issue.GetProperty(propertyDefinition.type);
             }
         }
 

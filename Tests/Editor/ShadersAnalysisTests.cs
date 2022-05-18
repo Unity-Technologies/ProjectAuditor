@@ -378,7 +378,7 @@ Shader ""Custom/MyEditorShader""
 
             var variants = issues.Where(i => i.description.Equals(k_ShaderName)).ToArray();
             Assert.Positive(variants.Length);
-
+            Assert.True(variants.All(v => v.descriptor == null));
             Assert.True(variants.All(v => v.GetCustomProperty(ShaderVariantProperty.Tier).Equals("Tier1")));
 
             var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty(ShaderVariantProperty.Platform)).Distinct();
@@ -408,9 +408,6 @@ Shader ""Custom/MyEditorShader""
                     Assert.True(colorSpaceGammaKeywordFound, "ColorSpace is Gamma but keyword UNITY_COLORSPACE_GAMMA was not found");
                 Assert.True(variantsForPlatform.All(v => v.GetCustomProperty(ShaderVariantProperty.Compiled).Equals(ShadersModule.k_NoRuntimeData)));
                 Assert.True(variantsForPlatform.All(v => v.GetCustomProperty(ShaderVariantProperty.Requirements).Contains(ShaderRequirements.BaseShaders.ToString())));
-
-                // check descriptor
-                Assert.True(variantsForPlatform.Select(v => v.descriptor.GetAreas()).All(areas => areas.Length == 1 && areas.Contains(Area.Info)));
             }
         }
 
@@ -534,12 +531,11 @@ Shader ""Custom/MyEditorShader""
             ShadersModule.ClearBuildData();
             var issues = Utility.Analyze(IssueCategory.Shader, i => i.description.Equals(k_ShaderName));
             var shaderIssue = issues.FirstOrDefault();
+
             Assert.NotNull(shaderIssue);
 
             // check descriptor
-            Assert.AreEqual("Assets/ProjectAuditor-Temp/Resources", shaderIssue.descriptor.description);
-            Assert.AreEqual(1, shaderIssue.descriptor.GetAreas().Length);
-            Assert.Contains(Area.Info, shaderIssue.descriptor.GetAreas());
+            Assert.IsNull(shaderIssue.descriptor);
 
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
