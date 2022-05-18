@@ -134,24 +134,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        static readonly ProblemDescriptor k_CompilerWarningDescriptor = new ProblemDescriptor
-            (
-            400001,
-            "Shader Compiler Warning"
-            )
-        {
-            severity = Rule.Severity.Warning
-        };
-
-        static readonly ProblemDescriptor k_CompilerErrorDescriptor = new ProblemDescriptor
-            (
-            400002,
-            "Shader Compiler Error"
-            )
-        {
-            severity = Rule.Severity.Error
-        };
-
         // k_NoPassNames and k_NoKeywords must be consistent with values assigned in SubProgram::Compile()
         internal static readonly string[] k_NoPassNames = new[] { "unnamed", "<unnamed>"}; // 2019.x uses: <unnamed>, whilst 2020.x uses unnamed
         internal static readonly Dictionary<string, string> k_StageNameMap = new Dictionary<string, string>()
@@ -164,8 +146,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string k_NoRuntimeData = "?";
         internal const string k_NotAvailable = "N/A";
         internal const string k_Unknown = "Unknown";
-
-        const int k_ShaderVariantFirstId = 400003;
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData = new Dictionary<Shader, List<ShaderVariantData>>();
 

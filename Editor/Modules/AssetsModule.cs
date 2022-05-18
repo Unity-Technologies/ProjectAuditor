@@ -21,20 +21,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
-            (
-            302000,
-            "Resources folder asset & dependencies",
-            Area.BuildSize,
-            "The Resources folder is a common source of many problems in Unity projects. Improper use of the Resources folder can bloat the size of a project’s build, lead to uncontrollable excessive memory utilization, and significantly increase application startup times.",
-            "Use AssetBundles when possible"
-            );
-
-        List<ProblemDescriptor> m_ProblemDescriptors;
-
         public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
-            return m_ProblemDescriptors;
+            yield return null;
         }
 
         public override IEnumerable<IssueLayout> GetLayouts()
@@ -44,13 +33,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Initialize(ProjectAuditorConfig config)
         {
-            m_ProblemDescriptors = new List<ProblemDescriptor>();
-            RegisterDescriptor(k_Descriptor);
-        }
-
-        public override void RegisterDescriptor(ProblemDescriptor descriptor)
-        {
-            m_ProblemDescriptors.Add(descriptor);
         }
 
         public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)

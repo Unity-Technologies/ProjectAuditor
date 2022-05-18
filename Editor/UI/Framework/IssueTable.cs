@@ -462,11 +462,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        void ClearExpanded()
-        {
-            state.expandedIDs.Clear();
-        }
-
         void ClearSelection()
         {
             state.selectedIDs.Clear();

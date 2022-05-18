@@ -79,24 +79,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         const string k_Unknown = "Unknown";
 #endif
 
-        static readonly ProblemDescriptor k_WarnDescriptor = new ProblemDescriptor
-            (
-            600002,
-            "Build step warning"
-            )
-        {
-            severity = Rule.Severity.Warning
-        };
-
-        static readonly ProblemDescriptor k_ErrorDescriptor = new ProblemDescriptor
-            (
-            600003,
-            "Build step error"
-            )
-        {
-            severity = Rule.Severity.Error
-        };
-
         static readonly IssueLayout k_FileLayout = new IssueLayout
         {
             category = IssueCategory.BuildFile,
