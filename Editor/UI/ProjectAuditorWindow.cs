@@ -237,10 +237,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuLabel = "Assets/Resources",
                 menuOrder = 1,
                 descriptionWithIcon = true,
-                enableGroupProperty = true,
                 showDependencyView = true,
                 showFilters = true,
-                //showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Asset Dependencies"),
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assets
@@ -252,7 +250,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 2,
                 menuLabel = "Assets/Shaders",
                 descriptionWithIcon = true,
-                enableGroupProperty = true,
                 showFilters = true,
                 onContextMenu = (menu, viewManager, issue) =>
                 {
@@ -277,7 +274,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Variants",
                 menuOrder = 3,
                 menuLabel = "Assets/Shader Variants",
-                enableGroupProperty = true,
                 showFilters = true,
                 showInfoPanel = true,
                 showRightPanels = true,
@@ -327,7 +323,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showDependencyView = true,
                 getAssemblyName = issue => issue.description,
-                enableGroupProperty = true,
                 //defaultGroupProperty = issue => issue.description.Split('.')[0],
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assemblies
@@ -339,7 +334,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Code",
                 menuLabel = "Code/Diagnostics",
                 menuOrder = 0,
-                enableGroupProperty = true,
                 showActions = true,
                 showAreaSelection = true,
                 showAssemblySelection = true,
@@ -362,7 +356,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Compiler Messages",
                 menuOrder = 98,
                 menuLabel = "Code/C# Compiler Messages",
-                enableGroupProperty = true,
                 showAssemblySelection = true,
                 showFilters = true,
                 showSeverityFilters = true,
@@ -422,7 +415,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Build Size",
                 menuLabel = "Build Report/Size",
                 menuOrder = 101,
-                enableGroupProperty = true,
                 descriptionWithIcon = true,
                 showFilters = true,
                 showInfoPanel = true,

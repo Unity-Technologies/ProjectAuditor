@@ -82,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_GroupDropdownItems = m_Layout.properties.Select(p => new Utility.DropdownItem
             {
                 Content = new GUIContent(p.defaultGroup ? p.name + " (default)" : p.name),
-                SelectionContent = new GUIContent("Group"),
+                SelectionContent = new GUIContent("Group By: " + p.name),
                 Enabled = p.format == PropertyFormat.String || p.format == PropertyFormat.Bool || p.format == PropertyFormat.Integer
             }).ToArray();
 
@@ -318,7 +318,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             SharedStyles.Label.fontSize = m_Preferences.fontSize;
             SharedStyles.TextArea.fontSize = m_Preferences.fontSize;
 
-            if (m_Desc.enableGroupProperty)
+            if (!m_Layout.hierarchy)
             {
                 // (optional) collapse/expand buttons
                 GUI.enabled = !m_Table.flatView;
@@ -343,12 +343,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         var index = (int)data;
                         if (index != m_Table.groupPropertyIndex)
                         {
+                            SetRowsExpanded(false);
+
                             m_Table.groupPropertyIndex = index;
                             m_Table.Clear();
                             m_Table.AddIssues(m_Issues.ToArray());
                             m_Table.Reload();
                         }
-                    }, GUILayout.Width(toolbarButtonSize));
+                    }, GUILayout.Width(toolbarButtonSize*2));
 
                 GUI.enabled = true;
             }
@@ -526,6 +528,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 columns[i].width = EditorPrefs.GetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width);
             }
             m_Table.flatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey), false);
+            m_Table.groupPropertyIndex = EditorPrefs.GetInt(GetPrefKey(k_GroupPropertyIndexKey), 0);
             m_TextFilter.searchDependencies = EditorPrefs.GetBool(GetPrefKey(k_SearchDepsKey), false);
             m_TextFilter.ignoreCase = EditorPrefs.GetBool(GetPrefKey(k_SearchIgnoreCaseKey), true);
             m_TextFilter.searchText = EditorPrefs.GetString(GetPrefKey(k_SearchStringKey));
@@ -539,6 +542,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 EditorPrefs.SetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width);
             }
             EditorPrefs.SetBool(GetPrefKey(k_FlatModeKey), m_Table.flatView);
+            EditorPrefs.SetInt(GetPrefKey(k_GroupPropertyIndexKey), m_Table.groupPropertyIndex);
             EditorPrefs.SetBool(GetPrefKey(k_SearchDepsKey), m_TextFilter.searchDependencies);
             EditorPrefs.SetBool(GetPrefKey(k_SearchIgnoreCaseKey), m_TextFilter.ignoreCase);
             EditorPrefs.SetString(GetPrefKey(k_SearchStringKey), m_TextFilter.searchText);
@@ -553,6 +557,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         const string k_PrefKeyPrefix = "ProjectAuditor.AnalysisView.";
         const string k_ColumnSizeKey = "ColumnSize";
         const string k_FlatModeKey = "FlatMode";
+        const string k_GroupPropertyIndexKey = "GroupPropertyIndex";
         const string k_SearchDepsKey = "SearchDeps";
         const string k_SearchIgnoreCaseKey = "SearchIgnoreCase";
         const string k_SearchStringKey = "SearchString";
@@ -592,7 +597,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
             public static readonly GUIContent FlatModeButton = new GUIContent("Flat View");
-            public static readonly GUIContent GroupButton = new GUIContent("Group");
             public static readonly GUIContent Zoom = new GUIContent("Zoom");
 
             public static readonly GUIContent InfoFoldout = new GUIContent("Information");
