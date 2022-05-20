@@ -129,8 +129,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (activeView.desc.category == category)
                 return;
 
-            var viewIndex = Array.IndexOf(m_Views, GetView(category));
-            ChangeView(viewIndex);
+            var newView = GetView(category);
+            if (newView == null)
+                return; // assume the view was not registered
+
+            ChangeView(Array.IndexOf(m_Views, newView));
         }
 
         public void ChangeView(int index)

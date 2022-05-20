@@ -161,7 +161,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             yield return k_ShaderVariantLayout;
 #endif
 
-#if UNITY_2019_4_OR_NEWER
+#if UNITY_2019_1_OR_NEWER
             yield return k_ShaderCompilerMessageLayout;
 #endif
         }

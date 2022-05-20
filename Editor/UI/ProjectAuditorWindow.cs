@@ -298,6 +298,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderVariants
             });
+
+#if UNITY_2019_1_OR_NEWER
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.ShaderCompilerMessage,
@@ -313,6 +315,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
             });
+#endif
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.Assembly,
