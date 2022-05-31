@@ -212,13 +212,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int columnIndex, ref RowGUIArgs args)
         {
             var property = m_Layout.properties[columnIndex];
-            var columnType = property.type;
+            var propertyType = property.type;
             var labelStyle = SharedStyles.Label;
             var item = treeViewItem as IssueTableItem;
 
             if (item == null)
             {
-                if (columnType == PropertyType.Description)
+                if (propertyType == PropertyType.Description)
                     EditorGUI.LabelField(cellRect, new GUIContent(treeViewItem.displayName, treeViewItem.displayName), labelStyle);
                 return;
             }
@@ -260,7 +260,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         GUI.enabled = false;
                 }
 
-                switch (columnType)
+                switch (propertyType)
                 {
                     case PropertyType.CriticalContext:
                     {
@@ -304,11 +304,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                     case PropertyType.Path:
                     case PropertyType.FileType:
-                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(columnType)), labelStyle);
+                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(propertyType)), labelStyle);
                         break;
 
                     default:
-                        var customProperty = issue.GetProperty(columnType);
+                        var customProperty = issue.GetProperty(propertyType);
                         if (customProperty != string.Empty)
                         {
                             bool boolValue;
