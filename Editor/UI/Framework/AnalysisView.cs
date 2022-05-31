@@ -350,7 +350,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             m_Table.AddIssues(m_Issues.ToArray());
                             m_Table.Reload();
                         }
-                    }, GUILayout.Width(toolbarButtonSize*2));
+                    }, GUILayout.Width(toolbarButtonSize * 2));
 
                 GUI.enabled = true;
             }
