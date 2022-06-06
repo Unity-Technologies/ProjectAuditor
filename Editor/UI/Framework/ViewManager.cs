@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -82,13 +83,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Profiler.EndSample();
         }
 
-        public void Audit(ProjectAuditor projectAuditor)
+        public void Audit(ProjectAuditor projectAuditor, ProjectReport report = null)
         {
             var issues = new List<ProjectIssue>();
             var modules = m_Categories.Select(projectAuditor.GetModule).Distinct();
             foreach (var module in modules)
             {
-                module.Audit(issue => { issues.Add(issue); });
+                module.Audit(issue =>
+                {
+                    if (report != null)
+                        report.AddIssue(issue);
+                    issues.Add(issue);
+                });
             }
 
             foreach (var view in m_Views)
