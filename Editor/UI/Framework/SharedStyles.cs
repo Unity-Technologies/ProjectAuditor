@@ -48,7 +48,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get
             {
                 if (s_TextArea == null)
+                {
                     s_TextArea = new GUIStyle(EditorStyles.textArea);
+                    s_TextArea.richText = true;
+                }
+
                 return s_TextArea;
             }
         }
