@@ -56,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (progress != null)
                     progress.Advance();
 
-                foreach (var issue in analyzer.Analyze())
+                foreach (var issue in analyzer.Analyze(projectAuditorParams.platform))
                 {
                     projectAuditorParams.onIssueFound(issue);
                 }

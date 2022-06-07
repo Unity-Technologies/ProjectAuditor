@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
 using UnityEditor.Macros;
 using UnityEngine;
 
@@ -42,20 +43,20 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             }
         }
 
-        public IEnumerable<ProjectIssue> Analyze()
+        public IEnumerable<ProjectIssue> Analyze(BuildTarget platform)
         {
             if (m_ProblemDescriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
 
             foreach (var descriptor in m_ProblemDescriptors)
             {
-                var issue = Evaluate(descriptor);
+                var issue = Evaluate(descriptor, platform);
                 if (issue != null)
                     yield return issue;
             }
         }
 
-        ProjectIssue Evaluate(ProblemDescriptor descriptor)
+        ProjectIssue Evaluate(ProblemDescriptor descriptor, BuildTarget platform)
         {
             if (string.IsNullOrEmpty(descriptor.customevaluator))
             {
@@ -80,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             {
                 var evalType = typeof(Evaluators);
                 var method = evalType.GetMethod(descriptor.customevaluator);
-                if ((bool)method.Invoke(null, null))
+                if ((bool)method.Invoke(null, new object[] {platform}))
                     return NewIssue(descriptor, descriptor.description);
             }
 

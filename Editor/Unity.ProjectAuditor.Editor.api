@@ -407,7 +407,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
     public interface ISettingsAnalyzer
     {
-        public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> Analyze();
+        public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> Analyze(UnityEditor.BuildTarget platform);
         public abstract void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorModule module);
     }
 }

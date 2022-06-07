@@ -28,37 +28,37 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void SettingsAnalysis_Default_AccelerometerFrequency()
         {
-            Assert.True(Evaluators.PlayerSettingsAccelerometerFrequency());
+            Assert.True(Evaluators.PlayerSettingsAccelerometerFrequency(EditorUserBuildSettings.activeBuildTarget));
         }
 
         [Test]
         public void SettingsAnalysis_Default_PhysicsLayerCollisionMatrix()
         {
-            Assert.True(Evaluators.PhysicsLayerCollisionMatrix());
+            Assert.True(Evaluators.PhysicsLayerCollisionMatrix(EditorUserBuildSettings.activeBuildTarget));
         }
 
         [Test]
         public void SettingsAnalysis_Default_Physics2DLayerCollisionMatrix()
         {
-            Assert.True(Evaluators.Physics2DLayerCollisionMatrix());
+            Assert.True(Evaluators.Physics2DLayerCollisionMatrix(EditorUserBuildSettings.activeBuildTarget));
         }
 
         [Test]
         public void SettingsAnalysis_Default_QualitySettings()
         {
-            Assert.True(Evaluators.QualityUsingDefaultSettings());
+            Assert.True(Evaluators.QualityUsingDefaultSettings(EditorUserBuildSettings.activeBuildTarget));
         }
 
         [Test]
         public void SettingsAnalysis_Default_QualityAsyncUploadTimeSlice()
         {
-            Assert.True(Evaluators.QualityDefaultAsyncUploadTimeSlice());
+            Assert.True(Evaluators.QualityDefaultAsyncUploadTimeSlice(EditorUserBuildSettings.activeBuildTarget));
         }
 
         [Test]
         public void SettingsAnalysis_Default_QualityAsyncUploadBufferSize()
         {
-            Assert.True(Evaluators.QualityDefaultAsyncUploadBufferSize());
+            Assert.True(Evaluators.QualityDefaultAsyncUploadBufferSize(EditorUserBuildSettings.activeBuildTarget));
         }
 
         [Test]
@@ -118,7 +118,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var prevSplashScreenEnabled = PlayerSettings.SplashScreen.show;
             PlayerSettings.SplashScreen.show = splashScreenEnabled;
 
-            Assert.AreEqual(splashScreenEnabled, Evaluators.PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled());
+            Assert.AreEqual(splashScreenEnabled, Evaluators.PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled(EditorUserBuildSettings.activeBuildTarget));
 
             PlayerSettings.SplashScreen.show = prevSplashScreenEnabled;
         }
@@ -127,7 +127,8 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(true)]
         public void SettingsAnalysis_GraphicsMixedStandardShaderQuality_IsReported(bool isMixed)
         {
-            var buildGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+            var buildTarget = EditorUserBuildSettings.activeBuildTarget;
+            var buildGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
             var savedTier1settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier1);
             var savedTier2settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier2);
             var savedTier3settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier3);
@@ -144,7 +145,7 @@ namespace Unity.ProjectAuditor.EditorTests
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, tier2settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, tier3settings);
 
-            Assert.AreEqual(isMixed, Evaluators.GraphicsMixedStandardShaderQuality());
+            Assert.AreEqual(isMixed, Evaluators.GraphicsMixedStandardShaderQuality(buildTarget));
 
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, savedTier1settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, savedTier2settings);
@@ -155,7 +156,8 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(RenderingPath.DeferredShading)]
         public void SettingsAnalysis_GraphicsUsingRenderingPath_IsReported(RenderingPath renderingPath)
         {
-            var buildGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+            var buildTarget = EditorUserBuildSettings.activeBuildTarget;
+            var buildGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
             var savedTier1settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier1);
             var savedTier2settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier2);
             var savedTier3settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier3);
@@ -174,13 +176,13 @@ namespace Unity.ProjectAuditor.EditorTests
 
             if (renderingPath == RenderingPath.Forward)
             {
-                Assert.AreEqual(true, Evaluators.GraphicsUsingForwardRendering());
-                Assert.AreEqual(false, Evaluators.GraphicsUsingDeferredRendering());
+                Assert.AreEqual(true, Evaluators.GraphicsUsingForwardRendering(buildTarget));
+                Assert.AreEqual(false, Evaluators.GraphicsUsingDeferredRendering(buildTarget));
             }
             else
             {
-                Assert.AreEqual(false, Evaluators.GraphicsUsingForwardRendering());
-                Assert.AreEqual(true, Evaluators.GraphicsUsingDeferredRendering());
+                Assert.AreEqual(false, Evaluators.GraphicsUsingForwardRendering(buildTarget));
+                Assert.AreEqual(true, Evaluators.GraphicsUsingDeferredRendering(buildTarget));
             }
 
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, savedTier1settings);

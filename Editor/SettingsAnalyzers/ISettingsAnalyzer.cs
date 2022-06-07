@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 {
@@ -7,6 +8,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
     {
         void Initialize(ProjectAuditorModule module);
 
-        IEnumerable<ProjectIssue> Analyze();
+        IEnumerable<ProjectIssue> Analyze(BuildTarget platform);
     }
 }

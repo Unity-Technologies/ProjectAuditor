@@ -21,9 +21,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             module.RegisterDescriptor(k_Descriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze()
+        public IEnumerable<ProjectIssue> Analyze(BuildTarget platform)
         {
-            if (Evaluators.PlayerSettingsIsStaticBatchingEnabled(EditorUserBuildSettings.activeBuildTarget))
+            if (Evaluators.PlayerSettingsIsStaticBatchingEnabled(platform))
             {
                 yield return new ProjectIssue(k_Descriptor, IssueCategory.ProjectSetting);
             }

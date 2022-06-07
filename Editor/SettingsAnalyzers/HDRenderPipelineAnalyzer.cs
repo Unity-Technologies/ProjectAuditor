@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return k_AssetLitShaderModeBothOrMixed.id;
         }
 
-        public IEnumerable<ProjectIssue> Analyze()
+        public IEnumerable<ProjectIssue> Analyze(BuildTarget platform)
         {
             if (IsLitShaderModeBothOrMixed())
             {

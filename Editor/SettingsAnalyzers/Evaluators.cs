@@ -12,12 +12,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
     {
         static readonly GraphicsTier[] k_GraphicsTiers = { GraphicsTier.Tier1, GraphicsTier.Tier2, GraphicsTier.Tier3};
 
-        public static bool PlayerSettingsAccelerometerFrequency()
+        public static bool PlayerSettingsAccelerometerFrequency(BuildTarget platform)
         {
             return PlayerSettings.accelerometerFrequency != 0;
         }
 
-        public static bool PlayerSettingsGraphicsAPIs_iOS_OpenGLES()
+        public static bool PlayerSettingsGraphicsAPIs_iOS_OpenGLES(BuildTarget platform)
         {
             var graphicsAPIs = PlayerSettings.GetGraphicsAPIs(BuildTarget.iOS);
 
@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return !hasMetal;
         }
 
-        public static bool PlayerSettingsGraphicsAPIs_iOS_OpenGLESAndMetal()
+        public static bool PlayerSettingsGraphicsAPIs_iOS_OpenGLESAndMetal(BuildTarget platform)
         {
             var graphicsAPIs = PlayerSettings.GetGraphicsAPIs(BuildTarget.iOS);
 
@@ -36,19 +36,19 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return graphicsAPIs.Contains(GraphicsDeviceType.Metal) && hasOpenGLES;
         }
 
-        public static bool PlayerSettingsArchitecture_iOS()
+        public static bool PlayerSettingsArchitecture_iOS(BuildTarget platform)
         {
             // PlayerSettings.GetArchitecture returns an integer value associated with the architecture of a BuildTargetPlatformGroup. 0 - None, 1 - ARM64, 2 - Universal.
             return PlayerSettings.GetArchitecture(BuildTargetGroup.iOS) == 2;
         }
 
-        public static bool PlayerSettingsArchitecture_Android()
+        public static bool PlayerSettingsArchitecture_Android(BuildTarget platform)
         {
             return (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARMv7) != 0 &&
                 (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) != 0;
         }
 
-        public static bool PlayerSettingsManagedCodeStripping_iOS()
+        public static bool PlayerSettingsManagedCodeStripping_iOS(BuildTarget platform)
         {
 #if UNITY_2018_3_OR_NEWER
             var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.iOS);
@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 #endif
         }
 
-        public static bool PlayerSettingsManagedCodeStripping_Android()
+        public static bool PlayerSettingsManagedCodeStripping_Android(BuildTarget platform)
         {
 #if UNITY_2018_3_OR_NEWER
             var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.Android);
@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return (int)args[1] > 0;
         }
 
-        public static bool PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled()
+        public static bool PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled(BuildTarget platform)
         {
             if (!PlayerSettings.SplashScreen.show)
                 return false;
@@ -102,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return (bool)licenseAllowsDisablingProperty.GetValue(null, null);
         }
 
-        public static bool PhysicsLayerCollisionMatrix()
+        public static bool PhysicsLayerCollisionMatrix(BuildTarget platform)
         {
             const int numLayers = 32;
             for (var i = 0; i < numLayers; ++i)
@@ -112,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return true;
         }
 
-        public static bool Physics2DLayerCollisionMatrix()
+        public static bool Physics2DLayerCollisionMatrix(BuildTarget platform)
         {
             const int numLayers = 32;
             for (var i = 0; i < numLayers; ++i)
@@ -122,7 +122,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return true;
         }
 
-        public static bool QualityUsingDefaultSettings()
+        public static bool QualityUsingDefaultSettings(BuildTarget platform)
         {
             return QualitySettings.names.Length == 6 &&
                 QualitySettings.names[0] == "Very Low" &&
@@ -133,7 +133,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
                 QualitySettings.names[5] == "Ultra";
         }
 
-        public static bool QualityUsingLowQualityTextures()
+        public static bool QualityUsingLowQualityTextures(BuildTarget platform)
         {
             var usingLowTextureQuality = false;
             var initialQualityLevel = QualitySettings.GetQualityLevel();
@@ -153,7 +153,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return usingLowTextureQuality;
         }
 
-        public static bool QualityDefaultAsyncUploadTimeSlice()
+        public static bool QualityDefaultAsyncUploadTimeSlice(BuildTarget platform)
         {
             var usingDefaultAsyncUploadTimeslice = false;
             var initialQualityLevel = QualitySettings.GetQualityLevel();
@@ -173,7 +173,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return usingDefaultAsyncUploadTimeslice;
         }
 
-        public static bool QualityDefaultAsyncUploadBufferSize()
+        public static bool QualityDefaultAsyncUploadBufferSize(BuildTarget platform)
         {
             var usingDefaultAsyncUploadBufferSize = false;
             var initialQualityLevel = QualitySettings.GetQualityLevel();
@@ -193,25 +193,25 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return usingDefaultAsyncUploadBufferSize;
         }
 
-        public static bool GraphicsMixedStandardShaderQuality()
+        public static bool GraphicsMixedStandardShaderQuality(BuildTarget platform)
         {
-            var buildGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+            var buildGroup = BuildPipeline.GetBuildTargetGroup(platform);
             var standardShaderQualities = k_GraphicsTiers.Select(tier => EditorGraphicsSettings.GetTierSettings(buildGroup, tier).standardShaderQuality);
 
             return standardShaderQualities.Distinct().Count() > 1;
         }
 
-        public static bool GraphicsUsingForwardRendering()
+        public static bool GraphicsUsingForwardRendering(BuildTarget platform)
         {
-            var buildGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+            var buildGroup = BuildPipeline.GetBuildTargetGroup(platform);
             var renderingPaths = k_GraphicsTiers.Select(tier => EditorGraphicsSettings.GetTierSettings(buildGroup, tier).renderingPath);
 
             return renderingPaths.Any(path => path == RenderingPath.Forward);
         }
 
-        public static bool GraphicsUsingDeferredRendering()
+        public static bool GraphicsUsingDeferredRendering(BuildTarget platform)
         {
-            var buildGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+            var buildGroup = BuildPipeline.GetBuildTargetGroup(platform);
             var renderingPaths = k_GraphicsTiers.Select(tier => EditorGraphicsSettings.GetTierSettings(buildGroup, tier).renderingPath);
 
             return renderingPaths.Any(path => path == RenderingPath.DeferredShading);
