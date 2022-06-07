@@ -125,7 +125,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
         }
 
-        public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             if (m_ProblemDescriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
@@ -135,7 +135,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             var compilationPipeline = new AssemblyCompilation
             {
-                AssemblyCompilationFinished = (compilationTask, compilerMessages) => ProcessCompilerMessages(compilationTask, compilerMessages, onIssueFound),
+                AssemblyCompilationFinished = (compilationTask, compilerMessages) => ProcessCompilerMessages(compilationTask, compilerMessages, projectAuditorParams.onIssueFound),
                 CompilationMode = m_Config.CompilationMode
             };
 
@@ -147,7 +147,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 foreach (var assemblyInfo in assemblyInfos)
                 {
-                    onIssueFound(new ProjectIssue(assemblyInfo.name, IssueCategory.Assembly,
+                    projectAuditorParams.onIssueFound(new ProjectIssue(assemblyInfo.name, IssueCategory.Assembly,
                         new object[(int)AssemblyProperty.Num]
                         {
                             assemblyInfo.packageReadOnly,
@@ -179,10 +179,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 // workaround for empty 'relativePath' strings which are not all available when 'onIssueFoundInternal' is called
                 foreach (var issue in foundIssues)
-                    onIssueFound(issue);
+                    projectAuditorParams.onIssueFound(issue);
 
-                if (onComplete != null)
-                    onComplete();
+                if (projectAuditorParams.onComplete != null)
+                    projectAuditorParams.onComplete();
             });
 
             var assemblyDirectories = new List<string>();

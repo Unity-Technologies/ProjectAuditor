@@ -35,11 +35,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
         }
 
-        public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            AnalyzeResources(onIssueFound);
-            if (onComplete != null)
-                onComplete();
+            AnalyzeResources(projectAuditorParams.onIssueFound);
+            if (projectAuditorParams.onComplete != null)
+                projectAuditorParams.onComplete();
         }
 
         static void AnalyzeResources(Action<ProjectIssue> onIssueFound)

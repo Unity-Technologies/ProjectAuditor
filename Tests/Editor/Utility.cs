@@ -42,14 +42,18 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var module = projectAuditor.GetModule(category);
+            var projectAuditorParams = new ProjectAuditorParams
+            {
+                onIssueFound = issue => {
+                    if (issue.category != category)
+                        return;
 
-            module.Audit(issue => {
-                if (issue.category != category)
-                    return;
+                    if (predicate == null || predicate(issue))
+                        foundIssues.Add(issue);
+                }
+            };
 
-                if (predicate == null || predicate(issue))
-                    foundIssues.Add(issue);
-            });
+            module.Audit(projectAuditorParams);
 
             return foundIssues.ToArray();
         }

@@ -139,26 +139,26 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
 #endif
 
-        public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
 #if BUILD_REPORT_API_SUPPORT
             var buildReport = BuildReportProvider.GetBuildReport();
             if (buildReport != null)
             {
-                NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath, onIssueFound);
-                NewMetaData(k_KeyPlatform, buildReport.summary.platform, onIssueFound);
-                NewMetaData(k_KeyResult, buildReport.summary.result, onIssueFound);
-                NewMetaData(k_KeyStartTime, buildReport.summary.buildStartedAt, onIssueFound);
-                NewMetaData(k_KeyEndTime, buildReport.summary.buildEndedAt, onIssueFound);
-                NewMetaData(k_KeyTotalTime, Formatting.FormatBuildTime(buildReport.summary.totalTime), onIssueFound);
-                NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize), onIssueFound);
+                NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath, projectAuditorParams.onIssueFound);
+                NewMetaData(k_KeyPlatform, buildReport.summary.platform, projectAuditorParams.onIssueFound);
+                NewMetaData(k_KeyResult, buildReport.summary.result, projectAuditorParams.onIssueFound);
+                NewMetaData(k_KeyStartTime, buildReport.summary.buildStartedAt, projectAuditorParams.onIssueFound);
+                NewMetaData(k_KeyEndTime, buildReport.summary.buildEndedAt, projectAuditorParams.onIssueFound);
+                NewMetaData(k_KeyTotalTime, Formatting.FormatBuildTime(buildReport.summary.totalTime), projectAuditorParams.onIssueFound);
+                NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize), projectAuditorParams.onIssueFound);
 
-                AnalyzeBuildSteps(onIssueFound, buildReport);
-                AnalyzePackedAssets(onIssueFound, buildReport);
+                AnalyzeBuildSteps(projectAuditorParams.onIssueFound, buildReport);
+                AnalyzePackedAssets(projectAuditorParams.onIssueFound, buildReport);
             }
 #endif
-            if (onComplete != null)
-                onComplete();
+            if (projectAuditorParams.onComplete != null)
+                projectAuditorParams.onComplete();
         }
 
 #if BUILD_REPORT_API_SUPPORT

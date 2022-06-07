@@ -522,16 +522,15 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             var newIssues = new List<ProjectIssue>();
-            module.Audit(issue =>
+            var projectAuditorParams = new ProjectAuditorParams
             {
-                newIssues.Add(issue);
-                m_ProjectReport.AddIssue(issue);
-            },
-                () =>
+                onIssueFound = issue =>
                 {
-                },
-                new ProgressBar()
-            );
+                    newIssues.Add(issue);
+                    m_ProjectReport.AddIssue(issue);
+                }
+            };
+            module.Audit(projectAuditorParams, new ProgressBar());
 
             // update views
             var views = layouts.Select(l => m_ViewManager.GetView(l.category)).Distinct();

@@ -167,21 +167,25 @@ namespace Unity.ProjectAuditor.Editor
             foreach (var module in supportedModules)
             {
                 var startTime = stopwatch.ElapsedMilliseconds;
-                module.Audit(projectAuditorParams.onIssueFound, () =>
+                module.Audit(new ProjectAuditorParams(projectAuditorParams)
                 {
-                    if (m_Config.LogTimingsInfo)
-                        Debug.Log(module.GetType().Name + " took: " + (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
-
-                    var finished = --numModules == 0;
-                    if (finished)
+                    onComplete = () =>
                     {
-                        stopwatch.Stop();
                         if (m_Config.LogTimingsInfo)
-                            Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
-                    }
+                            Debug.Log(module.GetType().Name + " took: " +
+                                (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
 
-                    if (projectAuditorParams.onUpdate != null)
-                        projectAuditorParams.onUpdate(finished);
+                        var finished = --numModules == 0;
+                        if (finished)
+                        {
+                            stopwatch.Stop();
+                            if (m_Config.LogTimingsInfo)
+                                Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
+                        }
+
+                        if (projectAuditorParams.onUpdate != null)
+                            projectAuditorParams.onUpdate(finished);
+                    }
                 }, progress);
             }
 

@@ -40,20 +40,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
             m_Config = config;
         }
 
-        public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            NewMetaData("Date and Time", DateTime.Now, onIssueFound);
-            NewMetaData("Host Name", SystemInfo.deviceName, onIssueFound);
-            NewMetaData("Host Platform", SystemInfo.operatingSystem, onIssueFound);
-            NewMetaData("Company Name", Application.companyName, onIssueFound);
-            NewMetaData("Product Name", Application.productName, onIssueFound);
-            NewMetaData("Build Target", EditorUserBuildSettings.activeBuildTarget, onIssueFound);
-            NewMetaData("Compilation Mode", m_Config.CompilationMode, onIssueFound);
-            NewMetaData("Project Auditor Version", ProjectAuditor.PackageVersion, onIssueFound);
-            NewMetaData("Unity Version", Application.unityVersion, onIssueFound);
+            NewMetaData("Date and Time", DateTime.Now, projectAuditorParams.onIssueFound);
+            NewMetaData("Host Name", SystemInfo.deviceName, projectAuditorParams.onIssueFound);
+            NewMetaData("Host Platform", SystemInfo.operatingSystem, projectAuditorParams.onIssueFound);
+            NewMetaData("Company Name", Application.companyName, projectAuditorParams.onIssueFound);
+            NewMetaData("Product Name", Application.productName, projectAuditorParams.onIssueFound);
+            NewMetaData("Build Target", EditorUserBuildSettings.activeBuildTarget, projectAuditorParams.onIssueFound);
+            NewMetaData("Compilation Mode", m_Config.CompilationMode, projectAuditorParams.onIssueFound);
+            NewMetaData("Project Auditor Version", ProjectAuditor.PackageVersion, projectAuditorParams.onIssueFound);
+            NewMetaData("Unity Version", Application.unityVersion, projectAuditorParams.onIssueFound);
 
-            if (onComplete != null)
-                onComplete();
+            if (projectAuditorParams.onComplete != null)
+                projectAuditorParams.onComplete();
         }
 
         void NewMetaData(string key, object value, Action<ProjectIssue> onIssueFound)

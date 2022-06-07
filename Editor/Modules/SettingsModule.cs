@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             m_ProblemDescriptors.Add(descriptor);
         }
 
-        public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             if (progress != null)
                 progress.Start("Analyzing Settings", "Analyzing project settings", m_Analyzers.Count);
@@ -58,15 +58,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var issue in analyzer.Analyze())
                 {
-                    onIssueFound(issue);
+                    projectAuditorParams.onIssueFound(issue);
                 }
             }
 
             if (progress != null)
                 progress.Clear();
 
-            if (onComplete != null)
-                onComplete();
+            if (projectAuditorParams.onComplete != null)
+                projectAuditorParams.onComplete();
         }
 
         void AddAnalyzer(ISettingsAnalyzer analyzer)

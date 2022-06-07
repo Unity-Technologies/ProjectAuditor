@@ -166,7 +166,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #endif
         }
 
-        public override void Audit(Action<ProjectIssue> onIssueFound, Action onComplete = null, IProgress progress = null)
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var shaderPathMap = new Dictionary<Shader, string>();
             var shaderGuids = AssetDatabase.FindAssets("t:shader");
@@ -267,11 +267,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     }
                 }
 #endif
-                AddShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader), onIssueFound);
+                AddShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader), projectAuditorParams.onIssueFound);
             }
 
-            if (onComplete != null)
-                onComplete();
+            if (projectAuditorParams.onComplete != null)
+                projectAuditorParams.onComplete();
         }
 
         void AddShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)

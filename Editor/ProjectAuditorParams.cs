@@ -16,5 +16,15 @@ namespace Unity.ProjectAuditor.Editor
         {
             target = EditorUserBuildSettings.activeBuildTarget;
         }
+
+        public ProjectAuditorParams(ProjectAuditorParams original)
+        {
+            categories = original.categories;
+            target = original.target;
+
+            onIssueFound = original.onIssueFound;
+            onUpdate = original.onUpdate;
+            onComplete = original.onComplete;
+        }
     }
 }

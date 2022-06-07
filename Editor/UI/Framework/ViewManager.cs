@@ -87,14 +87,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             var issues = new List<ProjectIssue>();
             var modules = m_Categories.Select(projectAuditor.GetModule).Distinct();
-            foreach (var module in modules)
+            var projectAuditorParams = new ProjectAuditorParams
             {
-                module.Audit(issue =>
+                onIssueFound = issue =>
                 {
                     if (report != null)
                         report.AddIssue(issue);
                     issues.Add(issue);
-                });
+                }
+            };
+            foreach (var module in modules)
+            {
+                module.Audit(projectAuditorParams);
             }
 
             foreach (var view in m_Views)
