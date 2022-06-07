@@ -94,8 +94,8 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 #endif
 
         public Action<AssemblyCompilationTask, CompilerMessage[]> AssemblyCompilationFinished;
-        public CompilationMode CompilationMode;
-        public BuildTarget Platform;
+        public CompilationMode CompilationMode = CompilationMode.Player;
+        public BuildTarget Platform = EditorUserBuildSettings.activeBuildTarget;
 
         public static CodeOptimization CodeOptimization = CodeOptimization.Release;
 

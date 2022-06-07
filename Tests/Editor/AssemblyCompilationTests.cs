@@ -3,7 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
-using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
@@ -39,6 +39,16 @@ class MyClass
         public void TearDown()
         {
             TempAsset.Cleanup();
+        }
+
+        [Test]
+        public void AssemblyCompilation_DefaultSettings_AreCorrect()
+        {
+            using (var compilationHelper = new AssemblyCompilation())
+            {
+                Assert.AreEqual(CompilationMode.Player, compilationHelper.CompilationMode);
+                Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, compilationHelper.Platform);
+            }
         }
 
         [Test]
