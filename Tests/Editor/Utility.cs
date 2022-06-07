@@ -22,11 +22,14 @@ namespace Unity.ProjectAuditor.EditorTests
             config.AnalyzeInBackground = false;
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-
-            projectAuditor.Audit(issue => {
-                if (predicate == null || predicate(issue))
-                    foundIssues.Add(issue);
-            }, b => {});
+            var projectAuditorParams = new ProjectAuditorParams
+            {
+                onIssueFound = issue => {
+                    if (predicate == null || predicate(issue))
+                        foundIssues.Add(issue);
+                },
+            };
+            projectAuditor.Audit(projectAuditorParams);
 
             return foundIssues.ToArray();
         }

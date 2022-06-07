@@ -135,8 +135,12 @@ namespace Unity.ProjectAuditor.Editor
         {
             var projectReport = new ProjectReport();
             var completed = false;
-
-            Audit(projectReport.AddIssue, _completed => { completed = _completed; }, progress);
+            var projectAuditorParams = new ProjectAuditorParams
+            {
+                onIssueFound = projectReport.AddIssue,
+                onUpdate = _completed => { completed = _completed; }
+            };
+            Audit(projectAuditorParams, progress);
 
             while (!completed)
                 Thread.Sleep(50);
@@ -146,17 +150,16 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Runs all modules that are both supported and enabled.
         /// </summary>
-        /// <param name="onIssueFound"> Action called whenever a new issue is found </param>
-        /// <param name="onUpdate"> Action called whenever a module completes </param>
+        /// <param name="projectAuditorParams"> Parameters to control the audit process </param>
         /// <param name="progress"> Progress bar, if applicable </param>
-        public void Audit(Action<ProjectIssue> onIssueFound, Action<bool> onUpdate, IProgress progress = null)
+        public void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var supportedModules = m_Modules.Where(m => m.IsSupported() && m.IsEnabledByDefault()).ToArray();
             var numModules = supportedModules.Length;
             if (numModules == 0)
             {
                 // early out if, for any reason, there are no registered modules
-                onUpdate(true);
+                projectAuditorParams.onUpdate(true);
                 return;
             }
 
@@ -164,7 +167,7 @@ namespace Unity.ProjectAuditor.Editor
             foreach (var module in supportedModules)
             {
                 var startTime = stopwatch.ElapsedMilliseconds;
-                module.Audit(onIssueFound, () =>
+                module.Audit(projectAuditorParams.onIssueFound, () =>
                 {
                     if (m_Config.LogTimingsInfo)
                         Debug.Log(module.GetType().Name + " took: " + (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
@@ -177,7 +180,7 @@ namespace Unity.ProjectAuditor.Editor
                             Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
                     }
 
-                    onUpdate(finished);
+                    projectAuditorParams.onUpdate(finished);
                 }, progress);
             }
 

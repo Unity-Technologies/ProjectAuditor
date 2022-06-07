@@ -113,7 +113,7 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectAuditor(string assetPath) {}
         public ProjectAuditor(Unity.ProjectAuditor.Editor.ProjectAuditorConfig projectAuditorConfig) {}
         public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
-        public void Audit(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<bool> onUpdate, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
+        public void Audit(Unity.ProjectAuditor.Editor.ProjectAuditorParams projectAuditorParams, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
         public Unity.ProjectAuditor.Editor.IssueLayout GetLayout(Unity.ProjectAuditor.Editor.IssueCategory category);
         public static Unity.ProjectAuditor.Editor.IssueCategory GetOrRegisterCategory(string name);
         public static int NumCategories();
@@ -148,6 +148,16 @@ namespace Unity.ProjectAuditor.Editor
         public virtual bool IsEnabledByDefault();
         public virtual bool IsSupported();
         public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+    }
+
+    public class ProjectAuditorParams
+    {
+        public Unity.ProjectAuditor.Editor.IssueCategory[] categories;
+        public System.Action onComplete;
+        public System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound;
+        public System.Action<bool> onUpdate;
+        public UnityEditor.BuildTarget target;
+        public ProjectAuditorParams() {}
     }
 
     public class ProjectIssue

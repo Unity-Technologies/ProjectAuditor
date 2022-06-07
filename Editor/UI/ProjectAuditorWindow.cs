@@ -460,13 +460,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ViewManager.Clear();
 
             var newIssues = new List<ProjectIssue>();
-
-            m_ProjectAuditor.Audit(projectIssue =>
+            var projectAuditorParams = new ProjectAuditorParams
             {
-                newIssues.Add(projectIssue);
-                m_ProjectReport.AddIssue(projectIssue);
-            },
-                completed =>
+                onIssueFound = projectIssue =>
+                {
+                    newIssues.Add(projectIssue);
+                    m_ProjectReport.AddIssue(projectIssue);
+                },
+                onUpdate = completed =>
                 {
                     // add batch of issues
                     m_ViewManager.AddIssues(newIssues.ToArray());
@@ -478,9 +479,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
 
                     m_ShouldRefresh = true;
-                },
-                new ProgressBar()
-            );
+                }
+            };
+            m_ProjectAuditor.Audit(projectAuditorParams, new ProgressBar());
         }
 
         void Update()
