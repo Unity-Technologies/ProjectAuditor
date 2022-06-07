@@ -180,7 +180,8 @@ namespace Unity.ProjectAuditor.Editor
                             Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
                     }
 
-                    projectAuditorParams.onUpdate(finished);
+                    if (projectAuditorParams.onUpdate != null)
+                        projectAuditorParams.onUpdate(finished);
                 }, progress);
             }
 
