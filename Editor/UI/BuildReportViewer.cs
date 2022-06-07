@@ -32,12 +32,20 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_ViewManager == null || !m_ViewManager.IsValid())
             {
                 BuildReportModule.BuildReportProvider = this;
+
                 var projectAuditor = new ProjectAuditor();
-                m_ViewManager = new ViewManager(new[] { IssueCategory.BuildStep, IssueCategory.BuildFile});
+                var categories = new[] {IssueCategory.BuildStep, IssueCategory.BuildFile};
+
+                m_ViewManager = new ViewManager(categories);
                 m_ViewManager.Create(projectAuditor, m_Preferences, this);
-                m_ViewManager.Audit(projectAuditor);
                 m_ViewManager.activeViewIndex = m_ActiveViewIndex;
                 m_ViewManager.onViewChanged = index => m_ActiveViewIndex = index;
+
+                projectAuditor.Audit(new ProjectAuditorParams
+                {
+                    categories = categories
+                });
+
                 BuildReportModule.BuildReportProvider = BuildReportModule.DefaultBuildReportProvider;
             }
         }

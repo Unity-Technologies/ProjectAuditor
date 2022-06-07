@@ -83,31 +83,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Profiler.EndSample();
         }
 
-        public void Audit(ProjectAuditor projectAuditor, ProjectReport report = null)
-        {
-            var issues = new List<ProjectIssue>();
-            var modules = m_Categories.Select(projectAuditor.GetModule).Distinct();
-            var projectAuditorParams = new ProjectAuditorParams
-            {
-                onIssueFound = issue =>
-                {
-                    if (report != null)
-                        report.AddIssue(issue);
-                    issues.Add(issue);
-                }
-            };
-            foreach (var module in modules)
-            {
-                module.Audit(projectAuditorParams);
-            }
-
-            foreach (var view in m_Views)
-            {
-                view.AddIssues(issues);
-                view.Refresh();
-            }
-        }
-
         public void ClearView(IssueCategory category)
         {
             var view = GetView(category);
