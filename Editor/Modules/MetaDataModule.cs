@@ -47,7 +47,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             NewMetaData("Host Platform", SystemInfo.operatingSystem, projectAuditorParams.onIssueFound);
             NewMetaData("Company Name", Application.companyName, projectAuditorParams.onIssueFound);
             NewMetaData("Product Name", Application.productName, projectAuditorParams.onIssueFound);
-            NewMetaData("Build Target", EditorUserBuildSettings.activeBuildTarget, projectAuditorParams.onIssueFound);
+            NewMetaData("Active Target", EditorUserBuildSettings.activeBuildTarget, projectAuditorParams.onIssueFound);
+            NewMetaData("Analysis Target", projectAuditorParams.target, projectAuditorParams.onIssueFound);
             NewMetaData("Compilation Mode", m_Config.CompilationMode, projectAuditorParams.onIssueFound);
             NewMetaData("Project Auditor Version", ProjectAuditor.PackageVersion, projectAuditorParams.onIssueFound);
             NewMetaData("Unity Version", Application.unityVersion, projectAuditorParams.onIssueFound);
