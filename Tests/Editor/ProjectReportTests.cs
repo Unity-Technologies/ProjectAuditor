@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -72,7 +73,7 @@ class MyClass : MonoBehaviour
             Assert.AreEqual(0, projectReport.GetNumIssues(IssueCategory.ProjectSetting));
         }
 
-        ProjectIssue[] AnalyzeAndExport(IssueCategory category, string path, Func<ProjectIssue, bool> predicate = null)
+        IReadOnlyCollection<ProjectIssue> AnalyzeAndExport(IssueCategory category, string path, Func<ProjectIssue, bool> predicate = null)
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             config.CompilationMode = CompilationMode.Player;

@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return m_Views != null && m_Views.Length > 0;
         }
 
-        public void AddIssues(ProjectIssue[] issues)
+        public void AddIssues(IReadOnlyCollection<ProjectIssue> issues)
         {
             Profiler.BeginSample("ViewManager.AddIssues");
             foreach (var view in m_Views)

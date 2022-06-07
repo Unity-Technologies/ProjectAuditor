@@ -235,7 +235,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public System.Action onViewExported;
         public int activeViewIndex { get; set; }
         public ViewManager(Unity.ProjectAuditor.Editor.IssueCategory[] categories) {}
-        public void AddIssues(Unity.ProjectAuditor.Editor.ProjectIssue[] issues);
+        public void AddIssues(System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.ProjectIssue> issues);
         public void Audit(Unity.ProjectAuditor.Editor.ProjectAuditor projectAuditor, Unity.ProjectAuditor.Editor.ProjectReport report = default(Unity.ProjectAuditor.Editor.ProjectReport));
         public void ChangeView(int index);
         public void ChangeView(Unity.ProjectAuditor.Editor.IssueCategory category);

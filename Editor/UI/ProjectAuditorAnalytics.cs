@@ -256,10 +256,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             var statsDict = new Dictionary<int, IssueStats>();
 
             var scriptIssues = projectReport.GetIssues(IssueCategory.Code);
-            var numScriptIssues = scriptIssues.Length;
-            for (var i = 0; i < numScriptIssues; ++i)
+            var numScriptIssues = scriptIssues.Count;
+            foreach (var issue in scriptIssues)
             {
-                var descriptor = scriptIssues[i].descriptor;
+                var descriptor = issue.descriptor;
 
                 var id = descriptor.id;
                 IssueStats stats;
@@ -270,7 +270,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 ++stats.numOccurrences;
 
-                if (scriptIssues[i].isPerfCriticalContext)
+                if (issue.isPerfCriticalContext)
                 {
                     ++stats.numHotPathOccurrences;
                 }

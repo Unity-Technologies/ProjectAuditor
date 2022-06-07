@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor
             get { return m_Issues.Count; }
         }
 
-        public ProjectIssue[] GetAllIssues()
+        public IReadOnlyCollection<ProjectIssue> GetAllIssues()
         {
             s_Mutex.WaitOne();
             var result = m_Issues.ToArray();
@@ -49,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="category"> Desired IssueCategory</param>
         /// <returns> Array of project issues</returns>
-        public ProjectIssue[] GetIssues(IssueCategory category)
+        public IReadOnlyCollection<ProjectIssue> GetIssues(IssueCategory category)
         {
             s_Mutex.WaitOne();
             var result = m_Issues.Where(i => i.category == category).ToArray();
