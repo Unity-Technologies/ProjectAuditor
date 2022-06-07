@@ -64,7 +64,7 @@ class MyClass
             config.CompilationMode = mode;
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-            var projectReport = projectAuditor.Audit();
+            var projectReport = projectAuditor.AuditSync();
 
             var issues = projectReport.GetIssues(IssueCategory.Code);
             var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TempAsset.relativePath));

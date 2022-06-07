@@ -79,7 +79,7 @@ class MyClass : MonoBehaviour
             config.CompilationMode = CompilationMode.Player;
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-            var projectReport = projectAuditor.Audit();
+            var projectReport = projectAuditor.AuditSync();
             var layout = projectAuditor.GetLayout(category);
 
             projectReport.ExportToCSV(path, layout, predicate);

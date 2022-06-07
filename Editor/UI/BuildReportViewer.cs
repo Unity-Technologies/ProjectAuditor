@@ -41,10 +41,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ViewManager.activeViewIndex = m_ActiveViewIndex;
                 m_ViewManager.onViewChanged = index => m_ActiveViewIndex = index;
 
-                projectAuditor.Audit(new ProjectAuditorParams
+                var report = projectAuditor.AuditSync(new ProjectAuditorParams
                 {
                     categories = categories
                 });
+
+                m_ViewManager.AddIssues(report.GetAllIssues());
+                foreach (var category in categories)
+                {
+                    m_ViewManager.GetView(category).Refresh();
+                }
 
                 BuildReportModule.BuildReportProvider = BuildReportModule.DefaultBuildReportProvider;
             }
