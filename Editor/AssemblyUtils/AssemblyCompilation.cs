@@ -95,6 +95,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         public Action<AssemblyCompilationTask, CompilerMessage[]> AssemblyCompilationFinished;
         public CompilationMode CompilationMode;
+        public BuildTarget Platform;
 
         public static CodeOptimization CodeOptimization = CodeOptimization.Release;
 
@@ -213,6 +214,8 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 var assemblyPath = Path.Combine(m_OutputFolder, filename);
                 var assemblyBuilder = new AssemblyBuilder(assemblyPath, assembly.sourceFiles);
 
+                assemblyBuilder.buildTarget = Platform;
+                assemblyBuilder.buildTargetGroup = BuildPipeline.GetBuildTargetGroup(Platform);
                 assemblyBuilder.buildFinished += (path, originalMessages) =>
                 {
                     var messages = new CompilerMessage[originalMessages.Length];

@@ -6,7 +6,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectAuditorParams
     {
         public IssueCategory[] categories;
-        public BuildTarget target;
+        public BuildTarget platform;
 
         public Action<ProjectIssue> onIssueFound;
         public Action<bool> onUpdate;
@@ -14,13 +14,13 @@ namespace Unity.ProjectAuditor.Editor
 
         public ProjectAuditorParams()
         {
-            target = EditorUserBuildSettings.activeBuildTarget;
+            platform = EditorUserBuildSettings.activeBuildTarget;
         }
 
         public ProjectAuditorParams(ProjectAuditorParams original)
         {
             categories = original.categories;
-            target = original.target;
+            platform = original.platform;
 
             onIssueFound = original.onIssueFound;
             onUpdate = original.onUpdate;

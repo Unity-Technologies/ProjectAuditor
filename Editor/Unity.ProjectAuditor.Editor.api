@@ -157,7 +157,7 @@ namespace Unity.ProjectAuditor.Editor
         public System.Action onComplete;
         public System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound;
         public System.Action<bool> onUpdate;
-        public UnityEditor.BuildTarget target;
+        public UnityEditor.BuildTarget platform;
         public ProjectAuditorParams() {}
         public ProjectAuditorParams(Unity.ProjectAuditor.Editor.ProjectAuditorParams original) {}
     }
