@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 
-            projectAuditor.Audit(issue => {
+            projectAuditor.AuditAsync(issue => {
                 if (predicate == null || predicate(issue))
                     foundIssues.Add(issue);
             }, b => {});

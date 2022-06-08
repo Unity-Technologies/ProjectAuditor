@@ -136,7 +136,7 @@ namespace Unity.ProjectAuditor.Editor
             var projectReport = new ProjectReport();
             var completed = false;
 
-            Audit(projectReport.AddIssue, _completed => { completed = _completed; }, progress);
+            AuditAsync(projectReport.AddIssue, _completed => { completed = _completed; }, progress);
 
             while (!completed)
                 Thread.Sleep(50);
@@ -149,7 +149,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="onIssueFound"> Action called whenever a new issue is found </param>
         /// <param name="onUpdate"> Action called whenever a module completes </param>
         /// <param name="progress"> Progress bar, if applicable </param>
-        public void Audit(Action<ProjectIssue> onIssueFound, Action<bool> onUpdate, IProgress progress = null)
+        public void AuditAsync(Action<ProjectIssue> onIssueFound, Action<bool> onUpdate, IProgress progress = null)
         {
             var supportedModules = m_Modules.Where(m => m.IsSupported() && m.IsEnabledByDefault()).ToArray();
             var numModules = supportedModules.Length;

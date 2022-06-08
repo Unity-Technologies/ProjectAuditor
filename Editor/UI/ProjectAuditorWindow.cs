@@ -461,7 +461,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var newIssues = new List<ProjectIssue>();
 
-            m_ProjectAuditor.Audit(projectIssue =>
+            m_ProjectAuditor.AuditAsync(projectIssue =>
             {
                 newIssues.Add(projectIssue);
                 m_ProjectReport.AddIssue(projectIssue);
