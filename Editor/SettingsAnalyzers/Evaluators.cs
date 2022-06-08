@@ -17,6 +17,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return PlayerSettings.accelerometerFrequency != 0;
         }
 
+        public static bool PlayerSettingsGraphicsAPIs_Android_Vulkan(BuildTarget platform)
+        {
+            return !PlayerSettings.GetGraphicsAPIs(BuildTarget.Android).Contains(GraphicsDeviceType.Vulkan);
+        }
+
         public static bool PlayerSettingsGraphicsAPIs_iOS_OpenGLES(BuildTarget platform)
         {
             var graphicsAPIs = PlayerSettings.GetGraphicsAPIs(BuildTarget.iOS);
