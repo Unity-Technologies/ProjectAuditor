@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// General-purpose constructor
         /// </summary>
-        /// <param name="description"> Diagnostic descriptor </param>
+        /// <param name="description"> User-friendly description </param>
         /// <param name="category"> Issue category </param>
         /// <param name="customProperties"> Issue-specific properties </param>
         public ProjectIssue(
@@ -86,6 +86,9 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
+        /// <summary>
+        /// Diagnostics-specific severity
+        /// </summary>
         public Rule.Severity severity
         {
             get
