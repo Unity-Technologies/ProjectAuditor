@@ -132,7 +132,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="progress"> Progress bar, if applicable </param>
         /// <param name="projectAuditorParams"> Parameters to control the audit process </param>
         /// <returns> Generated report </returns>
-        public ProjectReport AuditSync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var projectReport = new ProjectReport();
             var completed = false;
@@ -140,16 +140,16 @@ namespace Unity.ProjectAuditor.Editor
             projectAuditorParams.onIssueFound += projectReport.AddIssue;
             projectAuditorParams.onUpdate += _completed => { completed = _completed; };
 
-            Audit(projectAuditorParams, progress);
+            AuditAsync(projectAuditorParams, progress);
 
             while (!completed)
                 Thread.Sleep(50);
             return projectReport;
         }
 
-        public ProjectReport AuditSync(IProgress progress = null)
+        public ProjectReport Audit(IProgress progress = null)
         {
-            return AuditSync(new ProjectAuditorParams(), progress);
+            return Audit(new ProjectAuditorParams(), progress);
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="projectAuditorParams"> Parameters to control the audit process </param>
         /// <param name="progress"> Progress bar, if applicable </param>
-        public void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.Select(GetModule).Distinct() : m_Modules.Where(m => m.IsEnabledByDefault());
             var supportedModules = requestedModules.Where(m => m.IsSupported()).ToArray();
@@ -256,7 +256,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             if (m_Config.AnalyzeOnBuild)
             {
-                var projectReport = AuditSync();
+                var projectReport = Audit();
 
                 var numIssues = projectReport.NumTotalIssues;
                 if (numIssues > 0)

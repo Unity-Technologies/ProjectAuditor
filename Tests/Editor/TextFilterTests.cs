@@ -113,7 +113,7 @@ class InternalClass
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 
-            var projectReport = projectAuditor.AuditSync();
+            var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Code);
             var stringFilter = new TextFilter
             {
@@ -133,7 +133,7 @@ class InternalClass
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 
-            var projectReport = projectAuditor.AuditSync();
+            var projectReport = projectAuditor.Audit();
             var issues = projectReport.GetIssues(IssueCategory.Code);
             var stringFilter = new TextFilter
             {

@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
-            var projectReport = projectAuditor.AuditSync();
+            var projectReport = projectAuditor.Audit();
             projectReport.Save(k_ReportPath);
 
             var loadedReport = ProjectReport.Load(k_ReportPath);

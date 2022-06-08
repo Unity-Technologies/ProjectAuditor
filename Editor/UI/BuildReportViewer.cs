@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ViewManager.activeViewIndex = m_ActiveViewIndex;
                 m_ViewManager.onViewChanged = index => m_ActiveViewIndex = index;
 
-                var report = projectAuditor.AuditSync(new ProjectAuditorParams
+                var report = projectAuditor.Audit(new ProjectAuditorParams
                 {
                     categories = categories
                 });

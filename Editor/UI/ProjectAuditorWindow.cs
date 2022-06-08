@@ -481,7 +481,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ShouldRefresh = true;
                 }
             };
-            m_ProjectAuditor.Audit(projectAuditorParams, new ProgressBar());
+            m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar());
         }
 
         void Update()

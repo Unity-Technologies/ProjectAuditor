@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Module_CustomIssue_IsReported()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var report = projectAuditor.AuditSync();
+            var report = projectAuditor.Audit();
             var issues = report.GetIssues(IssueCategory.Code);
             Assert.NotNull(issues.FirstOrDefault(i => i.description.Equals("This is a test issue")));
         }

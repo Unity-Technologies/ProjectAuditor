@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.EditorTests
                         foundIssues.Add(issue);
                 },
             };
-            projectAuditor.Audit(projectAuditorParams);
+            projectAuditor.AuditAsync(projectAuditorParams);
 
             return foundIssues.ToArray();
         }
