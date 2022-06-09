@@ -247,15 +247,6 @@ namespace Unity.ProjectAuditor.Editor
             public const Unity.ProjectAuditor.Editor.Rule.Severity Warning = 2;
         }
     }
-
-    public class TextFilter : Unity.ProjectAuditor.Editor.IProjectIssueFilter
-    {
-        public bool ignoreCase;
-        public bool searchDependencies;
-        public string searchText;
-        public TextFilter() {}
-        public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
-    }
 }
 
 namespace Unity.ProjectAuditor.Editor.AssemblyUtils
