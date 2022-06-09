@@ -2,6 +2,7 @@
     "name": "Unity.ProjectAuditor.Editor",
     "rootNamespace": "",
     "references": [
+        "Unity.ProjectAuditor.Editor.Utils",
         "Unity.RenderPipelines.HighDefinition.Runtime"
     ],
     "includePlatforms": [

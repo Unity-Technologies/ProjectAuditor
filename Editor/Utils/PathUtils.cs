@@ -4,7 +4,7 @@ using SystemPath = System.IO.Path;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    internal static class PathUtils
+    public static class PathUtils
     {
         public const char Separator = '/';
 

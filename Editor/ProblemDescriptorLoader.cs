@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Unity.ProjectAuditor.Editor.Serialize;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.Utils
+namespace Unity.ProjectAuditor.Editor
 {
     static class ProblemDescriptorLoader
     {

@@ -7,7 +7,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    static class ShaderUtilProxy
+    public static class ShaderUtilProxy
     {
 #pragma warning disable 0414
         static Type s_TypeShaderUtil;

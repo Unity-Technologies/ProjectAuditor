@@ -105,6 +105,13 @@ namespace Unity.ProjectAuditor.Editor
         public virtual int GetHashCode();
     }
 
+    [System.Runtime.CompilerServices.Extension] public static class ProblemDescriptorExtensions
+    {
+        [System.Runtime.CompilerServices.Extension] public static Unity.ProjectAuditor.Editor.Area[] GetAreas(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+        [System.Runtime.CompilerServices.Extension] public static string GetAreasSummary(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+        [System.Runtime.CompilerServices.Extension] public static string GetFullTypeName(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+    }
+
     public class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport
     {
         public virtual int callbackOrder { get; }
@@ -172,6 +179,13 @@ namespace Unity.ProjectAuditor.Editor
         public void SetCustomProperties(object[] properties);
         public void SetCustomProperties(int numProperties, object property);
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : System.ValueType, new();
+    }
+
+    [System.Runtime.CompilerServices.Extension] public static class ProjectIssueExtensions
+    {
+        [System.Runtime.CompilerServices.Extension] public static string GetContext(Unity.ProjectAuditor.Editor.ProjectIssue issue);
+        [System.Runtime.CompilerServices.Extension] public static string GetProperty(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyType propertyType);
+        [System.Runtime.CompilerServices.Extension] public static string GetPropertyGroup(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyDefinition propertyDefinition);
     }
 
     public class ProjectReport
@@ -412,19 +426,5 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public Location(string path) {}
         public Location(string path, int line) {}
         public bool IsValid();
-    }
-
-    [System.Runtime.CompilerServices.Extension] public static class ProblemDescriptorExtensions
-    {
-        [System.Runtime.CompilerServices.Extension] public static Unity.ProjectAuditor.Editor.Area[] GetAreas(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-        [System.Runtime.CompilerServices.Extension] public static string GetAreasSummary(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-        [System.Runtime.CompilerServices.Extension] public static string GetFullTypeName(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-    }
-
-    [System.Runtime.CompilerServices.Extension] public static class ProjectIssueExtensions
-    {
-        [System.Runtime.CompilerServices.Extension] public static string GetContext(Unity.ProjectAuditor.Editor.ProjectIssue issue);
-        [System.Runtime.CompilerServices.Extension] public static string GetProperty(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyType propertyType);
-        [System.Runtime.CompilerServices.Extension] public static string GetPropertyGroup(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyDefinition propertyDefinition);
     }
 }
