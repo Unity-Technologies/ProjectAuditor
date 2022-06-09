@@ -14,12 +14,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static string[] SplitStrings(string combinedString, string separator = default(string));
     }
 
-    public static class GraphicsSettingsProxy
-    {
-        public static bool logShaderCompilationSupported { get; }
-        public static bool logWhenShaderIsCompiled { get; set; }
-    }
-
     public static class Json
     {
         public static T[] From<T>(string json);
