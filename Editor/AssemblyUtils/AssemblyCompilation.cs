@@ -76,14 +76,6 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         public int line;
     }
 
-    enum CompilationStatus
-    {
-        NotStarted,
-        IsCompiling,
-        Compiled,
-        MissingDependency
-    }
-
     class AssemblyCompilation : IDisposable
     {
         string m_OutputFolder = string.Empty;
@@ -194,7 +186,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 progress.Clear();
 
             if (AssemblyCompilationFinished != null)
-                foreach (var compilationTask in m_AssemblyCompilationTasks.Where(pair => pair.Value.status == CompilationStatus.MissingDependency).Select(p => p.Value))
+                foreach (var compilationTask in m_AssemblyCompilationTasks.Where(pair => pair.Value.status == TaskStatus.MissingDependency).Select(p => p.Value))
                 {
                     AssemblyCompilationFinished(compilationTask, new CompilerMessage[] {});
                 }

@@ -363,7 +363,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
 
             var severity = Rule.Severity.None;
-            if (compilationTask.status == CompilationStatus.MissingDependency)
+            if (compilationTask.status == TaskStatus.MissingDependency)
                 severity = Rule.Severity.Warning;
             else if (compilerMessages.Any(m => m.type == CompilerMessageType.Error))
                 severity = Rule.Severity.Error;
@@ -377,7 +377,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     compilationTask.durationInMs
                 })
                 {
-                    dependencies = new AssemblyDependencyNode(assemblyInfo.name, compilationTask.dependencies.Select(d => d.assemblyName).ToArray()),
+                    dependencies = new AssemblyDependencyNode(assemblyInfo.name, compilationTask.dependencies.Select(d => (d as AssemblyCompilationTask).assemblyName).ToArray()),
                     location = new Location(assemblyInfo.asmDefPath),
                     severity = severity
                 });

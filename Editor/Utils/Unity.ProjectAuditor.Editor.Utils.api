@@ -14,6 +14,17 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static string[] SplitStrings(string combinedString, string separator = default(string));
     }
 
+    public abstract class ITask
+    {
+        public Unity.ProjectAuditor.Editor.Utils.ITask[] dependencies;
+        protected Unity.ProjectAuditor.Editor.Utils.TaskStatus m_Status;
+        public Unity.ProjectAuditor.Editor.Utils.TaskStatus status { get; }
+        protected ITask() {}
+        public bool IsDone();
+        public abstract bool Success();
+        public abstract void Update();
+    }
+
     public static class Json
     {
         public static T[] From<T>(string json);
@@ -46,5 +57,14 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static int GetVariantCount(UnityEngine.Shader shader);
         public static bool HasInstancing(UnityEngine.Shader shader);
         public static bool HasSurfaceShaders(UnityEngine.Shader shader);
+    }
+
+    public enum TaskStatus
+    {
+        public const Unity.ProjectAuditor.Editor.Utils.TaskStatus Completed = 2;
+        public const Unity.ProjectAuditor.Editor.Utils.TaskStatus IsProgress = 1;
+        public const Unity.ProjectAuditor.Editor.Utils.TaskStatus MissingDependency = 3;
+        public const Unity.ProjectAuditor.Editor.Utils.TaskStatus NotStarted = 0;
+        public int value__;
     }
 }
