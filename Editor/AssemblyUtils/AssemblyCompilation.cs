@@ -180,7 +180,8 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 if (AssemblyCompilationFinished != null)
                     AssemblyCompilationFinished(compilationTask, messages);
             });
-            UpdateAssemblyBuilders();
+
+            Task.WaitFor(m_AssemblyCompilationTasks.Values.ToArray<ITask>());
 
             if (progress != null)
                 progress.Clear();
@@ -314,21 +315,6 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
                 m_AssemblyCompilationTasks[Path.GetFileName(assembly.name)].dependencies =
                     dependencies.ToArray();
-            }
-        }
-
-        void UpdateAssemblyBuilders()
-        {
-            while (true)
-            {
-                var pendingTasks = m_AssemblyCompilationTasks.Select(pair => pair.Value).Where(task => !task.IsDone());
-                if (!pendingTasks.Any())
-                    break;
-                foreach (var task in pendingTasks)
-                {
-                    task.Update();
-                }
-                System.Threading.Thread.Sleep(10);
             }
         }
 
