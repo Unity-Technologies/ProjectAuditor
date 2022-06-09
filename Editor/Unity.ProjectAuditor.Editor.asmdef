@@ -1,5 +1,6 @@
 {
     "name": "Unity.ProjectAuditor.Editor",
+    "rootNamespace": "",
     "references": [
         "Unity.RenderPipelines.HighDefinition.Runtime"
     ],
@@ -31,7 +32,7 @@
             "define": "HYBRID_RENDERER_ANALYZER_SUPPORT"
         },
         {
-            "name": "com.unity.rendering.hybrid",
+            "name": "com.unity.entities",
             "expression": "",
             "define": "ENTITIES_PACKAGE_INSTALLED"
         }
