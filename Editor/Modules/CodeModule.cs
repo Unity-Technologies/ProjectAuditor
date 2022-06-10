@@ -234,7 +234,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // Analyse all Player assemblies
                 foreach (var assemblyInfo in assemblyInfos)
                 {
-                    Console.WriteLine("[Project Auditor] Analyzing {0}", assemblyInfo.name);
                     if (progress != null)
                         progress.Advance(assemblyInfo.name);
 
