@@ -43,6 +43,13 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
     {
         const string k_VirtualPackagesRoot = "Packages";
 
+        internal static string s_ProjectPath;
+
+        static AssemblyInfoProvider()
+        {
+            s_ProjectPath = PathUtils.GetDirectoryName(Application.dataPath);
+        }
+
         internal static IEnumerable<string> GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes flags)
         {
             var assemblyPaths = new List<string>();
@@ -161,7 +168,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 return fullPath.Replace(assemblyInfo.packageResolvedPath, assemblyInfo.relativePath);
 
             // if it lives in Assets/... convert to relative path
-            return fullPath.Replace(ProjectAuditor.ProjectPath + PathUtils.Separator, "");
+            return fullPath.Replace(s_ProjectPath + PathUtils.Separator, "");
         }
     }
 }
