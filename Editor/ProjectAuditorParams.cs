@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor
         public BuildTarget platform;
 
         public Action<ProjectIssue> onIssueFound;
-        public Action<bool> onUpdate;
+        public Action<ProjectReport> onUpdate;
         public Action onComplete;
 
         public ProjectAuditorParams()

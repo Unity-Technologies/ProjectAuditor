@@ -1,6 +1,18 @@
 // This file is generated. Do not modify by hand.
 // XML documentation file not found. To check if public methods have XML comments,
 // make sure the XML doc file is present and located next to the scraped dll
+namespace Unity.ProjectAuditor.Editor
+{
+    public class TextFilter : Unity.ProjectAuditor.Editor.IProjectIssueFilter
+    {
+        public bool ignoreCase;
+        public bool searchDependencies;
+        public string searchText;
+        public TextFilter() {}
+        public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
+    }
+}
+
 namespace Unity.ProjectAuditor.Editor.UI
 {
     public class Draw2D

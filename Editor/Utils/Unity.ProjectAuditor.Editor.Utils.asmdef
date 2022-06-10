@@ -1,8 +1,6 @@
 {
-    "name": "Unity.ProjectAuditor.Editor.UI.Framework",
+    "name": "Unity.ProjectAuditor.Editor.Utils",
     "references": [
-        "Unity.ProjectAuditor.Editor",
-        "Unity.ProjectAuditor.Editor.Utils"
     ],
     "includePlatforms": [
         "Editor"
@@ -11,8 +9,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [],
-    "autoReferenced": true,
+    "autoReferenced": false,
     "defineConstraints": [],
-    "versionDefines": [],
     "noEngineReferences": false
 }

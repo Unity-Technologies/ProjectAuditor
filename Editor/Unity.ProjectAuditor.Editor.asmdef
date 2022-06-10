@@ -1,6 +1,8 @@
 {
     "name": "Unity.ProjectAuditor.Editor",
+    "rootNamespace": "",
     "references": [
+        "Unity.ProjectAuditor.Editor.Utils",
         "Unity.RenderPipelines.HighDefinition.Runtime"
     ],
     "includePlatforms": [
@@ -31,7 +33,7 @@
             "define": "HYBRID_RENDERER_ANALYZER_SUPPORT"
         },
         {
-            "name": "com.unity.rendering.hybrid",
+            "name": "com.unity.entities",
             "expression": "",
             "define": "ENTITIES_PACKAGE_INSTALLED"
         }

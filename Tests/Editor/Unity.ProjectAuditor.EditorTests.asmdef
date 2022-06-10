@@ -1,7 +1,9 @@
 {
     "name": "Unity.ProjectAuditor.EditorTests",
     "references": [
-        "Unity.ProjectAuditor.Editor"
+        "Unity.ProjectAuditor.Editor",
+        "Unity.ProjectAuditor.Editor.UI.Framework",
+	"Unity.ProjectAuditor.Editor.Utils"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
@@ -13,7 +15,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [
-        "Mono.Cecil.dll"        
+        "Mono.Cecil.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.Serialize
+namespace Unity.ProjectAuditor.Editor.Utils
 {
-    static class Json
+    public static class Json
     {
         public static T[] From<T>(string json)
         {

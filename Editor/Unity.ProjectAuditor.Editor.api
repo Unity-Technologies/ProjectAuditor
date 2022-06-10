@@ -105,6 +105,13 @@ namespace Unity.ProjectAuditor.Editor
         public virtual int GetHashCode();
     }
 
+    [System.Runtime.CompilerServices.Extension] public static class ProblemDescriptorExtensions
+    {
+        [System.Runtime.CompilerServices.Extension] public static Unity.ProjectAuditor.Editor.Area[] GetAreas(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+        [System.Runtime.CompilerServices.Extension] public static string GetAreasSummary(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+        [System.Runtime.CompilerServices.Extension] public static string GetFullTypeName(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+    }
+
     public class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport
     {
         public virtual int callbackOrder { get; }
@@ -156,7 +163,7 @@ namespace Unity.ProjectAuditor.Editor
         public Unity.ProjectAuditor.Editor.IssueCategory[] categories;
         public System.Action onComplete;
         public System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound;
-        public System.Action<bool> onUpdate;
+        public System.Action<Unity.ProjectAuditor.Editor.ProjectReport> onUpdate;
         public UnityEditor.BuildTarget platform;
         public ProjectAuditorParams() {}
         public ProjectAuditorParams(Unity.ProjectAuditor.Editor.ProjectAuditorParams original) {}
@@ -186,10 +193,16 @@ namespace Unity.ProjectAuditor.Editor
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : System.ValueType, new();
     }
 
+    [System.Runtime.CompilerServices.Extension] public static class ProjectIssueExtensions
+    {
+        [System.Runtime.CompilerServices.Extension] public static string GetContext(Unity.ProjectAuditor.Editor.ProjectIssue issue);
+        [System.Runtime.CompilerServices.Extension] public static string GetProperty(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyType propertyType);
+        [System.Runtime.CompilerServices.Extension] public static string GetPropertyGroup(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyDefinition propertyDefinition);
+    }
+
     public class ProjectReport
     {
         public int NumTotalIssues { get; }
-        public ProjectReport() {}
         public void ExportToCSV(string path, Unity.ProjectAuditor.Editor.IssueLayout layout, System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool> predicate = default(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool>));
         public System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.ProjectIssue> GetAllIssues();
         public System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.ProjectIssue> GetIssues(Unity.ProjectAuditor.Editor.IssueCategory category);
@@ -258,15 +271,6 @@ namespace Unity.ProjectAuditor.Editor
             public int value__;
             public const Unity.ProjectAuditor.Editor.Rule.Severity Warning = 2;
         }
-    }
-
-    public class TextFilter : Unity.ProjectAuditor.Editor.IProjectIssueFilter
-    {
-        public bool ignoreCase;
-        public bool searchDependencies;
-        public string searchText;
-        public TextFilter() {}
-        public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
     }
 }
 
@@ -433,19 +437,5 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public Location(string path) {}
         public Location(string path, int line) {}
         public bool IsValid();
-    }
-
-    [System.Runtime.CompilerServices.Extension] public static class ProblemDescriptorExtensions
-    {
-        [System.Runtime.CompilerServices.Extension] public static Unity.ProjectAuditor.Editor.Area[] GetAreas(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-        [System.Runtime.CompilerServices.Extension] public static string GetAreasSummary(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-        [System.Runtime.CompilerServices.Extension] public static string GetFullTypeName(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-    }
-
-    [System.Runtime.CompilerServices.Extension] public static class ProjectIssueExtensions
-    {
-        [System.Runtime.CompilerServices.Extension] public static string GetContext(Unity.ProjectAuditor.Editor.ProjectIssue issue);
-        [System.Runtime.CompilerServices.Extension] public static string GetProperty(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyType propertyType);
-        [System.Runtime.CompilerServices.Extension] public static string GetPropertyGroup(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyDefinition propertyDefinition);
     }
 }

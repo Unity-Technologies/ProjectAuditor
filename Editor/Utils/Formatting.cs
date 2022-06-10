@@ -2,7 +2,7 @@ using System;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    static class Formatting
+    public static class Formatting
     {
         public static string FormatBuildTime(TimeSpan t)
         {

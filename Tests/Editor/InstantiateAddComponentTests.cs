@@ -1,8 +1,7 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
-using Unity.ProjectAuditor.Editor.CodeAnalysis;
-using Unity.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.Editor;
 
 namespace Unity.ProjectAuditor.EditorTests
 {

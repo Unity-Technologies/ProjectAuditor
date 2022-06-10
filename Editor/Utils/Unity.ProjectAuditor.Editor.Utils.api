@@ -1,0 +1,50 @@
+// This file is generated. Do not modify by hand.
+// XML documentation file not found. To check if public methods have XML comments,
+// make sure the XML doc file is present and located next to the scraped dll
+namespace Unity.ProjectAuditor.Editor.Utils
+{
+    public static class Formatting
+    {
+        public static string CombineStrings(string[] strings, string separator = default(string));
+        public static string FormatBuildTime(System.TimeSpan t);
+        public static string FormatSize(System.UInt64 size);
+        public static string FormatTimeInSeconds(System.TimeSpan timeSpan);
+        public static string FormatTimeInSeconds(System.UInt64 timeMs);
+        public static string ReplaceStringSeparators(string combinedString, string separator);
+        public static string[] SplitStrings(string combinedString, string separator = default(string));
+    }
+
+    public static class Json
+    {
+        public static T[] From<T>(string json);
+        public static string To<T>(T[] array);
+        public static string To<T>(T[] array, bool prettyPrint);
+    }
+
+    public static class PathUtils
+    {
+        public const char Separator = /;
+        public static string Combine(string[] parts);
+        public static string Combine(string path1, string path2);
+        public static bool Exists(string path);
+        public static string GetDirectoryName(string path);
+        public static int GetExtensionIndexFromPath(string path);
+        public static int GetFilenameIndexFromPath(string path);
+        public static string GetFullPath(string path);
+        public static string ReplaceInvalidChars(string path);
+        public static string ReplaceSeparators(string path);
+        public static string[] Split(string path);
+    }
+
+    public static class ShaderUtilProxy
+    {
+        public static string[] GetCompilerPlatformNames();
+        public static int GetShaderActiveSubshaderIndex(UnityEngine.Shader shader);
+        public static string[] GetShaderGlobalKeywords(UnityEngine.Shader shader);
+        public static string[] GetShaderLocalKeywords(UnityEngine.Shader shader);
+        public static int GetSRPBatcherCompatibilityCode(UnityEngine.Shader shader, int subShaderIdx);
+        public static int GetVariantCount(UnityEngine.Shader shader);
+        public static bool HasInstancing(UnityEngine.Shader shader);
+        public static bool HasSurfaceShaders(UnityEngine.Shader shader);
+    }
+}

@@ -134,15 +134,13 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns> Generated report </returns>
         public ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var projectReport = new ProjectReport();
-            var completed = false;
+            ProjectReport projectReport = null;
 
-            projectAuditorParams.onIssueFound += projectReport.AddIssue;
-            projectAuditorParams.onUpdate += _completed => { completed = _completed; };
+            projectAuditorParams.onUpdate += result => { projectReport = result; };
 
             AuditAsync(projectAuditorParams, progress);
 
-            while (!completed)
+            while (projectReport == null)
                 Thread.Sleep(50);
             return projectReport;
         }
@@ -159,13 +157,14 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="progress"> Progress bar, if applicable </param>
         public void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
+            var result = new ProjectReport();
             var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.Select(GetModule).Distinct() : m_Modules.Where(m => m.IsEnabledByDefault());
             var supportedModules = requestedModules.Where(m => m.IsSupported()).ToArray();
             var numModules = supportedModules.Length;
             if (numModules == 0)
             {
                 // early out if, for any reason, there are no registered modules
-                projectAuditorParams.onUpdate(true);
+                projectAuditorParams.onUpdate(result);
                 return;
             }
 
@@ -175,6 +174,12 @@ namespace Unity.ProjectAuditor.Editor
                 var startTime = stopwatch.ElapsedMilliseconds;
                 module.Audit(new ProjectAuditorParams(projectAuditorParams)
                 {
+                    onIssueFound = issue =>
+                    {
+                        result.AddIssue(issue);
+                        if (projectAuditorParams.onIssueFound != null)
+                            projectAuditorParams.onIssueFound(issue);
+                    },
                     onComplete = () =>
                     {
                         if (m_Config.LogTimingsInfo)
@@ -190,7 +195,7 @@ namespace Unity.ProjectAuditor.Editor
                         }
 
                         if (projectAuditorParams.onUpdate != null)
-                            projectAuditorParams.onUpdate(finished);
+                            projectAuditorParams.onUpdate(finished ? result : null);
                     }
                 }, progress);
             }

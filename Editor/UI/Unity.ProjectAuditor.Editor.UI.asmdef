@@ -2,7 +2,8 @@
     "name": "Unity.ProjectAuditor.Editor.UI",
     "references": [
         "Unity.ProjectAuditor.Editor",
-        "Unity.ProjectAuditor.Editor.UI.Framework"
+        "Unity.ProjectAuditor.Editor.UI.Framework",
+        "Unity.ProjectAuditor.Editor.Utils"
     ],
     "includePlatforms": [
         "Editor"
