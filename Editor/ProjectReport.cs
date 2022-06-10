@@ -23,6 +23,10 @@ namespace Unity.ProjectAuditor.Editor
             get { return m_Issues.Count; }
         }
 
+        // for internal use only
+        internal ProjectReport()
+        {}
+
         public IReadOnlyCollection<ProjectIssue> GetAllIssues()
         {
             s_Mutex.WaitOne();

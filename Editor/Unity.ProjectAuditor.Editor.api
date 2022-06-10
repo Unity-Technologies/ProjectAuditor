@@ -120,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectAuditor(string assetPath) {}
         public ProjectAuditor(Unity.ProjectAuditor.Editor.ProjectAuditorConfig projectAuditorConfig) {}
         public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
-        public void AuditAsync(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<bool> onUpdate, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
+        public void AuditAsync(System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound, System.Action<Unity.ProjectAuditor.Editor.ProjectReport> onUpdate, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
         public Unity.ProjectAuditor.Editor.IssueLayout GetLayout(Unity.ProjectAuditor.Editor.IssueCategory category);
         public static Unity.ProjectAuditor.Editor.IssueCategory GetOrRegisterCategory(string name);
         public static int NumCategories();
@@ -191,7 +191,6 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectReport
     {
         public int NumTotalIssues { get; }
-        public ProjectReport() {}
         public void ExportToCSV(string path, Unity.ProjectAuditor.Editor.IssueLayout layout, System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool> predicate = default(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool>));
         public System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.ProjectIssue> GetAllIssues();
         public System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.ProjectIssue> GetIssues(Unity.ProjectAuditor.Editor.IssueCategory category);

@@ -456,7 +456,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ShouldRefresh = true;
             m_AnalysisState = AnalysisState.InProgress;
-            m_ProjectReport = new ProjectReport();
+            m_ProjectReport = null;
             m_ViewManager.Clear();
 
             var newIssues = new List<ProjectIssue>();
@@ -464,17 +464,17 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ProjectAuditor.AuditAsync(projectIssue =>
             {
                 newIssues.Add(projectIssue);
-                m_ProjectReport.AddIssue(projectIssue);
             },
-                completed =>
+                projectReport =>
                 {
                     // add batch of issues
                     m_ViewManager.AddIssues(newIssues.ToArray());
                     newIssues.Clear();
 
-                    if (completed)
+                    if (projectReport != null)
                     {
                         m_AnalysisState = AnalysisState.Completed;
+                        m_ProjectReport = projectReport;
                     }
 
                     m_ShouldRefresh = true;
