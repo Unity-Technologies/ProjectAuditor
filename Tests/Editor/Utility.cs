@@ -17,51 +17,25 @@ namespace Unity.ProjectAuditor.EditorTests
     {
         public static ProjectIssue[] Analyze(Func<ProjectIssue, bool> predicate = null)
         {
-            var foundIssues = new List<ProjectIssue>();
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             config.AnalyzeInBackground = false;
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-            var projectAuditorParams = new ProjectAuditorParams
-            {
-                onModuleCompleted = issues => foundIssues.AddRange(issues.Where(i => predicate == null || predicate(i)))
-                    /*
-                    onIssueFound = issue => {
-                        if (predicate == null || predicate(issue))
-                            foundIssues.Add(issue);
-                    },
-                */
-            };
-            projectAuditor.Audit(projectAuditorParams);
+            var projectReport = projectAuditor.Audit();
 
-            return foundIssues.ToArray();
+            return projectReport.GetAllIssues().ToArray();
         }
 
         public static ProjectIssue[] Analyze(IssueCategory category, Func<ProjectIssue, bool> predicate = null)
         {
-            var foundIssues = new List<ProjectIssue>();
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             config.AnalyzeInBackground = false;
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var module = projectAuditor.GetModule(category);
-            var projectAuditorParams = new ProjectAuditorParams
-            {
-                onModuleCompleted = issues => foundIssues.AddRange(issues.Where(i => i.category == category && (predicate == null || predicate(i))))
-                    /*
-                    onIssueFound = issue => {
-                        if (issue.category != category)
-                            return;
+            var issues = module.Audit();
 
-                        if (predicate == null || predicate(issue))
-                            foundIssues.Add(issue);
-                    }
-                */
-            };
-
-            module.Audit(projectAuditorParams);
-
-            return foundIssues.ToArray();
+            return issues.Where(i => i.category == category && (predicate == null || predicate(i))).ToArray();
         }
 
         public static ProjectIssue[] AnalyzeAndFindAssetIssues(TempAsset tempAsset,
