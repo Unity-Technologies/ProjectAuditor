@@ -216,13 +216,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
             });
 
             // final step: build call hierarchy. Note that this task will run AFTER the analysis finished.
-            analysisTask.ContinueWith((t) =>
+            var buildHierarchyTask = analysisTask.ContinueWith((t) =>
             {
-                var diagnostics = foundIssues.Where(i => i.category != IssueCategory.GenericInstance).ToList();
+                var diagnostics = foundIssues.Where(i => i.category == IssueCategory.Code).ToList();
                 Profiler.BeginSample("CodeModule.Audit.BuildCallHierarchies");
-                callCrawler.BuildCallHierarchies(diagnostics, null);
+                callCrawler.BuildCallHierarchies(diagnostics, progress);
                 Profiler.EndSample();
             });
+
+            if (!m_Config.AnalyzeInBackground)
+            {
+                return buildHierarchyTask.ContinueWith<IReadOnlyCollection<ProjectIssue>>(t => foundIssues);
+            }
 
             return analysisTask.ContinueWith<IReadOnlyCollection<ProjectIssue>>(t => foundIssues);
         }
