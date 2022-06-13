@@ -24,10 +24,13 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var projectAuditorParams = new ProjectAuditorParams
             {
-                onIssueFound = issue => {
-                    if (predicate == null || predicate(issue))
-                        foundIssues.Add(issue);
-                },
+                onModuleCompleted = issues => foundIssues.AddRange(issues.Where(i => predicate == null || predicate(i)))
+                    /*
+                    onIssueFound = issue => {
+                        if (predicate == null || predicate(issue))
+                            foundIssues.Add(issue);
+                    },
+                */
             };
             projectAuditor.Audit(projectAuditorParams);
 
@@ -44,13 +47,16 @@ namespace Unity.ProjectAuditor.EditorTests
             var module = projectAuditor.GetModule(category);
             var projectAuditorParams = new ProjectAuditorParams
             {
-                onIssueFound = issue => {
-                    if (issue.category != category)
-                        return;
+                onModuleCompleted = issues => foundIssues.AddRange(issues.Where(i => i.category == category && (predicate == null || predicate(i))))
+                    /*
+                    onIssueFound = issue => {
+                        if (issue.category != category)
+                            return;
 
-                    if (predicate == null || predicate(issue))
-                        foundIssues.Add(issue);
-                }
+                        if (predicate == null || predicate(issue))
+                            foundIssues.Add(issue);
+                    }
+                */
             };
 
             module.Audit(projectAuditorParams);

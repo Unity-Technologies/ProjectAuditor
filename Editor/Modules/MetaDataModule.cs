@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -40,21 +41,22 @@ namespace Unity.ProjectAuditor.Editor.Modules
             m_Config = config;
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override Task<IReadOnlyCollection<ProjectIssue>> AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            NewMetaData("Date and Time", DateTime.Now, projectAuditorParams.onIssueFound);
-            NewMetaData("Host Name", SystemInfo.deviceName, projectAuditorParams.onIssueFound);
-            NewMetaData("Host Platform", SystemInfo.operatingSystem, projectAuditorParams.onIssueFound);
-            NewMetaData("Company Name", Application.companyName, projectAuditorParams.onIssueFound);
-            NewMetaData("Product Name", Application.productName, projectAuditorParams.onIssueFound);
-            NewMetaData("Active Target", EditorUserBuildSettings.activeBuildTarget, projectAuditorParams.onIssueFound);
-            NewMetaData("Analysis Target", projectAuditorParams.platform, projectAuditorParams.onIssueFound);
-            NewMetaData("Compilation Mode", m_Config.CompilationMode, projectAuditorParams.onIssueFound);
-            NewMetaData("Project Auditor Version", ProjectAuditor.PackageVersion, projectAuditorParams.onIssueFound);
-            NewMetaData("Unity Version", Application.unityVersion, projectAuditorParams.onIssueFound);
+            var issues = new List<ProjectIssue>();
+            NewMetaData("Date and Time", DateTime.Now, issues.Add);
+            NewMetaData("Host Name", SystemInfo.deviceName, issues.Add);
+            NewMetaData("Host Platform", SystemInfo.operatingSystem, issues.Add);
+            NewMetaData("Company Name", Application.companyName, issues.Add);
+            NewMetaData("Product Name", Application.productName, issues.Add);
+            NewMetaData("Active Target", EditorUserBuildSettings.activeBuildTarget, issues.Add);
+            NewMetaData("Analysis Target", projectAuditorParams.platform, issues.Add);
+            NewMetaData("Compilation Mode", m_Config.CompilationMode, issues.Add);
+            NewMetaData("Project Auditor Version", ProjectAuditor.PackageVersion, issues.Add);
+            NewMetaData("Unity Version", Application.unityVersion, issues.Add);
 
-            if (projectAuditorParams.onComplete != null)
-                projectAuditorParams.onComplete();
+            IReadOnlyCollection<ProjectIssue> collection = issues.AsReadOnly();
+            return Task.FromResult(collection);
         }
 
         void NewMetaData(string key, object value, Action<ProjectIssue> onIssueFound)

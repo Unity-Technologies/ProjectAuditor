@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -134,15 +135,11 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns> Generated report </returns>
         public ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            ProjectReport projectReport = null;
+            var task = AuditAsync(projectAuditorParams, progress);
 
-            projectAuditorParams.onUpdate += result => { projectReport = result; };
+            task.Wait();
 
-            AuditAsync(projectAuditorParams, progress);
-
-            while (projectReport == null)
-                Thread.Sleep(50);
-            return projectReport;
+            return task.Result;
         }
 
         public ProjectReport Audit(IProgress progress = null)
@@ -155,53 +152,61 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="projectAuditorParams"> Parameters to control the audit process </param>
         /// <param name="progress"> Progress bar, if applicable </param>
-        public void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public Task<ProjectReport> AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var result = new ProjectReport();
             var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.Select(GetModule).Distinct() : m_Modules.Where(m => m.IsEnabledByDefault());
             var supportedModules = requestedModules.Where(m => m.IsSupported()).ToArray();
-            var numModules = supportedModules.Length;
-            if (numModules == 0)
+            if (supportedModules.Length == 0)
             {
-                // early out if, for any reason, there are no registered modules
-                projectAuditorParams.onUpdate(result);
-                return;
+                // early out if, for any reason, there are no registered modules (return empty report)
+                return Task.FromResult(result);
             }
 
+            if (progress != null)
+                progress.Start("Project Auditor", "Prepare Analysis", supportedModules.Length);
+
+            var tasks = new List<Task>();
             var stopwatch = Stopwatch.StartNew();
             foreach (var module in supportedModules)
             {
+                if (progress != null)
+                    progress.Advance(module.GetType().Name + " Analysis");
+
                 var startTime = stopwatch.ElapsedMilliseconds;
-                module.Audit(new ProjectAuditorParams(projectAuditorParams)
+                var task = module.AuditAsync(new ProjectAuditorParams(projectAuditorParams), progress).ContinueWith(t =>
                 {
-                    onIssueFound = issue =>
-                    {
-                        result.AddIssue(issue);
-                        if (projectAuditorParams.onIssueFound != null)
-                            projectAuditorParams.onIssueFound(issue);
-                    },
-                    onComplete = () =>
-                    {
-                        if (m_Config.LogTimingsInfo)
-                            Debug.Log(module.GetType().Name + " took: " +
-                                (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
+                    if (m_Config.LogTimingsInfo)
+                        Debug.Log(module.GetType().Name + " took: " +
+                            (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
 
-                        var finished = --numModules == 0;
-                        if (finished)
+                    if (projectAuditorParams.onModuleCompleted != null)
+                    {
+                        EditorApplication.delayCall += () =>
                         {
-                            stopwatch.Stop();
-                            if (m_Config.LogTimingsInfo)
-                                Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
-                        }
-
-                        if (projectAuditorParams.onUpdate != null)
-                            projectAuditorParams.onUpdate(finished ? result : null);
+                            projectAuditorParams.onModuleCompleted(t.Result);
+                        };
                     }
-                }, progress);
+
+                    result.AddIssues(t.Result);
+                });
+                tasks.Add(task);
             }
+
+            if (progress != null)
+                progress.Clear();
 
             if (m_Config.LogTimingsInfo)
                 Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
+
+            return Task.WhenAll(tasks).ContinueWith((t) =>
+            {
+                stopwatch.Stop();
+                if (m_Config.LogTimingsInfo)
+                    Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
+
+                return result;
+            });
         }
 
         internal T GetModule<T>() where T : ProjectAuditorModule

@@ -121,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectAuditor(Unity.ProjectAuditor.Editor.ProjectAuditorConfig projectAuditorConfig) {}
         public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
         public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.ProjectAuditorParams projectAuditorParams, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
-        public void AuditAsync(Unity.ProjectAuditor.Editor.ProjectAuditorParams projectAuditorParams, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
+        public System.Threading.Tasks.Task<Unity.ProjectAuditor.Editor.ProjectReport> AuditAsync(Unity.ProjectAuditor.Editor.ProjectAuditorParams projectAuditorParams, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
         public Unity.ProjectAuditor.Editor.IssueLayout GetLayout(Unity.ProjectAuditor.Editor.IssueCategory category);
         public static Unity.ProjectAuditor.Editor.IssueCategory GetOrRegisterCategory(string name);
         public static int NumCategories();
@@ -149,7 +149,9 @@ namespace Unity.ProjectAuditor.Editor
     public abstract class ProjectAuditorModule
     {
         protected ProjectAuditorModule() {}
-        public abstract void Audit(Unity.ProjectAuditor.Editor.ProjectAuditorParams projectAuditorParams, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
+        public System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.ProjectIssue> Audit(Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
+        public System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.ProjectIssue> Audit(Unity.ProjectAuditor.Editor.ProjectAuditorParams projectAuditorParams, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
+        public abstract System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.ProjectIssue>> AuditAsync(Unity.ProjectAuditor.Editor.ProjectAuditorParams projectAuditorParams, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
         [System.Runtime.CompilerServices.IteratorStateMachine(typeof(Unity.ProjectAuditor.Editor.ProjectAuditorModule.<GetDescriptors>d__0))] public virtual System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProblemDescriptor> GetDescriptors();
         public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.IssueLayout> GetLayouts();
         public virtual void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorConfig config);
@@ -161,9 +163,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectAuditorParams
     {
         public Unity.ProjectAuditor.Editor.IssueCategory[] categories;
-        public System.Action onComplete;
-        public System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound;
-        public System.Action<Unity.ProjectAuditor.Editor.ProjectReport> onUpdate;
+        public System.Action<System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.ProjectIssue>> onModuleCompleted;
         public UnityEditor.BuildTarget platform;
         public ProjectAuditorParams() {}
         public ProjectAuditorParams(Unity.ProjectAuditor.Editor.ProjectAuditorParams original) {}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.ProjectAuditor.Editor.SettingsAnalyzers;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -46,27 +47,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
             m_ProblemDescriptors.Add(descriptor);
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override Task<IReadOnlyCollection<ProjectIssue>> AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            if (progress != null)
-                progress.Start("Analyzing Settings", "Analyzing project settings", m_Analyzers.Count);
-
+            var issues = new List<ProjectIssue>();
             foreach (var analyzer in m_Analyzers)
             {
-                if (progress != null)
-                    progress.Advance();
-
                 foreach (var issue in analyzer.Analyze(projectAuditorParams.platform))
                 {
-                    projectAuditorParams.onIssueFound(issue);
+                    issues.Add(issue);
                 }
             }
 
-            if (progress != null)
-                progress.Clear();
-
-            if (projectAuditorParams.onComplete != null)
-                projectAuditorParams.onComplete();
+            IReadOnlyCollection<ProjectIssue> collection = issues.AsReadOnly();
+            return Task.FromResult(collection);
         }
 
         void AddAnalyzer(ISettingsAnalyzer analyzer)

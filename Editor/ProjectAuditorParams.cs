@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor
@@ -8,9 +9,7 @@ namespace Unity.ProjectAuditor.Editor
         public IssueCategory[] categories;
         public BuildTarget platform;
 
-        public Action<ProjectIssue> onIssueFound;
-        public Action<ProjectReport> onUpdate;
-        public Action onComplete;
+        public Action<IReadOnlyCollection<ProjectIssue>> onModuleCompleted; //should be called on main thread
 
         public ProjectAuditorParams()
         {
@@ -22,9 +21,7 @@ namespace Unity.ProjectAuditor.Editor
             categories = original.categories;
             platform = original.platform;
 
-            onIssueFound = original.onIssueFound;
-            onUpdate = original.onUpdate;
-            onComplete = original.onComplete;
+            onModuleCompleted = original.onModuleCompleted;
         }
     }
 }

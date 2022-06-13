@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build;
@@ -166,7 +167,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #endif
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override Task<IReadOnlyCollection<ProjectIssue>> AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var shaderPathMap = new Dictionary<Shader, string>();
             var shaderGuids = AssetDatabase.FindAssets("t:shader");
@@ -247,6 +248,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
             buildReportInfoAvailable = packetAssetInfos.Length > 0;
 #endif
+            var issues = new List<ProjectIssue>();
             var sortedShaders = shaderPathMap.Keys.ToList().OrderBy(shader => shader.name);
             foreach (var shader in sortedShaders)
             {
@@ -267,11 +269,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     }
                 }
 #endif
-                AddShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader), projectAuditorParams.onIssueFound);
+                AddShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader), issues.Add);
             }
 
-            if (projectAuditorParams.onComplete != null)
-                projectAuditorParams.onComplete();
+            IReadOnlyCollection<ProjectIssue> collection = issues.AsReadOnly();
+            return Task.FromResult(collection);
         }
 
         void AddShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)

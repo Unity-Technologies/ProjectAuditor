@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -33,11 +34,33 @@ namespace Unity.ProjectAuditor.Editor
         {}
 
         /// <summary>
-        /// This method audits the Unity project specific IssueCategory issues.
+        /// Helper method for synchronous Module Audit
         /// </summary>
-        /// <param name="onIssueFound"> Action called whenever a new issue is found </param>
-        /// <param name="onComplete"> Action called when the analysis completes </param>
         /// <param name="progress"> Progress bar, if applicable </param>
-        public abstract void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null);
+        public IReadOnlyCollection<ProjectIssue> Audit(IProgress progress = null)
+        {
+            return Audit(new ProjectAuditorParams(), progress);
+        }
+
+        /// <summary>
+        /// Helper method for synchronous Module Audit
+        /// </summary>
+        /// <param name="projectAuditorParams"> Parameters </param>
+        /// <param name="progress"> Progress bar, if applicable </param>
+        public IReadOnlyCollection<ProjectIssue> Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        {
+            var task = AuditAsync(projectAuditorParams, progress);
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        /// <summary>
+        /// Asynchronous Module Audit. Each module must implement a AuditAsync method.
+        /// </summary>
+        /// <param name="projectAuditorParams"> Parameters </param>
+        /// <param name="progress"> Progress bar, if applicable </param>
+        public abstract Task<IReadOnlyCollection<ProjectIssue>> AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null);
     }
 }

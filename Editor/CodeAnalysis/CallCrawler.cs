@@ -53,19 +53,22 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         readonly Dictionary<string, List<CallInfo>> m_BucketedCalls =
             new Dictionary<string, List<CallInfo>>();
 
-        public void Add(CallInfo callInfo)
+        public void AddCalls(IReadOnlyCollection<CallInfo> callInfos)
         {
-            var key = callInfo.callee.FullName;
-            List<CallInfo> calls;
-            if (!m_BucketedCalls.TryGetValue(key, out calls))
+            foreach (var callInfo in callInfos)
             {
-                calls = new List<CallInfo>();
-                m_BucketedCalls.Add(key, calls);
+                var key = callInfo.callee.FullName;
+                List<CallInfo> calls;
+                if (!m_BucketedCalls.TryGetValue(key, out calls))
+                {
+                    calls = new List<CallInfo>();
+                    m_BucketedCalls.Add(key, calls);
+                }
+                calls.Add(callInfo);
             }
-            calls.Add(callInfo);
         }
 
-        public void BuildCallHierarchies(List<ProjectIssue> issues, IProgress progress = null)
+        public void BuildCallHierarchies(IReadOnlyCollection<ProjectIssue> issues, IProgress progress = null)
         {
             if (issues.Count > 0)
             {

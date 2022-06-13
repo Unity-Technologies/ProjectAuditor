@@ -459,29 +459,23 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ProjectReport = null;
             m_ViewManager.Clear();
 
-            var newIssues = new List<ProjectIssue>();
             var projectAuditorParams = new ProjectAuditorParams
             {
-                onIssueFound = projectIssue =>
-                {
-                    newIssues.Add(projectIssue);
-                },
-                onUpdate = projectReport =>
+                onModuleCompleted = newIssues =>
                 {
                     // add batch of issues
-                    m_ViewManager.AddIssues(newIssues.ToArray());
-                    newIssues.Clear();
-
-                    if (projectReport != null)
-                    {
-                        m_AnalysisState = AnalysisState.Completed;
-                        m_ProjectReport = projectReport;
-                    }
+                    m_ViewManager.AddIssues(newIssues);
 
                     m_ShouldRefresh = true;
                 }
             };
-            m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar());
+            var task = m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar());
+
+            task.ContinueWith((t) =>
+            {
+                m_AnalysisState = AnalysisState.Completed;
+                m_ProjectReport = t.Result;
+            });
         }
 
         void Update()
@@ -521,23 +515,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ProjectReport.ClearIssues(layout.category);
             }
 
-            var newIssues = new List<ProjectIssue>();
-            var projectAuditorParams = new ProjectAuditorParams
-            {
-                onIssueFound = issue =>
-                {
-                    newIssues.Add(issue);
-                    m_ProjectReport.AddIssue(issue);
-                }
-            };
-            module.Audit(projectAuditorParams, new ProgressBar());
+            var issues = module.Audit(new ProgressBar());
+
+            m_ProjectReport.AddIssues(issues);
 
             // update views
             var views = layouts.Select(l => m_ViewManager.GetView(l.category)).Distinct();
             foreach (var view in views)
             {
                 view.Clear();
-                view.AddIssues(newIssues);
+                view.AddIssues(issues);
                 view.Refresh();
             }
         }

@@ -68,6 +68,13 @@ namespace Unity.ProjectAuditor.Editor
             s_Mutex.ReleaseMutex();
         }
 
+        internal void AddIssues(IReadOnlyCollection<ProjectIssue> issues)
+        {
+            s_Mutex.WaitOne();
+            m_Issues.AddRange(issues);
+            s_Mutex.ReleaseMutex();
+        }
+
         internal void ClearIssues(IssueCategory category)
         {
             s_Mutex.WaitOne();

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -139,26 +141,39 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
 #endif
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override Task<IReadOnlyCollection<ProjectIssue>> AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
 #if BUILD_REPORT_API_SUPPORT
             var buildReport = BuildReportProvider.GetBuildReport();
             if (buildReport != null)
             {
-                NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath, projectAuditorParams.onIssueFound);
-                NewMetaData(k_KeyPlatform, buildReport.summary.platform, projectAuditorParams.onIssueFound);
-                NewMetaData(k_KeyResult, buildReport.summary.result, projectAuditorParams.onIssueFound);
-                NewMetaData(k_KeyStartTime, buildReport.summary.buildStartedAt, projectAuditorParams.onIssueFound);
-                NewMetaData(k_KeyEndTime, buildReport.summary.buildEndedAt, projectAuditorParams.onIssueFound);
-                NewMetaData(k_KeyTotalTime, Formatting.FormatBuildTime(buildReport.summary.totalTime), projectAuditorParams.onIssueFound);
-                NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize), projectAuditorParams.onIssueFound);
+                var combinedIssues = new List<ProjectIssue>();
 
-                AnalyzeBuildSteps(projectAuditorParams.onIssueFound, buildReport);
-                AnalyzePackedAssets(projectAuditorParams.onIssueFound, buildReport);
+                NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath, combinedIssues.Add);
+                NewMetaData(k_KeyPlatform, buildReport.summary.platform, combinedIssues.Add);
+                NewMetaData(k_KeyResult, buildReport.summary.result, combinedIssues.Add);
+                NewMetaData(k_KeyStartTime, buildReport.summary.buildStartedAt, combinedIssues.Add);
+                NewMetaData(k_KeyEndTime, buildReport.summary.buildEndedAt, combinedIssues.Add);
+                NewMetaData(k_KeyTotalTime, Formatting.FormatBuildTime(buildReport.summary.totalTime), combinedIssues.Add);
+                NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize), combinedIssues.Add);
+
+                var taskIssues = new List<ProjectIssue>();
+                var tasks = new List<Task>();
+                tasks.Add(Task.Run(() =>
+                {
+                    AnalyzeBuildSteps(taskIssues.Add, buildReport);
+                }));
+
+                AnalyzePackedAssets(combinedIssues.Add, buildReport);
+
+                return Task.WhenAll(tasks).ContinueWith<IReadOnlyCollection<ProjectIssue>>(t =>
+                {
+                    combinedIssues.AddRange(taskIssues);
+                    return combinedIssues.AsReadOnly();
+                });
             }
 #endif
-            if (projectAuditorParams.onComplete != null)
-                projectAuditorParams.onComplete();
+            return Task.FromResult<IReadOnlyCollection<ProjectIssue>>(new ProjectIssue[] {});
         }
 
 #if BUILD_REPORT_API_SUPPORT

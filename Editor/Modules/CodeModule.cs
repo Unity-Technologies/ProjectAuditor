@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
@@ -39,16 +40,30 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class CodeModule : ProjectAuditorModule
     {
+        class AssemblyAnalysisResult
+        {
+            public List<CallInfo> callInfos = new List<CallInfo>();
+            public List<ProjectIssue> issues = new List<ProjectIssue>();
+        }
+
         static readonly IssueLayout k_AssemblyLayout = new IssueLayout
         {
             category = IssueCategory.Assembly,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Severity},
-                new PropertyDefinition { type = PropertyType.Description, name = "Assembly Name"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.CompileTime), format = PropertyFormat.Time, name = "Compile Time (seconds)"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.ReadOnly), format = PropertyFormat.Bool, name = "Read Only", defaultGroup = true},
-                new PropertyDefinition { type = PropertyType.Path, name = "asmdef Path"},
+                new PropertyDefinition {type = PropertyType.Severity},
+                new PropertyDefinition {type = PropertyType.Description, name = "Assembly Name"},
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(AssemblyProperty.CompileTime), format = PropertyFormat.Time,
+                    name = "Compile Time (seconds)"
+                },
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(AssemblyProperty.ReadOnly), format = PropertyFormat.Bool,
+                    name = "Read Only", defaultGroup = true
+                },
+                new PropertyDefinition {type = PropertyType.Path, name = "asmdef Path"},
             }
         };
 
@@ -57,12 +72,23 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.Code,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
-                new PropertyDefinition { type = PropertyType.CriticalContext, format = PropertyFormat.Bool, name = "Critical", longName = "Critical code path"},
-                new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
-                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" },
-                new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true},
+                new PropertyDefinition
+                {type = PropertyType.Description, name = "Issue", longName = "Issue description"},
+                new PropertyDefinition
+                {
+                    type = PropertyType.CriticalContext, format = PropertyFormat.Bool, name = "Critical",
+                    longName = "Critical code path"
+                },
+                new PropertyDefinition
+                {type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
+                new PropertyDefinition
+                {type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String,
+                    name = "Assembly", longName = "Managed Assembly name"
+                },
+                new PropertyDefinition {type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true},
             }
         };
 
@@ -71,12 +97,25 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.CodeCompilerMessage,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Severity, name = "Type"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Code), format = PropertyFormat.String, name = "Code", defaultGroup = true},
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Message", longName = "Compiler Message"},
-                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Assembly), format = PropertyFormat.String, name = "Target Assembly", longName = "Managed Assembly name" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Full path"},
+                new PropertyDefinition {type = PropertyType.Severity, name = "Type"},
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Code), format = PropertyFormat.String,
+                    name = "Code", defaultGroup = true
+                },
+                new PropertyDefinition
+                {
+                    type = PropertyType.Description, format = PropertyFormat.String, name = "Message",
+                    longName = "Compiler Message"
+                },
+                new PropertyDefinition
+                {type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Assembly),
+                    format = PropertyFormat.String, name = "Target Assembly", longName = "Managed Assembly name"
+                },
+                new PropertyDefinition {type = PropertyType.Path, name = "Full path"},
             }
         };
 
@@ -85,9 +124,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.GenericInstance,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Generic Type"},
-                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" }
+                new PropertyDefinition {type = PropertyType.Description, name = "Generic Type"},
+                new PropertyDefinition
+                {type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String,
+                    name = "Assembly", longName = "Managed Assembly name"
+                }
             }
         };
 
@@ -95,8 +139,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         List<IInstructionAnalyzer> m_Analyzers;
         List<OpCode> m_OpCodes;
         List<ProblemDescriptor> m_ProblemDescriptors;
-
-        Thread m_AssemblyAnalysisThread;
 
         public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -125,17 +167,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override Task<IReadOnlyCollection<ProjectIssue>> AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             if (m_ProblemDescriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
 
-            if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
-                m_AssemblyAnalysisThread.Join();
-
+            var foundIssues = new List<ProjectIssue>();
             var compilationPipeline = new AssemblyCompilation
             {
-                AssemblyCompilationFinished = (compilationTask, compilerMessages) => ProcessCompilerMessages(compilationTask, compilerMessages, projectAuditorParams.onIssueFound),
+                AssemblyCompilationFinished = (compilationTask, compilerMessages) => ProcessCompilerMessages(compilationTask, compilerMessages, foundIssues.Add),
                 CompilationMode = m_Config.CompilationMode,
                 Platform = projectAuditorParams.platform
             };
@@ -146,113 +186,95 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (m_Config.CompilationMode == CompilationMode.Editor)
             {
-                foreach (var assemblyInfo in assemblyInfos)
-                {
-                    projectAuditorParams.onIssueFound(new ProjectIssue(assemblyInfo.name, IssueCategory.Assembly,
-                        new object[(int)AssemblyProperty.Num]
-                        {
-                            assemblyInfo.packageReadOnly,
-                            "N/A"
-                        })
-                        {
-                            location = new Location(assemblyInfo.asmDefPath)
-                        });
-                }
+                foundIssues.AddRange(assemblyInfos.Select(assemblyInfo => new ProjectIssue(assemblyInfo.name, IssueCategory.Assembly,
+                    new object[(int)AssemblyProperty.Num]
+                    {
+                        assemblyInfo.packageReadOnly,
+                        "N/A"
+                    })
+                    {
+                        location = new Location(assemblyInfo.asmDefPath)
+                    }));
             }
-
-            // process successfully compiled assemblies
-            var localAssemblyInfos = assemblyInfos.Where(info => !info.packageReadOnly).ToArray();
-            var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.packageReadOnly).ToArray();
-            var foundIssues = new List<ProjectIssue>();
-            var callCrawler = new CallCrawler();
-            var onCallFound = new Action<CallInfo>(pair =>
-            {
-                callCrawler.Add(pair);
-            });
-            var onIssueFoundInternal = new Action<ProjectIssue>(foundIssues.Add);
-            var onCompleteInternal = new Action<IProgress>(bar =>
-            {
-                var diagnostics = foundIssues.Where(i => i.category != IssueCategory.GenericInstance).ToList();
-                Profiler.BeginSample("CodeModule.Audit.BuildCallHierarchies");
-                compilationPipeline.Dispose();
-                callCrawler.BuildCallHierarchies(diagnostics, bar);
-                Profiler.EndSample();
-
-                // workaround for empty 'relativePath' strings which are not all available when 'onIssueFoundInternal' is called
-                foreach (var issue in foundIssues)
-                    projectAuditorParams.onIssueFound(issue);
-
-                if (projectAuditorParams.onComplete != null)
-                    projectAuditorParams.onComplete();
-            });
 
             var assemblyDirectories = new List<string>();
 
             assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UserAssembly | PrecompiledAssemblyTypes.UnityEngine));
             if (m_Config.CompilationMode == CompilationMode.Editor)
                 assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UnityEditor));
+            assemblyDirectories.AddRange(assemblyInfos.Select(info => Path.GetDirectoryName(info.path)).Distinct());
 
-            Profiler.BeginSample("CodeModule.Audit.Analysis");
-
-            // first phase: analyze assemblies generated from editable scripts
-            AnalyzeAssemblies(localAssemblyInfos, assemblyDirectories, onCallFound, onIssueFoundInternal, null, progress);
-
-            var enableBackgroundAnalysis = m_Config.AnalyzeInBackground;
-#if !UNITY_2019_3_OR_NEWER
-            enableBackgroundAnalysis = false;
-#endif
-            // second phase: analyze all remaining assemblies, in a separate thread if enableBackgroundAnalysis is enabled
-            if (enableBackgroundAnalysis)
+            // analyze compiled assemblies
+            var callCrawler = new CallCrawler();
+            var analysisTask = AnalyzeAssemblies(assemblyInfos, assemblyDirectories, progress).ContinueWith(t =>
             {
-                m_AssemblyAnalysisThread = new Thread(() =>
-                    AnalyzeAssemblies(readOnlyAssemblyInfos, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal));
-                m_AssemblyAnalysisThread.Name = "Assembly Analysis";
-                m_AssemblyAnalysisThread.Priority = ThreadPriority.BelowNormal;
-                m_AssemblyAnalysisThread.Start();
-            }
-            else
+                foundIssues.AddRange(t.Result.issues);
+                callCrawler.AddCalls(t.Result.callInfos);
+
+                // cleanup assemblies
+                compilationPipeline.Dispose();
+            });
+
+            // final step: build call hierarchy. Note that this task will run AFTER the analysis finished.
+            analysisTask.ContinueWith((t) =>
             {
-                Profiler.BeginSample("CodeModule.Audit.AnalysisReadOnly");
-                AnalyzeAssemblies(readOnlyAssemblyInfos, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal, progress);
+                var diagnostics = foundIssues.Where(i => i.category != IssueCategory.GenericInstance).ToList();
+                Profiler.BeginSample("CodeModule.Audit.BuildCallHierarchies");
+                callCrawler.BuildCallHierarchies(diagnostics, null);
                 Profiler.EndSample();
-            }
-            Profiler.EndSample();
+            });
+
+            return analysisTask.ContinueWith<IReadOnlyCollection<ProjectIssue>>(t => foundIssues);
         }
 
-        void AnalyzeAssemblies(IEnumerable<AssemblyInfo> assemblyInfos, List<string> assemblyDirectories, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound, Action<IProgress> onComplete, IProgress progress = null)
+        Task<AssemblyAnalysisResult> AnalyzeAssemblies(IReadOnlyCollection<AssemblyInfo> assemblyInfos, IReadOnlyCollection<string> assemblyDirectories, IProgress progress = null)
         {
-            using (var assemblyResolver = new DefaultAssemblyResolver())
+            Profiler.BeginSample("AnalyzeAssemblies");
+
+            var tasks = new List<Task<AssemblyAnalysisResult>>();
+            foreach (var assemblyInfo in assemblyInfos)
             {
-                foreach (var path in assemblyDirectories)
-                    assemblyResolver.AddSearchDirectory(path);
-
-                foreach (var dir in assemblyInfos.Select(info => Path.GetDirectoryName(info.path)).Distinct())
-                    assemblyResolver.AddSearchDirectory(dir);
-
-                if (progress != null)
-                    progress.Start("Analyzing Assemblies", string.Empty, assemblyInfos.Count());
-
-                // Analyse all Player assemblies
-                foreach (var assemblyInfo in assemblyInfos)
+                if (!File.Exists(assemblyInfo.path))
                 {
-                    if (progress != null)
-                        progress.Advance(assemblyInfo.name);
+                    Debug.LogError(assemblyInfo.path + " not found.");
+                    continue;
+                }
 
-                    if (!File.Exists(assemblyInfo.path))
+                tasks.Add(Task.Run(() =>
+                {
+                    Profiler.BeginSample("AnalyzeAssemblies Task");
+
+                    var taskResult = new AssemblyAnalysisResult();
+                    using (var assemblyResolver = new DefaultAssemblyResolver())
                     {
-                        Debug.LogError(assemblyInfo.path + " not found.");
-                        continue;
+                        foreach (var dir in assemblyDirectories)
+                            assemblyResolver.AddSearchDirectory(dir);
+
+                        AnalyzeAssembly(assemblyInfo, assemblyResolver, info => taskResult.callInfos.Add(info), issue => taskResult.issues.Add(issue));
                     }
 
-                    AnalyzeAssembly(assemblyInfo, assemblyResolver, onCallFound, onIssueFound);
-                }
+                    Profiler.EndSample();
+
+                    return taskResult;
+                }));
             }
 
-            if (progress != null)
-                progress.Clear();
+            Profiler.EndSample();
 
-            if (onComplete != null)
-                onComplete(progress);
+            return Task.WhenAll(tasks).ContinueWith(t =>
+            {
+                Profiler.BeginSample("AnalyzeAssemblies Combine Results");
+
+                var result = new AssemblyAnalysisResult();
+                foreach (var taskResult in t.Result)
+                {
+                    result.callInfos.AddRange(taskResult.callInfos);
+                    result.issues.AddRange(taskResult.issues);
+                }
+
+                Profiler.EndSample();
+                return result;
+            });
         }
 
         public override void RegisterDescriptor(ProblemDescriptor descriptor)

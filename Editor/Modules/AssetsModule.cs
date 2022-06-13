@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 
@@ -35,11 +36,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override Task<IReadOnlyCollection<ProjectIssue>> AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            AnalyzeResources(projectAuditorParams.onIssueFound);
-            if (projectAuditorParams.onComplete != null)
-                projectAuditorParams.onComplete();
+            var issues = new List<ProjectIssue>();
+            AnalyzeResources(issues.Add);
+
+            IReadOnlyCollection<ProjectIssue> collection = issues.AsReadOnly();
+            return Task.FromResult(collection);
         }
 
         static void AnalyzeResources(Action<ProjectIssue> onIssueFound)
