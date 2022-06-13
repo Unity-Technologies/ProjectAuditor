@@ -147,30 +147,21 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var buildReport = BuildReportProvider.GetBuildReport();
             if (buildReport != null)
             {
-                var combinedIssues = new List<ProjectIssue>();
+                var issues = new List<ProjectIssue>();
 
-                NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath, combinedIssues.Add);
-                NewMetaData(k_KeyPlatform, buildReport.summary.platform, combinedIssues.Add);
-                NewMetaData(k_KeyResult, buildReport.summary.result, combinedIssues.Add);
-                NewMetaData(k_KeyStartTime, buildReport.summary.buildStartedAt, combinedIssues.Add);
-                NewMetaData(k_KeyEndTime, buildReport.summary.buildEndedAt, combinedIssues.Add);
-                NewMetaData(k_KeyTotalTime, Formatting.FormatBuildTime(buildReport.summary.totalTime), combinedIssues.Add);
-                NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize), combinedIssues.Add);
+                NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath, issues.Add);
+                NewMetaData(k_KeyPlatform, buildReport.summary.platform, issues.Add);
+                NewMetaData(k_KeyResult, buildReport.summary.result, issues.Add);
+                NewMetaData(k_KeyStartTime, buildReport.summary.buildStartedAt, issues.Add);
+                NewMetaData(k_KeyEndTime, buildReport.summary.buildEndedAt, issues.Add);
+                NewMetaData(k_KeyTotalTime, Formatting.FormatBuildTime(buildReport.summary.totalTime), issues.Add);
+                NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize), issues.Add);
 
-                var taskIssues = new List<ProjectIssue>();
-                var tasks = new List<Task>();
-                tasks.Add(Task.Run(() =>
-                {
-                    AnalyzeBuildSteps(taskIssues.Add, buildReport);
-                }));
+                AnalyzeBuildSteps(issues.Add, buildReport);
+                AnalyzePackedAssets(issues.Add, buildReport);
 
-                AnalyzePackedAssets(combinedIssues.Add, buildReport);
-
-                return Task.WhenAll(tasks).ContinueWith<IReadOnlyCollection<ProjectIssue>>(t =>
-                {
-                    combinedIssues.AddRange(taskIssues);
-                    return combinedIssues.AsReadOnly();
-                });
+                IReadOnlyCollection<ProjectIssue> collection = issues.AsReadOnly();
+                return Task.FromResult(collection);
             }
 #endif
             return Task.FromResult<IReadOnlyCollection<ProjectIssue>>(new ProjectIssue[] {});
