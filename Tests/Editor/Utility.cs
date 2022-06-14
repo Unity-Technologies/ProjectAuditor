@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var projectReport = projectAuditor.Audit();
 
-            return projectReport.GetAllIssues().ToArray();
+            return projectReport.GetAllIssues().Where(i => predicate == null || predicate(i)).ToArray();
         }
 
         public static ProjectIssue[] Analyze(IssueCategory category, Func<ProjectIssue, bool> predicate = null)
