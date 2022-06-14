@@ -461,19 +461,20 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var projectAuditorParams = new ProjectAuditorParams
             {
-                onModuleCompleted = newIssues =>
+                onAuditAsyncUpdate = newIssues =>
                 {
                     // add batch of issues
                     m_ViewManager.AddIssues(newIssues);
 
                     m_ShouldRefresh = true;
+                },
+                onAuditAsyncComplete = report =>
+                {
+                    m_AnalysisState = AnalysisState.Completed;
+                    m_ProjectReport = report;
                 }
             };
-            m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar()).ContinueWith((t) =>
-            {
-                m_AnalysisState = AnalysisState.Completed;
-                m_ProjectReport = t.Result;
-            });
+            m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar());
         }
 
         void Update()

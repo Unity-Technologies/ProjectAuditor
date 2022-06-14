@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 #if UNITY_2018_1_OR_NEWER
@@ -135,6 +136,12 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns> Generated report </returns>
         public ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
+            if (projectAuditorParams.onAuditAsyncUpdate != null)
+                throw new Exception("onUpdateAsync is not allowed in synchronous mode");
+
+            if (projectAuditorParams.onAuditAsyncComplete != null)
+                throw new Exception("onComplete is not allowed in synchronous mode");
+
             var task = AuditAsync(projectAuditorParams, progress);
 
             task.Wait();
@@ -160,6 +167,9 @@ namespace Unity.ProjectAuditor.Editor
             if (supportedModules.Length == 0)
             {
                 // early out if, for any reason, there are no registered modules (return empty report)
+                if (projectAuditorParams.onAuditAsyncComplete != null)
+                    projectAuditorParams.onAuditAsyncComplete(result);
+
                 return Task.FromResult(result);
             }
 
@@ -180,13 +190,8 @@ namespace Unity.ProjectAuditor.Editor
                         Debug.Log(module.GetType().Name + " took: " +
                             (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
 
-                    if (projectAuditorParams.onModuleCompleted != null)
-                    {
-                        EditorApplication.delayCall += () =>
-                        {
-                            projectAuditorParams.onModuleCompleted(t.Result);
-                        };
-                    }
+                    if (projectAuditorParams.onAuditAsyncUpdate != null)
+                        EditorApplication.delayCall += () => projectAuditorParams.onAuditAsyncUpdate(t.Result);
 
                     result.AddIssues(t.Result);
                 });
@@ -199,14 +204,18 @@ namespace Unity.ProjectAuditor.Editor
             if (m_Config.LogTimingsInfo)
                 Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
 
-            return Task.WhenAll(tasks).ContinueWith((t) =>
+            var finalTask = Task.WhenAll(tasks).ContinueWith((t) =>
             {
                 stopwatch.Stop();
                 if (m_Config.LogTimingsInfo)
                     Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
 
+                if (projectAuditorParams.onAuditAsyncComplete != null)
+                    EditorApplication.delayCall += () => projectAuditorParams.onAuditAsyncComplete(result);
+
                 return result;
             });
+            return finalTask;
         }
 
         internal T GetModule<T>() where T : ProjectAuditorModule

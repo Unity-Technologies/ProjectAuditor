@@ -9,7 +9,8 @@ namespace Unity.ProjectAuditor.Editor
         public IssueCategory[] categories;
         public BuildTarget platform;
 
-        public Action<IReadOnlyCollection<ProjectIssue>> onModuleCompleted; //should be called on main thread
+        public Action<IReadOnlyCollection<ProjectIssue>> onAuditAsyncUpdate;
+        public Action<ProjectReport> onAuditAsyncComplete;
 
         public ProjectAuditorParams()
         {
@@ -21,7 +22,8 @@ namespace Unity.ProjectAuditor.Editor
             categories = original.categories;
             platform = original.platform;
 
-            onModuleCompleted = original.onModuleCompleted;
+            onAuditAsyncUpdate = original.onAuditAsyncUpdate;
+            onAuditAsyncComplete = original.onAuditAsyncComplete;
         }
     }
 }

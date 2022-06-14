@@ -163,7 +163,8 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectAuditorParams
     {
         public Unity.ProjectAuditor.Editor.IssueCategory[] categories;
-        public System.Action<System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.ProjectIssue>> onModuleCompleted;
+        public System.Action<Unity.ProjectAuditor.Editor.ProjectReport> onAuditAsyncComplete;
+        public System.Action<System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.ProjectIssue>> onAuditAsyncUpdate;
         public UnityEditor.BuildTarget platform;
         public ProjectAuditorParams() {}
         public ProjectAuditorParams(Unity.ProjectAuditor.Editor.ProjectAuditorParams original) {}
