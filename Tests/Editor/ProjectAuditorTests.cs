@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using UnityEditorInternal;
+using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -41,26 +43,29 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(category, Unity.ProjectAuditor.Editor.ProjectAuditor.GetOrRegisterCategory(testCategoryName));
         }
 
-        [Test]
-        public void ProjectAuditor_Callbacks_AreCalled()
+        [UnityTest]
+        public IEnumerator ProjectAuditor_Callbacks_AreCalled()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
             var onUpdateIsCalled = false;
             var onCompleteIsCalled = false;
-            var result = projectAuditor.Audit(new ProjectAuditorParams
+            projectAuditor.AuditAsync(new ProjectAuditorParams
             {
-                onModuleUpdate = issues =>
+                onAuditAsyncUpdate = issues =>
                 {
-                    Assert.True(InternalEditorUtility.CurrentThreadIsMainThread(), "onModuleUpdate was not called on the Main thread");
+                    Assert.True(InternalEditorUtility.CurrentThreadIsMainThread(), "onUpdateAsync was not called on the Main thread");
                     onUpdateIsCalled = true;
                 },
-                onComplete = report =>
+                onAuditAsyncComplete = report =>
                 {
                     Assert.True(InternalEditorUtility.CurrentThreadIsMainThread(), "onComplete was not called on the Main thread");
                     onCompleteIsCalled = true;
                 }
-            });
+            }).Wait();
+
+            // wait a frame before checking callbacks
+            yield return null;
 
             Assert.True(onUpdateIsCalled);
             Assert.True(onCompleteIsCalled);
