@@ -306,7 +306,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawViewOptions()
         {
-            if (!m_Module.IsEnabledByDefault() && m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeCurrent, EditorStyles.toolbarButton, GUILayout.Width(120)))
+            if (!m_Module.IsEnabledByDefault() && m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeNow, EditorStyles.toolbarButton, GUILayout.Width(120)))
             {
                 m_ViewManager.onAnalyze(m_Module);
             }
@@ -592,7 +592,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         static class Contents
         {
-            public static readonly GUIContent AnalyzeCurrent = new GUIContent("Analyze Current");
+            public static readonly GUIContent AnalyzeNow = new GUIContent("Analyze Now!");
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
