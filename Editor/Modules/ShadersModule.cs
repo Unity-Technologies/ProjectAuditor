@@ -272,8 +272,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 AddShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader), issues.Add);
             }
 
-            IReadOnlyCollection<ProjectIssue> collection = issues.AsReadOnly();
-            return Task.FromResult(collection);
+            return Task.FromResult<IReadOnlyCollection<ProjectIssue>>(issues.AsReadOnly());
         }
 
         void AddShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)

@@ -41,8 +41,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var issues = new List<ProjectIssue>();
             AnalyzeResources(issues.Add);
 
-            IReadOnlyCollection<ProjectIssue> collection = issues.AsReadOnly();
-            return Task.FromResult(collection);
+            return Task.FromResult<IReadOnlyCollection<ProjectIssue>>(issues.AsReadOnly());
         }
 
         static void AnalyzeResources(Action<ProjectIssue> onIssueFound)

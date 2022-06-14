@@ -58,8 +58,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
             }
 
-            IReadOnlyCollection<ProjectIssue> collection = issues.AsReadOnly();
-            return Task.FromResult(collection);
+            return Task.FromResult<IReadOnlyCollection<ProjectIssue>>(issues.AsReadOnly());
         }
 
         void AddAnalyzer(ISettingsAnalyzer analyzer)

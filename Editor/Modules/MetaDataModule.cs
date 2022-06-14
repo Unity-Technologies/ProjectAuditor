@@ -55,8 +55,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             NewMetaData("Project Auditor Version", ProjectAuditor.PackageVersion, issues.Add);
             NewMetaData("Unity Version", Application.unityVersion, issues.Add);
 
-            IReadOnlyCollection<ProjectIssue> collection = issues.AsReadOnly();
-            return Task.FromResult(collection);
+            return Task.FromResult<IReadOnlyCollection<ProjectIssue>>(issues.AsReadOnly());
         }
 
         void NewMetaData(string key, object value, Action<ProjectIssue> onIssueFound)

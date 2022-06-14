@@ -160,8 +160,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 AnalyzeBuildSteps(issues.Add, buildReport);
                 AnalyzePackedAssets(issues.Add, buildReport);
 
-                IReadOnlyCollection<ProjectIssue> collection = issues.AsReadOnly();
-                return Task.FromResult(collection);
+                return Task.FromResult<IReadOnlyCollection<ProjectIssue>>(issues.AsReadOnly());
             }
 #endif
             return Task.FromResult<IReadOnlyCollection<ProjectIssue>>(new ProjectIssue[] {});
