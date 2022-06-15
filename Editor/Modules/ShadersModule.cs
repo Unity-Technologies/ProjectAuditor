@@ -1,7 +1,3 @@
-#if UNITY_2018_2_OR_NEWER
-    #define VARIANTS_ANALYSIS_SUPPORT
-#endif
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -62,13 +58,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public PassType passType;
         public string passName;
         public ShaderType shaderType;
-#if VARIANTS_ANALYSIS_SUPPORT
         public string[] keywords;
         public string[] platformKeywords;
         public ShaderRequirements[] requirements;
         public GraphicsTier graphicsTier;
         public ShaderCompilerPlatform compilerPlatform;
-#endif
     }
 
     class CompiledVariantData
@@ -79,9 +73,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     }
 
     class ShadersModule : ProjectAuditorModule
-#if VARIANTS_ANALYSIS_SUPPORT
         , IPreprocessShaders
-#endif
     {
         static readonly IssueLayout k_ShaderLayout = new IssueLayout
         {
@@ -157,9 +149,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_ShaderLayout;
-#if VARIANTS_ANALYSIS_SUPPORT
             yield return k_ShaderVariantLayout;
-#endif
 
 #if UNITY_2019_1_OR_NEWER
             yield return k_ShaderCompilerMessageLayout;
@@ -219,7 +209,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
             }
 
-#if VARIANTS_ANALYSIS_SUPPORT
             // find hidden shaders
             var shadersInBuild = s_ShaderVariantData.Select(variant => variant.Key);
             foreach (var shader in shadersInBuild)
@@ -235,7 +224,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     shaderPathMap.Add(shader, assetPath);
                 }
             }
-#endif
 
             var buildReportInfoAvailable = false;
 #if BUILD_REPORT_API_SUPPORT
@@ -279,7 +267,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             // set initial state (-1: info not available)
             var variantCount = s_ShaderVariantData.Count > 0 ? 0 : -1;
 
-#if VARIANTS_ANALYSIS_SUPPORT
             // add variants first
             if (s_ShaderVariantData.ContainsKey(shader))
             {
@@ -288,7 +275,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 AddVariants(shader, assetPath, variants, onIssueFound);
             }
-#endif
 
             var shaderName = shader.name;
             var shaderHasError = false;
@@ -374,7 +360,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return s_ShaderVariantData.Any();
         }
 
-#if VARIANTS_ANALYSIS_SUPPORT
         void AddVariants(Shader shader, string assetPath, List<ShaderVariantData> shaderVariants, Action<ProjectIssue> onIssueFound)
         {
             foreach (var shaderVariantData in shaderVariants)
@@ -445,8 +430,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 });
             }
         }
-
-#endif
 
         public static void ExportSVC(string svcName, string path, ProjectIssue[] variants)
         {
@@ -594,7 +577,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return cv.keywords.OrderBy(e => e).SequenceEqual(secondSet.OrderBy(e => e));
         }
 
-#if VARIANTS_ANALYSIS_SUPPORT
         static string[] GetShaderKeywords(Shader shader, ShaderKeyword[] shaderKeywords)
         {
 #if UNITY_2021_2_OR_NEWER
@@ -606,8 +588,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #endif
             return keywords.ToArray();
         }
-
-#endif
 
         static string[] SplitKeywords(string keywordsString, string separator = null)
         {

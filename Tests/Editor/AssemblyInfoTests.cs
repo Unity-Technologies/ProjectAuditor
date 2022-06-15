@@ -95,7 +95,6 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(result);
         }
 
-#if UNITY_2018_1_OR_NEWER
         [Test]
         public void AssemblyInfo_AssetPaths_CanBeResolved()
         {
@@ -171,8 +170,6 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.AreEqual("Packages/com.unity.ugui/Runtime/UI/Core/AnimationTriggers.cs", path, "Resolved Path is: " + path);
         }
-
-#endif
 
 #if UNITY_2019_1_OR_NEWER
         [Test]

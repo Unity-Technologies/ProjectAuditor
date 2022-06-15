@@ -1,16 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Compilation;
-using UnityEngine;
-#if UNITY_2018_2_OR_NEWER
-using UnityEditor.Build.Player;
-
-#endif
 
 namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
@@ -137,15 +130,10 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             }
 
             IEnumerable<string> compiledAssemblyPaths;
-#if UNITY_2018_2_OR_NEWER
             if (editorAssemblies)
                 compiledAssemblyPaths = CompileEditorAssemblies(assemblies);
             else
                 compiledAssemblyPaths = CompilePlayerAssemblies(assemblies, progress);
-#else
-            // fallback to CompilationPipeline assemblies
-            compiledAssemblyPaths = CompileEditorAssemblies(assemblies, !editorAssemblies);
-#endif
 
             return compiledAssemblyPaths.Select(AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath).ToArray();
         }
@@ -157,11 +145,9 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 CompilationPipeline.GetAssemblies(editorAssemblies
                     ? AssembliesType.Editor
                     : AssembliesType.PlayerWithoutTestAssemblies);
-#elif UNITY_2018_1_OR_NEWER
+#else
             var assemblies =
                 CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.Player);
-#else
-            var assemblies = CompilationPipeline.GetAssemblies();
 #endif
             return assemblies;
         }
@@ -184,7 +170,6 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             return assemblies.Select(assembly => assembly.outputPath);
         }
 
-#if UNITY_2018_2_OR_NEWER
         IEnumerable<string> CompilePlayerAssemblies(Assembly[] assemblies, IProgress progress = null)
         {
             if (progress != null)
@@ -370,7 +355,5 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 System.Threading.Thread.Sleep(10);
             }
         }
-
-#endif
     }
 }

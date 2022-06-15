@@ -8,11 +8,8 @@ using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
-#if UNITY_2018_1_OR_NEWER
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-
-#endif
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -20,9 +17,7 @@ namespace Unity.ProjectAuditor.Editor
     /// ProjectAuditor class is responsible for auditing the Unity project
     /// </summary>
     public class ProjectAuditor
-#if UNITY_2018_1_OR_NEWER
         : IPreprocessBuildWithReport
-#endif
     {
         static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
         static string s_DataPath;
@@ -251,7 +246,6 @@ namespace Unity.ProjectAuditor.Editor
             return (int)IssueCategory.FirstCustomCategory + s_CustomCategories.Count;
         }
 
-#if UNITY_2018_1_OR_NEWER
         public int callbackOrder
         {
             get { return 0; }
@@ -273,7 +267,5 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
         }
-
-#endif
     }
 }

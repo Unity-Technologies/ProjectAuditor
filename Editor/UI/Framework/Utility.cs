@@ -184,12 +184,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath)
         {
-#if UNITY_2018_3_OR_NEWER
             var icon = AssetDatabase.GetCachedIcon(assetPath);
             return EditorGUIUtility.TrTextContentWithIcon(displayName, assetPath, icon);
-#else
-            return new GUIContent(item.GetDisplayName(), issue.location.Path);
-#endif
         }
     }
 }

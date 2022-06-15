@@ -21,11 +21,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public static void EnableAnalytics()
         {
-#if UNITY_2018_1_OR_NEWER
             var result = EditorAnalytics.RegisterEventWithLimit(k_EventTopicName, k_MaxEventsPerHour, k_MaxEventItems, k_VendorKey);
             if (result == AnalyticsResult.Ok)
                 s_EnableAnalytics = true;
-#endif
         }
 
         public enum UIButton
@@ -289,12 +287,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (s_EnableAnalytics)
             {
-#if UNITY_2018_1_OR_NEWER
                 var uiButtonEvent = new ProjectAuditorEvent(GetEventName(uiButton), analytic);
 
                 var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
                 return (result == AnalyticsResult.Ok);
-#endif
             }
             return false;
         }
@@ -305,12 +301,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (s_EnableAnalytics)
             {
-#if UNITY_2018_1_OR_NEWER
                 var uiButtonEvent = new ProjectAuditorEventWithKeyValues(GetEventName(uiButton), analytic, payload);
 
                 var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
                 return (result == AnalyticsResult.Ok);
-#endif
             }
             return false;
         }
@@ -321,14 +315,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (s_EnableAnalytics)
             {
-#if UNITY_2018_1_OR_NEWER
                 var payload = CollectSelectionStats(selectedItems);
 
                 var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
                 var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
                 return (result == AnalyticsResult.Ok);
-#endif
             }
             return false;
         }
@@ -339,14 +331,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (s_EnableAnalytics)
             {
-#if UNITY_2018_1_OR_NEWER
                 var payload = GetScriptIssuesSummary(projectReport);
 
                 var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
                 var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
                 return (result == AnalyticsResult.Ok);
-#endif
             }
             return false;
         }

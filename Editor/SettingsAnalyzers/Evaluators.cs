@@ -55,22 +55,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
 
         public static bool PlayerSettingsManagedCodeStripping_iOS(BuildTarget platform)
         {
-#if UNITY_2018_3_OR_NEWER
             var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.iOS);
             return value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low;
-#else
-            return false;
-#endif
         }
 
         public static bool PlayerSettingsManagedCodeStripping_Android(BuildTarget platform)
         {
-#if UNITY_2018_3_OR_NEWER
             var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.Android);
             return value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low;
-#else
-            return false;
-#endif
         }
 
         public static bool PlayerSettingsIsStaticBatchingEnabled(BuildTarget platform)
