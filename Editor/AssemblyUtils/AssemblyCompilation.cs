@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -30,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         Editor
     }
 
-    enum CodeOptimization
+    public enum CodeOptimization
     {
         Debug,
         Release
@@ -86,24 +87,19 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
     class AssemblyCompilation : IDisposable
     {
-        string m_OutputFolder = string.Empty;
-
         Dictionary<string, AssemblyCompilationTask> m_AssemblyCompilationTasks;
-#if UNITY_2020_2_OR_NEWER
+        string m_OutputFolder = string.Empty;
         string[] m_RoslynAnalyzers;
-#endif
 
-        public Action<AssemblyCompilationTask, CompilerMessage[]> AssemblyCompilationFinished;
-        public CompilationMode CompilationMode = CompilationMode.Player;
-        public BuildTarget Platform = EditorUserBuildSettings.activeBuildTarget;
-
-        public static CodeOptimization CodeOptimization = CodeOptimization.Release;
+        public string[] assemblyNames;
+        public CodeOptimization codeOptimization = CodeOptimization.Release;
+        public CompilationMode compilationMode = CompilationMode.Player;
+        public BuildTarget platform = EditorUserBuildSettings.activeBuildTarget;
+        public Action<AssemblyCompilationTask, CompilerMessage[]> onAssemblyCompilationFinished;
 
         public AssemblyCompilation()
         {
-#if UNITY_2020_2_OR_NEWER
             m_RoslynAnalyzers = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath).ToArray();
-#endif
         }
 
         public void Dispose()
@@ -126,14 +122,19 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         public AssemblyInfo[] Compile(IProgress progress = null)
         {
-            var editorAssemblies = CompilationMode == CompilationMode.Editor;
-#if UNITY_2019_3_OR_NEWER
-            var assemblies = CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.PlayerWithoutTestAssemblies);
-#elif UNITY_2018_1_OR_NEWER
-            var assemblies = CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.Player);
-#else
-            var assemblies = CompilationPipeline.GetAssemblies();
-#endif
+            var editorAssemblies = compilationMode == CompilationMode.Editor;
+            var assemblies = GetAssemblies(editorAssemblies);
+
+            if (assemblyNames != null)
+            {
+                var assembliesAndDependencies = new List<Assembly>();
+                foreach (var assembly in assemblies.Where(a => assemblyNames.Contains(a.name)))
+                {
+                    CollectAssemblyDependencies(assembly, assembliesAndDependencies);
+                }
+
+                assemblies = assembliesAndDependencies.ToArray();
+            }
 
             IEnumerable<string> compiledAssemblyPaths;
 #if UNITY_2018_2_OR_NEWER
@@ -147,6 +148,33 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 #endif
 
             return compiledAssemblyPaths.Select(AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath).ToArray();
+        }
+
+        static Assembly[] GetAssemblies(bool editorAssemblies)
+        {
+#if UNITY_2019_3_OR_NEWER
+            var assemblies =
+                CompilationPipeline.GetAssemblies(editorAssemblies
+                    ? AssembliesType.Editor
+                    : AssembliesType.PlayerWithoutTestAssemblies);
+#elif UNITY_2018_1_OR_NEWER
+            var assemblies =
+                CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.Player);
+#else
+            var assemblies = CompilationPipeline.GetAssemblies();
+#endif
+            return assemblies;
+        }
+
+        static void CollectAssemblyDependencies(Assembly assembly, List<Assembly> assembliesAndDependencies)
+        {
+            if (!assembliesAndDependencies.Contains(assembly))
+                assembliesAndDependencies.Add(assembly);
+            var missingDependencies = assembly.assemblyReferences.Where(d => !assembliesAndDependencies.Contains(d));
+            foreach (var dependency in missingDependencies)
+            {
+                CollectAssemblyDependencies(dependency, assembliesAndDependencies);
+            }
         }
 
         IEnumerable<string> CompileEditorAssemblies(IEnumerable<Assembly> assemblies)
@@ -186,18 +214,18 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 if (stopWatch != null)
                     stopWatch.Stop();
 
-                if (AssemblyCompilationFinished != null)
-                    AssemblyCompilationFinished(compilationTask, messages);
+                if (onAssemblyCompilationFinished != null)
+                    onAssemblyCompilationFinished(compilationTask, messages);
             });
             UpdateAssemblyBuilders();
 
             if (progress != null)
                 progress.Clear();
 
-            if (AssemblyCompilationFinished != null)
+            if (onAssemblyCompilationFinished != null)
                 foreach (var compilationTask in m_AssemblyCompilationTasks.Where(pair => pair.Value.status == CompilationStatus.MissingDependency).Select(p => p.Value))
                 {
-                    AssemblyCompilationFinished(compilationTask, new CompilerMessage[] {});
+                    onAssemblyCompilationFinished(compilationTask, new CompilerMessage[] {});
                 }
 
             return m_AssemblyCompilationTasks.Where(pair => pair.Value.Success()).Select(task => task.Value.assemblyPath);
@@ -214,8 +242,8 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 var assemblyPath = Path.Combine(m_OutputFolder, filename);
                 var assemblyBuilder = new AssemblyBuilder(assemblyPath, assembly.sourceFiles);
 
-                assemblyBuilder.buildTarget = Platform;
-                assemblyBuilder.buildTargetGroup = BuildPipeline.GetBuildTargetGroup(Platform);
+                assemblyBuilder.buildTarget = platform;
+                assemblyBuilder.buildTargetGroup = BuildPipeline.GetBuildTargetGroup(platform);
                 assemblyBuilder.buildFinished += (path, originalMessages) =>
                 {
                     var messages = new CompilerMessage[originalMessages.Length];
@@ -271,14 +299,14 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                     AdditionalCompilerArguments = assembly.compilerOptions.AdditionalCompilerArguments,
                     AllowUnsafeCode = assembly.compilerOptions.AllowUnsafeCode,
                     ApiCompatibilityLevel = assembly.compilerOptions.ApiCompatibilityLevel,
-                    CodeOptimization = CodeOptimization == CodeOptimization.Release ? UnityEditor.Compilation.CodeOptimization.Release : UnityEditor.Compilation.CodeOptimization.Debug, // assembly.compilerOptions.CodeOptimization,
+                    CodeOptimization = codeOptimization == CodeOptimization.Release ? UnityEditor.Compilation.CodeOptimization.Release : UnityEditor.Compilation.CodeOptimization.Debug, // assembly.compilerOptions.CodeOptimization,
                     RoslynAnalyzerDllPaths = m_RoslynAnalyzers
                 };
 #else
                 assemblyBuilder.compilerOptions = assembly.compilerOptions;
 #endif
 
-                switch (CompilationMode)
+                switch (compilationMode)
                 {
                     case CompilationMode.Player:
                         assemblyBuilder.flags = AssemblyBuilderFlags.None;

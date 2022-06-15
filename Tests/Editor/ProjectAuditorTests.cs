@@ -1,6 +1,8 @@
 using System;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using UnityEditor;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -38,6 +40,36 @@ namespace Unity.ProjectAuditor.EditorTests
 
             // check category is still the same
             Assert.AreEqual(category, Unity.ProjectAuditor.Editor.ProjectAuditor.GetOrRegisterCategory(testCategoryName));
+        }
+
+        [Test]
+        public void ProjectAuditor_Params_DefaultsAreCorrect()
+        {
+            var projectAuditorParams = new ProjectAuditorParams();
+
+            Assert.IsNull(projectAuditorParams.categories);
+            Assert.IsNull(projectAuditorParams.assemblyNames);
+            Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, projectAuditorParams.platform);
+            Assert.AreEqual(CodeOptimization.Release, projectAuditorParams.codeOptimization);
+        }
+
+        [Test]
+        public void ProjectAuditor_Params_AreCopied()
+        {
+            var originalParams = new ProjectAuditorParams
+            {
+                categories = new[] {IssueCategory.Code},
+                assemblyNames = new[] {"Test"},
+                platform = BuildTarget.Android,
+                codeOptimization = CodeOptimization.Debug
+            };
+
+            var projectAuditorParams = new ProjectAuditorParams(originalParams);
+
+            Assert.IsNotNull(projectAuditorParams.categories);
+            Assert.IsNotNull(projectAuditorParams.assemblyNames);
+            Assert.AreEqual(BuildTarget.Android, projectAuditorParams.platform);
+            Assert.AreEqual(CodeOptimization.Debug, projectAuditorParams.codeOptimization);
         }
     }
 }

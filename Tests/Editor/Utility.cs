@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -15,6 +16,8 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     public static class Utility
     {
+        public static CodeOptimization CodeOptimization = CodeOptimization.Release;
+
         public static ProjectIssue[] Analyze(Func<ProjectIssue, bool> predicate = null)
         {
             var foundIssues = new List<ProjectIssue>();
@@ -24,6 +27,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var projectAuditorParams = new ProjectAuditorParams
             {
+                codeOptimization = CodeOptimization,
                 onIssueFound = issue => {
                     if (predicate == null || predicate(issue))
                         foundIssues.Add(issue);
@@ -44,6 +48,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var module = projectAuditor.GetModule(category);
             var projectAuditorParams = new ProjectAuditorParams
             {
+                assemblyNames = new[] { AssemblyInfo.DefaultAssemblyName},
                 onIssueFound = issue => {
                     if (issue.category != category)
                         return;
