@@ -9,6 +9,7 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     public class ViewTests
     {
+#if UNITY_2019_4_OR_NEWER
         [UnityTest]
         public IEnumerator ViewDescriptor_Register_OnlyOnce()
         {
@@ -32,5 +33,7 @@ namespace Unity.ProjectAuditor.EditorTests
             // check num categories is still the same
             Assert.AreEqual(numCategories, Unity.ProjectAuditor.Editor.ProjectAuditor.NumCategories());
         }
+
+#endif
     }
 }
