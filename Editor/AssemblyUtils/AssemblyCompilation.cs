@@ -82,18 +82,14 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
     {
         Dictionary<string, AssemblyCompilationTask> m_AssemblyCompilationTasks;
         string m_OutputFolder = string.Empty;
-        string[] m_RoslynAnalyzers;
 
         public string[] assemblyNames;
         public CodeOptimization codeOptimization = CodeOptimization.Release;
         public CompilationMode compilationMode = CompilationMode.Player;
         public BuildTarget platform = EditorUserBuildSettings.activeBuildTarget;
-        public Action<AssemblyCompilationTask, CompilerMessage[]> onAssemblyCompilationFinished;
+        public string[] roslynAnalyzers = new string[] {};
 
-        public AssemblyCompilation()
-        {
-            m_RoslynAnalyzers = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath).ToArray();
-        }
+        public Action<AssemblyCompilationTask, CompilerMessage[]> onAssemblyCompilationFinished;
 
         public void Dispose()
         {
@@ -285,7 +281,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                     AllowUnsafeCode = assembly.compilerOptions.AllowUnsafeCode,
                     ApiCompatibilityLevel = assembly.compilerOptions.ApiCompatibilityLevel,
                     CodeOptimization = codeOptimization == CodeOptimization.Release ? UnityEditor.Compilation.CodeOptimization.Release : UnityEditor.Compilation.CodeOptimization.Debug, // assembly.compilerOptions.CodeOptimization,
-                    RoslynAnalyzerDllPaths = m_RoslynAnalyzers
+                    RoslynAnalyzerDllPaths = roslynAnalyzers
                 };
 #else
                 assemblyBuilder.compilerOptions = assembly.compilerOptions;

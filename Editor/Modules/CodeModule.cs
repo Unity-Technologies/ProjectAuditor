@@ -163,17 +163,28 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     });
             }
 
-            var roslynAnalyzers = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath).ToArray();
-            foreach (var assemblyPath in roslynAnalyzers)
+            var roslynAnalyzers = new string[] {};
+            if (m_Config.UseRoslynAnalyzers)
             {
-                projectAuditorParams.onIssueFound(new ProjectIssue(Path.GetFileNameWithoutExtension(assemblyPath), IssueCategory.PrecompiledAssembly,
-                    new object[(int)PrecompiledAssemblyProperty.Num]
-                    {
-                        true
-                    })
-                    {
-                        location = new Location(assemblyPath)
-                    });
+                roslynAnalyzers = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath)
+                    .ToArray();
+                foreach (var assemblyPath in roslynAnalyzers)
+                {
+                    projectAuditorParams.onIssueFound(new ProjectIssue(Path.GetFileNameWithoutExtension(assemblyPath), IssueCategory.PrecompiledAssembly,
+                        new object[(int)PrecompiledAssemblyProperty.Num]
+                        {
+                            true
+                        })
+                        {
+                            location = new Location(assemblyPath)
+                        });
+                }
+            }
+
+            if (m_Config.UseRoslynAnalyzers)
+            {
+                roslynAnalyzers = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath)
+                    .ToArray();
             }
 
             var compilationPipeline = new AssemblyCompilation
@@ -182,6 +193,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 codeOptimization = projectAuditorParams.codeOptimization,
                 compilationMode = m_Config.CompilationMode,
                 platform = projectAuditorParams.platform,
+                roslynAnalyzers = roslynAnalyzers,
                 assemblyNames = projectAuditorParams.assemblyNames
             };
 

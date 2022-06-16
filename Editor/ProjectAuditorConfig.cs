@@ -27,6 +27,12 @@ namespace Unity.ProjectAuditor.Editor
         public CompilationMode CompilationMode;
 
         /// <summary>
+        /// If enabled, ProjectAuditor will use Roslyn Analyzer DLLs that are present in the project
+        /// </summary>
+        public bool UseRoslynAnalyzers;
+
+
+        /// <summary>
         /// If enabled, any issue reported by ProjectAuditor will cause the build to fail.
         /// </summary>
         public bool FailBuildOnIssues;
