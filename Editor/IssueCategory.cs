@@ -17,6 +17,7 @@ namespace Unity.ProjectAuditor.Editor
         BuildStep,
         BuildSummary,
         Assembly,
+        PrecompiledAssembly,
         ShaderCompilerMessage,
 
         FirstCustomCategory

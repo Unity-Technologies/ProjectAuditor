@@ -24,6 +24,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
+    public enum PrecompiledAssemblyProperty
+    {
+        RoslynAnalyzer = 0,
+        Num
+    }
+
     public enum CodeProperty
     {
         Assembly = 0,
@@ -49,6 +55,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.CompileTime), format = PropertyFormat.Time, name = "Compile Time (seconds)"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.ReadOnly), format = PropertyFormat.Bool, name = "Read Only", defaultGroup = true},
                 new PropertyDefinition { type = PropertyType.Path, name = "asmdef Path"},
+            }
+        };
+
+        static readonly IssueLayout k_PrecompiledAssemblyLayout = new IssueLayout
+        {
+            category = IssueCategory.PrecompiledAssembly,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Assembly Name"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PrecompiledAssemblyProperty.RoslynAnalyzer), format = PropertyFormat.Bool, name = "Roslyn Analyzer"},
+                new PropertyDefinition { type = PropertyType.Directory, name = "Path", defaultGroup = true},
             }
         };
 
@@ -106,6 +123,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_AssemblyLayout;
+            yield return k_PrecompiledAssemblyLayout;
             yield return k_IssueLayout;
             yield return k_CompilerMessageLayout;
             yield return k_GenericIssueLayout;
@@ -132,6 +150,31 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
+
+            foreach (var assemblyPath in AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All))
+            {
+                projectAuditorParams.onIssueFound(new ProjectIssue(Path.GetFileNameWithoutExtension(assemblyPath), IssueCategory.PrecompiledAssembly,
+                    new object[(int)PrecompiledAssemblyProperty.Num]
+                    {
+                        false
+                    })
+                    {
+                        location = new Location(assemblyPath)
+                    });
+            }
+
+            var roslynAnalyzers = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath).ToArray();
+            foreach (var assemblyPath in roslynAnalyzers)
+            {
+                projectAuditorParams.onIssueFound(new ProjectIssue(Path.GetFileNameWithoutExtension(assemblyPath), IssueCategory.PrecompiledAssembly,
+                    new object[(int)PrecompiledAssemblyProperty.Num]
+                    {
+                        true
+                    })
+                    {
+                        location = new Location(assemblyPath)
+                    });
+            }
 
             var compilationPipeline = new AssemblyCompilation
             {

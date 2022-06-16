@@ -321,7 +321,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 category = IssueCategory.Assembly,
                 name = "Assemblies",
                 menuLabel = "Code/Assemblies",
-                menuOrder = 99,
+                menuOrder = 98,
                 showAssemblySelection = true,
                 showFilters = true,
                 showDependencyView = true,
@@ -329,6 +329,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                 //defaultGroupProperty = issue => issue.description.Split('.')[0],
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assemblies
+            });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.PrecompiledAssembly,
+                name = "Precompiled Assemblies",
+                menuLabel = "Code/Precompiled Assemblies",
+                menuOrder = 99,
+                showFilters = true,
+                getAssemblyName = issue => issue.description,
+                onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PrecompiledAssemblies
             });
             ViewDescriptor.Register(new ViewDescriptor
             {

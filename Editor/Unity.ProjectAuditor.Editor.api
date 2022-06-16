@@ -63,12 +63,13 @@ namespace Unity.ProjectAuditor.Editor
         public const Unity.ProjectAuditor.Editor.IssueCategory BuildSummary = 10;
         public const Unity.ProjectAuditor.Editor.IssueCategory Code = 4;
         public const Unity.ProjectAuditor.Editor.IssueCategory CodeCompilerMessage = 5;
-        public const Unity.ProjectAuditor.Editor.IssueCategory FirstCustomCategory = 13;
+        public const Unity.ProjectAuditor.Editor.IssueCategory FirstCustomCategory = 14;
         public const Unity.ProjectAuditor.Editor.IssueCategory GenericInstance = 6;
         public const Unity.ProjectAuditor.Editor.IssueCategory MetaData = 0;
+        public const Unity.ProjectAuditor.Editor.IssueCategory PrecompiledAssembly = 12;
         public const Unity.ProjectAuditor.Editor.IssueCategory ProjectSetting = 7;
         public const Unity.ProjectAuditor.Editor.IssueCategory Shader = 2;
-        public const Unity.ProjectAuditor.Editor.IssueCategory ShaderCompilerMessage = 12;
+        public const Unity.ProjectAuditor.Editor.IssueCategory ShaderCompilerMessage = 13;
         public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariant = 3;
         public int value__;
     }
@@ -375,6 +376,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         public const Unity.ProjectAuditor.Editor.Modules.MetaDataProperty Num = 1;
         public const Unity.ProjectAuditor.Editor.Modules.MetaDataProperty Value = 0;
+        public int value__;
+    }
+
+    public enum PrecompiledAssemblyProperty
+    {
+        public const Unity.ProjectAuditor.Editor.Modules.PrecompiledAssemblyProperty Num = 1;
+        public const Unity.ProjectAuditor.Editor.Modules.PrecompiledAssemblyProperty RoslynAnalyzer = 0;
         public int value__;
     }
 

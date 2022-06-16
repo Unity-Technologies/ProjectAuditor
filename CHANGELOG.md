@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 * Added *ProjectAuditorParams* option for compiling selected assemblies
+* Added support for reporting precompiled assemblies
 * Renamed asynchronous *ProjectAuditor.Audit* to *AuditAsync*
 
 ## [0.8.0-preview] - 2022-05-20

@@ -53,6 +53,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             BuildSteps,
             Assemblies,
             ShaderCompilerMessages,
+            PrecompiledAssemblies,
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -179,6 +180,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "compiler_messages_tab";
                 case UIButton.Assemblies:
                     return "assemblies_tab";
+                case UIButton.PrecompiledAssemblies:
+                    return "precompiled_assemblies_tab";
                 case UIButton.AssemblySelect:
                     return "assembly_button_click";
                 case UIButton.AssemblySelectApply:
