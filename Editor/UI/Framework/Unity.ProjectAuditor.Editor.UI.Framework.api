@@ -237,7 +237,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public System.Type type;
         public ViewDescriptor() {}
         public static Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor[] GetAll();
-        public static void Register(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor);
+        public static bool Register(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor);
     }
 
     public class ViewManager

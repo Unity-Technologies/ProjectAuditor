@@ -36,10 +36,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         static readonly Dictionary<int, ViewDescriptor> s_ViewDescriptorsRegistry = new Dictionary<int, ViewDescriptor>();
 
-        public static void Register(ViewDescriptor descriptor)
+        /// <summary>
+        /// Register a view via ViewDescriptor
+        /// </summary>
+        /// <returns> Returns 'true' on success, 'false' otherwise</returns>
+        public static bool Register(ViewDescriptor descriptor)
         {
-            if (!s_ViewDescriptorsRegistry.ContainsKey((int)descriptor.category))
-                s_ViewDescriptorsRegistry.Add((int)descriptor.category, descriptor);
+            if (s_ViewDescriptorsRegistry.ContainsKey((int)descriptor.category))
+                return false;
+
+            s_ViewDescriptorsRegistry.Add((int)descriptor.category, descriptor);
+            return true;
         }
 
         public static ViewDescriptor[] GetAll()
