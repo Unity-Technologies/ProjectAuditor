@@ -46,8 +46,8 @@ class MyClass
         {
             using (var compilationHelper = new AssemblyCompilation())
             {
-                Assert.AreEqual(CompilationMode.Player, compilationHelper.CompilationMode);
-                Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, compilationHelper.Platform);
+                Assert.AreEqual(CompilationMode.Player, compilationHelper.compilationMode);
+                Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, compilationHelper.platform);
             }
         }
 

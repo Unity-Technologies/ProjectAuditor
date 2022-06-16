@@ -175,9 +175,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var foundIssues = new List<ProjectIssue>();
             var compilationPipeline = new AssemblyCompilation
             {
-                AssemblyCompilationFinished = (compilationTask, compilerMessages) => ProcessCompilerMessages(compilationTask, compilerMessages, foundIssues.Add),
-                CompilationMode = m_Config.CompilationMode,
-                Platform = projectAuditorParams.platform
+                codeOptimization = projectAuditorParams.codeOptimization,
+                compilationMode = m_Config.CompilationMode,
+                platform = projectAuditorParams.platform,
+                assemblyNames = projectAuditorParams.assemblyNames,
+                onAssemblyCompilationFinished = (compilationTask, compilerMessages) => ProcessCompilerMessages(compilationTask, compilerMessages, foundIssues.Add)
             };
 
             Profiler.BeginSample("CodeModule.Audit.Compilation");

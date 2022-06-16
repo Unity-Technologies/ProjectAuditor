@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -15,13 +16,19 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     public static class Utility
     {
+        public static CodeOptimization CodeOptimization = CodeOptimization.Release;
+
         public static ProjectIssue[] Analyze(Func<ProjectIssue, bool> predicate = null)
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             config.AnalyzeInBackground = false;
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-            var projectReport = projectAuditor.Audit();
+            var projectAuditorParams = new ProjectAuditorParams
+            {
+                codeOptimization = CodeOptimization
+            };
+            var projectReport = projectAuditor.Audit(projectAuditorParams);
 
             return projectReport.GetAllIssues().Where(i => predicate == null || predicate(i)).ToArray();
         }
@@ -33,7 +40,12 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var module = projectAuditor.GetModule(category);
-            var issues = module.Audit();
+            var projectAuditorParams = new ProjectAuditorParams
+            {
+                assemblyNames = new[] { AssemblyInfo.DefaultAssemblyName}
+            };
+
+            var issues = module.Audit(projectAuditorParams);
 
             return issues.Where(i => i.category == category && (predicate == null || predicate(i))).ToArray();
         }

@@ -11,11 +11,6 @@ using UnityEditor.Build;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.SceneManagement;
-#if UNITY_2018_2_OR_NEWER
-using UnityEditor.Build.Reporting;
-using UnityEditor.SceneManagement;
-#endif
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -34,7 +29,6 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_SurfShaderResource;
 #pragma warning restore 0414
 
-#if UNITY_2018_2_OR_NEWER
         const string s_KeywordName = "DIRECTIONAL";
 
         class StripVariants : IPreprocessShaders
@@ -61,7 +55,6 @@ namespace Unity.ProjectAuditor.EditorTests
                 }
             }
         }
-#endif
 
         [SetUp]
         public void Clear()
@@ -333,7 +326,6 @@ Shader ""Custom/MyEditorShader""
             TempAsset.Cleanup();
         }
 
-#if UNITY_2018_2_OR_NEWER
         [Test]
         public void ShadersAnalysis_Variants_RequireBuild()
         {
@@ -361,8 +353,6 @@ Shader ""Custom/MyEditorShader""
             Assert.NotNull(testShader);
             Assert.True(testShader.GetCustomPropertyAsLong(ShaderProperty.Size) > 0);
         }
-
-#endif
 
         [Test]
 #if UNITY_2021_1_OR_NEWER

@@ -73,7 +73,7 @@ class ScriptWithError {
             CompilerMessage[] compilerMessages = null;
             using (var compilationPipeline = new AssemblyCompilation
                {
-                   AssemblyCompilationFinished = (compilationTask, messages) =>
+                   onAssemblyCompilationFinished = (compilationTask, messages) =>
                    {
                        if (compilationTask.assemblyName.Equals(k_TempAssemblyName))
                        {

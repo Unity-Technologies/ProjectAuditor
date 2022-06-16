@@ -4,7 +4,6 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
-using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -36,12 +35,12 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(CodeOptimization.Release)]
         public void CodeAnalysis_MonoBehaviourWithEmptyEventMethod_IsReported(CodeOptimization codeOptimization)
         {
-            var prevCodeOptimization = AssemblyCompilation.CodeOptimization;
-            AssemblyCompilation.CodeOptimization = codeOptimization;
+            var prevCodeOptimization = Utility.CodeOptimization;
+            Utility.CodeOptimization = codeOptimization;
 
             var scriptIssues = Utility.AnalyzeAndFindAssetIssues(m_MonoBehaviourWithEmptyEventMethod);
 
-            AssemblyCompilation.CodeOptimization = prevCodeOptimization; // restore previous value
+            Utility.CodeOptimization = prevCodeOptimization; // restore previous value
 
             Assert.AreEqual(1, scriptIssues.Count());
 

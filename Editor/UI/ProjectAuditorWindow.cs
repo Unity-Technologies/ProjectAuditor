@@ -1037,11 +1037,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-#if UNITY_2018_1_OR_NEWER
         [MenuItem("Window/Analysis/Project Auditor")]
-#else
-        [MenuItem("Window/Project Auditor")]
-#endif
         public static ProjectAuditorWindow ShowWindow()
         {
             var wnd = GetWindow(typeof(ProjectAuditorWindow)) as ProjectAuditorWindow;
@@ -1084,11 +1080,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent LoadButton = new GUIContent("Load", "Load report from json file");
 #endif
 
-#if UNITY_2018_1_OR_NEWER
             public static readonly GUIContent HelpButton = EditorGUIUtility.TrIconContent("_Help", "Open Manual (in a web browser)");
-#else
-            public static readonly GUIContent HelpButton = new GUIContent("?", "Open Manual (in a web browser)");
-#endif
 
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");

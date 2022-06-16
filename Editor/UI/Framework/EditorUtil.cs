@@ -47,10 +47,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static void OpenProjectSettings(Location location)
         {
-#if UNITY_2018_3_OR_NEWER
             var window = SettingsService.OpenProjectSettings(location.Path);
             window.Repaint();
-#endif
         }
 
         public static void FocusOnAssetInProjectWindow(Location location)

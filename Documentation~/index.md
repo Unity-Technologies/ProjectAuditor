@@ -6,7 +6,7 @@ Project Auditor is an experimental static analysis tool that analyzes assets, se
 * Assets information
 
 ## Requirements
-Project Auditor is meant to be compatible with Unity versions from 2018 to the latest [Long-Term Support](https://unity3d.com/unity/qa/lts-releases) (recommended). 
+Project Auditor is meant to be compatible with Unity versions from 2018.4 to the latest [Long-Term Support](https://unity3d.com/unity/qa/lts-releases) (recommended). 
 
 Note that most recent Project Auditor version to support 2017 or earlier is [0.5.0-preview](https://github.com/Unity-Technologies/ProjectAuditor/releases/tag/0.5.0-preview).
 

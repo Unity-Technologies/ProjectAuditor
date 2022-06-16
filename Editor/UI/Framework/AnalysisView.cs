@@ -132,11 +132,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_TextFilter = new TextFilter();
 
             var helpButtonTooltip = string.Format("Open Reference for {0}", m_Desc.name);
-#if UNITY_2018_1_OR_NEWER
             m_HelpButtonContent = EditorGUIUtility.TrIconContent("_Help", helpButtonTooltip);
-#else
-            m_HelpButtonContent = new GUIContent("?", helpButtonTooltip);
-#endif
         }
 
         public virtual void AddIssues(IEnumerable<ProjectIssue> allIssues)

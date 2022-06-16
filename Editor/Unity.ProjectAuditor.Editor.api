@@ -162,7 +162,9 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectAuditorParams
     {
+        public string[] assemblyNames;
         public Unity.ProjectAuditor.Editor.IssueCategory[] categories;
+        public Unity.ProjectAuditor.Editor.AssemblyUtils.CodeOptimization codeOptimization;
         public System.Action<Unity.ProjectAuditor.Editor.ProjectReport> onAuditAsyncComplete;
         public System.Action<System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.ProjectIssue>> onAuditAsyncUpdate;
         public UnityEditor.BuildTarget platform;
@@ -277,6 +279,13 @@ namespace Unity.ProjectAuditor.Editor
 
 namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
+    public enum CodeOptimization
+    {
+        public const Unity.ProjectAuditor.Editor.AssemblyUtils.CodeOptimization Debug = 0;
+        public const Unity.ProjectAuditor.Editor.AssemblyUtils.CodeOptimization Release = 1;
+        public int value__;
+    }
+
     public enum CompilationMode
     {
         public const Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode DevelopmentPlayer = 1;
