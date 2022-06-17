@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -11,6 +12,11 @@ namespace Unity.ProjectAuditor.Editor
         public virtual IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             yield return null;
+        }
+
+        public IssueCategory[] GetCategories()
+        {
+            return GetLayouts().Select(l => l.category).ToArray();
         }
 
         public abstract IEnumerable<IssueLayout> GetLayouts();
