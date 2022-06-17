@@ -30,6 +30,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public ViewManager(IssueCategory[] categories)
         {
             m_Categories = categories;
+            m_ActiveViewIndex = 0;
         }
 
         public bool IsValid()
