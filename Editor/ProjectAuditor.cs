@@ -58,13 +58,6 @@ namespace Unity.ProjectAuditor.Editor
 #endif
             }
         }
-        internal static string ProjectPath
-        {
-            get
-            {
-                return PathUtils.GetDirectoryName(Application.dataPath);
-            }
-        }
 
         readonly List<ProjectAuditorModule> m_Modules = new List<ProjectAuditorModule>();
         ProjectAuditorConfig m_Config;
