@@ -138,7 +138,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid)// && m_ViewManager.activeViewIndex < viewDescriptors.Length)
             {
-                m_ProjectAuditor = new ProjectAuditor(); // NOTE: only needed if reloading a previous report
+                m_ProjectAuditor = new ProjectAuditor();
 
                 InitializeViews(true);
 
@@ -514,6 +514,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ShouldRefresh = true;
             m_AnalysisState = AnalysisState.InProgress;
             m_ProjectReport = null;
+
+            m_ProjectAuditor = new ProjectAuditor();
 
             InitializeViews(false);
 
