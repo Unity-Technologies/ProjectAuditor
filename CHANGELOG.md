@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 * Added *ProjectAuditorConfig* option to enable/disable Roslyn analyzers
 * Added *ProjectAuditorParams* option for compiling selected assemblies
+* Added discard button to toolbar
+* Added modules selection to initial UI panel
 * Added support for reporting precompiled assemblies
 * Renamed asynchronous *ProjectAuditor.Audit* to *AuditAsync*
 

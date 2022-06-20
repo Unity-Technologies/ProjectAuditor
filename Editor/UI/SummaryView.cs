@@ -57,15 +57,20 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField("Analysis overview", EditorStyles.boldLabel);
 
             EditorGUI.indentLevel++;
-            DrawSummaryItem("Code Issues: ", m_Stats.numCodeIssues, IssueCategory.Code);
-            DrawSummaryItem("Compiled Assemblies: ", string.Format("{0} / {1}", m_Stats.numCompiledAssemblies, m_Stats.numTotalAssemblies), IssueCategory.Assembly);
+            if (m_Stats.numCodeIssues > 0)
+                DrawSummaryItem("Code Issues: ", m_Stats.numCodeIssues, IssueCategory.Code);
+            if (m_Stats.numCompiledAssemblies > 0)
+                DrawSummaryItem("Compiled Assemblies: ", string.Format("{0} / {1}", m_Stats.numCompiledAssemblies, m_Stats.numTotalAssemblies), IssueCategory.Assembly);
             if (m_Stats.numCompilerErrors > 0)
             {
                 DrawSummaryItem("Compilation Errors: ", m_Stats.numCompilerErrors, IssueCategory.CodeCompilerMessage, Utility.GetSeverityIcon(Rule.Severity.Error));
             }
-            DrawSummaryItem("Settings Issues:", m_Stats.numSettingIssues, IssueCategory.ProjectSetting);
-            DrawSummaryItem("Assets in Resources folders:", m_Stats.numResources, IssueCategory.Asset);
-            DrawSummaryItem("Shaders in the project:", m_Stats.numShaders, IssueCategory.Shader);
+            if (m_Stats.numSettingIssues > 0)
+                DrawSummaryItem("Settings Issues:", m_Stats.numSettingIssues, IssueCategory.ProjectSetting);
+            if (m_Stats.numResources > 0)
+                DrawSummaryItem("Assets in Resources folders:", m_Stats.numResources, IssueCategory.Asset);
+            if (m_Stats.numShaders > 0)
+                DrawSummaryItem("Shaders in the project:", m_Stats.numShaders, IssueCategory.Shader);
             var buildAvailable = m_Stats.numBuildSteps > 0;
             DrawSummaryItem("Build Report available:", buildAvailable, IssueCategory.BuildStep);
             EditorGUI.indentLevel--;
