@@ -111,7 +111,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "Built-in",                        // prefix for built-in resources such as textures (not a real prefix path)
             };
 
-            var issues = Utility.AnalyzeBuild(i => i.category != IssueCategory.ProjectSetting);
+            var issues = Utility.AnalyzeBuild(i => i.category != IssueCategory.ProjectSetting && i.category != IssueCategory.PrecompiledAssembly);
             foreach (var issue in issues)
             {
                 var relativePath = issue.relativePath;
