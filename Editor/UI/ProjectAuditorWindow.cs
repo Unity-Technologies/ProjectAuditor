@@ -526,10 +526,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_ProjectReport == null)
                 m_ProjectReport = new ProjectReport();
 
-            var layouts = module.GetLayouts().ToArray();
-            foreach (var layout in layouts)
+            var categories = module.GetCategories().ToArray();
+            foreach (var category in categories)
             {
-                m_ProjectReport.ClearIssues(layout.category);
+                m_ProjectReport.ClearIssues(category);
             }
 
             var newIssues = new List<ProjectIssue>();
@@ -544,7 +544,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             module.Audit(projectAuditorParams, new ProgressBar());
 
             // update views
-            var views = layouts.Select(l => m_ViewManager.GetView(l.category)).Distinct();
+            var views = categories.Select(c => m_ViewManager.GetView(c)).Distinct();
             foreach (var view in views)
             {
                 view.Clear();
