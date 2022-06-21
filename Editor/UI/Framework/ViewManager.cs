@@ -12,6 +12,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     [Serializable]
     public class ViewManager
     {
+        class NullFilter : IProjectIssueFilter
+        {
+            public bool Match(ProjectIssue issue)
+            {
+                return true;
+            }
+        }
+
         AnalysisView[] m_Views;
 
         [SerializeField] IssueCategory[] m_Categories;
@@ -57,8 +65,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void Create(ProjectAuditor projectAuditor, Preferences preferences, IProjectIssueFilter filter, Action<ViewDescriptor, bool> onCreateView = null)
+        public void Create(ProjectAuditor projectAuditor, Preferences preferences, Action<ViewDescriptor, bool> onCreateView = null, IProjectIssueFilter filter = null)
         {
+            if (filter == null)
+                filter = new NullFilter();
+
             Profiler.BeginSample("ViewManager.Create");
             var views = new List<AnalysisView>();
             foreach (var category in m_Categories)

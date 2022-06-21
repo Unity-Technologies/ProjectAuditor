@@ -252,7 +252,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void ChangeView(Unity.ProjectAuditor.Editor.IssueCategory category);
         public void Clear();
         public void ClearView(Unity.ProjectAuditor.Editor.IssueCategory category);
-        public void Create(Unity.ProjectAuditor.Editor.ProjectAuditor projectAuditor, Unity.ProjectAuditor.Editor.UI.Framework.Preferences preferences, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter, System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor, bool> onCreateView = default(System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor, bool>));
+        public void Create(Unity.ProjectAuditor.Editor.ProjectAuditor projectAuditor, Unity.ProjectAuditor.Editor.UI.Framework.Preferences preferences, System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor, bool> onCreateView = default(System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor, bool>), Unity.ProjectAuditor.Editor.IProjectIssueFilter filter = default(Unity.ProjectAuditor.Editor.IProjectIssueFilter));
         public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetActiveView();
         public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(int index);
         public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(Unity.ProjectAuditor.Editor.IssueCategory category);

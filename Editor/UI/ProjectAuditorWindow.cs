@@ -186,7 +186,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Profiler.BeginSample("Views Creation");
 
             var dropdownItems = new List<Utility.DropdownItem>(categories.Length);
-            m_ViewManager.Create(m_ProjectAuditor, m_Preferences, this, (desc, isSupported) =>
+            m_ViewManager.Create(m_ProjectAuditor, m_Preferences, (desc, isSupported) =>
             {
                 dropdownItems.Add(new Utility.DropdownItem
                 {
@@ -195,8 +195,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                     Enabled = isSupported,
                     UserData = desc.category
                 });
-            });
+            }, this);
             m_ViewDropdownItems = dropdownItems.ToArray();
+
             Profiler.EndSample();
         }
 

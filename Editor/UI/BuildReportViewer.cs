@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Unity.ProjectAuditor.Editor.UI
 {
     [CustomEditor(typeof(BuildReport))]
-    class BuildReportViewer : UnityEditor.Editor, IBuildReportProvider, IProjectIssueFilter
+    class BuildReportViewer : UnityEditor.Editor, IBuildReportProvider
     {
         static int s_ActiveViewIndex;
         static Preferences s_Preferences;
@@ -20,6 +20,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] Preferences m_Preferences;
 
         ViewManager m_ViewManager;
+
+        static readonly IssueCategory[] k_Categories = {IssueCategory.BuildStep, IssueCategory.BuildFile};
 
         void InitializeIfNeeded()
         {
@@ -34,20 +36,19 @@ namespace Unity.ProjectAuditor.Editor.UI
                 BuildReportModule.BuildReportProvider = this;
 
                 var projectAuditor = new ProjectAuditor();
-                var categories = new[] {IssueCategory.BuildStep, IssueCategory.BuildFile};
 
-                m_ViewManager = new ViewManager(categories);
-                m_ViewManager.Create(projectAuditor, m_Preferences, this);
+                m_ViewManager = new ViewManager(k_Categories);
+                m_ViewManager.Create(projectAuditor, m_Preferences);
                 m_ViewManager.activeViewIndex = m_ActiveViewIndex;
                 m_ViewManager.onViewChanged = index => m_ActiveViewIndex = index;
 
                 var report = projectAuditor.Audit(new ProjectAuditorParams
                 {
-                    categories = categories
+                    categories = k_Categories
                 });
 
                 m_ViewManager.AddIssues(report.GetAllIssues());
-                foreach (var category in categories)
+                foreach (var category in k_Categories)
                 {
                     m_ViewManager.GetView(category).Refresh();
                 }
@@ -96,11 +97,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             view.DrawContent();
             EditorGUILayout.EndVertical();
-        }
-
-        public bool Match(ProjectIssue issue)
-        {
-            return true;
         }
 
         public BuildReport GetBuildReport()
