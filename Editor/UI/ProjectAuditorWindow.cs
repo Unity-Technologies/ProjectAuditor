@@ -163,11 +163,11 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             var categories = GetSelectedCategories();
             var viewDescriptors = ViewDescriptor.GetAll()
-                .Where(descriptor => m_ProjectAuditor.IsModuleSupported(descriptor.category) && categories.Contains(descriptor.category)).ToArray();
+                .Where(descriptor => categories.Contains(descriptor.category)).ToArray();
             Array.Sort(viewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
 
             if (m_ViewManager == null || !reload)
-                m_ViewManager = new ViewManager(categories);
+                m_ViewManager = new ViewManager(viewDescriptors.Select(d => d.category).ToArray()); // view manager needs sorted categories
 
             m_ViewManager.onViewChanged += i =>
             {
