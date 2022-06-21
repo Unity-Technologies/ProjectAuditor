@@ -123,6 +123,7 @@ namespace Unity.ProjectAuditor.Editor
         public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
         public Unity.ProjectAuditor.Editor.ProjectReport Audit(Unity.ProjectAuditor.Editor.ProjectAuditorParams projectAuditorParams, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
         public void AuditAsync(Unity.ProjectAuditor.Editor.ProjectAuditorParams projectAuditorParams, Unity.ProjectAuditor.Editor.IProgress progress = default(Unity.ProjectAuditor.Editor.IProgress));
+        public Unity.ProjectAuditor.Editor.IssueCategory[] GetCategories();
         public Unity.ProjectAuditor.Editor.IssueLayout GetLayout(Unity.ProjectAuditor.Editor.IssueCategory category);
         public static Unity.ProjectAuditor.Editor.IssueCategory GetOrRegisterCategory(string name);
         public static int NumCategories();

@@ -658,6 +658,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         IssueCategory[] GetSelectedCategories()
         {
+            if (m_SelectedModules == BuiltInModules.Everything)
+                return m_ProjectAuditor.GetCategories();
+
             var requestedCategories = new List<IssueCategory>(new[] {IssueCategory.MetaData});
             if ((m_SelectedModules & BuiltInModules.Code) != 0)
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<CodeModule>().GetCategories());
