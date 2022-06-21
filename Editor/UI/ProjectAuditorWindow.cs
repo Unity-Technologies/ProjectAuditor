@@ -24,6 +24,18 @@ namespace Unity.ProjectAuditor.Editor.UI
             Valid
         }
 
+        [Flags]
+        enum BuiltInModules
+        {
+            None = 0,
+            Code = 1 << 0,
+            Settings = 1 << 1,
+            Shaders = 1 << 2,
+            BuildReport = 1 << 3,
+
+            Everything = Code | Settings | Shaders | BuildReport
+        }
+
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow m_Instance;
 
@@ -48,6 +60,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         TreeViewSelection m_AssemblySelection;
 
         // Serialized fields
+        [SerializeField] BuiltInModules m_SelectedModules = BuiltInModules.Everything;
         [SerializeField] string m_AreaSelectionSummary;
         [SerializeField] string[] m_AssemblyNames;
         [SerializeField] string m_AssemblySelectionSummary;
@@ -117,31 +130,62 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             ProjectAuditorAnalytics.EnableAnalytics();
 
-            m_ProjectAuditor = new ProjectAuditor();
-
             Profiler.BeginSample("Update Selections");
             UpdateAreaSelection();
             UpdateAssemblySelection();
             Profiler.EndSample();
 
-            var viewDescriptors = ViewDescriptor.GetAll().Where(descriptor => m_ProjectAuditor.IsModuleSupported(descriptor.category)).ToArray();
+            // are we reloading from a valid state?
+            if (currentState == AnalysisState.Valid)// && m_ViewManager.activeViewIndex < viewDescriptors.Length)
+            {
+                m_ProjectAuditor = new ProjectAuditor();
+
+                InitializeViews(true);
+
+                Profiler.BeginSample("Views Update");
+                m_ViewManager.AddIssues(m_ProjectReport.GetAllIssues());
+                m_AnalysisState = currentState;
+                Profiler.EndSample();
+            }
+            else
+            {
+                m_AnalysisState = AnalysisState.Initialized;
+            }
+
+            Profiler.BeginSample("Refresh");
+            RefreshDisplay();
+            Profiler.EndSample();
+
+            m_Instance = this;
+        }
+
+        void InitializeViews(bool reload)
+        {
+            var categories = GetSelectedCategories();
+            var viewDescriptors = ViewDescriptor.GetAll()
+                .Where(descriptor => m_ProjectAuditor.IsModuleSupported(descriptor.category) && categories.Contains(descriptor.category)).ToArray();
             Array.Sort(viewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
 
-            m_ViewDropdownItems = new Utility.DropdownItem[viewDescriptors.Length];
-            if (m_ViewManager == null || !m_ViewManager.IsValid())
-                m_ViewManager = new ViewManager(viewDescriptors.Select(d => d.category).ToArray());
+            if (m_ViewManager == null || !reload)
+                m_ViewManager = new ViewManager(categories);
+
             m_ViewManager.onViewChanged += i =>
             {
-                ProjectAuditorAnalytics.SendEvent((ProjectAuditorAnalytics.UIButton)m_ViewManager.GetView(i).desc.analyticsEvent, ProjectAuditorAnalytics.BeginAnalytic());
+                ProjectAuditorAnalytics.SendEvent(
+                    (ProjectAuditorAnalytics.UIButton)m_ViewManager.GetView(i).desc.analyticsEvent,
+                    ProjectAuditorAnalytics.BeginAnalytic());
             };
 
             m_ViewManager.onAnalyze += IncrementalAudit;
             m_ViewManager.onViewExported += () =>
             {
-                ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Export, ProjectAuditorAnalytics.BeginAnalytic());
+                ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Export,
+                    ProjectAuditorAnalytics.BeginAnalytic());
             };
 
             Profiler.BeginSample("Views Creation");
+
+            m_ViewDropdownItems = new Utility.DropdownItem[categories.Length];
             m_ViewManager.Create(m_ProjectAuditor, m_Preferences, this, (desc, isSupported) =>
             {
                 var index = Array.IndexOf(viewDescriptors, desc);
@@ -153,26 +197,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 };
             });
             Profiler.EndSample();
-
-            // are we reloading from a valid state?
-            if (currentState == AnalysisState.Valid && m_ViewManager.activeViewIndex < viewDescriptors.Length)
-            {
-                Profiler.BeginSample("Views Update");
-                m_ViewManager.AddIssues(m_ProjectReport.GetAllIssues());
-                m_AnalysisState = currentState;
-                Profiler.EndSample();
-            }
-            else
-            {
-                m_ProjectReport = new ProjectReport();
-                m_AnalysisState = AnalysisState.Initialized;
-            }
-
-            Profiler.BeginSample("Refresh");
-            RefreshDisplay();
-            Profiler.EndSample();
-
-            m_Instance = this;
         }
 
         void OnDisable()
@@ -188,7 +212,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ViewManager.ChangeView(IssueCategory.MetaData);
             }
 
-            if (m_AnalysisState != AnalysisState.Initializing)
+            if (m_AnalysisState != AnalysisState.Initializing && m_AnalysisState != AnalysisState.Initialized)
             {
                 DrawSettings();
                 DrawToolbar();
@@ -214,7 +238,29 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
             else
             {
-                DrawHelpbox();
+                EditorGUILayout.BeginVertical(GUI.skin.box);
+
+                EditorGUILayout.LabelField(Contents.WelcomeText, SharedStyles.TextArea);
+                EditorGUILayout.Space();
+
+                const int width = 400;
+                using (new EditorGUILayout.VerticalScope())
+                {
+                    m_SelectedModules = (BuiltInModules)EditorGUILayout.EnumFlagsField(Contents.ModulesSelection, m_SelectedModules, GUILayout.Width(width));
+                }
+
+                EditorGUILayout.Space();
+
+                GUI.enabled = m_SelectedModules != BuiltInModules.None;
+                if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(width), GUILayout.Height(40)))
+                {
+                    Analyze();
+                }
+                GUI.enabled = true;
+
+                EditorGUILayout.Space();
+
+                EditorGUILayout.EndVertical();
             }
         }
 
@@ -468,11 +514,15 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ShouldRefresh = true;
             m_AnalysisState = AnalysisState.InProgress;
             m_ProjectReport = null;
-            m_ViewManager.Clear();
+
+            m_ProjectAuditor = new ProjectAuditor();
+
+            InitializeViews(false);
 
             var newIssues = new List<ProjectIssue>();
             var projectAuditorParams = new ProjectAuditorParams
             {
+                categories = GetSelectedCategories(),
                 onIssueFound = projectIssue =>
                 {
                     newIssues.Add(projectIssue);
@@ -604,52 +654,66 @@ namespace Unity.ProjectAuditor.Editor.UI
             return Utility.GetTreeViewSelectedSummary(m_AreaSelection, AreaNames);
         }
 
+        IssueCategory[] GetSelectedCategories()
+        {
+            var requestedCategories = new List<IssueCategory>(new[] {IssueCategory.MetaData});
+            if ((m_SelectedModules & BuiltInModules.Code) != 0)
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<CodeModule>().GetCategories());
+            if ((m_SelectedModules & BuiltInModules.Settings) != 0)
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<SettingsModule>().GetCategories());
+            if ((m_SelectedModules & BuiltInModules.Shaders) != 0)
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<ShadersModule>().GetCategories());
+            if ((m_SelectedModules & BuiltInModules.BuildReport) != 0)
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().GetCategories());
+            return requestedCategories.ToArray();
+        }
+
         void DrawAssemblyFilter()
         {
             if (!activeView.desc.showAssemblySelection)
                 return;
 
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(Contents.AssemblyFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
-
-            var lastEnabled = GUI.enabled;
-            GUI.enabled = IsAnalysisValid() && !AssemblySelectionWindow.IsOpen();
-            if (GUILayout.Button(Contents.AssemblyFilterSelect, EditorStyles.miniButton,
-                GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
+            using (new EditorGUILayout.HorizontalScope())
             {
-                if (m_AssemblyNames != null && m_AssemblyNames.Length > 0)
+                EditorGUILayout.LabelField(Contents.AssemblyFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
+
+                var lastEnabled = GUI.enabled;
+                GUI.enabled = IsAnalysisValid() && !AssemblySelectionWindow.IsOpen();
+                if (GUILayout.Button(Contents.AssemblyFilterSelect, EditorStyles.miniButton,
+                    GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
                 {
-                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-
-                    // Note: Window auto closes as it loses focus so this isn't strictly required
-                    if (AssemblySelectionWindow.IsOpen())
+                    if (m_AssemblyNames != null && m_AssemblyNames.Length > 0)
                     {
-                        AssemblySelectionWindow.CloseAll();
-                    }
-                    else
-                    {
-                        var windowPosition =
-                            new Vector2(Event.current.mousePosition.x + LayoutSize.FilterOptionsEnumWidth,
-                                Event.current.mousePosition.y + GUI.skin.label.lineHeight);
-                        var screenPosition = GUIUtility.GUIToScreenPoint(windowPosition);
+                        var analytic = ProjectAuditorAnalytics.BeginAnalytic();
 
-                        AssemblySelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AssemblySelection,
-                            m_AssemblyNames);
-                    }
+                        // Note: Window auto closes as it loses focus so this isn't strictly required
+                        if (AssemblySelectionWindow.IsOpen())
+                        {
+                            AssemblySelectionWindow.CloseAll();
+                        }
+                        else
+                        {
+                            var windowPosition =
+                                new Vector2(Event.current.mousePosition.x + LayoutSize.FilterOptionsEnumWidth,
+                                    Event.current.mousePosition.y + GUI.skin.label.lineHeight);
+                            var screenPosition = GUIUtility.GUIToScreenPoint(windowPosition);
 
-                    ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.AssemblySelect,
-                        analytic);
+                            AssemblySelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AssemblySelection,
+                                m_AssemblyNames);
+                        }
+
+                        ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.AssemblySelect,
+                            analytic);
+                    }
                 }
+
+                GUI.enabled = lastEnabled;
+
+                m_AssemblySelectionSummary = GetSelectedAssembliesSummary();
+                Utility.DrawSelectedText(m_AssemblySelectionSummary);
+
+                GUILayout.FlexibleSpace();
             }
-
-            GUI.enabled = lastEnabled;
-
-            m_AssemblySelectionSummary = GetSelectedAssembliesSummary();
-            Utility.DrawSelectedText(m_AssemblySelectionSummary);
-
-            GUILayout.FlexibleSpace();
-
-            EditorGUILayout.EndHorizontal();
         }
 
         // stephenm TODO - if AssemblySelectionWindow and AreaSelectionWindow end up sharing a common base class then
@@ -660,48 +724,49 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!activeView.desc.showAreaSelection)
                 return;
 
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(Contents.AreaFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
-
-            if (AreaNames.Length > 0)
+            using (new EditorGUILayout.HorizontalScope())
             {
-                var lastEnabled = GUI.enabled;
-                var enabled = IsAnalysisValid() &&
-                    !AreaSelectionWindow.IsOpen();
-                GUI.enabled = enabled;
-                if (GUILayout.Button(Contents.AreaFilterSelect, EditorStyles.miniButton,
-                    GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
+                EditorGUILayout.LabelField(Contents.AreaFilter,
+                    GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
+
+                if (AreaNames.Length > 0)
                 {
-                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-
-                    // Note: Window auto closes as it loses focus so this isn't strictly required
-                    if (AreaSelectionWindow.IsOpen())
+                    var lastEnabled = GUI.enabled;
+                    var enabled = IsAnalysisValid() &&
+                        !AreaSelectionWindow.IsOpen();
+                    GUI.enabled = enabled;
+                    if (GUILayout.Button(Contents.AreaFilterSelect, EditorStyles.miniButton,
+                        GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
                     {
-                        AreaSelectionWindow.CloseAll();
-                    }
-                    else
-                    {
-                        var windowPosition =
-                            new Vector2(Event.current.mousePosition.x + LayoutSize.FilterOptionsEnumWidth,
-                                Event.current.mousePosition.y + GUI.skin.label.lineHeight);
-                        var screenPosition = GUIUtility.GUIToScreenPoint(windowPosition);
+                        var analytic = ProjectAuditorAnalytics.BeginAnalytic();
 
-                        AreaSelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AreaSelection,
-                            AreaNames);
+                        // Note: Window auto closes as it loses focus so this isn't strictly required
+                        if (AreaSelectionWindow.IsOpen())
+                        {
+                            AreaSelectionWindow.CloseAll();
+                        }
+                        else
+                        {
+                            var windowPosition =
+                                new Vector2(Event.current.mousePosition.x + LayoutSize.FilterOptionsEnumWidth,
+                                    Event.current.mousePosition.y + GUI.skin.label.lineHeight);
+                            var screenPosition = GUIUtility.GUIToScreenPoint(windowPosition);
+
+                            AreaSelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AreaSelection,
+                                AreaNames);
+                        }
+
+                        ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.AreaSelect, analytic);
                     }
 
-                    ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.AreaSelect, analytic);
+                    GUI.enabled = lastEnabled;
+
+                    m_AreaSelectionSummary = GetSelectedAreasSummary();
+                    Utility.DrawSelectedText(m_AreaSelectionSummary);
+
+                    GUILayout.FlexibleSpace();
                 }
-
-                GUI.enabled = lastEnabled;
-
-                m_AreaSelectionSummary = GetSelectedAreasSummary();
-                Utility.DrawSelectedText(m_AreaSelectionSummary);
-
-                GUILayout.FlexibleSpace();
             }
-
-            EditorGUILayout.EndHorizontal();
         }
 
         void DrawFilters()
@@ -709,69 +774,70 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!activeView.desc.showFilters)
                 return;
 
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
-
-            m_Preferences.filters = Utility.BoldFoldout(m_Preferences.filters, Contents.FiltersFoldout);
-            if (m_Preferences.filters)
+            using (new EditorGUILayout.VerticalScope(GUILayout.ExpandWidth(true)))
             {
-                EditorGUI.indentLevel++;
-
-                DrawAssemblyFilter();
-                DrawAreaFilter();
-
-                EditorGUI.BeginChangeCheck();
-
-                activeView.DrawTextSearch();
-
-                // this is specific to diagnostics
-                if (activeView.desc.showCritical || activeView.desc.showMuteOptions)
+                m_Preferences.filters = Utility.BoldFoldout(m_Preferences.filters, Contents.FiltersFoldout);
+                if (m_Preferences.filters)
                 {
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+                    EditorGUI.indentLevel++;
 
-                    if (activeView.desc.showCritical)
+                    DrawAssemblyFilter();
+                    DrawAreaFilter();
+
+                    EditorGUI.BeginChangeCheck();
+
+                    activeView.DrawTextSearch();
+
+                    // this is specific to diagnostics
+                    if (activeView.desc.showCritical || activeView.desc.showMuteOptions)
                     {
-                        bool wasShowingCritical = m_Preferences.onlyCriticalIssues;
-                        m_Preferences.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
-                            m_Preferences.onlyCriticalIssues, GUILayout.Width(180));
-
-                        if (wasShowingCritical != m_Preferences.onlyCriticalIssues)
+                        using (new EditorGUILayout.HorizontalScope())
                         {
-                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                            var payload = new Dictionary<string, string>();
-                            payload["selected"] = activeView.desc.showCritical ? "true" : "false";
-                            ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues,
-                                analytic);
+                            EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+
+                            if (activeView.desc.showCritical)
+                            {
+                                bool wasShowingCritical = m_Preferences.onlyCriticalIssues;
+                                m_Preferences.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
+                                    m_Preferences.onlyCriticalIssues, GUILayout.Width(180));
+
+                                if (wasShowingCritical != m_Preferences.onlyCriticalIssues)
+                                {
+                                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                                    var payload = new Dictionary<string, string>();
+                                    payload["selected"] = activeView.desc.showCritical ? "true" : "false";
+                                    ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues,
+                                        analytic);
+                                }
+                            }
+
+                            if (activeView.desc.showMuteOptions)
+                            {
+                                bool wasDisplayingMuted = m_Preferences.mutedIssues;
+                                m_Preferences.mutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
+                                    m_Preferences.mutedIssues, GUILayout.Width(127));
+
+                                if (wasDisplayingMuted != m_Preferences.mutedIssues)
+                                {
+                                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                                    var payload = new Dictionary<string, string>();
+                                    payload["selected"] = m_Preferences.mutedIssues ? "true" : "false";
+                                    ProjectAuditorAnalytics.SendEventWithKeyValues(
+                                        ProjectAuditorAnalytics.UIButton.ShowMuted,
+                                        analytic, payload);
+                                }
+                            }
                         }
                     }
 
-                    if (activeView.desc.showMuteOptions)
-                    {
-                        bool wasDisplayingMuted = m_Preferences.mutedIssues;
-                        m_Preferences.mutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
-                            m_Preferences.mutedIssues, GUILayout.Width(127));
+                    if (EditorGUI.EndChangeCheck())
+                        m_ShouldRefresh = true;
 
-                        if (wasDisplayingMuted != m_Preferences.mutedIssues)
-                        {
-                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                            var payload = new Dictionary<string, string>();
-                            payload["selected"] = m_Preferences.mutedIssues ? "true" : "false";
-                            ProjectAuditorAnalytics.SendEventWithKeyValues(ProjectAuditorAnalytics.UIButton.ShowMuted,
-                                analytic, payload);
-                        }
-                    }
+                    activeView.DrawFilters();
 
-                    EditorGUILayout.EndHorizontal();
+                    EditorGUI.indentLevel--;
                 }
-
-                if (EditorGUI.EndChangeCheck())
-                    m_ShouldRefresh = true;
-
-                activeView.DrawFilters();
-
-                EditorGUI.indentLevel--;
             }
-            EditorGUILayout.EndVertical();
         }
 
         void DrawActions()
@@ -781,56 +847,55 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var table = activeView.table;
 
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
-
-            m_Preferences.actions = Utility.BoldFoldout(m_Preferences.actions, Contents.ActionsFoldout);
-            if (m_Preferences.actions)
+            using (new EditorGUILayout.VerticalScope(GUILayout.ExpandWidth(true)))
             {
-                EditorGUI.indentLevel++;
-
-                EditorGUILayout.BeginHorizontal();
-
-                GUI.enabled = activeView.desc.showMuteOptions;
-                EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-
-                if (GUILayout.Button(Contents.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                m_Preferences.actions = Utility.BoldFoldout(m_Preferences.actions, Contents.ActionsFoldout);
+                if (m_Preferences.actions)
                 {
-                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                    var selectedItems = table.GetSelectedItems();
-                    foreach (var item in selectedItems)
+                    EditorGUI.indentLevel++;
+
+                    using (new EditorGUILayout.HorizontalScope())
                     {
-                        SetRuleForItem(item, Rule.Severity.None);
+                        GUI.enabled = activeView.desc.showMuteOptions;
+                        EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+
+                        if (GUILayout.Button(Contents.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                        {
+                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                            var selectedItems = table.GetSelectedItems();
+                            foreach (var item in selectedItems)
+                            {
+                                SetRuleForItem(item, Rule.Severity.None);
+                            }
+
+                            if (!m_Preferences.mutedIssues)
+                            {
+                                table.SetSelection(new List<int>());
+                            }
+
+                            ProjectAuditorAnalytics.SendEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
+                                analytic, table.GetSelectedItems());
+                        }
+
+                        if (GUILayout.Button(Contents.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                        {
+                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                            var selectedItems = table.GetSelectedItems();
+                            foreach (var item in selectedItems)
+                            {
+                                ClearRulesForItem(item);
+                            }
+
+                            ProjectAuditorAnalytics.SendEventWithSelectionSummary(
+                                ProjectAuditorAnalytics.UIButton.Unmute, analytic, table.GetSelectedItems());
+                        }
+
+                        GUI.enabled = true;
                     }
 
-                    if (!m_Preferences.mutedIssues)
-                    {
-                        table.SetSelection(new List<int>());
-                    }
-
-                    ProjectAuditorAnalytics.SendEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
-                        analytic, table.GetSelectedItems());
+                    EditorGUI.indentLevel--;
                 }
-
-                if (GUILayout.Button(Contents.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                {
-                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                    var selectedItems = table.GetSelectedItems();
-                    foreach (var item in selectedItems)
-                    {
-                        ClearRulesForItem(item);
-                    }
-
-                    ProjectAuditorAnalytics.SendEventWithSelectionSummary(
-                        ProjectAuditorAnalytics.UIButton.Unmute, analytic, table.GetSelectedItems());
-                }
-
-                GUI.enabled = true;
-
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUI.indentLevel--;
             }
-            EditorGUILayout.EndVertical();
         }
 
         internal void SetAreaSelection(TreeViewSelection selection)
@@ -956,21 +1021,13 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawToolbar()
         {
-            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+            using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
-                GUI.enabled = (m_AnalysisState == AnalysisState.Valid || m_AnalysisState == AnalysisState.Initialized);
-
-                const int buttonWidth = 130;
-                if (GUILayout.Button(Contents.AnalyzeButton, EditorStyles.toolbarButton, GUILayout.Width(buttonWidth)))
-                {
-                    Analyze();
-                }
-
-                GUI.enabled = m_AnalysisState == AnalysisState.Valid;
+                const int largeButtonWidth = 200;
 
                 Utility.ToolbarDropdownList(m_ViewDropdownItems,
                     m_ViewManager.activeViewIndex,
-                    (obj) => {m_ViewManager.ChangeView((int)obj);}, GUILayout.Width(buttonWidth));
+                    (obj) => {m_ViewManager.ChangeView((int)obj);}, GUILayout.Width(largeButtonWidth));
 
                 GUI.enabled = true;
 
@@ -981,45 +1038,46 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.Space();
 
-                const int loadSaveButtonWidth = 40;
+                GUI.enabled = m_AnalysisState == AnalysisState.Valid;
+
+                const int loadSaveButtonWidth = 60;
                 // right-end buttons
                 if (GUILayout.Button(Contents.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
                 {
                     Load();
                 }
 
-                GUI.enabled = m_AnalysisState == AnalysisState.Valid;
                 if (GUILayout.Button(Contents.SaveButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
                 {
                     Save();
                 }
+
+                if (GUILayout.Button(Contents.DiscardButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
+                {
+                    if (EditorUtility.DisplayDialog(k_Discard, k_DiscardQuestion, "Ok", "Cancel"))
+                    {
+                        m_AnalysisState = AnalysisState.Initialized;
+                    }
+                }
+
                 GUI.enabled = true;
 
                 Utility.DrawHelpButton(Contents.HelpButton, "index");
             }
-            EditorGUILayout.EndHorizontal();
-        }
-
-        void DrawHelpbox()
-        {
-            EditorGUILayout.BeginVertical(GUI.skin.box);
-
-            EditorGUILayout.LabelField(Contents.HelpText, SharedStyles.TextArea);
-
-            EditorGUILayout.EndVertical();
         }
 
         void DrawSettings()
         {
             if (m_Preferences.developerMode)
             {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Build :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                m_ProjectAuditor.config.AnalyzeOnBuild = EditorGUILayout.ToggleLeft("Auto Analyze",
-                    m_ProjectAuditor.config.AnalyzeOnBuild, GUILayout.Width(100));
-                m_ProjectAuditor.config.FailBuildOnIssues = EditorGUILayout.ToggleLeft("Fail on Issues",
-                    m_ProjectAuditor.config.FailBuildOnIssues, GUILayout.Width(100));
-                EditorGUILayout.EndHorizontal();
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    EditorGUILayout.LabelField("Build :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+                    m_ProjectAuditor.config.AnalyzeOnBuild = EditorGUILayout.ToggleLeft("Auto Analyze",
+                        m_ProjectAuditor.config.AnalyzeOnBuild, GUILayout.Width(100));
+                    m_ProjectAuditor.config.FailBuildOnIssues = EditorGUILayout.ToggleLeft("Fail on Issues",
+                        m_ProjectAuditor.config.FailBuildOnIssues, GUILayout.Width(100));
+                }
             }
         }
 
@@ -1078,6 +1136,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         const string k_LoadFromFile = "Load from file";
         const string k_LoadingFailed = "Loading report from file was unsuccessful.";
         const string k_SaveToFile = "Save report to json file";
+        const string k_Discard = "Discard current report";
+        const string k_DiscardQuestion = "The current report will be lost. Are you sure?";
 
         // UI styles and layout
         static class LayoutSize
@@ -1096,13 +1156,17 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent AnalyzeButton =
                 new GUIContent("Analyze", "Analyze Project and list all issues found.");
+            public static readonly GUIContent ModulesSelection =
+                new GUIContent("Modules", "Select Project Auditor modules.");
 
 #if UNITY_2019_1_OR_NEWER
             public static readonly GUIContent SaveButton = EditorGUIUtility.TrIconContent("SaveAs", "Save current report to json file");
             public static readonly GUIContent LoadButton = EditorGUIUtility.TrIconContent("Import", "Load report from json file");
+            public static readonly GUIContent DiscardButton = EditorGUIUtility.TrIconContent("TreeEditor.Trash", "Discard the current report.");
 #else
             public static readonly GUIContent SaveButton = new GUIContent("Save", "Save current report to json file");
             public static readonly GUIContent LoadButton = new GUIContent("Load", "Load report from json file");
+            public static readonly GUIContent DiscardButton = new GUIContent("Discard", "Discard the current report.");
 #endif
 
             public static readonly GUIContent HelpButton = EditorGUIUtility.TrIconContent("_Help", "Open Manual (in a web browser)");
@@ -1125,7 +1189,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filtering Criteria");
             public static readonly GUIContent ActionsFoldout = new GUIContent("Actions", "Actions on selected issues");
 
-            public static readonly GUIContent HelpText = new GUIContent(
+            public static readonly GUIContent WelcomeText = new GUIContent(
 @"
 Project Auditor is an experimental static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report that contains the following:
 
