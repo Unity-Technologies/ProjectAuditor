@@ -185,17 +185,18 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Profiler.BeginSample("Views Creation");
 
-            m_ViewDropdownItems = new Utility.DropdownItem[categories.Length];
+            var dropdownItems = new List<Utility.DropdownItem>(categories.Length);
             m_ViewManager.Create(m_ProjectAuditor, m_Preferences, this, (desc, isSupported) =>
             {
-                var index = Array.IndexOf(viewDescriptors, desc);
-                m_ViewDropdownItems[index] = new Utility.DropdownItem
+                dropdownItems.Add(new Utility.DropdownItem
                 {
                     Content = new GUIContent(string.IsNullOrEmpty(desc.menuLabel) ? desc.name : desc.menuLabel),
                     SelectionContent = new GUIContent("View: " + desc.name),
-                    Enabled = isSupported
-                };
+                    Enabled = isSupported,
+                    UserData = desc.category
+                });
             });
+            m_ViewDropdownItems = dropdownItems.ToArray();
             Profiler.EndSample();
         }
 
@@ -1027,7 +1028,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 Utility.ToolbarDropdownList(m_ViewDropdownItems,
                     m_ViewManager.activeViewIndex,
-                    (obj) => {m_ViewManager.ChangeView((int)obj);}, GUILayout.Width(largeButtonWidth));
+                    (category) => {m_ViewManager.ChangeView((IssueCategory)category);}, GUILayout.Width(largeButtonWidth));
 
                 GUI.enabled = true;
 

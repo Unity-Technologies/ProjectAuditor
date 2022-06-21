@@ -23,6 +23,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public GUIContent Content;
             public GUIContent SelectionContent;
             public bool Enabled;
+            public object UserData;
         }
 
         public static bool BoldFoldout(bool toggle, GUIContent content)
@@ -41,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 for (var i = 0; i != items.Length; i++)
                     if (items[i].Enabled)
-                        menu.AddItem(items[i].Content, i == selectionIndex, callback, i);
+                        menu.AddItem(items[i].Content, i == selectionIndex, callback, items[i].UserData);
                     else
                         menu.AddDisabledItem(items[i].Content);
                 menu.DropDown(r);

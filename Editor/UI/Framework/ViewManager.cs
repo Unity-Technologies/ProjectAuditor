@@ -124,7 +124,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             ChangeView(Array.IndexOf(m_Views, newView));
         }
 
-        public void ChangeView(int index)
+        void ChangeView(int index)
         {
             var changeViewRequired = (m_ActiveViewIndex != index);
             if (changeViewRequired)
