@@ -524,7 +524,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var newIssues = new List<ProjectIssue>();
             var projectAuditorParams = new ProjectAuditorParams
             {
-                categories = GetSelectedCategories(),
+                categories = m_SelectedModules == BuiltInModules.Everything ? null : GetSelectedCategories(),
                 onIssueFound = projectIssue =>
                 {
                     newIssues.Add(projectIssue);
