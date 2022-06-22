@@ -83,7 +83,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 Content = new GUIContent(p.defaultGroup ? p.name + " (default)" : p.name),
                 SelectionContent = new GUIContent("Group By: " + p.name),
-                Enabled = p.format == PropertyFormat.String || p.format == PropertyFormat.Bool || p.format == PropertyFormat.Integer
+                Enabled = p.format == PropertyFormat.String || p.format == PropertyFormat.Bool || p.format == PropertyFormat.Integer,
+                UserData = Array.IndexOf(m_Layout.properties, p)
             }).ToArray();
 
             if (m_Table != null)
@@ -336,12 +337,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 Utility.ToolbarDropdownList(m_GroupDropdownItems, m_Table.groupPropertyIndex,
                     (data) =>
                     {
-                        var index = (int)data;
-                        if (index != m_Table.groupPropertyIndex)
+                        var groupPropertyIndex = (int)data;
+                        if (groupPropertyIndex != m_Table.groupPropertyIndex)
                         {
                             SetRowsExpanded(false);
 
-                            m_Table.groupPropertyIndex = index;
+                            m_Table.groupPropertyIndex = groupPropertyIndex;
                             m_Table.Clear();
                             m_Table.AddIssues(m_Issues.ToArray());
                             m_Table.Reload();
