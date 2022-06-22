@@ -323,7 +323,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Profiler.BeginSample("CodeModule.Analyze " + assemblyInfo.name);
 
             using (var assembly = AssemblyDefinition.ReadAssembly(assemblyInfo.path,
-                new ReaderParameters {ReadSymbols = true, AssemblyResolver = assemblyResolver}))
+                new ReaderParameters {ReadSymbols = true, AssemblyResolver = assemblyResolver, MetadataResolver = new MetadataResolverWithCache(assemblyResolver)}))
             {
                 foreach (var methodDefinition in MonoCecilHelper.AggregateAllTypeDefinitions(assembly.MainModule.Types)
                          .SelectMany(t => t.Methods))
