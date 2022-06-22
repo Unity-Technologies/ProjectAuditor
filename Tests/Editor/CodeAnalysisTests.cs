@@ -448,5 +448,14 @@ class UxmlAttributeDescriptionPropertyUsage
         }
 
 #endif
+
+
+        [Test]
+        public void CodeAnalysis_DefaultAssembly_IsOnlyReportedAssembly()
+        {
+            var issues = Utility.Analyze(IssueCategory.Code);
+
+            Assert.True(issues.All(i => i.GetCustomProperty(CodeProperty.Assembly).Equals(AssemblyInfo.DefaultAssemblyName)));
+        }
     }
 }
