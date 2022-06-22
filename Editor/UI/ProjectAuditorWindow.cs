@@ -382,7 +382,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.PrecompiledAssembly,
                 name = "Precompiled Assemblies",
-                menuLabel = "Code/Precompiled Assemblies",
+                menuLabel = "Experimental/Precompiled Assemblies",
                 menuOrder = 99,
                 showFilters = true,
                 getAssemblyName = issue => issue.description,
@@ -431,7 +431,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.GenericInstance,
                 name = "Generics",
-                menuLabel = "Code/Generic Types Instantiation",
+                menuLabel = "Experimental/Generic Types Instantiation",
                 menuOrder = 99,
                 showAssemblySelection = true,
                 showDependencyView = true,
