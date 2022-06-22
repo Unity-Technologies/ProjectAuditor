@@ -198,7 +198,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     var assetPath = PathUtils.ReplaceInvalidChars(content.sourceAssetPath);
 
                     // handle special case of Built-in assets
-                    if (assetPath.StartsWith("Built-in") && assetPath.Contains(':'))
+                    if (assetPath.StartsWith("Built-in") && assetPath.Contains(":"))
                         assetPath = assetPath.Substring(0, assetPath.IndexOf(':'));
 
                     var description = string.IsNullOrEmpty(assetPath) ? k_Unknown : Path.GetFileNameWithoutExtension(assetPath);
