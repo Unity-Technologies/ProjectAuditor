@@ -196,8 +196,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     // sourceAssetPath might contain '|' which is invalid. This is due to compressed texture format names in the asset name such as DXT1|BC1
                     var assetPath = PathUtils.ReplaceInvalidChars(content.sourceAssetPath);
-                    var assetImporter = AssetImporter.GetAtPath(assetPath);
+
+                    // handle special case of Built-in assets
+                    if (assetPath.StartsWith("Built-in") && assetPath.Contains(':'))
+                        assetPath = assetPath.Substring(0, assetPath.IndexOf(':'));
+
                     var description = string.IsNullOrEmpty(assetPath) ? k_Unknown : Path.GetFileNameWithoutExtension(assetPath);
+                    var assetImporter = AssetImporter.GetAtPath(assetPath);
 
                     var issue = new ProjectIssue(description, IssueCategory.BuildFile)
                     {
