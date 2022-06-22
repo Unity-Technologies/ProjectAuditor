@@ -203,7 +203,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnDisable()
         {
-            m_ViewManager.SaveSettings();
+            m_ViewManager?.SaveSettings();
         }
 
         void OnGUI()

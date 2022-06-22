@@ -152,6 +152,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void SaveSettings()
         {
+            if (!IsValid())
+                return;
+
             foreach (var view in m_Views)
             {
                 view.SaveSettings();
