@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                     return null;
 
                 Profiler.BeginSample("BuiltinCallAnalyzer.FindDescriptor");
-                descriptor = descriptors.Find(d => IsOrInheritedFrom(declaringType, d.type));
+                descriptor = descriptors.Find(d => MonoCecilHelper.IsOrInheritedFrom(declaringType, d.type));
                 Profiler.EndSample();
 
                 if (descriptor == null)
@@ -90,26 +90,6 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         {
             yield return OpCodes.Call;
             yield return OpCodes.Callvirt;
-        }
-
-        static bool IsOrInheritedFrom(TypeReference typeReference, string typeName)
-        {
-            try
-            {
-                var typeDefinition = typeReference.Resolve();
-
-                if (typeDefinition.FullName.Equals(typeName))
-                    return true;
-
-                if (typeDefinition.BaseType != null)
-                    return IsOrInheritedFrom(typeDefinition.BaseType, typeName);
-            }
-            catch (AssemblyResolutionException e)
-            {
-                Debug.LogWarningFormat("Could not resolve {0}: {1}", typeReference.Name, e.Message);
-            }
-
-            return false;
         }
     }
 }

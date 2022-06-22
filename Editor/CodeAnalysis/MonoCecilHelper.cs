@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
@@ -18,6 +19,26 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                 if (typeDefinition.HasNestedTypes)
                     typeDefs.AddRange(AggregateAllTypeDefinitions(typeDefinition.NestedTypes));
             return typeDefs;
+        }
+
+        public static bool IsOrInheritedFrom(TypeReference typeReference, string typeName)
+        {
+            try
+            {
+                var typeDefinition = typeReference.Resolve();
+
+                if (typeDefinition.FullName.Equals(typeName))
+                    return true;
+
+                if (typeDefinition.BaseType != null)
+                    return IsOrInheritedFrom(typeDefinition.BaseType, typeName);
+            }
+            catch (AssemblyResolutionException e)
+            {
+                Debug.LogWarningFormat("Could not resolve {0}: {1}", typeReference.Name, e.Message);
+            }
+
+            return false;
         }
     }
 }
