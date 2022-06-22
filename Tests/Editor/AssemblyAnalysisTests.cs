@@ -38,7 +38,7 @@ class MyClass
         }
 
         [Test]
-#if UNITY_2022_1_OR_NEWER
+#if UNITY_2018_4 || UNITY_2022_1_OR_NEWER
         [Ignore("TODO: investigate reason for test failure in Unity 2022+")]
 #endif
         public void AssemblyAnalysis_BuiltinPackage_IsReported()
