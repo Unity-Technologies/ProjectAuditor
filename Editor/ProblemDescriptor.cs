@@ -50,25 +50,28 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public class ProblemDescriptor : IEquatable<ProblemDescriptor>
     {
-        public Rule.Severity severity;
-        public string[] areas;
-        public string customevaluator;
-
+        // An unique identifier for the diagnostic
+        public int id;
         public string description;
         public string messageFormat;
 
-        // TODO: remove auditor-specific fields: method, type and customevaluator
-        public int id;
-        public string type;
-        public string method;
-        public string value;
         public bool critical;
+        public Rule.Severity severity;
+
+        // affected areas
+        public string[] areas;
+        // affected platforms
         public string[] platforms;
         public string problem;
         public string solution;
         public string minimumVersion;
         public string maximumVersion;
 
+        // TODO: remove auditor-specific fields
+        public string customevaluator;
+        public string type;
+        public string method;
+        public string value;
 
         internal ProblemDescriptor(int id, string description, string[] areas, string problem = null, string solution = null)
         {
