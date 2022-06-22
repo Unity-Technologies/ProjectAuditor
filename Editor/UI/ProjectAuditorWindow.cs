@@ -383,7 +383,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 category = IssueCategory.PrecompiledAssembly,
                 name = "Precompiled Assemblies",
                 menuLabel = "Experimental/Precompiled Assemblies",
-                menuOrder = 99,
+                menuOrder = 91,
                 showFilters = true,
                 getAssemblyName = issue => issue.description,
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
@@ -432,7 +432,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 category = IssueCategory.GenericInstance,
                 name = "Generics",
                 menuLabel = "Experimental/Generic Types Instantiation",
-                menuOrder = 99,
+                menuOrder = 90,
                 showAssemblySelection = true,
                 showDependencyView = true,
                 showFilters = true,
@@ -662,13 +662,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return m_ProjectAuditor.GetCategories();
 
             var requestedCategories = new List<IssueCategory>(new[] {IssueCategory.MetaData});
-            if ((m_SelectedModules & BuiltInModules.Code) != 0)
+            if ((m_SelectedModules.HasFlag(BuiltInModules.Code)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<CodeModule>().GetCategories());
-            if ((m_SelectedModules & BuiltInModules.Settings) != 0)
+            if (m_SelectedModules.HasFlag(BuiltInModules.Settings))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<SettingsModule>().GetCategories());
-            if ((m_SelectedModules & BuiltInModules.Shaders) != 0)
+            if ((m_SelectedModules.HasFlag(BuiltInModules.Shaders)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<ShadersModule>().GetCategories());
-            if ((m_SelectedModules & BuiltInModules.BuildReport) != 0)
+            if ((m_SelectedModules.HasFlag(BuiltInModules.BuildReport)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().GetCategories());
             return requestedCategories.ToArray();
         }
