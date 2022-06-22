@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Shaders = 1 << 2,
             BuildReport = 1 << 3,
 
-            Everything = Code | Settings | Shaders | BuildReport
+            Everything = ~0
         }
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
