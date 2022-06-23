@@ -241,25 +241,36 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
             else
             {
-                EditorGUILayout.BeginVertical(GUI.skin.box);
+                EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
 
                 EditorGUILayout.LabelField(Contents.WelcomeText, SharedStyles.TextArea);
                 EditorGUILayout.Space();
 
-                const int width = 400;
-                using (new EditorGUILayout.VerticalScope())
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    m_SelectedModules = (BuiltInModules)EditorGUILayout.EnumFlagsField(Contents.ModulesSelection, m_SelectedModules, GUILayout.Width(width));
+                    m_SelectedModules = (BuiltInModules)EditorGUILayout.EnumFlagsField(Contents.ModulesSelection, m_SelectedModules, GUILayout.ExpandWidth(true));
                 }
 
-                EditorGUILayout.Space();
+                GUILayout.FlexibleSpace();
 
-                GUI.enabled = m_SelectedModules != BuiltInModules.None;
-                if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(width), GUILayout.Height(40)))
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    Analyze();
+                    const int height = 30;
+
+                    GUILayout.FlexibleSpace();
+
+                    GUI.enabled = m_SelectedModules != BuiltInModules.None;
+                    if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(height)))
+                    {
+                        Analyze();
+                    }
+                    GUI.enabled = true;
+
+                    if (GUILayout.Button(Contents.LoadButton, GUILayout.Width(40), GUILayout.Height(height)))
+                    {
+                        Load();
+                    }
                 }
-                GUI.enabled = true;
 
                 EditorGUILayout.Space();
 
@@ -1150,8 +1161,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         // UI styles and layout
         static class LayoutSize
         {
-            public static readonly int MinWindowWidth = 600;
-            public static readonly int MinWindowHeight = 400;
+            public static readonly int MinWindowWidth = 410;
+            public static readonly int MinWindowHeight = 340;
             public static readonly int FilterOptionsLeftLabelWidth = 100;
             public static readonly int FilterOptionsEnumWidth = 50;
         }
