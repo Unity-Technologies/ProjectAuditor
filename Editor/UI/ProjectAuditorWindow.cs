@@ -1115,7 +1115,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void Load()
         {
-            var path = EditorUtility.OpenFilePanel(k_LoadFromFile, m_ProjectAuditor.config.SavePath, "json");
+            var projectAuditor = new ProjectAuditor();
+            var path = EditorUtility.OpenFilePanel(k_LoadFromFile, projectAuditor.config.SavePath, "json");
             if (path.Length != 0)
             {
                 m_ProjectReport = ProjectReport.Load(path);
@@ -1124,6 +1125,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     EditorUtility.DisplayDialog(k_LoadFromFile, k_LoadingFailed, "Ok");
                     return;
                 }
+
+                m_ProjectAuditor = projectAuditor;
 
                 m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
                 m_AnalysisState = AnalysisState.Valid;
