@@ -31,7 +31,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             Code = 1 << 0,
             Settings = 1 << 1,
             Shaders = 1 << 2,
-            BuildReport = 1 << 3,
+            Resources = 1 << 3,
+            BuildReport = 1 << 4,
 
             Everything = ~0
         }
