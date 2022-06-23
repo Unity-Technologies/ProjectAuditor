@@ -669,6 +669,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<SettingsModule>().GetCategories());
             if ((m_SelectedModules.HasFlag(BuiltInModules.Shaders)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<ShadersModule>().GetCategories());
+            if ((m_SelectedModules.HasFlag(BuiltInModules.Resources)))
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().GetCategories());
             if ((m_SelectedModules.HasFlag(BuiltInModules.BuildReport)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().GetCategories());
             return requestedCategories.ToArray();
