@@ -141,7 +141,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 m_ProjectAuditor = new ProjectAuditor();
 
-                InitializeViews(true);
+                var categories = m_ProjectReport.GetAllIssues().Select(i => i.category).Distinct().ToArray();
+                InitializeViews(categories, true);
 
                 Profiler.BeginSample("Views Update");
                 m_ViewManager.AddIssues(m_ProjectReport.GetAllIssues());
@@ -160,15 +161,16 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Instance = this;
         }
 
-        void InitializeViews(bool reload)
+        void InitializeViews(IssueCategory[] categories, bool reload)
         {
-            var categories = GetSelectedCategories();
-            var viewDescriptors = ViewDescriptor.GetAll()
-                .Where(descriptor => categories.Contains(descriptor.category)).ToArray();
-            Array.Sort(viewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
-
             if (m_ViewManager == null || !reload)
+            {
+                var viewDescriptors = ViewDescriptor.GetAll()
+                    .Where(descriptor => categories.Contains(descriptor.category)).ToArray();
+                Array.Sort(viewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
+
                 m_ViewManager = new ViewManager(viewDescriptors.Select(d => d.category).ToArray()); // view manager needs sorted categories
+            }
 
             m_ViewManager.onViewChanged += i =>
             {
@@ -531,12 +533,13 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ProjectAuditor = new ProjectAuditor();
 
-            InitializeViews(false);
+            var selectedCategories = GetSelectedCategories();
+            InitializeViews(selectedCategories, false);
 
             var newIssues = new List<ProjectIssue>();
             var projectAuditorParams = new ProjectAuditorParams
             {
-                categories = m_SelectedModules == BuiltInModules.Everything ? null : GetSelectedCategories(),
+                categories = m_SelectedModules == BuiltInModules.Everything ? null : selectedCategories,
                 onIssueFound = projectIssue =>
                 {
                     newIssues.Add(projectIssue);
@@ -1131,6 +1134,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
                 m_AnalysisState = AnalysisState.Valid;
                 m_ProjectAuditor.config.SavePath = Path.GetDirectoryName(path);
+                m_ViewManager = null; // make sure ViewManager is reinitialized
 
                 OnEnable();
 
