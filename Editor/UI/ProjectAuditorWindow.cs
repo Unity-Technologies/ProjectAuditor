@@ -261,12 +261,13 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     GUILayout.FlexibleSpace();
 
-                    GUI.enabled = m_SelectedModules != BuiltInModules.None;
-                    if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(height)))
+                    using (new EditorGUI.DisabledScope(m_SelectedModules == BuiltInModules.None))
                     {
-                        Analyze();
+                        if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(40)))
+                        {
+                            Analyze();
+                        }
                     }
-                    GUI.enabled = true;
 
                     if (GUILayout.Button(Contents.LoadButton, GUILayout.Width(40), GUILayout.Height(height)))
                     {
@@ -699,37 +700,36 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 EditorGUILayout.LabelField(Contents.AssemblyFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
 
-                var lastEnabled = GUI.enabled;
-                GUI.enabled = IsAnalysisValid() && !AssemblySelectionWindow.IsOpen();
-                if (GUILayout.Button(Contents.AssemblyFilterSelect, EditorStyles.miniButton,
-                    GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
+                using (new EditorGUI.DisabledScope(!IsAnalysisValid() || AssemblySelectionWindow.IsOpen()))
                 {
-                    if (m_AssemblyNames != null && m_AssemblyNames.Length > 0)
+                    if (GUILayout.Button(Contents.AssemblyFilterSelect, EditorStyles.miniButton,
+                        GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
                     {
-                        var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-
-                        // Note: Window auto closes as it loses focus so this isn't strictly required
-                        if (AssemblySelectionWindow.IsOpen())
+                        if (m_AssemblyNames != null && m_AssemblyNames.Length > 0)
                         {
-                            AssemblySelectionWindow.CloseAll();
-                        }
-                        else
-                        {
-                            var windowPosition =
-                                new Vector2(Event.current.mousePosition.x + LayoutSize.FilterOptionsEnumWidth,
-                                    Event.current.mousePosition.y + GUI.skin.label.lineHeight);
-                            var screenPosition = GUIUtility.GUIToScreenPoint(windowPosition);
+                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
 
-                            AssemblySelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AssemblySelection,
-                                m_AssemblyNames);
-                        }
+                            // Note: Window auto closes as it loses focus so this isn't strictly required
+                            if (AssemblySelectionWindow.IsOpen())
+                            {
+                                AssemblySelectionWindow.CloseAll();
+                            }
+                            else
+                            {
+                                var windowPosition =
+                                    new Vector2(Event.current.mousePosition.x + LayoutSize.FilterOptionsEnumWidth,
+                                        Event.current.mousePosition.y + GUI.skin.label.lineHeight);
+                                var screenPosition = GUIUtility.GUIToScreenPoint(windowPosition);
 
-                        ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.AssemblySelect,
-                            analytic);
+                                AssemblySelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AssemblySelection,
+                                    m_AssemblyNames);
+                            }
+
+                            ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.AssemblySelect,
+                                analytic);
+                        }
                     }
                 }
-
-                GUI.enabled = lastEnabled;
 
                 m_AssemblySelectionSummary = GetSelectedAssembliesSummary();
                 Utility.DrawSelectedText(m_AssemblySelectionSummary);
@@ -753,35 +753,32 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (AreaNames.Length > 0)
                 {
-                    var lastEnabled = GUI.enabled;
-                    var enabled = IsAnalysisValid() &&
-                        !AreaSelectionWindow.IsOpen();
-                    GUI.enabled = enabled;
-                    if (GUILayout.Button(Contents.AreaFilterSelect, EditorStyles.miniButton,
-                        GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
+                    using (new EditorGUI.DisabledScope(!IsAnalysisValid() || AreaSelectionWindow.IsOpen()))
                     {
-                        var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-
-                        // Note: Window auto closes as it loses focus so this isn't strictly required
-                        if (AreaSelectionWindow.IsOpen())
+                        if (GUILayout.Button(Contents.AreaFilterSelect, EditorStyles.miniButton,
+                            GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
                         {
-                            AreaSelectionWindow.CloseAll();
-                        }
-                        else
-                        {
-                            var windowPosition =
-                                new Vector2(Event.current.mousePosition.x + LayoutSize.FilterOptionsEnumWidth,
-                                    Event.current.mousePosition.y + GUI.skin.label.lineHeight);
-                            var screenPosition = GUIUtility.GUIToScreenPoint(windowPosition);
+                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
 
-                            AreaSelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AreaSelection,
-                                AreaNames);
-                        }
+                            // Note: Window auto closes as it loses focus so this isn't strictly required
+                            if (AreaSelectionWindow.IsOpen())
+                            {
+                                AreaSelectionWindow.CloseAll();
+                            }
+                            else
+                            {
+                                var windowPosition =
+                                    new Vector2(Event.current.mousePosition.x + LayoutSize.FilterOptionsEnumWidth,
+                                        Event.current.mousePosition.y + GUI.skin.label.lineHeight);
+                                var screenPosition = GUIUtility.GUIToScreenPoint(windowPosition);
 
-                        ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.AreaSelect, analytic);
+                                AreaSelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AreaSelection,
+                                    AreaNames);
+                            }
+
+                            ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.AreaSelect, analytic);
+                        }
                     }
-
-                    GUI.enabled = lastEnabled;
 
                     m_AreaSelectionSummary = GetSelectedAreasSummary();
                     Utility.DrawSelectedText(m_AreaSelectionSummary);
@@ -878,41 +875,41 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        GUI.enabled = activeView.desc.showMuteOptions;
                         EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
 
-                        if (GUILayout.Button(Contents.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                        using (new EditorGUI.DisabledScope(!activeView.desc.showMuteOptions))
                         {
-                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                            var selectedItems = table.GetSelectedItems();
-                            foreach (var item in selectedItems)
+                            if (GUILayout.Button(Contents.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                             {
-                                SetRuleForItem(item, Rule.Severity.None);
+                                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                                var selectedItems = table.GetSelectedItems();
+                                foreach (var item in selectedItems)
+                                {
+                                    SetRuleForItem(item, Rule.Severity.None);
+                                }
+
+                                if (!m_Preferences.mutedIssues)
+                                {
+                                    table.SetSelection(new List<int>());
+                                }
+
+                                ProjectAuditorAnalytics.SendEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
+                                    analytic, table.GetSelectedItems());
                             }
 
-                            if (!m_Preferences.mutedIssues)
+                            if (GUILayout.Button(Contents.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                             {
-                                table.SetSelection(new List<int>());
-                            }
+                                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                                var selectedItems = table.GetSelectedItems();
+                                foreach (var item in selectedItems)
+                                {
+                                    ClearRulesForItem(item);
+                                }
 
-                            ProjectAuditorAnalytics.SendEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
-                                analytic, table.GetSelectedItems());
+                                ProjectAuditorAnalytics.SendEventWithSelectionSummary(
+                                    ProjectAuditorAnalytics.UIButton.Unmute, analytic, table.GetSelectedItems());
+                            }
                         }
-
-                        if (GUILayout.Button(Contents.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                        {
-                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                            var selectedItems = table.GetSelectedItems();
-                            foreach (var item in selectedItems)
-                            {
-                                ClearRulesForItem(item);
-                            }
-
-                            ProjectAuditorAnalytics.SendEventWithSelectionSummary(
-                                ProjectAuditorAnalytics.UIButton.Unmute, analytic, table.GetSelectedItems());
-                        }
-
-                        GUI.enabled = true;
                     }
 
                     EditorGUI.indentLevel--;
@@ -1051,8 +1048,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ViewManager.activeViewIndex,
                     (category) => {m_ViewManager.ChangeView((IssueCategory)category);}, GUILayout.Width(largeButtonWidth));
 
-                GUI.enabled = true;
-
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
                     GUILayout.Label(Utility.GetStatusWheel());
@@ -1060,29 +1055,28 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.Space();
 
-                GUI.enabled = m_AnalysisState == AnalysisState.Valid;
-
-                const int loadSaveButtonWidth = 60;
                 // right-end buttons
-                if (GUILayout.Button(Contents.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
+                using (new EditorGUI.DisabledScope(m_AnalysisState != AnalysisState.Valid))
                 {
-                    Load();
-                }
-
-                if (GUILayout.Button(Contents.SaveButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
-                {
-                    Save();
-                }
-
-                if (GUILayout.Button(Contents.DiscardButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
-                {
-                    if (EditorUtility.DisplayDialog(k_Discard, k_DiscardQuestion, "Ok", "Cancel"))
+                    const int loadSaveButtonWidth = 60;
+                    if (GUILayout.Button(Contents.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
                     {
-                        m_AnalysisState = AnalysisState.Initialized;
+                        Load();
+                    }
+
+                    if (GUILayout.Button(Contents.SaveButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
+                    {
+                        Save();
+                    }
+
+                    if (GUILayout.Button(Contents.DiscardButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
+                    {
+                        if (EditorUtility.DisplayDialog(k_Discard, k_DiscardQuestion, "Ok", "Cancel"))
+                        {
+                            m_AnalysisState = AnalysisState.Initialized;
+                        }
                     }
                 }
-
-                GUI.enabled = true;
 
                 Utility.DrawHelpButton(Contents.HelpButton, "index");
             }
