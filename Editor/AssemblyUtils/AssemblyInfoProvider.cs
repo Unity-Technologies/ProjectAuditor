@@ -153,7 +153,8 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             }
             else if (!assemblyInfo.name.StartsWith(AssemblyInfo.DefaultAssemblyName))
             {
-                Debug.LogErrorFormat("Assembly Definition cannot be found for " + assemblyInfo.name);
+                // this might happen when loading a report from a different project
+                Debug.LogWarningFormat("Assembly Definition cannot be found for " + assemblyInfo.name);
             }
 
             return assemblyInfo;

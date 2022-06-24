@@ -7,7 +7,7 @@ To open the Project Auditor window in Unity, go to Window => Analysis => Project
 
 <img src="images/window-menu.png">
 
-Once the Project Auditor window is opened. Press *Analyze* to analyse the project.
+Once the Project Auditor window is opened, simply press Analyze to generate a report. By default, Project Auditor runs all supported modules, however, this behavior can be customized by selecting the desired modules before running the analysis. Alternatively, it is possible to load a previously saved report (json format) by clicking on the *Import* button next to *Analyze*.  
 
 <img src="images/intro.png">
 

@@ -141,7 +141,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 m_ProjectAuditor = new ProjectAuditor();
 
-                InitializeViews(true);
+                var categories = m_ProjectReport.GetAllIssues().Select(i => i.category).Distinct().ToArray();
+                InitializeViews(categories, true);
 
                 Profiler.BeginSample("Views Update");
                 m_ViewManager.AddIssues(m_ProjectReport.GetAllIssues());
@@ -160,15 +161,16 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Instance = this;
         }
 
-        void InitializeViews(bool reload)
+        void InitializeViews(IssueCategory[] categories, bool reload)
         {
-            var categories = GetSelectedCategories();
-            var viewDescriptors = ViewDescriptor.GetAll()
-                .Where(descriptor => categories.Contains(descriptor.category)).ToArray();
-            Array.Sort(viewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
-
             if (m_ViewManager == null || !reload)
+            {
+                var viewDescriptors = ViewDescriptor.GetAll()
+                    .Where(descriptor => categories.Contains(descriptor.category)).ToArray();
+                Array.Sort(viewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
+
                 m_ViewManager = new ViewManager(viewDescriptors.Select(d => d.category).ToArray()); // view manager needs sorted categories
+            }
 
             m_ViewManager.onViewChanged += i =>
             {
@@ -241,25 +243,36 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
             else
             {
-                EditorGUILayout.BeginVertical(GUI.skin.box);
+                EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
 
                 EditorGUILayout.LabelField(Contents.WelcomeText, SharedStyles.TextArea);
                 EditorGUILayout.Space();
 
-                const int width = 400;
-                using (new EditorGUILayout.VerticalScope())
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    m_SelectedModules = (BuiltInModules)EditorGUILayout.EnumFlagsField(Contents.ModulesSelection, m_SelectedModules, GUILayout.Width(width));
+                    m_SelectedModules = (BuiltInModules)EditorGUILayout.EnumFlagsField(Contents.ModulesSelection, m_SelectedModules, GUILayout.ExpandWidth(true));
                 }
 
-                EditorGUILayout.Space();
+                GUILayout.FlexibleSpace();
 
-                GUI.enabled = m_SelectedModules != BuiltInModules.None;
-                if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(width), GUILayout.Height(40)))
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    Analyze();
+                    const int height = 30;
+
+                    GUILayout.FlexibleSpace();
+
+                    GUI.enabled = m_SelectedModules != BuiltInModules.None;
+                    if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(height)))
+                    {
+                        Analyze();
+                    }
+                    GUI.enabled = true;
+
+                    if (GUILayout.Button(Contents.LoadButton, GUILayout.Width(40), GUILayout.Height(height)))
+                    {
+                        Load();
+                    }
                 }
-                GUI.enabled = true;
 
                 EditorGUILayout.Space();
 
@@ -520,12 +533,13 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ProjectAuditor = new ProjectAuditor();
 
-            InitializeViews(false);
+            var selectedCategories = GetSelectedCategories();
+            InitializeViews(selectedCategories, false);
 
             var newIssues = new List<ProjectIssue>();
             var projectAuditorParams = new ProjectAuditorParams
             {
-                categories = m_SelectedModules == BuiltInModules.Everything ? null : GetSelectedCategories(),
+                categories = m_SelectedModules == BuiltInModules.Everything ? null : selectedCategories,
                 onIssueFound = projectIssue =>
                 {
                     newIssues.Add(projectIssue);
@@ -1104,7 +1118,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void Load()
         {
-            var path = EditorUtility.OpenFilePanel(k_LoadFromFile, m_ProjectAuditor.config.SavePath, "json");
+            var projectAuditor = new ProjectAuditor();
+            var path = EditorUtility.OpenFilePanel(k_LoadFromFile, projectAuditor.config.SavePath, "json");
             if (path.Length != 0)
             {
                 m_ProjectReport = ProjectReport.Load(path);
@@ -1114,9 +1129,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return;
                 }
 
+                m_ProjectAuditor = projectAuditor;
+
                 m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
                 m_AnalysisState = AnalysisState.Valid;
                 m_ProjectAuditor.config.SavePath = Path.GetDirectoryName(path);
+                m_ViewManager = null; // make sure ViewManager is reinitialized
 
                 OnEnable();
 
@@ -1150,8 +1168,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         // UI styles and layout
         static class LayoutSize
         {
-            public static readonly int MinWindowWidth = 600;
-            public static readonly int MinWindowHeight = 400;
+            public static readonly int MinWindowWidth = 410;
+            public static readonly int MinWindowHeight = 340;
             public static readonly int FilterOptionsLeftLabelWidth = 100;
             public static readonly int FilterOptionsEnumWidth = 50;
         }
