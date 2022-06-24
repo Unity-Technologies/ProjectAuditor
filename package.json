@@ -1,6 +1,6 @@
 {
     "name": "com.unity.project-auditor",
-    "version": "0.8.0-preview",
+    "version": "0.8.1-preview",
     "displayName": "Project Auditor",
     "unity": "2018.4",
     "description": "Project Auditor is an experimental static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report containing: Code and Settings Diagnostics, the last BuildReport, and assets information. Note that this package is not officially supported by Unity and it is not on Unity's roadmap at this time.",
