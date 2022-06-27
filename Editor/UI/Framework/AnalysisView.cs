@@ -472,7 +472,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected virtual void Export(Func<ProjectIssue, bool> predicate = null)
         {
-            var path = EditorUtility.SaveFilePanel("Save to CSV file", m_Config.SavePath, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
+            var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.loadSavePath, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
                 "csv");
             if (path.Length != 0)
             {
@@ -490,7 +490,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 if (m_ViewManager.onViewExported != null)
                     m_ViewManager.onViewExported();
 
-                m_Config.SavePath = Path.GetDirectoryName(path);
+                UserPreferences.loadSavePath = Path.GetDirectoryName(path);
             }
         }
 

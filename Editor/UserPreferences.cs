@@ -11,6 +11,8 @@ namespace Unity.ProjectAuditor.Editor
         static readonly string k_LogTimingsInfoKey = k_EditorPrefsPrefix + ".logTimingsInfo";
         static readonly string k_LogTimingsInfoLabel = "Log timing information";
 
+        internal static string loadSavePath = string.Empty;
+
         public static bool logTimingsInfo
         {
             get => EditorPrefs.GetBool(k_LogTimingsInfoKey, false);

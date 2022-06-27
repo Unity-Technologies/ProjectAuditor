@@ -137,7 +137,6 @@ namespace Unity.ProjectAuditor.Editor
         public Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode CompilationMode;
         public bool FailBuildOnIssues;
         public bool SaveBuildReports;
-        public string SavePath;
         public bool UseRoslynAnalyzers;
         public int NumRules { get; }
         public ProjectAuditorConfig() {}

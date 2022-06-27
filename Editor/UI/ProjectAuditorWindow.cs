@@ -1099,11 +1099,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void Save()
         {
-            var path = EditorUtility.SaveFilePanel(k_SaveToFile, m_ProjectAuditor.config.SavePath, "project-auditor-report.json", "json");
+            var path = EditorUtility.SaveFilePanel(k_SaveToFile, UserPreferences.loadSavePath, "project-auditor-report.json", "json");
             if (path.Length != 0)
             {
                 m_ProjectReport.Save(path);
-                m_ProjectAuditor.config.SavePath = Path.GetDirectoryName(path);
+                UserPreferences.loadSavePath = Path.GetDirectoryName(path);
 
                 EditorUtility.RevealInFinder(path);
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Save, ProjectAuditorAnalytics.BeginAnalytic());
@@ -1112,8 +1112,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void Load()
         {
-            var projectAuditor = new ProjectAuditor();
-            var path = EditorUtility.OpenFilePanel(k_LoadFromFile, projectAuditor.config.SavePath, "json");
+            var path = EditorUtility.OpenFilePanel(k_LoadFromFile, UserPreferences.loadSavePath, "json");
             if (path.Length != 0)
             {
                 m_ProjectReport = ProjectReport.Load(path);
@@ -1123,11 +1122,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return;
                 }
 
-                m_ProjectAuditor = projectAuditor;
+                m_ProjectAuditor = new ProjectAuditor();
 
                 m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
                 m_AnalysisState = AnalysisState.Valid;
-                m_ProjectAuditor.config.SavePath = Path.GetDirectoryName(path);
+                UserPreferences.loadSavePath = Path.GetDirectoryName(path);
                 m_ViewManager = null; // make sure ViewManager is reinitialized
 
                 OnEnable();
