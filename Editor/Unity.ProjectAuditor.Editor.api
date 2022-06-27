@@ -136,7 +136,6 @@ namespace Unity.ProjectAuditor.Editor
         public bool AnalyzeOnBuild;
         public Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode CompilationMode;
         public bool FailBuildOnIssues;
-        public bool LogTimingsInfo;
         public bool SaveBuildReports;
         public string SavePath;
         public bool UseRoslynAnalyzers;
@@ -277,6 +276,12 @@ namespace Unity.ProjectAuditor.Editor
             public int value__;
             public const Unity.ProjectAuditor.Editor.Rule.Severity Warning = 2;
         }
+    }
+
+    public class UserPreferences
+    {
+        public static bool logTimingsInfo { get; set; }
+        public UserPreferences() {}
     }
 }
 

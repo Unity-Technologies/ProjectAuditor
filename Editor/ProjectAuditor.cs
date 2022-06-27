@@ -156,6 +156,7 @@ namespace Unity.ProjectAuditor.Editor
                 return;
             }
 
+            var logTimingsInfo = UserPreferences.logTimingsInfo;
             var stopwatch = Stopwatch.StartNew();
             foreach (var module in supportedModules)
             {
@@ -170,7 +171,8 @@ namespace Unity.ProjectAuditor.Editor
                     },
                     onComplete = () =>
                     {
-                        if (m_Config.LogTimingsInfo)
+
+                        if (logTimingsInfo)
                             Debug.Log(module.GetType().Name + " took: " +
                                 (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
 
@@ -178,7 +180,7 @@ namespace Unity.ProjectAuditor.Editor
                         if (finished)
                         {
                             stopwatch.Stop();
-                            if (m_Config.LogTimingsInfo)
+                            if (logTimingsInfo)
                                 Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
                         }
 
@@ -188,7 +190,7 @@ namespace Unity.ProjectAuditor.Editor
                 }, progress);
             }
 
-            if (m_Config.LogTimingsInfo)
+            if (logTimingsInfo)
                 Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
         }
 

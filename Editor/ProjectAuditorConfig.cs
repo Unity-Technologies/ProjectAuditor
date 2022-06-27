@@ -38,11 +38,6 @@ namespace Unity.ProjectAuditor.Editor
         public bool FailBuildOnIssues;
 
         /// <summary>
-        /// If enabled, ProjectAuditor will log statistics about analysis time.
-        /// </summary>
-        public bool LogTimingsInfo;
-
-        /// <summary>
         /// If enabled, a BuildReport asset is created after each build
         /// </summary>
         public bool SaveBuildReports;
