@@ -263,7 +263,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     using (new EditorGUI.DisabledScope(m_SelectedModules == BuiltInModules.None))
                     {
-                        if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(40)))
+                        if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(height)))
                         {
                             Analyze();
                         }
