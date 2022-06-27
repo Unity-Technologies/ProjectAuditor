@@ -545,7 +545,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorPrefs.SetString(GetPrefKey(k_SearchStringKey), m_TextFilter.searchText);
         }
 
-        protected string GetPrefKey(string key)
+        string GetPrefKey(string key)
         {
             return k_PrefKeyPrefix + m_Desc.name + key;
         }
