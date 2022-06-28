@@ -823,8 +823,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                                     var payload = new Dictionary<string, string>();
                                     payload["selected"] = activeView.desc.showCritical ? "true" : "false";
-                                    ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues,
-                                        analytic);
+                                    ProjectAuditorAnalytics.SendEventWithKeyValues(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues,
+                                        analytic, payload);
                                 }
                             }
 
