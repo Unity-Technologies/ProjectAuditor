@@ -547,7 +547,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         string GetPrefKey(string key)
         {
-            return k_PrefKeyPrefix + m_Desc.name + key;
+            return $"{k_PrefKeyPrefix}.{m_Desc.name}.{key}";
         }
 
         // pref keys
