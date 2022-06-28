@@ -529,8 +529,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 columns[i].width = EditorPrefs.GetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width);
             }
-            m_Table.flatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey), false);
-            m_Table.groupPropertyIndex = EditorPrefs.GetInt(GetPrefKey(k_GroupPropertyIndexKey), 0);
+
+            var defaultGroupPropertyIndex = m_Layout.defaultGroupPropertyIndex;
+            m_Table.flatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey), defaultGroupPropertyIndex != -1);
+            m_Table.groupPropertyIndex = EditorPrefs.GetInt(GetPrefKey(k_GroupPropertyIndexKey), defaultGroupPropertyIndex);
             m_TextFilter.searchDependencies = EditorPrefs.GetBool(GetPrefKey(k_SearchDepsKey), false);
             m_TextFilter.ignoreCase = EditorPrefs.GetBool(GetPrefKey(k_SearchIgnoreCaseKey), true);
             m_TextFilter.searchText = EditorPrefs.GetString(GetPrefKey(k_SearchStringKey));

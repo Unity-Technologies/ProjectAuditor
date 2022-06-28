@@ -50,7 +50,12 @@ namespace Unity.ProjectAuditor.Editor
 
         public int defaultGroupPropertyIndex
         {
-            get { return Array.FindIndex(properties, p => p.defaultGroup); }
+            get
+            {
+                if (hierarchy)
+                    return -1;
+                return Array.FindIndex(properties, p => p.defaultGroup);
+            }
         }
     }
 }

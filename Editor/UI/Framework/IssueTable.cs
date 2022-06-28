@@ -29,20 +29,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public bool flatView
         {
-            get { return m_FlatView; }
+            get => m_FlatView;
             set
             {
-                m_FlatView = value;
+                if (m_Layout.defaultGroupPropertyIndex != -1)
+                    m_FlatView = value;
             }
         }
 
         public int groupPropertyIndex
         {
-            get { return m_GroupPropertyIndex; }
-            set
-            {
-                m_GroupPropertyIndex = value;
-            }
+            get => m_GroupPropertyIndex;
+            set => m_GroupPropertyIndex = value;
         }
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
@@ -56,15 +54,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Layout = layout;
             m_FlatView = true; // by default, don't use groups
 
-            for (int i = 0; i < m_Layout.properties.Length; i++)
+            var propertyIndex = m_Layout.defaultGroupPropertyIndex;
+            if (propertyIndex != -1)
             {
-                if (m_Layout.properties[i].defaultGroup)
-                {
-                    m_FlatView = false;
-                    m_GroupPropertyIndex = i;
-                    break;
-                }
+                m_FlatView = false;
+                m_GroupPropertyIndex = propertyIndex;
             }
+
             multicolumnHeader.sortingChanged += OnSortingChanged;
             showAlternatingRowBackgrounds = true;
 
