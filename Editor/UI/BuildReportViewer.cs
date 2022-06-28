@@ -75,6 +75,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnDisable()
         {
+            m_ViewManager?.SaveSettings();
+
             s_Preferences = m_Preferences;
             s_ActiveViewIndex = m_ActiveViewIndex;
         }
