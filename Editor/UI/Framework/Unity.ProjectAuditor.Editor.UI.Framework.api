@@ -242,7 +242,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static bool Register(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor);
     }
 
-    public class ViewManager
+    public sealed class ViewManager
     {
         public System.Action<Unity.ProjectAuditor.Editor.ProjectAuditorModule> onAnalyze;
         public System.Action<int> onViewChanged;
@@ -258,8 +258,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(int index);
         public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(Unity.ProjectAuditor.Editor.IssueCategory category);
         public bool IsValid();
-        public virtual void LoadSettings();
+        public void LoadSettings();
         public void Refresh();
-        public virtual void SaveSettings();
+        public void SaveSettings();
     }
 }

@@ -10,7 +10,7 @@ using UnityEngine.Profiling;
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     [Serializable]
-    public class ViewManager
+    public sealed class ViewManager
     {
         class NullFilter : IProjectIssueFilter
         {
@@ -155,7 +155,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             GetActiveView().Refresh();
         }
 
-        public virtual void LoadSettings()
+        public void LoadSettings()
         {
             if (!IsValid())
                 return;
@@ -166,7 +166,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public virtual void SaveSettings()
+        public void SaveSettings()
         {
             if (!IsValid())
                 return;
