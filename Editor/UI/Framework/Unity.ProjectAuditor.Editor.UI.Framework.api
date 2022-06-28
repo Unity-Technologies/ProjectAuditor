@@ -256,6 +256,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(int index);
         public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(Unity.ProjectAuditor.Editor.IssueCategory category);
         public bool IsValid();
+        public void Refresh();
         public void SaveSettings();
     }
 }
