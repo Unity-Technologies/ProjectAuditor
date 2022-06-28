@@ -137,7 +137,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Profiler.EndSample();
 
             // are we reloading from a valid state?
-            if (currentState == AnalysisState.Valid)// && m_ViewManager.activeViewIndex < viewDescriptors.Length)
+            if (currentState == AnalysisState.Valid)
             {
                 m_ProjectAuditor = new ProjectAuditor();
 
@@ -219,7 +219,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (m_AnalysisState != AnalysisState.Initializing && m_AnalysisState != AnalysisState.Initialized)
             {
-                DrawSettings();
                 DrawToolbar();
             }
 
@@ -389,7 +388,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showDependencyView = true,
                 getAssemblyName = issue => issue.description,
-                //defaultGroupProperty = issue => issue.description.Split('.')[0],
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assemblies
             });
@@ -1079,21 +1077,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
 
                 Utility.DrawHelpButton(Contents.HelpButton, "index");
-            }
-        }
-
-        void DrawSettings()
-        {
-            if (m_Preferences.developerMode)
-            {
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    EditorGUILayout.LabelField("Build :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-                    m_ProjectAuditor.config.AnalyzeOnBuild = EditorGUILayout.ToggleLeft("Auto Analyze",
-                        m_ProjectAuditor.config.AnalyzeOnBuild, GUILayout.Width(100));
-                    m_ProjectAuditor.config.FailBuildOnIssues = EditorGUILayout.ToggleLeft("Fail on Issues",
-                        m_ProjectAuditor.config.FailBuildOnIssues, GUILayout.Width(100));
-                }
             }
         }
 
