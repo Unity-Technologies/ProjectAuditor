@@ -152,10 +152,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void Refresh()
         {
-            foreach (var view in m_Views)
-            {
-                view.Refresh();
-            }
+            GetActiveView().Refresh();
         }
 
         public void SaveSettings()

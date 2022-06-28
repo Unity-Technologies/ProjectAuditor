@@ -48,10 +48,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 });
 
                 m_ViewManager.AddIssues(report.GetAllIssues());
-                foreach (var category in k_Categories)
-                {
-                    m_ViewManager.GetView(category).Refresh();
-                }
+                m_ViewManager.Refresh();
 
                 BuildReportModule.BuildReportProvider = BuildReportModule.DefaultBuildReportProvider;
             }
