@@ -517,7 +517,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return m_BaseFilter.Match(issue) && m_TextFilter.Match(issue);
         }
 
-        internal virtual void OnEnable()
+        internal void OnEnable()
+        {
+            LoadSettings();
+        }
+
+        public virtual void LoadSettings()
         {
             var columns = m_Table.multiColumnHeader.state.columns;
             for (int i = 0; i < m_Layout.properties.Length; i++)
@@ -531,7 +536,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_TextFilter.searchText = EditorPrefs.GetString(GetPrefKey(k_SearchStringKey));
         }
 
-        internal virtual void SaveSettings()
+        public virtual void SaveSettings()
         {
             var columns = m_Table.multiColumnHeader.state.columns;
             for (int i = 0; i < m_Layout.properties.Length; i++)

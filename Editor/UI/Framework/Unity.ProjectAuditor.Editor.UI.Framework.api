@@ -70,9 +70,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected virtual void Export(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool> predicate = default(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool>));
         protected Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
         public bool IsValid();
+        public virtual void LoadSettings();
         public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
         protected virtual void OnDrawInfo();
         public void Refresh();
+        public virtual void SaveSettings();
         public void SetSearch(string filter);
     }
 
@@ -256,7 +258,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(int index);
         public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(Unity.ProjectAuditor.Editor.IssueCategory category);
         public bool IsValid();
+        public virtual void LoadSettings();
         public void Refresh();
-        public void SaveSettings();
+        public virtual void SaveSettings();
     }
 }

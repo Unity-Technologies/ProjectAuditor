@@ -155,7 +155,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             GetActiveView().Refresh();
         }
 
-        public void SaveSettings()
+        public virtual void LoadSettings()
+        {
+            if (!IsValid())
+                return;
+
+            foreach (var view in m_Views)
+            {
+                view.LoadSettings();
+            }
+        }
+
+        public virtual void SaveSettings()
         {
             if (!IsValid())
                 return;
