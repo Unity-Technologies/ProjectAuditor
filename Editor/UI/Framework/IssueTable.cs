@@ -424,7 +424,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             m_Desc.onOpenIssue(item.ProjectIssue.location);
                         });
                     }
-                    menu.AddItem(new GUIContent("Filter by " + item.ProjectIssue.description.Replace("/", "\u2215")) , false, () =>
+                    menu.AddItem(new GUIContent($"Filter by '{item.ProjectIssue.description.Replace("/", "\u2215")}'") , false, () =>
                     {
                         m_View.SetSearch(item.ProjectIssue.description);
                     });
