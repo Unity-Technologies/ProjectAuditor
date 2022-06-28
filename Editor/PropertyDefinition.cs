@@ -47,5 +47,10 @@ namespace Unity.ProjectAuditor.Editor
         public IssueCategory category;
         public PropertyDefinition[] properties;
         public bool hierarchy = false;
+
+        public int defaultGroupPropertyIndex
+        {
+            get { return Array.FindIndex(properties, p => p.defaultGroup); }
+        }
     }
 }

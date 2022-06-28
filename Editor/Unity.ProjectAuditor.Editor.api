@@ -79,6 +79,7 @@ namespace Unity.ProjectAuditor.Editor
         public Unity.ProjectAuditor.Editor.IssueCategory category;
         public bool hierarchy;
         public Unity.ProjectAuditor.Editor.PropertyDefinition[] properties;
+        public int defaultGroupPropertyIndex { get; }
         public IssueLayout() {}
     }
 
