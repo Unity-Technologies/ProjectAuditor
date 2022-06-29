@@ -147,7 +147,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             var result = new ProjectReport();
             var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.Select(GetModule).Distinct() : m_Modules.Where(m => m.IsEnabledByDefault());
-            var supportedModules = requestedModules.Where(m => m.IsSupported()).ToArray();
+            var supportedModules = requestedModules.Where(m => m != null && m.IsSupported()).ToArray();
             var numModules = supportedModules.Length;
             if (numModules == 0)
             {
@@ -171,7 +171,6 @@ namespace Unity.ProjectAuditor.Editor
                     },
                     onComplete = () =>
                     {
-
                         if (logTimingsInfo)
                             Debug.Log(module.GetType().Name + " took: " +
                                 (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
