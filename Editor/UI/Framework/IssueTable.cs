@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Clear();
         }
 
-        public void AddIssues(ProjectIssue[] issues)
+        public void AddIssues(IReadOnlyCollection<ProjectIssue> issues)
         {
             // update groups
             var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex])).Distinct().ToArray();
@@ -78,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     m_TreeViewItemGroups.Add((new IssueTableItem(m_NextId++, 0, name)));
             }
 
-            var itemsList = new List<IssueTableItem>(issues.Length);
+            var itemsList = new List<IssueTableItem>(issues.Count);
             if (m_TreeViewItemIssues != null)
                 itemsList.AddRange(m_TreeViewItemIssues);
             foreach (var issue in issues)
