@@ -309,6 +309,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         {
                             bool boolValue;
                             ulong ulongValue;
+                            float floatValue;
                             if (property.format == PropertyFormat.Bool && bool.TryParse(customProperty, out boolValue))
                             {
                                 EditorGUI.Toggle(cellRect, boolValue);
@@ -317,9 +318,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             {
                                 EditorGUI.LabelField(cellRect, Formatting.FormatSize(ulongValue), labelStyle);
                             }
-                            else if (property.format == PropertyFormat.Time && ulong.TryParse(customProperty, out ulongValue))
+                            else if (property.format == PropertyFormat.Time && float.TryParse(customProperty, out floatValue))
                             {
-                                EditorGUI.LabelField(cellRect, Formatting.FormatTimeInSeconds(ulongValue), labelStyle);
+                                EditorGUI.LabelField(cellRect, Formatting.FormatTime(floatValue), labelStyle);
                             }
                             else
                                 EditorGUI.LabelField(cellRect, new GUIContent(customProperty, customProperty), labelStyle);

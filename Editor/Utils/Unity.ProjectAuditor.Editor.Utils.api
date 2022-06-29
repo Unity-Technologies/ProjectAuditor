@@ -8,8 +8,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static string CombineStrings(string[] strings, string separator = default(string));
         public static string FormatBuildTime(System.TimeSpan t);
         public static string FormatSize(System.UInt64 size);
-        public static string FormatTimeInSeconds(System.TimeSpan timeSpan);
-        public static string FormatTimeInSeconds(System.UInt64 timeMs);
+        public static string FormatTime(float timeMs);
+        public static string FormatTime(System.TimeSpan timeSpan);
         public static string ReplaceStringSeparators(string combinedString, string separator);
         public static string[] SplitStrings(string combinedString, string separator = default(string));
     }
