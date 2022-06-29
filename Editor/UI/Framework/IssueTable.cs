@@ -241,6 +241,41 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     cellRect.xMax = args.rowRect.xMax;
                     EditorGUI.LabelField(cellRect, item.GetDisplayName(), labelStyle);
                 }
+                else if (PropertyTypeUtil.IsCustom(property.type))
+                {
+                    var customPropertyIndex = PropertyTypeUtil.ToCustomIndex(propertyType);
+                    if (property.format == PropertyFormat.Bytes || property.format == PropertyFormat.Time)
+                    {
+                        string label;
+                        if (property.format == PropertyFormat.Bytes)
+                        {
+                            ulong sum = 0;
+                            foreach (var childItem in item.children)
+                            {
+                                var issueTableItem = childItem as IssueTableItem;
+                                var value = issueTableItem.ProjectIssue.GetCustomPropertyAsULong(customPropertyIndex);
+                                sum += value;
+                            }
+
+                            label = Formatting.FormatSize(sum);
+                        }
+                        else
+                        {
+                            float sum = 0;
+                            foreach (var childItem in item.children)
+                            {
+                                var issueTableItem = childItem as IssueTableItem;
+                                var value = issueTableItem.ProjectIssue.GetCustomPropertyAsFloat(customPropertyIndex);
+                                sum += value;
+                            }
+                            label = Formatting.FormatTime(sum);
+                        }
+
+                        GUI.enabled = false;
+                        EditorGUI.LabelField(cellRect, label, labelStyle);
+                        GUI.enabled = true;
+                    }
+                }
             }
             else
             {
@@ -304,26 +339,26 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         break;
 
                     default:
-                        var customProperty = issue.GetProperty(propertyType);
-                        if (customProperty != string.Empty)
+                        if (PropertyTypeUtil.IsCustom(propertyType))
                         {
-                            bool boolValue;
-                            ulong ulongValue;
-                            float floatValue;
-                            if (property.format == PropertyFormat.Bool && bool.TryParse(customProperty, out boolValue))
+                            var customPropertyIndex = PropertyTypeUtil.ToCustomIndex(propertyType);
+
+                            switch (property.format)
                             {
-                                EditorGUI.Toggle(cellRect, boolValue);
+                                case PropertyFormat.Bool:
+                                    EditorGUI.Toggle(cellRect, issue.GetCustomPropertyAsBool(customPropertyIndex));
+                                    break;
+                                case PropertyFormat.Bytes:
+                                    EditorGUI.LabelField(cellRect, Formatting.FormatSize(issue.GetCustomPropertyAsULong(customPropertyIndex)), labelStyle);
+                                    break;
+                                case PropertyFormat.Time:
+                                    EditorGUI.LabelField(cellRect, Formatting.FormatTime(issue.GetCustomPropertyAsFloat(customPropertyIndex)), labelStyle);
+                                    break;
+                                default:
+                                    var value = issue.GetCustomProperty(customPropertyIndex);
+                                    EditorGUI.LabelField(cellRect, new GUIContent(value, value), labelStyle);
+                                    break;
                             }
-                            else if (property.format == PropertyFormat.Bytes && ulong.TryParse(customProperty, out ulongValue))
-                            {
-                                EditorGUI.LabelField(cellRect, Formatting.FormatSize(ulongValue), labelStyle);
-                            }
-                            else if (property.format == PropertyFormat.Time && float.TryParse(customProperty, out floatValue))
-                            {
-                                EditorGUI.LabelField(cellRect, Formatting.FormatTime(floatValue), labelStyle);
-                            }
-                            else
-                                EditorGUI.LabelField(cellRect, new GUIContent(customProperty, customProperty), labelStyle);
                         }
 
                         break;

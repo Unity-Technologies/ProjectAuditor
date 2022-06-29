@@ -143,6 +143,15 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
+        internal ulong GetCustomPropertyAsULong<T>(T propertyEnum) where T : struct
+        {
+            var valueAsString = GetCustomProperty(propertyEnum);
+            var value = (ulong)0;
+            if (!ulong.TryParse(valueAsString, out value))
+                return 0;
+            return value;
+        }
+
         public float GetCustomPropertyAsFloat<T>(T propertyEnum) where T : struct
         {
             float value;

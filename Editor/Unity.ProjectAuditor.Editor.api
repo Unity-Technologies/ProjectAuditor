@@ -253,6 +253,8 @@ namespace Unity.ProjectAuditor.Editor
     public struct PropertyTypeUtil
     {
         public static Unity.ProjectAuditor.Editor.PropertyType FromCustom<T>(T customPropEnum) where T : System.ValueType, new();
+        public static bool IsCustom(Unity.ProjectAuditor.Editor.PropertyType type);
+        public static int ToCustomIndex(Unity.ProjectAuditor.Editor.PropertyType type);
     }
 
     public class Rule : System.IEquatable<Unity.ProjectAuditor.Editor.Rule>

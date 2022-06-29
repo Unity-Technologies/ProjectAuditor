@@ -22,6 +22,16 @@ namespace Unity.ProjectAuditor.Editor
         {
             return PropertyType.Num + Convert.ToInt32(customPropEnum);
         }
+
+        public static int ToCustomIndex(PropertyType type)
+        {
+            return type - PropertyType.Num;
+        }
+
+        public static bool IsCustom(PropertyType type)
+        {
+            return type >= PropertyType.Num;
+        }
     }
 
     public enum PropertyFormat
