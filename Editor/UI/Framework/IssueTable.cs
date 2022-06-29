@@ -315,11 +315,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             }
                             else if (property.format == PropertyFormat.Bytes && ulong.TryParse(customProperty, out ulongValue))
                             {
-                                EditorGUI.LabelField(cellRect, Formatting.FormatSize(ulongValue));
+                                EditorGUI.LabelField(cellRect, Formatting.FormatSize(ulongValue), labelStyle);
                             }
                             else if (property.format == PropertyFormat.Time && ulong.TryParse(customProperty, out ulongValue))
                             {
-                                EditorGUI.LabelField(cellRect, Formatting.FormatTimeInSeconds(ulongValue));
+                                EditorGUI.LabelField(cellRect, Formatting.FormatTimeInSeconds(ulongValue), labelStyle);
                             }
                             else
                                 EditorGUI.LabelField(cellRect, new GUIContent(customProperty, customProperty), labelStyle);
