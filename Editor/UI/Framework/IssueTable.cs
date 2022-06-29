@@ -30,17 +30,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool flatView
         {
             get => m_FlatView;
-            set
-            {
-                if (m_Layout.defaultGroupPropertyIndex != -1)
-                    m_FlatView = value;
-            }
+            set => m_FlatView = value;
         }
 
         public int groupPropertyIndex
         {
             get => m_GroupPropertyIndex;
-            set => m_GroupPropertyIndex = value;
+            set
+            {
+                if (value >= 0)
+                    m_GroupPropertyIndex = value;
+            }
         }
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
