@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor
     /// <summary>
     /// ProjectAuditor class is responsible for auditing the Unity project
     /// </summary>
-    public class ProjectAuditor
+    public sealed class ProjectAuditor
         : IPreprocessBuildWithReport
     {
         static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();

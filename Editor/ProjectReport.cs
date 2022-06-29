@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor
     /// ProjectReport contains a list of all issues found by ProjectAuditor
     /// </summary>
     [Serializable]
-    public class ProjectReport
+    public sealed class ProjectReport
     {
         [SerializeField] List<ProjectIssue> m_Issues = new List<ProjectIssue>();
 

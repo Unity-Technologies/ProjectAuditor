@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor
     /// ProblemDescriptor defines the problem and a possible recommendation.
     /// </summary>
     [Serializable]
-    public class ProblemDescriptor : IEquatable<ProblemDescriptor>
+    public sealed class ProblemDescriptor : IEquatable<ProblemDescriptor>
     {
         // An unique identifier for the diagnostic
         public int id;

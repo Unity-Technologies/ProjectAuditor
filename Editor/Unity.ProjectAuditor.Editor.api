@@ -83,7 +83,7 @@ namespace Unity.ProjectAuditor.Editor
         public IssueLayout() {}
     }
 
-    public class ProblemDescriptor : System.IEquatable<Unity.ProjectAuditor.Editor.ProblemDescriptor>
+    public sealed class ProblemDescriptor : System.IEquatable<Unity.ProjectAuditor.Editor.ProblemDescriptor>
     {
         public string[] areas;
         public bool critical;
@@ -114,7 +114,7 @@ namespace Unity.ProjectAuditor.Editor
         [System.Runtime.CompilerServices.Extension] public static string GetFullTypeName(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
     }
 
-    public class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport
+    public sealed class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport
     {
         public virtual int callbackOrder { get; }
         public Unity.ProjectAuditor.Editor.ProjectAuditorConfig config { get; }
@@ -205,7 +205,7 @@ namespace Unity.ProjectAuditor.Editor
         [System.Runtime.CompilerServices.Extension] public static string GetPropertyGroup(Unity.ProjectAuditor.Editor.ProjectIssue issue, Unity.ProjectAuditor.Editor.PropertyDefinition propertyDefinition);
     }
 
-    public class ProjectReport
+    public sealed class ProjectReport
     {
         public int NumTotalIssues { get; }
         public void ExportToCSV(string path, Unity.ProjectAuditor.Editor.IssueLayout layout, System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool> predicate = default(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool>));
