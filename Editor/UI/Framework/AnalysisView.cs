@@ -146,11 +146,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Table.AddIssues(issues);
         }
 
-        protected ProjectIssue[] GetIssues()
-        {
-            return m_Issues.ToArray();
-        }
-
         public virtual void Clear()
         {
             m_Issues.Clear();

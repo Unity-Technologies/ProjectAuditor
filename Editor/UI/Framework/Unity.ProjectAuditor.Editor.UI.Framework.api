@@ -68,7 +68,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void DrawInfo();
         public virtual void DrawTextSearch();
         protected virtual void Export(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool> predicate = default(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool>));
-        protected Unity.ProjectAuditor.Editor.ProjectIssue[] GetIssues();
         public bool IsValid();
         public virtual void LoadSettings();
         public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
