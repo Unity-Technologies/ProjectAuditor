@@ -3,7 +3,7 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class CallTreeTests
+    class CallTreeTests : TestFixtureBase
     {
         TempAsset m_TempAsset;
         TempAsset m_TempAssetHierarchy;
@@ -64,16 +64,10 @@ class HierarchyTest
 }");
         }
 
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
-        }
-
         [Test]
         public void CallTree_Root_IsValid()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAsset);
 
             Assert.AreEqual(1, issues.Length);
 
@@ -90,7 +84,7 @@ class HierarchyTest
         [Test]
         public void CallTree_Hierarchy_IsNotRecursive()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetRecursive);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetRecursive);
 
             var root = issues[0].dependencies as CallTreeNode;
 
@@ -103,7 +97,7 @@ class HierarchyTest
         [Test]
         public void CallTree_SameSubHierarchy_IsUnique()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetHierarchy);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetHierarchy);
 
             Assert.AreEqual(2, issues.Length);
 

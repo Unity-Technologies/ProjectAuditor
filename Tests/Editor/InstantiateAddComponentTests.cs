@@ -5,7 +5,7 @@ using Unity.ProjectAuditor.Editor;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class InstantiateAddComponentTests
+    class InstantiateAddComponentTests : TestFixtureBase
     {
         TempAsset m_TempAssetAddComponent;
         TempAsset m_TempAssetAddComponentGeneric;
@@ -51,16 +51,10 @@ class AddComponentGeneric : MonoBehaviour
 ");
         }
 
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
-        }
-
         [Test]
         public void CodeAnalysis_Instantiate_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInstantiate);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetInstantiate);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("System.Void InstantiateObject::Test()", issues[0].GetContext());
@@ -70,7 +64,7 @@ class AddComponentGeneric : MonoBehaviour
         [Test]
         public void CodeAnalysis_AddComponent_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetAddComponent);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetAddComponent);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("System.Void AddComponentToGameObject::Test()", issues[0].GetContext());
@@ -80,7 +74,7 @@ class AddComponentGeneric : MonoBehaviour
         [Test]
         public void CodeAnalysis_AddComponentGeneric_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetAddComponentGeneric);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetAddComponentGeneric);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("System.Void AddComponentGeneric::Test()", issues[0].GetContext());

@@ -14,20 +14,32 @@ using UnityEngine.SceneManagement;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public static class Utility
+    public abstract class TestFixtureBase
     {
-        public static CodeOptimization CodeOptimization = CodeOptimization.Release;
+        protected CodeOptimization m_CodeOptimization = CodeOptimization.Release;
+        protected ProjectAuditorConfig m_Config;
 
-        public static ProjectIssue[] Analyze(Func<ProjectIssue, bool> predicate = null)
+        [OneTimeSetUp]
+        public void FixtureSetUp()
+        {
+            m_Config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            m_Config.AnalyzeInBackground = false;
+        }
+
+        [OneTimeTearDown]
+        public void FixtureTearDown()
+        {
+            TempAsset.Cleanup();
+        }
+
+        protected ProjectIssue[] Analyze(Func<ProjectIssue, bool> predicate = null)
         {
             var foundIssues = new List<ProjectIssue>();
-            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.AnalyzeInBackground = false;
 
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
             var projectAuditorParams = new ProjectAuditorParams
             {
-                codeOptimization = CodeOptimization,
+                codeOptimization = m_CodeOptimization,
                 onIssueFound = issue => {
                     if (predicate == null || predicate(issue))
                         foundIssues.Add(issue);
@@ -38,13 +50,10 @@ namespace Unity.ProjectAuditor.EditorTests
             return foundIssues.ToArray();
         }
 
-        public static ProjectIssue[] Analyze(IssueCategory category, Func<ProjectIssue, bool> predicate = null)
+        protected ProjectIssue[] Analyze(IssueCategory category, Func<ProjectIssue, bool> predicate = null)
         {
             var foundIssues = new List<ProjectIssue>();
-            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.AnalyzeInBackground = false;
-
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
             var module = projectAuditor.GetModule(category);
             var projectAuditorParams = new ProjectAuditorParams
             {
@@ -63,20 +72,20 @@ namespace Unity.ProjectAuditor.EditorTests
             return foundIssues.ToArray();
         }
 
-        public static ProjectIssue[] AnalyzeAndFindAssetIssues(TempAsset tempAsset,
+        protected ProjectIssue[] AnalyzeAndFindAssetIssues(TempAsset tempAsset,
             IssueCategory category = IssueCategory.Code)
         {
             return Analyze(category, i => i.relativePath.Equals(tempAsset.relativePath));
         }
 
-        public static ProjectIssue[] AnalyzeBuild(Func<ProjectIssue, bool> predicate = null)
+        protected ProjectIssue[] AnalyzeBuild(Func<ProjectIssue, bool> predicate = null)
         {
             Build();
 
             return Analyze(predicate);
         }
 
-        public static ProjectIssue[] AnalyzeBuild(IssueCategory category, Func<ProjectIssue, bool> predicate = null)
+        protected ProjectIssue[] AnalyzeBuild(IssueCategory category, Func<ProjectIssue, bool> predicate = null)
         {
             Build();
 

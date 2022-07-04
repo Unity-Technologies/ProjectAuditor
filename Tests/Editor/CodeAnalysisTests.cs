@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class CodeAnalysisTests
+    class CodeAnalysisTests : TestFixtureBase
     {
         TempAsset m_TempAsset;
         TempAsset m_TempAssetDerivedClassMethod;
@@ -259,16 +259,10 @@ class UxmlAttributeDescriptionPropertyUsage
 #endif
         }
 
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
-        }
-
         [Test]
         public void CodeAnalysis_Paths_CanBeResolved()
         {
-            var issues = Utility.Analyze(i => i.category == IssueCategory.Code);
+            var issues = Analyze(i => i.category == IssueCategory.Code);
             foreach (var issue in issues)
             {
                 var relativePath = issue.relativePath;
@@ -280,7 +274,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_Issue_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAsset);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -308,7 +302,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_DerivedClassMethodIssue_IsReported()
         {
-            var filteredIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetDerivedClassMethod);
+            var filteredIssues = AnalyzeAndFindAssetIssues(m_TempAssetDerivedClassMethod);
 
             Assert.AreEqual(1, filteredIssues.Count());
 
@@ -322,7 +316,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_IssueInPlugin_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetInPlugin);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetInPlugin);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void MyPlugin::Dummy()", issues[0].GetContext());
@@ -331,7 +325,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_IssueInNestedClass_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInNestedClass);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInNestedClass);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void MyClassWithNested/NestedClass::Dummy()", issues[0].GetContext());
@@ -340,7 +334,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_IssueInGenericClass_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInGenericClass);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInGenericClass);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void GenericClass`1::Dummy()", issues[0].GetContext());
@@ -349,7 +343,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_IssueInVirtualMethod_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInVirtualMethod);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInVirtualMethod);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void AbstractClass::Dummy()", issues[0].GetContext());
@@ -358,7 +352,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_IssueInOverrideMethod_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInOverrideMethod);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInOverrideMethod);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void DerivedClass::Dummy()", issues[0].GetContext());
@@ -367,7 +361,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_IssueInMonoBehaviour_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviour);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviour);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void MyMonoBehaviour::Start()", issues[0].GetContext());
@@ -376,7 +370,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_IssueInCoroutine_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInCoroutine);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInCoroutine);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Boolean MyMonoBehaviourWithCoroutine/<MyCoroutine>d__1::MoveNext()", issues[0].GetContext());
@@ -385,7 +379,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_IssueInDelegate_IsReported()
         {
-            var allScriptIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInDelegate);
+            var allScriptIssues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInDelegate);
             var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'UnityEngine.Camera.allCameras' usage"));
             Assert.NotNull(issue);
             Assert.AreEqual("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()", issue.GetContext());
@@ -394,7 +388,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_IssueInProperty_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetIssueInProperty, IssueCategory.Code);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInProperty, IssueCategory.Code);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("Conversion from value type 'Int32' to ref type", issues[0].description);
@@ -404,7 +398,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_IssueInNamespace_IsReported()
         {
-            var allScriptIssues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetAnyApiInNamespace);
+            var allScriptIssues = AnalyzeAndFindAssetIssues(m_TempAssetAnyApiInNamespace);
             var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'System.Linq.Enumerable.Sum' usage"));
 
             Assert.NotNull(issue);
@@ -414,7 +408,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_ObjectName_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetObjectName);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetObjectName);
 
             Assert.AreEqual(3, issues.Length);
             Assert.True(issues.All(i => i.description.Equals("'UnityEngine.Object.name' usage")));
@@ -423,7 +417,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_GenericInstantiation_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetGenericInstantiation, IssueCategory.GenericInstance);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetGenericInstantiation, IssueCategory.GenericInstance);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("'System.Collections.Generic.HashSet`1<System.String>' generic instance", issues[0].description);
@@ -432,7 +426,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_BaseTypePropertyUsage_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetBaseTypePropertyUsage);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetBaseTypePropertyUsage);
 
             Assert.AreEqual(6, issues.Length);
         }
@@ -441,7 +435,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_UxmlAttributeDescriptionPropertyUsage_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetUxmlAttributeDescriptionPropertyUsage);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetUxmlAttributeDescriptionPropertyUsage);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("'UnityEngine.UIElements.UxmlAttributeDescription.obsoleteNames' usage", issues[0].description);
@@ -453,7 +447,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_DefaultAssembly_IsOnlyReportedAssembly()
         {
-            var issues = Utility.Analyze(IssueCategory.Code);
+            var issues = Analyze(IssueCategory.Code);
 
             Assert.True(issues.All(i => i.GetCustomProperty(CodeProperty.Assembly).Equals(AssemblyInfo.DefaultAssemblyName)));
         }

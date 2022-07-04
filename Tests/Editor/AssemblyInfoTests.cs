@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class AssemblyInfoTests
+    class AssemblyInfoTests : TestFixtureBase
     {
 #pragma warning disable 0414
         TempAsset m_TempAsset;
@@ -22,12 +22,6 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             // this is required so the default assembly is generated when testing on an empty project (i.e: on Yamato)
             m_TempAsset = new TempAsset("MyClass.cs", "class MyClass { void MyMethod() { UnityEngine.Debug.Log(666); } }");
-        }
-
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
         }
 
         [Test]
@@ -111,7 +105,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "Built-in",                        // prefix for built-in resources such as textures (not a real prefix path)
             };
 
-            var issues = Utility.AnalyzeBuild(i => i.category != IssueCategory.ProjectSetting && i.category != IssueCategory.PrecompiledAssembly);
+            var issues = AnalyzeBuild(i => i.category != IssueCategory.ProjectSetting && i.category != IssueCategory.PrecompiledAssembly);
             foreach (var issue in issues)
             {
                 var relativePath = issue.relativePath;

@@ -9,7 +9,7 @@ using Assert = UnityEngine.Assertions.Assert;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class TextFilterTests
+    class TextFilterTests : TestFixtureBase
     {
 #pragma warning disable 0414
         TempAsset m_TempAsset;
@@ -48,8 +48,6 @@ class InternalClass
         [OneTimeTearDown]
         public void TearDown()
         {
-            TempAsset.Cleanup();
-
             // restore stripEngineCode
             PlayerSettings.stripEngineCode = m_PrevStripEngineCode;
         }
@@ -64,7 +62,7 @@ class InternalClass
                 searchText = string.Empty
             };
 
-            var issues = Utility.Analyze(IssueCategory.ProjectSetting);
+            var issues = Analyze(IssueCategory.ProjectSetting);
             var filteredIssues = issues.Where(i => stringFilter.Match(i));
 
             Assert.AreEqual(issues.Length, filteredIssues.Count());
@@ -73,7 +71,7 @@ class InternalClass
         [Test]
         public void TextFilter_CaseSensitive_Matches()
         {
-            var issues = Utility.Analyze(IssueCategory.ProjectSetting);
+            var issues = Analyze(IssueCategory.ProjectSetting);
             var stringFilter = new TextFilter
             {
                 ignoreCase = false,
@@ -94,7 +92,7 @@ class InternalClass
         [Test]
         public void TextFilter_CaseInsensitive_Matches()
         {
-            var issues = Utility.Analyze(IssueCategory.ProjectSetting);
+            var issues = Analyze(IssueCategory.ProjectSetting);
             var stringFilter = new TextFilter
             {
                 ignoreCase = true,

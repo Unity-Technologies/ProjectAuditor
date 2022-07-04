@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class BuildReportTests
+    class BuildReportTests : TestFixtureBase
     {
         private TempAsset m_TempAsset;
 
@@ -17,12 +17,6 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var material = new Material(Shader.Find("UI/Default"));
             m_TempAsset = TempAsset.Save(material, "Resources/Shiny.mat");
-        }
-
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
         }
 
         [Test]
@@ -44,7 +38,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
         public void BuildReport_Files_AreReported()
         {
-            var issues = Utility.AnalyzeBuild(IssueCategory.BuildFile, i => i.relativePath.Equals(m_TempAsset.relativePath));
+            var issues = AnalyzeBuild(IssueCategory.BuildFile, i => i.relativePath.Equals(m_TempAsset.relativePath));
             var matchingIssue = issues.FirstOrDefault();
 
             Assert.NotNull(matchingIssue);
@@ -62,7 +56,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
         public void BuildReport_Steps_AreReported()
         {
-            var issues = Utility.AnalyzeBuild(IssueCategory.BuildStep);
+            var issues = AnalyzeBuild(IssueCategory.BuildStep);
             var step = issues.FirstOrDefault(i => i.description.Equals("Build player"));
             Assert.NotNull(step);
             Assert.That(step.depth, Is.EqualTo(0));

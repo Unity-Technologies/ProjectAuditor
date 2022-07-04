@@ -7,7 +7,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class BoxingIssueTests
+    class BoxingIssueTests : TestFixtureBase
     {
         TempAsset m_TempAssetBoxingFloat;
         TempAsset m_TempAssetBoxingGeneric;
@@ -27,16 +27,10 @@ namespace Unity.ProjectAuditor.EditorTests
                 "class BoxingGeneric<T> { T refToGenericType; void Dummy() { if (refToGenericType == null){} } }");
         }
 
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
-        }
-
         [Test]
         public void CodeAnalysis_BoxingIntValue_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetBoxingInt);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetBoxingInt);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -63,7 +57,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_BoxingFloatValue_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetBoxingFloat);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetBoxingFloat);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -90,7 +84,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_BoxingGeneric_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetBoxingGeneric);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetBoxingGeneric);
 
             Assert.AreEqual(1, issues.Count());
         }
@@ -98,7 +92,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_BoxingGenericRefType_IsNotReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetBoxingGenericRefType);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetBoxingGenericRefType);
 
             Assert.Zero(issues.Count());
         }

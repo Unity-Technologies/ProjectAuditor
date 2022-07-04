@@ -11,9 +11,13 @@ using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class RuleTests
+    [Serializable]
+    class RuleTests : TestFixtureBase
     {
         TempAsset m_TempAsset;
+
+        [SerializeField]
+        ProjectAuditorConfig m_SerializedConfig;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -22,40 +26,60 @@ namespace Unity.ProjectAuditor.EditorTests
                 "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.allCameras.Length.ToString()); } }");
         }
 
-        [OneTimeTearDown]
-        public void TearDown()
+#if UNITY_2019_4_OR_NEWER
+        [UnityTest]
+        public IEnumerator Rule_Persist_AfterDomainReload()
         {
-            TempAsset.Cleanup();
+            m_SerializedConfig = m_Config;
+
+            m_SerializedConfig.ClearAllRules();
+
+            Assert.AreEqual(0, m_SerializedConfig.NumRules);
+
+            // add rule with a filter.
+            m_SerializedConfig.AddRule(new Rule
+            {
+                id = 0,
+                severity = Rule.Severity.None
+            });
+
+            Assert.AreEqual(1, m_SerializedConfig.NumRules);
+
+            yield return new WaitForDomainReload();
+
+            Assert.AreEqual(1, m_SerializedConfig.NumRules);
         }
+
+#endif
 
         [Test]
         public void Rule_MutedIssue_IsNotReported()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectAuditorSettings = projectAuditor.config;
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAsset);
 
             Assert.AreEqual(1, issues.Count());
 
             var issue = issues.FirstOrDefault();
 
-            projectAuditorSettings.ClearAllRules();
+            m_Config.ClearAllRules();
 
             var callingMethod = issue.GetContext();
-            var action = projectAuditorSettings.GetAction(issue.descriptor, callingMethod);
+            var action = m_Config.GetAction(issue.descriptor, callingMethod);
 
             // expect default action specified in descriptor
             Assert.AreEqual(issue.descriptor.severity, action);
 
             // add rule with a filter.
-            projectAuditorSettings.AddRule(new Rule
+            m_Config.AddRule(new Rule
             {
                 id = issue.descriptor.id,
                 severity = Rule.Severity.None,
                 filter = callingMethod
             });
 
-            action = projectAuditorSettings.GetAction(issue.descriptor, callingMethod);
+            Assert.AreEqual(1, m_Config.NumRules);
+
+            action = m_Config.GetAction(issue.descriptor, callingMethod);
 
             // issue has been muted so it should not be reported
             Assert.AreEqual(Rule.Severity.None, action);
@@ -67,18 +91,22 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             Rule_MutedIssue_IsNotReported();
 
+            m_SerializedConfig = m_Config;
             yield return new WaitForDomainReload();
+            m_Config = m_SerializedConfig; // restore config from serialized config
+
+            Assert.AreEqual(1, m_SerializedConfig.NumRules);
 
             // retry after domain reload
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectAuditorSettings = projectAuditor.config;
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAsset);
+
             var callingMethod = issues[0].GetContext();
-            var action = projectAuditorSettings.GetAction(issues[0].descriptor, callingMethod);
+            var action = m_SerializedConfig.GetAction(issues[0].descriptor, callingMethod);
 
             // issue has been muted so it should not be reported
             Assert.AreEqual(Rule.Severity.None, action);
         }
+
 #endif
 
         [Test]

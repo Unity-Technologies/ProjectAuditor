@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class StringConcatTests
+    class StringConcatTests : TestFixtureBase
     {
         TempAsset m_TempAssetStringConcat;
 
@@ -23,16 +23,10 @@ class StringConcat
 ");
         }
 
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
-        }
-
         [Test]
         public void CodeAnalysis_StringConcat_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetStringConcat);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetStringConcat);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("'System.String.Concat' usage", issues.First().description);

@@ -7,7 +7,7 @@ using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class MonoBehaviourEmptyMethodTests
+    class MonoBehaviourEmptyMethodTests : TestFixtureBase
     {
         TempAsset m_MonoBehaviourWithEmptyEventMethod;
         TempAsset m_MonoBehaviourWithEmptyMethod;
@@ -24,23 +24,17 @@ namespace Unity.ProjectAuditor.EditorTests
                 "class NotMonoBehaviourWithEmptyMethod { void Update() { } }");
         }
 
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
-        }
-
         [Test]
         [TestCase(CodeOptimization.Debug)]
         [TestCase(CodeOptimization.Release)]
         public void CodeAnalysis_MonoBehaviourWithEmptyEventMethod_IsReported(CodeOptimization codeOptimization)
         {
-            var prevCodeOptimization = Utility.CodeOptimization;
-            Utility.CodeOptimization = codeOptimization;
+            var prevCodeOptimization = m_CodeOptimization;
+            m_CodeOptimization = codeOptimization;
 
-            var scriptIssues = Utility.AnalyzeAndFindAssetIssues(m_MonoBehaviourWithEmptyEventMethod);
+            var scriptIssues = AnalyzeAndFindAssetIssues(m_MonoBehaviourWithEmptyEventMethod);
 
-            Utility.CodeOptimization = prevCodeOptimization; // restore previous value
+            m_CodeOptimization = prevCodeOptimization; // restore previous value
 
             Assert.AreEqual(1, scriptIssues.Count());
 
@@ -64,7 +58,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_MonoBehaviourWithEmptyMethod_IsNotReported()
         {
-            var scriptIssues = Utility.AnalyzeAndFindAssetIssues(m_MonoBehaviourWithEmptyMethod);
+            var scriptIssues = AnalyzeAndFindAssetIssues(m_MonoBehaviourWithEmptyMethod);
 
             Assert.AreEqual(0, scriptIssues.Count());
         }
@@ -72,7 +66,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_NotMonoBehaviourWithEmptyMethod_IsNotReported()
         {
-            var scriptIssues = Utility.AnalyzeAndFindAssetIssues(m_NotMonoBehaviourWithEmptyMethod);
+            var scriptIssues = AnalyzeAndFindAssetIssues(m_NotMonoBehaviourWithEmptyMethod);
 
             Assert.AreEqual(0, scriptIssues.Count());
         }

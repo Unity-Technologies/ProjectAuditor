@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class ProjectReportTests
+    class ProjectReportTests : TestFixtureBase
     {
 #pragma warning disable 0414
         TempAsset m_TempAsset;
@@ -30,12 +30,6 @@ class MyClass : MonoBehaviour
     }
 }
 ");
-        }
-
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
         }
 
         [Test]

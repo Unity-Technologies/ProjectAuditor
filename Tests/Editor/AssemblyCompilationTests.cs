@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class AssemblyCompilationTests
+    class AssemblyCompilationTests : TestFixtureBase
     {
 #pragma warning disable 0414
         TempAsset m_TempAsset; // this is required to generate Assembly-CSharp.dll
@@ -33,12 +33,6 @@ class MyClass
 #endif
 }
 ");
-        }
-
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
         }
 
         [Test]

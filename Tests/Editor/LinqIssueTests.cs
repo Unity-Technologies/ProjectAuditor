@@ -7,7 +7,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class LinqIssueTests
+    class LinqIssueTests : TestFixtureBase
     {
         TempAsset m_TempAsset;
 
@@ -28,16 +28,10 @@ class MyClass
             );
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
-        }
-
         [Test]
         public void CodeAnalysis_LinqIssue_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAsset);
 
             Assert.AreEqual(1, issues.Count());
 

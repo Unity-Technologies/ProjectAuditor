@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class CompilerWarningTests
+    class CompilerWarningTests : TestFixtureBase
     {
 #pragma warning disable 0414
         TempAsset m_ScriptWithWarning;
@@ -29,16 +29,10 @@ class ScriptWithWarning {
 ");
         }
 
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
-        }
-
         [Test]
         public void CompilerWarning_Issue_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_ScriptWithWarning, IssueCategory.CodeCompilerMessage);
+            var issues = AnalyzeAndFindAssetIssues(m_ScriptWithWarning, IssueCategory.CodeCompilerMessage);
 
             Assert.AreEqual(1, issues.Count());
 

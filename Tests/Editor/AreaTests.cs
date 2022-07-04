@@ -7,7 +7,7 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class AreaTests
+    class AreaTests : TestFixtureBase
     {
         [Test]
         public void Area_Name_IsValid()
@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var stripUnusedMeshComponents = PlayerSettings.stripUnusedMeshComponents;
             PlayerSettings.stripUnusedMeshComponents = false;
 
-            var issues = Utility.Analyze(IssueCategory.ProjectSetting, i => i.descriptor.method.Equals("stripUnusedMeshComponents"));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.method.Equals("stripUnusedMeshComponents"));
 
             var issue = issues.FirstOrDefault();
             Assert.NotNull(issue);

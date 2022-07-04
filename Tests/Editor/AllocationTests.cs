@@ -6,7 +6,7 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class AllocationTests
+    class AllocationTests : TestFixtureBase
     {
         TempAsset m_TempAssetObjectAllocation;
         TempAsset m_TempAssetClosureAllocation;
@@ -82,16 +82,10 @@ class ParamsArrayAllocation
 ");
         }
 
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
-        }
-
         [Test]
         public void CodeAnalysis_NewObject_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetObjectAllocation);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetObjectAllocation);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -104,7 +98,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_ClosureAllocation_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetClosureAllocation);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetClosureAllocation);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -118,7 +112,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_NewArray_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetArrayAllocation);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.First();
@@ -130,7 +124,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_NewMultidimensionalArray_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetMultidimensionalArrayAllocation);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetMultidimensionalArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.First();
@@ -142,7 +136,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_NewParamsArray_IsReported()
         {
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAssetParamsArrayAllocation);
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetParamsArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.First();

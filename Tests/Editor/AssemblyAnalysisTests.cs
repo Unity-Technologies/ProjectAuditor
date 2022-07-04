@@ -6,7 +6,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class AssemblyAnalysisTests
+    class AssemblyAnalysisTests : TestFixtureBase
     {
 #pragma warning disable 0414
         TempAsset m_TempAsset; // this is required to generate Assembly-CSharp.dll
@@ -22,16 +22,10 @@ class MyClass
 ");
         }
 
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
-        }
-
         [Test]
         public void AssemblyAnalysis_DefaultAssembly_IsReported()
         {
-            var issues = Utility.Analyze(IssueCategory.Assembly, issue => issue.description.Equals(AssemblyInfo.DefaultAssemblyName));
+            var issues = Analyze(IssueCategory.Assembly, issue => issue.description.Equals(AssemblyInfo.DefaultAssemblyName));
 
             Assert.AreEqual(1, issues.Length);
             Assert.False(issues[0].GetCustomPropertyAsBool(AssemblyProperty.ReadOnly));
@@ -43,7 +37,7 @@ class MyClass
 #endif
         public void AssemblyAnalysis_BuiltinPackage_IsReported()
         {
-            var issues = Utility.Analyze(IssueCategory.Assembly, issue => issue.description.Equals("UnityEngine.UI"));
+            var issues = Analyze(IssueCategory.Assembly, issue => issue.description.Equals("UnityEngine.UI"));
 
             Assert.AreEqual(1, issues.Length);
             Assert.True(issues[0].GetCustomPropertyAsBool(AssemblyProperty.ReadOnly));

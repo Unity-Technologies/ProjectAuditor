@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class CompilerErrorTests
+    class CompilerErrorTests : TestFixtureBase
     {
 #pragma warning disable 0414
         TempAsset m_ScriptWithError;
@@ -57,12 +57,6 @@ class ScriptWithError {
 }");
         }
 
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            TempAsset.Cleanup();
-        }
-
         [Test]
         [Ignore("TODO: investigate reason for test failure")]
         [ExplicitAttribute]
@@ -102,7 +96,7 @@ class ScriptWithError {
         {
             LogAssert.ignoreFailingMessages = true;
 
-            var issues = Utility.AnalyzeAndFindAssetIssues(m_ScriptWithError, IssueCategory.CodeCompilerMessage);
+            var issues = AnalyzeAndFindAssetIssues(m_ScriptWithError, IssueCategory.CodeCompilerMessage);
 
             LogAssert.ignoreFailingMessages = false;
 
@@ -131,7 +125,7 @@ class ScriptWithError {
         {
             LogAssert.ignoreFailingMessages = true;
 
-            var issues = Utility.Analyze(IssueCategory.Assembly, i => i.severity == Rule.Severity.Error && i.relativePath.Equals(m_TempAsmdef.relativePath));
+            var issues = Analyze(IssueCategory.Assembly, i => i.severity == Rule.Severity.Error && i.relativePath.Equals(m_TempAsmdef.relativePath));
 
             LogAssert.ignoreFailingMessages = false;
 
@@ -154,7 +148,7 @@ class ScriptWithError {
         {
             LogAssert.ignoreFailingMessages = true;
 
-            var issues = Utility.Analyze(IssueCategory.Assembly, i => i.severity == Rule.Severity.Error && i.description.Equals(AssemblyInfo.DefaultAssemblyName));
+            var issues = Analyze(IssueCategory.Assembly, i => i.severity == Rule.Severity.Error && i.description.Equals(AssemblyInfo.DefaultAssemblyName));
 
             LogAssert.ignoreFailingMessages = false;
 
