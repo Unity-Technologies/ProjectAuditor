@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public bool SaveBuildReports;
 
-        readonly List<Rule> m_Rules = new List<Rule>();
+        [SerializeField] List<Rule> m_Rules = new List<Rule>();
 
         public int NumRules
         {
