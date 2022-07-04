@@ -120,11 +120,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             get { return s_BuildReportProvider; }
         }
 
-        public override IEnumerable<ProblemDescriptor> GetDescriptors()
-        {
-            yield return null;
-        }
-
         public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_FileLayout;

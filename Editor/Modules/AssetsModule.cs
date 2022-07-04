@@ -21,11 +21,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        public override IEnumerable<ProblemDescriptor> GetDescriptors()
-        {
-            yield return null;
-        }
-
         public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_IssueLayout;
