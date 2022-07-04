@@ -61,6 +61,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(Rule.Severity.None, action);
         }
 
+#if UNITY_2019_4_OR_NEWER
         [UnityTest]
         public IEnumerator Rule_MutedIssue_IsNotReportedAfterDomainReload()
         {
@@ -78,6 +79,7 @@ namespace Unity.ProjectAuditor.EditorTests
             // issue has been muted so it should not be reported
             Assert.AreEqual(Rule.Severity.None, action);
         }
+#endif
 
         [Test]
         public void Rule_Test_CanBeAddedAndRemoved()
