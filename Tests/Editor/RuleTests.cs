@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
@@ -6,6 +7,7 @@ using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -54,6 +56,24 @@ namespace Unity.ProjectAuditor.EditorTests
             });
 
             action = projectAuditorSettings.GetAction(issue.descriptor, callingMethod);
+
+            // issue has been muted so it should not be reported
+            Assert.AreEqual(Rule.Severity.None, action);
+        }
+
+        [UnityTest]
+        public IEnumerator Rule_MutedIssue_IsNotReportedAfterDomainReload()
+        {
+            Rule_MutedIssue_IsNotReported();
+
+            yield return new WaitForDomainReload();
+
+            // retry after domain reload
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var projectAuditorSettings = projectAuditor.config;
+            var issues = Utility.AnalyzeAndFindAssetIssues(m_TempAsset);
+            var callingMethod = issues[0].GetContext();
+            var action = projectAuditorSettings.GetAction(issues[0].descriptor, callingMethod);
 
             // issue has been muted so it should not be reported
             Assert.AreEqual(Rule.Severity.None, action);
