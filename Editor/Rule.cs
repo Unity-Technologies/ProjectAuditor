@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor
         public Severity severity;
         public string filter;
 
-        public int id;
+        public string id;
 
         public bool Equals(Rule other)
         {

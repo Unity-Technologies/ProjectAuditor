@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var a = new ProblemDescriptor
                 (
-                102001,
+                "102001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 );
             var b = new ProblemDescriptor
                 (
-                102001,
+                "102001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -47,14 +47,14 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var p = new ProblemDescriptor
                 (
-                102001,
+                "102001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 );
 
-            Assert.True(p.GetHashCode() == p.id);
+            Assert.AreEqual(p.id.GetHashCode(), p.GetHashCode());
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new ProblemDescriptor
                 (
-                102001,
+                "102001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -108,11 +108,12 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+
         public void ProblemDescriptor_MultipleAreas_AreCorrect()
         {
             var desc = new ProblemDescriptor
                 (
-                102001,
+                "102001",
                 "test",
                 new[] {Area.CPU, Area.Memory},
                 "this is not actually a problem",
@@ -128,7 +129,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new ProblemDescriptor
                 (
-                102001,
+                "102001",
                 "test",
                 new[] {Area.CPU}
                 );
@@ -141,7 +142,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new ProblemDescriptor
                 (
-                102001,
+                "102001",
                 "test",
                 new[] {Area.CPU}
                 )
@@ -161,7 +162,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new ProblemDescriptor
                 (
-                102001,
+                "102001",
                 "test",
                 new[] {Area.CPU}
                 )
@@ -180,7 +181,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var descriptors = ProblemDescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, jsonFilename);
             foreach (var descriptor in descriptors)
             {
-                Assert.Positive(descriptor.id);
+                Assert.NotNull(descriptor.id);
                 Assert.NotNull(descriptor.areas);
             }
         }

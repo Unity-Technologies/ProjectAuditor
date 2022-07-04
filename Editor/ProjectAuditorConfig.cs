@@ -31,7 +31,6 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public bool UseRoslynAnalyzers;
 
-
         /// <summary>
         /// If enabled, any issue reported by ProjectAuditor will cause the build to fail.
         /// </summary>
@@ -42,7 +41,8 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public bool SaveBuildReports;
 
-        [SerializeField] List<Rule> m_Rules = new List<Rule>();
+        [SerializeField]
+        List<Rule> m_Rules = new List<Rule>();
 
         public int NumRules
         {

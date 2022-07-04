@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor
     public sealed class ProblemDescriptor : IEquatable<ProblemDescriptor>
     {
         // An unique identifier for the diagnostic
-        public int id;
+        public string id;
         public string description;
         public string messageFormat;
 
@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor
         public string method;
         public string value;
 
-        internal ProblemDescriptor(int id, string description, string[] areas, string problem = null, string solution = null)
+        internal ProblemDescriptor(string id, string description, string[] areas, string problem = null, string solution = null)
         {
             this.id = id;
             this.description = description;
@@ -82,12 +82,12 @@ namespace Unity.ProjectAuditor.Editor
             critical = false;
         }
 
-        public ProblemDescriptor(int id, string description, Area area, string problem = null, string solution = null)
+        public ProblemDescriptor(string id, string description, Area area, string problem = null, string solution = null)
             : this(id, description, new[] {area.ToString()}, problem, solution)
         {
         }
 
-        public ProblemDescriptor(int id, string description, Area[] areas, string problem = null, string solution = null)
+        public ProblemDescriptor(string id, string description, Area[] areas, string problem = null, string solution = null)
             : this(id, description, areas.Select(a => a.ToString()).ToArray(), problem, solution)
         {
         }
@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public override int GetHashCode()
         {
-            return id;
+            return id.GetHashCode();
         }
     }
 }

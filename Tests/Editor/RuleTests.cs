@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.EditorTests
             // add rule with a filter.
             m_SerializedConfig.AddRule(new Rule
             {
-                id = 0,
+                id = "someid",
                 severity = Rule.Severity.None
             });
 

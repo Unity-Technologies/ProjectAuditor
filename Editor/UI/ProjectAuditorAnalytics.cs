@@ -121,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         [Serializable]
         public struct IssueStats
         {
-            public int id;
+            public string id;
             public int numOccurrences;
             public int numHotPathOccurrences;
         }
@@ -227,7 +227,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static IssueStats[] CollectSelectionStats(IssueTableItem[] selectedItems)
         {
-            var selectionsDict = new Dictionary<int, IssueStats>();
+            var selectionsDict = new Dictionary<string, IssueStats>();
             var selectedChildren = selectedItems.Where(item => item.parent != null);
 
             foreach (var childItem in selectedChildren)
@@ -254,7 +254,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static IssueStats[] GetScriptIssuesSummary(ProjectReport projectReport)
         {
-            var statsDict = new Dictionary<int, IssueStats>();
+            var statsDict = new Dictionary<string, IssueStats>();
 
             var scriptIssues = projectReport.GetIssues(IssueCategory.Code);
             var numScriptIssues = scriptIssues.Count;
