@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 * Added user preferences
 * Added group size/time properties
+* Fixed Diagnostic Rules serialization
 
 ## [0.8.1-preview] - 2022-06-24
 * Added *ProjectAuditorConfig* option to enable/disable Roslyn analyzers
