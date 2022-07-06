@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var a = new ProblemDescriptor
                 (
-                "102001",
+                "TD2001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 );
             var b = new ProblemDescriptor
                 (
-                "102001",
+                "TD2001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var p = new ProblemDescriptor
                 (
-                "102001",
+                "TD2001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new ProblemDescriptor
                 (
-                "102001",
+                "TD2001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -103,7 +103,7 @@ namespace Unity.ProjectAuditor.EditorTests
             desc.minimumVersion = "1.1";
             desc.maximumVersion = "1.0";
             var result = ProblemDescriptorLoader.IsVersionCompatible(desc);
-            LogAssert.Expect(LogType.Error, "Descriptor (102001) minimumVersion (1.1) is greater than maximumVersion (1.0).");
+            LogAssert.Expect(LogType.Error, "Descriptor (TD2001) minimumVersion (1.1) is greater than maximumVersion (1.0).");
             Assert.False(result);
         }
 
@@ -113,7 +113,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new ProblemDescriptor
                 (
-                "102001",
+                "TD2001",
                 "test",
                 new[] {Area.CPU, Area.Memory},
                 "this is not actually a problem",
@@ -129,7 +129,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new ProblemDescriptor
                 (
-                "102001",
+                "TD2001",
                 "test",
                 new[] {Area.CPU}
                 );
@@ -142,7 +142,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new ProblemDescriptor
                 (
-                "102001",
+                "TD2001",
                 "test",
                 new[] {Area.CPU}
                 )
@@ -162,7 +162,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new ProblemDescriptor
                 (
-                "102001",
+                "TD2001",
                 "test",
                 new[] {Area.CPU}
                 )

@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.EditorTests
     {
         ProblemDescriptor s_Descriptor = new ProblemDescriptor
             (
-            "102001",
+            "TD2001",
             "test",
             Area.CPU,
             "this is not actually a problem",

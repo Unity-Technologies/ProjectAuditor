@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     {
         static readonly ProblemDescriptor k_ObjectAllocationDescriptor = new ProblemDescriptor
             (
-            "102002",
+            "CD2002",
             "Object Allocation",
             Area.Memory,
             "An object is allocated in managed memory",
@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         static readonly ProblemDescriptor k_ClosureAllocationDescriptor = new ProblemDescriptor
             (
-            "102003",
+            "CD2003",
             "Closure Allocation",
             Area.Memory,
             "An object is allocated in managed memory",
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         static readonly ProblemDescriptor k_ArrayAllocationDescriptor = new ProblemDescriptor
             (
-            "102004",
+            "CD2004",
             "Array Allocation",
             Area.Memory,
             "An array is allocated in managed memory",

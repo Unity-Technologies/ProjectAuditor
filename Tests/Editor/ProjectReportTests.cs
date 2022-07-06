@@ -47,7 +47,7 @@ class MyClass : MonoBehaviour
             var projectReport = new ProjectReport();
             var p = new ProblemDescriptor
                 (
-                "102001",
+                "TD2001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
