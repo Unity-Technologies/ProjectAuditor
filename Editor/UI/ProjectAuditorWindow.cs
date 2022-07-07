@@ -13,7 +13,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    public class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IProjectIssueFilter
+    public class ProjectAuditorWindow : EditorWindow, IProjectIssueFilter
     {
         enum AnalysisState
         {
@@ -74,11 +74,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         AnalysisView activeView
         {
             get { return m_ViewManager.GetActiveView(); }
-        }
-
-        public void AddItemsToMenu(GenericMenu menu)
-        {
-            menu.AddItem(Contents.DeveloperMode, m_Preferences.developerMode, OnToggleDeveloperMode);
         }
 
         public bool Match(ProjectIssue issue)
@@ -462,11 +457,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 viewManager.ChangeView(category);
             }
-        }
-
-        void OnToggleDeveloperMode()
-        {
-            m_Preferences.developerMode = !m_Preferences.developerMode;
         }
 
         bool IsAnalysisValid()
@@ -1159,8 +1149,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static class Contents
         {
-            public static readonly GUIContent DeveloperMode = new GUIContent("Developer Mode");
-
             public static readonly GUIContent WindowTitle = new GUIContent("Project Auditor");
 
             public static readonly GUIContent AnalyzeButton =

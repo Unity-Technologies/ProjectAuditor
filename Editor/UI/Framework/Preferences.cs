@@ -24,7 +24,5 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool mutedIssues;
 
         public int fontSize = k_MinFontSize;
-
-        public bool developerMode = false;
     }
 }

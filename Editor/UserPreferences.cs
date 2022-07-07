@@ -11,7 +11,17 @@ namespace Unity.ProjectAuditor.Editor
         static readonly string k_LogTimingsInfoKey = k_EditorPrefsPrefix + ".logTimingsInfo";
         static readonly string k_LogTimingsInfoLabel = "Log timing information";
 
+        static readonly string k_DeveloperModeKey = k_EditorPrefsPrefix + ".developerMode";
+        static readonly string k_DeveloperModeLabel = "Enable Developer Mode";
+
+
         internal static string loadSavePath = string.Empty;
+
+        public static bool developerMode
+        {
+            get => EditorPrefs.GetBool(k_DeveloperModeKey, false);
+            set => EditorPrefs.SetBool(k_DeveloperModeKey, value);
+        }
 
         public static bool logTimingsInfo
         {
@@ -33,6 +43,7 @@ namespace Unity.ProjectAuditor.Editor
         static void PreferencesGUI(string searchContext)
         {
             EditorGUI.indentLevel++;
+            developerMode = EditorGUILayout.Toggle(k_DeveloperModeLabel, developerMode);
             logTimingsInfo = EditorGUILayout.Toggle(k_LogTimingsInfoLabel, logTimingsInfo);
             EditorGUI.indentLevel--;
         }

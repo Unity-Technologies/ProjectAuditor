@@ -241,7 +241,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             m_Table.searchString = m_TextFilter.searchText;
 
-            if (m_Preferences.developerMode)
+            if (UserPreferences.developerMode)
             {
                 // this is only available in developer mode because it is still too slow at the moment
                 GUI.enabled = m_Desc.showDependencyView;
