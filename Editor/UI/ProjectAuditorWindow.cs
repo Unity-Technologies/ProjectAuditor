@@ -517,7 +517,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         void OnPostprocessBuild(BuildTarget target)
         {
             // Note that we can't run BuildReportModule in OnPostprocessBuild because the Library/LastBuild.buildreport file is only created AFTER OnPostprocessBuild
-            if (m_ProjectAuditor.config.SaveBuildReports)
+            if (m_ProjectAuditor != null && m_ProjectAuditor.config.SaveBuildReports)
                 m_NewBuildAvailable = true;
         }
 
