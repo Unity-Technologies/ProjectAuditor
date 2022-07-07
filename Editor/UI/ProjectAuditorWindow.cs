@@ -951,8 +951,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     else if (m_AreaSelectionSummary != "None")
                     {
                         var areas = Formatting.SplitStrings(m_AreaSelectionSummary);
-                        foreach (var area in areas)
-                            m_AreaSelection.selection.Add(area);
+                        m_AreaSelection.selection.AddRange(areas);
                     }
                 }
                 else
@@ -988,9 +987,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     var assemblies = Formatting.SplitStrings(m_AssemblySelectionSummary)
                         .Where(assemblyName => m_AssemblyNames.Contains(assemblyName));
-                    if (assemblies.Count() > 0)
-                        foreach (var assembly in assemblies)
-                            m_AssemblySelection.selection.Add(assembly);
+                    m_AssemblySelection.selection.AddRange(assemblies);
                 }
             }
 
