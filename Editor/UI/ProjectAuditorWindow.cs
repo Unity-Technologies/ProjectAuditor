@@ -224,59 +224,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (IsAnalysisValid())
             {
-                activeView.DrawInfo();
-
-                if (activeView.IsValid())
-                {
-                    DrawFilters();
-                    DrawActions();
-
-                    if (m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed)
-                    {
-                        RefreshDisplay();
-                        m_ShouldRefresh = false;
-                    }
-
-                    activeView.DrawContent();
-                }
+                DrawReport();
             }
             else
             {
-                EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
-
-                EditorGUILayout.LabelField(Contents.WelcomeText, SharedStyles.TextArea);
-                EditorGUILayout.Space();
-
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    m_SelectedModules = (BuiltInModules)EditorGUILayout.EnumFlagsField(Contents.ModulesSelection, m_SelectedModules, GUILayout.ExpandWidth(true));
-                }
-
-                GUILayout.FlexibleSpace();
-
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    const int height = 30;
-
-                    GUILayout.FlexibleSpace();
-
-                    using (new EditorGUI.DisabledScope(m_SelectedModules == BuiltInModules.None))
-                    {
-                        if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(height)))
-                        {
-                            Analyze();
-                        }
-                    }
-
-                    if (GUILayout.Button(Contents.LoadButton, GUILayout.Width(40), GUILayout.Height(height)))
-                    {
-                        Load();
-                    }
-                }
-
-                EditorGUILayout.Space();
-
-                EditorGUILayout.EndVertical();
+                DrawHome();
             }
         }
 
@@ -912,6 +864,64 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     EditorGUI.indentLevel--;
                 }
+            }
+        }
+
+        void DrawHome()
+        {
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
+
+            EditorGUILayout.LabelField(Contents.WelcomeText, SharedStyles.TextArea);
+            EditorGUILayout.Space();
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                m_SelectedModules = (BuiltInModules)EditorGUILayout.EnumFlagsField(Contents.ModulesSelection, m_SelectedModules, GUILayout.ExpandWidth(true));
+            }
+
+            GUILayout.FlexibleSpace();
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                const int height = 30;
+
+                GUILayout.FlexibleSpace();
+
+                using (new EditorGUI.DisabledScope(m_SelectedModules == BuiltInModules.None))
+                {
+                    if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(height)))
+                    {
+                        Analyze();
+                    }
+                }
+
+                if (GUILayout.Button(Contents.LoadButton, GUILayout.Width(40), GUILayout.Height(height)))
+                {
+                    Load();
+                }
+            }
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.EndVertical();
+        }
+
+        void DrawReport()
+        {
+            activeView.DrawInfo();
+
+            if (activeView.IsValid())
+            {
+                DrawFilters();
+                DrawActions();
+
+                if (m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed)
+                {
+                    RefreshDisplay();
+                    m_ShouldRefresh = false;
+                }
+
+                activeView.DrawContent();
             }
         }
 
