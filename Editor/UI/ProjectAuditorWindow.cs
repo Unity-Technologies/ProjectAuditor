@@ -734,7 +734,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!activeView.desc.showFilters)
                 return;
 
-            using (new EditorGUILayout.VerticalScope(GUILayout.ExpandWidth(true)))
+            using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
             {
                 m_GlobalStates.filters = Utility.BoldFoldout(m_GlobalStates.filters, Contents.FiltersFoldout);
                 if (m_GlobalStates.filters)
@@ -807,7 +807,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var table = activeView.table;
 
-            using (new EditorGUILayout.VerticalScope(GUILayout.ExpandWidth(true)))
+            using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
             {
                 m_GlobalStates.actions = Utility.BoldFoldout(m_GlobalStates.actions, Contents.ActionsFoldout);
                 if (m_GlobalStates.actions)

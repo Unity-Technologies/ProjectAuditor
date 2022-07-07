@@ -49,8 +49,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 if (s_TextArea == null)
                 {
-                    s_TextArea = new GUIStyle(EditorStyles.textArea);
+                    s_TextArea = new GUIStyle(EditorStyles.label);
                     s_TextArea.richText = true;
+                    s_TextArea.wordWrap = true;
+                    s_TextArea.alignment = TextAnchor.UpperLeft;
                 }
 
                 return s_TextArea;

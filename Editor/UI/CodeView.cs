@@ -31,8 +31,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         protected override void OnDrawInfo()
         {
-            EditorGUILayout.LabelField("* Use the Filters to reduce the number of reported issues");
-            EditorGUILayout.LabelField("* Use the Mute button to mark an issue as false-positive");
+            EditorGUILayout.LabelField("\u2022 Use the Filters to reduce the number of reported issues");
+            EditorGUILayout.LabelField("\u2022 Use the Mute button to mark an issue as false-positive");
 
             if (m_NumCompilerErrors > 0)
             {
