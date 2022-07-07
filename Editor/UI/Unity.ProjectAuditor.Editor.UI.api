@@ -11,11 +11,10 @@ namespace Unity.ProjectAuditor.Editor.UI
         protected virtual void OnDrawInfo();
     }
 
-    public class ProjectAuditorWindow : UnityEditor.EditorWindow, Unity.ProjectAuditor.Editor.IProjectIssueFilter, UnityEditor.IHasCustomMenu
+    public class ProjectAuditorWindow : UnityEditor.EditorWindow, Unity.ProjectAuditor.Editor.IProjectIssueFilter
     {
         public static Unity.ProjectAuditor.Editor.UI.ProjectAuditorWindow Instance { get; }
         public ProjectAuditorWindow() {}
-        public virtual void AddItemsToMenu(UnityEditor.GenericMenu menu);
         public void AnalyzeShaderVariants();
         public void ClearShaderVariants();
         public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);

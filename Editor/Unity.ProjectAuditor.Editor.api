@@ -282,6 +282,7 @@ namespace Unity.ProjectAuditor.Editor
 
     public class UserPreferences
     {
+        public static bool developerMode { get; set; }
         public static bool logTimingsInfo { get; set; }
         public UserPreferences() {}
     }
