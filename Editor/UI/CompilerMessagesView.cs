@@ -17,11 +17,10 @@ namespace Unity.ProjectAuditor.Editor.UI
         protected override void OnDrawInfo()
         {
             EditorGUILayout.LabelField(k_Info);
-            if (m_Config.CompilationMode == CompilationMode.Editor)
+            if (m_Config.CompilationMode == CompilationMode.Editor) // TODO: check setting at time of analysis
             {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(k_NotAvailable, GUILayout.MaxWidth(380));
-                EditorGUILayout.LabelField(Utility.GetSeverityIcon(Rule.Severity.Warning));
+                EditorGUILayout.HelpBox(k_NotAvailable, MessageType.Warning);
                 EditorGUILayout.EndHorizontal();
             }
         }
