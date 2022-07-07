@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void Create(ProjectAuditor projectAuditor, Preferences preferences, Action<ViewDescriptor, bool> onCreateView = null, IProjectIssueFilter filter = null)
+        public void Create(ProjectAuditor projectAuditor, GlobalStates globalStates, Action<ViewDescriptor, bool> onCreateView = null, IProjectIssueFilter filter = null)
         {
             if (filter == null)
                 filter = new NullFilter();
@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
 
                 var view = desc.type != null ? (AnalysisView)Activator.CreateInstance(desc.type, this) : new AnalysisView(this);
-                view.Create(desc, layout, projectAuditor.config, projectAuditor.GetModule(category), preferences, filter);
+                view.Create(desc, layout, projectAuditor.config, projectAuditor.GetModule(category), globalStates, filter);
                 view.OnEnable();
                 views.Add(view);
             }

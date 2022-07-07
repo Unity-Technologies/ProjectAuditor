@@ -10,6 +10,7 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.Profiling;
+using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
@@ -68,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] ProjectReport m_ProjectReport;
         [SerializeField] AnalysisState m_AnalysisState = AnalysisState.Initializing;
         [SerializeField] bool m_NewBuildAvailable = false;
-        [SerializeField] Preferences m_Preferences = new Preferences();
+        [SerializeField] GlobalStates m_GlobalStates = new GlobalStates();
         [SerializeField] ViewManager m_ViewManager;
 
         AnalysisView activeView
@@ -101,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!matchArea)
                 return false;
 
-            if (!m_Preferences.mutedIssues && activeView.desc.showMuteOptions)
+            if (!m_GlobalStates.mutedIssues && activeView.desc.showMuteOptions)
             {
                 Profiler.BeginSample("IsMuted");
                 var muted = m_ProjectAuditor.config.GetAction(issue.descriptor, issue.GetContext()) ==
@@ -112,7 +113,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             if (activeView.desc.showCritical &&
-                m_Preferences.onlyCriticalIssues &&
+                m_GlobalStates.onlyCriticalIssues &&
                 !issue.isPerfCriticalContext)
                 return false;
 
@@ -184,7 +185,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Profiler.BeginSample("Views Creation");
 
             var dropdownItems = new List<Utility.DropdownItem>(categories.Length);
-            m_ViewManager.Create(m_ProjectAuditor, m_Preferences, (desc, isSupported) =>
+            m_ViewManager.Create(m_ProjectAuditor, m_GlobalStates, (desc, isSupported) =>
             {
                 dropdownItems.Add(new Utility.DropdownItem
                 {
@@ -735,8 +736,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             using (new EditorGUILayout.VerticalScope(GUILayout.ExpandWidth(true)))
             {
-                m_Preferences.filters = Utility.BoldFoldout(m_Preferences.filters, Contents.FiltersFoldout);
-                if (m_Preferences.filters)
+                m_GlobalStates.filters = Utility.BoldFoldout(m_GlobalStates.filters, Contents.FiltersFoldout);
+                if (m_GlobalStates.filters)
                 {
                     EditorGUI.indentLevel++;
 
@@ -756,11 +757,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                             if (activeView.desc.showCritical)
                             {
-                                bool wasShowingCritical = m_Preferences.onlyCriticalIssues;
-                                m_Preferences.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
-                                    m_Preferences.onlyCriticalIssues, GUILayout.Width(180));
+                                bool wasShowingCritical = m_GlobalStates.onlyCriticalIssues;
+                                m_GlobalStates.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
+                                    m_GlobalStates.onlyCriticalIssues, GUILayout.Width(180));
 
-                                if (wasShowingCritical != m_Preferences.onlyCriticalIssues)
+                                if (wasShowingCritical != m_GlobalStates.onlyCriticalIssues)
                                 {
                                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                                     var payload = new Dictionary<string, string>();
@@ -772,15 +773,15 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                             if (activeView.desc.showMuteOptions)
                             {
-                                bool wasDisplayingMuted = m_Preferences.mutedIssues;
-                                m_Preferences.mutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
-                                    m_Preferences.mutedIssues, GUILayout.Width(127));
+                                bool wasDisplayingMuted = m_GlobalStates.mutedIssues;
+                                m_GlobalStates.mutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
+                                    m_GlobalStates.mutedIssues, GUILayout.Width(127));
 
-                                if (wasDisplayingMuted != m_Preferences.mutedIssues)
+                                if (wasDisplayingMuted != m_GlobalStates.mutedIssues)
                                 {
                                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                                     var payload = new Dictionary<string, string>();
-                                    payload["selected"] = m_Preferences.mutedIssues ? "true" : "false";
+                                    payload["selected"] = m_GlobalStates.mutedIssues ? "true" : "false";
                                     ProjectAuditorAnalytics.SendEventWithKeyValues(
                                         ProjectAuditorAnalytics.UIButton.ShowMuted,
                                         analytic, payload);
@@ -808,8 +809,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             using (new EditorGUILayout.VerticalScope(GUILayout.ExpandWidth(true)))
             {
-                m_Preferences.actions = Utility.BoldFoldout(m_Preferences.actions, Contents.ActionsFoldout);
-                if (m_Preferences.actions)
+                m_GlobalStates.actions = Utility.BoldFoldout(m_GlobalStates.actions, Contents.ActionsFoldout);
+                if (m_GlobalStates.actions)
                 {
                     EditorGUI.indentLevel++;
 
@@ -828,7 +829,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     SetRuleForItem(item, Rule.Severity.None);
                                 }
 
-                                if (!m_Preferences.mutedIssues)
+                                if (!m_GlobalStates.mutedIssues)
                                 {
                                     table.SetSelection(new List<int>());
                                 }

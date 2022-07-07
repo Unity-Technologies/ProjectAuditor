@@ -6,6 +6,7 @@ using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
@@ -13,11 +14,11 @@ namespace Unity.ProjectAuditor.Editor.UI
     class BuildReportViewer : UnityEditor.Editor, IBuildReportProvider
     {
         static int s_ActiveViewIndex;
-        static Preferences s_Preferences;
+        static GlobalStates s_GlobalStates;
         static BuildReport s_BuildReport;
 
         [SerializeField] int m_ActiveViewIndex;
-        [SerializeField] Preferences m_Preferences;
+        [SerializeField] GlobalStates m_GlobalStates;
 
         ViewManager m_ViewManager;
 
@@ -25,9 +26,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void InitializeIfNeeded()
         {
-            if (m_Preferences == null)
+            if (m_GlobalStates == null)
             {
-                m_Preferences = new Preferences();
+                m_GlobalStates = new GlobalStates();
                 m_ActiveViewIndex = 0;
             }
 
@@ -38,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 var projectAuditor = new ProjectAuditor();
 
                 m_ViewManager = new ViewManager(k_Categories);
-                m_ViewManager.Create(projectAuditor, m_Preferences);
+                m_ViewManager.Create(projectAuditor, m_GlobalStates);
                 m_ViewManager.activeViewIndex = m_ActiveViewIndex;
                 m_ViewManager.onViewChanged = index => m_ActiveViewIndex = index;
 
@@ -57,9 +58,9 @@ namespace Unity.ProjectAuditor.Editor.UI
         void OnEnable()
         {
             // restore prefs/active view when switching between report assets
-            if (s_Preferences != null)
+            if (s_GlobalStates != null)
             {
-                m_Preferences = s_Preferences;
+                m_GlobalStates = s_GlobalStates;
                 m_ActiveViewIndex = s_ActiveViewIndex;
             }
 
@@ -77,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             m_ViewManager?.SaveSettings();
 
-            s_Preferences = m_Preferences;
+            s_GlobalStates = m_GlobalStates;
             s_ActiveViewIndex = m_ActiveViewIndex;
         }
 

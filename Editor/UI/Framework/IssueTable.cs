@@ -196,7 +196,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void SetFontSize(int fontSize)
         {
-            rowHeight = k_DefaultRowHeight * fontSize / Preferences.k_MinFontSize;
+            rowHeight = k_DefaultRowHeight * fontSize / GlobalStates.k_MinFontSize;
         }
 
         protected override void RowGUI(RowGUIArgs args)
