@@ -104,8 +104,9 @@
             "method": "stripEngineCode",
             "value": "False",
             "areas": ["BuildSize"],
+            "platforms": ["Android", "iOS", "WebGL"],
             "problem": "Engine code stripping is disabled. The generated build will be larger than necessary.",
-            "solution": "Enable stripEngineCode in PlayerSettings"
+            "solution": "Enable <b>stripEngineCode</b> in <b>Project Settings ➔ Player ➔ Other Settings</b>"
         },
         {
             "id": 201010,
@@ -116,7 +117,7 @@
             "areas": ["LoadTime"],
             "platforms": ["WebGL"],
             "problem": "Build file needs to be downloaded every time the content is loaded.",
-            "solution": "Enable dataCaching to cache build files in Browser cache"
+            "solution": "Enable <b>dataCaching</b> to cache build files in Browser cache"
         },
         {
             "id": 201011,
@@ -127,7 +128,7 @@
             "areas": ["CPU","Memory"],
             "platforms": ["WebGL"],
             "problem": "WebGLLinkerTarget.Asm is deprecated.",
-            "solution": "Set UnityEditor.PlayerSettings.WebGL.linkerTarget to WebGLLinkerTarget.Wasm to generate code in WebAssembly format.",
+            "solution": "Set <b>UnityEditor.PlayerSettings.WebGL.linkerTarget</b> to <b>WebGLLinkerTarget.Wasm</b> to generate code in WebAssembly format.",
             "minimumVersion": "2018.1"
         },
         {
@@ -197,7 +198,7 @@
             "method": "GetQualityLevel",
             "customevaluator": "QualityUsingDefaultSettings",
             "areas": ["CPU","GPU","BuildSize","LoadTime"],
-            "problem": "This project is using the default set of quality levels defined in Quality Settings.",
+            "problem": "This project is using the default set of quality levels defined in <b>Project Settings ➔ Quality</b>.",
             "solution": "Check the quality setting for each platform the project supports in the grid - it's the level with the green tick. Remove quality levels you are not using, to make the Quality Settings simpler to see and edit. Adjust the setting for each platform if necessary, then select the appropriate levels to examine their settings in the panel below."
         },
         {
@@ -247,7 +248,7 @@
             "method": "GetTierSettings",
             "customevaluator": "GraphicsUsingForwardRendering",
             "areas": ["GPU"],
-            "problem": "The current build target uses forward rendering, as set in the <b>Rendering Path</b> settings in Graphics Tiers.",
+            "problem": "The current build target uses forward rendering, as set in the <b>Rendering Path</b> settings in <b>Project Settings ➔ Graphics ➔ Tier Settings</b>.",
             "solution": "This rendering path is suitable for games with simple rendering and lighting requirements - for instance, 2D games, or games which mainly use baked lighting. If the project makes use of a more than a few dynamic lights, consider experimenting with changing <b>Rendering Path</b> to Deferred to see whether doing so improves GPU rendering times."
         },
         {
@@ -257,7 +258,7 @@
             "method": "GetTierSettings",
             "customevaluator": "GraphicsUsingDeferredRendering",
             "areas": ["GPU"],
-            "problem": "The current build target uses deferred rendering, as set in the <b>Rendering Path</b> settings in Graphics Tiers.",
+            "problem": "The current build target uses deferred rendering, as set in the <b>Rendering Path</b> settings in <b>Project Settings ➔ Graphics ➔ Tier Settings</b>.",
             "solution": "This rendering path is suitable for games with more complex rendering requirements - for instance, games that make uses of dynamic lighting or certain types of fullscreen post-processing effects. If the project doesn't make use of such rendering techniques, consider experimenting with changing <b>Rendering Path</b> to Forward to see whether doing so improves GPU rendering times."
         },
         {
@@ -312,7 +313,7 @@
           "customevaluator": "PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled",
           "areas": ["LoadTime"],
           "problem": "<b>Splash Screen</b> is enabled and will increase the time it takes to load into the first scene.",
-          "solution": "Disable the Splash Screen option in Player Settings."
+          "solution": "Disable the Splash Screen option in <b>Project Settings ➔ Player ➔ Splash Image ➔ Show Splash Screen</b>."
         }
     ]
 }
