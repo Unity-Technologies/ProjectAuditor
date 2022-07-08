@@ -29,9 +29,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
                 new KeyValuePair<string, string>("UnityEditor.Rendering.EditorGraphicsSettings", "Project/Graphics"));
 
             // UnityEngine
-            m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.Physics", "Project/Physics"));
             m_ProjectSettingsMapping.Add(
                 new KeyValuePair<string, string>("UnityEngine.Physics2D", "Project/Physics 2D"));
+            m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.Physics", "Project/Physics"));
             m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.Time", "Project/Time"));
             m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.QualitySettings",
                 "Project/Quality"));
