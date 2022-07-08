@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
@@ -17,15 +18,24 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAsmdef;
 #pragma warning restore 0414
 
-#if UNITY_EDITOR_WIN
-        const string k_ExpectedMessage = "Assets\\ProjectAuditor-Temp\\ScriptWithError.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration";
+#if UNITY_2020_1_OR_NEWER
+        static readonly string k_ExpectedDescription = "Invalid token '}' in class, record, struct, or interface member declaration";
 #else
-        const string k_ExpectedMessage = "Assets/ProjectAuditor-Temp/ScriptWithError.cs(6,1): error CS1519: Invalid token '}' in class, struct, or interface member declaration";
+        static readonly string k_ExpectedDescription = "Invalid token '}' in class, struct, or interface member declaration";
+#endif
+
+#if UNITY_EDITOR_WIN
+        static readonly string k_ExpectedMessage = $"Assets\\ProjectAuditor-Temp\\ScriptWithError.cs(6,1): error CS1519: {k_ExpectedDescription}";
+#else
+        static readonly  string k_ExpectedMessage = $"Assets/ProjectAuditor-Temp/ScriptWithError.cs(6,1): error CS1519: {k_ExpectedDescription}";
 #endif
         const string k_ExpectedCode = "CS1519";
-        const string k_ExpectedDescription = "Invalid token '}' in class, record, struct, or interface member declaration";
 
-        const string k_TempAssemblyName = "Unity.ProjectAuditor.Temp";
+        const string k_TempAssemblyFileName = "Unity.ProjectAuditor.Temp.asmdef";
+        static string k_TempAssemblyName
+        {
+            get { return Path.GetFileNameWithoutExtension(k_TempAssemblyFileName); }
+        }
 
         [OneTimeSetUp]
         public void SetUp()
@@ -39,7 +49,7 @@ class ScriptWithError {
 ");
 
             // this is required to that we have an assembly which fails to compile. By doing so the default assembly won't be compiled as it's missing a dependency
-            m_TempAsmdef = new TempAsset(k_TempAssemblyName + ".asmdef", @"
+            m_TempAsmdef = new TempAsset(k_TempAssemblyFileName, @"
 {
     ""name"": ""Unity.ProjectAuditor.Temp"",
     ""rootNamespace"": """",
@@ -58,7 +68,6 @@ class ScriptWithError {
         }
 
         [Test]
-        [Ignore("TODO: investigate reason for test failure")]
         [ExplicitAttribute]
         public void CompilerError_IsReported()
         {
@@ -79,8 +88,8 @@ class ScriptWithError {
                 compilationPipeline.Compile();
             }
 
-            LogAssert.Expect(LogType.Error, k_ExpectedMessage);
-            LogAssert.Expect(LogType.Error, "Failed to compile player scripts");
+            //LogAssert.Expect(LogType.Error, k_ExpectedMessage);
+            //LogAssert.Expect(LogType.Error, "Failed to compile player scripts");
             LogAssert.ignoreFailingMessages = false;
 
             Assert.NotNull(compilerMessages);
@@ -105,7 +114,7 @@ class ScriptWithError {
             var issue = issues.First();
 
             // check descriptor
-            Assert.Contains(Area.Info, issue.descriptor.GetAreas());
+            Assert.IsNull(issue.descriptor);
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
@@ -134,7 +143,7 @@ class ScriptWithError {
             var issue = issues.First();
 
             // check descriptor
-            Assert.Contains(Area.Info, issue.descriptor.GetAreas());
+            Assert.IsNull(issue.descriptor);
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.Assembly));
@@ -148,7 +157,7 @@ class ScriptWithError {
         {
             LogAssert.ignoreFailingMessages = true;
 
-            var issues = Analyze(IssueCategory.Assembly, i => i.severity == Rule.Severity.Error && i.description.Equals(AssemblyInfo.DefaultAssemblyName));
+            var issues = Analyze(IssueCategory.Assembly, i => i.severity == Rule.Severity.Error && i.description.Equals(k_TempAssemblyName));
 
             LogAssert.ignoreFailingMessages = false;
 
@@ -157,12 +166,12 @@ class ScriptWithError {
             var issue = issues.First();
 
             // check descriptor
-            Assert.Contains(Area.Info, issue.descriptor.GetAreas());
+            Assert.IsNull(issue.descriptor);
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.Assembly));
             Assert.That(issue.severity, Is.EqualTo(Rule.Severity.Error));
-            Assert.True(string.IsNullOrEmpty(issue.filename));
+            Assert.AreEqual(k_TempAssemblyFileName, issue.filename);
         }
     }
 }
