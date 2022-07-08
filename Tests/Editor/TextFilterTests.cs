@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAsset;
 #pragma warning restore 0414
 
-        bool m_PrevStripEngineCode;
+        bool m_PrevBakeCollisionMeshes;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -40,16 +40,16 @@ class InternalClass
     }
 }
 ");
-            // disabling stripEngineCode will be reported as an issue
-            m_PrevStripEngineCode = PlayerSettings.stripEngineCode;
-            PlayerSettings.stripEngineCode = false;
+            // disabling bakeCollisionMeshes will be reported an issue
+            m_PrevBakeCollisionMeshes = PlayerSettings.bakeCollisionMeshes;
+            PlayerSettings.bakeCollisionMeshes = false;
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            // restore stripEngineCode
-            PlayerSettings.stripEngineCode = m_PrevStripEngineCode;
+            // restore bakeCollisionMeshes
+            PlayerSettings.bakeCollisionMeshes = m_PrevBakeCollisionMeshes;
         }
 
         [Test]
@@ -76,13 +76,13 @@ class InternalClass
             {
                 ignoreCase = false,
                 searchDependencies = false,
-                searchText = "Engine Code Stripping"
+                searchText = "Prebake Collision Meshes"
             };
             var filteredIssues = issues.Where(i => stringFilter.Match(i));
 
             Assert.AreEqual(1, filteredIssues.Count());
 
-            stringFilter.searchText = "engine code stripping";
+            stringFilter.searchText = "prebake collision meshes";
 
             filteredIssues = issues.Where(i => stringFilter.Match(i));
 
@@ -97,7 +97,7 @@ class InternalClass
             {
                 ignoreCase = true,
                 searchDependencies = false,
-                searchText = "engine code stripping"
+                searchText = "prebake collision meshes"
             };
             var filteredIssues = issues.Where(i => stringFilter.Match(i));
             Assert.AreEqual(1, filteredIssues.Count());
