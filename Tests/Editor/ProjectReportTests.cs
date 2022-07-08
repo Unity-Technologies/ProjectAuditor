@@ -144,7 +144,7 @@ class MyClass : MonoBehaviour
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
             var issues = AnalyzeAndExport(category, path);
             var issue = issues.FirstOrDefault(i => i.descriptor.method.Equals("bakeCollisionMeshes"));
-            var expectedIssueLine = string.Format("\"{0}\",\"{1}\"", issue.description, issue.descriptor.GetAreasSummary());
+            var expectedIssueLine = $"\"{issue.description}\",\"{issue.descriptor.GetAreasSummary()}\",\"{issue.relativePath}\"";
 
             var issueFound = false;
             using (var file = new StreamReader(path))
