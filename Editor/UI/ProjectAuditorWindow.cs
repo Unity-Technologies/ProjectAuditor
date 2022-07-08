@@ -641,7 +641,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 EditorGUILayout.LabelField(Contents.AssemblyFilter, GUILayout.Width(LayoutSize.FilterOptionsLeftLabelWidth));
 
-                using (new EditorGUI.DisabledScope(!IsAnalysisValid() || AssemblySelectionWindow.IsOpen()))
+                using (new EditorGUI.DisabledScope(!IsAnalysisValid() || SelectionWindow.IsOpen<AssemblySelectionWindow>()))
                 {
                     if (GUILayout.Button(Contents.AssemblyFilterSelect, EditorStyles.miniButton,
                         GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
@@ -651,9 +651,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                             var analytic = ProjectAuditorAnalytics.BeginAnalytic();
 
                             // Note: Window auto closes as it loses focus so this isn't strictly required
-                            if (AssemblySelectionWindow.IsOpen())
+                            if (SelectionWindow.IsOpen<AssemblySelectionWindow>())
                             {
-                                AssemblySelectionWindow.CloseAll();
+                                SelectionWindow.CloseAll<AssemblySelectionWindow>();
                             }
                             else
                             {
@@ -662,8 +662,20 @@ namespace Unity.ProjectAuditor.Editor.UI
                                         Event.current.mousePosition.y + GUI.skin.label.lineHeight);
                                 var screenPosition = GUIUtility.GUIToScreenPoint(windowPosition);
 
-                                AssemblySelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AssemblySelection,
-                                    m_AssemblyNames);
+                                SelectionWindow.Open<AssemblySelectionWindow>("Assemblies", screenPosition.x, screenPosition.y, m_AssemblySelection,
+                                    m_AssemblyNames, selection =>
+                                    {
+                                        var selectEvent = ProjectAuditorAnalytics.BeginAnalytic();
+                                        SetAssemblySelection(selection);
+
+                                        var payload = new Dictionary<string, string>();
+                                        var selectedAsmNames = selection.selection;
+
+                                        payload["numSelected"] = selectedAsmNames.Count.ToString();
+                                        payload["numUnityAssemblies"] = selectedAsmNames.Count(assemblyName => assemblyName.Contains("Unity")).ToString();
+
+                                        ProjectAuditorAnalytics.SendEventWithKeyValues(ProjectAuditorAnalytics.UIButton.AssemblySelectApply, selectEvent, payload);
+                                    });
                             }
 
                             ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.AssemblySelect,
@@ -694,7 +706,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (AreaNames.Length > 0)
                 {
-                    using (new EditorGUI.DisabledScope(!IsAnalysisValid() || AreaSelectionWindow.IsOpen()))
+                    using (new EditorGUI.DisabledScope(!IsAnalysisValid() || SelectionWindow.IsOpen<AreaSelectionWindow>()))
                     {
                         if (GUILayout.Button(Contents.AreaFilterSelect, EditorStyles.miniButton,
                             GUILayout.Width(LayoutSize.FilterOptionsEnumWidth)))
@@ -702,9 +714,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                             var analytic = ProjectAuditorAnalytics.BeginAnalytic();
 
                             // Note: Window auto closes as it loses focus so this isn't strictly required
-                            if (AreaSelectionWindow.IsOpen())
+                            if (SelectionWindow.IsOpen<AreaSelectionWindow>())
                             {
-                                AreaSelectionWindow.CloseAll();
+                                SelectionWindow.CloseAll<AreaSelectionWindow>();
                             }
                             else
                             {
@@ -713,8 +725,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                                         Event.current.mousePosition.y + GUI.skin.label.lineHeight);
                                 var screenPosition = GUIUtility.GUIToScreenPoint(windowPosition);
 
-                                AreaSelectionWindow.Open(screenPosition.x, screenPosition.y, this, m_AreaSelection,
-                                    AreaNames);
+                                SelectionWindow.Open<AreaSelectionWindow>("Areas", screenPosition.x, screenPosition.y, m_AreaSelection,
+                                    AreaNames, selection =>
+                                    {
+                                        var selectEvent = ProjectAuditorAnalytics.BeginAnalytic();
+                                        SetAreaSelection(selection);
+
+                                        var payload = new Dictionary<string, string>();
+                                        payload["areas"] = GetSelectedAreasSummary();
+                                        ProjectAuditorAnalytics.SendEventWithKeyValues(ProjectAuditorAnalytics.UIButton.AreaSelectApply, selectEvent, payload);
+                                    });
                             }
 
                             ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.AreaSelect, analytic);
