@@ -9,7 +9,6 @@ namespace Unity.ProjectAuditor.Editor
         public const Unity.ProjectAuditor.Editor.Area BuildTime = 4;
         public const Unity.ProjectAuditor.Editor.Area CPU = 0;
         public const Unity.ProjectAuditor.Editor.Area GPU = 1;
-        public const Unity.ProjectAuditor.Editor.Area Info = 6;
         public const Unity.ProjectAuditor.Editor.Area LoadTime = 5;
         public const Unity.ProjectAuditor.Editor.Area Memory = 2;
         public int value__;
@@ -100,7 +99,7 @@ namespace Unity.ProjectAuditor.Editor
         public string solution;
         public string type;
         public string value;
-        public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area area = 6, string problem = default(string), string solution = default(string)) {}
+        public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area area, string problem = default(string), string solution = default(string)) {}
         public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area[] areas, string problem = default(string), string solution = default(string)) {}
         public virtual bool Equals(object obj);
         public virtual bool Equals(Unity.ProjectAuditor.Editor.ProblemDescriptor other);

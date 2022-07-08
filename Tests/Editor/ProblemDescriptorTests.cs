@@ -108,18 +108,6 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptor_Area_IsDefault()
-        {
-            var desc = new ProblemDescriptor
-                (
-                102001,
-                "test"
-                );
-            Assert.AreEqual(1, desc.GetAreas().Length);
-            Assert.Contains(Area.Info, desc.GetAreas());
-        }
-
-        [Test]
         public void ProblemDescriptor_MultipleAreas_AreCorrect()
         {
             var desc = new ProblemDescriptor
