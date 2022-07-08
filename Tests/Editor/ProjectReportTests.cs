@@ -150,7 +150,7 @@ class MyClass : MonoBehaviour
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.AreEqual("Issue,Area", line, "Header was: " + line);
+                Assert.AreEqual("Issue,Area,Settings", line, "Header was: " + line);
 
                 while (file.Peek() >= 0)
                 {
