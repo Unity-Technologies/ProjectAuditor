@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_Descriptor);
         }
 
-        public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             // skip any no-op
             var previousIL = inst.Previous;
@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             if (!MonoBehaviourAnalysis.IsMonoBehaviourEvent(methodDefinition))
                 return null;
 
-            return new ProjectIssue(k_Descriptor, IssueCategory.Code, methodDefinition.Name);
+            return ProjectIssue.Create(IssueCategory.Code, k_Descriptor, methodDefinition.Name);
         }
 
         public IEnumerable<OpCode> GetOpCodes()

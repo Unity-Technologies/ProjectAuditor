@@ -52,10 +52,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_ArrayAllocationDescriptor);
         }
 
-        public ProjectIssue Analyze(MethodDefinition callerMethodDefinition, Instruction inst)
+        public ProjectIssueBuilder Analyze(MethodDefinition callerMethodDefinition, Instruction inst)
         {
-            ProjectIssue issue;
-
             if (inst.OpCode == OpCodes.Newobj)
             {
                 var methodReference = (MethodReference)inst.Operand;
@@ -66,21 +64,19 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 var isClosure = typeReference.Name.StartsWith("<>c__DisplayClass");
                 if (isClosure)
                 {
-                    issue = new ProjectIssue(k_ClosureAllocationDescriptor, IssueCategory.Code, callerMethodDefinition.DeclaringType.Name, callerMethodDefinition.Name);
+                    return ProjectIssue.Create(IssueCategory.Code, k_ClosureAllocationDescriptor, callerMethodDefinition.DeclaringType.Name, callerMethodDefinition.Name);
                 }
                 else
                 {
-                    issue = new ProjectIssue(k_ObjectAllocationDescriptor, IssueCategory.Code, typeReference.FullName);
+                    return ProjectIssue.Create(IssueCategory.Code, k_ObjectAllocationDescriptor, typeReference.FullName);
                 }
             }
             else // OpCodes.Newarr
             {
                 var typeReference = (TypeReference)inst.Operand;
 
-                issue = new ProjectIssue(k_ArrayAllocationDescriptor, IssueCategory.Code, typeReference.Name);
+                return ProjectIssue.Create(IssueCategory.Code, k_ArrayAllocationDescriptor, typeReference.Name);
             }
-
-            return issue;
         }
 
         public IEnumerable<OpCode> GetOpCodes()

@@ -180,10 +180,11 @@ namespace Unity.ProjectAuditor.Editor
         public int depth;
         public string description;
         public Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor;
-        public Unity.ProjectAuditor.Editor.Utils.Location location;
+        [UnityEngine.SerializeField] public Unity.ProjectAuditor.Editor.Utils.Location m_Location;
         public string filename { get; }
         public bool isPerfCriticalContext { get; }
         public int line { get; }
+        public Unity.ProjectAuditor.Editor.Utils.Location location { get; }
         public string relativePath { get; }
         public Unity.ProjectAuditor.Editor.Rule.Severity severity { get; set; }
         public ProjectIssue(string description, Unity.ProjectAuditor.Editor.IssueCategory category, object[] customProperties = default(object[])) {}

@@ -153,14 +153,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (var assemblyPath in AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All))
             {
-                projectAuditorParams.onIssueFound(new ProjectIssue(Path.GetFileNameWithoutExtension(assemblyPath), IssueCategory.PrecompiledAssembly,
-                    new object[(int)PrecompiledAssemblyProperty.Num]
+                projectAuditorParams.onIssueFound(ProjectIssue.Create(IssueCategory.PrecompiledAssembly, Path.GetFileNameWithoutExtension(assemblyPath))
+                    .WithCustomProperties(new object[(int) PrecompiledAssemblyProperty.Num]
                     {
                         false
                     })
-                    {
-                        location = new Location(assemblyPath)
-                    });
+                    .WithLocation(new Location(assemblyPath)));
             }
 
             var roslynAnalyzers = new string[] {};
@@ -170,14 +168,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .ToArray();
                 foreach (var assemblyPath in roslynAnalyzers)
                 {
-                    projectAuditorParams.onIssueFound(new ProjectIssue(Path.GetFileNameWithoutExtension(assemblyPath), IssueCategory.PrecompiledAssembly,
-                        new object[(int)PrecompiledAssemblyProperty.Num]
-                        {
-                            true
-                        })
-                        {
-                            location = new Location(assemblyPath)
-                        });
+                    projectAuditorParams.onIssueFound(ProjectIssue.Create(IssueCategory.PrecompiledAssembly, Path.GetFileNameWithoutExtension(assemblyPath))
+                        .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
+                            {
+                                true
+                            })
+                        .WithLocation(new Location(assemblyPath)));
                 }
             }
 
@@ -205,15 +201,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 foreach (var assemblyInfo in assemblyInfos)
                 {
-                    projectAuditorParams.onIssueFound(new ProjectIssue(assemblyInfo.name, IssueCategory.Assembly,
-                        new object[(int)AssemblyProperty.Num]
+                    projectAuditorParams.onIssueFound(ProjectIssue.Create(IssueCategory.Assembly, assemblyInfo.name)
+                        .WithCustomProperties(new object[(int) AssemblyProperty.Num]
                         {
                             assemblyInfo.packageReadOnly,
                             "N/A"
                         })
-                        {
-                            location = new Location(assemblyInfo.asmDefPath)
-                        });
+                        .WithLocation(new Location(assemblyInfo.asmDefPath)));
                 }
             }
 
@@ -396,14 +390,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (analyzer.GetOpCodes().Contains(inst.OpCode))
                     {
                         Profiler.BeginSample("CodeModule " + analyzer.GetType().Name);
-                        var projectIssue = analyzer.Analyze(caller, inst);
-                        if (projectIssue != null)
+                        var issueBuilder = analyzer.Analyze(caller, inst);
+                        if (issueBuilder != null)
                         {
-                            projectIssue.dependencies = callerNode; // set root
-                            projectIssue.location = location;
-                            projectIssue.SetCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.name});
+                            issueBuilder.WithDependencies(callerNode); // set root
+                            issueBuilder.WithLocation(location);
+                            issueBuilder.WithCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.name});
 
-                            onIssueFound(projectIssue);
+                            onIssueFound(issueBuilder);
                         }
                         Profiler.EndSample();
                     }
@@ -430,18 +424,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 severity = Rule.Severity.Error;
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.assemblyPath);
-
-            onIssueFound(new ProjectIssue(assemblyInfo.name, IssueCategory.Assembly,
-                new object[(int)AssemblyProperty.Num]
+            var assemblyIssue = ProjectIssue.Create(IssueCategory.Assembly, assemblyInfo.name)
+                .WithCustomProperties(new object[(int) AssemblyProperty.Num]
                 {
                     assemblyInfo.packageReadOnly,
                     compilationTask.durationInMs
                 })
-                {
-                    dependencies = new AssemblyDependencyNode(assemblyInfo.name, compilationTask.dependencies.Select(d => d.assemblyName).ToArray()),
-                    location = new Location(assemblyInfo.asmDefPath),
-                    severity = severity
-                });
+                .WithDependencies(new AssemblyDependencyNode(assemblyInfo.name,
+                    compilationTask.dependencies.Select(d => d.assemblyName).ToArray()))
+                .WithLocation(new Location(assemblyInfo.asmDefPath))
+                .WithSeverity(severity);
+            onIssueFound(assemblyIssue);
 
             foreach (var message in compilerMessages)
             {
@@ -452,17 +445,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 
                 var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.file);
-                var issue = new ProjectIssue(message.message,
-                    IssueCategory.CodeCompilerMessage,
-                    new object[(int)CompilerMessageProperty.Num]
+                var issue = ProjectIssue.Create(IssueCategory.CodeCompilerMessage, message.message)
+                    .WithCustomProperties(new object[(int) CompilerMessageProperty.Num]
                     {
                         message.code,
                         assemblyInfo.name
                     })
-                {
-                    location = new Location(relativePath, message.line),
-                    severity = CompilerMessageTypeToSeverity(message.type)
-                };
+                    .WithLocation(new Location(relativePath, message.line))
+                    .WithSeverity(CompilerMessageTypeToSeverity(message.type));
                 onIssueFound(issue);
             }
 

@@ -14,7 +14,6 @@ namespace Unity.ProjectAuditor.Editor
         static readonly string k_DeveloperModeKey = k_EditorPrefsPrefix + ".developerMode";
         static readonly string k_DeveloperModeLabel = "Enable Developer Mode";
 
-
         internal static string loadSavePath = string.Empty;
 
         public static bool developerMode

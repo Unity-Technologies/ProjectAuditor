@@ -11,94 +11,97 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public class ProjectIssue
     {
-        public DependencyNode dependencies;
-        public IssueCategory category;
+        /// <summary>
+        /// Create Diagnostics-specific ProjectIssueBuilder
+        /// </summary>
+        /// <param name="category"> Issue category </param>
+        /// <param name="descriptor"> Diagnostic descriptor </param>
+        /// <param name="args"> Arguments to be used in the message formatting</param>
+        public static ProjectIssueBuilder Create(IssueCategory category, ProblemDescriptor descriptor, params object[] args)
+        {
+            return new ProjectIssueBuilder(descriptor, category, args);
+        }
 
-        public string description;
-        public ProblemDescriptor descriptor;
-        public Location location;
+        /// <summary>
+        /// /// Create General-purpose ProjectIssueBuilder
+        /// </summary>
+        /// <param name="category"> Issue category </param>
+        /// <param name="description"> User-friendly description </param>
+        public static ProjectIssueBuilder Create(IssueCategory category, string description)
+        {
+            return new ProjectIssueBuilder(description, category);
+        }
+
+        [SerializeField] IssueCategory m_Category;
+        [SerializeField] string m_Description;
+        [SerializeField] ProblemDescriptor m_Descriptor;
+
+        [SerializeField] DependencyNode m_Dependencies;
+        [SerializeField] Location m_Location;
 
         [SerializeField] string[] m_CustomProperties;
         [SerializeField] Rule.Severity m_Severity;
 
-        /// <summary>
-        /// Diagnostics-specific constructor
-        /// </summary>
-        /// <param name="descriptor"> Diagnostic descriptor </param>
-        /// <param name="category"> Issue category </param>
-        /// <param name="args"> Arguments to be used in the message formatting</param>
-        public ProjectIssue(ProblemDescriptor descriptor, IssueCategory category, params object[] args)
+        internal ProjectIssue(IssueCategory category, ProblemDescriptor descriptor, params object[] args)
         {
-            this.descriptor = descriptor;
-            this.description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.description;
-            this.category = category;
+            m_Descriptor = descriptor;
+            m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.description;
+            this.m_Category = category;
         }
 
-        /// <summary>
-        /// General-purpose constructor
-        /// </summary>
-        /// <param name="description"> User-friendly description </param>
-        /// <param name="category"> Issue category </param>
-        /// <param name="customProperties"> Issue-specific properties </param>
-        public ProjectIssue(
-            string description,
-            IssueCategory category,
-            object[] customProperties = null)
+        internal ProjectIssue(IssueCategory category, string description)
         {
-            this.description = description;
-            this.category = category;
-            this.SetCustomProperties(customProperties);
+            m_Description = description;
+            m_Category = category;
 
             m_Severity = Rule.Severity.Default;
         }
 
+        public IssueCategory category => m_Category;
+
+        public string[] customProperties
+        {
+            get => m_CustomProperties;
+            internal set => m_CustomProperties = value;
+        }
+
+        public string description
+        {
+            get => m_Description;
+            internal set => m_Description = value;
+        }
+
+        public ProblemDescriptor descriptor => m_Descriptor;
+
+        public DependencyNode dependencies
+        {
+            get => m_Dependencies;
+            internal set => m_Dependencies = value;
+        }
+
         public int depth = 0;
 
-        public string filename
+        public string filename => m_Location == null ? string.Empty : m_Location.Filename;
+
+        public string relativePath => m_Location == null ? string.Empty : m_Location.Path;
+
+        public int line => m_Location == null ? 0 : m_Location.Line;
+
+        public Location location
         {
-            get
-            {
-                return location == null ? string.Empty : location.Filename;
-            }
+            get => m_Location;
+            internal set => m_Location = value;
         }
 
-        public string relativePath
-        {
-            get
-            {
-                return location == null ? string.Empty : location.Path;
-            }
-        }
-
-        public int line
-        {
-            get
-            {
-                return location == null ? 0 : location.Line;
-            }
-        }
-
-        public bool isPerfCriticalContext
-        {
-            get
-            {
-                return descriptor.critical || (dependencies != null && dependencies.IsPerfCritical());
-            }
-        }
+        public bool isPerfCriticalContext => descriptor.critical || (m_Dependencies != null && m_Dependencies.IsPerfCritical());
 
         /// <summary>
         /// Diagnostics-specific severity
         /// </summary>
         public Rule.Severity severity
         {
-            get
-            {
-                return m_Severity == Rule.Severity.Default && descriptor != null ? descriptor.severity : m_Severity;
-            }
-            set
-            {
-                m_Severity = value;
-            }
+            get => m_Severity == Rule.Severity.Default && descriptor != null ? descriptor.severity : m_Severity;
+            internal set => m_Severity = value;
         }
 
         public int GetNumCustomProperties()
@@ -169,24 +172,5 @@ namespace Unity.ProjectAuditor.Editor
             m_CustomProperties[Convert.ToUInt32(propertyEnum)] = property.ToString();
         }
 
-        /// <summary>
-        /// Initialize all custom properties to the same value
-        /// </summary>
-        /// <param name="numProperties"> total number of custom properties </param>
-        /// <param name="property"> value the properties will be set to </param>
-        public void SetCustomProperties(int numProperties, object property)
-        {
-            m_CustomProperties = new string[numProperties];
-            for (var i = 0; i < numProperties; i++)
-                m_CustomProperties[i] = property.ToString();
-        }
-
-        public void SetCustomProperties(object[] properties)
-        {
-            if (properties != null)
-                this.m_CustomProperties = properties.Select(p => p != null ? p.ToString() : string.Empty).ToArray();
-            else
-                this.m_CustomProperties = null;
-        }
     }
 }

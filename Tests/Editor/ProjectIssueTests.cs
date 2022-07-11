@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void ProjectIssue_NewIssue_IsInitialized()
         {
             var description = "dummy issue";
-            var uninitialised = new ProjectIssue(s_Descriptor, IssueCategory.Code, description);
+            var uninitialised = new ProjectIssue(IssueCategory.Code, s_Descriptor, description);
             Assert.AreEqual(string.Empty, uninitialised.filename);
             Assert.AreEqual(string.Empty, uninitialised.relativePath);
             Assert.AreEqual(string.Empty, uninitialised.GetContext());
@@ -37,15 +37,20 @@ namespace Unity.ProjectAuditor.EditorTests
                 "property #0",
                 "property #1"
             };
-            var issue = new ProjectIssue(s_Descriptor, IssueCategory.Code, "dummy issue");
-
-            Assert.AreEqual(0, issue.GetNumCustomProperties());
-
-            issue.SetCustomProperties(properties);
+            ProjectIssue issue = ProjectIssue.Create(IssueCategory.Code, s_Descriptor, "dummy issue")
+                .WithCustomProperties(properties);
 
             Assert.AreEqual(2, issue.GetNumCustomProperties());
             Assert.AreEqual(properties[0], issue.GetCustomProperty(0));
             Assert.AreEqual(properties[1], issue.GetCustomProperty(1));
+        }
+
+        [Test]
+        public void ProjectIssue_CustomProperties_AreNotSet()
+        {
+            var issue = new ProjectIssue(IssueCategory.Code, s_Descriptor, "dummy issue");
+
+            Assert.AreEqual(0, issue.GetNumCustomProperties());
         }
 
         [Test]
@@ -56,12 +61,9 @@ namespace Unity.ProjectAuditor.EditorTests
                 "property #0",
                 "property #1"
             };
-            var issue = new ProjectIssue(s_Descriptor, IssueCategory.Code, "dummy issue")
-            {
-                location = new Location("Assets/Dummy.cs")
-            };
-
-            issue.SetCustomProperties(properties);
+            ProjectIssue issue = ProjectIssue.Create(IssueCategory.Code, s_Descriptor, "dummy issue")
+                .WithCustomProperties(properties)
+                .WithLocation(new Location("Assets/Dummy.cs"));
 
             Assert.AreEqual(2, issue.GetNumCustomProperties());
             Assert.AreEqual("dummy issue", issue.GetProperty(PropertyType.Description));
@@ -79,7 +81,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectIssue_NoFileProperties_AreSet()
         {
-            var issue = new ProjectIssue(s_Descriptor, IssueCategory.Code, "dummy issue");
+            var issue = new ProjectIssue(IssueCategory.Code, s_Descriptor, "dummy issue");
 
             Assert.AreEqual(ProjectIssueExtensions.k_NotAvailable, issue.GetProperty(PropertyType.Path));
             Assert.AreEqual(ProjectIssueExtensions.k_NotAvailable, issue.GetProperty(PropertyType.Filename));

@@ -162,22 +162,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
             foreach (var step in buildReport.steps)
             {
                 var depth = step.depth;
-                onIssueFound(new ProjectIssue(step.name, IssueCategory.BuildStep, new object[(int)BuildReportStepProperty.Num]
-                {
-                    Formatting.FormatBuildTime(step.duration)
-                })
+                onIssueFound(ProjectIssue.Create(IssueCategory.BuildStep, step.name)
+                    .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                     {
-                        depth = depth,
-                        severity = Rule.Severity.Info
-                    });
+                        Formatting.FormatBuildTime(step.duration)
+                    })
+                    .WithDepth(depth)
+                    .WithSeverity(Rule.Severity.Info));
 
                 foreach (var message in step.messages)
                 {
-                    onIssueFound(new ProjectIssue(message.content, IssueCategory.BuildStep)
-                    {
-                        depth = depth + 1,
-                        severity = LogTypeToSeverity(message.type)
-                    });
+                    var issue = ProjectIssue.Create(IssueCategory.BuildStep, message.content)
+                        .WithDepth(depth + 1)
+                        .WithSeverity(LogTypeToSeverity(message.type));
+                    onIssueFound(issue);
                 }
             }
         }
@@ -198,18 +196,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                     var description = string.IsNullOrEmpty(assetPath) ? k_Unknown : Path.GetFileNameWithoutExtension(assetPath);
                     var assetImporter = AssetImporter.GetAtPath(assetPath);
-
-                    var issue = new ProjectIssue(description, IssueCategory.BuildFile)
-                    {
-                        location = new Location(assetPath)
-                    };
-                    issue.SetCustomProperties(new object[(int)BuildReportFileProperty.Num]
-                    {
-                        assetImporter != null ? assetImporter.GetType().FullName : k_Unknown,
-                        content.type,
-                        content.packedSize,
-                        packedAsset.shortPath
-                    });
+                    var issue = ProjectIssue.Create(IssueCategory.BuildFile, description)
+                        .WithLocation(new Location(assetPath))
+                        .WithCustomProperties(new object[(int)BuildReportFileProperty.Num]
+                        {
+                            assetImporter != null ? assetImporter.GetType().FullName : k_Unknown,
+                            content.type,
+                            content.packedSize,
+                            packedAsset.shortPath
+                        });
                     onIssueFound(issue);
                 }
             }
@@ -217,7 +212,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void NewMetaData(string key, object value, Action<ProjectIssue> onIssueFound)
         {
-            onIssueFound(new ProjectIssue(key, IssueCategory.BuildSummary, new object[(int)BuildReportMetaData.Num] {value}));
+            var issue = ProjectIssue.Create(IssueCategory.BuildSummary, key)
+                .WithCustomProperties(new object[(int)BuildReportMetaData.Num] { value });
+            onIssueFound(issue);
         }
 
         Rule.Severity LogTypeToSeverity(LogType logType)

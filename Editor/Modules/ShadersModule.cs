@@ -278,15 +278,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var shaderMessages = ShaderUtil.GetShaderMessages(shader);
             foreach (var message in shaderMessages)
             {
-                var messageIssue = new ProjectIssue(message.message, IssueCategory.ShaderCompilerMessage, new object[(int)ShaderMessageProperty.Num]
-                {
-                    shaderName,
-                    message.platform
-                })
-                {
-                    location = new Location(assetPath, message.line),
-                    severity = message.severity == ShaderCompilerMessageSeverity.Error ? Rule.Severity.Error : Rule.Severity.Warning
-                };
+                var messageIssue = ProjectIssue.Create(IssueCategory.ShaderCompilerMessage, message.message)
+                    .WithCustomProperties(new object[(int)ShaderMessageProperty.Num]
+                    {
+                        shaderName,
+                        message.platform
+                    })
+                    .WithLocation(new Location(assetPath, message.line))
+                    .WithSeverity(message.severity == ShaderCompilerMessageSeverity.Error
+                        ? Rule.Severity.Error
+                        : Rule.Severity.Warning);
                 onIssueFound(messageIssue);
             }
 
@@ -300,12 +301,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (shaderHasError)
             {
-                var issueWithError = new ProjectIssue(Path.GetFileNameWithoutExtension(assetPath), IssueCategory.Shader)
-                {
-                    location = new Location(assetPath)
-                };
-                issueWithError.SetCustomProperties((int)ShaderProperty.Num, k_NotAvailable);
-                issueWithError.severity = severity;
+                var issueWithError = ProjectIssue.Create(IssueCategory.Shader, Path.GetFileNameWithoutExtension(assetPath))
+                    .WithCustomProperties((int)ShaderProperty.Num, k_NotAvailable)
+                    .WithLocation(new Location(assetPath))
+                    .WithSeverity(severity);
 
                 onIssueFound(issueWithError);
 
@@ -330,22 +329,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #if UNITY_2019_1_OR_NEWER
             passCount = shader.passCount;
 #endif
-            var issue = new ProjectIssue(shaderName, IssueCategory.Shader)
-            {
-                location = new Location(assetPath)
-            };
-            issue.SetCustomProperties(new object[(int)ShaderProperty.Num]
-            {
-                assetSize,
-                variantCount == -1 ? k_NotAvailable : variantCount.ToString(),
-                passCount == -1 ? k_NotAvailable : passCount.ToString(),
-                (globalKeywords == null || localKeywords == null) ? k_NotAvailable : (globalKeywords.Length + localKeywords.Length).ToString(),
-                shader.renderQueue,
-                hasInstancing,
-                isSrpBatcherCompatible,
-                isAlwaysIncluded
-            });
-            issue.severity = severity;
+            var issue = ProjectIssue.Create(IssueCategory.Shader, shaderName)
+                .WithCustomProperties(new object[(int)ShaderProperty.Num]
+                {
+                    assetSize,
+                    variantCount == -1 ? k_NotAvailable : variantCount.ToString(),
+                    passCount == -1 ? k_NotAvailable : passCount.ToString(),
+                    (globalKeywords == null || localKeywords == null) ? k_NotAvailable : (globalKeywords.Length + localKeywords.Length).ToString(),
+                    shader.renderQueue,
+                    hasInstancing,
+                    isSrpBatcherCompatible,
+                    isAlwaysIncluded
+                })
+                .WithLocation(new Location(assetPath))
+                .WithSeverity(severity);
 
             onIssueFound(issue);
         }
@@ -359,23 +356,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             foreach (var shaderVariantData in shaderVariants)
             {
-                var issue = new ProjectIssue(shader.name, IssueCategory.ShaderVariant)
-                {
-                    location = new Location(assetPath)
-                };
-
-                issue.SetCustomProperties(new object[(int)ShaderVariantProperty.Num]
-                {
-                    k_NoRuntimeData,
-                    shaderVariantData.compilerPlatform,
-                    shaderVariantData.graphicsTier,
-                    shaderVariantData.shaderType,
-                    shaderVariantData.passType,
-                    shaderVariantData.passName,
-                    CombineKeywords(shaderVariantData.keywords),
-                    CombineKeywords(shaderVariantData.platformKeywords),
-                    CombineKeywords(shaderVariantData.requirements.Select(r => r.ToString()).ToArray())
-                });
+                var issue = ProjectIssue.Create(IssueCategory.ShaderVariant, shader.name)
+                    .WithLocation(new Location(assetPath))
+                    .WithCustomProperties(new object[(int) ShaderVariantProperty.Num]
+                    {
+                        k_NoRuntimeData,
+                        shaderVariantData.compilerPlatform,
+                        shaderVariantData.graphicsTier,
+                        shaderVariantData.shaderType,
+                        shaderVariantData.passType,
+                        shaderVariantData.passName,
+                        CombineKeywords(shaderVariantData.keywords),
+                        CombineKeywords(shaderVariantData.platformKeywords),
+                        CombineKeywords(shaderVariantData.requirements.Select(r => r.ToString()).ToArray())
+                    });
 
                 onIssueFound(issue);
             }

@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             m_WholeNamespaceDescriptors = module.GetDescriptors().Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
         }
 
-        public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             var callee = (MethodReference)inst.Operand;
             var description = string.Empty;
@@ -80,10 +80,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 }
             }
 
-            return new ProjectIssue(descriptor, IssueCategory.Code)
-            {
-                description = description
-            };
+            return ProjectIssue.Create(IssueCategory.Code, descriptor)
+                .WithDescription(description);
         }
 
         public IEnumerable<OpCode> GetOpCodes()

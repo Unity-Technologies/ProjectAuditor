@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_Descriptor);
         }
 
-        public ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             var type = (TypeReference)inst.Operand;
             if (type.IsGenericParameter)
@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             else if (type.FullName.Equals("System.Double"))
                 typeName = "double";
 
-            return new ProjectIssue(k_Descriptor, IssueCategory.Code, typeName);
+            return ProjectIssue.Create(IssueCategory.Code, k_Descriptor, typeName);
         }
 
         public IEnumerable<OpCode> GetOpCodes()

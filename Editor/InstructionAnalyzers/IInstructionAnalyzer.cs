@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     {
         void Initialize(ProjectAuditorModule module);
 
-        ProjectIssue Analyze(MethodDefinition methodDefinition, Instruction inst);
+        ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst);
 
         IEnumerable<OpCode> GetOpCodes();
     }

@@ -427,10 +427,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 else// if (issues.Length == 1)
                 {
                     var selection = issues[0];
+                    var dependencies = selection.dependencies;
 
-                    m_DependencyView.SetRoot(selection.dependencies);
+                    m_DependencyView.SetRoot(dependencies);
 
-                    if (selection.dependencies != null)
+                    if (dependencies != null)
                     {
                         var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
 

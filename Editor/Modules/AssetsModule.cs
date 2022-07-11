@@ -85,14 +85,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (parent != null)
                 dependencyNode.AddChild(parent);
 
-            onIssueFound(new ProjectIssue
+            onIssueFound(ProjectIssue.Create
                 (
-                    Path.GetFileNameWithoutExtension(location.Path),
-                    IssueCategory.Asset
-                ) {
-                    dependencies = dependencyNode,
-                    location = location
-                }
+                    IssueCategory.Asset,
+                    Path.GetFileNameWithoutExtension(location.Path)
+                )
+                .WithDependencies(dependencyNode)
+                .WithLocation(location)
             );
 
             assetPathsDict.Add(assetPath, dependencyNode);

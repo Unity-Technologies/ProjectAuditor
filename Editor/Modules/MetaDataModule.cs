@@ -54,7 +54,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void NewMetaData(string key, object value, Action<ProjectIssue> onIssueFound)
         {
-            onIssueFound(new ProjectIssue(key, IssueCategory.MetaData, new object[(int)MetaDataProperty.Num] {value}));
+            var issue = ProjectIssue.Create(IssueCategory.MetaData, key)
+                .WithCustomProperties(new object[(int)MetaDataProperty.Num] { value });
+            onIssueFound(issue);
         }
     }
 }
