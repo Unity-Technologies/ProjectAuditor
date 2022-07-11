@@ -175,27 +175,36 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectIssue
     {
-        public Unity.ProjectAuditor.Editor.IssueCategory category;
-        public Unity.ProjectAuditor.Editor.DependencyNode dependencies;
         public int depth;
-        public string description;
-        public Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor;
-        [UnityEngine.SerializeField] public Unity.ProjectAuditor.Editor.Utils.Location m_Location;
+        public Unity.ProjectAuditor.Editor.IssueCategory category { get; }
+        public string[] customProperties { get; }
+        public Unity.ProjectAuditor.Editor.DependencyNode dependencies { get; }
+        public string description { get; }
+        public Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor { get; }
         public string filename { get; }
         public bool isPerfCriticalContext { get; }
         public int line { get; }
         public Unity.ProjectAuditor.Editor.Utils.Location location { get; }
         public string relativePath { get; }
-        public Unity.ProjectAuditor.Editor.Rule.Severity severity { get; set; }
-        public ProjectIssue(string description, Unity.ProjectAuditor.Editor.IssueCategory category, object[] customProperties = default(object[])) {}
-        public ProjectIssue(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueCategory category, params object[] args) {}
+        public Unity.ProjectAuditor.Editor.Rule.Severity severity { get; }
+        public static Unity.ProjectAuditor.Editor.ProjectIssueBuilder Create(Unity.ProjectAuditor.Editor.IssueCategory category, string description);
+        public static Unity.ProjectAuditor.Editor.ProjectIssueBuilder Create(Unity.ProjectAuditor.Editor.IssueCategory category, Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor, params object[] args);
         public string GetCustomProperty<T>(T propertyEnum) where T : System.ValueType, new();
         public double GetCustomPropertyAsDouble<T>(T propertyEnum) where T : System.ValueType, new();
         public float GetCustomPropertyAsFloat<T>(T propertyEnum) where T : System.ValueType, new();
         public int GetNumCustomProperties();
-        public void SetCustomProperties(object[] properties);
-        public void SetCustomProperties(int numProperties, object property);
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : System.ValueType, new();
+    }
+
+    public class ProjectIssueBuilder
+    {
+        public static Unity.ProjectAuditor.Editor.ProjectIssue op_Implicit(Unity.ProjectAuditor.Editor.ProjectIssueBuilder builder);
+        public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithCustomProperties(object[] properties);
+        public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithCustomProperties(int numProperties, object property);
+        public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithDependencies(Unity.ProjectAuditor.Editor.DependencyNode dependencies);
+        public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithDescription(string description);
+        public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithLocation(Unity.ProjectAuditor.Editor.Utils.Location location);
+        public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithSeverity(Unity.ProjectAuditor.Editor.Rule.Severity severity);
     }
 
     [System.Runtime.CompilerServices.Extension] public static class ProjectIssueExtensions
@@ -323,7 +332,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     public interface IInstructionAnalyzer
     {
-        public abstract Unity.ProjectAuditor.Editor.ProjectIssue Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
+        public abstract Unity.ProjectAuditor.Editor.ProjectIssueBuilder Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
         public abstract System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
         public abstract void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorModule module);
     }

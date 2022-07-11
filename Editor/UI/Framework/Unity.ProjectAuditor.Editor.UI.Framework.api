@@ -145,6 +145,22 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void Start(string title, string description, int total);
     }
 
+    public abstract class SelectionWindow : UnityEditor.EditorWindow
+    {
+        protected UnityEditor.IMGUI.Controls.MultiColumnHeaderState m_MultiColumnHeaderState;
+        protected System.Action<Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection> m_OnSelection;
+        protected bool m_RequestClose;
+        protected Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable m_SelectionTable;
+        protected UnityEditor.IMGUI.Controls.TreeViewState m_TreeViewState;
+        protected SelectionWindow() {}
+        protected void ApplySelection();
+        public static void CloseAll<T>() where T : Unity.ProjectAuditor.Editor.UI.Framework.SelectionWindow;
+        protected abstract void CreateTable(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection, string[] names);
+        public static bool IsOpen<T>() where T : Unity.ProjectAuditor.Editor.UI.Framework.SelectionWindow;
+        public static T Open<T>(string title, float screenX, float screenY, Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection, string[] names, System.Action<Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection> onSelection) where T : Unity.ProjectAuditor.Editor.UI.Framework.SelectionWindow;
+        protected void SetData(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection, string[] names, System.Action<Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection> onSelection);
+    }
+
     public static class SharedStyles
     {
         public static UnityEngine.GUIStyle Foldout { get; }
