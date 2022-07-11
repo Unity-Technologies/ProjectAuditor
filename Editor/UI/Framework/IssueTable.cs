@@ -333,11 +333,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(PropertyType.Filename), issue.GetProperty(PropertyType.Path)), labelStyle);
                         break;
 
-                    case PropertyType.Path:
-                    case PropertyType.FileType:
-                        EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(propertyType)), labelStyle);
-                        break;
-
                     default:
                         if (PropertyTypeUtil.IsCustom(propertyType))
                         {
@@ -359,6 +354,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                     EditorGUI.LabelField(cellRect, new GUIContent(value, value), labelStyle);
                                     break;
                             }
+                        }
+                        else
+                        {
+                            EditorGUI.LabelField(cellRect, new GUIContent(issue.GetProperty(propertyType)), labelStyle);
                         }
 
                         break;

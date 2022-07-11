@@ -140,10 +140,8 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.CriticalContext:
                     return issueA.isPerfCriticalContext.CompareTo(issueB.isPerfCriticalContext);
                 default:
-                    var propertyIndex = propertyType - PropertyType.Num;
-
-                    var propA = issueA.GetCustomProperty(propertyIndex);
-                    var propB = issueB.GetCustomProperty(propertyIndex);
+                    var propA = issueA.GetProperty(propertyType);
+                    var propB = issueB.GetProperty(propertyType);
 
                     // Maybe instead of parsing, just assume the values are numbers and do it inplace?
                     //if (int.TryParse(propA, out var intA) && int.TryParse(propB, out var intB))
