@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor
@@ -9,13 +9,12 @@ namespace Unity.ProjectAuditor.Editor
 
         public static implicit operator ProjectIssue(ProjectIssueBuilder builder) => builder.m_Issue;
 
-        internal ProjectIssueBuilder(ProblemDescriptor descriptor, IssueCategory category, params object[] args)
+        internal ProjectIssueBuilder(IssueCategory category, ProblemDescriptor descriptor, params object[] args)
         {
             m_Issue = new ProjectIssue(category, descriptor, args);
         }
 
-        internal ProjectIssueBuilder(string description,
-            IssueCategory category)
+        internal ProjectIssueBuilder(IssueCategory category, string description)
         {
             m_Issue = new ProjectIssue(category, description);
         }
@@ -77,5 +76,4 @@ namespace Unity.ProjectAuditor.Editor
             return this;
         }
     }
-
 }

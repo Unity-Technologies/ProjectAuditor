@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="args"> Arguments to be used in the message formatting</param>
         public static ProjectIssueBuilder Create(IssueCategory category, ProblemDescriptor descriptor, params object[] args)
         {
-            return new ProjectIssueBuilder(descriptor, category, args);
+            return new ProjectIssueBuilder(category, descriptor, args);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="description"> User-friendly description </param>
         public static ProjectIssueBuilder Create(IssueCategory category, string description)
         {
-            return new ProjectIssueBuilder(description, category);
+            return new ProjectIssueBuilder(category, description);
         }
 
         [SerializeField] IssueCategory m_Category;
@@ -171,6 +171,5 @@ namespace Unity.ProjectAuditor.Editor
         {
             m_CustomProperties[Convert.ToUInt32(propertyEnum)] = property.ToString();
         }
-
     }
 }
