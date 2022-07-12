@@ -358,7 +358,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 var issue = ProjectIssue.Create(IssueCategory.ShaderVariant, shader.name)
                     .WithLocation(new Location(assetPath))
-                    .WithCustomProperties(new object[(int) ShaderVariantProperty.Num]
+                    .WithCustomProperties(new object[(int)ShaderVariantProperty.Num]
                     {
                         k_NoRuntimeData,
                         shaderVariantData.compilerPlatform,

@@ -154,7 +154,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             foreach (var assemblyPath in AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All))
             {
                 projectAuditorParams.onIssueFound(ProjectIssue.Create(IssueCategory.PrecompiledAssembly, Path.GetFileNameWithoutExtension(assemblyPath))
-                    .WithCustomProperties(new object[(int) PrecompiledAssemblyProperty.Num]
+                    .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
                     {
                         false
                     })
@@ -170,9 +170,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     projectAuditorParams.onIssueFound(ProjectIssue.Create(IssueCategory.PrecompiledAssembly, Path.GetFileNameWithoutExtension(assemblyPath))
                         .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
-                            {
-                                true
-                            })
+                        {
+                            true
+                        })
                         .WithLocation(new Location(assemblyPath)));
                 }
             }
@@ -202,7 +202,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 foreach (var assemblyInfo in assemblyInfos)
                 {
                     projectAuditorParams.onIssueFound(ProjectIssue.Create(IssueCategory.Assembly, assemblyInfo.name)
-                        .WithCustomProperties(new object[(int) AssemblyProperty.Num]
+                        .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                         {
                             assemblyInfo.packageReadOnly,
                             "N/A"
@@ -425,7 +425,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.assemblyPath);
             var assemblyIssue = ProjectIssue.Create(IssueCategory.Assembly, assemblyInfo.name)
-                .WithCustomProperties(new object[(int) AssemblyProperty.Num]
+                .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                 {
                     assemblyInfo.packageReadOnly,
                     compilationTask.durationInMs
@@ -446,7 +446,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.file);
                 var issue = ProjectIssue.Create(IssueCategory.CodeCompilerMessage, message.message)
-                    .WithCustomProperties(new object[(int) CompilerMessageProperty.Num]
+                    .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
                     {
                         message.code,
                         assemblyInfo.name

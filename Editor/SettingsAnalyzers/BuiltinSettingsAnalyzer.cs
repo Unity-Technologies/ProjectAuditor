@@ -95,11 +95,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             if (mappings.Any())
                 projectWindowPath = mappings.First().Value;
             return ProjectIssue.Create
-            (
-                IssueCategory.ProjectSetting,
-                descriptor,
-                description
-            ).WithLocation(new Location(projectWindowPath));
+                (
+                    IssueCategory.ProjectSetting,
+                    descriptor,
+                    description
+                ).WithLocation(new Location(projectWindowPath));
         }
     }
 }
