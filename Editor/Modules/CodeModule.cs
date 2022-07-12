@@ -108,6 +108,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
+        static readonly int k_SerializeFieldHashCode = "UnityEngine.SerializeField".GetHashCode();
+
+        static readonly ProblemDescriptor k_SerializeFieldStaticProblem = new ProblemDescriptor("PAC2005", "SerializeField attribute on static field", Area.Quality, "Static fields are not serialized.")
+        {
+            messageFormat = "Static field '{0}' is not serialized.",
+        };
+        static readonly ProblemDescriptor k_SerializeFieldReadOnlyProblem = new ProblemDescriptor("PAC2006", "SerializeField attribute on readonly field", Area.Quality, "Read-Only fields are not serialized.")
+        {
+            messageFormat = "Read-Only field '{0}' is not serialized.",
+        };
+
         ProjectAuditorConfig m_Config;
         List<IInstructionAnalyzer> m_Analyzers;
         List<OpCode> m_OpCodes;
@@ -138,6 +149,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             m_Analyzers = new List<IInstructionAnalyzer>();
             m_OpCodes = new List<OpCode>();
             m_ProblemDescriptors = new HashSet<ProblemDescriptor>();
+
+            RegisterDescriptor(k_SerializeFieldStaticProblem);
+            RegisterDescriptor(k_SerializeFieldReadOnlyProblem);
 
             foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IInstructionAnalyzer)))
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
@@ -319,8 +333,30 @@ namespace Unity.ProjectAuditor.Editor.Modules
             using (var assembly = AssemblyDefinition.ReadAssembly(assemblyInfo.path,
                 new ReaderParameters {ReadSymbols = true, AssemblyResolver = assemblyResolver, MetadataResolver = new MetadataResolverWithCache(assemblyResolver)}))
             {
-                foreach (var methodDefinition in MonoCecilHelper.AggregateAllTypeDefinitions(assembly.MainModule.Types)
-                         .SelectMany(t => t.Methods))
+                var typeDefinitions = MonoCecilHelper.AggregateAllTypeDefinitions(assembly.MainModule.Types).ToArray();
+                foreach (var fieldDefinition in typeDefinitions.SelectMany(t => t.Fields))
+                {
+                    if (fieldDefinition.HasCustomAttributes && fieldDefinition.CustomAttributes.Any(a => a.AttributeType.FullName.GetHashCode() == k_SerializeFieldHashCode))
+                    {
+                        if (fieldDefinition.IsStatic)
+                        {
+                            var issue = ProjectIssue.Create(IssueCategory.Code, k_SerializeFieldStaticProblem,
+                                fieldDefinition.Name)
+                                .WithCustomProperties(new object[(int)CodeProperty.Num] { assemblyInfo.name });
+//                              issueBuilder.WithLocation(location);
+
+                            onIssueFound(issue);
+                        }
+                        if (fieldDefinition.IsInitOnly)
+                        {
+                            var issue = ProjectIssue.Create(IssueCategory.Code, k_SerializeFieldReadOnlyProblem, fieldDefinition.Name)
+                                .WithCustomProperties(new object[(int)CodeProperty.Num] { assemblyInfo.name });
+                            onIssueFound(issue);
+                        }
+                    }
+                }
+
+                foreach (var methodDefinition in typeDefinitions.SelectMany(t => t.Methods))
                 {
                     if (!methodDefinition.HasBody)
                         continue;

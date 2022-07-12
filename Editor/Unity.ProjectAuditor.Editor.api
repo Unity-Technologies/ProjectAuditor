@@ -11,6 +11,7 @@ namespace Unity.ProjectAuditor.Editor
         public const Unity.ProjectAuditor.Editor.Area GPU = 1;
         public const Unity.ProjectAuditor.Editor.Area LoadTime = 5;
         public const Unity.ProjectAuditor.Editor.Area Memory = 2;
+        public const Unity.ProjectAuditor.Editor.Area Quality = 6;
         public int value__;
     }
 
