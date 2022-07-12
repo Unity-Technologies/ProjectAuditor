@@ -3,7 +3,7 @@
 This guide provides a brief overview on how to use Project Auditor.
 
 ## User Interface
-To open the Project Auditor window in Unity, go to Window => Analysis => Project Auditor.
+To open the Project Auditor window in Unity, go to **Window ➔ Analysis ➔ Project Auditor**.
 
 <img src="images/window-menu.png">
 
@@ -19,7 +19,7 @@ From the summary it's possible to open one of the diagnostics views (Code or Set
 
 <img src="images/overview.png">
 
-The filters allow the user to search through the list of potential issues by string, Assembly and other criterias.
+The filters allow the user to search through the list of potential issues by string, Assembly and other criteria.
 
 <img src="images/filters.png">
 
@@ -42,7 +42,8 @@ After each build the [BuildReport](https://docs.unity3d.com/ScriptReference/Buil
 * By analyzing the project, the last BuildReport will be automatically included in the report.
 * By selecting a BuildReport asset, Build Steps and Size information will be shown in the inspector window.
 
-Note that, by default BuildReport assets are not visible to the user. This is to avoid situations in which a new build report is added to the project after every build, which could make version control more complicated or bloat projects over time. In order to automatically create an accessible BuildReport asset for every build, enable the *Save Build Reports* option in the *ProjectAuditorConfig* asset which typically is in *Assets/Editor*. If this option is enabled, build reports will be created in *Assets/BuildReports*.
+### Build Report Assets
+By default BuildReport assets are not visible to the user. This is to avoid situations in which a new build report is added to the project after every build, which could make version control more complicated or bloat projects over time. In order to automatically create an accessible BuildReport asset for every build, enable the *Save Build Reports* option in the *ProjectAuditorConfig* asset which typically is in *Assets/Editor*. If this option is enabled, build reports will be created in *Assets/BuildReports*.
 
 <img src="images/save-build-reports.png">
 

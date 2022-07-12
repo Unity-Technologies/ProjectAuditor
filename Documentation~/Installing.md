@@ -1,5 +1,6 @@
 # Installing Project Auditor
-There are several ways to install Project Auditor. Choose the most appropriare method based on your needs.
+There are several ways to install Project Auditor. Choose the most appropriate method based on your needs.
+> **Note**: To install Project Auditor for development purposes, go to this [page](Developing.md) instead.
 
 ## Installing as read-only Package
 At this time, Project Auditor is not discoverable via Package Manager so it has to be installed from its Git repository. The instructions that follow are specific to Project Auditor, however, more infromation on how a package can be added to a project as a dependency from Git, you can check the Package Manager [documentation](https://docs.unity3d.com/Manual/upm-git.html).
@@ -35,9 +36,3 @@ Under the hood, the method described above adds `com.unity.project-auditor` as a
   }
 }
 ```
-
-
-
-## Installing for Development
-* In Unity 2018 (or newer), simply _clone_ the repository to the `Packages` folder of your project.
-* In Unity 2017 (or older), _clone_ the repository to the `Assets` folder of your project.

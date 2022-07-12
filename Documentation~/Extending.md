@@ -44,7 +44,7 @@ namespace MyNamespace
             // Implement your analysis here
 
             // Create an issue
-            projectAuditorParams.onIssueFound(ProjectIssue.Create("This is a test", k_IssueLayout.category));
+            projectAuditorParams.onIssueFound(ProjectIssue.Create(k_IssueLayout.category, "This is a test"));
 
             // Notify the user that the analysis of this module is complete
             projectAuditorParams.onComplete();

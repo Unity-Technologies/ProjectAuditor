@@ -11,9 +11,8 @@ Project Auditor is meant to be compatible with Unity versions from 2018.4 to the
 Note that most recent Project Auditor version to support 2017 or earlier is [0.5.0-preview](https://github.com/Unity-Technologies/ProjectAuditor/releases/tag/0.5.0-preview).
 
 ## Installation
-At this time, Project Auditor is not discoverable via Package Manager so it has to be installed manually.
-
 It is recommended to install Project Auditor via the _Add package from git URL_ in Package Manager. For more information on this and alternative installation methods please refer to [Installing Project Auditor](Installing.md).
+> **Note**: At this time, Project Auditor is not discoverable via Package Manager so it has to be installed manually.
 
 ## How to Use
 The Project Auditor editor window can be opened via *Window => Analysis => Project Auditor*. Click the Analyze button, then select a _View_ from the drop-down menu to review the list of potential issues to determine whether they are actual problems in your project. Every View provides:
