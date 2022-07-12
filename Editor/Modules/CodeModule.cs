@@ -205,7 +205,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                         {
                             assemblyInfo.packageReadOnly,
-                            "N/A"
+                            float.NaN
                         })
                         .WithLocation(new Location(assemblyInfo.asmDefPath)));
                 }

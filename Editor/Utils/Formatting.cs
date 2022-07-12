@@ -21,6 +21,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static string FormatTime(float timeMs)
         {
+            if (float.IsNaN(timeMs))
+                return "NaN";
             return FormatTime(TimeSpan.FromMilliseconds(timeMs));
         }
 

@@ -26,6 +26,12 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+        public void Formatting_TimeNaN_IsFormatted()
+        {
+            Assert.AreEqual("NaN", Formatting.FormatTime(float.NaN));
+        }
+
+        [Test]
         public void Formatting_TimeInSeconds_IsFormatted()
         {
             var time = new TimeSpan(0, 0, 0, 6, 123);
