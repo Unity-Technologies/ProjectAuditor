@@ -322,6 +322,7 @@
           "method": "optimizedFramePacing",
           "value": "False",
           "areas": [ "GPU", "LoadTime" ],
+          "platforms": ["Android"],
           "problem": "Android Frame Pacing syncs your rendering loop to the underlying display hardware, reducing stuttering and latency so that gameplay looks and feels smooth.",
           "solution": "To enable this feature, choose Project Settings > Player > Settings for Android > Resolution and Presentation, and select the Optimized Frame Pacing checkbox.",
           "minimumVersion": "2019.2"
