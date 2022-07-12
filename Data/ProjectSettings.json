@@ -314,6 +314,17 @@
           "areas": ["LoadTime"],
           "problem": "<b>Splash Screen</b> is enabled and will increase the time it takes to load into the first scene.",
           "solution": "Disable the Splash Screen option in <b>Project Settings ➔ Player ➔ Splash Image ➔ Show Splash Screen</b>."
+        },
+        {
+          "id": 201030,
+          "description": "Player (Android): Optimized Frame Pacing",
+          "type": "UnityEditor.PlayerSettings+Android",
+          "method": "optimizedFramePacing",
+          "value": "False",
+          "areas": [ "GPU", "LoadTime" ],
+          "problem": "Android Frame Pacing syncs your rendering loop to the underlying display hardware, reducing stuttering and latency so that gameplay looks and feels smooth.",
+          "solution": "To enable this feature, choose Project Settings > Player > Settings for Android > Resolution and Presentation, and select the Optimized Frame Pacing checkbox.",
+          "minimumVersion": "2019.2"
         }
     ]
 }
