@@ -58,6 +58,34 @@ class MyClass
         }
 
         [Test]
+        public void AssemblyCompilation_EditorAssembly_IsCompiled()
+        {
+            using (var compilationHelper = new AssemblyCompilation
+               {
+                   compilationMode =  CompilationMode.Editor
+               })
+            {
+                var assemblyInfo = compilationHelper.Compile().FirstOrDefault(a => a.name.Equals("Unity.ProjectAuditor.Editor"));
+
+                Assert.NotNull(assemblyInfo);
+            }
+        }
+
+        [Test]
+        public void AssemblyCompilation_EditorAssembly_IsNotCompiled()
+        {
+            using (var compilationHelper = new AssemblyCompilation
+               {
+                   compilationMode =  CompilationMode.EditorPlayMode
+               })
+            {
+                var assemblyInfo = compilationHelper.Compile().FirstOrDefault(a => a.name.Equals("Unity.ProjectAuditor.Editor"));
+
+                Assert.Null(assemblyInfo);
+            }
+        }
+
+        [Test]
         [TestCase(CompilationMode.Player, "PlayerMethod")]
         [TestCase(CompilationMode.DevelopmentPlayer, "DevelopmentPlayerMethod")]
         //Known failure because the script is not recompiled by the editor

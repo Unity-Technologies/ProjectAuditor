@@ -19,7 +19,12 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         DevelopmentPlayer,
 
         /// <summary>
-        ///   <para>Editor</para>
+        ///   <para>Editor assemblies for Play Mode</para>
+        /// </summary>
+        EditorPlayMode,
+
+        /// <summary>
+        ///   <para>Editor assemblies</para>
         /// </summary>
         Editor
     }
@@ -111,7 +116,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         public AssemblyInfo[] Compile(IProgress progress = null)
         {
-            var editorAssemblies = compilationMode == CompilationMode.Editor;
+            var editorAssemblies = compilationMode == CompilationMode.Editor || compilationMode == CompilationMode.EditorPlayMode;
             var assemblies = GetAssemblies(editorAssemblies);
 
             if (assemblyNames != null)
@@ -161,8 +166,11 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         IEnumerable<string> CompileEditorAssemblies(IEnumerable<Assembly> assemblies)
         {
-            // exclude Editor-Only Assemblies
-            assemblies = assemblies.Where(a => a.flags != AssemblyFlags.EditorAssembly);
+            if (compilationMode == CompilationMode.EditorPlayMode)
+            {
+                // exclude Editor-Only Assemblies
+                assemblies = assemblies.Where(a => a.flags != AssemblyFlags.EditorAssembly);
+            }
             return assemblies.Select(assembly => assembly.outputPath);
         }
 

@@ -309,7 +309,8 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
     public enum CompilationMode
     {
         public const Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode DevelopmentPlayer = 1;
-        public const Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode Editor = 2;
+        public const Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode Editor = 3;
+        public const Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode EditorPlayMode = 2;
         public const Unity.ProjectAuditor.Editor.AssemblyUtils.CompilationMode Player = 0;
         public int value__;
     }
