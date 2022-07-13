@@ -305,15 +305,26 @@
           "solution": "When this option is enabled, only a single instance of the Collision type is created and reused for each individual callback. This reduces waste for the garbage collector to handle and improves performance.",
           "minimumVersion": "2018.3"
         },
-        {
-          "id": 201029,
-          "description": "Player: Splash Screen",
-          "type": "UnityEditor.PlayerSettings+SplashScreen",
-          "method": "show",
-          "customevaluator": "PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled",
-          "areas": ["LoadTime"],
-          "problem": "<b>Splash Screen</b> is enabled and will increase the time it takes to load into the first scene.",
-          "solution": "Disable the Splash Screen option in <b>Project Settings ➔ Player ➔ Splash Image ➔ Show Splash Screen</b>."
-        }
+      {
+        "id": 201029,
+        "description": "Player: Splash Screen",
+        "type": "UnityEditor.PlayerSettings+SplashScreen",
+        "method": "show",
+        "customevaluator": "PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled",
+        "areas": [ "LoadTime" ],
+        "problem": "<b>Splash Screen</b> is enabled and will increase the time it takes to load into the first scene.",
+        "solution": "Disable the Splash Screen option in <b>Project Settings ➔ Player ➔ Splash Image ➔ Show Splash Screen</b>."
+      },
+      {
+        "id": 201031,
+        "description": "Using Vulkan Graphics Renderer API",
+          "type": "UnityEditor.PlayerSettings",
+          "method": "GetGraphicsAPIs",
+          "customevaluator": "PlayerSettingsGraphicsAPIs_Android_Vulkan",  
+        "areas": [ "LoadTime", "GPU", "CPU", "BuildSize"], 
+        "platforms": ["Android"],
+        "problem": "Consider adding Vulkan to the Graphics APIs by disabling the Auto Graphics API toggle. ",
+        "solution": "Vulkan will improve performance on Android by reducing power consumption and heat generation as it spreads the rendering across multiple cores."
+      }
     ]
 }
