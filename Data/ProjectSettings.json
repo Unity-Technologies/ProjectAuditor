@@ -337,6 +337,6 @@
             "platforms": ["Android"],
             "problem": "In the Android Player Settings, Vulkan graphics API is not enabled.",
             "solution": "Enable Vulkan graphics API for better CPU Performance."
-        }
+        }     
     ]
 }
