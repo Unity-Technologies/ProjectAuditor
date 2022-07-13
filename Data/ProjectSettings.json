@@ -284,47 +284,59 @@
             "solution": "Set managed stripping level to Medium or High."
         },
         {
-          "id": 201027,
-          "description": "Player: Mipmap Stripping",
-          "type": "UnityEditor.PlayerSettings",
-          "method": "mipStripping",
-          "value": "False",
-          "areas": ["BuildSize"],
-          "problem": "The <b>Texture MipMap Stripping</b> option in Player Settings is disabled. The generated build might be larger than necessary. ",
-          "solution": "Enable <b>Texture MipMap Stripping</b>. Note that this feature will only reduce the build size if no quality levels on the platform use highest mip(s). Furthermore, if code drives the <b>masterTextureLevel</b> to a value higher than those in the quality level settings the mip will no longer be available if this is enabled.",
-          "minimumVersion": "2020.2"
+            "id": 201027,
+            "description": "Player: Mipmap Stripping",
+            "type": "UnityEditor.PlayerSettings",
+            "method": "mipStripping",
+            "value": "False",
+            "areas": ["BuildSize"],
+            "problem": "The <b>Texture MipMap Stripping</b> option in Player Settings is disabled. The generated build might be larger than necessary. ",
+            "solution": "Enable <b>Texture MipMap Stripping</b>. Note that this feature will only reduce the build size if no quality levels on the platform use highest mip(s). Furthermore, if code drives the <b>masterTextureLevel</b> to a value higher than those in the quality level settings the mip will no longer be available if this is enabled.",
+            "minimumVersion": "2020.2"
         },
         {
-          "id": 201028,
-          "description": "Physics: Reuse Collision Callbacks",
-          "type": "UnityEngine.Physics",
-          "method": "reuseCollisionCallbacks",
-          "value": "False",
-          "areas": ["Memory"],
-          "problem": "The <b>Reuse Collision Callbacks</b> option in Physics Settings is disabled. For each OnCollision* callback, a temporary managed object is allocated which, eventually, will need to be garbage collected.",
-          "solution": "When this option is enabled, only a single instance of the Collision type is created and reused for each individual callback. This reduces waste for the garbage collector to handle and improves performance.",
-          "minimumVersion": "2018.3"
+            "id": 201028,
+            "description": "Physics: Reuse Collision Callbacks",
+            "type": "UnityEngine.Physics",
+            "method": "reuseCollisionCallbacks",
+            "value": "False",
+            "areas": ["Memory"],
+            "problem": "The <b>Reuse Collision Callbacks</b> option in Physics Settings is disabled. For each OnCollision* callback, a temporary managed object is allocated which, eventually, will need to be garbage collected.",
+            "solution": "When this option is enabled, only a single instance of the Collision type is created and reused for each individual callback. This reduces waste for the garbage collector to handle and improves performance.",
+            "minimumVersion": "2018.3"
         },
-      {
-        "id": 201029,
-        "description": "Player: Splash Screen",
-        "type": "UnityEditor.PlayerSettings+SplashScreen",
-        "method": "show",
-        "customevaluator": "PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled",
-        "areas": [ "LoadTime" ],
-        "problem": "<b>Splash Screen</b> is enabled and will increase the time it takes to load into the first scene.",
-        "solution": "Disable the Splash Screen option in <b>Project Settings ➔ Player ➔ Splash Image ➔ Show Splash Screen</b>."
-      },
-      {
-        "id": 201031,
-        "description": "Using Vulkan Graphics Renderer API",
-          "type": "UnityEditor.PlayerSettings",
-          "method": "GetGraphicsAPIs",
-          "customevaluator": "PlayerSettingsGraphicsAPIs_Android_Vulkan",  
-        "areas": [ "LoadTime", "GPU", "CPU", "BuildSize"], 
-        "platforms": ["Android"],
-        "problem": "Consider adding Vulkan to the Graphics APIs by disabling the Auto Graphics API toggle. ",
-        "solution": "Vulkan will improve performance on Android by reducing power consumption and heat generation as it spreads the rendering across multiple cores."
-      }
+        {
+            "id": 201029,
+            "description": "Player: Splash Screen",
+            "type": "UnityEditor.PlayerSettings+SplashScreen",
+            "method": "show",
+            "customevaluator": "PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled",
+            "areas": [ "LoadTime" ],
+            "problem": "<b>Splash Screen</b> is enabled and will increase the time it takes to load into the first scene.",
+            "solution": "Disable the Splash Screen option in <b>Project Settings ➔ Player ➔ Splash Image ➔ Show Splash Screen</b>."
+        },
+        {
+            "id": 201030,
+            "description": "Player (Android): Optimized Frame Pacing",
+            "type": "UnityEditor.PlayerSettings+Android",
+            "method": "optimizedFramePacing",
+            "value": "False",
+            "areas": [ "CPU" ],
+            "platforms": ["Android"],
+            "problem": "<b>Optimized Frame Pacing</b> is <b>disabled</b>, which can lead to suboptimal performance. Android Frame Pacing syncs your rendering loop to the underlying display hardware, reducing stuttering and latency so that gameplay looks and feels smooth.",
+            "solution": "To enable this feature, choose <b>Project Settings ➔ Player ➔ Settings for Android ➔ Resolution and Presentation</b>, and select the <b>Optimized Frame Pacing</b> checkbox.",
+            "minimumVersion": "2019.2"
+        },
+        {
+            "id": 201031,
+            "description": "Player (Android): Vulkan API",
+            "type": "UnityEditor.PlayerSettings",
+            "method": "GetGraphicsAPIs",
+            "customevaluator": "PlayerSettingsGraphicsAPIs_Android_Vulkan",
+            "areas": [ "GPU", "CPU"],
+            "platforms": ["Android"],
+            "problem": "In the Android Player Settings, Vulkan graphics API is not enabled.",
+            "solution": "Enable Vulkan graphics API for better CPU Performance."
+        }
     ]
 }
