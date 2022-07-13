@@ -1465,6 +1465,14 @@
           "areas": ["Memory"],
           "problem": "The Object.name property allocates managed memory.",
           "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        },
+        {
+          "id": 101232,
+          "type": "System.AppDomain",
+          "method": "GetAssemblies",
+          "areas": ["CPU"],
+          "problem": "<b>System.AppDomain.GetAssemblies</b> is expensive.",
+          "solution": "Try to minimize calls to <b>System.AppDomain.GetAssemblies</b> by caching the returned assemblies. When possible, use <b>UnityEditor.TypeCache</b> for fast access to types, methods and fields."
         }
     ]
 }
