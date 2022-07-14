@@ -346,8 +346,8 @@
             "customevaluator": "PlayerSettingsPhysics2DSimulationMode_NotScript",
             "areas": [ "CPU"],
             "platforms": ["Android"],
-            "problem": "Change Simulation Mode to Script to disable the 2d physics processing each frame.",
-            "solution": "If the physics engine is required for certain special rendering, use \"script\" option to control Physics2d.Simulate on a per frame basis. "
+            "problem": "<b>Physics2D.simulationMode</b> is set to either <b>FixedUpdate</b> or <b>Update</b>. By using this mode, 2D physics simulation is executed on every update which might be expensive for some projects.",
+            "solution": "Change <b>SimulationMode2D</b> to <b>Script</b> to disable the 2d physics processing each frame. If physics simulation is required for certain special rendering, use <b>Script</b> mode to control <b>Physics2d.Simulate</b> on a per frame basis."
         },
         {
             "id": 201033,
