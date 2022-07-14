@@ -31,6 +31,22 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
             return !hasMetal;
         }
 
+        public static bool PlayerSettingsPhysics2DSimulationMode_NotScript(BuildTarget platform)
+        {
+            if (Physics2D.simulationMode == SimulationMode2D.Script) {
+                return false;
+            }
+            else { return true; }
+        }
+        
+        public static bool PlayerSettingsAudioSettings_SpeakerMode(BuildTarget platform)
+        {
+            if (AudioSettings.speakerMode == AudioSpeakerMode.Mono){
+                return false;
+            }
+            else { return true; }
+        }
+
         public static bool PlayerSettingsGraphicsAPIs_iOS_OpenGLESAndMetal(BuildTarget platform)
         {
             var graphicsAPIs = PlayerSettings.GetGraphicsAPIs(BuildTarget.iOS);

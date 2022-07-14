@@ -337,6 +337,28 @@
             "platforms": ["Android"],
             "problem": "In the Android Player Settings, Vulkan graphics API is not enabled.",
             "solution": "Enable Vulkan graphics API for better CPU Performance."
-        }     
+        },
+        {
+            "id": 201032, 
+            "description": "Player (Android): Optimize 2D Physics Simulation",
+            "type": "UnityEngine.Physics2DModule+Physics2D",
+            "method": "simulationMode",
+            "customevaluator": "PlayerSettingsPhysics2DSimulationMode_NotScript",
+            "areas": [ "CPU"],
+            "platforms": ["Android"],
+            "problem": "Change Simulation Mode to Script to disable the 2d physics processing each frame.",
+            "solution": "If the physics engine is required for certain special rendering, use \"script\" option to control Physics2d.Simulate on a per frame basis. "
+        },
+        {
+            "id": 201033,
+            "description": "Player (Android): Change Default Speaker Mode to Mono",
+            "type": "UnityEngine.AudioModule+AudioSettings",
+            "method": "speakerMode",
+            "customevaluator": "PlayerSettingsAudioSettings_SpeakerMode",
+            "areas": [ "BuildSize"],
+            "platforms": ["Android"],
+            "problem": "Non-Mono Default Speaker settings cause the build size to be larger",
+            "solution": "Change Default Speaker Setting to be Mono to reduce the size of the build on disk."
+        }
     ]
 }
