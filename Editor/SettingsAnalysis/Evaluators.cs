@@ -6,7 +6,7 @@ using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
+namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     static class Evaluators
     {

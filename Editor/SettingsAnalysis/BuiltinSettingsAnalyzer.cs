@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEditor.Macros;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
+namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class BuiltinSettingsAnalyzer : ISettingsAnalyzer
     {

@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
+namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class HDRenderPipelineAnalyzer : ISettingsAnalyzer
     {

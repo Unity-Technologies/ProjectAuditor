@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.SettingsAnalyzers;
+using Unity.ProjectAuditor.Editor.SettingsAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 
-namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
+namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class HybridRenderingAnalyzer : ISettingsAnalyzer
     {
