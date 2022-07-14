@@ -379,11 +379,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Compiler Messages",
                 menuOrder = 98,
                 menuLabel = "Code/C# Compiler Messages",
-                showAssemblySelection = true,
+                //showAssemblySelection = true,
                 showFilters = true,
                 showSeverityFilters = true,
                 showInfoPanel = true,
-                getAssemblyName = issue => issue.GetCustomProperty(CompilerMessageProperty.Assembly),
+                //getAssemblyName = issue => issue.GetCustomProperty(CompilerMessageProperty.Assembly),
                 onOpenIssue = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenManual = EditorUtil.OpenCompilerMessageDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.CodeCompilerMessages
