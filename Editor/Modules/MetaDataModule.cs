@@ -23,6 +23,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
+        internal const string k_KeyDateAndTime = "Date and Time";
+        internal const string k_KeyHostName = "Host Name";
+        internal const string k_KeyHostPlatform = "Host Platform";
+        internal const string k_KeyCompanyName = "Company Name";
+        internal const string k_KeyProductName = "Product Name";
+        internal const string k_KeyAnalysisTarget = "Analysis Target";
+        internal const string k_KeyCompilationMode = "Compilation Mode";
+        internal const string k_KeyProjectAuditorVersion = "Project Auditor Version";
+        internal const string k_KeyUnityVersion = "Unity Version";
+
         ProjectAuditorConfig m_Config;
 
         public override IEnumerable<IssueLayout> GetLayouts()
@@ -37,16 +47,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            NewMetaData("Date and Time", DateTime.Now, projectAuditorParams.onIssueFound);
-            NewMetaData("Host Name", SystemInfo.deviceName, projectAuditorParams.onIssueFound);
-            NewMetaData("Host Platform", SystemInfo.operatingSystem, projectAuditorParams.onIssueFound);
-            NewMetaData("Company Name", Application.companyName, projectAuditorParams.onIssueFound);
-            NewMetaData("Product Name", Application.productName, projectAuditorParams.onIssueFound);
-            NewMetaData("Active Target", EditorUserBuildSettings.activeBuildTarget, projectAuditorParams.onIssueFound);
-            NewMetaData("Analysis Target", projectAuditorParams.platform, projectAuditorParams.onIssueFound);
-            NewMetaData("Compilation Mode", m_Config.CompilationMode, projectAuditorParams.onIssueFound);
-            NewMetaData("Project Auditor Version", ProjectAuditor.PackageVersion, projectAuditorParams.onIssueFound);
-            NewMetaData("Unity Version", Application.unityVersion, projectAuditorParams.onIssueFound);
+            NewMetaData(k_KeyDateAndTime, DateTime.Now, projectAuditorParams.onIssueFound);
+            NewMetaData(k_KeyHostName, SystemInfo.deviceName, projectAuditorParams.onIssueFound);
+            NewMetaData(k_KeyHostPlatform, SystemInfo.operatingSystem, projectAuditorParams.onIssueFound);
+            NewMetaData(k_KeyCompanyName, Application.companyName, projectAuditorParams.onIssueFound);
+            NewMetaData(k_KeyProductName, Application.productName, projectAuditorParams.onIssueFound);
+            NewMetaData(k_KeyAnalysisTarget, projectAuditorParams.platform, projectAuditorParams.onIssueFound);
+            NewMetaData(k_KeyCompilationMode, m_Config.CompilationMode, projectAuditorParams.onIssueFound);
+            NewMetaData(k_KeyProjectAuditorVersion, ProjectAuditor.PackageVersion, projectAuditorParams.onIssueFound);
+            NewMetaData(k_KeyUnityVersion, Application.unityVersion, projectAuditorParams.onIssueFound);
 
             if (projectAuditorParams.onComplete != null)
                 projectAuditorParams.onComplete();
