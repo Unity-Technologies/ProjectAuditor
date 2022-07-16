@@ -334,13 +334,12 @@
             "method": "GetGraphicsAPIs",
             "customevaluator": "PlayerSettingsGraphicsAPIs_Android_Vulkan",
             "areas": [ "GPU", "CPU"],
-            "platforms": ["Android"],
             "problem": "In the Android Player Settings, Vulkan graphics API is not enabled.",
             "solution": "Enable Vulkan graphics API for better CPU Performance."
         },
         {
             "id": 201032, 
-            "description": "Player (Android): Optimize 2D Physics Simulation",
+            "description": "Physics2D (Android): Optimize 2D Physics Simulation",
             "type": "UnityEngine.Physics2DModule+Physics2D",
             "method": "simulationMode",
             "customevaluator": "PlayerSettingsPhysics2DSimulationMode_NotScript",
@@ -351,7 +350,7 @@
         },
         {
             "id": 201033,
-            "description": "Player (Android): Change Default Speaker Mode to Mono",
+            "description": "Audio (Android): Change Default Speaker Mode to Mono",
             "type": "UnityEngine.AudioModule+AudioSettings",
             "method": "speakerMode",
             "customevaluator": "PlayerSettingsAudioSettings_SpeakerMode",
