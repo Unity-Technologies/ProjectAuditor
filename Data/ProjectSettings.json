@@ -334,28 +334,28 @@
             "method": "GetGraphicsAPIs",
             "customevaluator": "PlayerSettingsGraphicsAPIs_Android_Vulkan",
             "areas": [ "GPU", "CPU"],
+            "platforms": ["Android"],
             "problem": "In the Android Player Settings, Vulkan graphics API is not enabled.",
             "solution": "Enable Vulkan graphics API for better CPU Performance."
         },
         {
             "id": 201032, 
-            "description": "Physics2D (Android): Optimize 2D Physics Simulation",
+            "description": "Physics2D : Optimize 2D Physics Simulation",
             "type": "UnityEngine.Physics2DModule+Physics2D",
             "method": "simulationMode",
             "customevaluator": "PlayerSettingsPhysics2DSimulationMode_NotScript",
             "areas": [ "CPU"],
-            "platforms": ["Android"],
             "problem": "<b>Physics2D.simulationMode</b> is set to either <b>FixedUpdate</b> or <b>Update</b>. By using this mode, 2D physics simulation is executed on every update which might be expensive for some projects.",
             "solution": "Change <b>SimulationMode2D</b> to <b>Script</b> to disable the 2d physics processing each frame. If physics simulation is required for certain special rendering, use <b>Script</b> mode to control <b>Physics2d.Simulate</b> on a per frame basis."
+            "minimumVersion": "2020.2"
         },
         {
             "id": 201033,
-            "description": "Audio (Android): Change Default Speaker Mode to Mono",
+            "description": "Audio : Change Default Speaker Mode to Mono",
             "type": "UnityEngine.AudioModule+AudioSettings",
             "method": "speakerMode",
             "customevaluator": "PlayerSettingsAudioSettings_SpeakerMode",
             "areas": [ "BuildSize"],
-            "platforms": ["Android"],
             "problem": "Non-Mono Default Speaker settings cause the build size to be larger",
             "solution": "Change Default Speaker Setting to be Mono to reduce the size of the build on disk."
         }
