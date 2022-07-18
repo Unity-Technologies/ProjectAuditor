@@ -41,7 +41,7 @@ class MyClass
             Assert.NotNull(myIssue.descriptor);
 
             Assert.AreEqual(Rule.Severity.Default, myIssue.descriptor.severity);
-            Assert.AreEqual("CD0000", myIssue.descriptor.id);
+            Assert.AreEqual("CD1000", myIssue.descriptor.id);
             Assert.AreEqual("System.Linq", myIssue.descriptor.type);
             Assert.AreEqual("*", myIssue.descriptor.method);
 
