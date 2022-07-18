@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         List<ISettingsAnalyzer> m_Analyzers;
-        List<ProblemDescriptor> m_ProblemDescriptors;
+        HashSet<ProblemDescriptor> m_ProblemDescriptors;
 
         public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Initialize(ProjectAuditorConfig config)
         {
             m_Analyzers = new List<ISettingsAnalyzer>();
-            m_ProblemDescriptors = new List<ProblemDescriptor>();
+            m_ProblemDescriptors = new HashSet<ProblemDescriptor>();
 
             foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ISettingsAnalyzer)))
                 AddAnalyzer(Activator.CreateInstance(type) as ISettingsAnalyzer);
@@ -44,7 +44,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void RegisterDescriptor(ProblemDescriptor descriptor)
         {
-            m_ProblemDescriptors.Add(descriptor);
+            if (!m_ProblemDescriptors.Add(descriptor))
+                throw new Exception("Duplicate descriptor with id: " + descriptor.id);
         }
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)

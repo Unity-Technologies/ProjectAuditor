@@ -111,7 +111,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         ProjectAuditorConfig m_Config;
         List<IInstructionAnalyzer> m_Analyzers;
         List<OpCode> m_OpCodes;
-        List<ProblemDescriptor> m_ProblemDescriptors;
+        HashSet<ProblemDescriptor> m_ProblemDescriptors;
 
         Thread m_AssemblyAnalysisThread;
 
@@ -137,7 +137,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             m_Config = config;
             m_Analyzers = new List<IInstructionAnalyzer>();
             m_OpCodes = new List<OpCode>();
-            m_ProblemDescriptors = new List<ProblemDescriptor>();
+            m_ProblemDescriptors = new HashSet<ProblemDescriptor>();
 
             foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IInstructionAnalyzer)))
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
@@ -308,8 +308,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void RegisterDescriptor(ProblemDescriptor descriptor)
         {
-            // TODO: check for id conflict
-            m_ProblemDescriptors.Add(descriptor);
+            if (!m_ProblemDescriptors.Add(descriptor))
+                throw new Exception("Duplicate descriptor with id: " + descriptor.id);
         }
 
         void AnalyzeAssembly(AssemblyInfo assemblyInfo, IAssemblyResolver assemblyResolver, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)
