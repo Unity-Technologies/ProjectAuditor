@@ -51,6 +51,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        GUIContent[] m_PlatformContents;
+        BuildTarget[] m_SupportedBuildTargets;
         Utility.DropdownItem[] m_ViewDropdownItems;
         ProjectAuditor m_ProjectAuditor;
         bool m_ShouldRefresh;
@@ -62,6 +64,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         TreeViewSelection m_AssemblySelection;
 
         // Serialized fields
+        [SerializeField] BuildTarget m_Platform;
         [SerializeField] BuiltInModules m_SelectedModules = BuiltInModules.Everything;
         [SerializeField] string m_AreaSelectionSummary;
         [SerializeField] string[] m_AssemblyNames;
@@ -124,6 +127,17 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             var currentState = m_AnalysisState;
             m_AnalysisState = AnalysisState.Initializing;
+
+            var buildTargets = Enum.GetValues(typeof(BuildTarget)).Cast<BuildTarget>();
+            var supportedBuildTargets = buildTargets.Where(bt =>
+                BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(bt), bt)).ToList();
+            supportedBuildTargets.Sort((t1, t2) => String.Compare(t1.ToString(), t2.ToString(), StringComparison.Ordinal));
+            m_SupportedBuildTargets = supportedBuildTargets.ToArray();
+            m_PlatformContents = m_SupportedBuildTargets
+                .Select(t => new GUIContent(t.ToString())).ToArray();
+
+            if (!BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(m_Platform), m_Platform))
+                m_Platform = EditorUserBuildSettings.activeBuildTarget;
 
             ProjectAuditorAnalytics.EnableAnalytics();
 
@@ -482,6 +496,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var projectAuditorParams = new ProjectAuditorParams
             {
                 categories = m_SelectedModules == BuiltInModules.Everything ? null : selectedCategories,
+                platform = m_Platform,
                 onIssueFound = projectIssue =>
                 {
                     newIssues.Add(projectIssue);
@@ -885,10 +900,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField(Contents.WelcomeText, SharedStyles.TextArea);
             EditorGUILayout.Space();
 
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                m_SelectedModules = (BuiltInModules)EditorGUILayout.EnumFlagsField(Contents.ModulesSelection, m_SelectedModules, GUILayout.ExpandWidth(true));
-            }
+            m_SelectedModules = (BuiltInModules)EditorGUILayout.EnumFlagsField(Contents.ModulesSelection, m_SelectedModules, GUILayout.ExpandWidth(true));
+
+            var selectedTarget = Array.IndexOf(m_SupportedBuildTargets, m_Platform);
+            selectedTarget = EditorGUILayout.Popup(Contents.PlatformSelection, selectedTarget, m_PlatformContents);
+            m_Platform = m_SupportedBuildTargets[selectedTarget];
 
             GUILayout.FlexibleSpace();
 
@@ -1176,6 +1192,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ModulesSelection =
                 new GUIContent("Modules", "Select Project Auditor modules.");
+            public static readonly GUIContent PlatformSelection =
+                new GUIContent("Platform", "Select the target platform.");
 
 #if UNITY_2019_1_OR_NEWER
             public static readonly GUIContent SaveButton = EditorGUIUtility.TrIconContent("SaveAs", "Save current report to json file");
