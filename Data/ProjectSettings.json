@@ -346,7 +346,7 @@
             "customevaluator": "PlayerSettingsPhysics2DSimulationMode_NotScript",
             "areas": [ "CPU"],
             "problem": "<b>Physics2D.simulationMode</b> is set to either <b>FixedUpdate</b> or <b>Update</b>. By using this mode, 2D physics simulation is executed on every update which might be expensive for some projects.",
-            "solution": "Change <b>SimulationMode2D</b> to <b>Script</b> to disable the 2d physics processing each frame. If physics simulation is required for certain special rendering, use <b>Script</b> mode to control <b>Physics2d.Simulate</b> on a per frame basis."
+            "solution": "Change <b>SimulationMode2D</b> to <b>Script</b> to disable the 2d physics processing each frame. If physics simulation is required for certain special rendering, use <b>Script</b> mode to control <b>Physics2d.Simulate</b> on a per frame basis.",
             "minimumVersion": "2020.2"
         },
         {
