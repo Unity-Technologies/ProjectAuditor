@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added user preferences
 * Added group size/time properties
 * Added support for analyzing all compiled Editor assemblies
+* Changed descriptor ID to use a string instead of an integer
 * Fixed Diagnostic Rules serialization
 * Fixed *Home* page *NullReferenceException* on Build
 * Improved issue creation code-readability by using *ProjectIssueBuilder*
