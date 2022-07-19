@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -108,7 +109,6 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-
         public void ProblemDescriptor_MultipleAreas_AreCorrect()
         {
             var desc = new ProblemDescriptor
@@ -178,10 +178,12 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase("ProjectSettings")]
         public void ProblemDescriptor_Descriptors_AreCorrect(string jsonFilename)
         {
+            var regExp = new Regex("^[a-z]{3}[0-9]{4}", RegexOptions.IgnoreCase);
             var descriptors = ProblemDescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, jsonFilename);
             foreach (var descriptor in descriptors)
             {
                 Assert.NotNull(descriptor.id);
+                Assert.True(regExp.IsMatch(descriptor.id), "Descriptor id format is not valid: " + descriptor.id);
                 Assert.NotNull(descriptor.areas);
             }
         }
