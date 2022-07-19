@@ -60,6 +60,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             if (string.IsNullOrEmpty(descriptor.customevaluator))
             {
+                // evaluate a Unity API static method or property
                 var assembly = m_Assemblies.First(a => a.GetType(descriptor.type) != null);
                 var type = assembly.GetType(descriptor.type);
 
