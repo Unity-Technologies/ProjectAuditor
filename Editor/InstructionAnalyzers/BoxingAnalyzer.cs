@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     {
         static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
             (
-            102000,
+            "PAC2000",
             "Boxing Allocation",
             Area.Memory,
             "Boxing happens where a value type, such as an integer, is converted into an object of reference type. This causes an allocation on the heap, which might increase the size of the managed heap and the frequency of Garbage Collection.",

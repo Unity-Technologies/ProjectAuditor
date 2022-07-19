@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor
         public bool critical;
         public string customevaluator;
         public string description;
-        public int id;
+        public string id;
         public string maximumVersion;
         public string messageFormat;
         public string method;
@@ -99,8 +99,8 @@ namespace Unity.ProjectAuditor.Editor
         public string solution;
         public string type;
         public string value;
-        public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area area, string problem = default(string), string solution = default(string)) {}
-        public ProblemDescriptor(int id, string description, Unity.ProjectAuditor.Editor.Area[] areas, string problem = default(string), string solution = default(string)) {}
+        public ProblemDescriptor(string id, string description, Unity.ProjectAuditor.Editor.Area area, string problem = default(string), string solution = default(string)) {}
+        public ProblemDescriptor(string id, string description, Unity.ProjectAuditor.Editor.Area[] areas, string problem = default(string), string solution = default(string)) {}
         public virtual bool Equals(object obj);
         public virtual bool Equals(Unity.ProjectAuditor.Editor.ProblemDescriptor other);
         public virtual int GetHashCode();
@@ -270,7 +270,7 @@ namespace Unity.ProjectAuditor.Editor
     public class Rule : System.IEquatable<Unity.ProjectAuditor.Editor.Rule>
     {
         public string filter;
-        public int id;
+        public string id;
         public Unity.ProjectAuditor.Editor.Rule.Severity severity;
         public Rule() {}
         public virtual bool Equals(object obj);

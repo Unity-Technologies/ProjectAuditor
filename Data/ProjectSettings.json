@@ -1,7 +1,7 @@
 {
     "Items": [
         {
-            "id": 201000,
+            "id": "PAS0000",
             "description": "Player: Metal API Validation",
             "type": "UnityEditor.PlayerSettings",
             "method": "enableMetalAPIValidation",
@@ -13,7 +13,7 @@
             "minimumVersion": "2018.1"
         },
         {
-            "id": 201001,
+            "id": "PAS0001",
             "description": "Player: Graphics Jobs (Experimental)",
             "type": "UnityEditor.PlayerSettings",
             "method": "graphicsJobs",
@@ -23,7 +23,7 @@
             "solution": "Try enabling it and testing your application. This option spreads the task of building the render command buffer every frame across as many CPU cores as possible, rather than performing all the work in the render thread which is often a bottleneck. Note: This feature is experimental. It may not deliver a performance improvement for your project, and may introduce new crashes. Test accordingly."
         },
         {
-            "id": 201002,
+            "id": "PAS0002",
             "description": "Player (iOS): Accelerometer",
             "type": "UnityEditor.PlayerSettings",
             "method": "accelerometerFrequency",
@@ -34,7 +34,7 @@
             "solution": "Consider setting <b>Accelerometer Frequency</b> to Disabled if your application doesn't make use of the device's accelerometer. Disabling this option will save a tiny amount of CPU processing time."
         },
         {
-            "id": 201003,
+            "id": "PAS0003",
             "description": "Player (iOS): Building multiple architectures",
             "type": "UnityEditor.PlayerSettings",
             "method": "GetArchitecture",
@@ -45,7 +45,7 @@
             "solution": "If your application isn't intended to support 32-bit iOS devices, change <b>Architecture</b> to ARM64."
         },
         {
-            "id": 201004,
+            "id": "PAS0004",
             "description": "Player (Android): Building multiple architectures",
             "type": "UnityEditor.PlayerSettings",
             "method": "Android.targetArchitectures",
@@ -56,7 +56,7 @@
             "solution": "If your application isn't intended to support 32-bit Android devices, disable the <b>ARMv7</b> option."
         },
         {
-            "id": 201005,
+            "id": "PAS0005",
             "description": "Player(iOS): Metal & OpenGLES APIs",
             "type": "UnityEditor.PlayerSettings",
             "method": "GetGraphicsAPIs",
@@ -67,7 +67,7 @@
             "solution": "To reduce build size, remove OpenGLES graphics API if the minimum spec target device supports Metal."
         },
         {
-            "id": 201006,
+            "id": "PAS0006",
             "description": "Player (iOS): Metal API",
             "type": "UnityEditor.PlayerSettings",
             "method": "GetGraphicsAPIs",
@@ -78,7 +78,7 @@
             "solution": "Enable Metal graphics API for better CPU Performance."
         },
         {
-            "id": 201007,
+            "id": "PAS0007",
             "description": "Player: Prebake Collision Meshes",
             "type": "UnityEditor.PlayerSettings",
             "method": "bakeCollisionMeshes",
@@ -88,7 +88,7 @@
             "solution": "If you are using physics in your application, consider enabling this option. Prebaked collision meshes can result in an increase in build times and sizes, but reduce loading/initialization times in your application, because serializing prebaked meshes is faster than baking them at runtime."
         },
         {
-            "id": 201008,
+            "id": "PAS0008",
             "description": "Player: Optimize Mesh Data",
             "type": "UnityEditor.PlayerSettings",
             "method": "stripUnusedMeshComponents",
@@ -98,7 +98,7 @@
             "solution": "Consider enabling it. This option strips out vertex channels on meshes which are not used by the materials which are applied to them. This can reduce the file size of your meshes and the time to load them, and increase GPU rendering performance. It can, however, cause problems if mesh materials are changed at runtime, since the new materials might rely on vertex channels which have been removed, and it may contribute to longer build times."
         },
         {
-            "id": 201009,
+            "id": "PAS0009",
             "description": "Player: Engine Code Stripping",
             "type": "UnityEditor.PlayerSettings",
             "method": "stripEngineCode",
@@ -109,7 +109,7 @@
             "solution": "Enable <b>stripEngineCode</b> in <b>Project Settings ➔ Player ➔ Other Settings</b>"
         },
         {
-            "id": 201010,
+            "id": "PAS0010",
             "description": "Player (WebGL): Data Caching",
             "type": "UnityEditor.PlayerSettings+WebGL",
             "method": "dataCaching",
@@ -120,7 +120,7 @@
             "solution": "Enable <b>dataCaching</b> to cache build files in Browser cache"
         },
         {
-            "id": 201011,
+            "id": "PAS0011",
             "description": "Player (WebGL): Linker Target",
             "type": "UnityEditor.PlayerSettings+WebGL",
             "method": "linkerTarget",
@@ -132,7 +132,7 @@
             "minimumVersion": "2018.1"
         },
         {
-            "id": 201012,
+            "id": "PAS0012",
             "description": "Physics: Auto Sync Transforms",
             "type": "UnityEngine.Physics",
             "method": "autoSyncTransforms",
@@ -142,7 +142,7 @@
             "solution": "Consider disabling <b>Auto Sync Transforms</b> and testing your game to identify any areas where physics behavior is affected by the change. If there are areas of the game where more frequent synchronization is required to maintain the desired behaviour, this can be enforced by calling Physics.SyncTransforms() directly."
         },
         {
-            "id": 201013,
+            "id": "PAS0013",
             "description": "Physics: Layer Collision Matrix",
             "type": "UnityEngine.Physics",
             "method": "GetIgnoreLayerCollision",
@@ -152,7 +152,7 @@
             "solution": "Un-tick all of the boxes except the ones that represent collisions that should be considered by the physics system."
         },
         {
-            "id": 201014,
+            "id": "PAS0014",
             "description": "Physics2D: Auto Sync Transforms",
             "type": "UnityEngine.Physics2D",
             "method": "autoSyncTransforms",
@@ -162,7 +162,7 @@
             "solution": "Consider disabling <b>Auto Sync Transforms</b> and testing your game to identify any areas where physics behavior is affected by the change. If there are areas of the game where more frequent synchronization is required to maintain the desired behaviour, this can be enforced by calling Physics2D.SyncTransforms() directly."
         },
         {
-            "id": 201015,
+            "id": "PAS0015",
             "description": "Physics2D: Layer Collision Matrix",
             "type": "UnityEngine.Physics2D",
             "method": "GetIgnoreLayerCollision",
@@ -172,7 +172,7 @@
             "solution": "Un-tick all of the boxes except the ones that represent collisions that should be considered by the 2D physics system."
         },
         {
-            "id": 201016,
+            "id": "PAS0016",
             "description": "Time: Fixed Timestep",
             "type": "UnityEngine.Time",
             "method": "fixedDeltaTime",
@@ -182,7 +182,7 @@
             "solution": "We recommend setting Fixed Timestep to 0.04 when running at 30 FPS, in order to call the fixed updates at 25 Hz. The reason for having the fixed update be slightly less than the target frame rate is to avoid the “spiral of death”, in which if one frame takes longer than 33.3ms, FixedUpdate() happens multiple times on the next frame to catch up, pushing that frame time over as well, and permanently locking the game into a state where it cannot reach the desired frame rate because FixedUpdate() is constantly trying to catch up."
         },
         {
-            "id": 201017,
+            "id": "PAS0017",
             "description": "Time: Maximum Allowed Timestep",
             "type": "UnityEngine.Time",
             "method": "maximumDeltaTime",
@@ -192,7 +192,7 @@
             "solution": "Consider reducing <b>Maximum Allowed Timestep</b> to a time that can be comfortably accommodated within your project's target frame rate."
         },
         {
-            "id": 201018,
+            "id": "PAS0018",
             "description": "Quality: Quality Levels",
             "type": "UnityEngine.QualitySettings",
             "method": "GetQualityLevel",
@@ -202,7 +202,7 @@
             "solution": "Check the quality setting for each platform the project supports in the grid - it's the level with the green tick. Remove quality levels you are not using, to make the Quality Settings simpler to see and edit. Adjust the setting for each platform if necessary, then select the appropriate levels to examine their settings in the panel below."
         },
         {
-            "id": 201019,
+            "id": "PAS0019",
             "description": "Quality: Texture Quality",
             "type": "UnityEngine.QualitySettings",
             "method": "masterTextureLimit",
@@ -212,7 +212,7 @@
             "solution": "For devices which must use lower-resolution versions of textures, consider creating these lower resolution textures separately, and choosing the appropriate content to load at runtime using AssetBundle variants."
         },
         {
-            "id": 201020,
+            "id": "PAS0020",
             "description": "Quality: Async Upload Time Slice",
             "type": "UnityEngine.QualitySettings",
             "method": "asyncUploadTimeSlice",
@@ -222,7 +222,7 @@
             "solution": "If the project encounters long loading times when loading large amount of texture and/or mesh data, experiment with increasing this value to see if it allows content to be uploaded to the GPU more quickly."
         },
         {
-            "id": 201021,
+            "id": "PAS0021",
             "description": "Quality: Async Upload Buffer Size",
             "type": "UnityEngine.QualitySettings",
             "method": "asyncUploadBufferSize",
@@ -232,7 +232,7 @@
             "solution": "If the project encounters long loading times when loading large amount of texture and/or mesh data, experiment with increasing this value to see if it allows content to be uploaded to the GPU more quickly. This is most likely to help if you are loading large textures. Note that this setting controls a buffer size in megabytes, so exercise caution if memory is limited in your application."
         },
         {
-            "id": 201022,
+            "id": "PAS0022",
             "description": "Graphics: Shader Quality",
             "type": "UnityEditor.Rendering.EditorGraphicsSettings",
             "method": "GetTierSettings",
@@ -242,7 +242,7 @@
             "solution": "Unless you support devices with a very wide range of capabilities for a particular platform, consider editing the platform in Graphics Settings to use the same shader quality setting across all Graphics Tiers."
         },
         {
-            "id": 201023,
+            "id": "PAS0023",
             "description": "Graphics: Forward Rendering",
             "type": "UnityEditor.Rendering.EditorGraphicsSettings",
             "method": "GetTierSettings",
@@ -252,7 +252,7 @@
             "solution": "This rendering path is suitable for games with simple rendering and lighting requirements - for instance, 2D games, or games which mainly use baked lighting. If the project makes use of a more than a few dynamic lights, consider experimenting with changing <b>Rendering Path</b> to Deferred to see whether doing so improves GPU rendering times."
         },
         {
-            "id": 201024,
+            "id": "PAS0024",
             "description": "Graphics: Deferred Rendering",
             "type": "UnityEditor.Rendering.EditorGraphicsSettings",
             "method": "GetTierSettings",
@@ -262,7 +262,7 @@
             "solution": "This rendering path is suitable for games with more complex rendering requirements - for instance, games that make uses of dynamic lighting or certain types of fullscreen post-processing effects. If the project doesn't make use of such rendering techniques, consider experimenting with changing <b>Rendering Path</b> to Forward to see whether doing so improves GPU rendering times."
         },
         {
-            "id": 201025,
+            "id": "PAS0025",
             "description": "Player (Android): Managed Code Stripping",
             "type": "UnityEditor.PlayerSettings",
             "method": "GetManagedStrippingLevel",
@@ -273,7 +273,7 @@
             "solution": "Set managed stripping level to Medium or High."
         },
         {
-            "id": 201026,
+            "id": "PAS0026",
             "description": "Player (iOS): Managed Code Stripping",
             "type": "UnityEditor.PlayerSettings",
             "method": "GetManagedStrippingLevel",
@@ -284,7 +284,7 @@
             "solution": "Set managed stripping level to Medium or High."
         },
         {
-            "id": 201027,
+            "id": "PAS0027",
             "description": "Player: Mipmap Stripping",
             "type": "UnityEditor.PlayerSettings",
             "method": "mipStripping",
@@ -295,7 +295,7 @@
             "minimumVersion": "2020.2"
         },
         {
-            "id": 201028,
+            "id": "PAS0028",
             "description": "Physics: Reuse Collision Callbacks",
             "type": "UnityEngine.Physics",
             "method": "reuseCollisionCallbacks",
@@ -306,7 +306,7 @@
             "minimumVersion": "2018.3"
         },
         {
-            "id": 201029,
+            "id": "PAS0029",
             "description": "Player: Splash Screen",
             "type": "UnityEditor.PlayerSettings+SplashScreen",
             "method": "show",
@@ -316,7 +316,7 @@
             "solution": "Disable the Splash Screen option in <b>Project Settings ➔ Player ➔ Splash Image ➔ Show Splash Screen</b>."
         },
         {
-            "id": 201030,
+            "id": "PAS0030",
             "description": "Player (Android): Optimized Frame Pacing",
             "type": "UnityEditor.PlayerSettings+Android",
             "method": "optimizedFramePacing",
@@ -328,7 +328,7 @@
             "minimumVersion": "2019.2"
         },
         {
-            "id": 201031,
+            "id": "PAS0031",
             "description": "Player (Android): Vulkan API",
             "type": "UnityEditor.PlayerSettings",
             "method": "GetGraphicsAPIs",
@@ -337,6 +337,6 @@
             "platforms": ["Android"],
             "problem": "In the Android Player Settings, Vulkan graphics API is not enabled.",
             "solution": "Enable Vulkan graphics API for better CPU Performance."
-        }     
+        }
     ]
 }

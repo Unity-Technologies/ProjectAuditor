@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
     class HybridRenderingAnalyzer : ISettingsAnalyzer
     {
         static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor(
-            202000,
+            "PAS1000",
             "Player Settings: Static batching is enabled",
             Area.CPU,
             "Static batching is enabled and the package com.unity.rendering.hybrid is installed. Static batching is incompatible with the batching techniques used in the Hybrid Renderer and Scriptable Render Pipeline, and will result in poor rendering performance and excessive memory use.",

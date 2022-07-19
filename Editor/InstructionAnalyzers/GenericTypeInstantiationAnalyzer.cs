@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 var genericTypeName = typeDefinition.FullName;
                 if (!m_GenericDescriptors.ContainsKey(genericTypeName))
                 {
-                    var desc = new ProblemDescriptor(k_FirstDescriptorId + m_GenericDescriptors.Count,
+                    var desc = new ProblemDescriptor((k_FirstDescriptorId + m_GenericDescriptors.Count).ToString(),
                         typeDefinition.FullName, Area.BuildSize)
                     {
                         messageFormat = "'{0}' generic instance"

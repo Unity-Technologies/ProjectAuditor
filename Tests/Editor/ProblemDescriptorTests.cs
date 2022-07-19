@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -18,7 +19,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var a = new ProblemDescriptor
                 (
-                102001,
+                "TD2001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -26,7 +27,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 );
             var b = new ProblemDescriptor
                 (
-                102001,
+                "TD2001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -47,14 +48,14 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var p = new ProblemDescriptor
                 (
-                102001,
+                "TD2001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 );
 
-            Assert.True(p.GetHashCode() == p.id);
+            Assert.AreEqual(p.id.GetHashCode(), p.GetHashCode());
         }
 
         [Test]
@@ -62,7 +63,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new ProblemDescriptor
                 (
-                102001,
+                "TD2001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -103,7 +104,7 @@ namespace Unity.ProjectAuditor.EditorTests
             desc.minimumVersion = "1.1";
             desc.maximumVersion = "1.0";
             var result = ProblemDescriptorLoader.IsVersionCompatible(desc);
-            LogAssert.Expect(LogType.Error, "Descriptor (102001) minimumVersion (1.1) is greater than maximumVersion (1.0).");
+            LogAssert.Expect(LogType.Error, "Descriptor (TD2001) minimumVersion (1.1) is greater than maximumVersion (1.0).");
             Assert.False(result);
         }
 
@@ -112,7 +113,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new ProblemDescriptor
                 (
-                102001,
+                "TD2001",
                 "test",
                 new[] {Area.CPU, Area.Memory},
                 "this is not actually a problem",
@@ -128,7 +129,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new ProblemDescriptor
                 (
-                102001,
+                "TD2001",
                 "test",
                 new[] {Area.CPU}
                 );
@@ -141,7 +142,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new ProblemDescriptor
                 (
-                102001,
+                "TD2001",
                 "test",
                 new[] {Area.CPU}
                 )
@@ -161,7 +162,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new ProblemDescriptor
                 (
-                102001,
+                "TD2001",
                 "test",
                 new[] {Area.CPU}
                 )
@@ -177,10 +178,12 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase("ProjectSettings")]
         public void ProblemDescriptor_Descriptors_AreCorrect(string jsonFilename)
         {
+            var regExp = new Regex("^[a-z]{3}[0-9]{4}", RegexOptions.IgnoreCase);
             var descriptors = ProblemDescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, jsonFilename);
             foreach (var descriptor in descriptors)
             {
-                Assert.Positive(descriptor.id);
+                Assert.NotNull(descriptor.id);
+                Assert.True(regExp.IsMatch(descriptor.id), "Descriptor id format is not valid: " + descriptor.id);
                 Assert.NotNull(descriptor.areas);
             }
         }
