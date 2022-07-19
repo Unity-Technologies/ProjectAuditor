@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (m_ProblemDescriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
 
-            foreach (var descriptor in m_ProblemDescriptors)
+            foreach (var descriptor in m_ProblemDescriptors.Where(d => d.IsPlatformCompatible(platform)))
             {
                 var issue = Evaluate(descriptor, platform);
                 if (issue != null)
@@ -60,6 +60,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             if (string.IsNullOrEmpty(descriptor.customevaluator))
             {
+                // evaluate a Unity API static method or property
                 var assembly = m_Assemblies.First(a => a.GetType(descriptor.type) != null);
                 var type = assembly.GetType(descriptor.type);
 

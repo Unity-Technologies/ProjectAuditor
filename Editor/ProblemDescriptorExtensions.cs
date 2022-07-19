@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -19,6 +20,13 @@ namespace Unity.ProjectAuditor.Editor
         public static string GetFullTypeName(this ProblemDescriptor descriptor)
         {
             return descriptor.type + "." + descriptor.method;
+        }
+
+        public static bool IsPlatformCompatible(this ProblemDescriptor descriptor, BuildTarget buildTarget)
+        {
+            if (descriptor.platforms == null)
+                return true;
+            return descriptor.platforms.Contains(buildTarget.ToString());
         }
     }
 }
