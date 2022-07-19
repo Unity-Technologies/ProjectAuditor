@@ -64,9 +64,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                         forwardCamera = true;
 
                     if (deferredCamera && forwardCamera)
-                        yield return new ProjectIssue(k_CameraLitShaderModeBothOrMixed, IssueCategory.ProjectSetting);
+                        yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_CameraLitShaderModeBothOrMixed);
                 }
-                yield return new ProjectIssue(k_AssetLitShaderModeBothOrMixed, IssueCategory.ProjectSetting);
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_AssetLitShaderModeBothOrMixed);
             }
         }
 
