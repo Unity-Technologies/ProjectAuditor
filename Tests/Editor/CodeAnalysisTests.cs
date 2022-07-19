@@ -285,7 +285,7 @@ class UxmlAttributeDescriptionPropertyUsage
 
             Assert.AreEqual(Rule.Severity.Default, myIssue.descriptor.severity);
             Assert.AreEqual(typeof(string), myIssue.descriptor.id.GetType());
-            Assert.AreEqual("CD0066", myIssue.descriptor.id);
+            Assert.AreEqual("PAC0066", myIssue.descriptor.id);
             Assert.AreEqual("UnityEngine.Camera", myIssue.descriptor.type);
             Assert.AreEqual("allCameras", myIssue.descriptor.method);
 

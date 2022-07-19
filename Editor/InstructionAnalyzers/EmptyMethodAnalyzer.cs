@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     {
         static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
             (
-            "CD2001",
+            "PAC2001",
             "Empty MonoBehaviour Method",
             Area.CPU,
             "Any empty MonoBehaviour magic method will be included in the build and executed anyway.",
