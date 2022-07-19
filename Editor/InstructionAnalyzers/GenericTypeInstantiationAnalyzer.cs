@@ -9,11 +9,6 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     class GenericTypeInstantiationAnalyzer : IInstructionAnalyzer
     {
-        const int k_FirstDescriptorId = 500000;
-
-        // TODO: replace with single descriptor
-        readonly Dictionary<string, ProblemDescriptor> m_GenericDescriptors = new Dictionary<string, ProblemDescriptor>();
-
         public void Initialize(ProjectAuditorModule module)
         {
         }
@@ -28,28 +23,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             if (!typeReference.IsGenericInstance)
                 return null;
 
-            try
-            {
-                var typeDefinition = typeReference.Resolve();
-                var genericTypeName = typeDefinition.FullName;
-                if (!m_GenericDescriptors.ContainsKey(genericTypeName))
-                {
-                    var desc = new ProblemDescriptor((k_FirstDescriptorId + m_GenericDescriptors.Count).ToString(),
-                        typeDefinition.FullName, Area.BuildSize)
-                    {
-                        messageFormat = "'{0}' generic instance"
-                    };
-                    m_GenericDescriptors.Add(typeDefinition.FullName, desc);
-                }
-
-                return ProjectIssue.Create(IssueCategory.GenericInstance, m_GenericDescriptors[genericTypeName], typeReference.FullName);
-            }
-            catch (AssemblyResolutionException e)
-            {
-                Debug.LogWarningFormat("Could not resolve {0}: {1}", typeReference.Name, e.Message);
-            }
-
-            return null;
+            return ProjectIssue.Create(IssueCategory.GenericInstance, $"'{typeReference.FullName}' generic instance");
         }
 
         public IEnumerable<OpCode> GetOpCodes()
