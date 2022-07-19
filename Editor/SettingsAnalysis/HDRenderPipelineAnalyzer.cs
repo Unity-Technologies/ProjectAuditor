@@ -35,11 +35,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_CameraLitShaderModeBothOrMixed);
         }
 
-        public int GetDescriptorId()
-        {
-            return k_AssetLitShaderModeBothOrMixed.id;
-        }
-
         public IEnumerable<ProjectIssue> Analyze(BuildTarget platform)
         {
             if (IsLitShaderModeBothOrMixed())

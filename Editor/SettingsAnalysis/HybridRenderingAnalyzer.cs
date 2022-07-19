@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             if (Evaluators.PlayerSettingsIsStaticBatchingEnabled(platform))
             {
-                yield return new ProjectIssue(k_Descriptor, IssueCategory.ProjectSetting);
+                yield return new ProjectIssue(IssueCategory.ProjectSetting, k_Descriptor);
             }
         }
     }
