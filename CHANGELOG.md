@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added user preferences
 * Added group size/time properties
 * Added support for analyzing all compiled Editor assemblies
+* Added platform selection to _Home_ screen
 * Fixed Diagnostic Rules serialization
 * Fixed *Home* page *NullReferenceException* on Build
 * Improved issue creation code-readability by using *ProjectIssueBuilder*
@@ -16,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added *ProjectAuditorConfig* option to enable/disable Roslyn analyzers
 * Added *ProjectAuditorParams* option for compiling selected assemblies
 * Added discard button to toolbar
-* Added modules selection to initial UI panel
+* Added modules selection to _Home_ screen
 * Added support for reporting precompiled assemblies
 * Fixed compatibility with Unity 2022
 * Improved code analysis performance by caching "resolved" types
