@@ -242,5 +242,15 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
 #endif
+
+        [Test]
+        public void ProblemDescriptor_Platform_IsCorrect()
+        {
+            var descriptors = ProblemDescriptorLoader.LoadFromJson_Internal(Editor.ProjectAuditor.DataPath, "ProjectSettings");
+            var platDescriptor = descriptors.FirstOrDefault(d => d.id.Equals("PAS0004"));
+            Assert.NotNull(platDescriptor);
+            Assert.NotNull(platDescriptor.platforms);
+            Assert.Contains("Android", platDescriptor.platforms);
+        }
     }
 }

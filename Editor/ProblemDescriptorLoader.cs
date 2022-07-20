@@ -28,6 +28,7 @@ namespace Unity.ProjectAuditor.Editor
                     type = rawDescriptor.type ?? string.Empty,
                     method = rawDescriptor.method ?? string.Empty,
                     value = rawDescriptor.value,
+                    platforms = rawDescriptor.platforms,
                     critical = rawDescriptor.critical,
                     problem = rawDescriptor.problem,
                     solution = rawDescriptor.solution
