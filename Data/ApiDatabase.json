@@ -637,7 +637,6 @@
             "problem": "The property Collision2D.contacts allocates managed memory.",
             "solution": "Use Collision2D.GetContacts() instead."
         },
-
         {
             "id": "PAC0110",
             "type": "UnityEngine.TerrainData",
