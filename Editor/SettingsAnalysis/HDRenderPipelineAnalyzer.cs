@@ -9,12 +9,12 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
+namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class HDRenderPipelineAnalyzer : ISettingsAnalyzer
     {
         static readonly ProblemDescriptor k_AssetLitShaderModeBothOrMixed = new ProblemDescriptor(
-            202001,
+            "PAS1001",
             "HDRP: Render Pipeline Assets use both 'Lit Shader Mode' Forward and Deferred",
             new[] { Area.BuildSize, Area.BuildTime },
             "If HDRP 'Lit Shader Mode' is set to Both (or a mix of Forward and Deferred), shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         );
 
         static readonly ProblemDescriptor k_CameraLitShaderModeBothOrMixed = new ProblemDescriptor(
-            202002,
+            "PAS1002",
             "HDRP: Cameras mix usage of 'Lit Shader Mode' Forward and Deferred",
             new[] { Area.BuildSize, Area.BuildTime },
             "If Cameras use both 'Lit Shader Mode' Forward and Deferred, shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
@@ -33,11 +33,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
         {
             module.RegisterDescriptor(k_AssetLitShaderModeBothOrMixed);
             module.RegisterDescriptor(k_CameraLitShaderModeBothOrMixed);
-        }
-
-        public int GetDescriptorId()
-        {
-            return k_AssetLitShaderModeBothOrMixed.id;
         }
 
         public IEnumerable<ProjectIssue> Analyze(BuildTarget platform)
@@ -64,9 +59,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalyzers
                         forwardCamera = true;
 
                     if (deferredCamera && forwardCamera)
-                        yield return new ProjectIssue(k_CameraLitShaderModeBothOrMixed, IssueCategory.ProjectSetting);
+                        yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_CameraLitShaderModeBothOrMixed);
                 }
-                yield return new ProjectIssue(k_AssetLitShaderModeBothOrMixed, IssueCategory.ProjectSetting);
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_AssetLitShaderModeBothOrMixed);
             }
         }
 

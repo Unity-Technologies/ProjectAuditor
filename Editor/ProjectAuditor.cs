@@ -20,30 +20,8 @@ namespace Unity.ProjectAuditor.Editor
         : IPreprocessBuildWithReport
     {
         static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
-        static string s_DataPath;
 
-        internal static string DataPath
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(s_DataPath))
-                {
-                    const string path = PackagePath + "/Data";
-                    if (!File.Exists(Path.GetFullPath(path)))
-                    {
-                        // if it's not a package, let's search through all assets
-                        var apiDatabasePath = AssetDatabase.GetAllAssetPaths()
-                            .FirstOrDefault(p => p.EndsWith("Data/ApiDatabase.json"));
-
-                        if (string.IsNullOrEmpty(apiDatabasePath))
-                            throw new Exception("Could not find ApiDatabase.json");
-                        s_DataPath = apiDatabasePath.Substring(0, apiDatabasePath.IndexOf("/ApiDatabase.json"));
-                    }
-                }
-
-                return s_DataPath;
-            }
-        }
+        internal const string DataPath = PackagePath + "/Data";
         internal const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
         internal const string PackagePath = "Packages/com.unity.project-auditor";
         internal static string PackageVersion

@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.EditorTests
             // check descriptor
             Assert.NotNull(boxingInt.descriptor);
             Assert.AreEqual(Rule.Severity.Default, boxingInt.descriptor.severity);
-            Assert.AreEqual(102000, boxingInt.descriptor.id);
+            Assert.AreEqual("PAC2000", boxingInt.descriptor.id);
             Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.type));
             Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.method));
             Assert.False(string.IsNullOrEmpty(boxingInt.descriptor.description));
@@ -74,7 +74,7 @@ namespace Unity.ProjectAuditor.EditorTests
             // check descriptor
             Assert.NotNull(boxingFloat.descriptor);
             Assert.AreEqual(Rule.Severity.Default, boxingFloat.descriptor.severity);
-            Assert.AreEqual(102000, boxingFloat.descriptor.id);
+            Assert.AreEqual("PAC2000", boxingFloat.descriptor.id);
             Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.type));
             Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.method));
             Assert.False(string.IsNullOrEmpty(boxingFloat.descriptor.description));

@@ -1,7 +1,7 @@
 {
     "Items": [
         {
-            "id": 101000,
+            "id": "PAC0000",
             "type": "UnityEngine.Camera",
             "method": "main",
             "areas": ["CPU"],
@@ -10,7 +10,7 @@
             "maximumVersion": "2019.4.8"
         },
         {
-            "id": 101001,
+            "id": "PAC0001",
             "type": "UnityEngine.WebCamTexture",
             "method": "GetPixels",
             "areas": ["Memory"],
@@ -18,7 +18,7 @@
             "solution": "Use WebCamTexture.GetPixels32() instead."
         },
         {
-            "id": 101002,
+            "id": "PAC0002",
             "type": "UnityEngine.WebCamTexture",
             "method": "GetPixels32",
             "areas": ["Memory"],
@@ -26,7 +26,7 @@
             "solution": "Ensure that you pass an array of Color32[] to this API method for it to fill out, to avoid creating a new array every time the method is called."
         },
         {
-            "id": 101003,
+            "id": "PAC0003",
             "type": "UnityEngine.GeometryUtility",
             "method": "CalculateFrustumPlanes",
             "areas": ["Memory"],
@@ -34,7 +34,7 @@
             "solution": "Ensure that you use the CalculateFrustumPlanes(Matrix4x4 worldToProjectionMatrix, Plane[] planes) version of this API method, in order to be able to pass a pre-allocated Array of Planes."
         },
         {
-            "id": 101004,
+            "id": "PAC0004",
             "type": "UnityEngine.Resources",
             "method": "FindObjectsOfTypeAll",
             "areas": ["Memory"],
@@ -42,7 +42,7 @@
             "solution": "Use Resources.FindObjectsOfTypeNonAlloc() instead."
         },
         {
-            "id": 101005,
+            "id": "PAC0005",
             "type": "UnityEngine.Texture2D",
             "method": "GetPixels",
             "areas": ["Memory"],
@@ -50,7 +50,7 @@
             "solution": "Use Texture2D.GetRawTextureData() instead. This method returns a NativeArray of pixel data, and so does not allocate managed memory."
         },
         {
-            "id": 101006,
+            "id": "PAC0006",
             "type": "UnityEngine.Texture2D",
             "method": "GetPixels32",
             "areas": ["Memory"],
@@ -58,7 +58,7 @@
             "solution": "Use Texture2D.GetRawTextureData() instead. This method returns a NativeArray of pixel data, and so does not allocate managed memory."
         },
         {
-            "id": 101007,
+            "id": "PAC0007",
             "type": "UnityEngine.Rigidbody",
             "method": "SweepTestAll",
             "areas": ["Memory"],
@@ -66,7 +66,7 @@
             "solution": "Use Rigidbody.SweepTestNonAlloc() instead."
         },
         {
-            "id": 101008,
+            "id": "PAC0008",
             "type": "UnityEngine.Physics",
             "method": "RaycastAll",
             "areas": ["Memory"],
@@ -74,7 +74,7 @@
             "solution": "Use Physics.RaycastNonAlloc() instead."
         },
         {
-            "id": 101009,
+            "id": "PAC0009",
             "type": "UnityEngine.Physics",
             "method": "CapsuleCastAll",
             "areas": ["Memory"],
@@ -82,7 +82,7 @@
             "solution": "Use Physics.CapsuleCastNonAlloc() instead."
         },
         {
-            "id": 101010,
+            "id": "PAC0010",
             "type": "UnityEngine.Physics",
             "method": "SphereCastAll",
             "areas": ["Memory"],
@@ -90,7 +90,7 @@
             "solution": "Use Physics.SphereCastNonAlloc() instead."
         },
         {
-            "id": 101011,
+            "id": "PAC0011",
             "type": "UnityEngine.Physics",
             "method": "BoxCastAll",
             "areas": ["Memory"],
@@ -98,7 +98,7 @@
             "solution": "Use Physics.BoxCastNonAlloc() instead."
         },
         {
-            "id": 101012,
+            "id": "PAC0012",
             "type": "UnityEngine.Physics",
             "method": "OverlapCapsule",
             "areas": ["Memory"],
@@ -106,7 +106,7 @@
             "solution": "Use Physics.OverlapCapsuleNonAlloc() instead."
         },
         {
-            "id": 101013,
+            "id": "PAC0013",
             "type": "UnityEngine.Physics",
             "method": "OverlapSphere",
             "areas": ["Memory"],
@@ -114,7 +114,7 @@
             "solution": "Use Physics.OverlapSphereNonAlloc() instead."
         },
         {
-            "id": 101014,
+            "id": "PAC0014",
             "type": "UnityEngine.Physics",
             "method": "OverlapBox",
             "areas": ["Memory"],
@@ -122,7 +122,7 @@
             "solution": "Use Physics.OverlapBoxNonAlloc() instead."
         },
         {
-            "id": 101015,
+            "id": "PAC0015",
             "type": "UnityEngine.Physics2D",
             "method": "LinecastAll",
             "areas": ["Memory"],
@@ -130,7 +130,7 @@
             "solution": "Use Physics2D.LinecastNonAlloc() instead."
         },
         {
-            "id": 101016,
+            "id": "PAC0016",
             "type": "UnityEngine.Physics2D",
             "method": "RaycastAll",
             "areas": ["Memory"],
@@ -138,7 +138,7 @@
             "solution": "Use Physics2D.RaycastNonAlloc() instead."
         },
         {
-            "id": 101017,
+            "id": "PAC0017",
             "type": "UnityEngine.Physics2D",
             "method": "CircleCastAll",
             "areas": ["Memory"],
@@ -146,7 +146,7 @@
             "solution": "Use Physics2D.CircleCastNonAlloc() instead."
         },
         {
-            "id": 101018,
+            "id": "PAC0018",
             "type": "UnityEngine.Physics2D",
             "method": "BoxCastAll",
             "areas": ["Memory"],
@@ -154,7 +154,7 @@
             "solution": "Use Physics2D.BoxCastNonAlloc() instead."
         },
         {
-            "id": 101019,
+            "id": "PAC0019",
             "type": "UnityEngine.Physics2D",
             "method": "CapsuleCastAll",
             "areas": ["Memory"],
@@ -162,7 +162,7 @@
             "solution": "Use Physics2D.CapsuleCastNonAlloc() instead."
         },
         {
-            "id": 101020,
+            "id": "PAC0020",
             "type": "UnityEngine.Physics2D",
             "method": "GetRayIntersectionAll",
             "areas": ["Memory"],
@@ -170,7 +170,7 @@
             "solution": "Use Physics2D.GetRayIntersectionNonAlloc() instead."
         },
         {
-            "id": 101021,
+            "id": "PAC0021",
             "type": "UnityEngine.Physics2D",
             "method": "OverlapPointAll",
             "areas": ["Memory"],
@@ -178,7 +178,7 @@
             "solution": "Use Physics2D.OverlapPointNonAlloc() instead."
         },
         {
-            "id": 101022,
+            "id": "PAC0022",
             "type": "UnityEngine.Physics2D",
             "method": "OverlapCircleAll",
             "areas": ["Memory"],
@@ -186,7 +186,7 @@
             "solution": "Use Physics2D.OverlapCircleNonAlloc() instead."
         },
         {
-            "id": 101023,
+            "id": "PAC0023",
             "type": "UnityEngine.Physics2D",
             "method": "OverlapBoxAll",
             "areas": ["Memory"],
@@ -194,7 +194,7 @@
             "solution": "Use Physics2D.OverlapBoxNonAlloc() instead."
         },
         {
-            "id": 101024,
+            "id": "PAC0024",
             "type": "UnityEngine.Physics2D",
             "method": "OverlapAreaAll",
             "areas": ["Memory"],
@@ -202,7 +202,7 @@
             "solution": "Use Physics2D.OverlapAreaNonAlloc() instead."
         },
         {
-            "id": 101025,
+            "id": "PAC0025",
             "type": "UnityEngine.Physics2D",
             "method": "OverlapCapsuleAll",
             "areas": ["Memory"],
@@ -210,7 +210,7 @@
             "solution": "Use Physics2D.OverlapCapsuleNonAlloc() instead."
         },
         {
-            "id": 101026,
+            "id": "PAC0026",
             "type": "UnityEngine.Component",
             "method": "GetComponentsInChildren",
             "areas": ["Memory"],
@@ -218,7 +218,7 @@
             "solution": "Ensure you are using one of the versions of GameObject.GetComponentsInChildren() which accepts a List<T> as a parameter and populates it with the components it finds."
         },
         {
-            "id": 101027,
+            "id": "PAC0027",
             "type": "UnityEngine.Component",
             "method": "GetComponentsInParent",
             "areas": ["Memory"],
@@ -226,7 +226,7 @@
             "solution": "Ensure you are using one of the versions of GameObject.GetComponentsInParent() which accepts a List<T> as a parameter and populates it with the components it finds."
         },
         {
-            "id": 101028,
+            "id": "PAC0028",
             "type": "UnityEngine.GameObject",
             "method": "GetComponentsInChildren",
             "areas": ["Memory"],
@@ -234,7 +234,7 @@
             "solution": "Ensure you are using one of the versions of GameObject.GetComponentsInChildren() which accepts a List<T> as a parameter and populates it with the components it finds."
         },
         {
-            "id": 101029,
+            "id": "PAC0029",
             "type": "UnityEngine.GameObject",
             "method": "GetComponentsInParent",
             "areas": ["Memory"],
@@ -242,7 +242,7 @@
             "solution": "Ensure you are using one of the versions of GameObject.GetComponentsInParent() which accepts a List<T> as a parameter and populates it with the components it finds."
         },
         {
-            "id": 101030,
+            "id": "PAC0030",
             "type": "UnityEngine.Collider",
             "method": "OnTriggerStay",
             "areas": ["CPU"],
@@ -250,7 +250,7 @@
             "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all OnTriggerStay() methods, and consider refactoring code to not use them."
         },
         {
-            "id": 101031,
+            "id": "PAC0031",
             "type": "UnityEngine.MonoBehaviour",
             "method": "OnTriggerStay",
             "areas": ["CPU"],
@@ -258,7 +258,7 @@
             "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all OnTriggerStay() methods, and consider refactoring code to not use them."
         },
         {
-            "id": 101032,
+            "id": "PAC0032",
             "type": "UnityEngine.Collider2D",
             "method": "OnTriggerStay2D",
             "areas": ["CPU"],
@@ -266,7 +266,7 @@
             "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all OnTriggerStay2D() methods, and consider refactoring code to not use them."
         },
         {
-            "id": 101033,
+            "id": "PAC0033",
             "type": "UnityEngine.MonoBehaviour",
             "method": "OnTriggerStay2D",
             "areas": ["CPU"],
@@ -274,7 +274,7 @@
             "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all OnTriggerStay2D() methods, and consider refactoring code to not use them."
         },
         {
-            "id": 101034,
+            "id": "PAC0034",
             "type": "UnityEngine.Collider",
             "method": "OnCollisionStay",
             "areas": ["CPU"],
@@ -282,7 +282,7 @@
             "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all OnCollisionStay() methods, and consider refactoring code to not use them."
         },
         {
-            "id": 101035,
+            "id": "PAC0035",
             "type": "UnityEngine.MonoBehaviour",
             "method": "OnCollisionStay",
             "areas": ["CPU"],
@@ -290,7 +290,7 @@
             "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all OnCollisionStay() methods, and consider refactoring code to not use them."
         },
         {
-            "id": 101036,
+            "id": "PAC0036",
             "type": "UnityEngine.Rigidbody",
             "method": "OnCollisionStay",
             "areas": ["CPU"],
@@ -298,7 +298,7 @@
             "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all OnCollisionStay() methods, and consider refactoring code to not use them."
         },
         {
-            "id": 101037,
+            "id": "PAC0037",
             "type": "UnityEngine.ImageConversion",
             "method": "LoadImage",
             "areas": ["Memory"],
@@ -306,7 +306,7 @@
             "solution": "If a CPU-accessible copy of the texture is not required, ensure that the markNonReadable flag passed into the method is set to true."
         },
         {
-            "id": 101039,
+            "id": "PAC0039",
             "type": "UnityEngine.Renderer",
             "method": "material",
             "areas": ["GPU"],
@@ -314,23 +314,7 @@
             "solution": "If possible, use Renderer.sharedMaterial instead."
         },
         {
-            "id": 101049,
-            "type": "System.Linq",
-            "method": "*",
-            "areas": ["Memory"],
-            "problem": "Linq allocates large amounts of managed memory.",
-            "solution": "We strongly advise against using Linq in any frequently-updated code. Ban its usage from the project entirely, or confine it to initialization code and use it sparingly."
-        },
-        {
-            "id": 101050,
-            "type": "System.Reflection",
-            "method": "*",
-            "areas": ["CPU"],
-            "problem": "Reflection is slow, and not generally considered performant enough for runtime code.",
-            "solution": "Remove code which relies on reflection, or minimise its usage, particularly outside of initialization."
-        },
-        {
-            "id": 101051,
+            "id": "PAC0051",
             "type": "UnityEngine.ComputeBuffer",
             "method": "GetData",
             "areas": ["CPU"],
@@ -338,7 +322,7 @@
             "solution": "Avoid reading back from ComputeBuffers if it is at all possible. If it's unavoidable, profile your project carefully and regularly to monitor the performance impact."
         },
         {
-            "id": 101052,
+            "id": "PAC0052",
             "type": "UnityEngine.Texture2D",
             "method": "SetPixels",
             "areas": ["CPU"],
@@ -346,7 +330,7 @@
             "solution": "Use Texture2D.SetPixels32() or GetRawTextureData()/Apply() instead."
         },
         {
-            "id": 101053,
+            "id": "PAC0053",
             "type": "UnityEngine.Texture3D",
             "method": "SetPixels",
             "areas": ["CPU"],
@@ -354,7 +338,7 @@
             "solution": "Use Texture3D.SetPixels32() instead."
         },
         {
-            "id": 101054,
+            "id": "PAC0054",
             "type": "UnityEngine.Texture2DArray",
             "method": "SetPixels",
             "areas": ["CPU"],
@@ -362,7 +346,7 @@
             "solution": "Use Texture2DArray.SetPixels32() instead."
         },
         {
-            "id": 101055,
+            "id": "PAC0055",
             "type": "UnityEngine.CubemapArray",
             "method": "SetPixels",
             "areas": ["CPU"],
@@ -370,7 +354,7 @@
             "solution": "Use CubemapArray.SetPixels32() instead."
         },
         {
-            "id": 101056,
+            "id": "PAC0056",
             "type": "UnityEngine.GameObject",
             "method": "SendMessage",
             "areas": ["CPU"],
@@ -378,7 +362,7 @@
             "solution": "Implement a custom system to replace SendMessage - get the components you want to send messages and call methods directly on them."
         },
         {
-            "id": 101057,
+            "id": "PAC0057",
             "type": "UnityEngine.Component",
             "method": "SendMessage",
             "areas": ["CPU"],
@@ -386,7 +370,7 @@
             "solution": "Implement a custom system to replace SendMessage - get the components you want to send messages and call methods directly on them."
         },
         {
-            "id": 101058,
+            "id": "PAC0058",
             "type": "UnityEngine.MonoBehaviour",
             "method": "OnGUI",
             "areas": ["CPU"],
@@ -394,7 +378,7 @@
             "solution": "Remove all OnGUI() methods from the project code."
         },
         {
-            "id": 101059,
+            "id": "PAC0059",
             "type": "UnityEngine.AI.NavMeshPath",
             "method": "corners",
             "areas": ["Memory"],
@@ -402,7 +386,7 @@
             "solution": "Use AI.NavMeshPath.GetCornersNonAlloc() instead"
         },
         {
-            "id": 101060,
+            "id": "PAC0060",
             "type": "UnityEngine.Animator",
             "method": "parameters",
             "areas": ["Memory"],
@@ -410,7 +394,7 @@
             "solution": "Use Animator.GetParameter() instead."
         },
         {
-            "id": 101061,
+            "id": "PAC0061",
             "type": "UnityEngine.Animations.ParentConstraint",
             "method": "translationOffsets",
             "areas": ["Memory"],
@@ -418,7 +402,7 @@
             "solution": "Use Animations.ParentConstraint.GetTranslationOffset() instead."
         },
         {
-            "id": 101062,
+            "id": "PAC0062",
             "type": "UnityEngine.Animations.ParentConstraint",
             "method": "rotationOffsets",
             "areas": ["Memory"],
@@ -426,7 +410,7 @@
             "solution": "Use Animations.ParentConstraint.GetRotationOffset() instead."
         },
         {
-            "id": 101063,
+            "id": "PAC0063",
             "type": "UnityEngine.AnimationCurve",
             "method": "keys",
             "areas": ["Memory"],
@@ -434,7 +418,7 @@
             "solution": "Use AnimationCurve.AddKey()/MoveKey()/RemoveKey() instead."
         },
         {
-            "id": 101066,
+            "id": "PAC0066",
             "type": "UnityEngine.Camera",
             "method": "allCameras",
             "areas": ["Memory"],
@@ -442,7 +426,7 @@
             "solution": "Use Camera.GetAllCameras() instead."
         },
         {
-            "id": 101067,
+            "id": "PAC0067",
             "type": "UnityEngine.Mesh",
             "method": "boneWeights",
             "areas": ["Memory"],
@@ -450,7 +434,7 @@
             "solution": "Use Mesh.GetAllBoneWeights() instead. This method returns a NativeArray of BoneWeight1, and so does not allocate managed memory."
         },
         {
-            "id": 101068,
+            "id": "PAC0068",
             "type": "UnityEngine.Mesh",
             "method": "bindposes",
             "areas": ["Memory"],
@@ -458,7 +442,7 @@
             "solution": "Use Mesh.GetBindposes() instead."
         },
         {
-            "id": 101069,
+            "id": "PAC0069",
             "type": "UnityEngine.Mesh",
             "method": "vertices",
             "areas": ["Memory"],
@@ -466,7 +450,7 @@
             "solution": "Use Mesh.GetVertices() instead."
         },
         {
-            "id": 101070,
+            "id": "PAC0070",
             "type": "UnityEngine.Mesh",
             "method": "normals",
             "areas": ["Memory"],
@@ -474,7 +458,7 @@
             "solution": "Use Mesh.GetNormals() instead."
         },
         {
-            "id": 101071,
+            "id": "PAC0071",
             "type": "UnityEngine.Mesh",
             "method": "tangents",
             "areas": ["Memory"],
@@ -482,7 +466,7 @@
             "solution": "Use Mesh.GetTangents() instead."
         },
         {
-            "id": 101072,
+            "id": "PAC0072",
             "type": "UnityEngine.Mesh",
             "method": "uv",
             "areas": ["Memory"],
@@ -490,7 +474,7 @@
             "solution": "Use Mesh.GetUVs() instead."
         },
         {
-            "id": 101073,
+            "id": "PAC0073",
             "type": "UnityEngine.Mesh",
             "method": "uv1",
             "areas": ["Memory"],
@@ -498,7 +482,7 @@
             "solution": "Use Mesh.GetUVs() instead."
         },
         {
-            "id": 101074,
+            "id": "PAC0074",
             "type": "UnityEngine.Mesh",
             "method": "uv2",
             "areas": ["Memory"],
@@ -506,7 +490,7 @@
             "solution": "Use Mesh.GetUVs() instead."
         },
         {
-            "id": 101075,
+            "id": "PAC0075",
             "type": "UnityEngine.Mesh",
             "method": "uv3",
             "areas": ["Memory"],
@@ -514,7 +498,7 @@
             "solution": "Use Mesh.GetUVs() instead."
         },
         {
-            "id": 101076,
+            "id": "PAC0076",
             "type": "UnityEngine.Mesh",
             "method": "uv4",
             "areas": ["Memory"],
@@ -522,7 +506,7 @@
             "solution": "Use Mesh.GetUVs() instead."
         },
         {
-            "id": 101077,
+            "id": "PAC0077",
             "type": "UnityEngine.Mesh",
             "method": "uv5",
             "areas": ["Memory"],
@@ -530,7 +514,7 @@
             "solution": "Use Mesh.GetUVs() instead."
         },
         {
-            "id": 101078,
+            "id": "PAC0078",
             "type": "UnityEngine.Mesh",
             "method": "uv6",
             "areas": ["Memory"],
@@ -538,7 +522,7 @@
             "solution": "Use Mesh.GetUVs() instead."
         },
         {
-            "id": 101079,
+            "id": "PAC0079",
             "type": "UnityEngine.Mesh",
             "method": "uv7",
             "areas": ["Memory"],
@@ -546,7 +530,7 @@
             "solution": "Use Mesh.GetUVs() instead."
         },
         {
-            "id": 101080,
+            "id": "PAC0080",
             "type": "UnityEngine.Mesh",
             "method": "uv8",
             "areas": ["Memory"],
@@ -554,7 +538,7 @@
             "solution": "Use Mesh.GetUVs() instead."
         },
         {
-            "id": 101081,
+            "id": "PAC0081",
             "type": "UnityEngine.Mesh",
             "method": "colors",
             "areas": ["Memory"],
@@ -562,7 +546,7 @@
             "solution": "Use Mesh.GetColors() instead."
         },
         {
-            "id": 101082,
+            "id": "PAC0082",
             "type": "UnityEngine.Mesh",
             "method": "colors32",
             "areas": ["Memory"],
@@ -570,7 +554,7 @@
             "solution": "Use Mesh.GetColors() instead."
         },
         {
-            "id": 101083,
+            "id": "PAC0083",
             "type": "UnityEngine.Mesh",
             "method": "triangles",
             "areas": ["Memory"],
@@ -578,7 +562,7 @@
             "solution": "Use Mesh.GetTriangles() instead."
         },
         {
-            "id": 101084,
+            "id": "PAC0084",
             "type": "UnityEngine.Renderer",
             "method": "materials",
             "areas": ["Memory"],
@@ -586,7 +570,7 @@
             "solution": "Use Renderer.GetMaterials() instead."
         },
         {
-            "id": 101085,
+            "id": "PAC0085",
             "type": "UnityEngine.Renderer",
             "method": "sharedMaterials",
             "areas": ["Memory"],
@@ -594,7 +578,7 @@
             "solution": "Use Renderer.GetSharedMaterials() instead."
         },
         {
-            "id": 101094,
+            "id": "PAC0094",
             "type": "UnityEngine.Input",
             "method": "touches",
             "areas": ["Memory"],
@@ -602,7 +586,7 @@
             "solution": "Use Input.GetTouch() instead."
         },
         {
-            "id": 101095,
+            "id": "PAC0095",
             "type": "UnityEngine.Input",
             "method": "accelerationEvents",
             "areas": ["Memory"],
@@ -610,7 +594,7 @@
             "solution": "Use Input.GetAccelerationEvent() instead."
         },
         {
-            "id": 101096,
+            "id": "PAC0096",
             "type": "UnityEngine.iOS.NotificationServices",
             "method": "localNotifications",
             "areas": ["Memory"],
@@ -620,7 +604,7 @@
             "platforms": ["iOS"]
         },
         {
-            "id": 101097,
+            "id": "PAC0097",
             "type": "UnityEngine.iOS.NotificationServices",
             "method": "remoteNotifications",
             "areas": ["Memory"],
@@ -630,7 +614,7 @@
             "platforms": ["iOS"]
         },
         {
-            "id": 101100,
+            "id": "PAC0100",
             "type": "UnityEngine.GUISkin",
             "method": "customStyles",
             "areas": ["Memory"],
@@ -638,7 +622,7 @@
             "solution": "Use GUISkin.GetStyle() or GUISkin.FindStyle() instead."
         },
         {
-            "id": 101103,
+            "id": "PAC0103",
             "type": "UnityEngine.Collision",
             "method": "contacts",
             "areas": ["Memory"],
@@ -646,7 +630,7 @@
             "solution": "Use Collision.GetContacts() instead."
         },
         {
-            "id": 101104,
+            "id": "PAC0104",
             "type": "UnityEngine.Collision2D",
             "method": "contacts",
             "areas": ["Memory"],
@@ -655,7 +639,7 @@
         },
 
         {
-            "id": 101110,
+            "id": "PAC0110",
             "type": "UnityEngine.TerrainData",
             "method": "treeInstances",
             "areas": ["Memory"],
@@ -663,7 +647,7 @@
             "solution": "Use TerrainData.GetTreeInstance() instead."
         },
         {
-            "id": 101111,
+            "id": "PAC0111",
             "type": "UnityEngine.TerrainData",
             "method": "alphamapTextures",
             "areas": ["Memory"],
@@ -671,7 +655,7 @@
             "solution": "Use TerrainData.GetAlphamapTexture() instead."
         },
         {
-            "id": 101112,
+            "id": "PAC0112",
             "type": "UnityEngine.Font",
             "method": "characterInfo",
             "areas": ["Memory"],
@@ -679,7 +663,7 @@
             "solution": "Use Font.GetCharacterInfo() instead."
         },
         {
-            "id": 101115,
+            "id": "PAC0115",
             "type": "UnityEngine.Animator",
             "method": "GetCurrentAnimationClipState",
             "areas": ["Memory"],
@@ -687,7 +671,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101116,
+            "id": "PAC0116",
             "type": "UnityEngine.Animator",
             "method": "GetBehaviours",
             "areas": ["Memory"],
@@ -695,7 +679,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101117,
+            "id": "PAC0117",
             "type": "UnityEngine.AssetBundle",
             "method": "LoadAssetWithSubAssets",
             "areas": ["Memory"],
@@ -703,7 +687,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101118,
+            "id": "PAC0118",
             "type": "UnityEngine.AssetBundle",
             "method": "LoadAllAssets",
             "areas": ["Memory"],
@@ -711,7 +695,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101119,
+            "id": "PAC0119",
             "type": "UnityEngine.AssetBundleManifest",
             "method": "GetAllAssetBundles",
             "areas": ["Memory"],
@@ -719,7 +703,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101120,
+            "id": "PAC0120",
             "type": "UnityEngine.Resources",
             "method": "LoadAll",
             "areas": ["Memory"],
@@ -727,7 +711,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101121,
+            "id": "PAC0121",
             "type": "UnityEngine.Texture2D",
             "method": "PackTextures",
             "areas": ["Memory"],
@@ -735,7 +719,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101122,
+            "id": "PAC0122",
             "type": "UnityEngine.Cubemap",
             "method": "GetPixels",
             "areas": ["Memory"],
@@ -743,7 +727,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101123,
+            "id": "PAC0123",
             "type": "UnityEngine.Texture3D",
             "method": "GetPixels",
             "areas": ["Memory"],
@@ -751,7 +735,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101124,
+            "id": "PAC0124",
             "type": "UnityEngine.Texture3D",
             "method": "GetPixels32",
             "areas": ["Memory"],
@@ -759,7 +743,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101125,
+            "id": "PAC0125",
             "type": "UnityEngine.Texture2DArray",
             "method": "GetPixels",
             "areas": ["Memory"],
@@ -767,7 +751,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101126,
+            "id": "PAC0126",
             "type": "UnityEngine.Texture2DArray",
             "method": "GetPixels32",
             "areas": ["Memory"],
@@ -775,7 +759,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101127,
+            "id": "PAC0127",
             "type": "UnityEngine.CubemapArray",
             "method": "GetPixels",
             "areas": ["Memory"],
@@ -783,7 +767,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101128,
+            "id": "PAC0128",
             "type": "UnityEngine.CubemapArray",
             "method": "GetPixels32",
             "areas": ["Memory"],
@@ -791,7 +775,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101129,
+            "id": "PAC0129",
             "type": "UnityEngine.Object",
             "method": "FindObjectsOfType",
             "areas": ["Memory"],
@@ -799,7 +783,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101130,
+            "id": "PAC0130",
             "type": "UnityEngine.Windows.Crypto",
             "method": "ComputeMD5Hash",
             "areas": ["Memory"],
@@ -807,7 +791,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101131,
+            "id": "PAC0131",
             "type": "UnityEngine.Windows.File",
             "method": "ReadAllBytes",
             "areas": ["Memory"],
@@ -815,7 +799,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101132,
+            "id": "PAC0132",
             "type": "UnityEngine.ImageConversion",
             "method": "EncodeToJPG",
             "areas": ["Memory"],
@@ -823,7 +807,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101133,
+            "id": "PAC0133",
             "type": "UnityEngine.ImageConversion",
             "method": "EncodeToEXR",
             "areas": ["Memory"],
@@ -831,7 +815,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101134,
+            "id": "PAC0134",
             "type": "UnityEngine.ImageConversion",
             "method": "EncodeToTGA",
             "areas": ["Memory"],
@@ -839,7 +823,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101135,
+            "id": "PAC0135",
             "type": "UnityEngine.ImageConversion",
             "method": "EncodeToPNG",
             "areas": ["Memory"],
@@ -847,7 +831,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101136,
+            "id": "PAC0136",
             "type": "UnityEngine.U2D.SpriteShapeUtility",
             "method": "Generate",
             "areas": ["Memory"],
@@ -856,7 +840,7 @@
             "minimumVersion": "2019.3"
         },
         {
-            "id": 101138,
+            "id": "PAC0138",
             "type": "UnityEngine.AI.NavMeshTriangulation",
             "method": "layers",
             "areas": ["Memory"],
@@ -864,7 +848,7 @@
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101139,
+            "id": "PAC0139",
             "type": "UnityEngine.AnimationClip",
             "method": "events",
             "areas": ["Memory"],
@@ -872,7 +856,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101140,
+            "id": "PAC0140",
             "type": "UnityEngine.AnimatorOverrideController",
             "method": "animationClips",
             "areas": ["Memory"],
@@ -880,7 +864,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101141,
+            "id": "PAC0141",
             "type": "UnityEngine.HumanTrait",
             "method": "MuscleName",
             "areas": ["Memory"],
@@ -888,7 +872,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101142,
+            "id": "PAC0142",
             "type": "UnityEngine.HumanTrait",
             "method": "BoneName",
             "areas": ["Memory"],
@@ -896,7 +880,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101143,
+            "id": "PAC0143",
             "type": "UnityEngine.RuntimeAnimatorController",
             "method": "animationClips",
             "areas": ["Memory"],
@@ -904,7 +888,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101144,
+            "id": "PAC0144",
             "type": "UnityEngine.AssetBundleRequest",
             "method": "allAssets",
             "areas": ["Memory"],
@@ -912,7 +896,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101145,
+            "id": "PAC0145",
             "type": "UnityEngine.Microphone",
             "method": "devices",
             "areas": ["Memory"],
@@ -920,7 +904,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101146,
+            "id": "PAC0146",
             "type": "UnityEngine.WebCamDevice",
             "method": "availableResolutions",
             "areas": ["Memory"],
@@ -928,7 +912,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101147,
+            "id": "PAC0147",
             "type": "UnityEngine.WebCamTexture",
             "method": "devices",
             "areas": ["Memory"],
@@ -936,7 +920,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101148,
+            "id": "PAC0148",
             "type": "UnityEngine.Cloth",
             "method": "vertices",
             "areas": ["Memory"],
@@ -944,7 +928,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101149,
+            "id": "PAC0149",
             "type": "UnityEngine.Cloth",
             "method": "normals",
             "areas": ["Memory"],
@@ -952,7 +936,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101150,
+            "id": "PAC0150",
             "type": "UnityEngine.Cloth",
             "method": "coefficients",
             "areas": ["Memory"],
@@ -960,7 +944,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101151,
+            "id": "PAC0151",
             "type": "UnityEngine.Cloth",
             "method": "capsuleColliders",
             "areas": ["Memory"],
@@ -968,7 +952,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101152,
+            "id": "PAC0152",
             "type": "UnityEngine.Cloth",
             "method": "sphereColliders",
             "areas": ["Memory"],
@@ -976,7 +960,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101153,
+            "id": "PAC0153",
             "type": "UnityEngine.Camera",
             "method": "layerCullDistances",
             "areas": ["Memory"],
@@ -984,7 +968,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101154,
+            "id": "PAC0154",
             "type": "UnityEngine.CrashReport",
             "method": "reports",
             "areas": ["Memory"],
@@ -992,7 +976,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101155,
+            "id": "PAC0155",
             "type": "UnityEngine.Gradient",
             "method": "colorKeys",
             "areas": ["Memory"],
@@ -1000,7 +984,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101156,
+            "id": "PAC0156",
             "type": "UnityEngine.Gradient",
             "method": "alphaKeys",
             "areas": ["Memory"],
@@ -1008,7 +992,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101157,
+            "id": "PAC0157",
             "type": "UnityEngine.Screen",
             "method": "resolutions",
             "areas": ["Memory"],
@@ -1016,7 +1000,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101158,
+            "id": "PAC0158",
             "type": "UnityEngine.LightmapSettings",
             "method": "lightmaps",
             "areas": ["Memory"],
@@ -1024,7 +1008,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101159,
+            "id": "PAC0159",
             "type": "UnityEngine.LightProbes",
             "method": "positions",
             "areas": ["Memory"],
@@ -1032,7 +1016,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101160,
+            "id": "PAC0160",
             "type": "UnityEngine.LightProbes",
             "method": "bakedProbes",
             "areas": ["Memory"],
@@ -1040,7 +1024,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101161,
+            "id": "PAC0161",
             "type": "UnityEngine.LightProbes",
             "method": "coefficients",
             "areas": ["Memory"],
@@ -1048,7 +1032,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101162,
+            "id": "PAC0162",
             "type": "UnityEngine.QualitySettings",
             "method": "names",
             "areas": ["Memory"],
@@ -1056,7 +1040,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101163,
+            "id": "PAC0163",
             "type": "UnityEngine.Material",
             "method": "shaderKeywords",
             "areas": ["Memory"],
@@ -1064,7 +1048,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101164,
+            "id": "PAC0164",
             "type": "UnityEngine.Light",
             "method": "layerShadowCullDistances",
             "areas": ["Memory"],
@@ -1072,7 +1056,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101165,
+            "id": "PAC0165",
             "type": "UnityEngine.Rendering.RenderTargetBinding",
             "method": "colorRenderTargets",
             "areas": ["Memory"],
@@ -1080,7 +1064,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101166,
+            "id": "PAC0166",
             "type": "UnityEngine.Rendering.RenderTargetBinding",
             "method": "colorLoadActions",
             "areas": ["Memory"],
@@ -1088,7 +1072,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101167,
+            "id": "PAC0167",
             "type": "UnityEngine.Rendering.RenderTargetBinding",
             "method": "colorStoreActions",
             "areas": ["Memory"],
@@ -1096,7 +1080,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101168,
+            "id": "PAC0168",
             "type": "UnityEngine.SkinnedMeshRenderer",
             "method": "bones",
             "areas": ["Memory"],
@@ -1104,7 +1088,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101169,
+            "id": "PAC0169",
             "type": "UnityEngine.LightProbeGroup",
             "method": "probePositions",
             "areas": ["Memory"],
@@ -1112,7 +1096,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101170,
+            "id": "PAC0170",
             "type": "UnityEngine.Network",
             "method": "connections",
             "areas": ["Memory"],
@@ -1121,7 +1105,7 @@
             "maximumVersion": "2018.4"
         },
         {
-            "id": 101171,
+            "id": "PAC0171",
             "type": "UnityEngine.HostData",
             "method": "ip",
             "areas": ["Memory"],
@@ -1130,7 +1114,7 @@
             "maximumVersion": "2018.4"
         },
         {
-            "id": 101172,
+            "id": "PAC0172",
             "type": "UnityEngine.SortingLayer",
             "method": "layers",
             "areas": ["Memory"],
@@ -1138,7 +1122,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101173,
+            "id": "PAC0173",
             "type": "UnityEngine.TextAsset",
             "method": "bytes",
             "areas": ["Memory"],
@@ -1146,7 +1130,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101175,
+            "id": "PAC0175",
             "type": "UnityEngine.iOS.NotificationServices",
             "method": "deviceToken",
             "areas": ["Memory"],
@@ -1156,7 +1140,7 @@
             "platforms": ["iOS"]
         },
         {
-            "id": 101176,
+            "id": "PAC0176",
             "type": "UnityEngine.iOS.NotificationServices",
             "method": "scheduledLocalNotifications",
             "areas": ["Memory"],
@@ -1166,7 +1150,7 @@
             "platforms": ["iOS"]
         },
         {
-            "id": 101177,
+            "id": "PAC0177",
             "type": "UnityEngine.Sprite",
             "method": "vertices",
             "areas": ["Memory"],
@@ -1174,7 +1158,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101178,
+            "id": "PAC0178",
             "type": "UnityEngine.Sprite",
             "method": "triangles",
             "areas": ["Memory"],
@@ -1182,7 +1166,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101179,
+            "id": "PAC0179",
             "type": "UnityEngine.Sprite",
             "method": "uv",
             "areas": ["Memory"],
@@ -1190,7 +1174,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101180,
+            "id": "PAC0180",
             "type": "UnityEngine.SocialPlatforms.ILocalUser",
             "method": "friends",
             "areas": ["Memory"],
@@ -1198,7 +1182,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101181,
+            "id": "PAC0181",
             "type": "UnityEngine.SocialPlatforms.ILeaderboard",
             "method": "scores",
             "areas": ["Memory"],
@@ -1206,7 +1190,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101182,
+            "id": "PAC0182",
             "type": "UnityEngine.GUIStyleState",
             "method": "scaledBackgrounds",
             "areas": ["Memory"],
@@ -1214,7 +1198,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101183,
+            "id": "PAC0183",
             "type": "UnityEngine.EdgeCollider2D",
             "method": "points",
             "areas": ["Memory"],
@@ -1222,7 +1206,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101184,
+            "id": "PAC0184",
             "type": "UnityEngine.PolygonCollider2D",
             "method": "points",
             "areas": ["Memory"],
@@ -1230,7 +1214,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101185,
+            "id": "PAC0185",
             "type": "UnityEngine.Terrain",
             "method": "activeTerrains",
             "areas": ["Memory"],
@@ -1238,7 +1222,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101186,
+            "id": "PAC0186",
             "type": "UnityEngine.TerrainData",
             "method": "detailPrototypes",
             "areas": ["Memory"],
@@ -1246,7 +1230,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101187,
+            "id": "PAC0187",
             "type": "UnityEngine.TerrainData",
             "method": "treePrototypes",
             "areas": ["Memory"],
@@ -1254,7 +1238,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101188,
+            "id": "PAC0188",
             "type": "UnityEngine.TerrainData",
             "method": "splatPrototypes",
             "areas": ["Memory"],
@@ -1262,7 +1246,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101189,
+            "id": "PAC0189",
             "type": "UnityEngine.TerrainData",
             "method": "terrainLayers",
             "areas": ["Memory"],
@@ -1270,7 +1254,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101190,
+            "id": "PAC0190",
             "type": "UnityEngine.Tilemaps.TileAnimationData",
             "method": "animatedSprites",
             "areas": ["Memory"],
@@ -1278,7 +1262,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101191,
+            "id": "PAC0191",
             "type": "UnityEngine.UIElements.UxmlAttributeDescription",
             "method": "obsoleteNames",
             "areas": ["Memory"],
@@ -1287,7 +1271,7 @@
             "minimumVersion": "2019.1"
         },
         {
-            "id": 101200,
+            "id": "PAC0200",
             "type": "UnityEngine.Networking.IMultipartFormSection",
             "method": "sectionData",
             "areas": ["Memory"],
@@ -1295,7 +1279,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101201,
+            "id": "PAC0201",
             "type": "UnityEngine.Networking.MultipartFormDataSection",
             "method": "sectionData",
             "areas": ["Memory"],
@@ -1303,7 +1287,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101202,
+            "id": "PAC0202",
             "type": "UnityEngine.Networking.MultipartFormFileSection",
             "method": "sectionData",
             "areas": ["Memory"],
@@ -1311,7 +1295,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101203,
+            "id": "PAC0203",
             "type": "UnityEngine.WWWForm",
             "method": "data",
             "areas": ["Memory"],
@@ -1319,7 +1303,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101204,
+            "id": "PAC0204",
             "type": "UnityEngine.Networking.DownloadHandler",
             "method": "data",
             "areas": ["Memory"],
@@ -1327,7 +1311,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101208,
+            "id": "PAC0208",
             "type": "UnityEngine.Networking.UploadHandler",
             "method": "data",
             "areas": ["Memory"],
@@ -1335,7 +1319,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101215,
+            "id": "PAC0215",
             "type": "UnityEngine.Networking.NetworkMigrationManager",
             "method": "peers",
             "areas": ["Memory"],
@@ -1344,7 +1328,7 @@
             "maximumVersion": "2018.4"
         },
         {
-            "id": 101216,
+            "id": "PAC0216",
             "type": "UnityEngine.Networking.NetworkServerSimple",
             "method": "messageBuffer",
             "areas": ["Memory"],
@@ -1353,7 +1337,7 @@
             "maximumVersion": "2018.4"
         },
         {
-            "id": 101217,
+            "id": "PAC0217",
             "type": "UnityEngine.WWW",
             "method": "bytes",
             "areas": ["Memory"],
@@ -1361,7 +1345,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101219,
+            "id": "PAC0219",
             "type": "UnityEngine.XR.XRSettings",
             "method": "supportedDevices",
             "areas": ["Memory"],
@@ -1369,7 +1353,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101220,
+            "id": "PAC0220",
             "type": "UnityEngine.TestTools.Constraints.AllocatingGCMemoryConstraint",
             "method": "Arguments",
             "areas": ["Memory"],
@@ -1377,7 +1361,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101221,
+            "id": "PAC0221",
             "type": "UnityEngine.TestTools.UnityPlatformAttribute",
             "method": "include",
             "areas": ["Memory"],
@@ -1385,7 +1369,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101222,
+            "id": "PAC0222",
             "type": "UnityEngine.TestTools.UnityPlatformAttribute",
             "method": "exclude",
             "areas": ["Memory"],
@@ -1393,7 +1377,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
-            "id": 101223,
+            "id": "PAC0223",
             "type": "UnityEngine.GameObject",
             "method": "tag",
             "areas": ["Memory"],
@@ -1401,7 +1385,7 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Prefer using GameObject.CompareTag() instead, as this does not result in managed allocations."
         },
         {
-            "id": 101224,
+            "id": "PAC0224",
             "type": "UnityEngine.Object",
             "method": "Instantiate",
             "areas": ["CPU"],
@@ -1409,7 +1393,7 @@
             "solution": "Try to avoid calling Object.Instantiate frequently-updated code."
         },
         {
-            "id": 101225,
+            "id": "PAC0225",
             "type": "UnityEngine.GameObject",
             "method": "AddComponent",
             "areas": ["CPU"],
@@ -1417,33 +1401,25 @@
             "solution": "Try to avoid getting this property in frequently-updated code. Prefer instantiating GameObjects from Prefabs will all the necessary components instead."
         },
         {
-            "id": 101226,
-            "type": "System.String",
-            "method": "Concat",
-            "areas": ["Memory"],
-            "problem": "String concatenation operations allocates managed memory",
-            "solution": "Try to avoid concatenating strings in frequently-updated code. Prefer using a StringBuilder instead, as this minimizes managed allocations."
-        },
-        {
-          "id": 101227,
+          "id": "PAC0227",
           "type": "UnityEngine.Shader",
           "method": "WarmupAllShaders",
           "areas": ["CPU"],
-          "critical": true,
+          "critical": "true",
           "problem": "WarmupAllShaders does not work properly on Metal and Vulkan. This might result in unexpected CPU spikes due to shader compilation.",
           "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader used at runtime."
         },
         {
-          "id": 101228,
+          "id": "PAC0228",
           "type": "UnityEngine.ShaderVariantCollection",
           "method": "WarmUp",
           "areas": ["CPU"],
-          "critical": true,
+          "critical": "true",
           "problem": "WarmUp does not work properly on Metal and Vulkan. This might result in unexpected CPU spikes due to shader compilation.",
           "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader variant used at runtime."
         },
         {
-          "id": 101229,
+          "id": "PAC0229",
           "type": "UnityEngine.Component",
           "method": "tag",
           "areas": ["Memory"],
@@ -1451,7 +1427,39 @@
           "solution": "Try to avoid getting this property in frequently-updated code. Prefer using CompareTag() instead, as this does not result in managed allocations."
         },
         {
-          "id": 101230,
+          "id": "PAC0231",
+          "type": "UnityEngine.Object",
+          "method": "name",
+          "areas": ["Memory"],
+          "problem": "The Object.name property allocates managed memory.",
+          "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        },
+        {
+          "id": "PAC1000",
+          "type": "System.Linq",
+          "method": "*",
+          "areas": ["Memory"],
+          "problem": "Linq allocates large amounts of managed memory.",
+          "solution": "We strongly advise against using Linq in any frequently-updated code. Ban its usage from the project entirely, or confine it to initialization code and use it sparingly."
+        },
+        {
+          "id": "PAC1001",
+          "type": "System.Reflection",
+          "method": "*",
+          "areas": ["CPU"],
+          "problem": "Reflection is slow, and not generally considered performant enough for runtime code.",
+          "solution": "Remove code which relies on reflection, or minimise its usage, particularly outside of initialization."
+        },
+        {
+          "id": "PAC1002",
+          "type": "System.String",
+          "method": "Concat",
+          "areas": ["Memory"],
+          "problem": "String concatenation operations allocates managed memory",
+          "solution": "Try to avoid concatenating strings in frequently-updated code. Prefer using a StringBuilder instead, as this minimizes managed allocations."
+        },
+        {
+          "id": "PAC1003",
           "type": "System.DateTime",
           "method": "Now",
           "areas": ["CPU"],
@@ -1459,12 +1467,12 @@
           "solution": "Try to avoid using this method in frequently-updated code. Prefer UnityEngine.Time.time or, if precise time is needed, use DateTime.UtcNow."
         },
         {
-          "id": 101231,
-          "type": "UnityEngine.Object",
-          "method": "name",
-          "areas": ["Memory"],
-          "problem": "The Object.name property allocates managed memory.",
-          "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+          "id": "PAC0232",
+          "type": "System.AppDomain",
+          "method": "GetAssemblies",
+          "areas": ["CPU"],
+          "problem": "<b>System.AppDomain.GetAssemblies</b> is expensive.",
+          "solution": "Try to minimize calls to <b>System.AppDomain.GetAssemblies</b> by caching the returned assemblies. When possible, use <b>UnityEditor.TypeCache</b> for fast access to types, methods and fields."
         }
     ]
 }
