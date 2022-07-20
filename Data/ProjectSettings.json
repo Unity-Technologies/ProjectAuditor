@@ -334,7 +334,6 @@
             "id": "PAS0033",
             "description": "Audio: Speaker Mode",
             "type": "UnityEngine.AudioModule+AudioSettings",
-            "method": "speakerMode",
             "customevaluator": "PlayerSettingsAudioSettings_SpeakerMode",
             "areas": [ "BuildSize"],
             "problem": "<b>UnityEngine.AudioSettings.speakerMode</b> is not set to <b>UnityEngine.AudioSpeakerMode.Mono</b>. The generated build will be larger than necessary.",
