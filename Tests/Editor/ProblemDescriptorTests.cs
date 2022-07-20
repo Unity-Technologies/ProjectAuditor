@@ -208,14 +208,14 @@ namespace Unity.ProjectAuditor.EditorTests
             {
                 var type = types.FirstOrDefault(t => t.FullName.Equals(desc.type));
 
-                Assert.True(desc.method.Equals("*") || type != null, "Invalid Type : " + desc.type);
+                Assert.True(!string.IsNullOrEmpty(desc.customevaluator) || (desc.method.Equals("*") || type != null), "Invalid Type : " + desc.type);
 
                 if (skippableMethodNames.Contains(desc.method))
                     continue;
 
                 try
                 {
-                    Assert.True(type.GetMethod(desc.method) != null || type.GetProperty(desc.method) != null, "{0} does not belong to {1}", desc.method, desc.type);
+                    Assert.True(!string.IsNullOrEmpty(desc.customevaluator) || type.GetMethod(desc.method) != null || type.GetProperty(desc.method) != null, "{0} does not belong to {1}", desc.method, desc.type);
                 }
                 catch (AmbiguousMatchException)
                 {

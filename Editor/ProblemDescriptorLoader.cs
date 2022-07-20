@@ -25,8 +25,8 @@ namespace Unity.ProjectAuditor.Editor
                 var desc = new ProblemDescriptor(rawDescriptor.id, rawDescriptor.description, rawDescriptor.areas)
                 {
                     customevaluator = rawDescriptor.customevaluator,
-                    type = rawDescriptor.type,
-                    method = rawDescriptor.method,
+                    type = rawDescriptor.type ?? string.Empty,
+                    method = rawDescriptor.method ?? string.Empty,
                     value = rawDescriptor.value,
                     critical = rawDescriptor.critical,
                     problem = rawDescriptor.problem,
