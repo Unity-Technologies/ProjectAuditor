@@ -31,11 +31,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             return !hasMetal;
         }
 
+#if UNITY_2020_2_OR_NEWER
         public static bool PlayerSettingsPhysics2DSimulationMode_NotScript(BuildTarget platform)
         {
             return Physics2D.simulationMode != SimulationMode2D.Script;
         }
-        
+
+#endif
+
         public static bool PlayerSettingsAudioSettings_SpeakerMode(BuildTarget platform)
         {
             return AudioSettings.speakerMode != AudioSpeakerMode.Mono;
