@@ -35,6 +35,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.Time", "Project/Time"));
             m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.QualitySettings",
                 "Project/Quality"));
+            m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.AudioModule",
+                "Project/Audio"));
 
             m_ProblemDescriptors = ProblemDescriptorLoader.LoadFromJson(ProjectAuditor.DataPath, "ProjectSettings");
             foreach (var descriptor in m_ProblemDescriptors)

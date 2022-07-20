@@ -319,6 +319,25 @@
             "platforms": ["Android"],
             "problem": "In the Android Player Settings, Vulkan graphics API is not enabled.",
             "solution": "Enable Vulkan graphics API for better CPU Performance."
+        },
+        {
+            "id": "PAS0032",
+            "description": "Physics2D: Simulation Mode",
+            "type": "UnityEngine.Physics2DModule+Physics2D",
+            "customevaluator": "PlayerSettingsPhysics2DSimulationMode_NotScript",
+            "areas": [ "CPU"],
+            "problem": "<b>UnityEngine.Physics2D.simulationMode</b> is set to either <b>FixedUpdate</b> or <b>Update</b>. By using this mode, 2D physics simulation is executed on every update which might be expensive for some projects.",
+            "solution": "Change <b>Project Settings ➔ Physics 2D ➔ General Settings ➔ Simulation Mode</b> to <b>Script</b> to disable the 2d physics processing each frame. If physics simulation is required for certain special rendering, use <b>Script</b> mode to control <b>Physics2d.Simulate</b> on a per frame basis.",
+            "minimumVersion": "2020.2"
+        },
+        {
+            "id": "PAS0033",
+            "description": "Audio: Speaker Mode",
+            "type": "UnityEngine.AudioModule+AudioSettings",
+            "customevaluator": "PlayerSettingsAudioSettings_SpeakerMode",
+            "areas": [ "BuildSize"],
+            "problem": "<b>UnityEngine.AudioSettings.speakerMode</b> is not set to <b>UnityEngine.AudioSpeakerMode.Mono</b>. The generated build will be larger than necessary.",
+            "solution": "Change <b>Project Settings ➔ Audio ➔ Default Speaker Mode</b> to <b>Mono</b> to reduce the size of the build on disk."
         }
     ]
 }
