@@ -19,6 +19,7 @@ namespace Unity.ProjectAuditor.Editor
         Assembly,
         PrecompiledAssembly,
         ShaderCompilerMessage,
+        Texture,
 
         FirstCustomCategory
     }

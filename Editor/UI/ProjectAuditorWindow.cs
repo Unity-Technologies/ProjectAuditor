@@ -34,6 +34,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Shaders = 1 << 2,
             Resources = 1 << 3,
             BuildReport = 1 << 4,
+            TextureReport = 1 << 5,
 
             Everything = ~0
         }
@@ -462,6 +463,23 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
             });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                type = typeof(BuildReportView),                // ? needed
+                category = IssueCategory.Texture,
+                name = "Texture Report",
+                menuLabel = "Texture/Optimizations",
+                menuOrder = 102,
+                descriptionWithIcon = true,
+                showFilters = true,
+                showInfoPanel = true,
+                onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                onDrawToolbar = (viewManager) =>
+                {
+                    ChangeViewButton(viewManager, IssueCategory.BuildStep, Contents.BuildSteps);  // NEEDS Adjustement? 
+                },
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
+            });
         }
 
         static void ChangeViewButton(ViewManager viewManager, IssueCategory category, GUIContent guiContent)
@@ -644,6 +662,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().GetCategories());
             if ((m_SelectedModules.HasFlag(BuiltInModules.BuildReport)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().GetCategories());
+            if ((m_SelectedModules.HasFlag(BuiltInModules.TextureReport)))
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<TextureReportModule>().GetCategories());
             return requestedCategories.ToArray();
         }
 
