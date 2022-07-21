@@ -226,5 +226,15 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
             return renderingPaths.Any(path => path == RenderingPath.DeferredShading);
         }
+
+        public static bool Physics2DSimulateModeIsScript(BuildTarget platform)
+        {
+            return Physics2D.simulationMode != SimulationMode2D.Script;
+        }
+
+        public static bool AudioSpeakerModeIsMono(BuildTarget platform)
+        {
+            return AudioSettings.speakerMode != AudioSpeakerMode.Mono;
+        }
     }
 }

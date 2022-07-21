@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
@@ -34,9 +35,43 @@ namespace Unity.ProjectAuditor.Editor.UI
             Shaders = 1 << 2,
             Resources = 1 << 3,
             BuildReport = 1 << 4,
+            Texture = 1 << 5,
 
             Everything = ~0
         }
+
+
+        //JJ add
+        [Flags]
+        enum BuiltInPackages {
+            None = 0,
+            SpecificVersion = 1 << 0,
+            LatestVersion = 1 << 1,
+            LocalPackage = 1 << 2,
+            LocalTarballPackage = 1 <<3,
+
+            Everything = ~0
+        }
+
+        string[] googlePackageOptions = new string[] {
+            "Please select",
+            "Android Performance Tuner",
+            "Play Asset Delivery",
+            "Android App Bundle"
+        };
+        int selectIndex;
+
+        [Serializable]
+        public class GooglePackageItem {
+            public int id;
+            public string name;
+            public string url;
+            public string dependencies;
+            public string publishDate;
+            public string version;
+            public string minimumUnityVersion;
+        }
+        //JJ end
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow m_Instance;
@@ -74,6 +109,12 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] bool m_NewBuildAvailable = false;
         [SerializeField] GlobalStates m_GlobalStates = new GlobalStates();
         [SerializeField] ViewManager m_ViewManager;
+
+
+        //jj add
+        [SerializeField] BuiltInPackages m_selectedPackages = BuiltInPackages.None;
+        static UnityEditor.PackageManager.Requests.AddRequest Request;
+        //jj end
 
         AnalysisView activeView
         {
@@ -519,6 +560,156 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar());
         }
 
+        //JJ
+        void InstallPackage(BuiltInPackages builtInPackages) {
+            //Debug.Log("doing install");
+            //Debug.Log(builtInPackages);
+            GooglePackageItem[] packages = LoadJson();
+
+
+            if (builtInPackages == BuiltInPackages.None) {
+                Debug.Log("Instal nothing");
+                return;
+            }
+
+            if (builtInPackages.HasFlag(BuiltInPackages.SpecificVersion)) {
+                Debug.Log("install specific version");
+                string specificV = "com.unity.2d.pixel-perfect@5.0";
+                InstallPackage(specificV);
+            }
+            if (builtInPackages.HasFlag(BuiltInPackages.LatestVersion))
+            {
+                Debug.Log("install latest version");
+                string specificV = "com.unity.2d.sprite";
+                InstallPackage(specificV);
+            }
+            if (builtInPackages.HasFlag(BuiltInPackages.LocalPackage))
+            {
+                Debug.Log("install LocalPackage version");
+                string specificV = @"file:C:\Users\JianJiao\Downloads\arcore-unity-extensions-1.32.0\package";
+                //string specificV = @"com.google.android.performancetuner-1.5.0.tgz";
+                InstallPackage(specificV);
+            }
+            if (builtInPackages.HasFlag(BuiltInPackages.LocalTarballPackage))
+            {
+                Debug.Log("install LocalTarballPackage version");
+                //DownLoad the file and get the address
+
+                DownloadFile();
+                string specificV = @"file:C:\Users\JianJiao\Documents\UnityProjects\ShaderDemos\ShaderDemoe\Assets\MyPackage\com.google.android.appbundle-1.8.0.tgz";
+                InstallPackage(specificV);
+            }
+        }
+
+        void InstallPackage(int index) {
+            GooglePackageItem[] packages = LoadJson();
+
+            if (packages[index - 1].dependencies != "none")
+            {
+                InstallDependencies(packages[index - 1].dependencies);
+            }
+            InstallPackage(DownloadFile(packages[index - 1].url, packages[index - 1].name));
+            //switch (index)
+            //{
+            //    case 1:
+            //        Debug.Log(googlePackageOptions[index]);
+            //        Debug.Log(packages[index-1].name);
+            //        Debug.Log(packages[index - 1].url);
+            //        if (packages[index - 1].dependencies != "none")
+            //        {
+            //            InstallDependencies(packages[index - 1].dependencies);
+            //        }
+            //        InstallPackage(DownloadFile(packages[index - 1].url, packages[index - 1].name));
+            //        break;
+            //    case 2:
+            //        Debug.Log(googlePackageOptions[index]);
+            //        Debug.Log(packages[index - 1].name);
+            //        Debug.Log(packages[index - 1].url);
+            //        if (packages[index - 1].dependencies != "none")
+            //        {
+            //            InstallDependencies(packages[index - 1].dependencies);
+            //        }
+            //        InstallPackage(DownloadFile(packages[index - 1].url, packages[index - 1].name));
+            //        break;
+            //    case 3:
+            //        Debug.Log(googlePackageOptions[index]);
+            //        Debug.Log(packages[index - 1].name);
+            //        Debug.Log(packages[index - 1].url);
+            //        if (packages[index - 1].dependencies != "none")
+            //        {
+            //            InstallDependencies(packages[index - 1].dependencies);
+            //        }
+            //        InstallPackage(DownloadFile(packages[index - 1].url, packages[index - 1].name));
+            //        break;
+            //    default:
+            //        break;
+            //}
+        }
+
+        string DownloadFile() {
+            //StartCoroutine
+            return null;
+        }
+
+        string DownloadFile(string url, string fileName)
+        {
+            string path = Path.Combine(Application.persistentDataPath,fileName);
+            WebClient myWebClient = new WebClient();
+            myWebClient.DownloadFile(url, path);
+            Debug.Log("Successfully Downloaded File \\" + fileName + "\\ from \\" + url);
+            Debug.Log("\nDownloaded file saved in the following file system folder:\n\t" + Application.persistentDataPath);
+
+            return path;
+        }
+
+
+        void InstallDependencies(string dependencies) {
+            string[] dependenciesUrl = dependencies.Split('|');
+            for (int i = 0; i < dependenciesUrl.Length; i++)
+            {
+                InstallPackage(DownloadFile(dependenciesUrl[i], i.ToString()+".gtz"));
+            }
+        }
+
+        void InstallPackage(string path)
+        {
+            string fileFullPath = "file:" + path;
+            Request = UnityEditor.PackageManager.Client.Add(fileFullPath);
+            EditorApplication.update += Progress;
+            while (Request.Status == UnityEditor.PackageManager.StatusCode.InProgress)
+            {
+                Debug.Log("Installing package......");
+            }
+            //if(Request.Status == UnityEditor.PackageManager.StatusCode.Success)
+            //    File.Delete(path);
+        }
+        static void Progress()
+        {
+            Debug.Log(Request.Status);
+            if (Request.IsCompleted)
+            {
+                if (Request.Status == UnityEditor.PackageManager.StatusCode.Success)
+                    Debug.Log("Installed: " + Request.Result.packageId);
+                else if (Request.Status >= UnityEditor.PackageManager.StatusCode.Failure)
+                    Debug.Log(Request.Error.message);
+
+                EditorApplication.update -= Progress;
+            }
+        }
+
+        GooglePackageItem[] LoadJson() {
+            string path = Path.GetFullPath(Path.Combine(ProjectAuditor.DataPath, "GooglePackages.json"));
+            using (StreamReader r = new StreamReader(path)) {
+                //string packageJson = r.ReadToEnd();
+                string packageJson = File.ReadAllText(path);
+                GooglePackageItem[] googlePackages = Json.From<GooglePackageItem>(packageJson);
+                //var packages = JsonUtility.FromJson<GooglePackages>(packageJson);
+                return googlePackages;
+            }
+        }
+
+        //JJ end
+
         void Update()
         {
             if (m_ShouldRefresh)
@@ -644,6 +835,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().GetCategories());
             if ((m_SelectedModules.HasFlag(BuiltInModules.BuildReport)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().GetCategories());
+
+
+            // jj
+            if ((m_SelectedModules.HasFlag(BuiltInModules.Texture)))
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<SettingsModule>().GetCategories());
+            //end jj
+
             return requestedCategories.ToArray();
         }
 
@@ -905,6 +1103,45 @@ namespace Unity.ProjectAuditor.Editor.UI
             var selectedTarget = Array.IndexOf(m_SupportedBuildTargets, m_Platform);
             selectedTarget = EditorGUILayout.Popup(Contents.PlatformSelection, selectedTarget, m_PlatformContents);
             m_Platform = m_SupportedBuildTargets[selectedTarget];
+
+            EditorGUILayout.Space();
+
+            //JJ
+            GUILayout.FlexibleSpace();
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                m_selectedPackages = (BuiltInPackages)EditorGUILayout. EnumFlagsField(Contents.Packages, m_selectedPackages, GUILayout.ExpandWidth(true)) ;
+                const int height = 30;
+                using (new EditorGUI.DisabledScope(m_selectedPackages == BuiltInPackages.None))
+                {
+                    if (GUILayout.Button(Contents.InstallBtn, GUILayout.Width(100), GUILayout.Height(height)))
+                    {
+                        //Analyze();
+                        //Debug.Log("Install");
+                        InstallPackage(m_selectedPackages);
+                    }
+                }
+            }
+
+            EditorGUILayout.Space();
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                selectIndex = EditorGUILayout.Popup(Contents.Packages, selectIndex, googlePackageOptions);
+                const int height = 30;
+                using (new EditorGUI.DisabledScope(selectIndex == 0))
+                {
+                    if (GUILayout.Button(Contents.InstallBtn, GUILayout.Width(100), GUILayout.Height(height)))
+                    {
+                        //Analyze();
+                        //Debug.Log("Install");
+                        InstallPackage(selectIndex);
+                    }
+                }
+            }
+
+            //end JJ
 
             GUILayout.FlexibleSpace();
 
@@ -1186,6 +1423,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static class Contents
         {
+            //JJ
+            public static readonly GUIContent Packages = new GUIContent("Packages", "Select Package to install");
+            public static readonly GUIContent InstallBtn = new GUIContent("Install", "Install the selected Package");
+            //end jj
+
+
             public static readonly GUIContent WindowTitle = new GUIContent("Project Auditor");
 
             public static readonly GUIContent AnalyzeButton =
