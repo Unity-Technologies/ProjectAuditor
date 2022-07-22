@@ -1,40 +1,89 @@
 {
   "Items": [
     {
-      "id": 301000,
-      "name": "com.google.android.performancetuner.tgz",
+      "name": "Android Performance Tuner",
+      "description": "com.google.android.performancetuner.tgz",
       "url": "https://dl.google.com/games/registry/unity/com.google.android.performancetuner/com.google.android.performancetuner-1.1.2.tgz",
-      "dependencies": "none",
+      "dependencies": [],
       "publishDate": "2021-05",
       "version": "1.1.2",
-      "minimumUnityVersion": "2017.4"
+      "unity": "2017.4"
     },
     {
-      "id": 301001,
-      "name": "com.google.play.assetdelivery.tgz",
+      "name": "Play Asset Delivery",
+      "description": "com.google.play.assetdelivery.tgz",
       "url": "https://dl.google.com/games/registry/unity/com.google.play.assetdelivery/com.google.play.assetdelivery-1.8.0.tgz",
-      "dependencies": "https://dl.google.com/games/registry/unity/com.google.android.appbundle/com.google.android.appbundle-1.8.0.tgz|https://dl.google.com/games/registry/unity/com.google.play.common/com.google.play.common-1.8.0.tgz|https://dl.google.com/games/registry/unity/com.google.external-dependency-manager/com.google.external-dependency-manager-1.2.172.tgz|https://dl.google.com/games/registry/unity/com.google.play.core/com.google.play.core-1.8.0.tgz",
+      "dependencies": [
+        {
+          "name": "Android App Bundle",
+          "version": "1.8.0"
+        },
+        {
+          "name": "Play Common",
+          "version": "1.8.0"
+        },
+        {
+          "name": "External Dependency Manager for Unity",
+          "version": "1.2.172"
+        },
+        {
+          "name": "Play Core",
+          "version": "1.8.0"
+        }
+      ],
       "publishDate": "2021-07",
       "version": "1.8.0",
-      "minimumUnityVersion": "2017.4"
+      "unity": "2017.4"
     },
     {
-      "id": 301002,
-      "name": "com.google.android.appbundle.tgz",
+      "name": "Android App Bundle",
+      "description": "com.google.android.appbundle.tgz",
       "url": "https://dl.google.com/games/registry/unity/com.google.android.appbundle/com.google.android.appbundle-1.8.0.tgz",
-      "dependencies": "none",
+      "dependencies": [],
       "publishDate": "2022-07",
       "version": "1.8.0",
-      "minimumUnityVersion": "2017.4"
+      "unity": "2017.4"
     },
     {
-      "id": 301003,
-      "name": "com.google.firebase.firestore.tgz",
-      "url": "https://dl.google.com/games/registry/unity/com.google.firebase.firestore/com.google.firebase.firestore-9.1.0.tgz",
-      "dependencies": "https://dl.google.com/games/registry/unity/com.google.external-dependency-manager/com.google.external-dependency-manager-1.2.171.tgz|https://dl.google.com/games/registry/unity/com.google.firebase.app/com.google.firebase.app-9.1.0.tgz",
+      "name": "Play Common",
+      "description": "com.google.play.common.tgz",
+      "url": "https://dl.google.com/games/registry/unity/com.google.play.common/com.google.play.common-1.8.0.tgz",
+      "dependencies": [
+        {
+          "name": "Android App Bundle",
+          "version": "1.8.0"
+        }
+      ],
+      "publishDate": "2022-07",
+      "version": "1.8.0",
+      "unity": "2017.4"
+    },
+    {
+      "name": "External Dependency Manager for Unity",
+      "description": "com.google.external-dependency-manager.tgz",
+      "url": "https://dl.google.com/games/registry/unity/com.google.external-dependency-manager/com.google.external-dependency-manager-1.2.172.tgz",
+      "dependencies": [],
       "publishDate": "2022-06",
-      "version": "9.1.0",
-      "minimumUnityVersion": "2018.4"
+      "version": "1.2.172",
+      "unity": "2017.1"
+    },
+    {
+      "name": "Play Core",
+      "description": "com.google.play.core.tgz",
+      "url": "https://dl.google.com/games/registry/unity/com.google.play.core/com.google.play.core-1.8.0.tgz",
+      "dependencies": [
+        {
+          "name": "Android App Bundle",
+          "version": "1.8.0"
+        },
+        {
+          "name": "External Dependency Manager for Unity",
+          "version": "1.2.172"
+        }
+      ],
+      "publishDate": "2022-06",
+      "version": "1.8.0",
+      "unity": "2017.1"
     }
   ]
 }
