@@ -1,8 +1,8 @@
 {
   "Items": [
     {
-      "name": "Android Performance Tuner",
-      "description": "com.google.android.performancetuner.tgz",
+      "name": "com.google.android.performancetuner",
+      "description": "Android Performance Tuner",
       "url": "https://dl.google.com/games/registry/unity/com.google.android.performancetuner/com.google.android.performancetuner-1.1.2.tgz",
       "dependencies": [],
       "publishDate": "2021-05",
@@ -10,24 +10,24 @@
       "unity": "2017.4"
     },
     {
-      "name": "Play Asset Delivery",
-      "description": "com.google.play.assetdelivery.tgz",
+      "name": "com.google.play.assetdelivery",
+      "description": "Play Asset Delivery",
       "url": "https://dl.google.com/games/registry/unity/com.google.play.assetdelivery/com.google.play.assetdelivery-1.8.0.tgz",
       "dependencies": [
         {
-          "name": "Android App Bundle",
+          "name": "com.google.android.appbundle",
           "version": "1.8.0"
         },
         {
-          "name": "Play Common",
+          "name": "com.google.play.common",
           "version": "1.8.0"
         },
         {
-          "name": "External Dependency Manager for Unity",
+          "name": "com.google.external-dependency-manager",
           "version": "1.2.172"
         },
         {
-          "name": "Play Core",
+          "name": "com.google.play.core",
           "version": "1.8.0"
         }
       ],
@@ -36,8 +36,8 @@
       "unity": "2017.4"
     },
     {
-      "name": "Android App Bundle",
-      "description": "com.google.android.appbundle.tgz",
+      "name": "com.google.android.appbundle",
+      "description": "Android App Bundle",
       "url": "https://dl.google.com/games/registry/unity/com.google.android.appbundle/com.google.android.appbundle-1.8.0.tgz",
       "dependencies": [],
       "publishDate": "2022-07",
@@ -45,12 +45,12 @@
       "unity": "2017.4"
     },
     {
-      "name": "Play Common",
-      "description": "com.google.play.common.tgz",
+      "name": "com.google.play.common",
+      "description": "Play Common",
       "url": "https://dl.google.com/games/registry/unity/com.google.play.common/com.google.play.common-1.8.0.tgz",
       "dependencies": [
         {
-          "name": "Android App Bundle",
+          "name": "com.google.android.appbundle",
           "version": "1.8.0"
         }
       ],
@@ -59,8 +59,8 @@
       "unity": "2017.4"
     },
     {
-      "name": "External Dependency Manager for Unity",
-      "description": "com.google.external-dependency-manager.tgz",
+      "name": "com.google.external-dependency-manager",
+      "description": "External Dependency Manager for Unity",
       "url": "https://dl.google.com/games/registry/unity/com.google.external-dependency-manager/com.google.external-dependency-manager-1.2.172.tgz",
       "dependencies": [],
       "publishDate": "2022-06",
@@ -68,16 +68,16 @@
       "unity": "2017.1"
     },
     {
-      "name": "Play Core",
-      "description": "com.google.play.core.tgz",
+      "name": "com.google.play.core",
+      "description": "Play Core",
       "url": "https://dl.google.com/games/registry/unity/com.google.play.core/com.google.play.core-1.8.0.tgz",
       "dependencies": [
         {
-          "name": "Android App Bundle",
+          "name": "com.google.android.appbundle",
           "version": "1.8.0"
         },
         {
-          "name": "External Dependency Manager for Unity",
+          "name": "com.google.external-dependency-manager",
           "version": "1.2.172"
         }
       ],

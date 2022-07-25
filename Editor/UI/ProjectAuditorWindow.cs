@@ -205,7 +205,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     packageOptions[i] = "Please select...";
                 }
                 else {
-                    packageOptions[i] = packages[i - 1].name;
+                    packageOptions[i] = packages[i - 1].description;
                 }
             }
             //jj end
@@ -567,7 +567,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 foreach (var dependecy in packages[index-1].dependencies)
                 {
                     var package = packages.Where(p => (dependecy.name == p.name && dependecy.version == p.version)).ToArray();
-                    InstallPackage(DownloadFile(package[0].url, package[0].description));
+                    InstallPackage(DownloadFile(package[0].url, package[0].name));
                 }
             }
             InstallPackage(DownloadFile(packages[index - 1].url, packages[index - 1].name));
@@ -575,22 +575,24 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         string DownloadFile(string url, string fileName)
         {
-            string path = Path.Combine(Application.persistentDataPath,fileName);
+            string path = Path.Combine(Application.persistentDataPath,fileName+GetExtension(url));
             WebClient myWebClient = new WebClient();
-            progressBar.Start("Download Package", "Downloading Package", 10);
+            progressBar.Start("Download Package", "Downloading Package", int.MaxValue);
             progressBar.Advance();
             myWebClient.DownloadFile(url, path);
             progressBar.Clear();
             return path;
         }
 
+        string GetExtension(string url) {
+            string extension = url.Substring(url.LastIndexOf("."));
+            return String.IsNullOrEmpty(extension) ? "" : extension;
+        }
+
         void InstallPackage(string path)
         {
             string fileFullPath = "file:" + path;
-
-            //progressBar = new ProgressBar();
-            progressBar.Start("Install Package", "Installing Package", 3);
-
+            progressBar.Start("Install Package", "Installing Package", int.MaxValue);
             Request = UnityEditor.PackageManager.Client.Add(fileFullPath);
             EditorApplication.update += Progress;
             progressBar.Advance();
