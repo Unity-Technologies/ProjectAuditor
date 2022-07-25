@@ -45,6 +45,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         ProgressBar progressBar = new ProgressBar();
         string[] packageOptions;
         int selectIndex;
+        PackageItem[] packages;
         [Serializable]
         public class Dependency {
             public string name;
@@ -196,7 +197,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Instance = this;
 
             //jj add
-            PackageItem[] packages = LoadJson();
+            //PackageItem[] packages = LoadJson();
+            packages = PackagesUtils.LoadPackageJson<PackageItem>(ProjectAuditor.DataPath, "TestPackages.json");
             packageOptions = new string[packages.Length+1];
             for (int i = 0; i < packageOptions.Length; i++)
             {
@@ -561,7 +563,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         //JJ
         void InstallPackage(int index) {
-            PackageItem[] packages = LoadJson();
+            //PackageItem[] packages = LoadJson();
+            //PackageItem[] packages = LoadJson();
             if (packages[index - 1].dependencies.Length!=0)
             {
                 foreach (var dependecy in packages[index-1].dependencies)
@@ -575,7 +578,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         string DownloadFile(string url, string fileName)
         {
-            string path = Path.Combine(Application.persistentDataPath,fileName+GetExtension(url));
+            string path = Path.Combine(Application.persistentDataPath,fileName+ PackagesUtils.GetExtension(url));
             WebClient myWebClient = new WebClient();
             progressBar.Start("Download Package", "Downloading Package", int.MaxValue);
             progressBar.Advance();
@@ -584,10 +587,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             return path;
         }
 
-        string GetExtension(string url) {
-            string extension = url.Substring(url.LastIndexOf("."));
-            return String.IsNullOrEmpty(extension) ? "" : extension;
-        }
+        //string GetExtension(string url) {
+        //    string extension = url.Substring(url.LastIndexOf("."));
+        //    return String.IsNullOrEmpty(extension) ? "" : extension;
+        //}
 
         void InstallPackage(string path)
         {
@@ -614,16 +617,16 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             }
         }
-        PackageItem[] LoadJson()
-        {
-            string path = Path.GetFullPath(Path.Combine(ProjectAuditor.DataPath, "TestPackages.json"));
-            using (StreamReader r = new StreamReader(path))
-            {
-                string packageJson = File.ReadAllText(path);
-                PackageItem[] packages = Json.From<PackageItem>(packageJson);
-                return packages;
-            }
-        }
+        //PackageItem[] LoadJson()
+        //{
+        //    string path = Path.GetFullPath(Path.Combine(ProjectAuditor.DataPath, "TestPackages.json"));
+        //    using (StreamReader r = new StreamReader(path))
+        //    {
+        //        string packageJson = File.ReadAllText(path);
+        //        PackageItem[] packages = Json.From<PackageItem>(packageJson);
+        //        return packages;
+        //    }
+        //}
         //JJ end
 
         void Update()
