@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
@@ -32,7 +33,6 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             messageFormat = "Closure allocation in '{0}.{1}'"
         };
 
-
         static readonly ProblemDescriptor k_ArrayAllocationDescriptor = new ProblemDescriptor
             (
             "PAC2004",
@@ -45,15 +45,44 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             messageFormat = "'{0}' array allocation"
         };
 
+        static readonly ProblemDescriptor k_ParamArrayAllocationDescriptor = new ProblemDescriptor
+            (
+            "PAC2005",
+            "Param Object Allocation",
+            Area.Memory,
+            "A parameters array is allocated.",
+            "Try to avoid calling this method in frequently-updated code."
+            )
+        {
+            messageFormat = "Parameters array '{0} {1}' allocation"
+        };
+
+        static readonly int k_ParamArrayAtributeHashCode = "System.ParamArrayAttribute".GetHashCode();
+
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_ObjectAllocationDescriptor);
             module.RegisterDescriptor(k_ClosureAllocationDescriptor);
             module.RegisterDescriptor(k_ArrayAllocationDescriptor);
+            module.RegisterDescriptor(k_ParamArrayAllocationDescriptor);
         }
 
         public ProjectIssueBuilder Analyze(MethodDefinition callerMethodDefinition, Instruction inst)
         {
+            if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
+            {
+                var callee = (MethodReference)inst.Operand;
+                if (callee.HasParameters)
+                {
+                    var lastParam = callee.Parameters.Last();
+                    if (lastParam.HasCustomAttributes && lastParam.CustomAttributes.Any(a => a.AttributeType.FullName.GetHashCode() == k_ParamArrayAtributeHashCode))
+                    {
+                        return ProjectIssue.Create(IssueCategory.Code, k_ParamArrayAllocationDescriptor, lastParam.ParameterType.Name, lastParam.Name);
+                    }
+                }
+                return null;
+            }
+
             if (inst.OpCode == OpCodes.Newobj)
             {
                 var methodReference = (MethodReference)inst.Operand;
@@ -81,6 +110,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public IEnumerable<OpCode> GetOpCodes()
         {
+            yield return OpCodes.Call;
+            yield return OpCodes.Callvirt;
             yield return OpCodes.Newobj;
             yield return OpCodes.Newarr;
         }
