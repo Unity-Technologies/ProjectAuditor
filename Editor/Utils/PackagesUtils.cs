@@ -9,7 +9,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
 {
     public static class PackagesUtils
     {
-        public static T[] LoadPackageJson<T>(string path, string fileName) {
+        public static T[] LoadPackageJson<T>(string path, string fileName) where T: class
+        {
             string fullpath = Path.GetFullPath(Path.Combine(path, fileName));
             using (StreamReader r = new StreamReader(fullpath))
             {
