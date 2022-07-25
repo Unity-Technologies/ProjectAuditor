@@ -197,6 +197,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var assemblyInfos = compilationPipeline.Compile(progress);
             Profiler.EndSample();
 
+            if (projectAuditorParams.assemblyNames != null)
+            {
+                assemblyInfos = assemblyInfos.Where(a => projectAuditorParams.assemblyNames.Contains(a.name)).ToArray();
+            }
+
             if (m_Config.CompilationMode == CompilationMode.Editor)
             {
                 foreach (var assemblyInfo in assemblyInfos)
