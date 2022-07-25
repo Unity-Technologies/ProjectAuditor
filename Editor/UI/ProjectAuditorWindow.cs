@@ -614,7 +614,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
         PackageItem[] LoadJson()
         {
-            string path = Path.GetFullPath(Path.Combine(ProjectAuditor.DataPath, "GooglePackages.json"));
+            string path = Path.GetFullPath(Path.Combine(ProjectAuditor.DataPath, "TestPackages.json"));
             using (StreamReader r = new StreamReader(path))
             {
                 string packageJson = File.ReadAllText(path);
