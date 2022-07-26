@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public string version;
             public string unity;
         }
-        static UnityEditor.PackageManager.Requests.AddRequest Request;
+        //static UnityEditor.PackageManager.Requests.AddRequest Request;
         //JJ end
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
@@ -570,53 +570,53 @@ namespace Unity.ProjectAuditor.Editor.UI
                 foreach (var dependecy in packages[index-1].dependencies)
                 {
                     var package = packages.Where(p => (dependecy.name == p.name && dependecy.version == p.version)).ToArray();
-                    InstallPackage(DownloadFile(package[0].url, package[0].name));
+                    PackagesUtils.InstallPackage(PackagesUtils.DownloadFile(package[0].url, package[0].name, progressBar), progressBar);
                 }
             }
-            InstallPackage(DownloadFile(packages[index - 1].url, packages[index - 1].name));
+            PackagesUtils.InstallPackage(PackagesUtils.DownloadFile(packages[index - 1].url, packages[index - 1].name, progressBar), progressBar);
         }
 
-        string DownloadFile(string url, string fileName)
-        {
-            string path = Path.Combine(Application.persistentDataPath,fileName+ PackagesUtils.GetExtension(url));
-            WebClient myWebClient = new WebClient();
-            progressBar.Start("Download Package", "Downloading Package", int.MaxValue);
-            progressBar.Advance();
-            myWebClient.DownloadFile(url, path);
-            progressBar.Clear();
-            return path;
-        }
+        //string DownloadFile(string url, string fileName)
+        //{
+        //    string path = Path.Combine(Application.persistentDataPath,fileName+ PackagesUtils.GetExtension(url));
+        //    WebClient myWebClient = new WebClient();
+        //    progressBar.Start("Download Package", "Downloading Package", int.MaxValue);
+        //    progressBar.Advance();
+        //    myWebClient.DownloadFile(url, path);
+        //    progressBar.Clear();
+        //    return path;
+        //}
 
         //string GetExtension(string url) {
         //    string extension = url.Substring(url.LastIndexOf("."));
         //    return String.IsNullOrEmpty(extension) ? "" : extension;
         //}
 
-        void InstallPackage(string path)
-        {
-            string fileFullPath = "file:" + path;
-            progressBar.Start("Install Package", "Installing Package", int.MaxValue);
-            Request = UnityEditor.PackageManager.Client.Add(fileFullPath);
-            EditorApplication.update += Progress;
-            progressBar.Advance();
-            while (Request.Status == UnityEditor.PackageManager.StatusCode.InProgress) { }
-            if (Request.Status == UnityEditor.PackageManager.StatusCode.Success)
-                progressBar.Clear();
-        }
-        static void Progress()
-        {
-            Debug.Log(Request.Status);
-            if (Request.IsCompleted)
-            {
-                if (Request.Status == UnityEditor.PackageManager.StatusCode.Success)
-                    Debug.Log("Installed: " + Request.Result.packageId);
-                else if (Request.Status >= UnityEditor.PackageManager.StatusCode.Failure)
-                    Debug.Log(Request.Error.message);
+        //void InstallPackage(string path)
+        //{
+        //    string fileFullPath = "file:" + path;
+        //    progressBar.Start("Install Package", "Installing Package", int.MaxValue);
+        //    Request = UnityEditor.PackageManager.Client.Add(fileFullPath);
+        //    EditorApplication.update += Progress;
+        //    progressBar.Advance();
+        //    while (Request.Status == UnityEditor.PackageManager.StatusCode.InProgress) { }
+        //    if (Request.Status == UnityEditor.PackageManager.StatusCode.Success)
+        //        progressBar.Clear();
+        //}
+        //static void Progress()
+        //{
+        //    Debug.Log(Request.Status);
+        //    if (Request.IsCompleted)
+        //    {
+        //        if (Request.Status == UnityEditor.PackageManager.StatusCode.Success)
+        //            Debug.Log("Installed: " + Request.Result.packageId);
+        //        else if (Request.Status >= UnityEditor.PackageManager.StatusCode.Failure)
+        //            Debug.Log(Request.Error.message);
 
-                EditorApplication.update -= Progress;
+        //        EditorApplication.update -= Progress;
 
-            }
-        }
+        //    }
+        //}
         //PackageItem[] LoadJson()
         //{
         //    string path = Path.GetFullPath(Path.Combine(ProjectAuditor.DataPath, "TestPackages.json"));
