@@ -317,23 +317,53 @@ namespace Unity.ProjectAuditor.Editor.UI
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderVariants
             });
 
-#if UNITY_2019_1_OR_NEWER
-            ViewDescriptor.Register(new ViewDescriptor
+            if (UserPreferences.developerMode)
             {
-                category = IssueCategory.ShaderCompilerMessage,
-                name = "Shader Messages",
-                menuLabel = "Experimental/Shader Compiler Messages",
-                menuOrder = 4,
-                descriptionWithIcon = true,
-                onOpenIssue = EditorUtil.OpenTextFile<Shader>,
-                onDrawToolbar = (viewManager) =>
+                ViewDescriptor.Register(new ViewDescriptor
                 {
-                    AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
-                    AnalysisView.DrawToolbarButton(Contents.ShaderVariants, () => viewManager.ChangeView(IssueCategory.ShaderVariant));
-                },
-                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
-            });
+                    category = IssueCategory.GenericInstance,
+                    name = "Generics",
+                    menuLabel = "Experimental/Generic Types Instantiation",
+                    menuOrder = 90,
+                    showAssemblySelection = true,
+                    showDependencyView = true,
+                    showFilters = true,
+                    dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
+                    getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
+                    onOpenIssue = EditorUtil.OpenTextFile<TextAsset>,
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Generics
+                });
+
+#if UNITY_2019_1_OR_NEWER
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.ShaderCompilerMessage,
+                    name = "Shader Messages",
+                    menuLabel = "Experimental/Shader Compiler Messages",
+                    menuOrder = 4,
+                    descriptionWithIcon = true,
+                    onOpenIssue = EditorUtil.OpenTextFile<Shader>,
+                    onDrawToolbar = (viewManager) =>
+                    {
+                        AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
+                        AnalysisView.DrawToolbarButton(Contents.ShaderVariants, () => viewManager.ChangeView(IssueCategory.ShaderVariant));
+                    },
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
+                });
 #endif
+
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.PrecompiledAssembly,
+                    name = "Precompiled Assemblies",
+                    menuLabel = "Experimental/Precompiled Assemblies",
+                    menuOrder = 91,
+                    showFilters = true,
+                    getAssemblyName = issue => issue.description,
+                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PrecompiledAssemblies
+                });
+            }
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.Assembly,
@@ -346,17 +376,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 getAssemblyName = issue => issue.description,
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assemblies
-            });
-            ViewDescriptor.Register(new ViewDescriptor
-            {
-                category = IssueCategory.PrecompiledAssembly,
-                name = "Precompiled Assemblies",
-                menuLabel = "Experimental/Precompiled Assemblies",
-                menuOrder = 91,
-                showFilters = true,
-                getAssemblyName = issue => issue.description,
-                onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
-                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PrecompiledAssemblies
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
@@ -395,20 +414,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenIssue = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenManual = EditorUtil.OpenCompilerMessageDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.CodeCompilerMessages
-            });
-            ViewDescriptor.Register(new ViewDescriptor
-            {
-                category = IssueCategory.GenericInstance,
-                name = "Generics",
-                menuLabel = "Experimental/Generic Types Instantiation",
-                menuOrder = 90,
-                showAssemblySelection = true,
-                showDependencyView = true,
-                showFilters = true,
-                dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
-                getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
-                onOpenIssue = EditorUtil.OpenTextFile<TextAsset>,
-                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Generics
             });
             ViewDescriptor.Register(new ViewDescriptor
             {

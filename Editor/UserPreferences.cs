@@ -42,7 +42,14 @@ namespace Unity.ProjectAuditor.Editor
         static void PreferencesGUI(string searchContext)
         {
             EditorGUI.indentLevel++;
-            developerMode = EditorGUILayout.Toggle(k_DeveloperModeLabel, developerMode);
+            var value = EditorGUILayout.Toggle(k_DeveloperModeLabel, developerMode);
+            if (value != developerMode)
+            {
+                developerMode = value;
+
+                // need to trigger domain reload so that Views are re-registered
+                AssetDatabase.ImportAsset(ProjectAuditor.PackagePath + "/Editor/UserPreferences.cs");
+            }
             logTimingsInfo = EditorGUILayout.Toggle(k_LogTimingsInfoLabel, logTimingsInfo);
             EditorGUI.indentLevel--;
         }
