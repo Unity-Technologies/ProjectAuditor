@@ -189,7 +189,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     ProjectAuditorAnalytics.BeginAnalytic());
             };
 
-            m_ViewManager.onAnalyze += IncrementalAudit;
+            m_ViewManager.onAnalyze += AuditSingleModule;
             m_ViewManager.onViewExported += () =>
             {
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Export,
@@ -520,16 +520,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_NewBuildAvailable = true;
         }
 
-        void IncrementalAudit<T>() where T : ProjectAuditorModule
+        void AuditSingleModule<T>() where T : ProjectAuditorModule
         {
             var module = m_ProjectAuditor.GetModule<T>();
             if (!module.IsSupported())
                 return;
 
-            IncrementalAudit(module);
+            AuditSingleModule(module);
         }
 
-        void IncrementalAudit(ProjectAuditorModule module)
+        void AuditSingleModule(ProjectAuditorModule module)
         {
             if (m_ProjectReport == null)
                 m_ProjectReport = new ProjectReport();
@@ -563,7 +563,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void AnalyzeShaderVariants()
         {
-            IncrementalAudit<ShadersModule>();
+            AuditSingleModule<ShadersModule>();
         }
 
         public void ClearShaderVariants()
