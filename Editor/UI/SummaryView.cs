@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Stats = new Stats();
         }
 
-        protected override void OnDrawInfo()
+        protected override void DrawInfo()
         {
             EditorGUILayout.LabelField("Analysis overview", EditorStyles.boldLabel);
 

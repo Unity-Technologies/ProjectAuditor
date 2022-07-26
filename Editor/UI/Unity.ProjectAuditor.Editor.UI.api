@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         public CodeView(Unity.ProjectAuditor.Editor.UI.Framework.ViewManager viewManager) {}
         public virtual void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
         public virtual void Clear();
-        protected virtual void OnDrawInfo();
+        protected virtual void DrawInfo();
     }
 
     public class ProjectAuditorWindow : UnityEditor.EditorWindow, Unity.ProjectAuditor.Editor.IProjectIssueFilter

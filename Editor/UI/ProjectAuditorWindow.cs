@@ -165,7 +165,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             Profiler.BeginSample("Refresh");
-            RefreshDisplay();
+            RefreshWindow();
             Profiler.EndSample();
 
             m_Instance = this;
@@ -575,7 +575,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ShadersModule.ClearBuildData();
         }
 
-        void RefreshDisplay()
+        void RefreshWindow()
         {
             if (!IsAnalysisValid())
                 return;
@@ -908,7 +908,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (GUILayout.Button(Contents.LoadButton, GUILayout.Width(40), GUILayout.Height(height)))
                 {
-                    Load();
+                    LoadReport();
                 }
             }
 
@@ -919,7 +919,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawReport()
         {
-            activeView.DrawInfo();
+            activeView.DrawTopPanel();
 
             if (activeView.IsValid())
             {
@@ -928,7 +928,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed)
                 {
-                    RefreshDisplay();
+                    RefreshWindow();
                     m_ShouldRefresh = false;
                 }
 
@@ -939,13 +939,13 @@ namespace Unity.ProjectAuditor.Editor.UI
         internal void SetAreaSelection(TreeViewSelection selection)
         {
             m_AreaSelection = selection;
-            RefreshDisplay();
+            RefreshWindow();
         }
 
         internal void SetAssemblySelection(TreeViewSelection selection)
         {
             m_AssemblySelection = selection;
-            RefreshDisplay();
+            RefreshWindow();
         }
 
         void UpdateAreaSelection()
@@ -1077,12 +1077,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                     const int loadSaveButtonWidth = 60;
                     if (GUILayout.Button(Contents.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
                     {
-                        Load();
+                        LoadReport();
                     }
 
                     if (GUILayout.Button(Contents.SaveButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
                     {
-                        Save();
+                        SaveReport();
                     }
 
                     if (GUILayout.Button(Contents.DiscardButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
@@ -1098,7 +1098,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        void Save()
+        void SaveReport()
         {
             var path = EditorUtility.SaveFilePanel(k_SaveToFile, UserPreferences.loadSavePath, "project-auditor-report.json", "json");
             if (path.Length != 0)
@@ -1111,7 +1111,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        void Load()
+        void LoadReport()
         {
             var path = EditorUtility.OpenFilePanel(k_LoadFromFile, UserPreferences.loadSavePath, "json");
             if (path.Length != 0)

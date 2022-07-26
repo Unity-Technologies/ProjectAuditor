@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_MetaData.Clear();
         }
 
-        protected override void OnDrawInfo()
+        protected override void DrawInfo()
         {
             EditorGUILayout.BeginVertical();
             foreach (var issue in m_MetaData)

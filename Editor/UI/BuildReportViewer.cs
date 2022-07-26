@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.BeginVertical(GUILayout.Height(Screen.height));
             var view = m_ViewManager.GetActiveView();
-            view.DrawInfo();
+            view.DrawTopPanel();
 
             EditorGUI.BeginChangeCheck();
             view.DrawTextSearch();

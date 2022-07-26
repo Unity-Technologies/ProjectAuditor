@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_CompilationMode = (CompilationMode)Enum.Parse(typeof(CompilationMode), metaData.GetCustomProperty(MetaDataProperty.Value));
         }
 
-        protected override void OnDrawInfo()
+        protected override void DrawInfo()
         {
             EditorGUILayout.LabelField(k_Info);
             if (m_CompilationMode == CompilationMode.Editor)

@@ -126,7 +126,7 @@ To clear the recorded variants use the <b>Clear</b> button";
             GUI.enabled = true;
         }
 
-        public override void DrawFoldouts(ProjectIssue[] selectedIssues)
+        public override void DrawRightPanels(ProjectIssue[] selectedIssues)
         {
             EditorGUILayout.BeginVertical(GUILayout.Width(300));
 
@@ -163,7 +163,7 @@ To clear the recorded variants use the <b>Clear</b> button";
             EditorGUILayout.EndVertical();
         }
 
-        protected override void OnDrawInfo()
+        protected override void DrawInfo()
         {
             EditorGUILayout.BeginVertical();
             EditorGUILayout.LabelField(k_BuildInstructions, SharedStyles.TextArea);

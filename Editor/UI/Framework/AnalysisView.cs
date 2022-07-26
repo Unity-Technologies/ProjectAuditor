@@ -177,7 +177,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             if (m_Desc.showRightPanels)
             {
-                DrawFoldouts(selectedIssues);
+                DrawRightPanels(selectedIssues);
             }
 
             EditorGUILayout.EndHorizontal();
@@ -188,7 +188,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void DrawInfo()
+        public void DrawTopPanel()
         {
             if (!m_Desc.showInfoPanel)
                 return;
@@ -200,14 +200,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 EditorGUI.indentLevel++;
 
-                OnDrawInfo();
+                DrawInfo();
 
                 EditorGUI.indentLevel--;
             }
             EditorGUILayout.EndVertical();
         }
 
-        protected virtual void OnDrawInfo()
+        protected virtual void DrawInfo()
         {
         }
 
@@ -268,19 +268,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndHorizontal();
         }
 
-        public virtual void DrawFoldouts(ProjectIssue[] selectedIssues)
+        public virtual void DrawRightPanels(ProjectIssue[] selectedIssues)
         {
             var selectedDescriptors = selectedIssues.Select(i => i.descriptor).Distinct().ToArray();
 
             EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
 
-            DrawDetailsFoldout(selectedDescriptors);
-            DrawRecommendationFoldout(selectedDescriptors);
+            DrawDetails(selectedDescriptors);
+            DrawRecommendation(selectedDescriptors);
 
             EditorGUILayout.EndVertical();
         }
 
-        void DrawDetailsFoldout(ProblemDescriptor[] selectedDescriptors)
+        void DrawDetails(ProblemDescriptor[] selectedDescriptors)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
             m_GlobalStates.details = Utility.BoldFoldout(m_GlobalStates.details, Contents.DetailsFoldout);
@@ -393,7 +393,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        void DrawRecommendationFoldout(ProblemDescriptor[] selectedDescriptors)
+        void DrawRecommendation(ProblemDescriptor[] selectedDescriptors)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
             m_GlobalStates.recommendation = Utility.BoldFoldout(m_GlobalStates.recommendation, Contents.RecommendationFoldout);

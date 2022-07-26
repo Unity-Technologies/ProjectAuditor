@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_NumCompilerErrors = 0;
         }
 
-        protected override void OnDrawInfo()
+        protected override void DrawInfo()
         {
             EditorGUILayout.LabelField("\u2022 Use the Filters to reduce the number of reported issues");
             EditorGUILayout.LabelField("\u2022 Use the Mute button to mark an issue as false-positive");
