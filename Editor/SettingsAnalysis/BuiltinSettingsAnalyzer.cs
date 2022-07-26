@@ -102,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                     IssueCategory.ProjectSetting,
                     descriptor,
                     description
-                ).WithLocation(new Location(projectWindowPath));
+                ).WithLocation(projectWindowPath);
         }
     }
 }

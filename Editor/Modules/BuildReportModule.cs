@@ -197,7 +197,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     var description = string.IsNullOrEmpty(assetPath) ? k_Unknown : Path.GetFileNameWithoutExtension(assetPath);
                     var assetImporter = AssetImporter.GetAtPath(assetPath);
                     var issue = ProjectIssue.Create(IssueCategory.BuildFile, description)
-                        .WithLocation(new Location(assetPath))
+                        .WithLocation(assetPath)
                         .WithCustomProperties(new object[(int)BuildReportFileProperty.Num]
                         {
                             assetImporter != null ? assetImporter.GetType().FullName : k_Unknown,

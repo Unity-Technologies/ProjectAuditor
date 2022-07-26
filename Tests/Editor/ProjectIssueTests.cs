@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.EditorTests
             };
             ProjectIssue issue = ProjectIssue.Create(IssueCategory.Code, s_Descriptor, "dummy issue")
                 .WithCustomProperties(properties)
-                .WithLocation(new Location("Assets/Dummy.cs"));
+                .WithLocation("Assets/Dummy.cs");
 
             Assert.AreEqual(2, issue.GetNumCustomProperties());
             Assert.AreEqual("dummy issue", issue.GetProperty(PropertyType.Description));

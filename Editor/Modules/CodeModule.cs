@@ -158,7 +158,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     {
                         false
                     })
-                    .WithLocation(new Location(assemblyPath)));
+                    .WithLocation(assemblyPath));
             }
 
             var roslynAnalyzers = new string[] {};
@@ -173,7 +173,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         {
                             true
                         })
-                        .WithLocation(new Location(assemblyPath)));
+                        .WithLocation(assemblyPath));
                 }
             }
 
@@ -212,7 +212,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             assemblyInfo.packageReadOnly,
                             float.NaN
                         })
-                        .WithLocation(new Location(assemblyInfo.asmDefPath)));
+                        .WithLocation(assemblyInfo.asmDefPath));
                 }
             }
 
@@ -437,7 +437,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 })
                 .WithDependencies(new AssemblyDependencyNode(assemblyInfo.name,
                     compilationTask.dependencies.Select(d => d.assemblyName).ToArray()))
-                .WithLocation(new Location(assemblyInfo.asmDefPath))
+                .WithLocation(assemblyInfo.asmDefPath)
                 .WithSeverity(severity);
             onIssueFound(assemblyIssue);
 
@@ -456,7 +456,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         message.code,
                         assemblyInfo.name
                     })
-                    .WithLocation(new Location(relativePath, message.line))
+                    .WithLocation(relativePath, message.line)
                     .WithSeverity(CompilerMessageTypeToSeverity(message.type));
                 onIssueFound(issue);
             }

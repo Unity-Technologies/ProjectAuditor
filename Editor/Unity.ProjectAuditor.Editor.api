@@ -205,6 +205,7 @@ namespace Unity.ProjectAuditor.Editor
         public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithDependencies(Unity.ProjectAuditor.Editor.DependencyNode dependencies);
         public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithDescription(string description);
         public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithLocation(Unity.ProjectAuditor.Editor.Utils.Location location);
+        public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithLocation(string path, int line = 0);
         public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithSeverity(Unity.ProjectAuditor.Editor.Rule.Severity severity);
     }
 

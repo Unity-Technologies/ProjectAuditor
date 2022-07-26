@@ -284,7 +284,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         shaderName,
                         message.platform
                     })
-                    .WithLocation(new Location(assetPath, message.line))
+                    .WithLocation(assetPath, message.line)
                     .WithSeverity(message.severity == ShaderCompilerMessageSeverity.Error
                         ? Rule.Severity.Error
                         : Rule.Severity.Warning);
@@ -303,7 +303,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 var issueWithError = ProjectIssue.Create(IssueCategory.Shader, Path.GetFileNameWithoutExtension(assetPath))
                     .WithCustomProperties((int)ShaderProperty.Num, k_NotAvailable)
-                    .WithLocation(new Location(assetPath))
+                    .WithLocation(assetPath)
                     .WithSeverity(severity);
 
                 onIssueFound(issueWithError);
@@ -341,7 +341,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     isSrpBatcherCompatible,
                     isAlwaysIncluded
                 })
-                .WithLocation(new Location(assetPath))
+                .WithLocation(assetPath)
                 .WithSeverity(severity);
 
             onIssueFound(issue);
@@ -357,7 +357,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             foreach (var shaderVariantData in shaderVariants)
             {
                 var issue = ProjectIssue.Create(IssueCategory.ShaderVariant, shader.name)
-                    .WithLocation(new Location(assetPath))
+                    .WithLocation(assetPath)
                     .WithCustomProperties(new object[(int)ShaderVariantProperty.Num]
                     {
                         k_NoRuntimeData,

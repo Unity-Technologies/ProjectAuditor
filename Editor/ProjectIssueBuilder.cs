@@ -70,6 +70,12 @@ namespace Unity.ProjectAuditor.Editor
             return this;
         }
 
+        public ProjectIssueBuilder WithLocation(string path, int line = 0)
+        {
+            m_Issue.location = new Location(path, line);
+            return this;
+        }
+
         public ProjectIssueBuilder WithSeverity(Rule.Severity severity)
         {
             m_Issue.severity = severity;
