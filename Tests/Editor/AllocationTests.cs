@@ -69,14 +69,14 @@ class MultidimensionalArrayAllocation
             m_TempAssetParamsArrayAllocation = new TempAsset("ParamsArrayAllocation.cs", @"
 class ParamsArrayAllocation
 {
-    void DummyImpl(params object[] args)
+    void MethodWithParams(params object[] args)
     {
     }
 
     void Dummy(object C)
     {
         // implicit array allocation
-        DummyImpl(null, null);
+        MethodWithParams(null, null);
     }
 }
 ");
@@ -137,12 +137,15 @@ class ParamsArrayAllocation
         public void CodeAnalysis_NewParamsArray_IsReported()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetParamsArrayAllocation);
-            Assert.AreEqual(1, issues.Count());
+            Assert.AreEqual(2, issues.Count());
 
-            var allocationIssue = issues.First();
+            Assert.AreEqual(IssueCategory.Code, issues[0].category);
+            Assert.AreEqual("PAC2004", issues[0].descriptor.id);
+            Assert.AreEqual("'Object' array allocation", issues[0].description);
 
-            Assert.AreEqual("'Object' array allocation", allocationIssue.description);
-            Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
+            Assert.AreEqual(IssueCategory.Code, issues[1].category);
+            Assert.AreEqual("PAC2005", issues[1].descriptor.id);
+            Assert.AreEqual("Parameters array 'Object[] args' allocation", issues[1].description);
         }
     }
 }
