@@ -286,8 +286,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbar = (viewManager) =>
                 {
-                    ChangeViewButton(viewManager, IssueCategory.ShaderCompilerMessage, Contents.ShaderCompilerMessages);
-                    ChangeViewButton(viewManager, IssueCategory.ShaderVariant, Contents.ShaderVariants);
+                    AnalysisView.DrawToolbarButton(Contents.ShaderCompilerMessages, () => viewManager.ChangeView(IssueCategory.ShaderCompilerMessage));
+                    AnalysisView.DrawToolbarButton(Contents.ShaderVariants, () => viewManager.ChangeView(IssueCategory.ShaderVariant));
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Shaders
             });
@@ -305,20 +305,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onDrawToolbar = (viewManager) =>
                 {
                     GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
-                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
-                    {
-                        Instance.AnalyzeShaderVariants();
-                    }
-                    if (GUILayout.Button("Clear", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true),
-                        GUILayout.Width(AnalysisView.toolbarButtonSize)))
-                    {
-                        Instance.ClearShaderVariants();
-                    }
+
+                    AnalysisView.DrawToolbarButton(Contents.Refresh, () => Instance.AnalyzeShaderVariants());
+                    AnalysisView.DrawToolbarButton(Contents.Clear, () => Instance.ClearShaderVariants());
+
                     GUILayout.FlexibleSpace();
 
-                    ChangeViewButton(viewManager, IssueCategory.ShaderCompilerMessage, Contents.ShaderCompilerMessages);
-                    ChangeViewButton(viewManager, IssueCategory.Shader, Contents.Shaders);
+                    AnalysisView.DrawToolbarButton(Contents.ShaderCompilerMessages, () => viewManager.ChangeView(IssueCategory.ShaderCompilerMessage));
+                    AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderVariants
             });
@@ -334,8 +328,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenIssue = EditorUtil.OpenTextFile<Shader>,
                 onDrawToolbar = (viewManager) =>
                 {
-                    ChangeViewButton(viewManager, IssueCategory.Shader, Contents.Shaders);
-                    ChangeViewButton(viewManager, IssueCategory.ShaderVariant, Contents.ShaderVariants);
+                    AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
+                    AnalysisView.DrawToolbarButton(Contents.ShaderVariants, () => viewManager.ChangeView(IssueCategory.ShaderVariant));
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
             });
@@ -441,7 +435,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showInfoPanel = true,
                 onDrawToolbar = (viewManager) =>
                 {
-                    ChangeViewButton(viewManager, IssueCategory.BuildFile, Contents.BuildFiles);
+                    AnalysisView.DrawToolbarButton(Contents.BuildFiles, () => viewManager.ChangeView(IssueCategory.BuildFile));
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildSteps
             });
@@ -458,20 +452,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbar = (viewManager) =>
                 {
-                    ChangeViewButton(viewManager, IssueCategory.BuildStep, Contents.BuildSteps);
+                    AnalysisView.DrawToolbarButton(Contents.BuildSteps, () => viewManager.ChangeView(IssueCategory.BuildStep));
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
             });
-        }
-
-        static void ChangeViewButton(ViewManager viewManager, IssueCategory category, GUIContent guiContent)
-        {
-            if (GUILayout.Button(
-                guiContent, EditorStyles.toolbarButton,
-                GUILayout.Width(AnalysisView.toolbarButtonSize)))
-            {
-                viewManager.ChangeView(category);
-            }
         }
 
         bool IsAnalysisValid()
@@ -1239,6 +1223,9 @@ Once the project is analyzed, Project Auditor displays a summary with high-level
 A view allows the user to browse through the listed items and filter by string or other search criteria.
 "
             );
+
+            public static readonly GUIContent Clear = new GUIContent("Clear");
+            public static readonly GUIContent Refresh = new GUIContent("Refresh");
 
             public static readonly GUIContent Shaders = new GUIContent("Shaders", "Inspect Shaders");
             public static readonly GUIContent ShaderCompilerMessages = new GUIContent("Messages", "Show Shader Compiler Messages");

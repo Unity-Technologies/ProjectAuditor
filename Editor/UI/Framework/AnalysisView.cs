@@ -553,6 +553,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return $"{k_PrefKeyPrefix}.{m_Desc.name}.{key}";
         }
 
+        public static void DrawToolbarButton(GUIContent guiContent, Action onClick)
+        {
+            if (GUILayout.Button(
+                guiContent, EditorStyles.toolbarButton,
+                GUILayout.Width(toolbarButtonSize)))
+            {
+                onClick();
+            }
+        }
+
         // pref keys
         const string k_PrefKeyPrefix = "ProjectAuditor.AnalysisView.";
         const string k_ColumnSizeKey = "ColumnSize";

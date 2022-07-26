@@ -67,6 +67,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void DrawFoldouts(Unity.ProjectAuditor.Editor.ProjectIssue[] selectedIssues);
         public void DrawInfo();
         public virtual void DrawTextSearch();
+        public static void DrawToolbarButton(UnityEngine.GUIContent guiContent, System.Action onClick);
         protected virtual void Export(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool> predicate = default(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool>));
         public bool IsValid();
         public virtual void LoadSettings();
