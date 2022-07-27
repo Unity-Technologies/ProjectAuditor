@@ -1466,7 +1466,7 @@
           "solution": "Try to avoid using this method in frequently-updated code. Prefer UnityEngine.Time.time or, if precise time is needed, use DateTime.UtcNow."
         },
         {
-          "id": "PAC0232",
+          "id": "PAC1004",
           "type": "System.AppDomain",
           "method": "GetAssemblies",
           "areas": ["CPU"],
