@@ -206,6 +206,10 @@ namespace Unity.ProjectAuditor.EditorTests
             var descriptors = ProblemDescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, jsonFilename);
             foreach (var desc in descriptors)
             {
+                Assert.False(string.IsNullOrEmpty(desc.id));
+                Assert.False(string.IsNullOrEmpty(desc.problem), desc.id + " has no problem description");
+                Assert.False(string.IsNullOrEmpty(desc.solution), desc.id + " has no solution description");
+
                 var type = types.FirstOrDefault(t => t.FullName.Equals(desc.type));
 
                 Assert.True(!string.IsNullOrEmpty(desc.customevaluator) || (desc.method.Equals("*") || type != null), "Invalid Type : " + desc.type);
