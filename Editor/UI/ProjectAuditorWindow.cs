@@ -43,25 +43,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         //JJ add
         ProgressBar progressBar = new ProgressBar();
-        string[] packageOptions;
         int selectIndex;
-        PackageItem[] packages;
-        [Serializable]
-        public class Dependency {
-            public string name;
-            public string version;
-        }
-        [Serializable]
-        public class PackageItem {
-            public string name;
-            public string description;
-            public string url;
-            public Dependency[] dependencies;
-            public string publishDate;
-            public string version;
-            public string unity;
-        }
-        //static UnityEditor.PackageManager.Requests.AddRequest Request;
         //JJ end
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
@@ -197,19 +179,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Instance = this;
 
             //jj add
-            //PackageItem[] packages = LoadJson();
-            packages = PackagesUtils.LoadPackageJson<PackageItem>(ProjectAuditor.DataPath, "TestPackages.json");
-            packageOptions = new string[packages.Length+1];
-            for (int i = 0; i < packageOptions.Length; i++)
-            {
-                if (i == 0)
-                {
-                    packageOptions[i] = "Please select...";
-                }
-                else {
-                    packageOptions[i] = packages[i - 1].description;
-                }
-            }
+            PackagesUtils.Initial(ProjectAuditor.DataPath, "TestPackages.json");
             //jj end
         }
 
@@ -560,74 +530,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             };
             m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar());
         }
-
-        //JJ
-        void InstallPackage(int index) {
-            //PackageItem[] packages = LoadJson();
-            //PackageItem[] packages = LoadJson();
-            if (packages[index - 1].dependencies.Length!=0)
-            {
-                foreach (var dependecy in packages[index-1].dependencies)
-                {
-                    var package = packages.Where(p => (dependecy.name == p.name && dependecy.version == p.version)).ToArray();
-                    PackagesUtils.InstallPackage(PackagesUtils.DownloadFile(package[0].url, package[0].name, progressBar), progressBar);
-                }
-            }
-            PackagesUtils.InstallPackage(PackagesUtils.DownloadFile(packages[index - 1].url, packages[index - 1].name, progressBar), progressBar);
-        }
-
-        //string DownloadFile(string url, string fileName)
-        //{
-        //    string path = Path.Combine(Application.persistentDataPath,fileName+ PackagesUtils.GetExtension(url));
-        //    WebClient myWebClient = new WebClient();
-        //    progressBar.Start("Download Package", "Downloading Package", int.MaxValue);
-        //    progressBar.Advance();
-        //    myWebClient.DownloadFile(url, path);
-        //    progressBar.Clear();
-        //    return path;
-        //}
-
-        //string GetExtension(string url) {
-        //    string extension = url.Substring(url.LastIndexOf("."));
-        //    return String.IsNullOrEmpty(extension) ? "" : extension;
-        //}
-
-        //void InstallPackage(string path)
-        //{
-        //    string fileFullPath = "file:" + path;
-        //    progressBar.Start("Install Package", "Installing Package", int.MaxValue);
-        //    Request = UnityEditor.PackageManager.Client.Add(fileFullPath);
-        //    EditorApplication.update += Progress;
-        //    progressBar.Advance();
-        //    while (Request.Status == UnityEditor.PackageManager.StatusCode.InProgress) { }
-        //    if (Request.Status == UnityEditor.PackageManager.StatusCode.Success)
-        //        progressBar.Clear();
-        //}
-        //static void Progress()
-        //{
-        //    Debug.Log(Request.Status);
-        //    if (Request.IsCompleted)
-        //    {
-        //        if (Request.Status == UnityEditor.PackageManager.StatusCode.Success)
-        //            Debug.Log("Installed: " + Request.Result.packageId);
-        //        else if (Request.Status >= UnityEditor.PackageManager.StatusCode.Failure)
-        //            Debug.Log(Request.Error.message);
-
-        //        EditorApplication.update -= Progress;
-
-        //    }
-        //}
-        //PackageItem[] LoadJson()
-        //{
-        //    string path = Path.GetFullPath(Path.Combine(ProjectAuditor.DataPath, "TestPackages.json"));
-        //    using (StreamReader r = new StreamReader(path))
-        //    {
-        //        string packageJson = File.ReadAllText(path);
-        //        PackageItem[] packages = Json.From<PackageItem>(packageJson);
-        //        return packages;
-        //    }
-        //}
-        //JJ end
 
         void Update()
         {
@@ -1028,13 +930,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             //JJ
             using (new EditorGUILayout.HorizontalScope())
             {
-                selectIndex = EditorGUILayout.Popup(Contents.Packages, selectIndex, packageOptions);
+                selectIndex = EditorGUILayout.Popup(Contents.Packages, selectIndex, PackagesUtils.GetPackagesNames());
                 const int height = 30;
                 using (new EditorGUI.DisabledScope(selectIndex == 0))
                 {
                     if (GUILayout.Button(Contents.InstallBtn, GUILayout.Width(100), GUILayout.Height(height)))
                     {
-                        InstallPackage(selectIndex);
+                        PackagesUtils.InstallPackage(selectIndex, progressBar);
                     }
                 }
             }

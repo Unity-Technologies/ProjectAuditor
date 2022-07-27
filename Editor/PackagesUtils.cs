@@ -1,14 +1,57 @@
 using System;
 using System.IO;
+using System.Linq;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.PackageManager.Requests;
 
 namespace Unity.ProjectAuditor.Editor
 {
+
+    [Serializable]
+    public class Dependency
+    {
+        public string name;
+        public string version;
+    }
+    [Serializable]
+    public class PackageItem
+    {
+        public string name;
+        public string description;
+        public string url;
+        public Dependency[] dependencies;
+        public string publishDate;
+        public string version;
+        public string unity;
+    }
     public static class PackagesUtils
     {
 
         public static AddRequest Request;
+        public static PackageItem[] packages;
+
+        public static void Initial(string dataPath, string fileName) {
+            packages = LoadPackageJson<PackageItem>(dataPath, fileName);
+        }
+
+        public static string[] GetPackagesNames() {
+            if (packages.Length != 0) {
+                string[] options = new string[packages.Length + 1];
+                for (int i = 0; i < options.Length; i++)
+                {
+                    if (i == 0)
+                    {
+                        options[i] = "Please select...";
+                    }
+                    else {
+                        options[i] = packages[i - 1].description;
+                    }
+                }
+                return options;
+            }
+            else
+                return null;
+        }
 
         public static T[] LoadPackageJson<T>(string path, string fileName) where T: class
         {
@@ -35,6 +78,20 @@ namespace Unity.ProjectAuditor.Editor
             myWebClient.DownloadFile(url, path);
             progressBar.Clear();
             return path;
+        }
+
+
+        public static void InstallPackage(int index, IProgress progressBar)
+        {
+            if (packages[index - 1].dependencies.Length != 0)
+            {
+                foreach (var dependecy in packages[index - 1].dependencies)
+                {
+                    var package = packages.Where(p => (dependecy.name == p.name && dependecy.version == p.version)).ToArray();
+                    InstallPackage(DownloadFile(package[0].url, package[0].name, progressBar), progressBar);
+                }
+            }
+            PackagesUtils.InstallPackage(PackagesUtils.DownloadFile(PackagesUtils.packages[index - 1].url, PackagesUtils.packages[index - 1].name, progressBar), progressBar);
         }
 
         public static void InstallPackage(string path, IProgress progressBar) {
