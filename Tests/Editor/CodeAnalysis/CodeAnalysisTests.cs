@@ -25,12 +25,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAssetIssueInOverrideMethod;
         TempAsset m_TempAssetIssueInVirtualMethod;
         TempAsset m_TempAssetAnyApiInNamespace;
-        TempAsset m_TempAssetObjectName;
         TempAsset m_TempAssetGenericInstantiation;
-        TempAsset m_TempAssetBaseTypePropertyUsage;
-#if UNITY_2019_1_OR_NEWER
-        TempAsset m_TempAssetUxmlAttributeDescriptionPropertyUsage;
-#endif
 
         [OneTimeSetUp]
         public void SetUp()
@@ -210,19 +205,6 @@ class AnyApiInNamespace
 }
 ");
 
-            m_TempAssetObjectName = new TempAsset("ObjectNameTest.cs", @"
-using UnityEngine;
-class ObjectNameTest : MonoBehaviour
-{
-    void Start()
-    {
-        Debug.Log(gameObject.name);
-        Debug.Log(transform.name);
-        Debug.Log(this.name);
-    }
-}
-");
-
             m_TempAssetGenericInstantiation = new TempAsset("GenericInstantiation.cs", @"
 using System.Collections.Generic;
 class GenericInstantiation
@@ -234,51 +216,6 @@ class GenericInstantiation
     }
 }
 ");
-
-            m_TempAssetBaseTypePropertyUsage = new TempAsset("BaseTypePropertyUsage.cs", @"
-using UnityEngine;
-class BaseTypePropertyUsage
-{
-    void Test()
-    {
-        Material material = null;
-        Material[] materials;
-        Material[] sharedMaterials;
-
-        // check base class Renderer
-        Renderer baseClassRenderer = null;
-        material = baseClassRenderer.material;
-        materials = baseClassRenderer.materials;
-        sharedMaterials = baseClassRenderer.sharedMaterials;
-
-        // check derived class LineRenderer
-        LineRenderer subClassRenderer = null;
-        material = subClassRenderer.material;
-        materials = subClassRenderer.materials;
-        sharedMaterials = subClassRenderer.sharedMaterials;
-    }
-}
-");
-
-#if UNITY_2019_1_OR_NEWER
-            m_TempAssetUxmlAttributeDescriptionPropertyUsage = new TempAsset("UxmlAttributeDescriptionPropertyUsage.cs", @"
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UIElements;
-
-class UxmlAttributeDescriptionPropertyUsage
-{
-    UxmlFloatAttributeDescription desc;
-    IEnumerable<string> names;
-
-    void Test()
-    {
-        names = desc.obsoleteNames;
-    }
-}
-");
-#endif
         }
 
         [Test]
@@ -441,15 +378,6 @@ class UxmlAttributeDescriptionPropertyUsage
         }
 
         [Test]
-        public void CodeAnalysis_ObjectName_IsReported()
-        {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetObjectName);
-
-            Assert.AreEqual(3, issues.Length);
-            Assert.True(issues.All(i => i.description.Equals("'UnityEngine.Object.name' usage")));
-        }
-
-        [Test]
         public void CodeAnalysis_GenericInstantiation_IsReported()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetGenericInstantiation, IssueCategory.GenericInstance);
@@ -457,27 +385,6 @@ class UxmlAttributeDescriptionPropertyUsage
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("'System.Collections.Generic.HashSet`1<System.String>' generic instance", issues[0].description);
         }
-
-        [Test]
-        public void CodeAnalysis_BaseTypePropertyUsage_IsReported()
-        {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetBaseTypePropertyUsage);
-
-            Assert.AreEqual(6, issues.Length);
-        }
-
-#if UNITY_2019_1_OR_NEWER
-        [Test]
-        public void CodeAnalysis_UxmlAttributeDescriptionPropertyUsage_IsReported()
-        {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetUxmlAttributeDescriptionPropertyUsage);
-
-            Assert.AreEqual(1, issues.Length);
-            Assert.AreEqual("'UnityEngine.UIElements.UxmlAttributeDescription.obsoleteNames' usage", issues[0].description);
-        }
-
-#endif
-
 
         [Test]
         public void CodeAnalysis_DefaultAssembly_IsOnlyReportedAssembly()
