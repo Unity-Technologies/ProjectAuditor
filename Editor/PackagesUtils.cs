@@ -7,25 +7,26 @@ using UnityEditor.PackageManager.Requests;
 namespace Unity.ProjectAuditor.Editor
 {
 
-    [Serializable]
-    public class Dependency
-    {
-        public string name;
-        public string version;
-    }
-    [Serializable]
-    public class PackageItem
-    {
-        public string name;
-        public string description;
-        public string url;
-        public Dependency[] dependencies;
-        public string publishDate;
-        public string version;
-        public string unity;
-    }
+
     public static class PackagesUtils
     {
+        [Serializable]
+        public class Dependency
+        {
+            public string name;
+            public string version;
+        }
+        [Serializable]
+        public class PackageItem
+        {
+            public string name;
+            public string description;
+            public string url;
+            public Dependency[] dependencies;
+            public string publishDate;
+            public string version;
+            public string unity;
+        }
 
         public static AddRequest Request;
         public static PackageItem[] packages;
