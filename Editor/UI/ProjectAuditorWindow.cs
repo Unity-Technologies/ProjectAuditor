@@ -859,8 +859,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     table.SetSelection(new List<int>());
                                 }
 
+                                var selectedIssues = selectedItems.Where(item => item.parent != null);
                                 ProjectAuditorAnalytics.SendEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
-                                    analytic, table.GetSelectedItems());
+                                    analytic, selectedIssues);
                             }
 
                             if (GUILayout.Button(Contents.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))

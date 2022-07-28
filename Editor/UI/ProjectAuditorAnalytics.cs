@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Analytics;
@@ -225,14 +224,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         // -------------------------------------------------------------------------------------------------------------
 
-        static IssueStats[] CollectSelectionStats(IssueTableItem[] selectedItems)
+        static IssueStats[] CollectSelectionStats(ProjectIssue[] selectedIssues)
         {
             var selectionsDict = new Dictionary<string, IssueStats>();
-            var selectedChildren = selectedItems.Where(item => item.parent != null);
 
-            foreach (var childItem in selectedChildren)
+            foreach (var issue in selectedIssues)
             {
-                var id = childItem.ProjectIssue.descriptor.id;
+                var id = issue.descriptor.id;
+
                 IssueStats summary;
                 if (!selectionsDict.TryGetValue(id, out summary))
                 {
@@ -312,13 +311,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             return false;
         }
 
-        public static bool SendEventWithSelectionSummary(UIButton uiButton, Analytic analytic, IssueTableItem[] selectedItems)
+        public static bool SendEventWithSelectionSummary(UIButton uiButton, Analytic analytic, ProjectIssue[] selectedIssues)
         {
             analytic.End();
 
             if (s_EnableAnalytics)
             {
-                var payload = CollectSelectionStats(selectedItems);
+                var payload = CollectSelectionStats(selectedIssues);
 
                 var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
