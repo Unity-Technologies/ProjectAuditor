@@ -604,7 +604,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             activeView.Refresh();
-            ProjectAuditorAnalytics.SendEvent((ProjectAuditorAnalytics.UIButton)activeView.desc.analyticsEvent, ProjectAuditorAnalytics.BeginAnalytic());
         }
 
         string GetSelectedAssembliesSummary()
