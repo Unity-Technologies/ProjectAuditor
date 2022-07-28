@@ -88,24 +88,26 @@ namespace Unity.ProjectAuditor.Editor.UI
             // - is not muted, if enabled
             // - critical context, if enabled/applicable
 
+            var viewDesc = activeView.desc;
+
             Profiler.BeginSample("MatchAssembly");
-            var matchAssembly = !activeView.desc.showAssemblySelection ||
+            var matchAssembly = !viewDesc.showAssemblySelection ||
                 m_AssemblySelection != null &&
-                (m_AssemblySelection.Contains(activeView.desc.getAssemblyName(issue)) ||
+                (m_AssemblySelection.Contains(viewDesc.getAssemblyName(issue)) ||
                     m_AssemblySelection.ContainsGroup("All"));
             Profiler.EndSample();
             if (!matchAssembly)
                 return false;
 
             Profiler.BeginSample("MatchArea");
-            var matchArea = !activeView.desc.showAreaSelection ||
+            var matchArea = !viewDesc.showAreaSelection ||
                 m_AreaSelection.ContainsAny(issue.descriptor.areas) ||
                 m_AreaSelection.ContainsGroup("All");
             Profiler.EndSample();
             if (!matchArea)
                 return false;
 
-            if (!m_GlobalStates.mutedIssues && activeView.desc.showMuteOptions)
+            if (!m_GlobalStates.mutedIssues && viewDesc.showMuteOptions)
             {
                 Profiler.BeginSample("IsMuted");
                 var muted = m_ProjectAuditor.config.GetAction(issue.descriptor, issue.GetContext()) ==
@@ -115,7 +117,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return false;
             }
 
-            if (activeView.desc.showCritical &&
+            if (viewDesc.showCritical &&
                 m_GlobalStates.onlyCriticalIssues &&
                 !issue.isPerfCriticalContext)
                 return false;
