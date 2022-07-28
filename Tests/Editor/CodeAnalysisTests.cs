@@ -13,6 +13,7 @@ namespace Unity.ProjectAuditor.EditorTests
     class CodeAnalysisTests : TestFixtureBase
     {
         TempAsset m_TempAsset;
+        TempAsset m_TempAssetClassWithConditionalAttribute;
         TempAsset m_TempAssetDerivedClassMethod;
         TempAsset m_TempAssetInPlugin;
         TempAsset m_TempAssetIssueInCoroutine;
@@ -41,6 +42,27 @@ class MyClass
     void Dummy()
     {
         Debug.Log(Camera.allCameras.Length.ToString());
+    }
+}
+");
+
+            m_TempAssetClassWithConditionalAttribute = new TempAsset("ClassWithConditionalAttribute.cs", @"
+using System.Diagnostics;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
+
+class ClassWithConditionalAttribute
+{
+    void Caller()
+    {
+        // this call will be removed by the compiler
+        MethodWithConditionalAttribute();
+    }
+
+    [Conditional(""ENABLE_LOG_NOT_DEFINED"")]
+    void MethodWithConditionalAttribute()
+    {
+        Debug.Log(6); // boxing
     }
 }
 ");
@@ -298,6 +320,18 @@ class UxmlAttributeDescriptionPropertyUsage
             // check custom property
             Assert.AreEqual((int)CodeProperty.Num, myIssue.GetNumCustomProperties());
             Assert.AreEqual(AssemblyInfo.DefaultAssemblyName, myIssue.GetCustomProperty(CodeProperty.Assembly));
+        }
+
+        [Test]
+        public void CodeAnalysis_ConditionalMethodCallSites_AreRemoved()
+        {
+            var issues = AnalyzeAndFindAssetIssues(m_TempAssetClassWithConditionalAttribute);
+            Assert.Positive(issues.Length);
+            Assert.NotNull(issues[0]);
+            Assert.NotNull(issues[0].dependencies);
+
+            // all call sites should be removed by the compiler
+            Assert.False(issues[0].dependencies.HasChildren());
         }
 
         [Test]
