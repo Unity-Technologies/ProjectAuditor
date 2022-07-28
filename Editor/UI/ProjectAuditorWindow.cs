@@ -845,10 +845,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                         using (new EditorGUI.DisabledScope(!activeView.desc.showMuteOptions))
                         {
+                            var selectedItems = table.GetSelectedItems();
+                            var selectedIssues = selectedItems.Where(item => item.parent != null).Select(i => i.ProjectIssue).ToArray();
                             if (GUILayout.Button(Contents.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                             {
                                 var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                                var selectedItems = table.GetSelectedItems();
                                 foreach (var item in selectedItems)
                                 {
                                     SetRuleForItem(item, Rule.Severity.None);
@@ -859,7 +860,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     table.SetSelection(new List<int>());
                                 }
 
-                                var selectedIssues = selectedItems.Where(item => item.parent != null);
                                 ProjectAuditorAnalytics.SendEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
                                     analytic, selectedIssues);
                             }
@@ -867,14 +867,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                             if (GUILayout.Button(Contents.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                             {
                                 var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                                var selectedItems = table.GetSelectedItems();
                                 foreach (var item in selectedItems)
                                 {
                                     ClearRulesForItem(item);
                                 }
 
                                 ProjectAuditorAnalytics.SendEventWithSelectionSummary(
-                                    ProjectAuditorAnalytics.UIButton.Unmute, analytic, table.GetSelectedItems());
+                                    ProjectAuditorAnalytics.UIButton.Unmute, analytic, selectedIssues);
                             }
                         }
                     }
