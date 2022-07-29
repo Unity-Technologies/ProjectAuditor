@@ -6,11 +6,11 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    public class CodeView : AnalysisView
+    public class DiagnosticView : AnalysisView
     {
         int m_NumCompilerErrors = 0;
 
-        public CodeView(ViewManager viewManager) : base(viewManager)
+        public DiagnosticView(ViewManager viewManager) : base(viewManager)
         {
         }
 
@@ -18,8 +18,11 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             base.AddIssues(allIssues);
 
-            var compilerMessages = allIssues.Where(i => i.category == IssueCategory.CodeCompilerMessage);
-            m_NumCompilerErrors += compilerMessages.Count(i => i.severity == Rule.Severity.Error);
+            if (m_Desc.category == IssueCategory.Code)
+            {
+                var compilerMessages = allIssues.Where(i => i.category == IssueCategory.CodeCompilerMessage);
+                m_NumCompilerErrors += compilerMessages.Count(i => i.severity == Rule.Severity.Error);
+            }
         }
 
         public override void Clear()
@@ -34,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField("\u2022 Use the Filters to reduce the number of reported issues");
             EditorGUILayout.LabelField("\u2022 Use the Mute button to mark an issue as false-positive");
 
-            if (m_NumCompilerErrors > 0)
+            if (m_Desc.category == IssueCategory.Code && m_NumCompilerErrors > 0)
             {
                 EditorGUILayout.Space();
                 EditorGUILayout.BeginHorizontal();

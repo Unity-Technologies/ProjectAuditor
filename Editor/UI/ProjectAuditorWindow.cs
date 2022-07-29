@@ -381,7 +381,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                type = typeof(CodeView),
+                type = typeof(DiagnosticView),
                 category = IssueCategory.Code,
                 name = "Code",
                 menuLabel = "Code/Diagnostics",
@@ -419,6 +419,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
+                type = typeof(DiagnosticView),
                 category = IssueCategory.ProjectSetting,
                 name = "Settings",
                 menuLabel = "Settings/Diagnostics",
@@ -426,6 +427,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showActions = true,
                 showAreaSelection = true,
                 showFilters = true,
+                showInfoPanel = true,
                 showMuteOptions = true,
                 showRightPanels = true,
                 onOpenIssue = EditorUtil.OpenProjectSettings,
