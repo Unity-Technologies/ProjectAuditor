@@ -772,7 +772,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     EditorGUI.BeginChangeCheck();
 
-                    activeView.DrawTextSearch();
+                    activeView.DrawSearch();
 
                     // this is specific to diagnostics
                     if (activeView.desc.showCritical || activeView.desc.showMuteOptions)

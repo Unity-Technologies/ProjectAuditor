@@ -7,11 +7,11 @@ namespace Unity.ProjectAuditor.Editor
     {
         public bool ignoreCase = true;
         public bool searchDependencies = false;
-        public string searchText = string.Empty;
+        public string searchString = string.Empty;
 
         public bool Match(ProjectIssue issue)
         {
-            if (string.IsNullOrEmpty(searchText))
+            if (string.IsNullOrEmpty(searchString))
                 return true;
 
             // return true if the issue matches the any of the following string search criteria
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor
         bool MatchesSearch(string text)
         {
             return !string.IsNullOrEmpty(text) &&
-                text.IndexOf(searchText, ignoreCase ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture) >= 0;
+                text.IndexOf(searchString, ignoreCase ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture) >= 0;
         }
 
         bool MatchesSearch(DependencyNode node, bool recursive)

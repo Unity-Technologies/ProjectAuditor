@@ -91,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             view.DrawTopPanel();
 
             EditorGUI.BeginChangeCheck();
-            view.DrawTextSearch();
+            view.DrawSearch();
             if (EditorGUI.EndChangeCheck())
                 view.MarkDirty();
 

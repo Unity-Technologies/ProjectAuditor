@@ -249,16 +249,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndVertical();
         }
 
-        public virtual void DrawTextSearch()
+        public virtual void DrawSearch()
         {
             EditorGUILayout.BeginHorizontal();
 
             EditorGUILayout.LabelField(Contents.TextSearchLabel, GUILayout.Width(80));
 
-            m_TextFilter.searchText = EditorGUILayout.DelayedTextField(m_TextFilter.searchText, GUILayout.Width(180));
+            m_TextFilter.searchString = EditorGUILayout.DelayedTextField(m_TextFilter.searchString, GUILayout.Width(180));
             m_TextFilter.ignoreCase = !EditorGUILayout.ToggleLeft(Contents.TextSearchCaseSensitive, !m_TextFilter.ignoreCase, GUILayout.Width(160));
 
-            m_Table.searchString = m_TextFilter.searchText;
+            m_Table.searchString = m_TextFilter.searchString;
 
             if (UserPreferences.developerMode)
             {
@@ -468,7 +468,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void SetSearch(string filter)
         {
-            m_TextFilter.searchText = filter;
+            m_TextFilter.searchString = filter;
         }
 
         void SetRowsExpanded(bool expanded)
@@ -550,7 +550,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Table.groupPropertyIndex = EditorPrefs.GetInt(GetPrefKey(k_GroupPropertyIndexKey), defaultGroupPropertyIndex);
             m_TextFilter.searchDependencies = EditorPrefs.GetBool(GetPrefKey(k_SearchDepsKey), false);
             m_TextFilter.ignoreCase = EditorPrefs.GetBool(GetPrefKey(k_SearchIgnoreCaseKey), true);
-            m_TextFilter.searchText = EditorPrefs.GetString(GetPrefKey(k_SearchStringKey));
+            m_TextFilter.searchString = EditorPrefs.GetString(GetPrefKey(k_SearchStringKey));
         }
 
         public virtual void SaveSettings()
@@ -564,7 +564,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorPrefs.SetInt(GetPrefKey(k_GroupPropertyIndexKey), m_Table.groupPropertyIndex);
             EditorPrefs.SetBool(GetPrefKey(k_SearchDepsKey), m_TextFilter.searchDependencies);
             EditorPrefs.SetBool(GetPrefKey(k_SearchIgnoreCaseKey), m_TextFilter.ignoreCase);
-            EditorPrefs.SetString(GetPrefKey(k_SearchStringKey), m_TextFilter.searchText);
+            EditorPrefs.SetString(GetPrefKey(k_SearchStringKey), m_TextFilter.searchString);
         }
 
         string GetPrefKey(string key)
