@@ -59,7 +59,7 @@ class InternalClass
             {
                 ignoreCase = false,
                 searchDependencies = false,
-                searchText = string.Empty
+                searchString = string.Empty
             };
 
             var issues = Analyze(IssueCategory.ProjectSetting);
@@ -76,13 +76,13 @@ class InternalClass
             {
                 ignoreCase = false,
                 searchDependencies = false,
-                searchText = "Prebake Collision Meshes"
+                searchString = "Prebake Collision Meshes"
             };
             var filteredIssues = issues.Where(i => stringFilter.Match(i));
 
             Assert.AreEqual(1, filteredIssues.Count());
 
-            stringFilter.searchText = "prebake collision meshes";
+            stringFilter.searchString = "prebake collision meshes";
 
             filteredIssues = issues.Where(i => stringFilter.Match(i));
 
@@ -97,7 +97,7 @@ class InternalClass
             {
                 ignoreCase = true,
                 searchDependencies = false,
-                searchText = "prebake collision meshes"
+                searchString = "prebake collision meshes"
             };
             var filteredIssues = issues.Where(i => stringFilter.Match(i));
             Assert.AreEqual(1, filteredIssues.Count());
@@ -117,7 +117,7 @@ class InternalClass
             {
                 ignoreCase = true,
                 searchDependencies = false,
-                searchText = "FilterTests.cs"
+                searchString = "FilterTests.cs"
             };
             var filteredIssues = issues.Where(i => stringFilter.Match(i));
             Assert.AreEqual(1, filteredIssues.Count());
@@ -137,7 +137,7 @@ class InternalClass
             {
                 ignoreCase = false,
                 searchDependencies = false,
-                searchText = "WrapperClass"
+                searchString = "WrapperClass"
             };
             var filteredIssues = issues.Where(i => stringFilter.Match(i));
             Assert.AreEqual(0, filteredIssues.Count());

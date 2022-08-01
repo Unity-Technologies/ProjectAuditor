@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// /// Create General-purpose ProjectIssueBuilder
+        /// Create General-purpose ProjectIssueBuilder
         /// </summary>
         /// <param name="category"> Issue category </param>
         /// <param name="description"> User-friendly description </param>

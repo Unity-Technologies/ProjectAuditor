@@ -87,7 +87,6 @@ To clear the recorded variants use the <b>Clear</b> button";
             {
                 case ParseLogResult.Success:
                     EditorUtility.DisplayDialog(k_PlayerLogParsingDialogTitle, k_PlayerLogProcessed, k_Ok);
-                    Refresh();
                     break;
                 case ParseLogResult.NoCompiledVariants:
                     if (GraphicsSettingsProxy.logShaderCompilationSupported)
@@ -119,7 +118,7 @@ To clear the recorded variants use the <b>Clear</b> button";
             m_ShowUncompiledVariants = EditorGUILayout.ToggleLeft("Uncompiled Variants", m_ShowUncompiledVariants, GUILayout.Width(180));
             if (EditorGUI.EndChangeCheck())
             {
-                Refresh();
+                MarkDirty();
             }
             EditorGUILayout.EndHorizontal();
 

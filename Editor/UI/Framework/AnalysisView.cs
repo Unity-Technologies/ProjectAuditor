@@ -21,6 +21,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
 
         protected Draw2D m_2D;
+        protected bool m_Dirty = true;
         protected ProjectAuditorConfig m_Config;
         protected ProjectAuditorModule m_Module;
         protected GlobalStates m_GlobalStates;
@@ -144,17 +145,33 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             m_Issues.AddRange(issues);
             m_Table.AddIssues(issues);
+
+            m_Dirty = true;
         }
 
         public virtual void Clear()
         {
             m_Issues.Clear();
             m_Table.Clear();
+
+            m_Dirty = true;
         }
 
-        public void Refresh()
+        /// <summary>
+        /// Mark view as dirty. Use this to force a table reload.
+        /// </summary>
+        public void MarkDirty()
         {
+            m_Dirty = true;
+        }
+
+        void RefreshIfDirty()
+        {
+            if (!m_Dirty)
+                return;
+
             m_Table.Reload();
+            m_Dirty = false;
         }
 
         public bool IsValid()
@@ -213,6 +230,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawTable(ProjectIssue[] selectedIssues)
         {
+            RefreshIfDirty();
+
             EditorGUILayout.BeginVertical();
             EditorGUILayout.Space();
 
@@ -230,16 +249,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndVertical();
         }
 
-        public virtual void DrawTextSearch()
+        public virtual void DrawSearch()
         {
             EditorGUILayout.BeginHorizontal();
 
-            EditorGUILayout.LabelField(Contents.TextSearchLabel, GUILayout.Width(80));
+            // note that we don't need to detect string changes (with EditorGUI.Begin/EndChangeCheck(), because the TreeViewController already triggers a BuildRows() when the text changes
+            EditorGUILayout.LabelField(Contents.SearchStringLabel, GUILayout.Width(80));
 
-            m_TextFilter.searchText = EditorGUILayout.DelayedTextField(m_TextFilter.searchText, GUILayout.Width(180));
+            m_TextFilter.searchString = EditorGUILayout.DelayedTextField(m_TextFilter.searchString, GUILayout.Width(180));
+            m_Table.searchString = m_TextFilter.searchString;
+
+            EditorGUI.BeginChangeCheck();
             m_TextFilter.ignoreCase = !EditorGUILayout.ToggleLeft(Contents.TextSearchCaseSensitive, !m_TextFilter.ignoreCase, GUILayout.Width(160));
-
-            m_Table.searchString = m_TextFilter.searchText;
 
             if (UserPreferences.developerMode)
             {
@@ -249,6 +270,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     m_TextFilter.searchDependencies, GUILayout.Width(160));
                 GUI.enabled = true;
             }
+
+            if (EditorGUI.EndChangeCheck())
+                MarkDirty();
 
             EditorGUILayout.EndHorizontal();
         }
@@ -324,7 +348,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_Table.flatView = GUILayout.Toggle(m_Table.flatView, Contents.FlatModeButton, EditorStyles.toolbarButton, GUILayout.Width(AnalysisView.toolbarButtonSize));
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Refresh();
+                    MarkDirty();
                 }
 
                 GUI.enabled = !m_Table.flatView;
@@ -355,7 +379,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_ShowError = GUILayout.Toggle(m_ShowError, Utility.GetSeverityIcon(Rule.Severity.Error, "Show errors"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(false));
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Refresh();
+                    MarkDirty();
                 }
             }
         }
@@ -449,7 +473,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void SetSearch(string filter)
         {
-            m_TextFilter.searchText = filter;
+            m_TextFilter.searchString = filter;
         }
 
         void SetRowsExpanded(bool expanded)
@@ -531,7 +555,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Table.groupPropertyIndex = EditorPrefs.GetInt(GetPrefKey(k_GroupPropertyIndexKey), defaultGroupPropertyIndex);
             m_TextFilter.searchDependencies = EditorPrefs.GetBool(GetPrefKey(k_SearchDepsKey), false);
             m_TextFilter.ignoreCase = EditorPrefs.GetBool(GetPrefKey(k_SearchIgnoreCaseKey), true);
-            m_TextFilter.searchText = EditorPrefs.GetString(GetPrefKey(k_SearchStringKey));
+            m_TextFilter.searchString = EditorPrefs.GetString(GetPrefKey(k_SearchStringKey));
         }
 
         public virtual void SaveSettings()
@@ -545,7 +569,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorPrefs.SetInt(GetPrefKey(k_GroupPropertyIndexKey), m_Table.groupPropertyIndex);
             EditorPrefs.SetBool(GetPrefKey(k_SearchDepsKey), m_TextFilter.searchDependencies);
             EditorPrefs.SetBool(GetPrefKey(k_SearchIgnoreCaseKey), m_TextFilter.ignoreCase);
-            EditorPrefs.SetString(GetPrefKey(k_SearchStringKey), m_TextFilter.searchText);
+            EditorPrefs.SetString(GetPrefKey(k_SearchStringKey), m_TextFilter.searchString);
         }
 
         string GetPrefKey(string key)
@@ -613,7 +637,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout =
                 new GUIContent("Recommendation", "Recommendation on how to solve the issue");
-            public static readonly GUIContent TextSearchLabel = new GUIContent("Search : ", "Text search options");
+            public static readonly GUIContent SearchStringLabel = new GUIContent("Search : ", "Text search options");
             public static readonly GUIContent TextSearchCaseSensitive = new GUIContent("Match Case", "Case-sensitive search");
             public static readonly GUIContent Dependencies = new GUIContent("Dependencies");
         }
