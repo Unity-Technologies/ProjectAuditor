@@ -87,6 +87,7 @@ To clear the recorded variants use the <b>Clear</b> button";
             {
                 case ParseLogResult.Success:
                     EditorUtility.DisplayDialog(k_PlayerLogParsingDialogTitle, k_PlayerLogProcessed, k_Ok);
+                    MarkDirty();
                     break;
                 case ParseLogResult.NoCompiledVariants:
                     if (GraphicsSettingsProxy.logShaderCompilationSupported)
