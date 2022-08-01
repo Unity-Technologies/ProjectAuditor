@@ -28,7 +28,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public int activeViewIndex
         {
             get { return m_ActiveViewIndex; }
-            set { m_ActiveViewIndex = value;  }
         }
 
         public Action<ProjectAuditorModule> onAnalyze;
@@ -103,7 +102,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (view != null)
             {
                 view.Clear();
-                view.Refresh();
             }
         }
 
@@ -126,7 +124,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             var activeView = GetActiveView();
             if (activeView.desc.category == category)
+            {
                 return;
+            }
 
             var newView = GetView(category);
             if (newView == null)
@@ -141,18 +141,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (changeViewRequired)
             {
                 m_ActiveViewIndex = index;
-                var activeView = m_Views[m_ActiveViewIndex];
-
-                activeView.Refresh();
 
                 if (onViewChanged != null)
                     onViewChanged(m_ActiveViewIndex);
             }
         }
 
-        public void Refresh()
+        /// <summary>
+        /// Mark all views as dirty. Use this to reload their tables.
+        /// </summary>
+        public void MarkViewsAsDirty()
         {
-            GetActiveView().Refresh();
+            foreach (var view in m_Views)
+            {
+                view.MarkDirty();
+            }
         }
 
         public void LoadSettings()

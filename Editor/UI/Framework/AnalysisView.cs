@@ -21,6 +21,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
 
         protected Draw2D m_2D;
+        protected bool m_Dirty = true;
         protected ProjectAuditorConfig m_Config;
         protected ProjectAuditorModule m_Module;
         protected GlobalStates m_GlobalStates;
@@ -144,17 +145,33 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             m_Issues.AddRange(issues);
             m_Table.AddIssues(issues);
+
+            m_Dirty = true;
         }
 
         public virtual void Clear()
         {
             m_Issues.Clear();
             m_Table.Clear();
+
+            m_Dirty = true;
         }
 
-        public void Refresh()
+        /// <summary>
+        /// Mark view as dirty. Use this to force a table reload.
+        /// </summary>
+        public void MarkDirty()
         {
+            m_Dirty = true;
+        }
+
+        void RefreshIfDirty()
+        {
+            if (!m_Dirty)
+                return;
+
             m_Table.Reload();
+            m_Dirty = false;
         }
 
         public bool IsValid()
@@ -213,6 +230,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawTable(ProjectIssue[] selectedIssues)
         {
+            RefreshIfDirty();
+
             EditorGUILayout.BeginVertical();
             EditorGUILayout.Space();
 
@@ -324,7 +343,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_Table.flatView = GUILayout.Toggle(m_Table.flatView, Contents.FlatModeButton, EditorStyles.toolbarButton, GUILayout.Width(AnalysisView.toolbarButtonSize));
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Refresh();
+                    MarkDirty();
                 }
 
                 GUI.enabled = !m_Table.flatView;
@@ -355,7 +374,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_ShowError = GUILayout.Toggle(m_ShowError, Utility.GetSeverityIcon(Rule.Severity.Error, "Show errors"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(false));
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Refresh();
+                    MarkDirty();
                 }
             }
         }

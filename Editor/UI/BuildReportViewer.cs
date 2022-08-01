@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 m_ViewManager = new ViewManager(k_Categories);
                 m_ViewManager.Create(projectAuditor, m_GlobalStates);
-                m_ViewManager.activeViewIndex = m_ActiveViewIndex;
+
                 m_ViewManager.onViewChanged = index => m_ActiveViewIndex = index;
 
                 var report = projectAuditor.Audit(new ProjectAuditorParams
@@ -49,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 });
 
                 m_ViewManager.AddIssues(report.GetAllIssues());
-                m_ViewManager.Refresh();
+                m_ViewManager.ChangeView(k_Categories[m_ActiveViewIndex]);
 
                 BuildReportModule.BuildReportProvider = BuildReportModule.DefaultBuildReportProvider;
             }
@@ -93,7 +93,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUI.BeginChangeCheck();
             view.DrawTextSearch();
             if (EditorGUI.EndChangeCheck())
-                view.Refresh();
+                view.MarkDirty();
 
             view.DrawContent();
             EditorGUILayout.EndVertical();

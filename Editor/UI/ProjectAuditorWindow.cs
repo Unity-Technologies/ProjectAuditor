@@ -566,7 +566,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 view.Clear();
                 view.AddIssues(newIssues);
-                view.Refresh();
             }
         }
 
@@ -589,6 +588,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!IsAnalysisValid())
                 return;
 
+            m_ViewManager.MarkViewsAsDirty();
+
             if (m_AnalysisState == AnalysisState.Completed)
             {
                 UpdateAssemblyNames();
@@ -604,8 +605,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 // repaint once more to make status wheel disappear
                 Repaint();
             }
-
-            activeView.Refresh();
         }
 
         string GetSelectedAssembliesSummary()

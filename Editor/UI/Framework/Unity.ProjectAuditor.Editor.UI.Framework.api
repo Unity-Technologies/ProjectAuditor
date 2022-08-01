@@ -50,6 +50,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_BaseFilter;
         protected Unity.ProjectAuditor.Editor.ProjectAuditorConfig m_Config;
         protected Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor m_Desc;
+        protected bool m_Dirty;
         protected Unity.ProjectAuditor.Editor.UI.Framework.GlobalStates m_GlobalStates;
         protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.ProjectIssue> m_Issues;
         protected Unity.ProjectAuditor.Editor.ProjectAuditorModule m_Module;
@@ -72,8 +73,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected virtual void Export(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool> predicate = default(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool>));
         public bool IsValid();
         public virtual void LoadSettings();
+        public void MarkDirty();
         public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
-        public void Refresh();
         public virtual void SaveSettings();
         public void SetSearch(string filter);
     }
@@ -262,7 +263,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public System.Action<Unity.ProjectAuditor.Editor.ProjectAuditorModule> onAnalyze;
         public System.Action<int> onViewChanged;
         public System.Action onViewExported;
-        public int activeViewIndex { get; set; }
+        public int activeViewIndex { get; }
         public ViewManager(Unity.ProjectAuditor.Editor.IssueCategory[] categories) {}
         public void AddIssues(System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.ProjectIssue> issues);
         public void ChangeView(Unity.ProjectAuditor.Editor.IssueCategory category);
@@ -274,7 +275,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(Unity.ProjectAuditor.Editor.IssueCategory category);
         public bool IsValid();
         public void LoadSettings();
-        public void Refresh();
+        public void MarkViewsAsDirty();
         public void SaveSettings();
     }
 }
