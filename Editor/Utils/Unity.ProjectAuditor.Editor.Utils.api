@@ -14,6 +14,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static string[] SplitStrings(string combinedString, string separator = default(string));
     }
 
+    public static class Installer
+    {
+        public static string GetUnityHubModuleDownloadURL(string moduleName);
+    }
+
     public static class Json
     {
         public static T[] From<T>(string json);
