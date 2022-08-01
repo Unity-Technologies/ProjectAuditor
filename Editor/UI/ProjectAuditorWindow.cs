@@ -770,13 +770,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                     DrawAssemblyFilter();
                     DrawAreaFilter();
 
-                    EditorGUI.BeginChangeCheck();
-
                     activeView.DrawSearch();
 
                     // this is specific to diagnostics
                     if (activeView.desc.showCritical || activeView.desc.showMuteOptions)
                     {
+                        EditorGUI.BeginChangeCheck();
+
                         using (new EditorGUILayout.HorizontalScope())
                         {
                             EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
@@ -814,10 +814,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 }
                             }
                         }
+                        if (EditorGUI.EndChangeCheck())
+                            m_ShouldRefresh = true;
                     }
 
-                    if (EditorGUI.EndChangeCheck())
-                        m_ShouldRefresh = true;
 
                     activeView.DrawFilters();
 

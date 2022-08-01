@@ -253,12 +253,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             EditorGUILayout.BeginHorizontal();
 
-            EditorGUILayout.LabelField(Contents.TextSearchLabel, GUILayout.Width(80));
+            // note that we don't need to detect string changes (with EditorGUI.Begin/EndChangeCheck(), because the TreeViewController already triggers a BuildRows() when the text changes
+            EditorGUILayout.LabelField(Contents.SearchStringLabel, GUILayout.Width(80));
 
             m_TextFilter.searchString = EditorGUILayout.DelayedTextField(m_TextFilter.searchString, GUILayout.Width(180));
-            m_TextFilter.ignoreCase = !EditorGUILayout.ToggleLeft(Contents.TextSearchCaseSensitive, !m_TextFilter.ignoreCase, GUILayout.Width(160));
-
             m_Table.searchString = m_TextFilter.searchString;
+
+            EditorGUI.BeginChangeCheck();
+            m_TextFilter.ignoreCase = !EditorGUILayout.ToggleLeft(Contents.TextSearchCaseSensitive, !m_TextFilter.ignoreCase, GUILayout.Width(160));
 
             if (UserPreferences.developerMode)
             {
@@ -268,6 +270,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     m_TextFilter.searchDependencies, GUILayout.Width(160));
                 GUI.enabled = true;
             }
+
+            if (EditorGUI.EndChangeCheck())
+                MarkDirty();
 
             EditorGUILayout.EndHorizontal();
         }
@@ -632,7 +637,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent RecommendationFoldout =
                 new GUIContent("Recommendation", "Recommendation on how to solve the issue");
-            public static readonly GUIContent TextSearchLabel = new GUIContent("Search : ", "Text search options");
+            public static readonly GUIContent SearchStringLabel = new GUIContent("Search : ", "Text search options");
             public static readonly GUIContent TextSearchCaseSensitive = new GUIContent("Match Case", "Case-sensitive search");
             public static readonly GUIContent Dependencies = new GUIContent("Dependencies");
         }
