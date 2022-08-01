@@ -561,7 +561,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             module.Audit(projectAuditorParams, new ProgressBar());
 
             // update views
-            var views = categories.Select(c => m_ViewManager.GetView(c)).Distinct();
+            var views = categories
+                .Select(c => m_ViewManager.GetView(c))
+                .Where(v => v != null)
+                .Distinct();
             foreach (var view in views)
             {
                 view.Clear();
