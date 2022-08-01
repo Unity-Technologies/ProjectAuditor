@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -234,7 +235,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase("ProjectSettings")]
         public void ProblemDescriptor_Areas_Exist(string jsonFilename)
         {
-            var descriptors = ProblemDescriptorLoader.LoadFromJson_Internal(Editor.ProjectAuditor.DataPath, jsonFilename);
+            var descriptors = Json.FromFile<ProblemDescriptor>(Path.Combine(Editor.ProjectAuditor.DataPath, jsonFilename));
             foreach (var desc in descriptors)
             {
                 for (int i = 0; i < desc.areas.Length; i++)
@@ -250,7 +251,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProblemDescriptor_Platform_IsCorrect()
         {
-            var descriptors = ProblemDescriptorLoader.LoadFromJson_Internal(Editor.ProjectAuditor.DataPath, "ProjectSettings");
+            var descriptors = Json.FromFile<ProblemDescriptor>(Path.Combine(Editor.ProjectAuditor.DataPath, "ProjectSettings"));
             var platDescriptor = descriptors.FirstOrDefault(d => d.id.Equals("PAS0004"));
             Assert.NotNull(platDescriptor);
             Assert.NotNull(platDescriptor.platforms);

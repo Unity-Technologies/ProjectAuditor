@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         public static List<ProblemDescriptor> LoadFromJson(string path, string name)
         {
-            var rawDescriptors = LoadFromJson_Internal(path, name);
+            var rawDescriptors = Json.FromFile<ProblemDescriptor>(Path.Combine(path, name + ".json"));
             var descriptors = new List<ProblemDescriptor>(rawDescriptors.Length);
             foreach (var rawDescriptor in rawDescriptors)
             {
@@ -45,15 +45,6 @@ namespace Unity.ProjectAuditor.Editor
             }
 
             return descriptors;
-        }
-
-        internal static ProblemDescriptor[] LoadFromJson_Internal(string path, string name)
-        {
-            var fullPath = Path.GetFullPath(Path.Combine(path, name + ".json"));
-            var json = File.ReadAllText(fullPath);
-            var rawDescriptors = Json.From<ProblemDescriptor>(json);
-
-            return rawDescriptors;
         }
 
         internal static bool IsPlatformCompatible(ProblemDescriptor desc)

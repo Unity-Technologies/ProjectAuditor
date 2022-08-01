@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
@@ -9,6 +10,15 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
             var wrapper = JsonUtility.FromJson<Wrapper<T>>(json);
             return wrapper.Items;
+        }
+
+        public static T[] FromFile<T>(string fileName)
+        {
+            var fullPath = Path.GetFullPath(fileName);
+            var json = File.ReadAllText(fullPath);
+            var items = Json.From<T>(json);
+
+            return items;
         }
 
         public static string To<T>(T[] array)

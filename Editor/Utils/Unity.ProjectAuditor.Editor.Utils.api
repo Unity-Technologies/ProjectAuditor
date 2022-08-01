@@ -22,6 +22,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
     public static class Json
     {
         public static T[] From<T>(string json);
+        public static T[] FromFile<T>(string fileName);
         public static string To<T>(T[] array);
         public static string To<T>(T[] array, bool prettyPrint);
     }
