@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using UnityEditorInternal;
 using UnityEngine;
 
@@ -7,15 +7,15 @@ namespace Unity.ProjectAuditor.Editor.Utils
     public static class Installer
     {
         // Major.Minor.Micro followed by one of abxfp followed by an identifier, optionally suffixed with " (revisionhash)"
-        static Regex s_VersionPattern = new Regex(@"(?<shortVersion>\d+\.\d+\.\d+(?<suffix>((?<alphabeta>[abx])|[fp])[^\s]*))( \((?<revision>[a-fA-F\d]+)\))?",
+        static readonly Regex s_VersionPattern = new Regex(@"(?<shortVersion>\d+\.\d+\.\d+(?<suffix>((?<alphabeta>[abx])|[fp])[^\s]*))( \((?<revision>[a-fA-F\d]+)\))?",
             RegexOptions.Compiled);
 
         public static string GetUnityHubModuleDownloadURL(string moduleName)
         {
-            string fullVersion = InternalEditorUtility.GetFullUnityVersion();
-            string revision = "";
-            string shortVersion = "";
-            Match versionMatch = s_VersionPattern.Match(fullVersion);
+            var fullVersion = InternalEditorUtility.GetFullUnityVersion();
+            var revision = "";
+            var shortVersion = "";
+            var versionMatch = s_VersionPattern.Match(fullVersion);
             if (!versionMatch.Success || !versionMatch.Groups["shortVersion"].Success || !versionMatch.Groups["suffix"].Success)
                 Debug.LogWarningFormat("Error parsing version '{0}'", fullVersion);
 
@@ -26,6 +26,5 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             return string.Format("unityhub://{0}/{1}/module={2}", shortVersion, revision, moduleName.ToLower());
         }
-
     }
 }
