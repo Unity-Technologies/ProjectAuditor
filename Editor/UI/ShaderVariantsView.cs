@@ -23,7 +23,7 @@ Note that it's important to clear the cache before building Addressables.
 To clear the recorded variants use the <b>Clear</b> button";
 
         static readonly string k_PlayerLogInstructions = $@"The number of Variants contributes to the build size, however, there might be Variants that are not required (compiled) at runtime on the target platform. To find out which of these variants are not compiled at runtime, follow these steps:
-{k_BulletPointUnicode} Enable the Log Shader Compilation option
+{k_BulletPointUnicode} Enable the <b>Log Shader Compilation</b> option
 {k_BulletPointUnicode} Make a Development build
 {k_BulletPointUnicode} Run the build on the target platform. Make sure to go through all scenes.
 {k_BulletPointUnicode} Drag & Drop the Player.log file on this window";
