@@ -64,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void Create(ProjectAuditor projectAuditor, GlobalStates globalStates, Action<ViewDescriptor, bool> onCreateView = null, IProjectIssueFilter filter = null)
+        public void Create(ProjectAuditor projectAuditor, ViewStates m_ViewStates, Action<ViewDescriptor, bool> onCreateView = null, IProjectIssueFilter filter = null)
         {
             if (filter == null)
                 filter = new NullFilter();
@@ -73,7 +73,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var views = new List<AnalysisView>();
             foreach (var category in m_Categories)
             {
-                var desc = ViewDescriptor.GetAll().First(d => d.category == category);
+                var desc = ViewDescriptor.GetAll().FirstOrDefault(d => d.category == category);
+                if (desc == null)
+                {
+                    Debug.Log("Descriptor for " + category + " was not registered found.");
+                    continue;
+                }
                 var layout = projectAuditor.GetLayout(category);
                 var isSupported = layout != null;
 
@@ -87,7 +92,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
 
                 var view = desc.type != null ? (AnalysisView)Activator.CreateInstance(desc.type, this) : new AnalysisView(this);
-                view.Create(desc, layout, projectAuditor.config, projectAuditor.GetModule(category), globalStates, filter);
+                view.Create(desc, layout, projectAuditor.config, projectAuditor.GetModule(category), m_ViewStates, filter);
                 view.OnEnable();
                 views.Add(view);
             }

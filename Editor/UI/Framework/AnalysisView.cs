@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected bool m_Dirty = true;
         protected ProjectAuditorConfig m_Config;
         protected ProjectAuditorModule m_Module;
-        protected GlobalStates m_GlobalStates;
+        protected ViewStates m_ViewStates;
         protected ViewDescriptor m_Desc;
         protected IProjectIssueFilter m_BaseFilter;
         protected List<ProjectIssue> m_Issues = new List<ProjectIssue>();
@@ -71,12 +71,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_ViewManager = viewManager;
         }
 
-        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ProjectAuditorModule module, GlobalStates prefs, IProjectIssueFilter filter)
+        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ProjectAuditorModule module, ViewStates viewStates, IProjectIssueFilter filter)
         {
             m_Desc = descriptor;
             m_Config = config;
             m_Module = module;
-            m_GlobalStates = prefs;
+            m_ViewStates = viewStates;
             m_BaseFilter = filter;
             m_Layout = layout;
 
@@ -212,8 +212,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
 
-            m_GlobalStates.info = Utility.BoldFoldout(m_GlobalStates.info, Contents.InfoFoldout);
-            if (m_GlobalStates.info)
+            m_ViewStates.info = Utility.BoldFoldout(m_ViewStates.info, Contents.InfoFoldout);
+            if (m_ViewStates.info)
             {
                 EditorGUI.indentLevel++;
 
@@ -307,8 +307,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         void DrawDetails(ProblemDescriptor[] selectedDescriptors)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
-            m_GlobalStates.details = Utility.BoldFoldout(m_GlobalStates.details, Contents.DetailsFoldout);
-            if (m_GlobalStates.details)
+            m_ViewStates.details = Utility.BoldFoldout(m_ViewStates.details, Contents.DetailsFoldout);
+            if (m_ViewStates.details)
             {
                 if (selectedDescriptors.Length == 0)
                     GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
@@ -328,11 +328,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
 
             EditorGUILayout.LabelField(Contents.Zoom, EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
-            m_GlobalStates.fontSize = (int)GUILayout.HorizontalSlider(m_GlobalStates.fontSize, GlobalStates.k_MinFontSize, GlobalStates.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(AnalysisView.toolbarButtonSize));
-            m_Table.SetFontSize(m_GlobalStates.fontSize);
+            m_ViewStates.fontSize = (int)GUILayout.HorizontalSlider(m_ViewStates.fontSize, ViewStates.k_MinFontSize, ViewStates.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(AnalysisView.toolbarButtonSize));
+            m_Table.SetFontSize(m_ViewStates.fontSize);
 
-            SharedStyles.Label.fontSize = m_GlobalStates.fontSize;
-            SharedStyles.TextArea.fontSize = m_GlobalStates.fontSize;
+            SharedStyles.Label.fontSize = m_ViewStates.fontSize;
+            SharedStyles.TextArea.fontSize = m_ViewStates.fontSize;
 
             if (!m_Layout.hierarchy)
             {
@@ -420,8 +420,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         void DrawRecommendation(ProblemDescriptor[] selectedDescriptors)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
-            m_GlobalStates.recommendation = Utility.BoldFoldout(m_GlobalStates.recommendation, Contents.RecommendationFoldout);
-            if (m_GlobalStates.recommendation)
+            m_ViewStates.recommendation = Utility.BoldFoldout(m_ViewStates.recommendation, Contents.RecommendationFoldout);
+            if (m_ViewStates.recommendation)
             {
                 if (selectedDescriptors.Length == 0)
                     GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
@@ -437,8 +437,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Height(LayoutSize.DependencyViewHeight));
 
-            m_GlobalStates.dependencies = Utility.BoldFoldout(m_GlobalStates.dependencies, m_Desc.dependencyViewGuiContent != null ? m_Desc.dependencyViewGuiContent : Contents.Dependencies);
-            if (m_GlobalStates.dependencies)
+            m_ViewStates.dependencies = Utility.BoldFoldout(m_ViewStates.dependencies, m_Desc.dependencyViewGuiContent != null ? m_Desc.dependencyViewGuiContent : Contents.Dependencies);
+            if (m_ViewStates.dependencies)
             {
                 if (issues.Length == 0)
                 {

@@ -14,11 +14,11 @@ namespace Unity.ProjectAuditor.Editor.UI
     class BuildReportViewer : UnityEditor.Editor, IBuildReportProvider
     {
         static int s_ActiveViewIndex;
-        static GlobalStates s_GlobalStates;
+        static ViewStates s_ViewStates;
         static BuildReport s_BuildReport;
 
         [SerializeField] int m_ActiveViewIndex;
-        [SerializeField] GlobalStates m_GlobalStates;
+        [SerializeField] ViewStates m_ViewStates;
 
         ViewManager m_ViewManager;
 
@@ -26,9 +26,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void InitializeIfNeeded()
         {
-            if (m_GlobalStates == null)
+            if (m_ViewStates == null)
             {
-                m_GlobalStates = new GlobalStates();
+                m_ViewStates = new ViewStates();
                 m_ActiveViewIndex = 0;
             }
 
@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 var projectAuditor = new ProjectAuditor();
 
                 m_ViewManager = new ViewManager(k_Categories);
-                m_ViewManager.Create(projectAuditor, m_GlobalStates);
+                m_ViewManager.Create(projectAuditor, m_ViewStates);
 
                 m_ViewManager.onViewChanged = index => m_ActiveViewIndex = index;
 
@@ -58,9 +58,9 @@ namespace Unity.ProjectAuditor.Editor.UI
         void OnEnable()
         {
             // restore prefs/active view when switching between report assets
-            if (s_GlobalStates != null)
+            if (s_ViewStates != null)
             {
-                m_GlobalStates = s_GlobalStates;
+                m_ViewStates = s_ViewStates;
                 m_ActiveViewIndex = s_ActiveViewIndex;
             }
 
@@ -78,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             m_ViewManager?.SaveSettings();
 
-            s_GlobalStates = m_GlobalStates;
+            s_ViewStates = m_ViewStates;
             s_ActiveViewIndex = m_ActiveViewIndex;
         }
 

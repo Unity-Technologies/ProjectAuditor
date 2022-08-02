@@ -6,7 +6,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     /// Global UI states. Note that these preferences will not persist between sessions.
     /// </summary>
     [Serializable]
-    public class GlobalStates
+    public class ViewStates
     {
         public const int k_MinFontSize = 12;
         public const int k_MaxFontSize = 22;
