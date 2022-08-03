@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 var desc = ViewDescriptor.GetAll().FirstOrDefault(d => d.category == category);
                 if (desc == null)
                 {
-                    Debug.Log("Descriptor for " + category + " was not registered found.");
+                    Debug.Log("Descriptor for " + category + " was not registered.");
                     continue;
                 }
                 var layout = projectAuditor.GetLayout(category);
