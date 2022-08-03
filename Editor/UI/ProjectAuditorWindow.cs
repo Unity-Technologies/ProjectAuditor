@@ -1076,7 +1076,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
-                    GUILayout.Label(Utility.GetStatusWheel());
+                    GUILayout.Label(Utility.GetIcon(Utility.IconType.StatusWheel));
                 }
 
                 EditorGUILayout.Space();

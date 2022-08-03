@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 DrawSummaryItem("Compiled Assemblies: ", string.Format("{0} / {1}", m_Stats.numCompiledAssemblies, m_Stats.numTotalAssemblies), IssueCategory.Assembly);
             if (m_Stats.numCompilerErrors > 0)
             {
-                DrawSummaryItem("Compilation Errors: ", m_Stats.numCompilerErrors, IssueCategory.CodeCompilerMessage, Utility.GetSeverityIcon(Rule.Severity.Error));
+                DrawSummaryItem("Compilation Errors: ", m_Stats.numCompilerErrors, IssueCategory.CodeCompilerMessage, Utility.GetIcon(Utility.IconType.Error));
             }
             if (m_Stats.numSettingIssues > 0)
                 DrawSummaryItem("Settings Issues:", m_Stats.numSettingIssues, IssueCategory.ProjectSetting);

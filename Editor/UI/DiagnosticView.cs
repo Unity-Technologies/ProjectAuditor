@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 EditorGUILayout.Space();
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(Utility.GetSeverityIcon(Rule.Severity.Error), GUILayout.MaxWidth(36));
+                EditorGUILayout.LabelField(Utility.GetIcon(Utility.IconType.Error), GUILayout.MaxWidth(36));
                 EditorGUILayout.LabelField(new GUIContent("Code Analysis is incomplete due to compilation errors"), GUILayout.Width(330), GUILayout.ExpandWidth(false));
                 if (GUILayout.Button("View", EditorStyles.miniButton, GUILayout.Width(50)))
                     m_ViewManager.ChangeView(IssueCategory.CodeCompilerMessage);

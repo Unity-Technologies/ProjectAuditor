@@ -374,9 +374,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (m_Desc.showSeverityFilters)
             {
                 EditorGUI.BeginChangeCheck();
-                m_ShowInfo = GUILayout.Toggle(m_ShowInfo, Utility.GetSeverityIcon(Rule.Severity.Info, "Show info messages"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(false));
-                m_ShowWarn = GUILayout.Toggle(m_ShowWarn, Utility.GetSeverityIcon(Rule.Severity.Warning, "Show warnings"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(false));
-                m_ShowError = GUILayout.Toggle(m_ShowError, Utility.GetSeverityIcon(Rule.Severity.Error, "Show errors"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(false));
+                m_ShowInfo = GUILayout.Toggle(m_ShowInfo, Utility.GetIcon(Utility.IconType.Info, "Show info messages"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(false));
+                m_ShowWarn = GUILayout.Toggle(m_ShowWarn, Utility.GetIcon(Utility.IconType.Warning, "Show warnings"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(false));
+                m_ShowError = GUILayout.Toggle(m_ShowError, Utility.GetIcon(Utility.IconType.Error, "Show errors"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(false));
                 if (EditorGUI.EndChangeCheck())
                 {
                     MarkDirty();

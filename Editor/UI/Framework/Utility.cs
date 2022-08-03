@@ -7,9 +7,23 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public static class Utility
     {
+        public enum IconType
+        {
+            Info,
+            Warning,
+            Error,
+            Help,
+            StatusWheel,
+            WhiteCheckMark,
+            GreenCheckMark
+        }
+
         static readonly string k_InfoIconName = "console.infoicon";
-        static readonly string k_WarnIconName = "console.warnicon";
+        static readonly string k_WarningIconName = "console.warnicon";
         static readonly string k_ErrorIconName = "console.erroricon";
+        static readonly string k_HelpIconName = "_Help";
+        static readonly string k_WhiteCheckMarkIconName = "FilterSelectedOnly";
+        static readonly string k_GreenCheckMarkIconName = "TestPassed";
 
         static GUIContent[] s_StatusWheel;
 
@@ -119,9 +133,33 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return Formatting.CombineStrings(selectedStrings);
         }
 
-        public static GUIContent GetIcon(string name)
+        public static GUIContent GetIcon(IconType iconType, string tooltip = null)
         {
-            return EditorGUIUtility.TrIconContent(ProjectAuditor.PackagePath + "/Editor/Icons/" + name + ".png");
+            switch (iconType)
+            {
+                case IconType.Info:
+                    if (string.IsNullOrEmpty(tooltip))
+                        tooltip = "Info";
+                    return EditorGUIUtility.TrIconContent(k_InfoIconName, tooltip);
+                case IconType.Warning:
+                    if (string.IsNullOrEmpty(tooltip))
+                        tooltip = "Warning";
+                    return EditorGUIUtility.TrIconContent(k_WarningIconName, tooltip);
+                case IconType.Error:
+                    if (string.IsNullOrEmpty(tooltip))
+                        tooltip = "Error";
+                    return EditorGUIUtility.TrIconContent(k_ErrorIconName, tooltip);
+                case IconType.Help:
+                    return EditorGUIUtility.TrIconContent(k_HelpIconName, tooltip);
+                case IconType.StatusWheel:
+                    return GetStatusWheel();
+                case IconType.WhiteCheckMark:
+                    return EditorGUIUtility.TrIconContent(k_WhiteCheckMarkIconName, tooltip);
+                case IconType.GreenCheckMark:
+                    return EditorGUIUtility.TrIconContent(k_GreenCheckMarkIconName, tooltip);
+            }
+
+            return null;
         }
 
         public static GUIContent GetSeverityIcon(Rule.Severity severity, string tooltip = null)
@@ -135,9 +173,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         tooltip = "Info";
                     break;
                 case Rule.Severity.Warning:
-                    iconName = k_WarnIconName;
-                    if (string.IsNullOrEmpty(tooltip))
-                        tooltip = "Warning";
+                    iconName = k_WarningIconName;
                     break;
                 case Rule.Severity.Error:
                     iconName = k_ErrorIconName;
@@ -170,7 +206,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public static GUIContent GetStatusWheel()
+        static GUIContent GetStatusWheel()
         {
             if (s_StatusWheel == null)
             {

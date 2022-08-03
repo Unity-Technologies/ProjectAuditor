@@ -296,7 +296,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     case PropertyType.CriticalContext:
                     {
                         if (issue.isPerfCriticalContext)
-                            EditorGUI.LabelField(cellRect, Utility.GetSeverityIcon(Rule.Severity.Warning, Tooltip.HotPath), labelStyle);
+                            EditorGUI.LabelField(cellRect, Utility.GetIcon(Utility.IconType.Warning, Tooltip.HotPath), labelStyle);
                     }
                     break;
                     case PropertyType.Severity:
@@ -341,7 +341,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             switch (property.format)
                             {
                                 case PropertyFormat.Bool:
-                                    EditorGUI.Toggle(cellRect, issue.GetCustomPropertyAsBool(customPropertyIndex));
+                                    var boolAsString = issue.GetCustomProperty(customPropertyIndex);
+                                    var boolValue = false;
+                                    if (!bool.TryParse(boolAsString, out boolValue))
+                                        EditorGUI.LabelField(cellRect, Utility.GetIcon(Utility.IconType.Info, boolAsString), labelStyle);
+                                    else if (boolValue)
+                                        EditorGUI.LabelField(cellRect, Utility.GetIcon(Utility.IconType.WhiteCheckMark), labelStyle);
                                     break;
                                 case PropertyFormat.Bytes:
                                     EditorGUI.LabelField(cellRect, Formatting.FormatSize(issue.GetCustomPropertyAsULong(customPropertyIndex)), labelStyle);

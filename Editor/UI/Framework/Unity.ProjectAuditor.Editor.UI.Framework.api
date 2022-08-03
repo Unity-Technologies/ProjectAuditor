@@ -195,9 +195,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static bool BoldFoldout(bool toggle, UnityEngine.GUIContent content);
         public static void DrawHelpButton(UnityEngine.GUIContent content, string page);
         public static void DrawSelectedText(string text);
-        public static UnityEngine.GUIContent GetIcon(string name);
+        public static UnityEngine.GUIContent GetIcon(Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType iconType, string tooltip = default(string));
         public static UnityEngine.GUIContent GetSeverityIcon(Unity.ProjectAuditor.Editor.Rule.Severity severity, string tooltip = default(string));
-        public static UnityEngine.GUIContent GetStatusWheel();
         public static UnityEngine.GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath);
         public static UnityEngine.GUIContent GetTextWithSeverityIcon(string text, string tooltip, Unity.ProjectAuditor.Editor.Rule.Severity severity);
         public static string GetTreeViewSelectedSummary(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection, string[] names);
@@ -209,6 +208,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public UnityEngine.GUIContent SelectionContent;
             public object UserData;
             public DropdownItem() {}
+        }
+        public enum IconType
+        {
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Error = 2;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Help = 3;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Info = 0;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType StatusWheel = 4;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Valid = 5;
+            public int value__;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Warning = 1;
         }
     }
 
