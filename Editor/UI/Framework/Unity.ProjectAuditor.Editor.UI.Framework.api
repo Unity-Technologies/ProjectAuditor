@@ -212,12 +212,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public enum IconType
         {
             public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Error = 2;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType GreenCheckMark = 6;
             public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Help = 3;
             public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Info = 0;
             public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType StatusWheel = 4;
-            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Valid = 5;
             public int value__;
             public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Warning = 1;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType WhiteCheckMark = 5;
         }
     }
 
