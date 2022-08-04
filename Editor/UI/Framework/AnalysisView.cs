@@ -327,7 +327,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_ViewManager.onAnalyze(m_Module);
             }
 
-            EditorGUILayout.LabelField(Contents.Zoom, EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(40));
+            EditorGUILayout.LabelField(Utility.GetIcon(Utility.IconType.ZoomTool), EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(20));
             m_ViewStates.fontSize = (int)GUILayout.HorizontalSlider(m_ViewStates.fontSize, ViewStates.k_MinFontSize, ViewStates.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(AnalysisView.toolbarButtonSize));
             m_Table.SetFontSize(m_ViewStates.fontSize);
 
@@ -345,7 +345,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 GUI.enabled = true;
 
                 EditorGUI.BeginChangeCheck();
-                m_Table.flatView = GUILayout.Toggle(m_Table.flatView, Contents.FlatModeButton, EditorStyles.toolbarButton, GUILayout.Width(AnalysisView.toolbarButtonSize));
+                m_Table.flatView = !GUILayout.Toggle(!m_Table.flatView, Utility.GetIcon(Utility.IconType.Hierarchy, "Show/Hide Hierarchy"), EditorStyles.toolbarButton, GUILayout.Width(LayoutSize.ToolbarIconSize));
                 if (EditorGUI.EndChangeCheck())
                 {
                     MarkDirty();
@@ -622,6 +622,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int FoldoutMaxHeight = 220;
             public static readonly int DependencyViewHeight = 200;
             public static readonly int ToolbarButtonSize = 80;
+            public static readonly int ToolbarIconSize = 40;
         }
 
         static class Contents

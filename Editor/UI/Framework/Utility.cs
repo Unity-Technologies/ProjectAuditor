@@ -14,8 +14,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Error,
             Help,
             StatusWheel,
+            Hierarchy,
+            ZoomTool,
             WhiteCheckMark,
-            GreenCheckMark
+            GreenCheckMark,
         }
 
         static readonly string k_InfoIconName = "console.infoicon";
@@ -24,6 +26,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_HelpIconName = "_Help";
         static readonly string k_WhiteCheckMarkIconName = "FilterSelectedOnly";
         static readonly string k_GreenCheckMarkIconName = "TestPassed";
+        static readonly string k_HierarchyIconName = "UnityEditor.SceneHierarchyWindow";
+        static readonly string k_ZoomToolIconName = "ViewToolZoom";
 
         static GUIContent[] s_StatusWheel;
 
@@ -149,6 +153,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     if (string.IsNullOrEmpty(tooltip))
                         tooltip = "Error";
                     return EditorGUIUtility.TrIconContent(k_ErrorIconName, tooltip);
+                case IconType.Hierarchy:
+                    return EditorGUIUtility.TrIconContent(k_HierarchyIconName, tooltip);
+                case IconType.ZoomTool:
+                    return EditorGUIUtility.TrIconContent(k_ZoomToolIconName, tooltip);
                 case IconType.Help:
                     return EditorGUIUtility.TrIconContent(k_HelpIconName, tooltip);
                 case IconType.StatusWheel:
