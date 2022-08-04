@@ -22,9 +22,17 @@ namespace Unity.ProjectAuditor.Editor
         public virtual bool IsPerfCritical();
     }
 
+    public class CSVExporter : System.IDisposable
+    {
+        public CSVExporter(string path, Unity.ProjectAuditor.Editor.IssueLayout layout) {}
+        public virtual void Dispose();
+        public void WriteHeader();
+        public void WriteIssues(Unity.ProjectAuditor.Editor.ProjectIssue[] issues);
+    }
+
     public abstract class DependencyNode
     {
-        public Unity.ProjectAuditor.Editor.Utils.Location location;
+        public Unity.ProjectAuditor.Editor.Location location;
         protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.DependencyNode> m_Children;
         public bool perfCriticalContext;
         public string name { get; }
@@ -80,6 +88,19 @@ namespace Unity.ProjectAuditor.Editor
         public Unity.ProjectAuditor.Editor.PropertyDefinition[] properties;
         public int defaultGroupPropertyIndex { get; }
         public IssueLayout() {}
+    }
+
+    public class Location
+    {
+        public string Extension { get; }
+        public string Filename { get; }
+        public string FormattedFilename { get; }
+        public string FormattedPath { get; }
+        public int Line { get; }
+        public string Path { get; }
+        public Location(string path) {}
+        public Location(string path, int line) {}
+        public bool IsValid();
     }
 
     public sealed class ProblemDescriptor : System.IEquatable<Unity.ProjectAuditor.Editor.ProblemDescriptor>
@@ -185,7 +206,7 @@ namespace Unity.ProjectAuditor.Editor
         public string filename { get; }
         public bool isPerfCriticalContext { get; }
         public int line { get; }
-        public Unity.ProjectAuditor.Editor.Utils.Location location { get; }
+        public Unity.ProjectAuditor.Editor.Location location { get; }
         public string relativePath { get; }
         public Unity.ProjectAuditor.Editor.Rule.Severity severity { get; }
         public static Unity.ProjectAuditor.Editor.ProjectIssueBuilder Create(Unity.ProjectAuditor.Editor.IssueCategory category, string description);
@@ -204,7 +225,7 @@ namespace Unity.ProjectAuditor.Editor
         public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithCustomProperties(int numProperties, object property);
         public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithDependencies(Unity.ProjectAuditor.Editor.DependencyNode dependencies);
         public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithDescription(string description);
-        public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithLocation(Unity.ProjectAuditor.Editor.Utils.Location location);
+        public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithLocation(Unity.ProjectAuditor.Editor.Location location);
         public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithLocation(string path, int line = 0);
         public Unity.ProjectAuditor.Editor.ProjectIssueBuilder WithSeverity(Unity.ProjectAuditor.Editor.Rule.Severity severity);
     }
@@ -453,29 +474,5 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
     {
         public abstract System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> Analyze(UnityEditor.BuildTarget platform);
         public abstract void Initialize(Unity.ProjectAuditor.Editor.ProjectAuditorModule module);
-    }
-}
-
-namespace Unity.ProjectAuditor.Editor.Utils
-{
-    public class CSVExporter : System.IDisposable
-    {
-        public CSVExporter(string path, Unity.ProjectAuditor.Editor.IssueLayout layout) {}
-        public virtual void Dispose();
-        public void WriteHeader();
-        public void WriteIssues(Unity.ProjectAuditor.Editor.ProjectIssue[] issues);
-    }
-
-    public class Location
-    {
-        public string Extension { get; }
-        public string Filename { get; }
-        public string FormattedFilename { get; }
-        public string FormattedPath { get; }
-        public int Line { get; }
-        public string Path { get; }
-        public Location(string path) {}
-        public Location(string path, int line) {}
-        public bool IsValid();
     }
 }

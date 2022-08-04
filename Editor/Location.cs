@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.Utils
+namespace Unity.ProjectAuditor.Editor
 {
     [Serializable]
     public class Location

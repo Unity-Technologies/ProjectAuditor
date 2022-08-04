@@ -81,11 +81,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
     public static class EditorUtil
     {
-        public static void FocusOnAssetInProjectWindow(Unity.ProjectAuditor.Editor.Utils.Location location);
+        public static void FocusOnAssetInProjectWindow(Unity.ProjectAuditor.Editor.Location location);
         public static void OpenCodeDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
         public static void OpenCompilerMessageDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
-        public static void OpenProjectSettings(Unity.ProjectAuditor.Editor.Utils.Location location);
-        public static void OpenTextFile<T>(Unity.ProjectAuditor.Editor.Utils.Location location) where T : UnityEngine.Object;
+        public static void OpenProjectSettings(Unity.ProjectAuditor.Editor.Location location);
+        public static void OpenTextFile<T>(Unity.ProjectAuditor.Editor.Location location) where T : UnityEngine.Object;
     }
 
     public class MultiSelectionTable : UnityEditor.IMGUI.Controls.TreeView
@@ -236,7 +236,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public string name;
         public System.Action<UnityEditor.GenericMenu, Unity.ProjectAuditor.Editor.UI.Framework.ViewManager, Unity.ProjectAuditor.Editor.ProjectIssue> onContextMenu;
         public System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewManager> onDrawToolbar;
-        public System.Action<Unity.ProjectAuditor.Editor.Utils.Location> onOpenIssue;
+        public System.Action<Unity.ProjectAuditor.Editor.Location> onOpenIssue;
         public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenManual;
         public bool showActions;
         public bool showAreaSelection;

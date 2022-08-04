@@ -1,6 +1,6 @@
 using System;
 using NUnit.Framework;
-using Unity.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.Editor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
