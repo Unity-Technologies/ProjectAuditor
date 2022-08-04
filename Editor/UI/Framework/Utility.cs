@@ -16,6 +16,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             StatusWheel,
             Hierarchy,
             ZoomTool,
+            Fix,
             WhiteCheckMark,
             GreenCheckMark,
         }
@@ -28,6 +29,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_GreenCheckMarkIconName = "TestPassed";
         static readonly string k_HierarchyIconName = "UnityEditor.SceneHierarchyWindow";
         static readonly string k_ZoomToolIconName = "ViewToolZoom";
+        static readonly string k_FixIconName = "Profiler.Custom";
 
         static GUIContent[] s_StatusWheel;
 
@@ -157,6 +159,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     return EditorGUIUtility.TrIconContent(k_HierarchyIconName, tooltip);
                 case IconType.ZoomTool:
                     return EditorGUIUtility.TrIconContent(k_ZoomToolIconName, tooltip);
+                case IconType.Fix:
+                    return EditorGUIUtility.TrIconContent(k_FixIconName, tooltip);
                 case IconType.Help:
                     return EditorGUIUtility.TrIconContent(k_HelpIconName, tooltip);
                 case IconType.StatusWheel:
