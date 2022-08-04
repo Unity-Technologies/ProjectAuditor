@@ -78,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor
         public void ExportToCSV(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
             var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
-            using (var exporter = new Exporter(path, layout))
+            using (var exporter = new CSVExporter(path, layout))
             {
                 exporter.WriteHeader();
                 exporter.WriteIssues(issues);

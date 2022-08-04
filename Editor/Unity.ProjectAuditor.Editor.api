@@ -458,9 +458,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    public class Exporter : System.IDisposable
+    public class CSVExporter : System.IDisposable
     {
-        public Exporter(string path, Unity.ProjectAuditor.Editor.IssueLayout layout) {}
+        public CSVExporter(string path, Unity.ProjectAuditor.Editor.IssueLayout layout) {}
         public virtual void Dispose();
         public void WriteHeader();
         public void WriteIssues(Unity.ProjectAuditor.Editor.ProjectIssue[] issues);

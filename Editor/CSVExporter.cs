@@ -4,12 +4,12 @@ using System.Text;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    public class Exporter : IDisposable
+    public class CSVExporter : IDisposable
     {
         readonly IssueLayout m_Layout;
         readonly StreamWriter m_StreamWriter;
 
-        public Exporter(string path, IssueLayout layout)
+        public CSVExporter(string path, IssueLayout layout)
         {
             m_Layout = layout;
             m_StreamWriter = new StreamWriter(path);
