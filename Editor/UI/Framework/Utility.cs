@@ -172,31 +172,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static GUIContent GetSeverityIcon(Rule.Severity severity, string tooltip = null)
         {
-            string iconName;
             switch (severity)
             {
                 case Rule.Severity.Info:
-                    iconName = k_InfoIconName;
-                    if (string.IsNullOrEmpty(tooltip))
-                        tooltip = "Info";
-                    break;
+                    return GetIcon(IconType.Info, tooltip);
                 case Rule.Severity.Warning:
-                    iconName = k_WarningIconName;
-                    break;
+                    return GetIcon(IconType.Warning, tooltip);
                 case Rule.Severity.Error:
-                    iconName = k_ErrorIconName;
-                    if (string.IsNullOrEmpty(tooltip))
-                        tooltip = "Error";
-                    break;
+                    return GetIcon(IconType.Error, tooltip);
                 default:
                     return null;
             }
-
-#if UNITY_2019_3_OR_NEWER
-            return EditorGUIUtility.TrIconContent(iconName, tooltip);
-#else
-            return new GUIContent(EditorGUIUtility.FindTexture(iconName), tooltip);
-#endif
         }
 
         public static GUIContent GetTextWithSeverityIcon(string text, string tooltip, Rule.Severity severity)
