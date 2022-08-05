@@ -354,6 +354,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                 case PropertyFormat.Time:
                                     EditorGUI.LabelField(cellRect, Formatting.FormatTime(issue.GetCustomPropertyAsFloat(customPropertyIndex)), labelStyle);
                                     break;
+                                case PropertyFormat.Integer:
+                                    var intAsString = issue.GetCustomProperty(customPropertyIndex);
+                                    var intValue = 0;
+                                    if (!int.TryParse(intAsString, out intValue))
+                                        EditorGUI.LabelField(cellRect, Utility.GetIcon(Utility.IconType.Info, intAsString), labelStyle);
+                                    else
+                                        EditorGUI.LabelField(cellRect, new GUIContent(intAsString, intAsString), labelStyle);
+                                    break;
                                 default:
                                     var value = issue.GetCustomProperty(customPropertyIndex);
                                     EditorGUI.LabelField(cellRect, new GUIContent(value, value), labelStyle);

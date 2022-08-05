@@ -136,7 +136,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string k_NoKeywords = "<no keywords>";
         internal const string k_UnnamedPassPrefix = "Pass ";
         internal const string k_NoRuntimeData = "This feature requires runtime data.";
-        internal const string k_NotAvailable = "This feature is not available.";
+        internal const string k_NotAvailable = "This feature is requires a build.";
         internal const string k_Unknown = "Unknown";
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData = new Dictionary<Shader, List<ShaderVariantData>>();
