@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Changed descriptor ID type from _int_ to _string_
 * Fixed Diagnostic Rules serialization
 * Fixed *Home* page *NullReferenceException* on Build
+* Fixed *NullReferenceException* on export of non-diagnostic issues
 * Improved issue creation code-readability by using *ProjectIssueBuilder*
 
 ## [0.8.1-preview] - 2022-06-24
