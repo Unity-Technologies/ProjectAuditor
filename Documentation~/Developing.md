@@ -8,7 +8,7 @@ Alternatively, it is possible to clone the repository to a different folder. How
 ## Tests
 In order to be able to run (existing or new) tests in VS/Rider or within Unity using TestRunner, it is necessary to: 
 - Install `Test Framework` from Package Manager. 
-- Add the following lines to your `Packages.manifest.json`:
+- Add the following lines to your `Packages/manifest.json`:
 ```
  "testables": [
     "com.unity.project-auditor"
