@@ -98,7 +98,7 @@ class MyClass : MonoBehaviour
         {
             var category = IssueCategory.Code;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
-            AnalyzeAndExport(category ,path, "csv");
+            AnalyzeAndExport(category, path, "csv");
             var issueFound = false;
             using (var file = new StreamReader(path))
             {
@@ -244,7 +244,8 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void ProjectReport_Codeissues_AreFilteredAndExported_HTML() {
+        public void ProjectReport_CodeIssues_AreFilteredAndExported_HTML()
+        {
             var category = IssueCategory.Code;
             var path = string.Format("project-auditor-report-{0}.html", category.ToString()).ToLower();
             AnalyzeAndExport(category, path, "html", issue =>
@@ -366,7 +367,8 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void ProjectReport_SettingsIssues_AreExportedAndFormatted_HTML() {
+        public void ProjectReport_SettingsIssues_AreExportedAndFormatted_HTML()
+        {
             var bakeCollisionMeshes = PlayerSettings.bakeCollisionMeshes;
             PlayerSettings.bakeCollisionMeshes = false;
 
@@ -432,7 +434,8 @@ class MyClass : MonoBehaviour
                             issueFound = true;
                         }
                     }
-                    else {
+                    else
+                    {
                         line = file.ReadLine();
                         if (line.Equals("</html>")) {
                             formatCorrect = true;

@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor
             m_StreamWriter.Close();
         }
 
-        public virtual void WriteHeader() { }
+        public abstract void WriteHeader();
 
         public void WriteIssues(ProjectIssue[] issues)
         {
@@ -28,9 +28,9 @@ namespace Unity.ProjectAuditor.Editor
                 WriteIssue(issue);
         }
 
-        protected virtual void WriteIssue(ProjectIssue issue) { }
+        protected abstract void WriteIssue(ProjectIssue issue);
 
-        public virtual void WriteFooter() {}
+        public virtual void WriteFooter() { }
 
     }
 }
