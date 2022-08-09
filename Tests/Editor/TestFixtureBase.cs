@@ -40,9 +40,9 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditorParams = new ProjectAuditorParams
             {
                 codeOptimization = m_CodeOptimization,
-                onIssueFound = issue => {
-                    if (predicate == null || predicate(issue))
-                        foundIssues.Add(issue);
+                onIncomingIssues = issues =>
+                {
+                    foundIssues.AddRange(predicate == null ? issues : issues.Where(predicate));
                 },
             };
             projectAuditor.Audit(projectAuditorParams);
@@ -58,12 +58,11 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditorParams = new ProjectAuditorParams
             {
                 assemblyNames = new[] { AssemblyInfo.DefaultAssemblyName},
-                onIssueFound = issue => {
-                    if (issue.category != category)
-                        return;
+                onIncomingIssues = issues =>
+                {
+                    var categoryIssues = issues.Where(issue => issue.category == category);
 
-                    if (predicate == null || predicate(issue))
-                        foundIssues.Add(issue);
+                    foundIssues.AddRange(predicate == null ? categoryIssues : categoryIssues.Where(predicate));
                 }
             };
 

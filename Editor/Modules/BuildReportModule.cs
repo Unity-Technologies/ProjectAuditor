@@ -140,29 +140,31 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var buildReport = BuildReportProvider.GetBuildReport();
             if (buildReport != null)
             {
-                NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath, projectAuditorParams.onIssueFound);
-                NewMetaData(k_KeyPlatform, buildReport.summary.platform, projectAuditorParams.onIssueFound);
-                NewMetaData(k_KeyResult, buildReport.summary.result, projectAuditorParams.onIssueFound);
-                NewMetaData(k_KeyStartTime, buildReport.summary.buildStartedAt, projectAuditorParams.onIssueFound);
-                NewMetaData(k_KeyEndTime, buildReport.summary.buildEndedAt, projectAuditorParams.onIssueFound);
-                NewMetaData(k_KeyTotalTime, Formatting.FormatBuildTime(buildReport.summary.totalTime), projectAuditorParams.onIssueFound);
-                NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize), projectAuditorParams.onIssueFound);
+                var issues = new List<ProjectIssue>();
+                NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath, issues);
+                NewMetaData(k_KeyPlatform, buildReport.summary.platform, issues);
+                NewMetaData(k_KeyResult, buildReport.summary.result, issues);
+                NewMetaData(k_KeyStartTime, buildReport.summary.buildStartedAt, issues);
+                NewMetaData(k_KeyEndTime, buildReport.summary.buildEndedAt, issues);
+                NewMetaData(k_KeyTotalTime, Formatting.FormatBuildTime(buildReport.summary.totalTime), issues);
+                NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize), issues);
 
-                AnalyzeBuildSteps(projectAuditorParams.onIssueFound, buildReport);
-                AnalyzePackedAssets(projectAuditorParams.onIssueFound, buildReport);
+                AnalyzeBuildSteps(buildReport, issues);
+                AnalyzePackedAssets(buildReport, issues);
+
+                projectAuditorParams.onIncomingIssues(issues);
             }
 #endif
-            if (projectAuditorParams.onComplete != null)
-                projectAuditorParams.onComplete();
+            projectAuditorParams.onComplete?.Invoke();
         }
 
 #if BUILD_REPORT_API_SUPPORT
-        void AnalyzeBuildSteps(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
+        void AnalyzeBuildSteps(BuildReport buildReport, IList<ProjectIssue> issues)
         {
             foreach (var step in buildReport.steps)
             {
                 var depth = step.depth;
-                onIssueFound(ProjectIssue.Create(IssueCategory.BuildStep, step.name)
+                issues.Add(ProjectIssue.Create(IssueCategory.BuildStep, step.name)
                     .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                     {
                         Formatting.FormatBuildTime(step.duration)
@@ -175,12 +177,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     var issue = ProjectIssue.Create(IssueCategory.BuildStep, message.content)
                         .WithDepth(depth + 1)
                         .WithSeverity(LogTypeToSeverity(message.type));
-                    onIssueFound(issue);
+                    issues.Add(issue);
                 }
             }
         }
 
-        void AnalyzePackedAssets(Action<ProjectIssue> onIssueFound, BuildReport buildReport)
+        void AnalyzePackedAssets(BuildReport buildReport, IList<ProjectIssue> issues)
         {
             foreach (var packedAsset in buildReport.packedAssets)
             {
@@ -205,16 +207,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             content.packedSize,
                             packedAsset.shortPath
                         });
-                    onIssueFound(issue);
+                    issues.Add(issue);
                 }
             }
         }
 
-        void NewMetaData(string key, object value, Action<ProjectIssue> onIssueFound)
+        void NewMetaData(string key, object value, IList<ProjectIssue> issues)
         {
             var issue = ProjectIssue.Create(IssueCategory.BuildSummary, key)
                 .WithCustomProperties(new object[(int)BuildReportMetaData.Num] { value });
-            onIssueFound(issue);
+            issues.Add(issue);
         }
 
         Rule.Severity LogTypeToSeverity(LogType logType)

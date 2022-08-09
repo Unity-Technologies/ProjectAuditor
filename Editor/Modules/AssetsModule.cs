@@ -32,12 +32,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            AnalyzeResources(projectAuditorParams.onIssueFound);
-            if (projectAuditorParams.onComplete != null)
-                projectAuditorParams.onComplete();
+            var issues = new List<ProjectIssue>();
+            AnalyzeResources(issues);
+
+            projectAuditorParams.onIncomingIssues(issues);
+            projectAuditorParams.onComplete?.Invoke();
         }
 
-        static void AnalyzeResources(Action<ProjectIssue> onIssueFound)
+        static void AnalyzeResources(IList<ProjectIssue> issues)
         {
             var allAssetPaths = AssetDatabase.GetAllAssetPaths();
             var allResources = allAssetPaths.Where(path => path.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) >= 0);
@@ -49,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if ((File.GetAttributes(assetPath) & FileAttributes.Directory) == FileAttributes.Directory)
                     continue;
 
-                var root = AddResourceAsset(assetPath, assetPathsDict, onIssueFound, null);
+                var root = AddResourceAsset(assetPath, assetPathsDict, issues, null);
                 var dependencies = AssetDatabase.GetDependencies(assetPath, true);
                 foreach (var depAssetPath in dependencies)
                 {
@@ -57,13 +59,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (depAssetPath.Equals(assetPath))
                         continue;
 
-                    AddResourceAsset(depAssetPath, assetPathsDict, onIssueFound, root);
+                    AddResourceAsset(depAssetPath, assetPathsDict, issues, root);
                 }
             }
         }
 
         static DependencyNode AddResourceAsset(
-            string assetPath, Dictionary<string, DependencyNode> assetPathsDict, Action<ProjectIssue> onIssueFound, DependencyNode parent)
+            string assetPath, Dictionary<string, DependencyNode> assetPathsDict, IList<ProjectIssue> issues, DependencyNode parent)
         {
             // skip C# scripts
             if (Path.GetExtension(assetPath).Equals(".cs"))
@@ -85,14 +87,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (parent != null)
                 dependencyNode.AddChild(parent);
 
-            onIssueFound(ProjectIssue.Create
+            issues.Add(ProjectIssue.Create
                 (
                     IssueCategory.Asset,
                     Path.GetFileNameWithoutExtension(location.Path)
                 )
                 .WithDependencies(dependencyNode)
-                .WithLocation(location)
-            );
+                .WithLocation(location));
 
             assetPathsDict.Add(assetPath, dependencyNode);
 

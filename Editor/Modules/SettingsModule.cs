@@ -58,17 +58,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (progress != null)
                     progress.Advance();
 
-                foreach (var issue in analyzer.Analyze(projectAuditorParams.platform))
-                {
-                    projectAuditorParams.onIssueFound(issue);
-                }
+                projectAuditorParams.onIncomingIssues(analyzer.Analyze(projectAuditorParams.platform));
             }
 
-            if (progress != null)
-                progress.Clear();
-
-            if (projectAuditorParams.onComplete != null)
-                projectAuditorParams.onComplete();
+            progress?.Clear();
+            projectAuditorParams.onComplete?.Invoke();
         }
 
         void AddAnalyzer(ISettingsAnalyzer analyzer)

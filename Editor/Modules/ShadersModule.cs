@@ -184,6 +184,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var graphicsSettingsSerializedObject = new SerializedObject(graphicsSettings);
             var alwaysIncludedShadersSerializedProperty = graphicsSettingsSerializedObject.FindProperty("m_AlwaysIncludedShaders");
 
+            var issues = new List<ProjectIssue>();
             for (var i = 0; i < alwaysIncludedShadersSerializedProperty.arraySize; i++)
             {
                 var shader = (Shader)alwaysIncludedShadersSerializedProperty.GetArrayElementAtIndex(i).objectReferenceValue;
@@ -250,11 +251,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     }
                 }
 #endif
-                AddShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader), projectAuditorParams.onIssueFound);
+                AddShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader), issues.Add);
             }
 
-            if (projectAuditorParams.onComplete != null)
-                projectAuditorParams.onComplete();
+            projectAuditorParams.onIncomingIssues(issues);
+            projectAuditorParams.onComplete?.Invoke();
         }
 
         void AddShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)

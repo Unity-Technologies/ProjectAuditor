@@ -47,25 +47,26 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            NewMetaData(k_KeyDateAndTime, DateTime.Now, projectAuditorParams.onIssueFound);
-            NewMetaData(k_KeyHostName, SystemInfo.deviceName, projectAuditorParams.onIssueFound);
-            NewMetaData(k_KeyHostPlatform, SystemInfo.operatingSystem, projectAuditorParams.onIssueFound);
-            NewMetaData(k_KeyCompanyName, Application.companyName, projectAuditorParams.onIssueFound);
-            NewMetaData(k_KeyProductName, Application.productName, projectAuditorParams.onIssueFound);
-            NewMetaData(k_KeyAnalysisTarget, projectAuditorParams.platform, projectAuditorParams.onIssueFound);
-            NewMetaData(k_KeyCompilationMode, m_Config.CompilationMode, projectAuditorParams.onIssueFound);
-            NewMetaData(k_KeyProjectAuditorVersion, ProjectAuditor.PackageVersion, projectAuditorParams.onIssueFound);
-            NewMetaData(k_KeyUnityVersion, Application.unityVersion, projectAuditorParams.onIssueFound);
+            var issues = new List<ProjectIssue>();
+            NewMetaData(k_KeyDateAndTime, DateTime.Now, issues);
+            NewMetaData(k_KeyHostName, SystemInfo.deviceName, issues);
+            NewMetaData(k_KeyHostPlatform, SystemInfo.operatingSystem, issues);
+            NewMetaData(k_KeyCompanyName, Application.companyName, issues);
+            NewMetaData(k_KeyProductName, Application.productName, issues);
+            NewMetaData(k_KeyAnalysisTarget, projectAuditorParams.platform, issues);
+            NewMetaData(k_KeyCompilationMode, m_Config.CompilationMode, issues);
+            NewMetaData(k_KeyProjectAuditorVersion, ProjectAuditor.PackageVersion, issues);
+            NewMetaData(k_KeyUnityVersion, Application.unityVersion, issues);
 
-            if (projectAuditorParams.onComplete != null)
-                projectAuditorParams.onComplete();
+            projectAuditorParams.onIncomingIssues(issues);
+            projectAuditorParams.onComplete?.Invoke();
         }
 
-        void NewMetaData(string key, object value, Action<ProjectIssue> onIssueFound)
+        void NewMetaData(string key, object value, IList<ProjectIssue> issues)
         {
             var issue = ProjectIssue.Create(IssueCategory.MetaData, key)
                 .WithCustomProperties(new object[(int)MetaDataProperty.Num] { value });
-            onIssueFound(issue);
+            issues.Add(issue);
         }
     }
 }

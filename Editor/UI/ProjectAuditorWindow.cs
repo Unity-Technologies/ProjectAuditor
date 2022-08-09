@@ -485,21 +485,17 @@ namespace Unity.ProjectAuditor.Editor.UI
             var selectedCategories = GetSelectedCategories();
             InitializeViews(selectedCategories, false);
 
-            var newIssues = new List<ProjectIssue>();
             var projectAuditorParams = new ProjectAuditorParams
             {
                 categories = m_SelectedModules == BuiltInModules.Everything ? null : selectedCategories,
                 platform = m_Platform,
-                onIssueFound = projectIssue =>
+                onIncomingIssues = issues =>
                 {
-                    newIssues.Add(projectIssue);
+                    // add batch of issues
+                    m_ViewManager.AddIssues(issues.ToList());
                 },
                 onUpdate = projectReport =>
                 {
-                    // add batch of issues
-                    m_ViewManager.AddIssues(newIssues.ToArray());
-                    newIssues.Clear();
-
                     if (projectReport != null)
                     {
                         m_AnalysisState = AnalysisState.Completed;
@@ -543,33 +539,36 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_ProjectReport == null)
                 m_ProjectReport = new ProjectReport();
 
-            var categories = module.GetCategories().ToArray();
+            var categories = module.GetCategories();
             foreach (var category in categories)
             {
                 m_ProjectReport.ClearIssues(category);
             }
 
-            var newIssues = new List<ProjectIssue>();
-            var projectAuditorParams = new ProjectAuditorParams
-            {
-                onIssueFound = issue =>
-                {
-                    newIssues.Add(issue);
-                    m_ProjectReport.AddIssue(issue);
-                }
-            };
-            module.Audit(projectAuditorParams, new ProgressBar());
-
-            // update views
             var views = categories
                 .Select(c => m_ViewManager.GetView(c))
                 .Where(v => v != null)
-                .Distinct();
+                .Distinct()
+                .ToArray();
+
             foreach (var view in views)
             {
                 view.Clear();
-                view.AddIssues(newIssues);
             }
+
+            var projectAuditorParams = new ProjectAuditorParams
+            {
+                onIncomingIssues = issues =>
+                {
+                    foreach (var view in views)
+                    {
+                        view.AddIssues(issues);
+                    }
+
+                    m_ProjectReport.AddIssues(issues);
+                }
+            };
+            module.Audit(projectAuditorParams, new ProgressBar());
         }
 
         public void AnalyzeShaderVariants()

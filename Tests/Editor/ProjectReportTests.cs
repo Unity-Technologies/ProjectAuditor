@@ -54,12 +54,12 @@ class MyClass : MonoBehaviour
                 "do nothing"
                 );
 
-            projectReport.AddIssue(new ProjectIssue
+            projectReport.AddIssues(new[] { new ProjectIssue
                 (
                     IssueCategory.Code,
                     p,
                     "dummy issue"
-                )
+                ) }
             );
 
             Assert.AreEqual(1, projectReport.NumTotalIssues);

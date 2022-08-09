@@ -141,11 +141,10 @@ namespace Unity.ProjectAuditor.Editor
                 var startTime = stopwatch.ElapsedMilliseconds;
                 module.Audit(new ProjectAuditorParams(projectAuditorParams)
                 {
-                    onIssueFound = issue =>
+                    onIncomingIssues = issues =>
                     {
-                        result.AddIssue(issue);
-                        if (projectAuditorParams.onIssueFound != null)
-                            projectAuditorParams.onIssueFound(issue);
+                        result.AddIssues(issues);
+                        projectAuditorParams.onIncomingIssues?.Invoke(issues);
                     },
                     onComplete = () =>
                     {
