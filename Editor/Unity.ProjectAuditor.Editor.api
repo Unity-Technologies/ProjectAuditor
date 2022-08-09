@@ -188,7 +188,7 @@ namespace Unity.ProjectAuditor.Editor
         public Unity.ProjectAuditor.Editor.IssueCategory[] categories;
         public Unity.ProjectAuditor.Editor.AssemblyUtils.CodeOptimization codeOptimization;
         public System.Action onComplete;
-        public System.Action<Unity.ProjectAuditor.Editor.ProjectIssue> onIssueFound;
+        public System.Action<System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue>> onIncomingIssues;
         public System.Action<Unity.ProjectAuditor.Editor.ProjectReport> onUpdate;
         public UnityEditor.BuildTarget platform;
         public ProjectAuditorParams() {}
