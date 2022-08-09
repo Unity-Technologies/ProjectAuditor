@@ -102,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             ProjectReport projectReport = null;
 
-            projectAuditorParams.onUpdate += result => { projectReport = result; };
+            projectAuditorParams.onCompleted += result => { projectReport = result; };
 
             AuditAsync(projectAuditorParams, progress);
 
@@ -130,7 +130,7 @@ namespace Unity.ProjectAuditor.Editor
             if (numModules == 0)
             {
                 // early out if, for any reason, there are no registered modules
-                projectAuditorParams.onUpdate(result);
+                projectAuditorParams.onCompleted(result);
                 return;
             }
 
@@ -146,11 +146,13 @@ namespace Unity.ProjectAuditor.Editor
                         result.AddIssues(issues);
                         projectAuditorParams.onIncomingIssues?.Invoke(issues);
                     },
-                    onComplete = () =>
+                    onModuleCompleted = () =>
                     {
                         if (logTimingsInfo)
                             Debug.Log(module.GetType().Name + " took: " +
                                 (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
+
+                        projectAuditorParams.onModuleCompleted?.Invoke();
 
                         var finished = --numModules == 0;
                         if (finished)
@@ -158,10 +160,9 @@ namespace Unity.ProjectAuditor.Editor
                             stopwatch.Stop();
                             if (logTimingsInfo)
                                 Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
-                        }
 
-                        if (projectAuditorParams.onUpdate != null)
-                            projectAuditorParams.onUpdate(finished ? result : null);
+                            projectAuditorParams.onCompleted?.Invoke(result);
+                        }
                     }
                 }, progress);
             }

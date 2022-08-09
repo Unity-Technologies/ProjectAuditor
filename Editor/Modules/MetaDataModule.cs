@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             NewMetaData(k_KeyUnityVersion, Application.unityVersion, issues);
 
             projectAuditorParams.onIncomingIssues(issues);
-            projectAuditorParams.onComplete?.Invoke();
+            projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
         void NewMetaData(string key, object value, IList<ProjectIssue> issues)

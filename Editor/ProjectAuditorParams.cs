@@ -13,8 +13,8 @@ namespace Unity.ProjectAuditor.Editor
         public CodeOptimization codeOptimization;
 
         public Action<IEnumerable<ProjectIssue>> onIncomingIssues;
-        public Action<ProjectReport> onUpdate;
-        public Action onComplete;
+        public Action<ProjectReport> onCompleted;
+        public Action onModuleCompleted;
 
         public ProjectAuditorParams()
         {
@@ -30,8 +30,8 @@ namespace Unity.ProjectAuditor.Editor
             codeOptimization = original.codeOptimization;
 
             onIncomingIssues = original.onIncomingIssues;
-            onUpdate = original.onUpdate;
-            onComplete = original.onComplete;
+            onCompleted = original.onCompleted;
+            onModuleCompleted = original.onModuleCompleted;
         }
     }
 }

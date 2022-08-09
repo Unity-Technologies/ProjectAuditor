@@ -229,7 +229,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 // workaround for empty 'relativePath' strings which are not all available when 'onIssueFoundInternal' is called
                 projectAuditorParams.onIncomingIssues(foundIssues);
-                projectAuditorParams.onComplete?.Invoke();
+                projectAuditorParams.onModuleCompleted?.Invoke();
             });
 
             var assemblyDirectories = new List<string>();

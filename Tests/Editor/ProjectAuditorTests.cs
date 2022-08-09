@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using UnityEditor;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -39,7 +40,8 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(numCategories + 1, Unity.ProjectAuditor.Editor.ProjectAuditor.NumCategories());
 
             // check category is still the same
-            Assert.AreEqual(category, Unity.ProjectAuditor.Editor.ProjectAuditor.GetOrRegisterCategory(testCategoryName));
+            Assert.AreEqual(category,
+                Unity.ProjectAuditor.Editor.ProjectAuditor.GetOrRegisterCategory(testCategoryName));
         }
 
         [Test]
@@ -58,8 +60,8 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var originalParams = new ProjectAuditorParams
             {
-                categories = new[] {IssueCategory.Code},
-                assemblyNames = new[] {"Test"},
+                categories = new[] { IssueCategory.Code },
+                assemblyNames = new[] { "Test" },
                 platform = BuildTarget.Android,
                 codeOptimization = CodeOptimization.Debug
             };
@@ -70,6 +72,34 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsNotNull(projectAuditorParams.assemblyNames);
             Assert.AreEqual(BuildTarget.Android, projectAuditorParams.platform);
             Assert.AreEqual(CodeOptimization.Debug, projectAuditorParams.codeOptimization);
+        }
+
+        [Test]
+        public void ProjectAuditor_Params_CallbacksAreInvoked()
+        {
+            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            config.CompilationMode = CompilationMode.Player;
+
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
+
+            int numModules = 0;
+            ProjectReport projectReport = null;
+
+            projectAuditor.Audit(new ProjectAuditorParams
+            {
+                categories = new[] { IssueCategory.ProjectSetting },
+                onModuleCompleted = () => numModules++,
+                onCompleted = report =>
+                {
+                    Assert.Null(projectReport);
+                    Assert.NotNull(report);
+
+                    projectReport = report;
+                }
+            });
+
+            Assert.AreEqual(1, numModules);
+            Assert.NotNull(projectReport);
         }
     }
 }

@@ -255,7 +255,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             projectAuditorParams.onIncomingIssues(issues);
-            projectAuditorParams.onComplete?.Invoke();
+            projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
         void AddShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)

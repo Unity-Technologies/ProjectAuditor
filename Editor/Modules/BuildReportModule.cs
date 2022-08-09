@@ -155,7 +155,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 projectAuditorParams.onIncomingIssues(issues);
             }
 #endif
-            projectAuditorParams.onComplete?.Invoke();
+            projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
 #if BUILD_REPORT_API_SUPPORT

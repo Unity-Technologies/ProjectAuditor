@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             progress?.Clear();
-            projectAuditorParams.onComplete?.Invoke();
+            projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
         void AddAnalyzer(ISettingsAnalyzer analyzer)

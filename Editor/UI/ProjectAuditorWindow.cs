@@ -494,13 +494,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                     // add batch of issues
                     m_ViewManager.AddIssues(issues.ToList());
                 },
-                onUpdate = projectReport =>
+                onCompleted = projectReport =>
                 {
-                    if (projectReport != null)
-                    {
-                        m_AnalysisState = AnalysisState.Completed;
-                        m_ProjectReport = projectReport;
-                    }
+                    m_AnalysisState = AnalysisState.Completed;
+                    m_ProjectReport = projectReport;
 
                     m_ShouldRefresh = true;
                 }
