@@ -29,7 +29,6 @@ namespace Unity.ProjectAuditor.Editor
                 m_StreamWriter.WriteLine(@"<td>" + prop + @"</td>");
             }
             m_StreamWriter.WriteLine(@"</tr>");
-            //m_StreamWriter.Write(@"</body>" + m_StreamWriter.NewLine + @"</html>" + m_StreamWriter.NewLine);
         }
 
         public override void WriteFooter() {

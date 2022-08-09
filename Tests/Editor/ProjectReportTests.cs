@@ -94,7 +94,7 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void ProjectReport_CodeIssues_AreExportedAndFormatted()
+        public void ProjectReport_CodeIssues_AreExportedAndFormatted_CSV()
         {
             var category = IssueCategory.Code;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
@@ -118,7 +118,106 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void ProjectReport_CodeIssues_AreFilteredAndExported()
+        public void ProjectReport_CodeIssues_AreExportedAndFormatted_HTML()
+        {
+            var category = IssueCategory.Code;
+            var path = string.Format("project-auditor-report-{0}.html", category.ToString()).ToLower();
+            AnalyzeAndExport(category, path, "html");
+
+            var issueFound = false;
+            var formatCorrect = false;
+            using (var file = new StreamReader(path))
+            {
+                var line = file.ReadLine();
+                Assert.AreEqual("<html>", line);
+                line = file.ReadLine();
+                Assert.AreEqual("<body>", line);
+                line = file.ReadLine();
+                Assert.AreEqual("<table width='50%' cellpadding='10' style='margin-top:10px' cellspacing='3' border='1' rules='all'>", line);
+                line = file.ReadLine();
+                Assert.AreEqual("<tr>", line);
+                line = file.ReadLine();
+                Assert.AreEqual("<th>Issue</th>", line);
+                line = file.ReadLine();
+                Assert.AreEqual("<th>Critical</th>", line);
+                line = file.ReadLine();
+                Assert.AreEqual("<th>Area</th>", line);
+                line = file.ReadLine();
+                Assert.AreEqual("<th>Filename</th>", line);
+                line = file.ReadLine();
+                Assert.AreEqual("<th>Assembly</th>", line);
+                line = file.ReadLine();
+                Assert.AreEqual("<th>Descriptor</th>", line);
+                line = file.ReadLine();
+                Assert.AreEqual("</tr>", line);
+
+                while (file.Peek() > -1)
+                {
+
+                    line = file.ReadLine();
+                    if (!line.Equals("</body>"))
+                    {
+                        int index = 0;
+                        if (line.Equals("<tr>"))
+                        {
+                            index++;
+                        }
+                        line = file.ReadLine();
+                        if (line.Equals($"<td>'UnityEngine.Camera.allCameras' usage</td>"))
+                        {
+                            index++;
+                        }
+                        line = file.ReadLine();
+                        if (line.Equals($"<td>True</td>"))
+                        {
+                            index++;
+                        }
+                        line = file.ReadLine();
+                        if (line.Equals($"<td>Memory</td>"))
+                        {
+                            index++;
+                        }
+                        line = file.ReadLine();
+                        if (line.Equals($"<td>MyClass.cs:7</td>"))
+                        {
+                            index++;
+                        }
+                        line = file.ReadLine();
+                        if (line.Equals($"<td>Assembly-CSharp</td>"))
+                        {
+                            index++;
+                        }
+                        line = file.ReadLine();
+                        if (line.Equals($"<td>UnityEngine.Camera.allCameras</td>"))
+                        {
+                            index++;
+                        }
+                        line = file.ReadLine();
+                        if (line.Equals("</tr>"))
+                        {
+                            index++;
+                        }
+                        if (index == 8)
+                        {
+                            issueFound = true;
+                        }
+                    }
+                    else
+                    {
+                        line = file.ReadLine();
+                        if (line.Equals("</html>"))
+                        {
+                            formatCorrect = true;
+                        }
+                    }
+                }
+            }
+            Assert.True(issueFound);
+            Assert.True(formatCorrect);
+        }
+
+        [Test]
+        public void ProjectReport_CodeIssues_AreFilteredAndExported_CSV()
         {
             var category = IssueCategory.Code;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
@@ -145,42 +244,31 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        //[Ignore("not finish filtered and exported")]
-        public void ProjectReprt_Codeissues_AreFilteredAndExported_HTML() {
-            IssueCategory category = IssueCategory.Code;
-            string path = string.Format("project-auditor-report-{0}.html", category.ToString()).ToLower();
+        public void ProjectReport_Codeissues_AreFilteredAndExported_HTML() {
+            var category = IssueCategory.Code;
+            var path = string.Format("project-auditor-report-{0}.html", category.ToString()).ToLower();
             AnalyzeAndExport(category, path, "html", issue =>
             {
                 return issue.description.StartsWith("Conversion");
             });
-            //AnalyzeAndExport(category, path, "html");
-            bool issueFound = false;
-            bool filterCorrect = true;
-            using (StreamReader file = new StreamReader(path)) {
-                var line = file.ReadLine();
-                //Assert.AreEqual("<html>", line);
-                line = file.ReadLine();
-                //Assert.AreEqual("<body>", line);
-                line = file.ReadLine();
-                //Assert.AreEqual("<table width='50%' cellpadding='10' style='margin-top:10px' cellspacing='3' border='1' rules='all'>", line);
-                line = file.ReadLine();
-                //Assert.AreEqual("<tr>", line);
-                line = file.ReadLine();
-                //Assert.AreEqual("<th>Issue</th>", line);
-                line = file.ReadLine();
-                //Assert.AreEqual("<th>Critical</th>", line);
-                line = file.ReadLine();
-                //Assert.AreEqual("<th>Area</th>", line);
-                line = file.ReadLine();
-                //Assert.AreEqual("<th>Area</th>", line);
-                line = file.ReadLine();
-                //Assert.AreEqual("<th>Area</th>", line);
-                line = file.ReadLine();
-                //Assert.AreEqual("<th>Area</th>", line);
-                line = file.ReadLine();
-                //Assert.AreEqual("</tr>", line);
-                
-                while (file.Peek() > -1) {
+            var issueFound = false;
+            var filterCorrect = true;
+            using (var file = new StreamReader(path))
+            {
+                var line = file.ReadLine(); //should be "<html>"
+                line = file.ReadLine();     //should be "<body>"
+                line = file.ReadLine();     //should be "<<table width='50%' cellpadding='10' style='margin-top:10px' cellspacing='3' border='1' rules='all'>"
+                line = file.ReadLine();     //should be "<tr>"
+                line = file.ReadLine();     //should be "<th>Issue</th>"
+                line = file.ReadLine();     //should be "<th>Critical</th>"
+                line = file.ReadLine();     //should be "<th>Area</th>"
+                line = file.ReadLine();     //should be "<th>Filename</th>"
+                line = file.ReadLine();     //should be "<th>Assembly</th>"
+                line = file.ReadLine();     //should be "<th>Descriptor</th>"
+                line = file.ReadLine();     //should be "</tr>"
+
+                while (file.Peek() > -1)
+                {
                     line = file.ReadLine();
                     if (!line.Equals("</body>"))
                     {
@@ -240,18 +328,15 @@ class MyClass : MonoBehaviour
                     else
                     {
                         line = file.ReadLine();
-                        //if (line.Equals("</html>"))
-                        //{
-                        //    formatCorrect = true;
-                        //}
                     }
                 }
-                Assert.True(issueFound && filterCorrect);
+                Assert.True(issueFound);
+                Assert.True(filterCorrect);
             }
         }
 
         [Test]
-        public void ProjectReport_SettingsIssues_AreExportedAndFormatted()
+        public void ProjectReport_SettingsIssues_AreExportedAndFormatted_CSV()
         {
             var bakeCollisionMeshes = PlayerSettings.bakeCollisionMeshes;
             PlayerSettings.bakeCollisionMeshes = false;
@@ -281,20 +366,18 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        //[Ignore("HTMLExporter")]
         public void ProjectReport_SettingsIssues_AreExportedAndFormatted_HTML() {
-            bool bakeCollisionMeshes = PlayerSettings.bakeCollisionMeshes;
+            var bakeCollisionMeshes = PlayerSettings.bakeCollisionMeshes;
             PlayerSettings.bakeCollisionMeshes = false;
 
-            IssueCategory category = IssueCategory.ProjectSetting;
-            string path = string.Format("project-auditor-report-{0}.html", category.ToString().ToLower());
-            IReadOnlyCollection<ProjectIssue> issues = AnalyzeAndExport(category, path, "html");
-            ProjectIssue issue =  issues.FirstOrDefault(i => i.descriptor.method.Equals("bakeCollisionMeshes"));
-            string expectedIssueLine = $"\"{issue.description}\",\"{issue.descriptor.GetAreasSummary()}\",\"{issue.relativePath}\"";
+            var category = IssueCategory.ProjectSetting;
+            var path = string.Format("project-auditor-report-{0}.html", category.ToString().ToLower());
+            var issues = AnalyzeAndExport(category, path, "html");
+            var issue =  issues.FirstOrDefault(i => i.descriptor.method.Equals("bakeCollisionMeshes"));
 
-            bool issueFound = false;
-            bool formatCorrect = false;
-            using(StreamReader file = new StreamReader(path))
+            var issueFound = false;
+            var formatCorrect = false;
+            using(var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
                 Assert.AreEqual("<html>", line);
@@ -313,7 +396,8 @@ class MyClass : MonoBehaviour
                 line = file.ReadLine();
                 Assert.AreEqual("</tr>", line);
 
-                while (file.Peek() > -1) {
+                while (file.Peek() > -1)
+                {
 
                     line = file.ReadLine();
                     if (!line.Equals("</body>"))
@@ -356,7 +440,9 @@ class MyClass : MonoBehaviour
                     }
                 }
             }
-            Assert.True(issueFound && formatCorrect);
+            Assert.True(issueFound);
+            Assert.True(formatCorrect);
+
             PlayerSettings.bakeCollisionMeshes = bakeCollisionMeshes;
         }
     }

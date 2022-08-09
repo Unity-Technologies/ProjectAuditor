@@ -492,21 +492,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected virtual void Export(Func<ProjectIssue, bool> predicate = null)
         {
-            //var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.loadSavePath, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
-            //    "csv");
-            var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.loadSavePath, string.Format("project-auditor-{0}.html", m_Desc.category.ToString()).ToLower(),
-                "html");
+            var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.loadSavePath, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
+                "csv");
             if (path.Length != 0)
             {
-                //using (var exporter = new CSVExporter(path, m_Layout))
-                using (var exporter = new HTMLExporter(path, m_Layout))
+                using (var exporter = new CSVExporter(path, m_Layout))
                 {
                     exporter.WriteHeader();
 
                     var matchingIssues = m_Issues.Where(issue => issue.descriptor == null || m_Config.GetAction(issue.descriptor, issue.GetContext()) !=
                         Rule.Severity.None && (predicate == null || predicate(issue)));
                     exporter.WriteIssues(matchingIssues.ToArray());
-                    exporter.WriteFooter();
                 }
 
                 EditorUtility.RevealInFinder(path);
