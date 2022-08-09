@@ -168,7 +168,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 projectAuditorParams.onIncomingIssues(roslynAnalyzers
                     .Select(roslynAnalyzerDllPath => (ProjectIssue)ProjectIssue.Create(IssueCategory.PrecompiledAssembly,
-                            Path.GetFileNameWithoutExtension(roslynAnalyzerDllPath))
+                        Path.GetFileNameWithoutExtension(roslynAnalyzerDllPath))
                         .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
                         {
                             true
