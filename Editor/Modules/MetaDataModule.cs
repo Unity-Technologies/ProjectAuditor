@@ -30,6 +30,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string k_KeyProductName = "Product Name";
         internal const string k_KeyAnalysisTarget = "Analysis Target";
         internal const string k_KeyCompilationMode = "Compilation Mode";
+        internal const string k_KeyRoslynAnalysis = "Roslyn Analysis";
         internal const string k_KeyProjectAuditorVersion = "Project Auditor Version";
         internal const string k_KeyUnityVersion = "Unity Version";
 
@@ -55,6 +56,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             NewMetaData(k_KeyProductName, Application.productName, issues);
             NewMetaData(k_KeyAnalysisTarget, projectAuditorParams.platform, issues);
             NewMetaData(k_KeyCompilationMode, m_Config.CompilationMode, issues);
+            NewMetaData(k_KeyRoslynAnalysis, m_Config.UseRoslynAnalyzers, issues);
             NewMetaData(k_KeyProjectAuditorVersion, ProjectAuditor.PackageVersion, issues);
             NewMetaData(k_KeyUnityVersion, Application.unityVersion, issues);
 
