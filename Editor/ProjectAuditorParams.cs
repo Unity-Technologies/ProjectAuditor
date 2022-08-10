@@ -12,8 +12,19 @@ namespace Unity.ProjectAuditor.Editor
         public string[] assemblyNames;
         public CodeOptimization codeOptimization;
 
+        /// <summary>
+        /// Reports a batch of new issues. Note that this be called multiple times per analysis.
+        /// </summary>
         public Action<IEnumerable<ProjectIssue>> onIncomingIssues;
+
+        /// <summary>
+        /// Notifies that all modules completed their analysis.
+        /// </summary>
         public Action<ProjectReport> onCompleted;
+
+        /// <summary>
+        /// Notifies that a module completed its analysis.
+        /// </summary>
         public Action onModuleCompleted;
 
         public ProjectAuditorParams()
