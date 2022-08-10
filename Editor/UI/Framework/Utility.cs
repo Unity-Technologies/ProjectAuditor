@@ -18,6 +18,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             ZoomTool,
             Fix,
             Download,
+            Load,
+            Save,
+            Trash,
             View,
             WhiteCheckMark,
             GreenCheckMark,
@@ -33,6 +36,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_ZoomToolIconName = "ViewToolZoom";
         static readonly string k_FixIconName = "Profiler.Custom"; // Only available in 2020+
         static readonly string k_DownloadIconName = "Download-Available"; // Only available in 2020+
+        static readonly string k_LoadIconName = "Import";
+        static readonly string k_SaveIconName = "SaveAs";
+        static readonly string k_TrashIconName = "TreeEditor.Trash";
         static readonly string k_ViewIconName = "ViewToolOrbit";
 
         static GUIContent[] s_StatusWheel;
@@ -171,6 +177,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     return EditorGUIUtility.TrIconContent(k_ViewIconName, tooltip);
                 case IconType.Help:
                     return EditorGUIUtility.TrIconContent(k_HelpIconName, tooltip);
+                case IconType.Load:
+                    return EditorGUIUtility.TrIconContent(k_LoadIconName, tooltip);
+                case IconType.Save:
+                    return EditorGUIUtility.TrIconContent(k_SaveIconName, tooltip);
+                case IconType.Trash:
+                    return EditorGUIUtility.TrIconContent(k_TrashIconName, tooltip);
                 case IconType.StatusWheel:
                     return GetStatusWheel();
                 case IconType.WhiteCheckMark:

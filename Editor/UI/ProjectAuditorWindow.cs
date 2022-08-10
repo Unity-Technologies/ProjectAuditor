@@ -1186,16 +1186,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new GUIContent("Platform", "Select the target platform.");
 
 #if UNITY_2019_1_OR_NEWER
-            public static readonly GUIContent SaveButton = EditorGUIUtility.TrIconContent("SaveAs", "Save current report to json file");
-            public static readonly GUIContent LoadButton = EditorGUIUtility.TrIconContent("Import", "Load report from json file");
-            public static readonly GUIContent DiscardButton = EditorGUIUtility.TrIconContent("TreeEditor.Trash", "Discard the current report.");
+            public static readonly GUIContent SaveButton = Utility.GetIcon(Utility.IconType.Save, "Save current report to json file");
+            public static readonly GUIContent LoadButton = Utility.GetIcon(Utility.IconType.Load, "Load report from json file");
+            public static readonly GUIContent DiscardButton = Utility.GetIcon(Utility.IconType.Trash, "Discard the current report.");
 #else
             public static readonly GUIContent SaveButton = new GUIContent("Save", "Save current report to json file");
             public static readonly GUIContent LoadButton = new GUIContent("Load", "Load report from json file");
             public static readonly GUIContent DiscardButton = new GUIContent("Discard", "Discard the current report.");
 #endif
 
-            public static readonly GUIContent HelpButton = EditorGUIUtility.TrIconContent("_Help", "Open Manual (in a web browser)");
+            public static readonly GUIContent HelpButton = Utility.GetIcon(Utility.IconType.Help,"Open Manual (in a web browser)");
 
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");
