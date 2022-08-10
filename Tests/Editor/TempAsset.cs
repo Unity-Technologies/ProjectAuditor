@@ -48,8 +48,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var path = Path.Combine("Assets", k_TempFolder);
             if (Directory.Exists(path))
             {
-                Directory.Delete(path, true);
-                File.Delete(path + ".meta");
+                AssetDatabase.DeleteAsset(path);
                 AssetDatabase.Refresh();
             }
         }
