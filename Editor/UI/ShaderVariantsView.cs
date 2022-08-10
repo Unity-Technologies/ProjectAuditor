@@ -15,12 +15,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static readonly string k_BuildInstructions = $@"This view shows the built Shader Variants.
 
-To view the built Shader Variants, run your build pipeline and Refresh:
+To record and view the Shader Variants for this project, follow these steps:
+{k_BulletPointUnicode} Click the <b>Clear</b> button
 {k_BulletPointUnicode} Build the project and/or Addressables/AssetBundles
-{k_BulletPointUnicode} Click the <b>Refresh</b> button
-Note that it's important to clear the cache before building Addressables.
+{k_BulletPointUnicode} Click the <b>Refresh</b> button";
 
-To clear the recorded variants use the <b>Clear</b> button";
+        static readonly string k_ClearInstructions = "Depending on the Unity version, the incremental build pipeline might not recompile all variants if the project was built previously. Therefore it is important to Clear before building.";
 
         static readonly string k_PlayerLogInstructions = $@"The number of Variants contributes to the build size, however, there might be Variants that are not required (compiled) at runtime on the target platform. To find out which of these variants are not compiled at runtime, follow these steps:
 {k_BulletPointUnicode} Enable the <b>Log Shader Compilation</b> option
@@ -167,6 +167,7 @@ To clear the recorded variants use the <b>Clear</b> button";
         {
             EditorGUILayout.BeginVertical();
             EditorGUILayout.LabelField(k_BuildInstructions, SharedStyles.TextArea);
+            EditorGUILayout.HelpBox(k_ClearInstructions, MessageType.Warning);
 
             if (numIssues > 0)
             {
