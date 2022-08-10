@@ -35,7 +35,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var issues = new List<ProjectIssue>();
             AnalyzeResources(issues);
 
-            projectAuditorParams.onIncomingIssues(issues);
+            if (issues.Any())
+                projectAuditorParams.onIncomingIssues(issues);
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 

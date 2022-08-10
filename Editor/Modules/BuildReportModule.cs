@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -152,7 +153,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 AnalyzeBuildSteps(buildReport, issues);
                 AnalyzePackedAssets(buildReport, issues);
 
-                projectAuditorParams.onIncomingIssues(issues);
+                if (issues.Any())
+                    projectAuditorParams.onIncomingIssues(issues);
             }
 #endif
             projectAuditorParams.onModuleCompleted?.Invoke();

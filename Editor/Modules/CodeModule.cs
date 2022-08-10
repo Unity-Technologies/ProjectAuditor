@@ -151,14 +151,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
-            projectAuditorParams.onIncomingIssues(AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All)
+            var precompiledAssemblies = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All)
                 .Select(assemblyPath => (ProjectIssue)ProjectIssue
                     .Create(IssueCategory.PrecompiledAssembly, Path.GetFileNameWithoutExtension(assemblyPath))
                     .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
                     {
                         false
                     })
-                    .WithLocation(assemblyPath)));
+                    .WithLocation(assemblyPath))
+                .ToArray();
+            if (precompiledAssemblies.Any())
+                projectAuditorParams.onIncomingIssues(precompiledAssemblies);
 
             var roslynAnalyzers = new string[] {};
             if (m_Config.UseRoslynAnalyzers)
@@ -166,14 +169,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 roslynAnalyzers = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath)
                     .ToArray();
 
-                projectAuditorParams.onIncomingIssues(roslynAnalyzers
-                    .Select(roslynAnalyzerDllPath => (ProjectIssue)ProjectIssue.Create(IssueCategory.PrecompiledAssembly,
-                        Path.GetFileNameWithoutExtension(roslynAnalyzerDllPath))
-                        .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
-                        {
-                            true
-                        })
-                        .WithLocation(roslynAnalyzerDllPath)));
+                var roslynAnalyzerDLLs = roslynAnalyzers
+                    .Select(roslynAnalyzerDllPath => (ProjectIssue)ProjectIssue.Create(
+                    IssueCategory.PrecompiledAssembly,
+                    Path.GetFileNameWithoutExtension(roslynAnalyzerDllPath))
+                    .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
+                    {
+                        true
+                    })
+                    .WithLocation(roslynAnalyzerDllPath))
+                    .ToArray();
+
+                if (roslynAnalyzerDLLs.Any())
+                    projectAuditorParams.onIncomingIssues(roslynAnalyzerDLLs);
             }
 
             var compilationIssues = new List<ProjectIssue>();
@@ -191,7 +199,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var assemblyInfos = compilationPipeline.Compile(progress);
             Profiler.EndSample();
 
-            projectAuditorParams.onIncomingIssues(compilationIssues);
+            if (compilationIssues.Any())
+                projectAuditorParams.onIncomingIssues(compilationIssues);
 
             if (projectAuditorParams.assemblyNames != null)
             {
@@ -200,13 +209,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (m_Config.CompilationMode == CompilationMode.Editor)
             {
-                projectAuditorParams.onIncomingIssues(assemblyInfos.Select(assemblyInfo => (ProjectIssue)ProjectIssue.Create(IssueCategory.Assembly, assemblyInfo.name)
+                var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)ProjectIssue
+                    .Create(IssueCategory.Assembly, assemblyInfo.name)
                     .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                     {
                         assemblyInfo.packageReadOnly,
                         float.NaN
                     })
-                    .WithLocation(assemblyInfo.asmDefPath)));
+                    .WithLocation(assemblyInfo.asmDefPath))
+                    .ToArray();
+                if (issues.Any())
+                    projectAuditorParams.onIncomingIssues(issues);
             }
 
             // process successfully compiled assemblies
@@ -228,7 +241,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 Profiler.EndSample();
 
                 // workaround for empty 'relativePath' strings which are not all available when 'onIssueFoundInternal' is called
-                projectAuditorParams.onIncomingIssues(foundIssues);
+                if (foundIssues.Any())
+                    projectAuditorParams.onIncomingIssues(foundIssues);
                 projectAuditorParams.onModuleCompleted?.Invoke();
             });
 

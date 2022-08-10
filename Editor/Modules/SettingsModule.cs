@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.ProjectAuditor.Editor.SettingsAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -58,7 +59,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (progress != null)
                     progress.Advance();
 
-                projectAuditorParams.onIncomingIssues(analyzer.Analyze(projectAuditorParams.platform));
+                var issues = analyzer.Analyze(projectAuditorParams.platform).ToArray();
+                if (issues.Any())
+                    projectAuditorParams.onIncomingIssues(issues);
             }
 
             progress?.Clear();
