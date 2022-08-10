@@ -30,7 +30,6 @@ namespace Unity.ProjectAuditor.Editor
 
         protected abstract void WriteIssue(ProjectIssue issue);
 
-        public virtual void WriteFooter() { }
-
+        public virtual void WriteFooter() {}
     }
 }

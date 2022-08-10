@@ -55,11 +55,11 @@ class MyClass : MonoBehaviour
                 );
 
             projectReport.AddIssues(new[] { new ProjectIssue
-                (
-                    IssueCategory.Code,
-                    p,
-                    "dummy issue"
-                ) }
+                                            (
+                                                IssueCategory.Code,
+                                                p,
+                                                "dummy issue"
+                                            ) }
             );
 
             Assert.AreEqual(1, projectReport.NumTotalIssues);
@@ -153,7 +153,6 @@ class MyClass : MonoBehaviour
 
                 while (file.Peek() > -1)
                 {
-
                     line = file.ReadLine();
                     if (!line.Equals("</body>"))
                     {
@@ -221,7 +220,7 @@ class MyClass : MonoBehaviour
         {
             var category = IssueCategory.Code;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
-            AnalyzeAndExport(category,path, "csv", issue =>
+            AnalyzeAndExport(category, path, "csv", issue =>
             {
                 return issue.description.StartsWith("Conversion");
             });
@@ -344,7 +343,7 @@ class MyClass : MonoBehaviour
 
             var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
-            var issues = AnalyzeAndExport(category,  path,"csv");
+            var issues = AnalyzeAndExport(category,  path, "csv");
             var issue = issues.FirstOrDefault(i => i.descriptor.method.Equals("bakeCollisionMeshes"));
             var expectedIssueLine = $"\"{issue.description}\",\"{issue.descriptor.GetAreasSummary()}\",\"{issue.relativePath}\"";
 
@@ -379,7 +378,7 @@ class MyClass : MonoBehaviour
 
             var issueFound = false;
             var formatCorrect = false;
-            using(var file = new StreamReader(path))
+            using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
                 Assert.AreEqual("<html>", line);
@@ -400,7 +399,6 @@ class MyClass : MonoBehaviour
 
                 while (file.Peek() > -1)
                 {
-
                     line = file.ReadLine();
                     if (!line.Equals("</body>"))
                     {
@@ -437,7 +435,8 @@ class MyClass : MonoBehaviour
                     else
                     {
                         line = file.ReadLine();
-                        if (line.Equals("</html>")) {
+                        if (line.Equals("</html>"))
+                        {
                             formatCorrect = true;
                         }
                     }

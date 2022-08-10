@@ -6,7 +6,7 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class CSVExporter : Exporter
     {
-        public CSVExporter(string path, IssueLayout layout) : base(path, layout) { }
+        public CSVExporter(string path, IssueLayout layout) : base(path, layout) {}
 
         public override void WriteHeader()
         {

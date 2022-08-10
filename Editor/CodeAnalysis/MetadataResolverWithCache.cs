@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Mono.Cecil;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
@@ -42,7 +42,5 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             m_Cache.Add(reference, definition);
             return (MethodDefinition)definition;
         }
-
     }
-
 }

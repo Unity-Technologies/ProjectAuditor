@@ -6,7 +6,7 @@ namespace Unity.ProjectAuditor.Editor
 {
     public class HTMLExporter : Exporter
     {
-        public HTMLExporter(string path, IssueLayout layout) : base(path, layout) { }
+        public HTMLExporter(string path, IssueLayout layout) : base(path, layout) {}
 
         public override void WriteHeader()
         {
@@ -36,5 +36,4 @@ namespace Unity.ProjectAuditor.Editor
             m_StreamWriter.Write(@"</body>" + m_StreamWriter.NewLine + @"</html>" + m_StreamWriter.NewLine);
         }
     }
-
 }
