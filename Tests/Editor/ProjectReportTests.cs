@@ -278,7 +278,6 @@ class MyClass : MonoBehaviour
                             index++;
                         }
                         line = file.ReadLine();
-                        //if (line.Equals($"<td>Conversion from value type 'Int32' to ref type</td>"))
                         if (line.Contains("Conversion"))
                         {
                             if (line.Equals($"<td>Conversion from value type 'Int32' to ref type</td>"))
