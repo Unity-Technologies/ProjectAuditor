@@ -85,6 +85,17 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
+        public void ExportToHTML(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
+        {
+            var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
+            using (var exporter = new HTMLExporter(path, layout))
+            {
+                exporter.WriteHeader();
+                exporter.WriteIssues(issues);
+                exporter.WriteFooter();
+            }
+        }
+
         public void Save(string path)
         {
             File.WriteAllText(path, JsonUtility.ToJson(this));

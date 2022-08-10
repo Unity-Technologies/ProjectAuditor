@@ -4,24 +4,11 @@ using System.Text;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class CSVExporter : IDisposable
+    public class CSVExporter : Exporter
     {
-        readonly IssueLayout m_Layout;
-        readonly StreamWriter m_StreamWriter;
+        public CSVExporter(string path, IssueLayout layout) : base(path, layout) { }
 
-        public CSVExporter(string path, IssueLayout layout)
-        {
-            m_Layout = layout;
-            m_StreamWriter = new StreamWriter(path);
-        }
-
-        public void Dispose()
-        {
-            m_StreamWriter.Flush();
-            m_StreamWriter.Close();
-        }
-
-        public void WriteHeader()
+        public override void WriteHeader()
         {
             var stringBuilder = new StringBuilder();
             for (var i = 0; i < m_Layout.properties.Length; i++)
@@ -33,13 +20,7 @@ namespace Unity.ProjectAuditor.Editor
             m_StreamWriter.WriteLine(stringBuilder);
         }
 
-        public void WriteIssues(ProjectIssue[] issues)
-        {
-            foreach (var issue in issues)
-                WriteIssue(issue);
-        }
-
-        void WriteIssue(ProjectIssue issue)
+        protected override void WriteIssue(ProjectIssue issue)
         {
             var stringBuilder = new StringBuilder();
             for (var i = 0; i < m_Layout.properties.Length; i++)
@@ -54,7 +35,6 @@ namespace Unity.ProjectAuditor.Editor
                 if (i + 1 < m_Layout.properties.Length)
                     stringBuilder.Append(",");
             }
-
             m_StreamWriter.WriteLine(stringBuilder);
         }
     }
