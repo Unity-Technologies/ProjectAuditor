@@ -88,8 +88,9 @@ namespace Unity.ProjectAuditor.Editor
         BuildSummary = 10,
         Code = 4,
         CodeCompilerMessage = 5,
-        FirstCustomCategory = 14,
+        FirstCustomCategory = 15,
         GenericInstance = 6,
+        installedPackages = 14,
         MetaData = 0,
         PrecompiledAssembly = 12,
         ProjectSetting = 7,
@@ -427,6 +428,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         Num = 1,
         Value = 0,
+    }
+
+    public enum PackageProperty
+    {
+        Name = 0,
+        Num = 3,
+        Source = 2,
+        Version = 1,
     }
 
     public enum PrecompiledAssemblyProperty

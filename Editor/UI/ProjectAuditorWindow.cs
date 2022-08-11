@@ -35,6 +35,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             Resources = 1 << 3,
             BuildReport = 1 << 4,
 
+            //Add - JJ
+            InstalledPackages = 1 << 5,
+
             Everything = ~0
         }
 
@@ -336,6 +339,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Generics
                 });
 
+                //add - jj
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.installedPackages,
+                    name = "Installed Packages",
+                    menuLabel = "Packages/Installed Packages",
+                    menuOrder = 105,
+                    showInfoPanel = true,
+                    //type = typeof(SummaryView),
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Summary
+                });
+
 #if UNITY_2019_1_OR_NEWER
                 ViewDescriptor.Register(new ViewDescriptor
                 {
@@ -433,6 +448,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenIssue = EditorUtil.OpenProjectSettings,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ProjectSettings
             });
+
             ViewDescriptor.Register(new ViewDescriptor
             {
                 type = typeof(BuildReportView),
@@ -634,6 +650,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().GetCategories());
             if ((m_SelectedModules.HasFlag(BuiltInModules.BuildReport)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().GetCategories());
+
+            //add - JJ
+            if ((m_SelectedModules.HasFlag(BuiltInModules.InstalledPackages)))
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<InstalledPackagesModule>().GetCategories());
+
             return requestedCategories.ToArray();
         }
 
@@ -1195,7 +1216,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent DiscardButton = new GUIContent("Discard", "Discard the current report.");
 #endif
 
-            public static readonly GUIContent HelpButton = Utility.GetIcon(Utility.IconType.Help,"Open Manual (in a web browser)");
+            public static readonly GUIContent HelpButton = Utility.GetIcon(Utility.IconType.Help, "Open Manual (in a web browser)");
 
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");
