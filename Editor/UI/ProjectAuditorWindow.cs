@@ -1195,7 +1195,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent DiscardButton = new GUIContent("Discard", "Discard the current report.");
 #endif
 
-            public static readonly GUIContent HelpButton = Utility.GetIcon(Utility.IconType.Help,"Open Manual (in a web browser)");
+            public static readonly GUIContent HelpButton = Utility.GetIcon(Utility.IconType.Help, "Open Manual (in a web browser)");
 
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");
