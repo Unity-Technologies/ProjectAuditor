@@ -121,6 +121,14 @@ namespace Unity.ProjectAuditor.Editor
         public bool IsValid();
     }
 
+    public class PackageDependencyNode : DependencyNode
+    {
+        public PackageDependencyNode(string name, string[] deps = default(string[])) {}
+        public override string GetName();
+        public override string GetPrettyName();
+        public override bool IsPerfCritical();
+    }
+
     public sealed class ProblemDescriptor : System.IEquatable<ProblemDescriptor>
     {
         public string[] areas;

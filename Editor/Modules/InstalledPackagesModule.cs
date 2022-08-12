@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
+using System.Linq;
 using UnityEditor;
 
 
@@ -37,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (progress != null)
                 progress.Start("Analyzing packages", "Anaylyzing installed packages", int.MaxValue);
             request = Client.List();
-            progress.Advance();
+            progress?.Advance();
             while (!(request.Status == StatusCode.Success)) {}
             var issues = new List<ProjectIssue>();
             foreach (var package in request.Result)
@@ -52,12 +53,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void AddInstalledPackage(UnityEditor.PackageManager.PackageInfo package, Action<ProjectIssue> issueFound)
         {
+            string[] dependecies = package.dependencies.Select(d => d.name + " [" + d.version + "]").ToArray();
+            PackageDependencyNode testNode = new PackageDependencyNode(package.displayName, dependecies);
             var packageIssue = ProjectIssue.Create(IssueCategory.installedPackages, package.displayName).WithCustomProperties(new object[(int)PackageProperty.Num]
             {
                 package.name,
                 package.version,
                 package.source
-            });
+            }).WithDependencies(testNode);
             issueFound(packageIssue);
         }
 

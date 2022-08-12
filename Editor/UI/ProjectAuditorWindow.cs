@@ -347,8 +347,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     menuLabel = "Packages/Installed Packages",
                     menuOrder = 105,
                     showInfoPanel = true,
-                    //type = typeof(SummaryView),
-                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Summary
+                    showDependencyView = true,
+                    dependencyViewGuiContent = new GUIContent("Package Dependencies")
                 });
 
 #if UNITY_2019_1_OR_NEWER
