@@ -37,6 +37,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         ProjectAuditorConfig m_Config;
 
+        public override string name => "MetaData";
+
         public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_IssueLayout;

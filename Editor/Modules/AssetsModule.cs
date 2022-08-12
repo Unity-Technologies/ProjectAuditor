@@ -22,6 +22,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
+        public override string name => "Resources";
+
         public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_IssueLayout;

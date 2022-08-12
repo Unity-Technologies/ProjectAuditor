@@ -142,6 +142,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData = new Dictionary<Shader, List<ShaderVariantData>>();
 
+        public override string name => "Shaders";
+
         public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_ShaderLayout;

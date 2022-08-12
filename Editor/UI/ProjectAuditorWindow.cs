@@ -537,7 +537,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         void AuditSingleModule<T>() where T : ProjectAuditorModule
         {
             var module = m_ProjectAuditor.GetModule<T>();
-            if (!module.IsSupported())
+            if (!module.isSupported)
                 return;
 
             AuditSingleModule(module);

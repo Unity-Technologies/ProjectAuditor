@@ -32,6 +32,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Source), format = PropertyFormat.String, name = "Source", defaultGroup = true }
             }
         };
+
+        public override string name => "Packages";
+
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var request = Client.List();

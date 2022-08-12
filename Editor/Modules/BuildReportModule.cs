@@ -122,19 +122,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
             get { return s_BuildReportProvider; }
         }
 
+        public override string name => "Build Report";
+
+#if !BUILD_REPORT_API_SUPPORT
+        public override bool isSupported => false;
+#endif
+
+
         public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_FileLayout;
             yield return k_StepLayout;
         }
-
-#if !BUILD_REPORT_API_SUPPORT
-        public override bool IsSupported()
-        {
-            return false;
-        }
-
-#endif
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {

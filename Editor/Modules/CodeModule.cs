@@ -116,6 +116,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         Thread m_AssemblyAnalysisThread;
 
+        public override string name => "Code";
+
         public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             return m_ProblemDescriptors;

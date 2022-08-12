@@ -9,6 +9,15 @@ namespace Unity.ProjectAuditor.Editor.Core
     /// </summary>
     public abstract class ProjectAuditorModule
     {
+        public abstract string name
+        {
+            get;
+        }
+
+        public virtual bool isEnabledByDefault => true;
+
+        public virtual bool isSupported => true;
+
         public IssueCategory[] GetCategories()
         {
             return GetLayouts().Select(l => l.category).ToArray();
@@ -23,16 +32,6 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public virtual void Initialize(ProjectAuditorConfig config)
         {
-        }
-
-        public virtual bool IsEnabledByDefault()
-        {
-            return true;
-        }
-
-        public virtual bool IsSupported()
-        {
-            return true;
         }
 
         public virtual void RegisterDescriptor(ProblemDescriptor descriptor)

@@ -25,6 +25,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
         List<ISettingsAnalyzer> m_Analyzers;
         HashSet<ProblemDescriptor> m_ProblemDescriptors;
 
+        public override string name => "Settings";
+
         public override IEnumerable<ProblemDescriptor> GetDescriptors()
         {
             return m_ProblemDescriptors;
