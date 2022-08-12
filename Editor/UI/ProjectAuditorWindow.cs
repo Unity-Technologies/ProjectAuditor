@@ -34,8 +34,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             Shaders = 1 << 2,
             Resources = 1 << 3,
             BuildReport = 1 << 4,
+<<<<<<< Updated upstream
             TextureReport = 1 << 5,
 
+=======
+            Texture = 1 << 5,
+>>>>>>> Stashed changes
             Everything = ~0
         }
 
@@ -246,6 +250,15 @@ namespace Unity.ProjectAuditor.Editor.UI
         [InitializeOnLoadMethod]
         static void OnLoad()
         {
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.Texture,
+                name = "Texture",
+                menuOrder = 5,
+                showInfoPanel = true,
+                // type = typeof(SummaryView),
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Summary
+            });
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.MetaData,
@@ -662,8 +675,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().GetCategories());
             if ((m_SelectedModules.HasFlag(BuiltInModules.BuildReport)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().GetCategories());
+<<<<<<< Updated upstream
             if ((m_SelectedModules.HasFlag(BuiltInModules.TextureReport)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<TextureReportModule>().GetCategories());
+=======
+            if ((m_SelectedModules.HasFlag(BuiltInModules.Texture)))
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<TextureModule>().GetCategories());
+>>>>>>> Stashed changes
             return requestedCategories.ToArray();
         }
 
