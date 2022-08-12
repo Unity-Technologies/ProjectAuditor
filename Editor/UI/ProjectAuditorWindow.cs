@@ -34,8 +34,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             Shaders = 1 << 2,
             Resources = 1 << 3,
             BuildReport = 1 << 4,
-
-            //Add - JJ
             InstalledPackages = 1 << 5,
 
             Everything = ~0
@@ -339,7 +337,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Generics
                 });
 
-                //add - jj
                 ViewDescriptor.Register(new ViewDescriptor
                 {
                     category = IssueCategory.installedPackages,
@@ -448,7 +445,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenIssue = EditorUtil.OpenProjectSettings,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ProjectSettings
             });
-
             ViewDescriptor.Register(new ViewDescriptor
             {
                 type = typeof(BuildReportView),
@@ -650,8 +646,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().GetCategories());
             if ((m_SelectedModules.HasFlag(BuiltInModules.BuildReport)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().GetCategories());
-
-            //add - JJ
             if ((m_SelectedModules.HasFlag(BuiltInModules.InstalledPackages)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<InstalledPackagesModule>().GetCategories());
 

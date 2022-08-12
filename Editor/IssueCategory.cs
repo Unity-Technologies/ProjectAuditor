@@ -19,8 +19,6 @@ namespace Unity.ProjectAuditor.Editor
         Assembly,
         PrecompiledAssembly,
         ShaderCompilerMessage,
-
-        //add - jj
         installedPackages,
 
         FirstCustomCategory

@@ -20,8 +20,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             public int numTotalAssemblies;
             public int numResources;
             public int numShaders;
-
-            //add -- jj
             public int numPackages;
         }
 
@@ -40,15 +38,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Stats.numSettingIssues += allIssues.Count(i => i.category == IssueCategory.ProjectSetting);
             m_Stats.numResources += allIssues.Count(i => i.category == IssueCategory.Asset);
             m_Stats.numShaders += allIssues.Count(i => i.category == IssueCategory.Shader);
+            m_Stats.numPackages += allIssues.Count(i => i.category == IssueCategory.installedPackages);
 
             var compilerMessages = allIssues.Where(i => i.category == IssueCategory.CodeCompilerMessage);
             m_Stats.numCompilerErrors += compilerMessages.Count(i => i.severity == Rule.Severity.Error);
 
             m_Stats.numCompiledAssemblies += allIssues.Count(i => i.category == IssueCategory.Assembly && i.severity != Rule.Severity.Error);
             m_Stats.numTotalAssemblies += allIssues.Count(i => i.category == IssueCategory.Assembly);
-
-            //add -- jj
-            m_Stats.numPackages += allIssues.Count(i => i.category == IssueCategory.installedPackages);
         }
 
         public override void Clear()

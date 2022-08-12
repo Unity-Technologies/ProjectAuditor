@@ -30,13 +30,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyType.Description, name = "Display Name", },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Name), format = PropertyFormat.String, name = "Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Version), format = PropertyFormat.String, name = "version" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Source), format = PropertyFormat.String, name = "source" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Source), format = PropertyFormat.String, name = "source" }
             }
         };
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            if (progress != null)
-                progress.Start("Analyzing packages", "Anaylyzing installed packages", int.MaxValue);
+            progress?.Start("Analyzing packages", "Anaylyzing installed packages", int.MaxValue);
             request = Client.List();
             progress?.Advance();
             while (!(request.Status == StatusCode.Success)) {}
