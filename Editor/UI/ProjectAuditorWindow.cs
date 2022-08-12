@@ -34,6 +34,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Shaders = 1 << 2,
             Resources = 1 << 3,
             BuildReport = 1 << 4,
+            Texture = 1 << 5,
 
             Everything = ~0
         }
@@ -352,6 +353,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                     },
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
                 });
+
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.Texture,
+                    name = "Texture",
+                    menuOrder = 6,
+                    showInfoPanel = true,
+                    // type = typeof(SummaryView),
+                    // analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Summary
+                });
+
+
 #endif
 
                 ViewDescriptor.Register(new ViewDescriptor
@@ -634,6 +647,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().GetCategories());
             if ((m_SelectedModules.HasFlag(BuiltInModules.BuildReport)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().GetCategories());
+            if ((m_SelectedModules.HasFlag(BuiltInModules.Texture)))
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<TextureModule>().GetCategories());
             return requestedCategories.ToArray();
         }
 
