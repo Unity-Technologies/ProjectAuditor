@@ -55,7 +55,6 @@ namespace Unity.ProjectAuditor.Editor
 
     public enum IssueCategory
     {
-<<<<<<< Updated upstream
         public const Unity.ProjectAuditor.Editor.IssueCategory Assembly = 11;
         public const Unity.ProjectAuditor.Editor.IssueCategory Asset = 1;
         public const Unity.ProjectAuditor.Editor.IssueCategory BuildFile = 8;
@@ -72,24 +71,6 @@ namespace Unity.ProjectAuditor.Editor
         public const Unity.ProjectAuditor.Editor.IssueCategory ShaderCompilerMessage = 13;
         public const Unity.ProjectAuditor.Editor.IssueCategory ShaderVariant = 3;
         public int value__;
-=======
-        Assembly = 11,
-        Asset = 1,
-        BuildFile = 8,
-        BuildStep = 9,
-        BuildSummary = 10,
-        Code = 4,
-        CodeCompilerMessage = 5,
-        FirstCustomCategory = 15,
-        GenericInstance = 6,
-        MetaData = 0,
-        PrecompiledAssembly = 12,
-        ProjectSetting = 7,
-        Shader = 2,
-        ShaderCompilerMessage = 13,
-        ShaderVariant = 3,
-        Texture = 14,
->>>>>>> Stashed changes
     }
 
     public class IssueLayout
@@ -462,20 +443,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public const Unity.ProjectAuditor.Editor.Modules.ShaderVariantProperty Stage = 3;
         public const Unity.ProjectAuditor.Editor.Modules.ShaderVariantProperty Tier = 2;
         public int value__;
-    }
-
-    public enum TextureProperties
-    {
-        Format = 1,
-        MinMipMapLevel = 5,
-        Name = 0,
-        Num = 9,
-        Path = 8,
-        ReadWrite = 3,
-        Resolution = 6,
-        Shape = 2,
-        SizeOnDisk = 7,
-        StreamingMipMaps = 4,
     }
 }
 
