@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class Draw2D
     {
