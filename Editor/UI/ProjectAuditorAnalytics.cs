@@ -53,6 +53,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Assemblies,
             ShaderCompilerMessages,
             PrecompiledAssemblies,
+            Packages
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -201,6 +202,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "save";
                 case UIButton.Load:
                     return "load";
+                case UIButton.Packages:
+                    return "Packages";
                 default:
                     Debug.LogFormat("SendUIButtonEvent: Unsupported button type : {0}", uiButton);
                     return "";

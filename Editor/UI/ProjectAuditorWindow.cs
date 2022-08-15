@@ -34,7 +34,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             Shaders = 1 << 2,
             Resources = 1 << 3,
             BuildReport = 1 << 4,
-            InstalledPackages = 1 << 5,
 
             Everything = ~0
         }
@@ -339,13 +338,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 ViewDescriptor.Register(new ViewDescriptor
                 {
-                    category = IssueCategory.installedPackages,
+                    category = IssueCategory.Package,
                     name = "Installed Packages",
-                    menuLabel = "Packages/Installed Packages",
+                    menuLabel = "Experimental/Installed Packages",
                     menuOrder = 105,
                     showInfoPanel = true,
                     showDependencyView = true,
-                    dependencyViewGuiContent = new GUIContent("Package Dependencies")
+                    dependencyViewGuiContent = new GUIContent("Package Dependencies"),
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Packages
                 });
 
 #if UNITY_2019_1_OR_NEWER
@@ -646,8 +646,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().GetCategories());
             if ((m_SelectedModules.HasFlag(BuiltInModules.BuildReport)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().GetCategories());
-            if ((m_SelectedModules.HasFlag(BuiltInModules.InstalledPackages)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<InstalledPackagesModule>().GetCategories());
 
             return requestedCategories.ToArray();
         }

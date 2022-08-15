@@ -12,37 +12,35 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     public enum PackageProperty
     {
-        Name,
+        Name = 0,
         Version,
         Source,
         Num
     }
 
-    class InstalledPackagesModule : ProjectAuditorModule
+    class PackagesModule : ProjectAuditorModule
     {
-        static ListRequest request;
-
-        static readonly IssueLayout k_packagesLayout = new IssueLayout
+        static readonly IssueLayout k_PackageLayout = new IssueLayout
         {
-            category = IssueCategory.installedPackages,
+            category = IssueCategory.Package,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Display Name", },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Name), format = PropertyFormat.String, name = "Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Version), format = PropertyFormat.String, name = "version" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Source), format = PropertyFormat.String, name = "source" }
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Version), format = PropertyFormat.String, name = "Version" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Source), format = PropertyFormat.String, name = "Source", defaultGroup = true }
             }
         };
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            progress?.Start("Analyzing packages", "Anaylyzing installed packages", int.MaxValue);
-            request = Client.List();
+            progress?.Start("Analyzing packages", "Analyzing installed packages", int.MaxValue);
+            var request = Client.List();
             progress?.Advance();
-            while (!(request.Status == StatusCode.Success)) {}
+            while (request.Status != StatusCode.Success) {}
             var issues = new List<ProjectIssue>();
             foreach (var package in request.Result)
             {
-                AddInstalledPackage(package, issues.Add);
+                AddInstalledPackage(package, issues);
             }
             if (issues.Count > 0)
                 projectAuditorParams.onIncomingIssues(issues);
@@ -50,22 +48,22 @@ namespace Unity.ProjectAuditor.Editor.Modules
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
-        void AddInstalledPackage(UnityEditor.PackageManager.PackageInfo package, Action<ProjectIssue> issueFound)
+        void AddInstalledPackage(UnityEditor.PackageManager.PackageInfo package, List<ProjectIssue> issues)
         {
-            string[] dependecies = package.dependencies.Select(d => d.name + " [" + d.version + "]").ToArray();
-            PackageDependencyNode testNode = new PackageDependencyNode(package.displayName, dependecies);
-            var packageIssue = ProjectIssue.Create(IssueCategory.installedPackages, package.displayName).WithCustomProperties(new object[(int)PackageProperty.Num]
+            var dependencies = package.dependencies.Select(d => d.name + " [" + d.version + "]").ToArray();
+            var node = new PackageDependencyNode(package.displayName, dependencies);
+            var packageIssue = ProjectIssue.Create(IssueCategory.Package, package.displayName).WithCustomProperties(new object[(int)PackageProperty.Num]
             {
                 package.name,
                 package.version,
                 package.source
-            }).WithDependencies(testNode);
-            issueFound(packageIssue);
+            }).WithDependencies(node);
+            issues.Add(packageIssue);
         }
 
         public override IEnumerable<IssueLayout> GetLayouts()
         {
-            yield return k_packagesLayout;
+            yield return k_PackageLayout;
         }
 
         public override bool IsEnabledByDefault()
