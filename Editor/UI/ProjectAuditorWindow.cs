@@ -14,7 +14,7 @@ using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    public class ProjectAuditorWindow : EditorWindow, IProjectIssueFilter
+    class ProjectAuditorWindow : EditorWindow, IProjectIssueFilter
     {
         enum AnalysisState
         {
