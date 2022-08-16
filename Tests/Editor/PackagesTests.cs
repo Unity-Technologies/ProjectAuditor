@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.EditorTests
     {
         [Test]
         [TestCase("Project Auditor", "com.unity.project-auditor", "Local", new string[] { "com.unity.nuget.mono-cecil" })]
-        [TestCase("Unity UI", "com.unity.ugui", "BuiltIn", new string[] { "com.unity.modules.ui", "com.unity.modules.imgui" })]
+        [TestCase("Physics", "com.unity.modules.physics", "BuiltIn", new string[] { "com.unity.modules.ui", "com.unity.modules.imgui" })]
         [TestCase("Test Framework", "com.unity.test-framework", "Registry")]
         public void InstalledPackage_IsReported(string description, string name, string source, string[] dependecies = null)
         {
@@ -17,6 +17,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsNotNull(matchIssue, "Cannot find the package: " + description);
             Assert.AreEqual(matchIssue.customProperties[0], name);
             Assert.AreEqual(matchIssue.customProperties[2], source, "Package: " + description);
+            Assert.IsTrue(matchIssue.customProperties[2].StartsWith(source), "Package: " + description);
             if (dependecies != null && dependecies.Length != 0)
             {
                 for (int i = 0; i < matchIssue.dependencies.GetNumChildren(); i++)
