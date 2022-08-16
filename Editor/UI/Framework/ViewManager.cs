@@ -120,6 +120,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return m_Views[index];
         }
 
+        public bool HasView(IssueCategory category)
+        {
+            return GetView(category) != null;
+        }
+
         public AnalysisView GetView(IssueCategory category)
         {
             return m_Views.FirstOrDefault(v => v.desc.category == category);

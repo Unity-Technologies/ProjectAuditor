@@ -105,6 +105,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawSummaryItem<T>(string title, T value, IssueCategory category, GUIContent icon = null)
         {
+            if (!m_ViewManager.HasView(category))
+                return;
+
             var viewLink = true;
             var valueAsString = value.ToString();
             if (typeof(T) == typeof(bool))
