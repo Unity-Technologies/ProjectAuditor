@@ -20,6 +20,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public int numTotalAssemblies;
             public int numResources;
             public int numShaders;
+            public int numPackages;
         }
 
         Stats m_Stats;
@@ -37,6 +38,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Stats.numSettingIssues += allIssues.Count(i => i.category == IssueCategory.ProjectSetting);
             m_Stats.numResources += allIssues.Count(i => i.category == IssueCategory.Asset);
             m_Stats.numShaders += allIssues.Count(i => i.category == IssueCategory.Shader);
+            m_Stats.numPackages += allIssues.Count(i => i.category == IssueCategory.Package);
 
             var compilerMessages = allIssues.Where(i => i.category == IssueCategory.CodeCompilerMessage);
             m_Stats.numCompilerErrors += compilerMessages.Count(i => i.severity == Rule.Severity.Error);
@@ -71,6 +73,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 DrawSummaryItem("Assets in Resources folders:", m_Stats.numResources, IssueCategory.Asset);
             if (m_Stats.numShaders > 0)
                 DrawSummaryItem("Shaders in the project:", m_Stats.numShaders, IssueCategory.Shader);
+            if (m_Stats.numPackages > 0)
+                DrawSummaryItem("Installed Packages:", m_Stats.numPackages, IssueCategory.Package);
+
             var buildAvailable = m_Stats.numBuildSteps > 0;
             DrawSummaryItem("Build Report available:", buildAvailable, IssueCategory.BuildStep);
             EditorGUI.indentLevel--;
