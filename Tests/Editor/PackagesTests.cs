@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         [TestCase("Project Auditor", "com.unity.project-auditor", "Local", new string[] { "com.unity.nuget.mono-cecil" })]
         [TestCase("Unity UI", "com.unity.ugui", "BuiltIn", new string[] { "com.unity.modules.ui", "com.unity.modules.imgui" })]
-        [TestCase("Unity Coding Tools", "com.unity.coding", "Registry")]
+        [TestCase("Test Framework", "com.unity.test-framework", "Registry")]
         public void InstalledPackage_IsReported(string description, string name, string source, string[] dependecies = null)
         {
             var installedPackagesIssue = Analyze(IssueCategory.Package);

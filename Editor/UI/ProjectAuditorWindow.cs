@@ -342,7 +342,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     name = "Installed Packages",
                     menuLabel = "Experimental/Installed Packages",
                     menuOrder = 105,
-                    showInfoPanel = true,
                     showDependencyView = true,
                     dependencyViewGuiContent = new GUIContent("Package Dependencies"),
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Packages

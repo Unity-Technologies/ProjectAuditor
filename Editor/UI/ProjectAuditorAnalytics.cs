@@ -203,7 +203,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 case UIButton.Load:
                     return "load";
                 case UIButton.Packages:
-                    return "Packages";
+                    return "packages";
                 default:
                     Debug.LogFormat("SendUIButtonEvent: Unsupported button type : {0}", uiButton);
                     return "";

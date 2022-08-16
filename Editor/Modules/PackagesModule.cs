@@ -33,9 +33,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            progress?.Start("Analyzing packages", "Analyzing installed packages", int.MaxValue);
             var request = Client.List();
-            progress?.Advance();
             while (request.Status != StatusCode.Success) {}
             var issues = new List<ProjectIssue>();
             foreach (var package in request.Result)
@@ -44,7 +42,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
             if (issues.Count > 0)
                 projectAuditorParams.onIncomingIssues(issues);
-            progress?.Clear();
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
@@ -64,11 +61,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_PackageLayout;
-        }
-
-        public override bool IsEnabledByDefault()
-        {
-            return true;
         }
     }
 }
