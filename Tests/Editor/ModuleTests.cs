@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.EditorTests
     {
         readonly ProblemDescriptor m_Descriptor = new ProblemDescriptor("666", "This is a test descriptor", Area.CPU);
 
-        private readonly IssueLayout m_Layout = new IssueLayout
+        readonly IssueLayout m_Layout = new IssueLayout
         {
             category = IssueCategory.Code,
             properties = new[]

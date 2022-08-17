@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     class BuildReportTests : TestFixtureBase
     {
-        private TempAsset m_TempAsset;
+        TempAsset m_TempAsset;
 
         [OneTimeSetUp]
         public void SetUp()

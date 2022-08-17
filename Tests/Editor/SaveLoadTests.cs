@@ -5,7 +5,7 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     class SaveLoadTests
     {
-        private const string k_ReportPath = "report.json";
+        const string k_ReportPath = "report.json";
 
         [Test]
         public void SaveLoad_Report_CanSaveAndLoad()
