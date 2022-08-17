@@ -10,9 +10,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             BottomLeft
         };
 
+        readonly string m_ShaderName;
+
         Origin m_Origin = Origin.TopLeft;
         GUIStyle m_GLStyle;
-        string m_ShaderName;
         Material m_Material;
         Rect m_Rect;
         Vector4 m_ClipRect;
@@ -24,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             CheckAndSetupMaterial();
         }
 
-        public bool CheckAndSetupMaterial()
+        bool CheckAndSetupMaterial()
         {
             if (m_Material == null)
             {
@@ -101,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
         }
 
-        public void Translate(ref float x, ref float y)
+        void Translate(ref float x, ref float y)
         {
             // Translation done CPU side so we have world space coords in the shader for clipping.
             if (m_Origin == Origin.BottomLeft)

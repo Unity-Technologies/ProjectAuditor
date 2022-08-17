@@ -53,7 +53,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     public class Draw2D
     {
         public Draw2D(string shaderName) {}
-        public bool CheckAndSetupMaterial();
         public void ClearClipRect();
         public void DrawBox(float x, float y, float w, float h, UnityEngine.Color col);
         public void DrawBox(float x, float y, float w, float h, float r, float g, float b);
@@ -67,7 +66,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool IsMaterialValid();
         public void OnGUI();
         public void SetClipRect(UnityEngine.Rect clipRect);
-        public void Translate(ref float x, ref float y);
         public enum Origin
         {
             public const Unity.ProjectAuditor.Editor.UI.Framework.Draw2D.Origin BottomLeft = 1;
