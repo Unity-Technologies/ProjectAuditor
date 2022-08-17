@@ -77,17 +77,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var tname = ((Texture2D)AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D)));
                 var t = (TextureImporter)TextureImporter.GetAtPath(path);
                 var tSize = Profiler.GetRuntimeMemorySizeLong(t);
-
-                TextureImporter textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
-
+                //TextureImporter textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
                 var issue = ProjectIssue.Create(k_IssueLayout.category, tname.name).WithCustomProperties(new object[((int)TextureProperties.Num)]
                 {
                     tname.name, // must use this way, texture name is not available from ImportSettings or GetPlatformSettings
                     t.GetPlatformTextureSettings("Android").format,     //new Format
                     t.GetPlatformTextureSettings("Android").textureCompression, //new TextureCompression
-                    textureImporter.isReadable,
-                    textureImporter.textureShape,
-                    textureImporter.textureType,
+                    t.isReadable,
+                    t.textureShape,
+                    t.textureType,
                     path,  //new
 
                     /*
