@@ -32,7 +32,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.Texture,
             properties = new[]
             {
-                //  new PropertyDefinition { type = Editor.PropertyType.Description, format = PropertyFormat.String, name = "Texture Description", longName = "Textures Description" },
                 new PropertyDefinition {type = PropertyTypeUtil.FromCustom(TextureProperties.Name), format = PropertyFormat.String, name = "Name", longName = "Texture Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Shape), format = PropertyFormat.String, name = "TextureShape", longName = "Texture Shape" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.ImporterType), format = PropertyFormat.String, name = "Importer Type", longName = "Texture Importer Type" },
@@ -42,33 +41,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Readable), format = PropertyFormat.Bool, name = "Readable", longName = "Readable" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Resolution), format = PropertyFormat.String, name = "Resolution", longName = "Texture Resolution" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.SizeOnDisk), format = PropertyFormat.String, name = "Size", longName = "Texture Size" },
-                /*
-
-
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.StreamingMipMaps), format = PropertyFormat.Bool, name = "StreamingMipMaps", longName = "Texture StreamingMipMaps" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.MinMipMapLevel), format = PropertyFormat.Integer, name = "MinMipMapLevel", longName = "Texture MinMipMapLevel" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.SizeOnDisk), format = PropertyFormat.String, name = "Size", longName = "Texture Size" }, }
-                 */
-
-
-                //  new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Path), format = PropertyFormat.String, name = "Location", longName = "Show Texture Location Path" },
             }
         };
-        public override bool IsEnabledByDefault()
-        {
-            return false;
-        }
+        public override bool IsEnabledByDefault() { return false; }
 
-        public override IEnumerable<IssueLayout> GetLayouts()
-        {
-            yield return k_IssueLayout;
-        }
+        public override IEnumerable<IssueLayout> GetLayouts() {  yield return k_IssueLayout;  }
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var allTextures = AssetDatabase.FindAssets("t: Texture, a:assets");
-            progress?.Start("Finding Textures", "Positive Always", allTextures.Length);
             var issues = new List<ProjectIssue>();
+            progress?.Start("Finding Textures", "Positive Always", allTextures.Length);
 
             foreach (string aTexture in allTextures)
             {
@@ -81,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 var issue = ProjectIssue.Create(k_IssueLayout.category, tName.name).WithCustomProperties(new object[((int)TextureProperties.Num)]
                 {
-                    tName.name, // must use this way, texture name is not available from ImportSettings or GetPlatformSettings
+                    tName.name,
                     textureImporter.textureShape,
                     textureImporter.textureType, //Importer Type
                     t.GetPlatformTextureSettings("Android").format,     //new Format
@@ -94,18 +77,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     (tName.width + "x" + tName.height),
                    #endif
                     Utils.Formatting.FormatSize((ulong)tSize),
-
-                    /*
-                    t.dimension,     //Shape
-                    t.isReadable,     //Read-Write
-                    t.streamingMipmaps,     //Streaming Mip Maps
-                    t.minimumMipmapLevel,     // Minimum MipMap Level
-                    (t.width + "x" + t.height),     // Resolution
-                    Utils.Formatting.FormatSize((ulong)tSize),
-                    AssetDatabase.GetAssetPath(t),     //Location
-                    */
                 });
-                //      Debug.Log("Texture location is reported as: " + path);
 
                 issues.Add(issue);
 
@@ -116,24 +88,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 projectAuditorParams.onIncomingIssues(issues);
             progress?.Clear();
 
-
-            /*
-                string  platformString = "Android";
-                int     platformMaxTextureSize = 0;
-                TextureImporterFormat platformTextureFmt;
-                int     platformCompressionQuality = 0;
-                bool    platformAllowsAlphaSplit = false;
-
-                TextureImporter ti = (TextureImporter)TextureImporter.GetAtPath("Assets/characters.png");
-                if (ti.GetPlatformTextureSettings(platformString, out platformMaxTextureSize, out platformTextureFmt, out platformCompressionQuality, out platformAllowsAlphaSplit))
-                {
-                    Debug.Log("Texture Info For platform: " + platformString + "are as follows : /n" + "Format: " + platformTextureFmt + " /n " + "MaxTextureSize : " + platformMaxTextureSize
-                      + " /n " + "Texture Size : " + platformTextureFmt  + " /n" + "Compression Quality : " + platformCompressionQuality + " /n " +  " /n " + "AllowsAlphaSplit : " + platformAllowsAlphaSplit  +  TextureImporter.isReadable
-                    TextureImporter.textureShape );
-                }
-
-                TextureImporter.textureShape
-            */
             projectAuditorParams.onModuleCompleted.Invoke();
         }
     }
