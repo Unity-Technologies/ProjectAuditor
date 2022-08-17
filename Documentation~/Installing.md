@@ -8,7 +8,7 @@ At this time, Project Auditor is not discoverable via Package Manager so it has 
 ### Package Manager UI (Recommended)
 The easiest way to install Project Auditor in Unity 2018 (or newer) is via Package Manager with the following steps:
 
-Click on _Code_ and copy the repository URL to the clipboard
+Click on _Code_ and copy the repository __HTTPS__ URL to the clipboard
 
 <img src="images/copy-repo-url.png">
 
@@ -22,7 +22,7 @@ Finally, paste the URL and click _Add_
 
 Note that to install a specific version, simply add `#<version>` at the end of the URL. For example:
 
-```https://github.com/Unity-Technologies/ProjectAuditor.git#0.4.1-preview```
+```https://github.com/Unity-Technologies/ProjectAuditor.git#0.8.2-preview```
 
 A list of releases can be found [here](https://github.com/Unity-Technologies/ProjectAuditor/releases).
 
@@ -32,7 +32,7 @@ Under the hood, the method described above adds `com.unity.project-auditor` as a
 ```
 {
   "dependencies": {
-    "com.unity.project-auditor": "https://github.com/Unity-Technologies/ProjectAuditor.git#0.4.2-preview",
+    "com.unity.project-auditor": "https://github.com/Unity-Technologies/ProjectAuditor.git#0.8.2-preview",
   }
 }
 ```
