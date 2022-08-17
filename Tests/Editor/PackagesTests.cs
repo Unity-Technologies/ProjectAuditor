@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void InstalledPackage_IsReported(string description, string name, string source, string[] dependecies = null)
         {
             var installedPackagesIssue = Analyze(IssueCategory.Package);
-            var matchIssue = installedPackagesIssue.First(issue => issue.description == description);
+            var matchIssue = installedPackagesIssue.FirstOrDefault(issue => issue.description == description);
             Assert.IsNotNull(matchIssue, "Cannot find the package: " + description);
             Assert.AreEqual(matchIssue.customProperties[0], name);
             Assert.IsTrue(matchIssue.customProperties[2].StartsWith(source), "Package: " + description);
