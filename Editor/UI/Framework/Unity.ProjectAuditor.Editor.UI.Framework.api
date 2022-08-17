@@ -3,18 +3,53 @@
 // make sure the XML doc file is present and located next to the scraped dll
 namespace Unity.ProjectAuditor.Editor
 {
-    public class TextFilter : IProjectIssueFilter
+    public class TextFilter : Unity.ProjectAuditor.Editor.IProjectIssueFilter
     {
-        public bool ignoreCase = true;
-        public bool searchDependencies = false;
+        public bool ignoreCase;
+        public bool searchDependencies;
         public string searchString;
         public TextFilter() {}
-        public bool Match(ProjectIssue issue);
+        public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
     }
 }
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
+    public class AnalysisView : Unity.ProjectAuditor.Editor.IProjectIssueFilter
+    {
+        protected Unity.ProjectAuditor.Editor.UI.Framework.Draw2D m_2D;
+        protected Unity.ProjectAuditor.Editor.IProjectIssueFilter m_BaseFilter;
+        protected Unity.ProjectAuditor.Editor.ProjectAuditorConfig m_Config;
+        protected Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor m_Desc;
+        protected bool m_Dirty;
+        protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.ProjectIssue> m_Issues;
+        protected Unity.ProjectAuditor.Editor.ProjectAuditorModule m_Module;
+        protected Unity.ProjectAuditor.Editor.TextFilter m_TextFilter;
+        protected Unity.ProjectAuditor.Editor.UI.Framework.ViewManager m_ViewManager;
+        protected Unity.ProjectAuditor.Editor.UI.Framework.ViewStates m_ViewStates;
+        public Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor desc { get; }
+        protected int numIssues { get; }
+        public static int toolbarButtonSize { get; }
+        public AnalysisView(Unity.ProjectAuditor.Editor.UI.Framework.ViewManager viewManager) {}
+        public virtual void AddIssues(System.Collections.Generic.IEnumerable<Unity.ProjectAuditor.Editor.ProjectIssue> allIssues);
+        public virtual void Clear();
+        public virtual void Create(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.IssueLayout layout, Unity.ProjectAuditor.Editor.ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.ProjectAuditorModule module, Unity.ProjectAuditor.Editor.UI.Framework.ViewStates viewStates, Unity.ProjectAuditor.Editor.IProjectIssueFilter filter);
+        public virtual void DrawContent();
+        public virtual void DrawFilters();
+        protected virtual void DrawInfo();
+        public virtual void DrawRightPanels(Unity.ProjectAuditor.Editor.ProjectIssue[] selectedIssues);
+        public virtual void DrawSearch();
+        public static void DrawToolbarButton(UnityEngine.GUIContent guiContent, System.Action onClick);
+        public void DrawTopPanel();
+        protected virtual void Export(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool> predicate = default(System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, bool>));
+        public bool IsValid();
+        public virtual void LoadSettings();
+        public void MarkDirty();
+        public virtual bool Match(Unity.ProjectAuditor.Editor.ProjectIssue issue);
+        public virtual void SaveSettings();
+        public void SetSearch(string filter);
+    }
+
     public class Draw2D
     {
         public Draw2D(string shaderName) {}
@@ -27,82 +62,46 @@ namespace Unity.ProjectAuditor.Editor.UI
         public void DrawFilledBox(float x, float y, float w, float h, float r, float g, float b);
         public void DrawLine(float x, float y, float x2, float y2, UnityEngine.Color col);
         public void DrawLine(float x, float y, float x2, float y2, float r, float g, float b);
-        public bool DrawStart(UnityEngine.Rect r, Draw2D.Origin origin = Draw2D.Origin.TopLeft);
-        public bool DrawStart(float w, float h, Draw2D.Origin origin = Draw2D.Origin.TopLeft, UnityEngine.GUIStyle style = default(UnityEngine.GUIStyle));
+        public bool DrawStart(UnityEngine.Rect r, Unity.ProjectAuditor.Editor.UI.Framework.Draw2D.Origin origin = 0);
+        public bool DrawStart(float w, float h, Unity.ProjectAuditor.Editor.UI.Framework.Draw2D.Origin origin = 0, UnityEngine.GUIStyle style = default(UnityEngine.GUIStyle));
         public bool IsMaterialValid();
         public void OnGUI();
         public void SetClipRect(UnityEngine.Rect clipRect);
         public void Translate(ref float x, ref float y);
         public enum Origin
         {
-            BottomLeft = 1,
-            TopLeft = 0,
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Draw2D.Origin BottomLeft = 1;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Draw2D.Origin TopLeft = 0;
+            public int value__;
         }
-    }
-}
-
-namespace Unity.ProjectAuditor.Editor.UI.Framework
-{
-    public class AnalysisView : IProjectIssueFilter
-    {
-        protected Draw2D m_2D;
-        protected IProjectIssueFilter m_BaseFilter;
-        protected ProjectAuditorConfig m_Config;
-        protected ViewDescriptor m_Desc;
-        protected bool m_Dirty = true;
-        protected System.Collections.Generic.List<ProjectIssue> m_Issues;
-        protected ProjectAuditorModule m_Module;
-        protected TextFilter m_TextFilter;
-        protected ViewManager m_ViewManager;
-        protected ViewStates m_ViewStates;
-        public ViewDescriptor desc { get; }
-        protected int numIssues { get; }
-        public static int toolbarButtonSize { get; }
-        public AnalysisView(ViewManager viewManager) {}
-        public virtual void AddIssues(System.Collections.Generic.IEnumerable<ProjectIssue> allIssues);
-        public virtual void Clear();
-        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ProjectAuditorModule module, ViewStates viewStates, IProjectIssueFilter filter);
-        public virtual void DrawContent();
-        public virtual void DrawFilters();
-        protected virtual void DrawInfo();
-        public virtual void DrawRightPanels(ProjectIssue[] selectedIssues);
-        public virtual void DrawSearch();
-        public static void DrawToolbarButton(UnityEngine.GUIContent guiContent, System.Action onClick);
-        public void DrawTopPanel();
-        protected virtual void Export(System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
-        public bool IsValid();
-        public virtual void LoadSettings();
-        public void MarkDirty();
-        public virtual bool Match(ProjectIssue issue);
-        public virtual void SaveSettings();
-        public void SetSearch(string filter);
     }
 
     public static class EditorUtil
     {
-        public static void FocusOnAssetInProjectWindow(Location location);
-        public static void OpenCodeDescriptor(ProblemDescriptor descriptor);
-        public static void OpenCompilerMessageDescriptor(ProblemDescriptor descriptor);
-        public static void OpenProjectSettings(Location location);
-        public static void OpenTextFile<T>(Location location) where T : UnityEngine.Object;
+        public static void FocusOnAssetInProjectWindow(Unity.ProjectAuditor.Editor.Location location);
+        public static void OpenCodeDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+        public static void OpenCompilerMessageDescriptor(Unity.ProjectAuditor.Editor.ProblemDescriptor descriptor);
+        public static void OpenProjectSettings(Unity.ProjectAuditor.Editor.Location location);
+        public static void OpenTextFile<T>(Unity.ProjectAuditor.Editor.Location location) where T : UnityEngine.Object;
     }
 
     public class MultiSelectionTable : UnityEditor.IMGUI.Controls.TreeView
     {
-        public MultiSelectionTable(UnityEditor.IMGUI.Controls.TreeViewState state, UnityEditor.IMGUI.Controls.MultiColumnHeader multicolumnHeader, string[] names, TreeViewSelection selection) {}
-        protected override UnityEditor.IMGUI.Controls.TreeViewItem BuildRoot();
-        protected override System.Collections.Generic.IList<UnityEditor.IMGUI.Controls.TreeViewItem> BuildRows(UnityEditor.IMGUI.Controls.TreeViewItem root);
-        protected override bool CanMultiSelect(UnityEditor.IMGUI.Controls.TreeViewItem item);
+        public MultiSelectionTable(UnityEditor.IMGUI.Controls.TreeViewState state, UnityEditor.IMGUI.Controls.MultiColumnHeader multicolumnHeader, string[] names, Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection) {}
+        protected virtual UnityEditor.IMGUI.Controls.TreeViewItem BuildRoot();
+        protected virtual System.Collections.Generic.IList<UnityEditor.IMGUI.Controls.TreeViewItem> BuildRows(UnityEditor.IMGUI.Controls.TreeViewItem root);
+        protected virtual bool CanMultiSelect(UnityEditor.IMGUI.Controls.TreeViewItem item);
         public void ClearSelection();
-        public static UnityEditor.IMGUI.Controls.MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(MultiSelectionTable.HeaderData[] headerData);
-        protected int GetChildCount(TreeItemIdentifier selectedIdentifier, out int selected);
-        public TreeViewSelection GetTreeViewSelection();
-        protected override void RowGUI(UnityEditor.IMGUI.Controls.TreeView.RowGUIArgs args);
+        public static UnityEditor.IMGUI.Controls.MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.HeaderData[] headerData);
+        protected int GetChildCount(Unity.ProjectAuditor.Editor.UI.Framework.TreeItemIdentifier selectedIdentifier, out int selected);
+        public Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection GetTreeViewSelection();
+        protected virtual void RowGUI(UnityEditor.IMGUI.Controls.TreeView.RowGUIArgs args);
         public enum Column
         {
-            GroupName = 2,
-            ItemName = 0,
-            State = 1,
+            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.Column GroupName = 2;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.Column ItemName = 0;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.Column State = 1;
+            public int value__;
         }
         public struct HeaderData
         {
@@ -111,37 +110,38 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public UnityEngine.GUIContent content;
             public float minWidth;
             public float width;
-            public HeaderData(string name, string tooltip = @"", float _width = 50f, float _minWidth = 30f, bool _autoResize = true, bool _allowToggleVisibility = true) {}
+            public HeaderData(string name, string tooltip = , float _width = 50, float _minWidth = 30, bool _autoResize = True, bool _allowToggleVisibility = True) {}
         }
         public enum SortOption
         {
-            GroupName = 1,
-            ItemName = 0,
+            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.SortOption GroupName = 1;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable.SortOption ItemName = 0;
+            public int value__;
         }
     }
 
-    public class ProgressBar : IProgress
+    public class ProgressBar : Unity.ProjectAuditor.Editor.IProgress
     {
         public ProgressBar() {}
-        public void Advance(string description = @"");
-        public void Clear();
-        public void Start(string title, string description, int total);
+        public virtual void Advance(string description = );
+        public virtual void Clear();
+        public virtual void Start(string title, string description, int total);
     }
 
     public abstract class SelectionWindow : UnityEditor.EditorWindow
     {
         protected UnityEditor.IMGUI.Controls.MultiColumnHeaderState m_MultiColumnHeaderState;
-        protected System.Action<TreeViewSelection> m_OnSelection;
+        protected System.Action<Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection> m_OnSelection;
         protected bool m_RequestClose;
-        protected MultiSelectionTable m_SelectionTable;
+        protected Unity.ProjectAuditor.Editor.UI.Framework.MultiSelectionTable m_SelectionTable;
         protected UnityEditor.IMGUI.Controls.TreeViewState m_TreeViewState;
         protected SelectionWindow() {}
         protected void ApplySelection();
-        public static void CloseAll<T>() where T : SelectionWindow;
-        protected abstract void CreateTable(TreeViewSelection selection, string[] names);
-        public static bool IsOpen<T>() where T : SelectionWindow;
-        public static T Open<T>(string title, float screenX, float screenY, TreeViewSelection selection, string[] names, System.Action<TreeViewSelection> onSelection) where T : SelectionWindow;
-        protected void SetData(TreeViewSelection selection, string[] names, System.Action<TreeViewSelection> onSelection);
+        public static void CloseAll<T>() where T : Unity.ProjectAuditor.Editor.UI.Framework.SelectionWindow;
+        protected abstract void CreateTable(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection, string[] names);
+        public static bool IsOpen<T>() where T : Unity.ProjectAuditor.Editor.UI.Framework.SelectionWindow;
+        public static T Open<T>(string title, float screenX, float screenY, Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection, string[] names, System.Action<Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection> onSelection) where T : Unity.ProjectAuditor.Editor.UI.Framework.SelectionWindow;
+        protected void SetData(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection, string[] names, System.Action<Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection> onSelection);
     }
 
     public static class SharedStyles
@@ -155,12 +155,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     public struct TreeItemIdentifier
     {
         public static int kAll;
-        public static int kSingle = 0;
+        public static int kSingle;
         public int index { get; }
         public string name { get; }
         public string nameWithIndex { get; }
         public TreeItemIdentifier(string _nameWithIndex) {}
-        public TreeItemIdentifier(TreeItemIdentifier treeItemIdentifier) {}
+        public TreeItemIdentifier(Unity.ProjectAuditor.Editor.UI.Framework.TreeItemIdentifier treeItemIdentifier) {}
         public TreeItemIdentifier(string _name, int _index) {}
         public void SetAll();
         public void SetIndex(int newIndex);
@@ -172,13 +172,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public System.Collections.Generic.List<string> groups;
         public System.Collections.Generic.List<string> selection;
         public TreeViewSelection() {}
-        public TreeViewSelection(TreeViewSelection selection) {}
+        public TreeViewSelection(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection) {}
         public bool Contains(string name);
         public bool ContainsAny(string[] names);
         public bool ContainsGroup(string groupName);
         public string[] GetSelectedStrings(string[] names, bool summarize);
         public void Set(string name);
-        public void Set(TreeViewSelection selection);
+        public void Set(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection);
         public void SetAll(string[] names);
         public void SetGroup(string groupName);
     }
@@ -192,12 +192,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static bool BoldFoldout(bool toggle, UnityEngine.GUIContent content);
         public static void DrawHelpButton(UnityEngine.GUIContent content, string page);
         public static void DrawSelectedText(string text);
-        public static UnityEngine.GUIContent GetIcon(Utility.IconType iconType, string tooltip = default(string));
-        public static UnityEngine.GUIContent GetSeverityIcon(Rule.Severity severity, string tooltip = default(string));
+        public static UnityEngine.GUIContent GetIcon(Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType iconType, string tooltip = default(string));
+        public static UnityEngine.GUIContent GetSeverityIcon(Unity.ProjectAuditor.Editor.Rule.Severity severity, string tooltip = default(string));
         public static UnityEngine.GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath);
-        public static UnityEngine.GUIContent GetTextWithSeverityIcon(string text, string tooltip, Rule.Severity severity);
-        public static string GetTreeViewSelectedSummary(TreeViewSelection selection, string[] names);
-        public static void ToolbarDropdownList(Utility.DropdownItem[] items, int selectionIndex, UnityEditor.GenericMenu.MenuFunction2 callback, params UnityEngine.GUILayoutOption[] options);
+        public static UnityEngine.GUIContent GetTextWithSeverityIcon(string text, string tooltip, Unity.ProjectAuditor.Editor.Rule.Severity severity);
+        public static string GetTreeViewSelectedSummary(Unity.ProjectAuditor.Editor.UI.Framework.TreeViewSelection selection, string[] names);
+        public static void ToolbarDropdownList(Unity.ProjectAuditor.Editor.UI.Framework.Utility.DropdownItem[] items, int selectionIndex, UnityEditor.GenericMenu.MenuFunction2 callback, params UnityEngine.GUILayoutOption[] options);
         public class DropdownItem
         {
             public UnityEngine.GUIContent Content;
@@ -208,38 +208,39 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
         public enum IconType
         {
-            Download = 8,
-            Error = 2,
-            Fix = 7,
-            GreenCheckMark = 14,
-            Help = 3,
-            Hierarchy = 5,
-            Info = 0,
-            Load = 9,
-            Save = 10,
-            StatusWheel = 4,
-            Trash = 11,
-            View = 12,
-            Warning = 1,
-            WhiteCheckMark = 13,
-            ZoomTool = 6,
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Download = 8;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Error = 2;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Fix = 7;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType GreenCheckMark = 14;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Help = 3;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Hierarchy = 5;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Info = 0;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Load = 9;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Save = 10;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType StatusWheel = 4;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Trash = 11;
+            public int value__;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType View = 12;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType Warning = 1;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType WhiteCheckMark = 13;
+            public const Unity.ProjectAuditor.Editor.UI.Framework.Utility.IconType ZoomTool = 6;
         }
     }
 
     public class ViewDescriptor
     {
         public int analyticsEvent;
-        public IssueCategory category;
+        public Unity.ProjectAuditor.Editor.IssueCategory category;
         public UnityEngine.GUIContent dependencyViewGuiContent;
         public bool descriptionWithIcon;
-        public System.Func<ProjectIssue, string> getAssemblyName;
+        public System.Func<Unity.ProjectAuditor.Editor.ProjectIssue, string> getAssemblyName;
         public string menuLabel;
         public int menuOrder;
         public string name;
-        public System.Action<UnityEditor.GenericMenu, ViewManager, ProjectIssue> onContextMenu;
-        public System.Action<ViewManager> onDrawToolbar;
-        public System.Action<Location> onOpenIssue;
-        public System.Action<ProblemDescriptor> onOpenManual;
+        public System.Action<UnityEditor.GenericMenu, Unity.ProjectAuditor.Editor.UI.Framework.ViewManager, Unity.ProjectAuditor.Editor.ProjectIssue> onContextMenu;
+        public System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewManager> onDrawToolbar;
+        public System.Action<Unity.ProjectAuditor.Editor.Location> onOpenIssue;
+        public System.Action<Unity.ProjectAuditor.Editor.ProblemDescriptor> onOpenManual;
         public bool showActions;
         public bool showAreaSelection;
         public bool showAssemblySelection;
@@ -252,25 +253,26 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool showSeverityFilters;
         public System.Type type;
         public ViewDescriptor() {}
-        public static ViewDescriptor[] GetAll();
-        public static bool Register(ViewDescriptor descriptor);
+        public static Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor[] GetAll();
+        public static bool Register(Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor descriptor);
     }
 
     public sealed class ViewManager
     {
-        public System.Action<ProjectAuditorModule> onAnalyze;
+        public System.Action<Unity.ProjectAuditor.Editor.ProjectAuditorModule> onAnalyze;
         public System.Action<int> onViewChanged;
         public System.Action onViewExported;
         public int activeViewIndex { get; }
-        public ViewManager(IssueCategory[] categories) {}
-        public void AddIssues(System.Collections.Generic.IReadOnlyCollection<ProjectIssue> issues);
-        public void ChangeView(IssueCategory category);
+        public ViewManager(Unity.ProjectAuditor.Editor.IssueCategory[] categories) {}
+        public void AddIssues(System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.ProjectIssue> issues);
+        public void ChangeView(Unity.ProjectAuditor.Editor.IssueCategory category);
         public void Clear();
-        public void ClearView(IssueCategory category);
-        public void Create(ProjectAuditor projectAuditor, ViewStates m_ViewStates, System.Action<ViewDescriptor, bool> onCreateView = default(System.Action<ViewDescriptor, bool>), IProjectIssueFilter filter = default(IProjectIssueFilter));
-        public AnalysisView GetActiveView();
-        public AnalysisView GetView(int index);
-        public AnalysisView GetView(IssueCategory category);
+        public void ClearView(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public void Create(Unity.ProjectAuditor.Editor.ProjectAuditor projectAuditor, Unity.ProjectAuditor.Editor.UI.Framework.ViewStates viewStates, System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor, bool> onCreateView = default(System.Action<Unity.ProjectAuditor.Editor.UI.Framework.ViewDescriptor, bool>), Unity.ProjectAuditor.Editor.IProjectIssueFilter filter = default(Unity.ProjectAuditor.Editor.IProjectIssueFilter));
+        public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetActiveView();
+        public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(int index);
+        public Unity.ProjectAuditor.Editor.UI.Framework.AnalysisView GetView(Unity.ProjectAuditor.Editor.IssueCategory category);
+        public bool HasView(Unity.ProjectAuditor.Editor.IssueCategory category);
         public bool IsValid();
         public void LoadSettings();
         public void MarkViewsAsDirty();
@@ -279,17 +281,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
     public class ViewStates
     {
-        public bool actions = true;
-        public bool dependencies = true;
-        public bool details = true;
-        public bool filters = true;
-        public int fontSize = 12;
-        public bool info = true;
+        public bool actions;
+        public bool dependencies;
+        public bool details;
+        public bool filters;
+        public int fontSize;
+        public bool info;
         public const int k_MaxFontSize = 22;
         public const int k_MinFontSize = 12;
         public bool mutedIssues;
         public bool onlyCriticalIssues;
-        public bool recommendation = true;
+        public bool recommendation;
         public ViewStates() {}
     }
 }
