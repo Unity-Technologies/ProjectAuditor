@@ -472,14 +472,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public enum TextureProperties
     {
-        Format = 1,
-        ImporterType = 5,
+        Format = 3,
+        ImporterType = 2,
+        MipMapEnabled = 5,
         Name = 0,
-        Num = 7,
-        Path = 6,
-        Readable = 3,
-        Shape = 4,
-        TextureCompression = 2,
+        Num = 9,
+        Readable = 6,
+        Resolution = 7,
+        Shape = 1,
+        SizeOnDisk = 8,
+        TextureCompression = 4,
     }
 }
 

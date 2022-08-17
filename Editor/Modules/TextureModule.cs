@@ -11,20 +11,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
     public enum TextureProperties
     {
         Name,
-        Format,
-
-
-        /*
-        StreamingMipMaps,
-        MinMipMapLevel,
-        Resolution,
-        SizeOnDisk, */
-        TextureCompression,
-        Readable,
         Shape,
         ImporterType,
-        Path,
-
+        Format,
+        TextureCompression,
+        MipMapEnabled,
+        Readable,
+        Resolution,
+        SizeOnDisk,
         Num
     }
 
@@ -40,8 +34,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 //  new PropertyDefinition { type = Editor.PropertyType.Description, format = PropertyFormat.String, name = "Texture Description", longName = "Textures Description" },
                 new PropertyDefinition {type = PropertyTypeUtil.FromCustom(TextureProperties.Name), format = PropertyFormat.String, name = "Name", longName = "Texture Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Shape), format = PropertyFormat.String, name = "TextureShape", longName = "Texture Shape" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.ImporterType), format = PropertyFormat.String, name = "Importer Type", longName = "Texture Importer Type" },
                 new PropertyDefinition {type = PropertyTypeUtil.FromCustom(TextureProperties.Format), format = PropertyFormat.String, name = "Format", longName = "Texture Format" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.TextureCompression), format = PropertyFormat.String, name = "Compression Used?", longName = "Texture Compression" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.MipMapEnabled), format = PropertyFormat.Bool, name = "MipMaps", longName = "Texture MipMap Used?" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Readable), format = PropertyFormat.Bool, name = "Readable", longName = "Readable" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Resolution), format = PropertyFormat.String, name = "Resolution", longName = "Texture Resolution" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.SizeOnDisk), format = PropertyFormat.String, name = "Size", longName = "Texture Size" },
                 /*
 
 
@@ -49,10 +49,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.MinMipMapLevel), format = PropertyFormat.Integer, name = "MinMipMapLevel", longName = "Texture MinMipMapLevel" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.SizeOnDisk), format = PropertyFormat.String, name = "Size", longName = "Texture Size" }, }
                  */
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.ImporterType), format = PropertyFormat.String, name = "Importer Type", longName = "Texture Importer Type" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Shape), format = PropertyFormat.String, name = "TextureShape", longName = "Texture Shape" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Readable), format = PropertyFormat.Bool, name = "Readable", longName = "Readable" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Path), format = PropertyFormat.String, name = "Location", longName = "Show Texture Location Path" },
+
+
+                //  new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Path), format = PropertyFormat.String, name = "Location", longName = "Show Texture Location Path" },
             }
         };
         public override bool IsEnabledByDefault()
@@ -74,19 +73,27 @@ namespace Unity.ProjectAuditor.Editor.Modules
             foreach (string aTexture in allTextures)
             {
                 var path = AssetDatabase.GUIDToAssetPath(aTexture);
-                var tname = ((Texture2D)AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D)));
+                var tName = ((Texture2D)AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D)));
                 var t = (TextureImporter)TextureImporter.GetAtPath(path);
                 var tSize = Profiler.GetRuntimeMemorySizeLong(t);
-                //TextureImporter textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
-                var issue = ProjectIssue.Create(k_IssueLayout.category, tname.name).WithCustomProperties(new object[((int)TextureProperties.Num)]
+
+                TextureImporter textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
+
+                var issue = ProjectIssue.Create(k_IssueLayout.category, tName.name).WithCustomProperties(new object[((int)TextureProperties.Num)]
                 {
-                    tname.name, // must use this way, texture name is not available from ImportSettings or GetPlatformSettings
+                    tName.name, // must use this way, texture name is not available from ImportSettings or GetPlatformSettings
+                    textureImporter.textureShape,
+                    textureImporter.textureType, //Importer Type
                     t.GetPlatformTextureSettings("Android").format,     //new Format
                     t.GetPlatformTextureSettings("Android").textureCompression, //new TextureCompression
-                    t.isReadable,
-                    t.textureShape,
-                    t.textureType,
-                    path,  //new
+                    textureImporter.mipmapEnabled,
+                    textureImporter.isReadable,
+                    #if UNITY_2021_2_OR_NEWER
+                    t.GetSourceTextureWidthAndHeight.width + "x" + t.GetSourceTextureWidthAndHeight.height, //Not avail before Unity 2021.2
+                   #else
+                    (tName.width + "x" + tName.height),
+                   #endif
+                    Utils.Formatting.FormatSize((ulong)tSize),
 
                     /*
                     t.dimension,     //Shape
