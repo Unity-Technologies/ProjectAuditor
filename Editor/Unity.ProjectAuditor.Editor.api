@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         protected readonly Unity.ProjectAuditor.Editor.IssueLayout m_Layout;
         protected readonly System.IO.StreamWriter m_StreamWriter;
-        public Exporter(string path, Unity.ProjectAuditor.Editor.IssueLayout layout) {}
+        protected Exporter(string path, Unity.ProjectAuditor.Editor.IssueLayout layout) {}
         public virtual void Dispose();
         public virtual void WriteFooter();
         public abstract void WriteHeader();
