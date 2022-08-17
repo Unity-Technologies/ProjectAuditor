@@ -6,9 +6,11 @@ Project Auditor is an experimental static analysis tool that analyzes assets, se
 * Assets information
 
 ## Requirements
-Project Auditor is meant to be compatible with Unity versions from 2018.4 to the latest [Long-Term Support](https://unity3d.com/unity/qa/lts-releases) (recommended). 
+* Project Auditor is compatible with Unity versions from 2018.4 to the latest [Long-Term Support](https://unity3d.com/unity/qa/lts-releases) (recommended). 
+* .NET 4.x is required. Check the Project Settings to make sure a compatible .NET is selected.  
+<img src="images/dot-net.png">
 
-Note that most recent Project Auditor version to support 2017 or earlier is [0.5.0-preview](https://github.com/Unity-Technologies/ProjectAuditor/releases/tag/0.5.0-preview).
+> **Note**: The most recent Project Auditor version to support 2017 or earlier is [0.5.0-preview](https://github.com/Unity-Technologies/ProjectAuditor/releases/tag/0.5.0-preview).
 
 ## Installation
 It is recommended to install Project Auditor via the _Add package from git URL_ in Package Manager. For more information on this and alternative installation methods please refer to [Installing Project Auditor](Installing.md).
