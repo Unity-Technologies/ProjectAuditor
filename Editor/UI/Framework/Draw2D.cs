@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class Draw2D
     {
@@ -10,9 +10,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             BottomLeft
         };
 
+        readonly string m_ShaderName;
+
         Origin m_Origin = Origin.TopLeft;
         GUIStyle m_GLStyle;
-        string m_ShaderName;
         Material m_Material;
         Rect m_Rect;
         Vector4 m_ClipRect;
@@ -21,29 +22,28 @@ namespace Unity.ProjectAuditor.Editor.UI
         public Draw2D(string shaderName)
         {
             m_ShaderName = shaderName;
-            CheckAndSetupMaterial();
+            SetupMaterial();
         }
 
-        public bool CheckAndSetupMaterial()
+        bool SetupMaterial()
         {
-            if (m_Material == null)
+            if (m_Material != null)
+                return true;
+
+            var shader = Shader.Find(m_ShaderName);
+            if (shader == null)
             {
-                m_Material = new Material(Shader.Find(m_ShaderName));
-                m_Material.EnableKeyword("UNITY_UI_CLIP_RECT");
-            }
-
-            if (m_Material == null)
+                Debug.LogError("Project Auditor: Could not find shader " + m_ShaderName);
                 return false;
+            }
+            m_Material = new Material(shader);
 
             return true;
         }
 
-        public bool IsMaterialValid()
+        bool IsMaterialValid()
         {
-            if (m_Material == null)
-                return false;
-
-            return true;
+            return m_Material != null;
         }
 
         public void OnGUI()
@@ -61,7 +61,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ClipRect = new Vector4(clipRect.x, clipRect.y, clipRect.x + clipRect.width, clipRect.y + clipRect.height);
             m_ClipRectEnabled = true;
 
-            CheckAndSetupMaterial();
+            if (!IsMaterialValid())
+                return;
+
             m_Material.SetFloat("_UseClipRect", m_ClipRectEnabled ? 1f : 0f);
             m_Material.SetVector("_ClipRect", m_ClipRect);
         }
@@ -70,9 +72,16 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             m_ClipRectEnabled = false;
 
-            CheckAndSetupMaterial();
+            if (!IsMaterialValid())
+                return;
+
             m_Material.SetFloat("_UseClipRect", m_ClipRectEnabled ? 1f : 0f);
             m_Material.SetVector("_ClipRect", m_ClipRect);
+        }
+
+        public Rect GetClipRect()
+        {
+            return new Rect(m_ClipRect.x, m_ClipRect.y, m_ClipRect.z - m_ClipRect.x, m_ClipRect.w - m_ClipRect.y);
         }
 
         public bool DrawStart(Rect r, Origin origin = Origin.TopLeft)
@@ -80,10 +89,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (Event.current.type != EventType.Repaint)
                 return false;
 
-            if (!CheckAndSetupMaterial())
+            if (!IsMaterialValid())
                 return false;
 
-            CheckAndSetupMaterial();
             m_Material.SetPass(0);
 
             m_Rect = r;
@@ -101,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
         }
 
-        public void Translate(ref float x, ref float y)
+        void Translate(ref float x, ref float y)
         {
             // Translation done CPU side so we have world space coords in the shader for clipping.
             if (m_Origin == Origin.BottomLeft)

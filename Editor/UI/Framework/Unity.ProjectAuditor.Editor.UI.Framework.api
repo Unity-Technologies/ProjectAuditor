@@ -13,34 +13,6 @@ namespace Unity.ProjectAuditor.Editor
     }
 }
 
-namespace Unity.ProjectAuditor.Editor.UI
-{
-    public class Draw2D
-    {
-        public Draw2D(string shaderName) {}
-        public bool CheckAndSetupMaterial();
-        public void ClearClipRect();
-        public void DrawBox(float x, float y, float w, float h, UnityEngine.Color col);
-        public void DrawBox(float x, float y, float w, float h, float r, float g, float b);
-        public void DrawEnd();
-        public void DrawFilledBox(float x, float y, float w, float h, UnityEngine.Color col);
-        public void DrawFilledBox(float x, float y, float w, float h, float r, float g, float b);
-        public void DrawLine(float x, float y, float x2, float y2, UnityEngine.Color col);
-        public void DrawLine(float x, float y, float x2, float y2, float r, float g, float b);
-        public bool DrawStart(UnityEngine.Rect r, Draw2D.Origin origin = Draw2D.Origin.TopLeft);
-        public bool DrawStart(float w, float h, Draw2D.Origin origin = Draw2D.Origin.TopLeft, UnityEngine.GUIStyle style = default(UnityEngine.GUIStyle));
-        public bool IsMaterialValid();
-        public void OnGUI();
-        public void SetClipRect(UnityEngine.Rect clipRect);
-        public void Translate(ref float x, ref float y);
-        public enum Origin
-        {
-            BottomLeft = 1,
-            TopLeft = 0,
-        }
-    }
-}
-
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class AnalysisView : IProjectIssueFilter
@@ -76,6 +48,29 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual bool Match(ProjectIssue issue);
         public virtual void SaveSettings();
         public void SetSearch(string filter);
+    }
+
+    public class Draw2D
+    {
+        public Draw2D(string shaderName) {}
+        public void ClearClipRect();
+        public void DrawBox(float x, float y, float w, float h, UnityEngine.Color col);
+        public void DrawBox(float x, float y, float w, float h, float r, float g, float b);
+        public void DrawEnd();
+        public void DrawFilledBox(float x, float y, float w, float h, UnityEngine.Color col);
+        public void DrawFilledBox(float x, float y, float w, float h, float r, float g, float b);
+        public void DrawLine(float x, float y, float x2, float y2, UnityEngine.Color col);
+        public void DrawLine(float x, float y, float x2, float y2, float r, float g, float b);
+        public bool DrawStart(UnityEngine.Rect r, Draw2D.Origin origin = Draw2D.Origin.TopLeft);
+        public bool DrawStart(float w, float h, Draw2D.Origin origin = Draw2D.Origin.TopLeft, UnityEngine.GUIStyle style = default(UnityEngine.GUIStyle));
+        public UnityEngine.Rect GetClipRect();
+        public void OnGUI();
+        public void SetClipRect(UnityEngine.Rect clipRect);
+        public enum Origin
+        {
+            BottomLeft = 1,
+            TopLeft = 0,
+        }
     }
 
     public static class EditorUtil
@@ -267,10 +262,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void ChangeView(IssueCategory category);
         public void Clear();
         public void ClearView(IssueCategory category);
-        public void Create(ProjectAuditor projectAuditor, ViewStates m_ViewStates, System.Action<ViewDescriptor, bool> onCreateView = default(System.Action<ViewDescriptor, bool>), IProjectIssueFilter filter = default(IProjectIssueFilter));
+        public void Create(ProjectAuditor projectAuditor, ViewStates viewStates, System.Action<ViewDescriptor, bool> onCreateView = default(System.Action<ViewDescriptor, bool>), IProjectIssueFilter filter = default(IProjectIssueFilter));
         public AnalysisView GetActiveView();
         public AnalysisView GetView(int index);
         public AnalysisView GetView(IssueCategory category);
+        public bool HasView(IssueCategory category);
         public bool IsValid();
         public void LoadSettings();
         public void MarkViewsAsDirty();

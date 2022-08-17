@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor
         protected readonly IssueLayout m_Layout;
         protected readonly StreamWriter m_StreamWriter;
 
-        public Exporter(string path, IssueLayout layout)
+        protected Exporter(string path, IssueLayout layout)
         {
             m_Layout = layout;
             m_StreamWriter = new StreamWriter(path);

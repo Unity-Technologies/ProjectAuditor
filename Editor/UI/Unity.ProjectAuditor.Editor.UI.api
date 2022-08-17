@@ -1,24 +1,3 @@
 // This file is generated. Do not modify by hand.
 // XML documentation file not found. To check if public methods have XML comments,
 // make sure the XML doc file is present and located next to the scraped dll
-namespace Unity.ProjectAuditor.Editor.UI
-{
-    public class DiagnosticView : Framework.AnalysisView
-    {
-        public DiagnosticView(Framework.ViewManager viewManager) {}
-        public override void AddIssues(System.Collections.Generic.IEnumerable<ProjectIssue> allIssues);
-        public override void Clear();
-        protected override void DrawInfo();
-    }
-
-    public class ProjectAuditorWindow : UnityEditor.EditorWindow, IProjectIssueFilter
-    {
-        public static ProjectAuditorWindow Instance { get; }
-        public ProjectAuditorWindow() {}
-        public void AnalyzeShaderVariants();
-        public void ClearShaderVariants();
-        public bool Match(ProjectIssue issue);
-        [UnityEditor.Callbacks.PostProcessBuild(1)] public static void OnPostprocessBuild(UnityEditor.BuildTarget target, string pathToBuiltProject);
-        [UnityEditor.MenuItem(@"Window/Analysis/Project Auditor")] public static ProjectAuditorWindow ShowWindow();
-    }
-}

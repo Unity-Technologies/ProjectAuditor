@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    public class DiagnosticView : AnalysisView
+    internal class DiagnosticView : AnalysisView
     {
         int m_NumCompilerErrors = 0;
 

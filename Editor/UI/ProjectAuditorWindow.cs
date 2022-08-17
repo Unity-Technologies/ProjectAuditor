@@ -14,7 +14,7 @@ using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    public class ProjectAuditorWindow : EditorWindow, IProjectIssueFilter
+    class ProjectAuditorWindow : EditorWindow, IProjectIssueFilter
     {
         enum AnalysisState
         {
@@ -337,6 +337,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Generics
                 });
 
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.Package,
+                    name = "Installed Packages",
+                    menuLabel = "Experimental/Installed Packages",
+                    menuOrder = 105,
+                    showDependencyView = true,
+                    dependencyViewGuiContent = new GUIContent("Package Dependencies"),
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Packages
+                });
+
 #if UNITY_2019_1_OR_NEWER
                 ViewDescriptor.Register(new ViewDescriptor
                 {
@@ -645,6 +656,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().GetCategories());
             if ((m_SelectedModules.HasFlag(BuiltInModules.BuildReport)))
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().GetCategories());
+
             return requestedCategories.ToArray();
         }
 
