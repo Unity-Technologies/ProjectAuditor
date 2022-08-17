@@ -63,6 +63,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void DrawLine(float x, float y, float x2, float y2, float r, float g, float b);
         public bool DrawStart(UnityEngine.Rect r, Draw2D.Origin origin = Draw2D.Origin.TopLeft);
         public bool DrawStart(float w, float h, Draw2D.Origin origin = Draw2D.Origin.TopLeft, UnityEngine.GUIStyle style = default(UnityEngine.GUIStyle));
+        public UnityEngine.Rect GetClipRect();
         public void OnGUI();
         public void SetClipRect(UnityEngine.Rect clipRect);
         public enum Origin

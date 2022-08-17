@@ -37,7 +37,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return false;
             }
             m_Material = new Material(shader);
-            m_Material.EnableKeyword("UNITY_UI_CLIP_RECT");
 
             return true;
         }
@@ -78,6 +77,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             m_Material.SetFloat("_UseClipRect", m_ClipRectEnabled ? 1f : 0f);
             m_Material.SetVector("_ClipRect", m_ClipRect);
+        }
+
+        public Rect GetClipRect()
+        {
+            return new Rect(m_ClipRect.x, m_ClipRect.y, m_ClipRect.z - m_ClipRect.x, m_ClipRect.w - m_ClipRect.y);
         }
 
         public bool DrawStart(Rect r, Origin origin = Origin.TopLeft)
