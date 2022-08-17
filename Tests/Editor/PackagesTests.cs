@@ -10,18 +10,18 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase("Project Auditor", "com.unity.project-auditor", "Local", new string[] { "com.unity.nuget.mono-cecil" })]
         [TestCase("Physics", "com.unity.modules.physics", "BuiltIn", new string[] { "com.unity.modules.ui", "com.unity.modules.imgui" })]
         [TestCase("Test Framework", "com.unity.test-framework", "Registry")]
-        public void InstalledPackage_IsReported(string description, string name, string source, string[] dependecies = null)
+        public void InstalledPackage_IsReported(string description, string name, string source, string[] dependencies = null)
         {
-            var installedPackagesIssue = Analyze(IssueCategory.Package);
-            var matchIssue = installedPackagesIssue.FirstOrDefault(issue => issue.description == description);
+            var installedPackages = Analyze(IssueCategory.Package);
+            var matchIssue = installedPackages.FirstOrDefault(issue => issue.description == description);
             Assert.IsNotNull(matchIssue, "Cannot find the package: " + description);
             Assert.AreEqual(matchIssue.customProperties[0], name);
             Assert.IsTrue(matchIssue.customProperties[2].StartsWith(source), "Package: " + description);
-            if (dependecies != null && dependecies.Length != 0)
+            if (dependencies != null && dependencies.Length != 0)
             {
                 for (int i = 0; i < matchIssue.dependencies.GetNumChildren(); i++)
                 {
-                    Assert.IsTrue(matchIssue.dependencies.GetChild(i).GetName().Contains(dependecies[i]), "Package: " + description);
+                    Assert.IsTrue(matchIssue.dependencies.GetChild(i).GetName().Contains(dependencies[i]), "Package: " + description);
                 }
             }
         }
