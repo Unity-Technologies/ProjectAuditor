@@ -371,6 +371,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     name = "Texture",
                     menuOrder = 6,
                     showInfoPanel = true,
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Texture
                 });
 
 

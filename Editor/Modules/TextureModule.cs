@@ -6,6 +6,7 @@ using Unity.ProjectAuditor.Editor;
 using UnityEditor;
 using UnityEngine;
 
+
 namespace Unity.ProjectAuditor.Editor.Modules
 {
     public enum TextureProperties
@@ -55,22 +56,22 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (string aTexture in allTextures)
             {
-                var path = AssetDatabase.GUIDToAssetPath(aTexture);
-                var tName = ((Texture2D)AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D)));
-                var t = (TextureImporter)TextureImporter.GetAtPath(path);
-                var tSize = Profiler.GetRuntimeMemorySizeLong(t);
+                var pathToTexture = AssetDatabase.GUIDToAssetPath(aTexture);
+                var tName = ((Texture2D)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture2D)));  // Reference the actual texture itself
+                var tSize = Profiler.GetRuntimeMemorySizeLong(tName); // Size of the actual texture itself
 
-                TextureImporter textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
+                TextureImporter t = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;  // Loads TextureImporter for that particular Texture
+              
 
                 var issue = ProjectIssue.Create(k_IssueLayout.category, tName.name).WithCustomProperties(new object[((int)TextureProperties.Num)]
                 {
                     tName.name,
-                    textureImporter.textureShape,
-                    textureImporter.textureType, //Importer Type
+                    t.textureShape,
+                    t.textureType, //Importer Type
                     t.GetPlatformTextureSettings("Android").format,     //new Format
                     t.GetPlatformTextureSettings("Android").textureCompression, //new TextureCompression
-                    textureImporter.mipmapEnabled,
-                    textureImporter.isReadable,
+                    t.mipmapEnabled,
+                    t.isReadable,
                     #if UNITY_2021_2_OR_NEWER
                     t.GetSourceTextureWidthAndHeight.width + "x" + t.GetSourceTextureWidthAndHeight.height, //Not avail before Unity 2021.2
                    #else
@@ -82,11 +83,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 issues.Add(issue);
 
                 progress?.Advance();
+
+              
             }
 
             if (issues.Count > 0)
                 projectAuditorParams.onIncomingIssues(issues);
             progress?.Clear();
+
 
             projectAuditorParams.onModuleCompleted.Invoke();
         }
