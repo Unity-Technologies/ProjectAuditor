@@ -1,8 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Profiling;
-using Unity.ProjectAuditor.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -52,24 +49,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var allTextures = AssetDatabase.FindAssets("t: Texture, a:assets");
             var issues = new List<ProjectIssue>();
-            progress?.Start("Finding Textures", "Positive Always", allTextures.Length);
+            progress?.Start("Finding Textures", "Search in Progress...", allTextures.Length);
 
             foreach (string aTexture in allTextures)
             {
                 var pathToTexture = AssetDatabase.GUIDToAssetPath(aTexture);
-                var tName = ((Texture2D)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture2D)));  // Reference the actual texture itself
-                var tSize = Profiler.GetRuntimeMemorySizeLong(tName); // Size of the actual texture itself
+                var tName = ((Texture2D)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture2D)));
+                var tSize = Profiler.GetRuntimeMemorySizeLong(tName);
 
-                TextureImporter t = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;  // Loads TextureImporter for that particular Texture
-              
+                TextureImporter t = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
+
 
                 var issue = ProjectIssue.Create(k_IssueLayout.category, tName.name).WithCustomProperties(new object[((int)TextureProperties.Num)]
                 {
                     tName.name,
                     t.textureShape,
-                    t.textureType, //Importer Type
-                    t.GetPlatformTextureSettings("Android").format,     //new Format
-                    t.GetPlatformTextureSettings("Android").textureCompression, //new TextureCompression
+                    t.textureType,
+                    t.GetPlatformTextureSettings("Android").format,
+                    t.GetPlatformTextureSettings("Android").textureCompression,
                     t.mipmapEnabled,
                     t.isReadable,
                     #if UNITY_2021_2_OR_NEWER
@@ -77,22 +74,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
                    #else
                     (tName.width + "x" + tName.height),
                    #endif
-                    Utils.Formatting.FormatSize((ulong)tSize),
+                    Utils.Formatting.FormatSize((byte)tSize),
                 });
 
                 issues.Add(issue);
 
                 progress?.Advance();
-
-              
             }
 
             if (issues.Count > 0)
                 projectAuditorParams.onIncomingIssues(issues);
             progress?.Clear();
 
-
-            projectAuditorParams.onModuleCompleted.Invoke();
+            projectAuditorParams.onModuleCompleted?.Invoke();
         }
     }
 }

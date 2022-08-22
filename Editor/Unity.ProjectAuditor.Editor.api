@@ -103,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor
     public class IssueLayout
     {
         public IssueCategory category;
-        public bool hierarchy = false;
+        public bool hierarchy;
         public PropertyDefinition[] properties;
         public int defaultGroupPropertyIndex { get; }
         public IssueLayout() {}
@@ -224,7 +224,7 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectIssue
     {
-        public int depth = 0;
+        public int depth;
         public IssueCategory category { get; }
         public string[] customProperties { get; }
         public DependencyNode dependencies { get; }
