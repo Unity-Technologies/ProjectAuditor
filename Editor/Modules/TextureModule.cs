@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.ImporterType), format = PropertyFormat.String, name = "Importer Type", longName = "Texture Importer Type" },
                 new PropertyDefinition {type = PropertyTypeUtil.FromCustom(TextureProperties.Format), format = PropertyFormat.String, name = "Format", longName = "Texture Format" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.TextureCompression), format = PropertyFormat.String, name = "Compression Used?", longName = "Texture Compression" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.MipMapEnabled), format = PropertyFormat.Bool, name = "MipMaps", longName = "Texture MipMap Used?" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.MipMapEnabled), format = PropertyFormat.Bool, name = "MipMaps", longName = "Texture MipMaps Enabled" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Readable), format = PropertyFormat.Bool, name = "Readable", longName = "Readable" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Resolution), format = PropertyFormat.String, name = "Resolution", longName = "Texture Resolution" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.SizeOnDisk), format = PropertyFormat.String, name = "Size", longName = "Texture Size" },
@@ -51,15 +51,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var issues = new List<ProjectIssue>();
             progress?.Start("Finding Textures", "Search in Progress...", allTextures.Length);
 
-            foreach (string aTexture in allTextures)
+            foreach (var aTexture in allTextures)
             {
                 var pathToTexture = AssetDatabase.GUIDToAssetPath(aTexture);
                 var tName = ((Texture2D)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture2D)));
                 var tSize = Profiler.GetRuntimeMemorySizeLong(tName);
-
                 TextureImporter t = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
-
-
                 var issue = ProjectIssue.Create(k_IssueLayout.category, tName.name).WithCustomProperties(new object[((int)TextureProperties.Num)]
                 {
                     tName.name,
