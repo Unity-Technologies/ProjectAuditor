@@ -369,6 +369,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     category = IssueCategory.Texture,
                     name = "Texture",
+                    menuLabel = "Texture/Diagnostics",
                     menuOrder = 6,
                     showInfoPanel = true,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Texture
