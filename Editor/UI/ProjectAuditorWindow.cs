@@ -347,6 +347,15 @@ namespace Unity.ProjectAuditor.Editor.UI
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Packages
                 });
 
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.AudioClip,
+                    name = "AudioClip",
+                    menuLabel = "Experimental/AudioClip",
+                    menuOrder = 106,
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AudioClip
+                });
+
 #if UNITY_2019_1_OR_NEWER
                 ViewDescriptor.Register(new ViewDescriptor
                 {
