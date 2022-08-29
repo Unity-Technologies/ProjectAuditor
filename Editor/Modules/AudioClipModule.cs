@@ -6,20 +6,19 @@ using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using System.Linq;
 using UnityEditor;
+using System.IO;
 
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public enum AudioProperty
+    public enum AudioClipProperty
     {
-        Name = 0,
         Format,             //AudioImporter
         ForceToMono,        //AudioImporter
-        DecompressOnLoad,   //AudioImporter
         LoadInBackground,   //AudioImporter
         PreloadAudioData,   //AudioImporter
-        LoadType,           //AudioImporterSampleSettings
-        CompressionFormat,  //AudioImporterSampleSettings
+        LoadType,           //AudioImporter.defaultSampleSettings
+        CompressionFormat,  //AudioImporter.defaultSampleSettings
         Num
     }
 
@@ -30,14 +29,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.AudioClip,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioProperty.Name), format = PropertyFormat.String, name = "Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioProperty.Format), format = PropertyFormat.String, name = "Format", defaultGroup = true },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioProperty.ForceToMono), format = PropertyFormat.String, name = "ForceToMono"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioProperty.DecompressOnLoad), format = PropertyFormat.String, name = "DecompressOnLoad" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioProperty.LoadInBackground), format = PropertyFormat.String, name = "LoadInBackground"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioProperty.PreloadAudioData), format = PropertyFormat.String, name = "PreloadAudioData" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioProperty.LoadType), format = PropertyFormat.String, name = "LoadType" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioProperty.CompressionFormat), format = PropertyFormat.String, name = "CompressionFormat"}
+                new PropertyDefinition { type = PropertyType.Description, name = "Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.Format), format = PropertyFormat.String, name = "Format", defaultGroup = true },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.ForceToMono), format = PropertyFormat.Bool, name = "ForceToMono"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadInBackground), format = PropertyFormat.Bool, name = "LoadInBackground"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.PreloadAudioData), format = PropertyFormat.Bool, name = "PreloadAudioData" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadType), format = PropertyFormat.String, name = "LoadType" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.CompressionFormat), format = PropertyFormat.String, name = "CompressionFormat"}
             }
         };
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
@@ -51,20 +49,22 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         private void AnalyzeAudioClip(List<ProjectIssue> issues)
         {
-            UnityEngine.Object[] objects = Selection.GetFiltered(typeof(AudioClip), SelectionMode.DeepAssets);
-        }
-
-        void AddInstalledPackage(UnityEditor.PackageManager.PackageInfo package, List<ProjectIssue> issues)
-        {
-            var dependencies = package.dependencies.Select(d => d.name + " [" + d.version + "]").ToArray();
-            var node = new PackageDependencyNode(package.displayName, dependencies);
-            var packageIssue = ProjectIssue.Create(IssueCategory.Package, package.displayName).WithCustomProperties(new object[(int)PackageProperty.Num]
+            var GUIDsAudioClip = AssetDatabase.FindAssets("t:AudioClip");
+            foreach (var guid in GUIDsAudioClip)
             {
-                package.name,
-                package.version,
-                package.source
-            }).WithDependencies(node);
-            issues.Add(packageIssue);
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var importer = AssetImporter.GetAtPath(path) as AudioImporter;
+                var audioClipIssue = ProjectIssue.Create(IssueCategory.AudioClip, Path.GetFileNameWithoutExtension(path)).WithCustomProperties(new object[(int)AudioClipProperty.Num]
+                {
+                    Path.GetExtension(path),
+                    importer.forceToMono,
+                    importer.loadInBackground,
+                    importer.preloadAudioData,
+                    importer.defaultSampleSettings.loadType,
+                    importer.defaultSampleSettings.compressionFormat
+                });
+                issues.Add(audioClipIssue);
+            }
         }
 
         public override IEnumerable<IssueLayout> GetLayouts()
