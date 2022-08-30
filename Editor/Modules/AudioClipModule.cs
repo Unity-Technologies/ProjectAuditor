@@ -56,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var importer = AssetImporter.GetAtPath(path) as AudioImporter;
                 var audioClipIssue = ProjectIssue.Create(IssueCategory.AudioClip, Path.GetFileNameWithoutExtension(path)).WithCustomProperties(new object[(int)AudioClipProperty.Num]
                 {
-                    Path.GetExtension(path),
+                    Path.GetExtension(path).Substring(1),
                     importer.forceToMono,
                     importer.loadInBackground,
                     importer.preloadAudioData,
