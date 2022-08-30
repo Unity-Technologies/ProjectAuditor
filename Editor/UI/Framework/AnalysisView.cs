@@ -240,6 +240,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
 
             Profiler.BeginSample("IssueTable.OnGUI");
+
+            //m_Table.Clear();
+
             m_Table.OnGUI(r);
             Profiler.EndSample();
 
@@ -364,6 +367,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             m_Table.groupPropertyIndex = groupPropertyIndex;
                             m_Table.Clear();
                             m_Table.AddIssues(m_Issues);
+
+
                             m_Table.Reload();
                         }
                     }, GUILayout.Width(toolbarButtonSize * 2));

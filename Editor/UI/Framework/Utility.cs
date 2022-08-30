@@ -47,6 +47,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static readonly GUIContent CopyToClipboard = new GUIContent("Copy to Clipboard");
         public static readonly GUIContent OpenIssue = new GUIContent("Open Issue");
         public static readonly GUIContent OpenScriptReference = new GUIContent("Open Script Reference");
+        public static readonly GUIContent SortGroupsByNumberDesc = new GUIContent("Sort By Number desc");
+        public static readonly GUIContent SortGroupsByNumberAsc = new GUIContent("Sort By Number asc");
 
         public class DropdownItem
         {

@@ -70,7 +70,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void AddIssues(IReadOnlyCollection<ProjectIssue> issues)
         {
             // update groups
-            var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex])).Distinct().ToArray();
+            //var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex])).Distinct().ToArray();
+            var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex])).Distinct().ToList();
+
+            groupNames.Sort();
+
             foreach (var name in groupNames)
             {
                 // if necessary, create a group
@@ -143,7 +147,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Profiler.BeginSample("IssueTable.BuildRows");
             if (!hasSearch && !m_FlatView)
             {
-                var groupedItemQuery = filteredItems.GroupBy(i => i.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
+                //var groupedItemQuery = filteredItems.GroupBy(i => i.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
+                var groupedItemQuery = filteredItems.GroupBy(i => i.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex])).ToList();
+                //groupedItemQuery.Sort();
                 foreach (var groupedItems in groupedItemQuery)
                 {
                     var groupName = groupedItems.Key;
@@ -497,6 +503,23 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     m_Desc.onContextMenu(menu, m_View.viewManager, item.ProjectIssue);
                 }
 
+
+                //add by jj
+                if (item.depth == 0)
+                {
+                    menu.AddSeparator("");
+                    menu.AddItem(Utility.SortGroupsByNumberAsc, false, () =>
+                    {
+                        SortByMultipleColumns(GetRows(), true, false);
+                    });
+                    menu.AddSeparator("");
+                    menu.AddItem(Utility.SortGroupsByNumberDesc, false, () =>
+                    {
+                        SortByMultipleColumns(GetRows(), true, true);
+                    });
+                }
+                //end jj
+
                 menu.AddSeparator("");
                 menu.AddItem(Utility.CopyToClipboard, false, () => CopyToClipboard(item.GetDisplayName()));
 
@@ -527,10 +550,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Repaint();
         }
 
-        void SortByMultipleColumns(IList<TreeViewItem> rows)
+        void SortByMultipleColumns(IList<TreeViewItem> rows, bool isSortGroupNum = false, bool sortGroupNumDesc = false)
         {
             var sortedColumns = multiColumnHeader.state.sortedColumns;
-            if (sortedColumns.Length == 0)
+            if (sortedColumns.Length == 0 && isSortGroupNum == false)
                 return;
 
             var columnAscending = new bool[sortedColumns.Length];
@@ -562,7 +585,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
             }
 
-            root.Sort(sortedColumns, columnAscending);
+            root.Sort(sortedColumns, columnAscending, isSortGroupNum, sortGroupNumDesc);
 
             // convert back to rows
             var newRows = new List<TreeViewItem>(rows.Count);
@@ -595,12 +618,34 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_Children.Add(item);
             }
 
-            public void Sort(int[] columnSortOrder, bool[] isColumnAscending)
+            public void Sort(int[] columnSortOrder, bool[] isColumnAscending, bool isSortGroupNum = false, bool sortGroupNumDesc = false)
             {
                 m_Children.Sort(delegate(ItemTree a, ItemTree b)
                 {
                     var rtn = 0;
-
+                    if (a.Depth == 0 && a.Depth == b.Depth)
+                    {
+                        if (isSortGroupNum)
+                        {
+                            if (a.m_Item.children.Count() > b.m_Item.children.Count())
+                            {
+                                return sortGroupNumDesc ? -1 : 1;
+                            }
+                            else if (a.m_Item.children.Count() < b.m_Item.children.Count())
+                            {
+                                return sortGroupNumDesc ? 1 : -1;
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        }
+                        else
+                        {
+                            var order = isColumnAscending[0] ? 1 : -1;
+                            return order * string.CompareOrdinal(a.m_Item.GroupName, b.m_Item.GroupName);
+                        }
+                    }
                     for (var i = 0; i < columnSortOrder.Length; i++)
                     {
                         var order = isColumnAscending[i] ? 1 : -1;
