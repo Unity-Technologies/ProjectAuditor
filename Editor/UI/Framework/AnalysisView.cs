@@ -240,9 +240,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
 
             Profiler.BeginSample("IssueTable.OnGUI");
-
-            //m_Table.Clear();
-
             m_Table.OnGUI(r);
             Profiler.EndSample();
 

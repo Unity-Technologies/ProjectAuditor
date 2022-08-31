@@ -554,7 +554,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Repaint();
         }
 
-        void SortByMultipleColumns(IList<TreeViewItem> rows, bool isSortGroupNum = false, bool sortGroupNumDesc = false)
+        void SortByMultipleColumns(IList<TreeViewItem> rows, bool isSortGroupNum = false, bool sortGroupByIssueAmount = false)
         {
             var sortedColumns = multiColumnHeader.state.sortedColumns;
             if (sortedColumns.Length == 0 && isSortGroupNum == false)
@@ -589,7 +589,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
             }
 
-            root.Sort(sortedColumns, columnAscending, isSortGroupNum, sortGroupNumDesc);
+            root.Sort(sortedColumns, columnAscending, isSortGroupNum, sortGroupByIssueAmount);
 
             // convert back to rows
             var newRows = new List<TreeViewItem>(rows.Count);
@@ -622,7 +622,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_Children.Add(item);
             }
 
-            public void Sort(int[] columnSortOrder, bool[] isColumnAscending, bool isSortGroupNum = false, bool sortGroupNumDesc = false)
+            public void Sort(int[] columnSortOrder, bool[] isColumnAscending, bool isSortGroupNum = false, bool sortGroupByIssueAmount = false)
             {
                 m_Children.Sort(delegate(ItemTree a, ItemTree b)
                 {
@@ -633,11 +633,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         {
                             if (a.m_Item.children.Count() > b.m_Item.children.Count())
                             {
-                                return sortGroupNumDesc ? -1 : 1;
+                                return sortGroupByIssueAmount ? -1 : 1;
                             }
                             else if (a.m_Item.children.Count() < b.m_Item.children.Count())
                             {
-                                return sortGroupNumDesc ? 1 : -1;
+                                return sortGroupByIssueAmount ? 1 : -1;
                             }
                             else
                             {
