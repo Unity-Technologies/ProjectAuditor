@@ -70,11 +70,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void AddIssues(IReadOnlyCollection<ProjectIssue> issues)
         {
             // update groups
-            //var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex])).Distinct().ToArray();
-            var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex])).Distinct().ToList();
-
-            groupNames.Sort();
-
+            var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex])).Distinct().ToArray();
             foreach (var name in groupNames)
             {
                 // if necessary, create a group
@@ -147,9 +143,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Profiler.BeginSample("IssueTable.BuildRows");
             if (!hasSearch && !m_FlatView)
             {
-                //var groupedItemQuery = filteredItems.GroupBy(i => i.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
-                var groupedItemQuery = filteredItems.GroupBy(i => i.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex])).ToList();
-                //groupedItemQuery.Sort();
+                var groupedItemQuery = filteredItems.GroupBy(i => i.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
                 foreach (var groupedItems in groupedItemQuery)
                 {
                     var groupName = groupedItems.Key;
@@ -503,8 +497,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     m_Desc.onContextMenu(menu, m_View.viewManager, item.ProjectIssue);
                 }
 
-
-                //add by jj
                 if (item.depth == 0)
                 {
                     menu.AddSeparator("");
@@ -522,7 +514,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         }
                     });
                 }
-                //end jj
 
                 menu.AddSeparator("");
                 menu.AddItem(Utility.CopyToClipboard, false, () => CopyToClipboard(item.GetDisplayName()));

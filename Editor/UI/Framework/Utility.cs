@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static readonly GUIContent OpenIssue = new GUIContent("Open Issue");
         public static readonly GUIContent OpenScriptReference = new GUIContent("Open Script Reference");
         public static readonly GUIContent SortGroupsByNumber = new GUIContent("Sort groups by issue amount");
-        public static bool isSortGroupsByNumberAsc = false;
+        public static bool  isSortGroupsByNumberAsc = false;
 
         public class DropdownItem
         {

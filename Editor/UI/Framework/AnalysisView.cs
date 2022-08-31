@@ -364,8 +364,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             m_Table.groupPropertyIndex = groupPropertyIndex;
                             m_Table.Clear();
                             m_Table.AddIssues(m_Issues);
-
-
                             m_Table.Reload();
                         }
                     }, GUILayout.Width(toolbarButtonSize * 2));
