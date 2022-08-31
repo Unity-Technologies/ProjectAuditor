@@ -508,14 +508,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 if (item.depth == 0)
                 {
                     menu.AddSeparator("");
-                    menu.AddItem(Utility.SortGroupsByNumberAsc, false, () =>
+                    menu.AddItem(Utility.SortGroupsByNumber, false, () =>
                     {
-                        SortByMultipleColumns(GetRows(), true, false);
-                    });
-                    menu.AddSeparator("");
-                    menu.AddItem(Utility.SortGroupsByNumberDesc, false, () =>
-                    {
-                        SortByMultipleColumns(GetRows(), true, true);
+                        if (!Utility.isSortGroupsByNumberAsc)
+                        {
+                            SortByMultipleColumns(GetRows(), true, Utility.isSortGroupsByNumberAsc);
+                            Utility.isSortGroupsByNumberAsc = true;
+                        }
+                        else
+                        {
+                            SortByMultipleColumns(GetRows(), true, Utility.isSortGroupsByNumberAsc);
+                            Utility.isSortGroupsByNumberAsc = false;
+                        }
                     });
                 }
                 //end jj
