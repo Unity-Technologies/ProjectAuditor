@@ -1,12 +1,7 @@
-using System.Collections;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor.PackageManager;
-using UnityEditor.PackageManager.Requests;
 using System.Linq;
-using UnityEditor;
-
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -22,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         Name = 0,
         CurrentVersion,
-        ReconmandVersion,
+        RecommendedVersion,
         Experimental,
         Num
     }
@@ -41,21 +36,21 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        static readonly IssueLayout k_PacakgeVersionLayout = new IssueLayout
+        static readonly IssueLayout k_PackageVersionLayout = new IssueLayout
         {
             category = IssueCategory.PackageVersion,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Display Name"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.Name), format = PropertyFormat.String, name = "Package Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.Name), format = PropertyFormat.String, name = "Package Name", defaultGroup = true},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.CurrentVersion), format = PropertyFormat.String, name = "Current Version" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.ReconmandVersion), format = PropertyFormat.String, name = "Reconmand Version" , defaultGroup = true},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.RecommendedVersion), format = PropertyFormat.String, name = "Recommended Version"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.Experimental), format = PropertyFormat.Bool, name = "Preview" }  //TODO: I feel confused about the Experimental and Preview. Now I use preview first and will discuss this issue with Marco later.
             }
         };
 
 
-        static readonly ProblemDescriptor k_recommendPacakgeUpgrade  = new ProblemDescriptor(
+        static readonly ProblemDescriptor k_recommendPackageUpgrade  = new ProblemDescriptor(
             "PKG0001",
             "package name",
             new[] { Area.BuildSize },   //TODO: here the issue is I can not find the specifc area I need. It might need a other value?
@@ -63,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "we strongly encourage you to update from the Unity Package Manager."
         );
 
-        static readonly ProblemDescriptor k_recommendPacakgePreView = new ProblemDescriptor(
+        static readonly ProblemDescriptor k_recommendPackagePreView = new ProblemDescriptor(
             "PKG0002",
             "package name",
             new[] { Area.BuildSize },    //TODO: here the issue is I can not find the specifc area I need. It might need a other value?
@@ -105,8 +100,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (!String.IsNullOrEmpty(package.version) && !String.IsNullOrEmpty(package.versions.verified))
             {
                 var currentVersion = new Version(package.version);
-                var recommandVersion = new Version(package.versions.verified);
-                result = currentVersion.CompareTo(recommandVersion);
+                var recommendedVersion = new Version(package.versions.verified);
+                result = currentVersion.CompareTo(recommendedVersion);
             }
 
             if (package.version.Contains("pre") || package.version.Contains("exp"))
@@ -115,7 +110,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
             if (result < 0 || isPreview)
             {
-                var packageVersionIssue = ProjectIssue.Create(IssueCategory.PackageVersion, isPreview ? k_recommendPacakgePreView : k_recommendPacakgeUpgrade, package.displayName)
+                var packageVersionIssue = ProjectIssue.Create(IssueCategory.PackageVersion, isPreview ? k_recommendPackagePreView : k_recommendPackageUpgrade, package.displayName)
                     .WithCustomProperties(new object[(int)PackageVersionProperty.Num]
                     {
                         package.name,
@@ -130,7 +125,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IEnumerable<IssueLayout> GetLayouts()
         {
             yield return k_PackageLayout;
-            yield return k_PacakgeVersionLayout;
+            yield return k_PackageVersionLayout;
         }
     }
 }
