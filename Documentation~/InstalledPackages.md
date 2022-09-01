@@ -1,5 +1,5 @@
-<a name="PackageViersion"></a>
-# Package Viersion View
-This view reports all installed packages needed to upgrade or is the preview version.
+<a name="InstalledPackage"></a>
+# Installed Packages View
+This view reports all installed packages and the dependecies.
 
-<img src="images/package-version.png">
+<img src="images/installed-packages.png">
