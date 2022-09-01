@@ -7,7 +7,7 @@ This view reports all AudioClips in the project.
 ### Reported Properties: ###
 •	Name <br>
 •	format <br>
-•	decompressOnLoad <br>
+•	forceToMono <br>
 •	loadInBackground <br>
 •	preloadAudioData <br>
 •	loadType <br>
