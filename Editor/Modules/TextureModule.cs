@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             foreach (var aTexture in allTextures)
             {
                 var pathToTexture = AssetDatabase.GUIDToAssetPath(aTexture);
-                var tName = ((Texture2D)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture2D)));
+                var tName = (Texture2D)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture2D));
                 var tSize = Profiler.GetRuntimeMemorySizeLong(tName);
                 TextureImporter t = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
                 var issue = ProjectIssue.Create(k_IssueLayout.category, tName.name).WithCustomProperties(new object[((int)TextureProperties.Num)]
