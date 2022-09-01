@@ -1,5 +1,5 @@
 <a name="AudioClip"></a>
-# Settings View
+# AudioClip View
 This view reports all AudioClips in the project.
 
 <img src="images/audio-clip.png">
