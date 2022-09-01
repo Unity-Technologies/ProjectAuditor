@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.Name), format = PropertyFormat.String, name = "Package Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.CurrentVersion), format = PropertyFormat.String, name = "Current Version" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.ReconmandVersion), format = PropertyFormat.String, name = "Reconmand Version" , defaultGroup = true},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.Experimental), format = PropertyFormat.Bool, name = "Preview" }
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.Experimental), format = PropertyFormat.Bool, name = "Preview" }  //TODO: I feel confused about the Experimental and Preview. Now I use preview first and will discuss this issue with Marco later.
             }
         };
 
@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         static readonly ProblemDescriptor k_recommendPacakgeUpgrade  = new ProblemDescriptor(
             "PKG0001",
             "package name",
-            new[] { Area.BuildSize },
+            new[] { Area.BuildSize },   //TODO: here the issue is I can not find the specifc area I need. It might need a other value?
             "A newer version of this package is available",
             "we strongly encourage you to update from the Unity Package Manager."
         );
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         static readonly ProblemDescriptor k_recommendPacakgePreView = new ProblemDescriptor(
             "PKG0002",
             "package name",
-            new[] { Area.BuildSize },
+            new[] { Area.BuildSize },    //TODO: here the issue is I can not find the specifc area I need. It might need a other value?
             "Preview Packages are in the early stages of development and not yet ready for production. We recommend using these only for testing purposes and to give us direct feedback"
         );
 
@@ -115,13 +115,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
             if (result < 0 || isPreview)
             {
-                var packageVersionIssue = ProjectIssue.Create(IssueCategory.PackageVersion, isPreview ? k_recommendPacakgePreView : k_recommendPacakgeUpgrade, package.displayName).WithCustomProperties(new object[(int)PackageVersionProperty.Num]
-                {
-                    package.name,
-                    package.version,
-                    package.versions.verified,
-                    isPreview
-                });
+                var packageVersionIssue = ProjectIssue.Create(IssueCategory.PackageVersion, isPreview ? k_recommendPacakgePreView : k_recommendPacakgeUpgrade, package.displayName)
+                    .WithCustomProperties(new object[(int)PackageVersionProperty.Num]
+                    {
+                        package.name,
+                        package.version,
+                        package.versions.verified,
+                        isPreview
+                    });
                 issues.Add(packageVersionIssue);
             }
         }
