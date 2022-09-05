@@ -132,7 +132,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onOpenIssue);
 
             if (m_TextFilter == null)
-                m_TextFilter = new TextFilter();
+                m_TextFilter = new TextFilter(layout.properties);
 
             var helpButtonTooltip = string.Format("Open Reference for {0}", m_Desc.name);
             m_HelpButtonContent = Utility.GetIcon(Utility.IconType.Help, helpButtonTooltip);
