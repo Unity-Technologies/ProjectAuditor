@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.Core
 {
     /// <summary>
     /// Project Auditor module base class. Any class derived from ProjectAuditorModule will be instantiated by ProjectAuditor and used to audit the project

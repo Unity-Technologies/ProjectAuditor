@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.Core
 {
     static class ProblemDescriptorLoader
     {

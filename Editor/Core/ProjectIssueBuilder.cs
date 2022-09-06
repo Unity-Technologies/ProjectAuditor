@@ -1,7 +1,7 @@
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Utils;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.Core
 {
     public class ProjectIssueBuilder
     {

@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.Core
 {
     class AssemblyDependencyNode : DependencyNode
     {

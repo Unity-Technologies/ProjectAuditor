@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Core;
 using UnityEditor;
 
 
