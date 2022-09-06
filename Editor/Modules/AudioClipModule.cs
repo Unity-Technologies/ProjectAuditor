@@ -31,11 +31,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.Format), format = PropertyFormat.String, name = "Format", defaultGroup = true },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.ForceToMono), format = PropertyFormat.Bool, name = "ForceToMono"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadInBackground), format = PropertyFormat.Bool, name = "LoadInBackground"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.PreloadAudioData), format = PropertyFormat.Bool, name = "PreloadAudioData" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadType), format = PropertyFormat.String, name = "LoadType" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.CompressionFormat), format = PropertyFormat.String, name = "CompressionFormat"}
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.ForceToMono), format = PropertyFormat.Bool, name = "Force To Mono"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadInBackground), format = PropertyFormat.Bool, name = "Load In Background"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.PreloadAudioData), format = PropertyFormat.Bool, name = "Preload AudioData" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadType), format = PropertyFormat.String, name = "Load Type" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.CompressionFormat), format = PropertyFormat.String, name = "Compression Format"},
+                new PropertyDefinition { type = PropertyType.Path, name = "Path"}
             }
         };
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
@@ -62,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     importer.preloadAudioData,
                     importer.defaultSampleSettings.loadType,
                     importer.defaultSampleSettings.compressionFormat
-                });
+                }).WithLocation(path);
                 issues.Add(audioClipIssue);
             }
         }

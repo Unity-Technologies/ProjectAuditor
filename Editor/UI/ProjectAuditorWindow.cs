@@ -353,6 +353,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     name = "AudioClip",
                     menuLabel = "Experimental/AudioClip",
                     menuOrder = 106,
+                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AudioClip
                 });
 
