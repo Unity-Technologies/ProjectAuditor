@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 m_Descriptors[d.method].Add(d);
             }
 
-            m_WholeNamespaceDescriptors = module.supportedDescriptors.Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
+            m_WholeNamespaceDescriptors = descriptors.Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
         }
 
         public ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
