@@ -8,10 +8,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     public interface IInstructionAnalyzer
     {
+        IReadOnlyCollection<OpCode> opCodes { get; }
+
         void Initialize(ProjectAuditorModule module);
 
         ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst);
-
-        IEnumerable<OpCode> GetOpCodes();
     }
 }

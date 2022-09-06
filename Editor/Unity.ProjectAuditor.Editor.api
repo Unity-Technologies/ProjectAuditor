@@ -382,8 +382,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     public interface IInstructionAnalyzer
     {
+        public System.Collections.Generic.IReadOnlyCollection<Mono.Cecil.Cil.OpCode> opCodes { get; }
         public Unity.ProjectAuditor.Editor.Core.ProjectIssueBuilder Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
-        public System.Collections.Generic.IEnumerable<Mono.Cecil.Cil.OpCode> GetOpCodes();
         public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
     }
 }

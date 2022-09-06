@@ -393,7 +393,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 Profiler.BeginSample("CodeModule.Analyzing " + inst.OpCode.Name);
                 foreach (var analyzer in m_Analyzers)
-                    if (analyzer.GetOpCodes().Contains(inst.OpCode))
+                    if (analyzer.opCodes.Contains(inst.OpCode))
                     {
                         Profiler.BeginSample("CodeModule " + analyzer.GetType().Name);
                         var issueBuilder = analyzer.Analyze(caller, inst);
@@ -416,7 +416,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             analyzer.Initialize(this);
             m_Analyzers.Add(analyzer);
-            m_OpCodes.AddRange(analyzer.GetOpCodes());
+            m_OpCodes.AddRange(analyzer.opCodes);
         }
 
         void ProcessCompilerMessages(AssemblyCompilationTask compilationTask, CompilerMessage[] compilerMessages, Action<ProjectIssue> onIssueFound)

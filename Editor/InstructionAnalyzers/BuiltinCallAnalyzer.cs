@@ -17,6 +17,14 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         Dictionary<string, List<ProblemDescriptor>> m_Descriptors; // method name as key, list of type names as value
         Dictionary<string, ProblemDescriptor> m_WholeNamespaceDescriptors; // namespace as key
 
+        readonly OpCode[] m_OpCodes =
+        {
+            OpCodes.Call,
+            OpCodes.Callvirt
+        };
+
+        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+
         public void Initialize(ProjectAuditorModule module)
         {
             var descriptors = ProblemDescriptorLoader.LoadFromJson(ProjectAuditor.DataPath, "ApiDatabase");
@@ -83,12 +91,6 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
             return ProjectIssue.Create(IssueCategory.Code, descriptor)
                 .WithDescription(description);
-        }
-
-        public IEnumerable<OpCode> GetOpCodes()
-        {
-            yield return OpCodes.Call;
-            yield return OpCodes.Callvirt;
         }
     }
 }

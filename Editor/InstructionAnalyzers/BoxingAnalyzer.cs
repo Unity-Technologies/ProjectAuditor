@@ -20,6 +20,13 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             messageFormat = "Conversion from value type '{0}' to ref type"
         };
 
+        readonly OpCode[] m_OpCodes =
+        {
+            OpCodes.Box
+        };
+
+        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_Descriptor);
@@ -56,11 +63,6 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 typeName = "double";
 
             return ProjectIssue.Create(IssueCategory.Code, k_Descriptor, typeName);
-        }
-
-        public IEnumerable<OpCode> GetOpCodes()
-        {
-            yield return OpCodes.Box;
         }
     }
 }

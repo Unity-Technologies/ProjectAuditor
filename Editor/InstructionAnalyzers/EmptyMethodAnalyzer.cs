@@ -21,6 +21,13 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             messageFormat = "MonoBehaviour method '{0}' is empty"
         };
 
+        readonly OpCode[] m_OpCodes =
+        {
+            OpCodes.Ret
+        };
+
+        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_Descriptor);
@@ -44,11 +51,6 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 return null;
 
             return ProjectIssue.Create(IssueCategory.Code, k_Descriptor, methodDefinition.Name);
-        }
-
-        public IEnumerable<OpCode> GetOpCodes()
-        {
-            yield return OpCodes.Ret;
         }
 
         public static ProblemDescriptor GetDescriptor()
