@@ -354,7 +354,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     menuLabel = "Experimental/Packages Version",
                     menuOrder = 106,
                     showRightPanels = true,
-                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Packages
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageVersion
                 });
 
 #if UNITY_2019_1_OR_NEWER
