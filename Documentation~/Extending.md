@@ -43,7 +43,7 @@ namespace MyNamespace
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
-                new PropertyDefinition { type = PropertyType.Filename, name = "File", longName = "The area the issue might have an impact on"}
+                new PropertyDefinition { type = PropertyType.Filename, name = "File"}
             }
         };
 
