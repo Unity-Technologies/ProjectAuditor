@@ -39,10 +39,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override string name => "MetaData";
 
-        public override IEnumerable<IssueLayout> GetLayouts()
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
-            yield return k_IssueLayout;
-        }
+            k_IssueLayout
+        };
 
         public override void Initialize(ProjectAuditorConfig config)
         {

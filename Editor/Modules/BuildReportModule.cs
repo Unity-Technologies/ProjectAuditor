@@ -128,12 +128,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override bool isSupported => false;
 #endif
 
-
-        public override IEnumerable<IssueLayout> GetLayouts()
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
-            yield return k_FileLayout;
-            yield return k_StepLayout;
-        }
+            k_FileLayout,
+            k_StepLayout
+        };
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {

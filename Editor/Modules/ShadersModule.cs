@@ -144,15 +144,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override string name => "Shaders";
 
-        public override IEnumerable<IssueLayout> GetLayouts()
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
-            yield return k_ShaderLayout;
-            yield return k_ShaderVariantLayout;
+            k_ShaderLayout,
+            k_ShaderVariantLayout,
 
 #if UNITY_2019_1_OR_NEWER
-            yield return k_ShaderCompilerMessageLayout;
+            k_ShaderCompilerMessageLayout
 #endif
-        }
+        };
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {

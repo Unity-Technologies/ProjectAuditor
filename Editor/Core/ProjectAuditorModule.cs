@@ -18,17 +18,17 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public virtual bool isSupported => true;
 
+        public virtual IReadOnlyCollection<ProblemDescriptor> supportedDescriptors => Array.Empty<ProblemDescriptor>();
+
+        public abstract IReadOnlyCollection<IssueLayout> supportedLayouts
+        {
+            get;
+        }
+
         public IssueCategory[] GetCategories()
         {
-            return GetLayouts().Select(l => l.category).ToArray();
+            return supportedLayouts.Select(l => l.category).ToArray();
         }
-
-        public virtual IEnumerable<ProblemDescriptor> GetDescriptors()
-        {
-            yield return null;
-        }
-
-        public abstract IEnumerable<IssueLayout> GetLayouts();
 
         public virtual void Initialize(ProjectAuditorConfig config)
         {

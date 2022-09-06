@@ -35,6 +35,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override string name => "Packages";
 
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        {
+            k_PackageLayout
+        };
+
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var request = Client.List();
@@ -60,11 +65,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 package.source
             }).WithDependencies(node);
             issues.Add(packageIssue);
-        }
-
-        public override IEnumerable<IssueLayout> GetLayouts()
-        {
-            yield return k_PackageLayout;
         }
     }
 }

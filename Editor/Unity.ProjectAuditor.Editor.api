@@ -356,11 +356,11 @@ namespace Unity.ProjectAuditor.Editor.Core
         public virtual bool isEnabledByDefault { get; }
         public virtual bool isSupported { get; }
         public abstract string name { get; }
+        public virtual System.Collections.Generic.IReadOnlyCollection<ProblemDescriptor> supportedDescriptors { get; }
+        public abstract System.Collections.Generic.IReadOnlyCollection<IssueLayout> supportedLayouts { get; }
         protected ProjectAuditorModule() {}
         public abstract void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = default(IProgress));
         public IssueCategory[] GetCategories();
-        public virtual System.Collections.Generic.IEnumerable<ProblemDescriptor> GetDescriptors();
-        public abstract System.Collections.Generic.IEnumerable<IssueLayout> GetLayouts();
         public virtual void Initialize(ProjectAuditorConfig config);
         public virtual void RegisterDescriptor(ProblemDescriptor descriptor);
     }

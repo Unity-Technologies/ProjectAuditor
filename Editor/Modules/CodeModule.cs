@@ -118,19 +118,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override string name => "Code";
 
-        public override IEnumerable<ProblemDescriptor> GetDescriptors()
-        {
-            return m_ProblemDescriptors;
-        }
+        public override IReadOnlyCollection<ProblemDescriptor> supportedDescriptors => m_ProblemDescriptors;
 
-        public override IEnumerable<IssueLayout> GetLayouts()
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
-            yield return k_AssemblyLayout;
-            yield return k_PrecompiledAssemblyLayout;
-            yield return k_IssueLayout;
-            yield return k_CompilerMessageLayout;
-            yield return k_GenericIssueLayout;
-        }
+            k_AssemblyLayout,
+            k_PrecompiledAssemblyLayout,
+            k_IssueLayout,
+            k_CompilerMessageLayout,
+            k_GenericIssueLayout,
+        };
 
         public override void Initialize(ProjectAuditorConfig config)
         {

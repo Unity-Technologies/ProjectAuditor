@@ -27,15 +27,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override string name => "Settings";
 
-        public override IEnumerable<ProblemDescriptor> GetDescriptors()
-        {
-            return m_ProblemDescriptors;
-        }
+        public override IReadOnlyCollection<ProblemDescriptor> supportedDescriptors => m_ProblemDescriptors;
 
-        public override IEnumerable<IssueLayout> GetLayouts()
-        {
-            yield return k_IssueLayout;
-        }
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
 
         public override void Initialize(ProjectAuditorConfig config)
         {

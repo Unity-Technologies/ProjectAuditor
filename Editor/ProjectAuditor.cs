@@ -185,12 +185,12 @@ namespace Unity.ProjectAuditor.Editor
 
         internal ProjectAuditorModule GetModule(IssueCategory category)
         {
-            return m_Modules.FirstOrDefault(a => a.isSupported && a.GetLayouts().FirstOrDefault(l => l.category == category) != null);
+            return m_Modules.FirstOrDefault(a => a.isSupported && a.supportedLayouts.FirstOrDefault(l => l.category == category) != null);
         }
 
         internal bool IsModuleSupported(IssueCategory category)
         {
-            return m_Modules.Any(a => a.isSupported && a.GetLayouts().FirstOrDefault(l => l.category == category) != null);
+            return m_Modules.Any(a => a.isSupported && a.supportedLayouts.FirstOrDefault(l => l.category == category) != null);
         }
 
         public IssueCategory[] GetCategories()
@@ -200,7 +200,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public IssueLayout GetLayout(IssueCategory category)
         {
-            var layouts = m_Modules.Where(a => a.isSupported).SelectMany(module => module.GetLayouts()).Where(l => l.category == category);
+            var layouts = m_Modules.Where(a => a.isSupported).SelectMany(module => module.supportedLayouts).Where(l => l.category == category);
             return layouts.FirstOrDefault();
         }
 
