@@ -6,7 +6,7 @@ Project Auditor has been designed to be modular and this guide provides a brief 
 A *module* is a self-contained domain-specific analyzer which reports a list of *issues*.
 
 This is a list of steps to create a module:
-1. Create a new module class that inherits from [ProjectAuditorModule](../Editor/ProjectAuditorModule.cs).
+1. Create a new module class that inherits from [ProjectAuditorModule](../Editor/Core/ProjectAuditorModule.cs).
 2. Define a set of layouts. A layout is used to define name, type and format of the properties of an issue produced by the analysis.
 3. Register any module-specific categories. A category is a name used to classify the same kind of issues. 
 4. Override the *Audit* method. This is where you will implement your analysis.
@@ -20,6 +20,7 @@ Here is an example of a custom module:
 ```
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEditor;
 
@@ -37,10 +38,12 @@ namespace MyNamespace
             }
         };
 
-        public override IEnumerable<IssueLayout> GetLayouts()
+        public override string name => "My Module";
+
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
-            yield return k_IssueLayout;
-        }
+            k_IssueLayout
+        };
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
