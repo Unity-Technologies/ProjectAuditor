@@ -7,7 +7,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     public enum PackageProperty
     {
-        Name = 0,
+        PackageID = 0,
         Version,
         Source,
         Num
@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public enum PackageVersionProperty
     {
-        Name = 0,
+        PackageID = 0,
         CurrentVersion,
         RecommendedVersion,
         Experimental,
@@ -29,8 +29,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.Package,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Display Name", },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Name), format = PropertyFormat.String, name = "Name" },
+                new PropertyDefinition { type = PropertyType.Description, name = "Name", longName = "Package Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.PackageID), format = PropertyFormat.String, name = "ID", longName = "Package ID" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Version), format = PropertyFormat.String, name = "Version" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Source), format = PropertyFormat.String, name = "Source", defaultGroup = true }
             }
@@ -41,27 +41,27 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.PackageVersion,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Display Name"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.Name), format = PropertyFormat.String, name = "Package Name", defaultGroup = true},
+                new PropertyDefinition { type = PropertyType.Description, name = "Name", longName = "Package Name"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.PackageID), format = PropertyFormat.String, name = "ID", longName = "Package ID", defaultGroup = true},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.CurrentVersion), format = PropertyFormat.String, name = "Current Version" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.RecommendedVersion), format = PropertyFormat.String, name = "Recommended Version"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.Experimental), format = PropertyFormat.Bool, name = "Preview" }  //TODO: I feel confused about the Experimental and Preview. Now I use preview first and will discuss this issue with Marco later.
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.Experimental), format = PropertyFormat.Bool, name = "Experimental/Preview" }
             }
         };
 
 
-        static readonly ProblemDescriptor k_recommendPackageUpgrade  = new ProblemDescriptor(
+        static readonly ProblemDescriptor k_RecommendPackageUpgrade  = new ProblemDescriptor(
             "PKG0001",
-            "package name",
-            new[] { Area.BuildSize },   //TODO: here the issue is I can not find the specifc area I need. It might need a other value?
+            "Upgradable packages",
+            new[] { Area.Quality },
             "A newer version of this package is available",
             "we strongly encourage you to update from the Unity Package Manager."
         );
 
-        static readonly ProblemDescriptor k_recommendPackagePreView = new ProblemDescriptor(
+        static readonly ProblemDescriptor k_RecommendPackagePreView = new ProblemDescriptor(
             "PKG0002",
-            "package name",
-            new[] { Area.BuildSize },    //TODO: here the issue is I can not find the specifc area I need. It might need a other value?
+            "Experimental/Preview packages",
+            new[] { Area.Quality },
             "Preview Packages are in the early stages of development and not yet ready for production. We recommend using these only for testing purposes and to give us direct feedback"
         );
 
@@ -110,7 +110,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
             if (result < 0 || isPreview)
             {
-                var packageVersionIssue = ProjectIssue.Create(IssueCategory.PackageVersion, isPreview ? k_recommendPackagePreView : k_recommendPackageUpgrade, package.displayName)
+                var packageVersionIssue = ProjectIssue.Create(IssueCategory.PackageVersion, isPreview ? k_RecommendPackagePreView : k_RecommendPackageUpgrade, package.displayName)
                     .WithCustomProperties(new object[(int)PackageVersionProperty.Num]
                     {
                         package.name,

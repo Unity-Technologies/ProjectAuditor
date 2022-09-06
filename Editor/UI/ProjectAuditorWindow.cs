@@ -351,7 +351,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     category = IssueCategory.PackageVersion,
                     name = "Packages Version",
-                    menuLabel = "Experimental/Packages Version",
+                    menuLabel = "Experimental/Package Version",
                     menuOrder = 106,
                     showRightPanels = true,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Packages
