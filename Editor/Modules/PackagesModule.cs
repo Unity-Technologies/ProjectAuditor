@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Core;
+using UnityEditor;
+
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -36,6 +39,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
+
         static readonly IssueLayout k_PackageVersionLayout = new IssueLayout
         {
             category = IssueCategory.PackageVersion,
@@ -64,6 +68,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             new[] { Area.Quality },
             "Preview Packages are in the early stages of development and not yet ready for production. We recommend using these only for testing purposes and to give us direct feedback"
         );
+
+        public override string name => "Packages";
+
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        {
+            k_PackageLayout,
+            k_PackageVersionLayout
+        };
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
@@ -120,12 +132,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     });
                 issues.Add(packageVersionIssue);
             }
-        }
-
-        public override IEnumerable<IssueLayout> GetLayouts()
-        {
-            yield return k_PackageLayout;
-            yield return k_PackageVersionLayout;
         }
     }
 }

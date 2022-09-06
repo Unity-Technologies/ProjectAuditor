@@ -1,8 +1,7 @@
 using System;
 using System.IO;
 
-
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.Core
 {
     public class HTMLExporter : Exporter
     {

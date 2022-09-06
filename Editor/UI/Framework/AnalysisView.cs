@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -322,7 +323,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawViewOptions()
         {
-            if (!m_Module.IsEnabledByDefault() && m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeNow, EditorStyles.toolbarButton, GUILayout.Width(120)))
+            if (!m_Module.isEnabledByDefault && m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeNow, EditorStyles.toolbarButton, GUILayout.Width(120)))
             {
                 m_ViewManager.onAnalyze(m_Module);
             }

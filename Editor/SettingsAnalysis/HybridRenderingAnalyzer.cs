@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor;
+using Unity.ProjectAuditor.Editor.Core;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {

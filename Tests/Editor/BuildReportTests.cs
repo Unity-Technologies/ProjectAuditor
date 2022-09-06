@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var module = projectAuditor.GetModule<BuildReportModule>();
-            var isSupported = module.IsSupported();
+            var isSupported = module.isSupported;
 #if BUILD_REPORT_API_SUPPORT
             Assert.True(isSupported);
 #else

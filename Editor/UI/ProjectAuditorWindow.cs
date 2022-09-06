@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -258,7 +259,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Asset,
+                category = IssueCategory.Resource,
                 name = "Resources",
                 menuLabel = "Assets/Resources",
                 menuOrder = 1,
@@ -546,7 +547,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         void AuditSingleModule<T>() where T : ProjectAuditorModule
         {
             var module = m_ProjectAuditor.GetModule<T>();
-            if (!module.IsSupported())
+            if (!module.isSupported)
                 return;
 
             AuditSingleModule(module);

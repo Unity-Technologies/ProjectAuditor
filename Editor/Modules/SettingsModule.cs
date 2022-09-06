@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.SettingsAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -24,15 +25,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
         List<ISettingsAnalyzer> m_Analyzers;
         HashSet<ProblemDescriptor> m_ProblemDescriptors;
 
-        public override IEnumerable<ProblemDescriptor> GetDescriptors()
-        {
-            return m_ProblemDescriptors;
-        }
+        public override string name => "Settings";
 
-        public override IEnumerable<IssueLayout> GetLayouts()
-        {
-            yield return k_IssueLayout;
-        }
+        public override IReadOnlyCollection<ProblemDescriptor> supportedDescriptors => m_ProblemDescriptors;
+
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
 
         public override void Initialize(ProjectAuditorConfig config)
         {

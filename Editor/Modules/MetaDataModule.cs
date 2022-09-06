@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.ProjectAuditor.Editor.Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -36,10 +37,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         ProjectAuditorConfig m_Config;
 
-        public override IEnumerable<IssueLayout> GetLayouts()
+        public override string name => "MetaData";
+
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
-            yield return k_IssueLayout;
-        }
+            k_IssueLayout
+        };
 
         public override void Initialize(ProjectAuditorConfig config)
         {

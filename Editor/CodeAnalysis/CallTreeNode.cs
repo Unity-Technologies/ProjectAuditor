@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Mono.Cecil;
+using Unity.ProjectAuditor.Editor.Core;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
