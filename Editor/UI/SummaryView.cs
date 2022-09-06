@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Stats.numBuildSteps += allIssues.Count(i => i.category == IssueCategory.BuildStep);
             m_Stats.numCodeIssues += allIssues.Count(i => i.category == IssueCategory.Code);
             m_Stats.numSettingIssues += allIssues.Count(i => i.category == IssueCategory.ProjectSetting);
-            m_Stats.numResources += allIssues.Count(i => i.category == IssueCategory.Asset);
+            m_Stats.numResources += allIssues.Count(i => i.category == IssueCategory.Resource);
             m_Stats.numShaders += allIssues.Count(i => i.category == IssueCategory.Shader);
             m_Stats.numPackages += allIssues.Count(i => i.category == IssueCategory.Package);
 
@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_Stats.numSettingIssues > 0)
                 DrawSummaryItem("Settings Issues:", m_Stats.numSettingIssues, IssueCategory.ProjectSetting);
             if (m_Stats.numResources > 0)
-                DrawSummaryItem("Assets in Resources folders:", m_Stats.numResources, IssueCategory.Asset);
+                DrawSummaryItem("Assets in Resources folders:", m_Stats.numResources, IssueCategory.Resource);
             if (m_Stats.numShaders > 0)
                 DrawSummaryItem("Shaders in the project:", m_Stats.numShaders, IssueCategory.Shader);
             if (m_Stats.numPackages > 0)

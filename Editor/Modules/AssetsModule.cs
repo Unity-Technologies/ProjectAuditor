@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
-            category = IssueCategory.Asset,
+            category = IssueCategory.Resource,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Asset Name"},
@@ -93,7 +93,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             issues.Add(ProjectIssue.Create
                 (
-                    IssueCategory.Asset,
+                    IssueCategory.Resource,
                     Path.GetFileNameWithoutExtension(location.Path)
                 )
                 .WithDependencies(dependencyNode)

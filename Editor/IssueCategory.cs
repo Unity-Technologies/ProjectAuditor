@@ -6,7 +6,7 @@ namespace Unity.ProjectAuditor.Editor
     public enum IssueCategory
     {
         MetaData,
-        Asset,
+        Resource,
         Shader,
         ShaderVariant,
         Code,

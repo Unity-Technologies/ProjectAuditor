@@ -259,7 +259,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Asset,
+                category = IssueCategory.Resource,
                 name = "Resources",
                 menuLabel = "Assets/Resources",
                 menuOrder = 1,
