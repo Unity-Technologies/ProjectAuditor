@@ -350,8 +350,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ViewDescriptor.Register(new ViewDescriptor
                 {
                     category = IssueCategory.PackageVersion,
-                    name = "Packages Version",
-                    menuLabel = "Experimental/Packages Version",
+                    name = "Package Version",
+                    menuLabel = "Experimental/Package Version",
                     menuOrder = 106,
                     showRightPanels = true,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageVersion
