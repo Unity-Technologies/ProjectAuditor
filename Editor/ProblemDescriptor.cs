@@ -36,12 +36,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Load times
         /// </summary>
-        LoadTime,
-
-        /// <summary>
-        /// Quality
-        /// </summary>
-        Quality
+        LoadTime
     }
 
     /// <summary>
