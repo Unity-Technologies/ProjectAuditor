@@ -28,17 +28,31 @@ namespace MyNamespace
 {
     class MyModule : ProjectAuditorModule
     {
+        private static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
+        (
+            "PAT0000",
+            "Test Descriptor",
+            Area.Memory,
+            "Explanation of the problem.",
+            "Explanation of potential solution."
+        );
+
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
             category = ProjectAuditor.GetOrRegisterCategory("New Category"),
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
-                new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"}
+                new PropertyDefinition { type = PropertyType.Filename, name = "File", longName = "The area the issue might have an impact on"}
             }
         };
 
         public override string name => "My Module";
+
+        public override IReadOnlyCollection<ProblemDescriptor> supportedDescriptors => new ProblemDescriptor[]
+        {
+            k_Descriptor
+        };
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
@@ -47,19 +61,21 @@ namespace MyNamespace
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            // Implement your analysis here
+            // Implement your analysis here and issue reporting
 
-            // Create an issue
-            var issues = new List<ProjectIssue>()
-            
-            issues.Add(ProjectIssue.Create(k_IssueLayout.category, "This is a test"))
-            // add more issues...
+            var issues = new List<ProjectIssue>();
 
-            if (issues.Count() > 0)
-              projectAuditorParams.onIncomingIssues(issues);
+            // Create a diagnostic issue
+            var diagnostic = ProjectIssue.Create(k_IssueLayout.category, k_Descriptor)
+                .WithLocation("MyFile.cs", 0);
+
+            issues.Add(diagnostic);
+
+            if (issues.Count > 0)
+                projectAuditorParams.onIncomingIssues(issues);
 
             // Notify that the analysis of this module is completed
-            projectAuditorParams.onComplete();
+            projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
         [InitializeOnLoadMethod]
