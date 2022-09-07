@@ -324,6 +324,31 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 ViewDescriptor.Register(new ViewDescriptor
                 {
+//                    type = typeof(ShaderVariantsView),
+                    category = IssueCategory.ComputeShaderVariant,
+                    name = "Compute Shader Variants",
+                    menuOrder = 3,
+                    menuLabel = "Experimental/Compute Shader Variants",
+                    showFilters = true,
+                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                    onDrawToolbar = (viewManager) =>
+                    {
+                        GUILayout.FlexibleSpace();
+
+                        AnalysisView.DrawToolbarButton(Contents.Refresh, () => Instance.AnalyzeShaderVariants());
+                        AnalysisView.DrawToolbarButton(Contents.Clear, () => Instance.ClearShaderVariants());
+                        /*
+                        GUILayout.FlexibleSpace();
+
+                        AnalysisView.DrawToolbarButton(Contents.ShaderCompilerMessages, () => viewManager.ChangeView(IssueCategory.ShaderCompilerMessage));
+                        AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
+                    */
+                    },
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ComputeShaderVariants
+                });
+
+                ViewDescriptor.Register(new ViewDescriptor
+                {
                     category = IssueCategory.GenericInstance,
                     name = "Generics",
                     menuLabel = "Experimental/Generic Types Instantiation",

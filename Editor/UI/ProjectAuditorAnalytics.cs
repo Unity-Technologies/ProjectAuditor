@@ -53,7 +53,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             Assemblies,
             ShaderCompilerMessages,
             PrecompiledAssemblies,
-            Packages
+            Packages,
+            ComputeShaderVariants,
         }
 
         // -------------------------------------------------------------------------------------------------------------

@@ -1,3 +1,8 @@
+#if UNITY_2020_1_OR_NEWER
+    #define COMPUTE_SHADER_ANALYSIS
+#endif
+
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,6 +45,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
+    public enum ComputeShaderVariantProperty
+    {
+        Kernel = 0,
+        Keywords,
+        Num
+    }
     public enum ShaderMessageProperty
     {
         ShaderName = 0,
@@ -66,6 +77,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public ShaderCompilerPlatform compilerPlatform;
     }
 
+    class ComputeShaderVariantData
+    {
+        public string kernelName;
+        public string[] keywords;
+        //public string[] platformKeywords;
+        //public ShaderRequirements[] requirements;
+        //public GraphicsTier graphicsTier;
+        //public ShaderCompilerPlatform compilerPlatform;
+    }
+
     class CompiledVariantData
     {
         public string pass;
@@ -75,6 +96,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class ShadersModule : ProjectAuditorModule
         , IPreprocessShaders
+#if COMPUTE_SHADER_ANALYSIS
+        , IPreprocessComputeShaders
+#endif
     {
         static readonly IssueLayout k_ShaderLayout = new IssueLayout
         {
@@ -101,16 +125,63 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.ShaderVariant,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Shader Name", defaultGroup = true},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Compiled), format = PropertyFormat.Bool, name = "Compiled", longName = "Compiled at runtime by the player" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Platform), format = PropertyFormat.String, name = "Graphics API" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Tier), format = PropertyFormat.String, name = "Tier" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Stage), format = PropertyFormat.String, name = "Stage" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PassType), format = PropertyFormat.String, name = "Pass Type" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PassName), format = PropertyFormat.String, name = "Pass Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Keywords), format = PropertyFormat.String, name = "Keywords" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PlatformKeywords), format = PropertyFormat.String, name = "Platform Keywords" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Requirements), format = PropertyFormat.String, name = "Requirements" }
+                new PropertyDefinition { type = PropertyType.Description, name = "Shader Name", defaultGroup = true },
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Compiled), format = PropertyFormat.Bool,
+                    name = "Compiled", longName = "Compiled at runtime by the player"
+                },
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Platform), format = PropertyFormat.String,
+                    name = "Graphics API"
+                },
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Tier), format = PropertyFormat.String,
+                    name = "Tier"
+                },
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Stage), format = PropertyFormat.String,
+                    name = "Stage"
+                },
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PassType), format = PropertyFormat.String,
+                    name = "Pass Type"
+                },
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PassName), format = PropertyFormat.String,
+                    name = "Pass Name"
+                },
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Keywords), format = PropertyFormat.String,
+                    name = "Keywords"
+                },
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PlatformKeywords),
+                    format = PropertyFormat.String, name = "Platform Keywords"
+                },
+                new PropertyDefinition
+                {
+                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Requirements),
+                    format = PropertyFormat.String, name = "Requirements"
+                }
+            }
+        };
+
+        static readonly IssueLayout k_ComputeShaderVariantLayout = new IssueLayout
+        {
+            category = IssueCategory.ComputeShaderVariant,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Shader Name", defaultGroup = true },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Kernel), format = PropertyFormat.String, name = "Kernel" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Keywords), format = PropertyFormat.String, name = "Keywords" },
             }
         };
 
@@ -140,7 +211,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string k_NotAvailable = "This feature is requires a build.";
         internal const string k_Unknown = "Unknown";
 
-        static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData = new Dictionary<Shader, List<ShaderVariantData>>();
+        static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData =
+            new Dictionary<Shader, List<ShaderVariantData>>();
+#if COMPUTE_SHADER_ANALYSIS
+        static Dictionary<ComputeShader, List<ComputeShaderVariantData>> s_ComputeShaderVariantData =
+            new Dictionary<ComputeShader, List<ComputeShaderVariantData>>();
+#endif
 
         public override string name => "Shaders";
 
@@ -149,12 +225,26 @@ namespace Unity.ProjectAuditor.Editor.Modules
             k_ShaderLayout,
             k_ShaderVariantLayout,
 
+#if COMPUTE_SHADER_ANALYSIS
+            k_ComputeShaderVariantLayout,
+#endif
+
 #if UNITY_2019_1_OR_NEWER
             k_ShaderCompilerMessageLayout
 #endif
         };
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        {
+            var shaderPathMap = CollectShaders();
+            ProcessShaders(shaderPathMap, projectAuditorParams.onIncomingIssues);
+
+            ProcessComputeShaders(projectAuditorParams.onIncomingIssues);
+
+            projectAuditorParams.onModuleCompleted?.Invoke();
+        }
+
+        Dictionary<Shader, string> CollectShaders()
         {
             var shaderPathMap = new Dictionary<Shader, string>();
             var shaderGuids = AssetDatabase.FindAssets("t:shader");
@@ -182,15 +272,39 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 shaderPathMap.Add(shader, assetPath);
             }
 
+            var builtShaderPaths = GetBuiltShaderPaths();
+
+            foreach (var builtShader in builtShaderPaths)
+            {
+                if (!shaderPathMap.ContainsKey(builtShader.Key))
+                {
+                    shaderPathMap.Add(builtShader.Key, builtShader.Value);
+                }
+            }
+
+            return shaderPathMap;
+        }
+
+        static Dictionary<Shader, string> GetBuiltShaderPaths()
+        {
+            // note this will find hidden shaders too
+            return s_ShaderVariantData.Select(variant => variant.Key)
+                .Where(shader => shader != null) // skip shader if it's been removed since the last build
+                .ToDictionary(s => s, AssetDatabase.GetAssetPath);
+        }
+
+        static HashSet<Shader> GetAlwaysIncludedShaders()
+        {
             var alwaysIncludedShaders = new HashSet<Shader>();
             var graphicsSettings = Unsupported.GetSerializedAssetInterfaceSingleton("GraphicsSettings");
             var graphicsSettingsSerializedObject = new SerializedObject(graphicsSettings);
-            var alwaysIncludedShadersSerializedProperty = graphicsSettingsSerializedObject.FindProperty("m_AlwaysIncludedShaders");
+            var alwaysIncludedShadersSerializedProperty =
+                graphicsSettingsSerializedObject.FindProperty("m_AlwaysIncludedShaders");
 
-            var issues = new List<ProjectIssue>();
             for (var i = 0; i < alwaysIncludedShadersSerializedProperty.arraySize; i++)
             {
-                var shader = (Shader)alwaysIncludedShadersSerializedProperty.GetArrayElementAtIndex(i).objectReferenceValue;
+                var shader = (Shader)alwaysIncludedShadersSerializedProperty.GetArrayElementAtIndex(i)
+                    .objectReferenceValue;
 
                 // sanity check, maybe the shader was removed/deleted
                 if (shader == null)
@@ -200,38 +314,27 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     alwaysIncludedShaders.Add(shader);
                 }
-                if (!shaderPathMap.ContainsKey(shader))
-                {
-                    var assetPath = AssetDatabase.GetAssetPath(shader);
-
-                    shaderPathMap.Add(shader, assetPath);
-                }
             }
 
-            // find hidden shaders
-            var shadersInBuild = s_ShaderVariantData.Select(variant => variant.Key);
-            foreach (var shader in shadersInBuild)
-            {
-                // skip shader if it's been removed since the last build
-                if (shader == null)
-                    continue;
+            return alwaysIncludedShaders;
+        }
 
-                if (!shaderPathMap.ContainsKey(shader))
-                {
-                    var assetPath = AssetDatabase.GetAssetPath(shader);
+        void ProcessShaders(Dictionary<Shader, string> shaderPathMap,
+            Action<IEnumerable<ProjectIssue>> onIncomingIssues)
+        {
+            var issues = new List<ProjectIssue>();
 
-                    shaderPathMap.Add(shader, assetPath);
-                }
-            }
-
+            var alwaysIncludedShaders = GetAlwaysIncludedShaders();
             var buildReportInfoAvailable = false;
 #if BUILD_REPORT_API_SUPPORT
             var packetAssetInfos = new PackedAssetInfo[0];
             var buildReport = BuildReportModule.BuildReportProvider.GetBuildReport();
             if (buildReport != null)
             {
-                packetAssetInfos = buildReport.packedAssets.SelectMany(packedAsset => packedAsset.contents).Where(c => c.type == typeof(UnityEngine.Shader)).ToArray();
+                packetAssetInfos = buildReport.packedAssets.SelectMany(packedAsset => packedAsset.contents)
+                    .Where(c => c.type == typeof(UnityEngine.Shader)).ToArray();
             }
+
             buildReportInfoAvailable = packetAssetInfos.Length > 0;
 #endif
             var sortedShaders = shaderPathMap.Keys.ToList().OrderBy(shader => shader.name);
@@ -258,9 +361,32 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             if (issues.Any())
-                projectAuditorParams.onIncomingIssues(issues);
-            projectAuditorParams.onModuleCompleted?.Invoke();
+                onIncomingIssues(issues);
         }
+
+#if COMPUTE_SHADER_ANALYSIS
+        void ProcessComputeShaders(Action<IEnumerable<ProjectIssue>> onIncomingIssues)
+        {
+            var issues = new List<ProjectIssue>();
+
+            foreach (var data in s_ComputeShaderVariantData)
+            {
+                var computeShaderName = data.Key.name;
+                foreach (var variantData in data.Value)
+                {
+                    issues.Add(ProjectIssue.Create(k_ComputeShaderVariantLayout.category, computeShaderName)
+                        .WithCustomProperties(new[]
+                        {
+                            variantData.kernelName,
+                            CombineKeywords(variantData.keywords),
+                        }));
+                }
+            }
+            if (issues.Any())
+                onIncomingIssues(issues);
+        }
+
+#endif
 
         void AddShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)
         {
@@ -383,6 +509,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static void ClearBuildData()
         {
             s_ShaderVariantData.Clear();
+            s_ComputeShaderVariantData.Clear();
 #if UNITY_2021_1_OR_NEWER
             var playerDataCachePath = Path.Combine("Library", "PlayerDataCache");
             if (Directory.Exists(playerDataCachePath))
@@ -393,6 +520,29 @@ namespace Unity.ProjectAuditor.Editor.Modules
         }
 
         public int callbackOrder { get { return Int32.MaxValue; } }
+
+#if COMPUTE_SHADER_ANALYSIS
+        public void OnProcessComputeShader(ComputeShader shader, string kernelName, IList<ShaderCompilerData> data)
+        {
+            if (!s_ComputeShaderVariantData.ContainsKey(shader))
+            {
+                s_ComputeShaderVariantData.Add(shader, new List<ComputeShaderVariantData>());
+            }
+
+            foreach (var shaderCompilerData in data)
+            {
+                s_ComputeShaderVariantData[shader].Add(new ComputeShaderVariantData
+                {
+                    kernelName = kernelName,
+                    keywords = shaderCompilerData.shaderKeywordSet.GetShaderKeywords().Select(keyword => keyword.name).ToArray(),
+                    platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
+                    compilerPlatform = shaderCompilerData.shaderCompilerPlatform
+                });
+            }
+        }
+
+#endif
+
         public void OnProcessShader(Shader shader, ShaderSnippetData snippet, IList<ShaderCompilerData> data)
         {
             if (!s_ShaderVariantData.ContainsKey(shader))
