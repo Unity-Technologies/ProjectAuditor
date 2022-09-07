@@ -13,7 +13,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     public enum AudioClipProperty
     {
-        Format,             //AudioImporter
         ForceToMono,        //AudioImporter
         LoadInBackground,   //AudioImporter
         PreloadAudioData,   //AudioImporter
@@ -30,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.Format), format = PropertyFormat.String, name = "Format", defaultGroup = true },
+                new PropertyDefinition { type = PropertyType.FileType, name = "Format", defaultGroup = true },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.ForceToMono), format = PropertyFormat.Bool, name = "Force To Mono"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadInBackground), format = PropertyFormat.Bool, name = "Load In Background"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.PreloadAudioData), format = PropertyFormat.Bool, name = "Preload AudioData" },
@@ -57,7 +56,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var importer = AssetImporter.GetAtPath(path) as AudioImporter;
                 var audioClipIssue = ProjectIssue.Create(IssueCategory.AudioClip, Path.GetFileNameWithoutExtension(path)).WithCustomProperties(new object[(int)AudioClipProperty.Num]
                 {
-                    Path.GetExtension(path).Substring(1),
                     importer.forceToMono,
                     importer.loadInBackground,
                     importer.preloadAudioData,
