@@ -11,6 +11,9 @@ namespace Unity.ProjectAuditor.Editor
         GPU = 1,
         LoadTime = 5,
         Memory = 2,
+        Quality = 6,
+        Requirement = 8,
+        Support = 7,
     }
 
     public interface IProgress
