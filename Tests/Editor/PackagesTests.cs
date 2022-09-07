@@ -2,11 +2,34 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Modules;
+using UnityEditor.Compilation;
+using UnityEditor.PackageManager;
+using UnityEditor.PackageManager.Requests;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     class PackagesTests : TestFixtureBase
     {
+        [OneTimeSetUp]
+        public void SetUp()
+        {
+            AddRequest AddRequest = Client.Add("com.unity.2d.pixel-perfect@3.0.2");
+            while (AddRequest.Status != StatusCode.Success) {}
+            AddRequest = Client.Add("com.unity.services.vivox");
+            while (AddRequest.Status != StatusCode.Success) {}
+            //CompilationPipeline.RequestScriptCompilation();   //Use this function to make the Unity Editor recompile every Script in your Project asynchronously. When the compilation finishes, the Unity Editor then loads the compiled assemblies. https://docs.unity3d.com/2020.1/Documentation/ScriptReference/Compilation.CompilationPipeline.RequestScriptCompilation.html
+        }
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            //TODO: the issue is: the package can be insstalled without compiling. After run the test, PackageManagement can not uninstalled it (becasue the package does not compile.）
+            //RemoveRequest removeRequest = Client.Remove("com.unity.2d.pixel-perfect@3.0.2");
+            //while (removeRequest.Status != StatusCode.Success) {}
+            //removeRequest = Client.Remove("com.unity.services.vivox");
+            //while (removeRequest.Status != StatusCode.Success) { }
+        }
+
         [Test]
         public void InstalledPackages_AreValid()
         {
@@ -46,6 +69,32 @@ namespace Unity.ProjectAuditor.EditorTests
                     Assert.IsTrue(matchIssue.dependencies.GetChild(i).GetName().Contains(dependencies[i]), "Package: " + description);
                 }
             }
+        }
+
+        [Test]
+        public void RecommandedUpgradePackage_IsReproted()
+        {
+            var issuePackages = Analyze(IssueCategory.PackageVersion);
+            var matchIssue = issuePackages.FirstOrDefault(issue => issue.customProperties[0] == "com.unity.2d.pixel-perfect");
+
+            Assert.IsNotNull(matchIssue, "Cannot find the upgrade pacakge: com.unity.2d.pixel-perfect");
+            Assert.AreEqual(matchIssue.customProperties[0], "com.unity.2d.pixel-perfect");
+            Assert.AreEqual(matchIssue.customProperties[1], "3.0.2");
+            Assert.AreEqual(matchIssue.customProperties[2], "4.0.1");
+            Assert.AreEqual(matchIssue.customProperties[3], "False");
+        }
+
+        [Test]
+        public void RecommandedPreviewPackage_IsReproted()
+        {
+            var issuePackages = Analyze(IssueCategory.PackageVersion);
+            var matchIssue = issuePackages.FirstOrDefault(issue => issue.customProperties[0] == "com.unity.services.vivox");
+
+            Assert.IsNotNull(matchIssue, "Cannot find the upgrade pacakge: com.unity.services.vivox");
+            Assert.AreEqual(matchIssue.customProperties[0], "com.unity.services.vivox");
+            Assert.AreEqual(matchIssue.customProperties[1], "15.1.180001-pre.5");
+            Assert.AreEqual(matchIssue.customProperties[2], "");
+            Assert.AreEqual(matchIssue.customProperties[3], "True");
         }
     }
 }
