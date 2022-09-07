@@ -324,12 +324,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 ViewDescriptor.Register(new ViewDescriptor
                 {
-//                    type = typeof(ShaderVariantsView),
+                    type = typeof(ShaderVariantsView),
                     category = IssueCategory.ComputeShaderVariant,
                     name = "Compute Shader Variants",
                     menuOrder = 3,
                     menuLabel = "Experimental/Compute Shader Variants",
                     showFilters = true,
+                    showInfoPanel = true,
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     onDrawToolbar = (viewManager) =>
                     {
@@ -337,12 +338,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                         AnalysisView.DrawToolbarButton(Contents.Refresh, () => Instance.AnalyzeShaderVariants());
                         AnalysisView.DrawToolbarButton(Contents.Clear, () => Instance.ClearShaderVariants());
-                        /*
-                        GUILayout.FlexibleSpace();
-
-                        AnalysisView.DrawToolbarButton(Contents.ShaderCompilerMessages, () => viewManager.ChangeView(IssueCategory.ShaderCompilerMessage));
-                        AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
-                    */
                     },
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ComputeShaderVariants
                 });

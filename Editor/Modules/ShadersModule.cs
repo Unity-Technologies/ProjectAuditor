@@ -364,9 +364,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 onIncomingIssues(issues);
         }
 
-#if COMPUTE_SHADER_ANALYSIS
         void ProcessComputeShaders(Action<IEnumerable<ProjectIssue>> onIncomingIssues)
         {
+#if COMPUTE_SHADER_ANALYSIS
             var issues = new List<ProjectIssue>();
 
             foreach (var data in s_ComputeShaderVariantData)
@@ -384,9 +384,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
             if (issues.Any())
                 onIncomingIssues(issues);
-        }
-
 #endif
+        }
 
         void AddShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)
         {
@@ -509,7 +508,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static void ClearBuildData()
         {
             s_ShaderVariantData.Clear();
+#if COMPUTE_SHADER_ANALYSIS
             s_ComputeShaderVariantData.Clear();
+#endif
+
 #if UNITY_2021_1_OR_NEWER
             var playerDataCachePath = Path.Combine("Library", "PlayerDataCache");
             if (Directory.Exists(playerDataCachePath))
@@ -534,9 +536,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 s_ComputeShaderVariantData[shader].Add(new ComputeShaderVariantData
                 {
                     kernelName = kernelName,
-                    keywords = shaderCompilerData.shaderKeywordSet.GetShaderKeywords().Select(keyword => keyword.name).ToArray(),
-                    platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
-                    compilerPlatform = shaderCompilerData.shaderCompilerPlatform
+                    keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
                 });
             }
         }
@@ -733,6 +733,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return keywords.ToArray();
         }
 
+#if COMPUTE_SHADER_ANALYSIS
+        static string[] GetShaderKeywords(ComputeShader shader, ShaderKeyword[] shaderKeywords)
+        {
+#if UNITY_2021_2_OR_NEWER
+            var keywords = shaderKeywords.Select(keyword => keyword.name);
+#elif UNITY_2019_3_OR_NEWER
+            var keywords = shaderKeywords.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ? ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword));
+#else
+            var keywords = shaderKeywords.Select(keyword => keyword.GetKeywordName());
+#endif
+            return keywords.ToArray();
+        }
+
+#endif
         static string[] SplitKeywords(string keywordsString, string separator = null)
         {
             if (keywordsString.Equals(k_NoKeywords))

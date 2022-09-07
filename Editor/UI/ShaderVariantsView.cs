@@ -169,7 +169,7 @@ To record and view the Shader Variants for this project, follow these steps:
             EditorGUILayout.LabelField(k_BuildInstructions, SharedStyles.TextArea);
             EditorGUILayout.HelpBox(k_ClearInstructions, MessageType.Warning);
 
-            if (numIssues > 0)
+            if (numIssues > 0 && m_Desc.category == IssueCategory.ShaderVariant)
             {
                 EditorGUILayout.LabelField(k_PlayerLogInstructions, SharedStyles.TextArea);
                 if (!GraphicsSettingsProxy.logShaderCompilationSupported)
@@ -245,6 +245,9 @@ To record and view the Shader Variants for this project, follow these steps:
         {
             if (!base.Match(issue))
                 return false;
+            if (m_Desc.category == IssueCategory.ComputeShaderVariant)
+                return true;
+
             var compiled = issue.GetCustomPropertyAsBool(ShaderVariantProperty.Compiled);
             if (compiled && m_ShowCompiledVariants)
                 return true;
