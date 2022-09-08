@@ -22,19 +22,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class TextureModule : ProjectAuditorModule
     {
-        public static string[] searchTheseFolders;
-        public TextureImporter TextProp;
-
         private static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
             category = IssueCategory.Texture,
             properties = new[]
             {
                 new PropertyDefinition {type = PropertyTypeUtil.FromCustom(TextureProperties.Name), format = PropertyFormat.String, name = "Name", longName = "Texture Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Shape), format = PropertyFormat.String, name = "TextureShape", longName = "Texture Shape" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Shape), format = PropertyFormat.String, name = "Shape", longName = "Texture Shape" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.ImporterType), format = PropertyFormat.String, name = "Importer Type", longName = "Texture Importer Type" },
                 new PropertyDefinition {type = PropertyTypeUtil.FromCustom(TextureProperties.Format), format = PropertyFormat.String, name = "Format", longName = "Texture Format" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.TextureCompression), format = PropertyFormat.String, name = "Compression Used?", longName = "Texture Compression" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.TextureCompression), format = PropertyFormat.String, name = "Compression", longName = "Texture Compression" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.MipMapEnabled), format = PropertyFormat.Bool, name = "MipMaps", longName = "Texture MipMaps Enabled" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Readable), format = PropertyFormat.Bool, name = "Readable", longName = "Readable" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Resolution), format = PropertyFormat.String, name = "Resolution", longName = "Texture Resolution" },
@@ -56,7 +53,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var pathToTexture = AssetDatabase.GUIDToAssetPath(aTexture);
                 var tName = (Texture2D)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture2D));
                 var tSize = Profiler.GetRuntimeMemorySizeLong(tName);
-                TextureImporter t = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
+                var t = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
+                var location = new Location(pathToTexture);
                 var issue = ProjectIssue.Create(k_IssueLayout.category, tName.name).WithCustomProperties(new object[((int)TextureProperties.Num)]
                 {
                     tName.name,
@@ -69,10 +67,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     #if UNITY_2021_2_OR_NEWER
                     t.GetSourceTextureWidthAndHeight.width + "x" + t.GetSourceTextureWidthAndHeight.height, //Not avail before Unity 2021.2
                    #else
-                    (tName.width + "x" + tName.height),
+                    tSize,
                    #endif
                     Utils.Formatting.FormatSize((byte)tSize),
-                });
+                })
+                    .WithLocation(location);
 
                 issues.Add(issue);
 

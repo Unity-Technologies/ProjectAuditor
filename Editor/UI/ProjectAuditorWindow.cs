@@ -372,10 +372,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                     menuLabel = "Texture/Diagnostics",
                     menuOrder = 6,
                     showInfoPanel = true,
-                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Texture
+                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
                 });
-
-
 #endif
 
                 ViewDescriptor.Register(new ViewDescriptor
