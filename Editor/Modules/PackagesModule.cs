@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
 
         static readonly ProblemDescriptor k_RecommendPackageUpgrade  = new ProblemDescriptor(
-            "PKG0001",
+            "PAP0001",
             "Upgradable packages",
             new[] { Area.Quality },
             "A newer version of this package is available",
@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         );
 
         static readonly ProblemDescriptor k_RecommendPackagePreView = new ProblemDescriptor(
-            "PKG0002",
+            "PAP0002",
             "Experimental/Preview packages",
             new[] { Area.Quality },
             "Preview Packages are in the early stages of development and not yet ready for production. We recommend using these only for testing purposes and to give us direct feedback"

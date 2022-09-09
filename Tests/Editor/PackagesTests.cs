@@ -75,11 +75,13 @@ namespace Unity.ProjectAuditor.EditorTests
             var issuePackages = Analyze(IssueCategory.PackageVersion);
             var matchIssue = issuePackages.FirstOrDefault(issue => issue.customProperties[0] == "com.unity.2d.pixel-perfect");
 
-            Assert.IsNotNull(matchIssue, "Cannot find the upgrade pacakge: com.unity.2d.pixel-perfect");
-            Assert.AreEqual(matchIssue.customProperties[0], "com.unity.2d.pixel-perfect");
-            Assert.AreEqual(matchIssue.customProperties[1], "3.0.2");
-            Assert.AreEqual(matchIssue.customProperties[2], "4.0.1");
-            Assert.AreEqual(matchIssue.customProperties[3], "False");
+            Assert.IsNotNull(matchIssue, "Cannot find the upgrade package: com.unity.2d.pixel-perfect");
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.PackageID), "com.unity.2d.pixel-perfect");
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.CurrentVersion), "3.0.2");
+            var currentVersion = System.Version.Parse(matchIssue.GetCustomProperty(PackageVersionProperty.CurrentVersion));
+            var recommendedVersion = System.Version.Parse(matchIssue.GetCustomProperty(PackageVersionProperty.RecommendedVersion));
+            Assert.IsTrue(recommendedVersion.CompareTo(currentVersion) > 0, "The recommended version is wrong");
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.Experimental), "False");
         }
 
         [Test]
@@ -88,11 +90,11 @@ namespace Unity.ProjectAuditor.EditorTests
             var issuePackages = Analyze(IssueCategory.PackageVersion);
             var matchIssue = issuePackages.FirstOrDefault(issue => issue.customProperties[0] == "com.unity.services.vivox");
 
-            Assert.IsNotNull(matchIssue, "Cannot find the upgrade pacakge: com.unity.services.vivox");
-            Assert.AreEqual(matchIssue.customProperties[0], "com.unity.services.vivox");
-            Assert.AreEqual(matchIssue.customProperties[1], "15.1.180001-pre.5");
-            Assert.AreEqual(matchIssue.customProperties[2], "");
-            Assert.AreEqual(matchIssue.customProperties[3], "True");
+            Assert.IsNotNull(matchIssue, "Cannot find the upgrade package: com.unity.services.vivox");
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.PackageID), "com.unity.services.vivox");
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.CurrentVersion), "15.1.180001-pre.5");
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.RecommendedVersion), "");
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.Experimental), "True");
         }
     }
 }
