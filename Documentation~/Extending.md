@@ -7,13 +7,14 @@ A *module* is a self-contained domain-specific analyzer which reports a list of 
 
 This is a list of steps to create a module:
 1. Create a new module class that inherits from [ProjectAuditorModule](../Editor/Core/ProjectAuditorModule.cs).
-2. Define a set of layouts. A layout is used to define name, type and format of the properties of an issue produced by the analysis.
-3. Register any module-specific categories. A category is a name used to classify the same kind of issues. 
-4. Override the *Audit* method. This is where you will implement your analysis.
+2. Override the *name* property, which returns a user-fiendly module name.
+3. Override the *supportedLayouts* property to return a collection of supported layouts. Note that a layout is used to define name, type and format of the properties of an issue produced by the analysis.
+4. If applicable, override the *supportedDescriptors* property to return a collection of supported descriptors. This can be skipped for the module does not report diagnostics.
+5. Register any module-specific categories via *ProjectAuditor.GetOrRegisterCategory*. Note that a category is a unique name used to classify the same kind of issues. 
+6. Override the *Audit* method. This is where you will implement your analysis.
    1. Create [ProjectIssue](../Editor/ProjectIssue.cs) objects, if any
    2. Use the *onIncomingIssues* to report a batch of issues, if any. This can be used multiple times inside a module.
    3. Use the *onModuleCompleted* to notify that the module has finished its analysis.
-5. Override the *GetLayouts* method. This returns a collection of layouts supported by the module.
 6. Register a [ViewDescriptor](../Editor/UI/Framework/ViewDescriptor.cs) for the module. This is used to display the module issues in the UI.
 
 Here is an example of a custom module:
