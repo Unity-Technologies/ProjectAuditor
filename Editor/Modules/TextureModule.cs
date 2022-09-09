@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.Core;
 using UnityEngine.Profiling;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 
 
 namespace Unity.ProjectAuditor.Editor.Modules

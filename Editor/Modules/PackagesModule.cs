@@ -109,17 +109,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var result = 0;
             var isPreview = false;
-            if (!String.IsNullOrEmpty(package.version) && !String.IsNullOrEmpty(package.versions.verified))
+
+            if (package.version.Contains("pre") || package.version.Contains("exp"))
+            {
+                isPreview = true;
+            }
+
+            if (!isPreview && !String.IsNullOrEmpty(package.version) && !String.IsNullOrEmpty(package.versions.verified))
             {
                 var currentVersion = new Version(package.version);
                 var recommendedVersion = new Version(package.versions.verified);
                 result = currentVersion.CompareTo(recommendedVersion);
             }
 
-            if (package.version.Contains("pre") || package.version.Contains("exp"))
-            {
-                isPreview = true;
-            }
+
             if (result < 0 || isPreview)
             {
                 var packageVersionIssue = ProjectIssue.Create(IssueCategory.PackageVersion, isPreview ? k_RecommendPackagePreView : k_RecommendPackageUpgrade, package.displayName)
