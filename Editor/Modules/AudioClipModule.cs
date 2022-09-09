@@ -41,13 +41,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var issues = new List<ProjectIssue>();
-            AnalyzeAudioClip(issues);
+            AnalyzeAudioClip(issues, projectAuditorParams.platform);
             if (issues.Count > 0)
                 projectAuditorParams.onIncomingIssues(issues);
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
-        private void AnalyzeAudioClip(List<ProjectIssue> issues)
+        private void AnalyzeAudioClip(List<ProjectIssue> issues, BuildTarget platform)
         {
             var GUIDsAudioClip = AssetDatabase.FindAssets("t:AudioClip");
             foreach (var guid in GUIDsAudioClip)
@@ -59,8 +59,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     importer.forceToMono,
                     importer.loadInBackground,
                     importer.preloadAudioData,
-                    importer.defaultSampleSettings.loadType,
-                    importer.defaultSampleSettings.compressionFormat
+                    importer.GetOverrideSampleSettings(platform.ToString()).loadType,
+                    importer.GetOverrideSampleSettings(platform.ToString()).compressionFormat
                 }).WithLocation(path);
                 issues.Add(audioClipIssue);
             }
