@@ -54,6 +54,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ShaderCompilerMessages,
             PrecompiledAssemblies,
             Packages,
+            PackageVersion,
             AudioClip
         }
 
@@ -205,6 +206,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "load";
                 case UIButton.Packages:
                     return "packages";
+                case UIButton.PackageVersion:
+                    return "package_version";
                 case UIButton.AudioClip:
                     return "audioClip";
                 default:

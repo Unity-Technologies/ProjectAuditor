@@ -7,17 +7,17 @@ using UnityEditor.PackageManager.Requests;
 using System.Linq;
 using UnityEditor;
 using System.IO;
-
+using Unity.ProjectAuditor.Editor.Core;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
     public enum AudioClipProperty
     {
-        ForceToMono,        //AudioImporter
-        LoadInBackground,   //AudioImporter
-        PreloadAudioData,   //AudioImporter
-        LoadType,           //AudioImporter.defaultSampleSettings
-        CompressionFormat,  //AudioImporter.defaultSampleSettings
+        ForceToMono = 0,
+        LoadInBackground,
+        PreloadAudioData,
+        LoadType,
+        CompressionFormat,
         Num
     }
 
@@ -38,6 +38,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"}
             }
         };
+
+        public override string name => "AudioClip";
+
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        {
+            k_AudioClipLayout,
+        };
+
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var issues = new List<ProjectIssue>();
@@ -70,14 +78,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        public override IEnumerable<IssueLayout> GetLayouts()
-        {
-            yield return k_AudioClipLayout;
-        }
-
-        public override bool IsEnabledByDefault()
-        {
-            return false;
-        }
+        public override bool isEnabledByDefault => false;
     }
 }

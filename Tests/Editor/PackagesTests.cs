@@ -2,11 +2,32 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Modules;
+using UnityEditor.Compilation;
+using UnityEditor.PackageManager;
+using UnityEditor.PackageManager.Requests;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     class PackagesTests : TestFixtureBase
     {
+        [OneTimeSetUp]
+        public void SetUp()
+        {
+            AddRequest AddRequest = Client.Add("com.unity.2d.pixel-perfect@3.0.2");
+            while (AddRequest.Status != StatusCode.Success) {}
+            AddRequest = Client.Add("com.unity.services.vivox");
+            while (AddRequest.Status != StatusCode.Success) {}
+        }
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            RemoveRequest removeRequest = Client.Remove("com.unity.2d.pixel-perfect");
+            while (removeRequest.Status != StatusCode.Success) {}
+            removeRequest = Client.Remove("com.unity.services.vivox");
+            while (removeRequest.Status != StatusCode.Success) {}
+        }
+
         [Test]
         public void InstalledPackages_AreValid()
         {
@@ -17,8 +38,8 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
             foreach (var package in installedPackages)
             {
-                Assert.AreNotEqual(string.Empty, package.description, "Package: " + package.GetCustomProperty(PackageProperty.Name));
-                Assert.AreNotEqual(string.Empty, package.GetCustomProperty(PackageProperty.Name), "Package: " + package.description);
+                Assert.AreNotEqual(string.Empty, package.description, "Package: " + package.GetCustomProperty(PackageProperty.PackageID));
+                Assert.AreNotEqual(string.Empty, package.GetCustomProperty(PackageProperty.PackageID), "Package: " + package.description);
                 Assert.AreNotEqual(string.Empty, package.GetCustomProperty(PackageProperty.Source), "Package: " + package.description);
                 Assert.AreNotEqual(string.Empty, package.GetCustomProperty(PackageProperty.Version), "Package: " + package.description);
             }
@@ -46,6 +67,34 @@ namespace Unity.ProjectAuditor.EditorTests
                     Assert.IsTrue(matchIssue.dependencies.GetChild(i).GetName().Contains(dependencies[i]), "Package: " + description);
                 }
             }
+        }
+
+        [Test]
+        public void RecommandedUpgradePackage_IsReproted()
+        {
+            var issuePackages = Analyze(IssueCategory.PackageVersion);
+            var matchIssue = issuePackages.FirstOrDefault(issue => issue.customProperties[0] == "com.unity.2d.pixel-perfect");
+
+            Assert.IsNotNull(matchIssue, "Cannot find the upgrade package: com.unity.2d.pixel-perfect");
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.PackageID), "com.unity.2d.pixel-perfect");
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.CurrentVersion), "3.0.2");
+            var currentVersion = System.Version.Parse(matchIssue.GetCustomProperty(PackageVersionProperty.CurrentVersion));
+            var recommendedVersion = System.Version.Parse(matchIssue.GetCustomProperty(PackageVersionProperty.RecommendedVersion));
+            Assert.IsTrue(recommendedVersion.CompareTo(currentVersion) > 0, "The recommended version is wrong");
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.Experimental), "False");
+        }
+
+        [Test]
+        public void RecommandedPreviewPackage_IsReproted()
+        {
+            var issuePackages = Analyze(IssueCategory.PackageVersion);
+            var matchIssue = issuePackages.FirstOrDefault(issue => issue.customProperties[0] == "com.unity.services.vivox");
+
+            Assert.IsNotNull(matchIssue, "Cannot find the upgrade package: com.unity.services.vivox");
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.PackageID), "com.unity.services.vivox");
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.CurrentVersion), "15.1.180001-pre.5");
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.RecommendedVersion), "");
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.Experimental), "True");
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -124,8 +125,8 @@ namespace Unity.ProjectAuditor.Editor
         public void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var result = new ProjectReport();
-            var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.Select(GetModule).Distinct() : m_Modules.Where(m => m.IsEnabledByDefault());
-            var supportedModules = requestedModules.Where(m => m != null && m.IsSupported()).ToArray();
+            var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.Select(GetModule).Distinct() : m_Modules.Where(m => m.isEnabledByDefault);
+            var supportedModules = requestedModules.Where(m => m != null && m.isSupported).ToArray();
             var numModules = supportedModules.Length;
             if (numModules == 0)
             {
@@ -149,7 +150,7 @@ namespace Unity.ProjectAuditor.Editor
                     onModuleCompleted = () =>
                     {
                         if (logTimingsInfo)
-                            Debug.Log(module.GetType().Name + " took: " +
+                            Debug.Log(module.name + " module took: " +
                                 (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
 
                         projectAuditorParams.onModuleCompleted?.Invoke();
@@ -184,22 +185,22 @@ namespace Unity.ProjectAuditor.Editor
 
         internal ProjectAuditorModule GetModule(IssueCategory category)
         {
-            return m_Modules.FirstOrDefault(a => a.IsSupported() && a.GetLayouts().FirstOrDefault(l => l.category == category) != null);
+            return m_Modules.FirstOrDefault(a => a.isSupported && a.supportedLayouts.FirstOrDefault(l => l.category == category) != null);
         }
 
         internal bool IsModuleSupported(IssueCategory category)
         {
-            return m_Modules.Any(a => a.IsSupported() && a.GetLayouts().FirstOrDefault(l => l.category == category) != null);
+            return m_Modules.Any(a => a.isSupported && a.supportedLayouts.FirstOrDefault(l => l.category == category) != null);
         }
 
         public IssueCategory[] GetCategories()
         {
-            return m_Modules.Where(module => module.IsSupported()).SelectMany(m => m.GetCategories()).ToArray();
+            return m_Modules.Where(module => module.isSupported).SelectMany(m => m.GetCategories()).ToArray();
         }
 
         public IssueLayout GetLayout(IssueCategory category)
         {
-            var layouts = m_Modules.Where(a => a.IsSupported()).SelectMany(module => module.GetLayouts()).Where(l => l.category == category);
+            var layouts = m_Modules.Where(a => a.isSupported).SelectMany(module => module.supportedLayouts).Where(l => l.category == category);
             return layouts.FirstOrDefault();
         }
 

@@ -114,7 +114,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var settingsAuditor = projectAuditor.GetModule<SettingsModule>();
-            var descriptors = settingsAuditor.GetDescriptors();
+            var descriptors = settingsAuditor.supportedDescriptors;
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             var firstDescriptor = descriptors.FirstOrDefault();
 

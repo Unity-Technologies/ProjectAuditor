@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.IMGUI.Controls;
 

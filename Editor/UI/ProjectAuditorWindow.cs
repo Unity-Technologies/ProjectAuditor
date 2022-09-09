@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -258,7 +259,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Asset,
+                category = IssueCategory.Resource,
                 name = "Resources",
                 menuLabel = "Assets/Resources",
                 menuOrder = 1,
@@ -349,10 +350,20 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 ViewDescriptor.Register(new ViewDescriptor
                 {
+                    category = IssueCategory.PackageVersion,
+                    name = "Packages Version",
+                    menuLabel = "Experimental/Package Version",
+                    menuOrder = 106,
+                    showRightPanels = true,
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageVersion
+                });
+
+                ViewDescriptor.Register(new ViewDescriptor
+                {
                     category = IssueCategory.AudioClip,
                     name = "AudioClip",
                     menuLabel = "Experimental/AudioClip",
-                    menuOrder = 106,
+                    menuOrder = 107,
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AudioClip
                 });
@@ -546,7 +557,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         void AuditSingleModule<T>() where T : ProjectAuditorModule
         {
             var module = m_ProjectAuditor.GetModule<T>();
-            if (!module.IsSupported())
+            if (!module.isSupported)
                 return;
 
             AuditSingleModule(module);
