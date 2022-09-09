@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Mono.Cecil.Cil;
+using Unity.ProjectAuditor.Editor.Core;
 using UnityEngine.Profiling;
 using UnityEditor;
 using UnityEngine;
@@ -24,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class TextureModule : ProjectAuditorModule
     {
-        private static readonly IssueLayout k_IssueLayout = new IssueLayout
+        private static readonly IssueLayout k_TexturesIssueLayout = new IssueLayout
         {
             category = IssueCategory.Texture,
             properties = new[]
@@ -40,9 +41,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.SizeOnDisk), format = PropertyFormat.Bytes, name = "Size", longName = "Texture Size" },
             }
         };
-        public override bool IsEnabledByDefault() { return false; }
+        public override string name => "Textures";
 
-        public override IEnumerable<IssueLayout> GetLayouts() {  yield return k_IssueLayout;  }
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        {
+            k_TexturesIssueLayout,
+        };
+
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
@@ -73,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     var tSize = Profiler.GetRuntimeMemorySizeLong(tName);
 
                     var location = new Location(pathToTexture);
-                    var issue = ProjectIssue.Create(k_IssueLayout.category, tName.name).WithCustomProperties(new object[((int)TextureProperties.Num)]
+                    var issue = ProjectIssue.Create(k_TexturesIssueLayout.category, tName.name).WithCustomProperties(new object[((int)TextureProperties.Num)]
                     {
                         tName.name,
                         t.textureShape,
@@ -104,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     var tSize = Profiler.GetRuntimeMemorySizeLong(tName);
 
                     var location = new Location(pathToTexture);
-                    var issue = ProjectIssue.Create(k_IssueLayout.category, tName.name).WithCustomProperties(new object[((int)TextureProperties.Num)]
+                    var issue = ProjectIssue.Create(k_TexturesIssueLayout.category, tName.name).WithCustomProperties(new object[((int)TextureProperties.Num)]
                     {
                         tName.name,
                         t.textureShape,

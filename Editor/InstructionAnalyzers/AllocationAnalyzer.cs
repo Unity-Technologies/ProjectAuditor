@@ -4,6 +4,7 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Core;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
@@ -59,6 +60,16 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         static readonly int k_ParamArrayAtributeHashCode = "System.ParamArrayAttribute".GetHashCode();
 
+        readonly OpCode[] m_OpCodes =
+        {
+            OpCodes.Call,
+            OpCodes.Callvirt,
+            OpCodes.Newobj,
+            OpCodes.Newarr
+        };
+
+        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_ObjectAllocationDescriptor);
@@ -106,14 +117,6 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
                 return ProjectIssue.Create(IssueCategory.Code, k_ArrayAllocationDescriptor, typeReference.Name);
             }
-        }
-
-        public IEnumerable<OpCode> GetOpCodes()
-        {
-            yield return OpCodes.Call;
-            yield return OpCodes.Callvirt;
-            yield return OpCodes.Newobj;
-            yield return OpCodes.Newarr;
         }
     }
 }

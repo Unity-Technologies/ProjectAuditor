@@ -4,6 +4,7 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -15,6 +16,14 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     {
         Dictionary<string, List<ProblemDescriptor>> m_Descriptors; // method name as key, list of type names as value
         Dictionary<string, ProblemDescriptor> m_WholeNamespaceDescriptors; // namespace as key
+
+        readonly OpCode[] m_OpCodes =
+        {
+            OpCodes.Call,
+            OpCodes.Callvirt
+        };
+
+        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
         public void Initialize(ProjectAuditorModule module)
         {
@@ -36,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 m_Descriptors[d.method].Add(d);
             }
 
-            m_WholeNamespaceDescriptors = module.GetDescriptors().Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
+            m_WholeNamespaceDescriptors = descriptors.Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
         }
 
         public ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
@@ -82,12 +91,6 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
             return ProjectIssue.Create(IssueCategory.Code, descriptor)
                 .WithDescription(description);
-        }
-
-        public IEnumerable<OpCode> GetOpCodes()
-        {
-            yield return OpCodes.Call;
-            yield return OpCodes.Callvirt;
         }
     }
 }

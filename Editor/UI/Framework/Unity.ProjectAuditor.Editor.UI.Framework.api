@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected ViewDescriptor m_Desc;
         protected bool m_Dirty = true;
         protected System.Collections.Generic.List<ProjectIssue> m_Issues;
-        protected ProjectAuditorModule m_Module;
+        protected Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule m_Module;
         protected TextFilter m_TextFilter;
         protected ViewManager m_ViewManager;
         protected ViewStates m_ViewStates;
@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public AnalysisView(ViewManager viewManager) {}
         public virtual void AddIssues(System.Collections.Generic.IEnumerable<ProjectIssue> allIssues);
         public virtual void Clear();
-        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ProjectAuditorModule module, ViewStates viewStates, IProjectIssueFilter filter);
+        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module, ViewStates viewStates, IProjectIssueFilter filter);
         public virtual void DrawContent();
         public virtual void DrawFilters();
         protected virtual void DrawInfo();
@@ -253,7 +253,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
     public sealed class ViewManager
     {
-        public System.Action<ProjectAuditorModule> onAnalyze;
+        public System.Action<Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule> onAnalyze;
         public System.Action<int> onViewChanged;
         public System.Action onViewExported;
         public int activeViewIndex { get; }

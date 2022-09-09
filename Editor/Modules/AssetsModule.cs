@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 
@@ -11,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
-            category = IssueCategory.Asset,
+            category = IssueCategory.Resource,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Asset Name"},
@@ -21,14 +22,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        public override IEnumerable<IssueLayout> GetLayouts()
-        {
-            yield return k_IssueLayout;
-        }
+        public override string name => "Resources";
 
-        public override void Initialize(ProjectAuditorConfig config)
-        {
-        }
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
@@ -90,7 +86,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             issues.Add(ProjectIssue.Create
                 (
-                    IssueCategory.Asset,
+                    IssueCategory.Resource,
                     Path.GetFileNameWithoutExtension(location.Path)
                 )
                 .WithDependencies(dependencyNode)

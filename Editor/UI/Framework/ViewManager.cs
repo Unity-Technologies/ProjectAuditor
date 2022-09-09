@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using Unity.ProjectAuditor.Editor.Core;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;

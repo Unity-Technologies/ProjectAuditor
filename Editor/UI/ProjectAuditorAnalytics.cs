@@ -54,7 +54,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             ShaderCompilerMessages,
             PrecompiledAssemblies,
             Packages,
-            Textures
+            Textures,
+            PackageVersion
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -207,6 +208,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "packages";
                 case UIButton.Textures:
                     return "texture";
+                case UIButton.PackageVersion:
+                    return "package_version";
                 default:
                     Debug.LogFormat("SendUIButtonEvent: Unsupported button type : {0}", uiButton);
                     return "";
