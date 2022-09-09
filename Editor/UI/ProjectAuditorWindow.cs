@@ -331,6 +331,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     menuLabel = "Experimental/Compute Shader Variants",
                     showFilters = true,
                     showInfoPanel = true,
+                    showRightPanels = true,
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     onDrawToolbar = (viewManager) =>
                     {

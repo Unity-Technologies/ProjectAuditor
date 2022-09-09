@@ -47,10 +47,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public enum ComputeShaderVariantProperty
     {
-        Kernel = 0,
+        Platform = 0,
+        Tier,
+        Kernel,
         Keywords,
+        PlatformKeywords,
         Num
     }
+
     public enum ShaderMessageProperty
     {
         ShaderName = 0,
@@ -81,10 +85,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         public string kernelName;
         public string[] keywords;
-        //public string[] platformKeywords;
-        //public ShaderRequirements[] requirements;
-        //public GraphicsTier graphicsTier;
-        //public ShaderCompilerPlatform compilerPlatform;
+        public string[] platformKeywords;
+        public GraphicsTier graphicsTier;
+        public ShaderCompilerPlatform compilerPlatform;
     }
 
     class CompiledVariantData
@@ -180,8 +183,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Shader Name", defaultGroup = true },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Platform), format = PropertyFormat.String, name = "Graphics API" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Tier), format = PropertyFormat.String, name = "Tier" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Kernel), format = PropertyFormat.String, name = "Kernel" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Keywords), format = PropertyFormat.String, name = "Keywords" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.PlatformKeywords), format = PropertyFormat.String, name = "Platform Keywords" },
             }
         };
 
@@ -369,16 +375,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #if COMPUTE_SHADER_ANALYSIS
             var issues = new List<ProjectIssue>();
 
-            foreach (var data in s_ComputeShaderVariantData)
+            foreach (var shaderCompilerData in s_ComputeShaderVariantData)
             {
-                var computeShaderName = data.Key.name;
-                foreach (var variantData in data.Value)
+                var computeShaderName = shaderCompilerData.Key.name;
+                foreach (var shaderVariantData in shaderCompilerData.Value)
                 {
                     issues.Add(ProjectIssue.Create(k_ComputeShaderVariantLayout.category, computeShaderName)
-                        .WithCustomProperties(new[]
+                        .WithCustomProperties(new object[(int)ComputeShaderVariantProperty.Num]
                         {
-                            variantData.kernelName,
-                            CombineKeywords(variantData.keywords),
+                            shaderVariantData.compilerPlatform,
+                            shaderVariantData.graphicsTier,
+                            shaderVariantData.kernelName,
+                            CombineKeywords(shaderVariantData.keywords),
+                            CombineKeywords(shaderVariantData.platformKeywords)
                         }));
                 }
             }
@@ -537,6 +546,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     kernelName = kernelName,
                     keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
+                    platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
+                    graphicsTier = shaderCompilerData.graphicsTier,
+                    compilerPlatform = shaderCompilerData.shaderCompilerPlatform
                 });
             }
         }
