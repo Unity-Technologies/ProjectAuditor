@@ -17,17 +17,15 @@ namespace Unity.ProjectAuditor.EditorTests
             while (AddRequest.Status != StatusCode.Success) {}
             AddRequest = Client.Add("com.unity.services.vivox");
             while (AddRequest.Status != StatusCode.Success) {}
-            //CompilationPipeline.RequestScriptCompilation();   //Use this function to make the Unity Editor recompile every Script in your Project asynchronously. When the compilation finishes, the Unity Editor then loads the compiled assemblies. https://docs.unity3d.com/2020.1/Documentation/ScriptReference/Compilation.CompilationPipeline.RequestScriptCompilation.html
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            //TODO: the issue is: the package can be insstalled without compiling. After run the test, PackageManagement can not uninstalled it (becasue the package does not compile.）
-            //RemoveRequest removeRequest = Client.Remove("com.unity.2d.pixel-perfect@3.0.2");
-            //while (removeRequest.Status != StatusCode.Success) {}
-            //removeRequest = Client.Remove("com.unity.services.vivox");
-            //while (removeRequest.Status != StatusCode.Success) { }
+            RemoveRequest removeRequest = Client.Remove("com.unity.2d.pixel-perfect");
+            while (removeRequest.Status != StatusCode.Success) {}
+            removeRequest = Client.Remove("com.unity.services.vivox");
+            while (removeRequest.Status != StatusCode.Success) {}
         }
 
         [Test]
