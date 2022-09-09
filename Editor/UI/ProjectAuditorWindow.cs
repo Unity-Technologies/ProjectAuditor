@@ -348,6 +348,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Packages
                 });
 
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.PackageVersion,
+                    name = "Packages Version",
+                    menuLabel = "Experimental/Package Version",
+                    menuOrder = 106,
+                    showRightPanels = true,
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageVersion
+                });
+
 #if UNITY_2019_1_OR_NEWER
                 ViewDescriptor.Register(new ViewDescriptor
                 {

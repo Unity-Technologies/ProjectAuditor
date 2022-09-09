@@ -20,6 +20,7 @@ namespace Unity.ProjectAuditor.Editor
         PrecompiledAssembly,
         ShaderCompilerMessage,
         Package,
+        PackageVersion,
 
         FirstCustomCategory
     }
