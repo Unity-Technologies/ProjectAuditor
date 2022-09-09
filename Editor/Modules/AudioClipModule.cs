@@ -58,7 +58,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     importer.forceToMono,
                     importer.loadInBackground,
+#if UNITY_2022_2_OR_NEWER
+                    importer.GetOverrideSampleSettings(platform.ToString()).preloadAudioData,
+#else
                     importer.preloadAudioData,
+#endif
                     importer.GetOverrideSampleSettings(platform.ToString()).loadType,
                     importer.GetOverrideSampleSettings(platform.ToString()).compressionFormat
                 }).WithLocation(path);
