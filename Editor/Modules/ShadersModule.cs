@@ -22,6 +22,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         Size = 0,
         NumVariants,
+        NumBuiltVariants,
         NumPasses,
         NumKeywords,
         RenderQueue,
@@ -111,7 +112,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyType.Severity},
                 new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size of the variants in the build" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumVariants), format = PropertyFormat.Integer, name = "Actual Variants", longName = "Number of variants in the build" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumVariants), format = PropertyFormat.Integer, name = "Num Variants", longName = "Number of variants" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumBuiltVariants), format = PropertyFormat.Integer, name = "Actual Variants", longName = "Number of variants in the build" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumPasses), format = PropertyFormat.Integer, name = "Num Passes", longName = "Number of Passes" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumKeywords), format = PropertyFormat.Integer, name = "Num Keywords", longName = "Number of Keywords" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.RenderQueue), format = PropertyFormat.Integer, name = "Render Queue" },
@@ -472,6 +474,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .WithCustomProperties(new object[(int)ShaderProperty.Num]
                 {
                     assetSize,
+                    ShaderUtilProxy.GetVariantCount(shader),
                     variantCount == -1 ? k_NotAvailable : variantCount.ToString(),
                     passCount == -1 ? k_NotAvailable : passCount.ToString(),
                     (globalKeywords == null || localKeywords == null) ? k_NotAvailable : (globalKeywords.Length + localKeywords.Length).ToString(),
