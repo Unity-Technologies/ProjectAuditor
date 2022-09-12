@@ -13,22 +13,20 @@ namespace Unity.ProjectAuditor.EditorTests
     {
         public int projectTextureCount;
         public int resolution = 1;
-        public string testTextureName = "ProceduralTextureForTest321";
 
         [OneTimeSetUp]
         public void SetUp()
         {
             var texture = new Texture2D(resolution, resolution); //defaults: mipmaps = true & format = automatic
             texture.SetPixel(0, 0, Random.ColorHSV());
-            texture.name = testTextureName;
+            texture.name = "ProceduralTextureForTest321.png";
             texture.Apply();
 
             byte[] bytes = texture.EncodeToPNG();
 
-            var temptesttexture = new TempAsset("ProceduralTextureForTest321.png", Encoding.Default.GetString(bytes));
-
-            AssetDatabase.Refresh();   //not needed if using TempAsset for the tester png image
-            projectTextureCount += 1;
+            var temptesttexture = new TempAsset(texture.name, Encoding.Default.GetString(bytes));
+            //File.WriteAllBytes("ProceduralTextureForTest321.png", bytes);
+            //AssetDatabase.Refresh();   //not needed if using TempAsset for the tester png image : To be removed - Required if using File.WriteAllBytes
 
             projectTextureCount = AssetDatabase.FindAssets("t: Texture, a:assets").Length;
         }
