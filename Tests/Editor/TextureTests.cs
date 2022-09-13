@@ -24,11 +24,14 @@ namespace Unity.ProjectAuditor.EditorTests
 
             byte[] bytes = texture.EncodeToPNG();
 
-            var temptesttexture = new TempAsset(texture.name, Encoding.Default.GetString(bytes));
-            //File.WriteAllBytes("ProceduralTextureForTest321.png", bytes);
-            //AssetDatabase.Refresh();   //not needed if using TempAsset for the tester png image : To be removed - Required if using File.WriteAllBytes
+            var temptesttexture = new TempAsset(texture.name, bytes);
 
-            projectTextureCount = AssetDatabase.FindAssets("t: Texture, a:assets").Length;
+            var allTextures = AssetDatabase.FindAssets("t: Texture, a:assets");
+            projectTextureCount = allTextures.Length;
+            foreach (var foundTexture in allTextures)
+            {
+                var pathToTexture = AssetDatabase.GUIDToAssetPath(foundTexture);
+                if (pathToTexture.EndsWith("renderTexture")) { projectTextureCount -= 1; } }
         }
 
         [Test]
