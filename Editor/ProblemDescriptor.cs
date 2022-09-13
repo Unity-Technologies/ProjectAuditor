@@ -38,6 +38,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         LoadTime,
 
+        /// <summary>
         /// Quality. For example, using deprecated APIs that might be removed in the future.
         /// </summary>
         Quality,
@@ -73,6 +74,7 @@ namespace Unity.ProjectAuditor.Editor
         public string[] platforms;
         public string problem;
         public string solution;
+        public string documentation;
         public string minimumVersion;
         public string maximumVersion;
 

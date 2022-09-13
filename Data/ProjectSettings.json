@@ -54,7 +54,7 @@
         },
         {
             "id": "PAS0005",
-            "description": "Player(iOS): Metal & OpenGLES APIs",
+            "description": "Player (iOS): Metal & OpenGLES APIs",
             "type": "UnityEditor.PlayerSettings",
             "customevaluator": "PlayerSettingsGraphicsAPIs_iOS_OpenGLESAndMetal",
             "areas": ["BuildSize"],

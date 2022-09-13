@@ -78,6 +78,7 @@ namespace Unity.ProjectAuditor.Editor
         public bool critical = false;
         public string customevaluator;
         public string description;
+        public string documentation;
         public string id;
         public string maximumVersion;
         public string messageFormat = @"{0}";
