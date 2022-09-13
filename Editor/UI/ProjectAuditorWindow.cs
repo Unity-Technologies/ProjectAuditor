@@ -575,6 +575,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 view.Clear();
             }
 
+            var platform = m_ProjectReport.GetIssues(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));
             var projectAuditorParams = new ProjectAuditorParams
             {
                 onIncomingIssues = issues =>
@@ -587,6 +588,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ProjectReport.AddIssues(issues);
                 }
             };
+
+            if (platform != null)
+                projectAuditorParams.platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), platform.GetCustomProperty(MetaDataProperty.Value));
             module.Audit(projectAuditorParams, new ProgressBar());
         }
 
