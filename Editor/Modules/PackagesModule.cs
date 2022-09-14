@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 
 
@@ -109,10 +110,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var result = 0;
             var isPreview = false;
-            if (!String.IsNullOrEmpty(package.version) && !String.IsNullOrEmpty(package.versions.verified))
+            var recommendedVersionString = PackageUtils.GetPackageRecommendedVersion(package);
+            if (!String.IsNullOrEmpty(package.version) && !String.IsNullOrEmpty(recommendedVersionString))
             {
                 var currentVersion = new Version(package.version);
-                var recommendedVersion = new Version(package.versions.verified);
+                var recommendedVersion = new Version(recommendedVersionString);
                 result = currentVersion.CompareTo(recommendedVersion);
             }
 
@@ -127,7 +129,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     {
                         package.name,
                         package.version,
-                        package.versions.verified,
+                        recommendedVersionString,
                         isPreview
                     });
                 issues.Add(packageVersionIssue);

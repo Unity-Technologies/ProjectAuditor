@@ -29,12 +29,12 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void InstalledPackages_AreValid()
+        public void Packages_Installed_AreValid()
         {
             var installedPackages = Analyze(IssueCategory.Package);
 #if !UNITY_2019_1_OR_NEWER
             // for some reason com.unity.ads is missing the description in 2018.x
-            installedPackages = installedPackages.Where(p => !p.GetCustomProperty(PackageProperty.Name).Equals("com.unity.ads")).ToArray();
+            installedPackages = installedPackages.Where(p => !p.GetCustomProperty(PackageProperty.PackageID).Equals("com.unity.ads")).ToArray();
 #endif
             foreach (var package in installedPackages)
             {
@@ -51,12 +51,12 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase("Unity UI", "com.unity.ugui", "BuiltIn", new string[] { "com.unity.modules.ui", "com.unity.modules.imgui" })]
         [TestCase("Test Framework", "com.unity.test-framework", "Registry")]
 #endif
-        public void InstalledPackage_IsReported(string description, string name, string source, string[] dependencies = null)
+        public void Package_Installed_IsReported(string description, string name, string source, string[] dependencies = null)
         {
             var installedPackages = Analyze(IssueCategory.Package);
             var matchIssue = installedPackages.FirstOrDefault(issue => issue.description == description);
 
-            Assert.IsNotNull(matchIssue, "Cannot find the package: " + description);
+            Assert.IsNotNull(matchIssue, "Package {0} not found. Packages: {1}", description, string.Join(", ", installedPackages.Select(p => p.description).ToArray()));
             Assert.AreEqual(matchIssue.customProperties[0], name);
             Assert.IsTrue(matchIssue.customProperties[2].StartsWith(source), "Package: " + description);
 
@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void RecommandedUpgradePackage_IsReproted()
+        public void Package_Upgrade_IsRecommended()
         {
             var issuePackages = Analyze(IssueCategory.PackageVersion);
             var matchIssue = issuePackages.FirstOrDefault(issue => issue.customProperties[0] == "com.unity.2d.pixel-perfect");
@@ -85,7 +85,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void RecommandedPreviewPackage_IsReproted()
+        public void Package_Preview_IsReported()
         {
             var issuePackages = Analyze(IssueCategory.PackageVersion);
             var matchIssue = issuePackages.FirstOrDefault(issue => issue.customProperties[0] == "com.unity.services.vivox");

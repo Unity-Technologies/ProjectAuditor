@@ -462,7 +462,22 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showInfoPanel = true,
                 showMuteOptions = true,
                 showRightPanels = true,
-                onOpenIssue = EditorUtil.OpenProjectSettings,
+                onOpenIssue = (location) =>
+                {
+#if UNITY_2020_2_OR_NEWER
+                    var guid = AssetDatabase.GUIDFromAssetPath(location.Path);
+                    if (guid.Empty())
+                    {
+                        EditorUtil.OpenProjectSettings(location);
+                    }
+                    else
+                    {
+                        EditorUtil.FocusOnAssetInProjectWindow(location);
+                    }
+#else
+                    EditorUtil.OpenProjectSettings(location);
+#endif
+                },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ProjectSettings
             });
             ViewDescriptor.Register(new ViewDescriptor
