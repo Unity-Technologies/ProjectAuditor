@@ -109,10 +109,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var result = 0;
             var isPreview = false;
-            if (!String.IsNullOrEmpty(package.version) && !String.IsNullOrEmpty(package.versions.verified))
+            if (!String.IsNullOrEmpty(package.version) && !String.IsNullOrEmpty(package.versions.recommended))
             {
                 var currentVersion = new Version(package.version);
-                var recommendedVersion = new Version(package.versions.verified);
+                var recommendedVersion = new Version(package.versions.recommended);
                 result = currentVersion.CompareTo(recommendedVersion);
             }
 
@@ -127,7 +127,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     {
                         package.name,
                         package.version,
-                        package.versions.verified,
+                        package.versions.recommended,
                         isPreview
                     });
                 issues.Add(packageVersionIssue);
