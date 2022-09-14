@@ -447,23 +447,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Value = 0,
     }
 
-    public enum PackageProperty
-    {
-        Num = 3,
-        PackageID = 0,
-        Source = 2,
-        Version = 1,
-    }
-
-    public enum PackageVersionProperty
-    {
-        CurrentVersion = 1,
-        Experimental = 3,
-        Num = 4,
-        PackageID = 0,
-        RecommendedVersion = 2,
-    }
-
     public enum PrecompiledAssemblyProperty
     {
         Num = 1,
