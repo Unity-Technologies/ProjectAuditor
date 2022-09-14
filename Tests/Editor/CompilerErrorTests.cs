@@ -68,7 +68,7 @@ class ScriptWithError {
         }
 
         [Test]
-        [ExplicitAttribute]
+        [Explicit]
         public void CompilerError_IsReported()
         {
             LogAssert.ignoreFailingMessages = true;
@@ -100,7 +100,7 @@ class ScriptWithError {
         }
 
         [Test]
-        [ExplicitAttribute]
+        [Explicit]
         public void CompilerError_Message_IsReported()
         {
             LogAssert.ignoreFailingMessages = true;
@@ -129,7 +129,7 @@ class ScriptWithError {
         }
 
         [Test]
-        [ExplicitAttribute]
+        [Explicit]
         public void CompilerError_Assembly_IsReported()
         {
             LogAssert.ignoreFailingMessages = true;
@@ -152,7 +152,7 @@ class ScriptWithError {
         }
 
         [Test]
-        [ExplicitAttribute]
+        [Explicit]
         public void CompilerError_AssemblyDependency_IsReported()
         {
             LogAssert.ignoreFailingMessages = true;
