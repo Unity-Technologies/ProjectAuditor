@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using System.IO;
@@ -5,6 +6,8 @@ using System.Text;
 using Unity.ProjectAuditor.EditorTests;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 
 namespace Unity.ProjectAuditor.EditorTests
@@ -12,7 +15,8 @@ namespace Unity.ProjectAuditor.EditorTests
     class TextureTests : TestFixtureBase
     {
         const int resolution = 1;
-        string currentplatform = EditorUserBuildSettings.activeBuildTarget.ToString();
+        string currentPlatform = EditorUserBuildSettings.activeBuildTarget.ToString();
+        Texture textureToCompare;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -27,6 +31,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var tempTestTexture = new TempAsset(texture.name, bytes);
 
             var allTextures = AssetDatabase.FindAssets("t: Texture, a:assets");
+
+            textureToCompare = (Texture)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(allTextures[0]), typeof(Texture));
         }
 
         [Test]
@@ -35,9 +41,11 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var textureTests = Analyze(IssueCategory.Texture);
 
-            Assert.AreEqual(currentplatform, textureTests[0].customProperties[9], "Checked Platform");
+            Assert.AreEqual(currentPlatform, textureTests[0].customProperties[9], "Checked Platform");
 
-            Assert.AreEqual("ProceduralTextureForTest321", textureTests[0].customProperties[0], "Checked Texture Name");
+            Assert.AreEqual(textureToCompare.name, textureTests[0].customProperties[0], "Checked Texture Name");
+
+            Assert.AreEqual(textureToCompare.dimension.ToString(), textureTests[0].customProperties[1], "Checked Texture Shape/Dimension");
 
             Assert.AreEqual("Image", textureTests[0].customProperties[2], "Checked TextureImporterType "); // Shown as "Default" in Editor but corresponds as "Image" (value returned) in API
 

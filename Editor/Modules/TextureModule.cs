@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     new object[((int)TextureProperties.Num)]
                     {
                         tName.name,
-                        t.textureShape,
+                        tName.dimension,
                         t.textureType,
                         platformSettings.format,
                         platformSettings.textureCompression,
