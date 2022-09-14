@@ -17,6 +17,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Readable,
         Resolution,
         SizeOnDisk,
+        Platform,
         Num
     }
 
@@ -51,6 +52,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var allTextures = AssetDatabase.FindAssets("t: Texture, a:assets");
             var issues = new List<ProjectIssue>();
+            var currentPlatform = projectAuditorParams.platform;
+
             progress?.Start("Finding Textures", "Search in Progress...", allTextures.Length);
 
             foreach (var aTexture in allTextures)
@@ -58,29 +61,36 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var pathToTexture = AssetDatabase.GUIDToAssetPath(aTexture);
                 var location = new Location(pathToTexture);
 
+                //next 2 lines: Grabs actual texture for inspecting its properties & continues if the object found is not a member of the Texture Group:(Texture2D, Texture3D, CubeMap, 2D Array)
                 var t = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
                 if (t == null) { continue; }
 
                 var tName = (Texture)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture));
                 var tSize = Profiler.GetRuntimeMemorySizeLong(tName);
+                var platformSettings = t.GetPlatformTextureSettings(currentPlatform.ToString());
 
-                var issue = ProjectIssue.Create(k_TexturesIssueLayout.category, tName.name).WithCustomProperties(new object[((int)TextureProperties.Num)]
-                {
-                    tName.name,
-                    t.textureShape,
-                    t.textureType,
-                    t.GetPlatformTextureSettings("Android").format,
-                    t.GetPlatformTextureSettings("Android").textureCompression,
-                    t.mipmapEnabled,
-                    t.isReadable,
-                        #if UNITY_2021_2_OR_NEWER
-                    t.GetSourceTextureWidthAndHeight.width + "x" + t.GetSourceTextureWidthAndHeight.height,         //Not avail before Unity 2021.2
-                        #else
-                    (tName.width + "x" + tName.height),
-                        #endif
-                    tSize
-                })
+                #if UNITY_2021_2_OR_NEWER
+                var resolution =  t.GetSourceTextureWidthAndHeight.width + "x" + t.GetSourceTextureWidthAndHeight.height,             //Not avail before Unity 2021.2
+                #else
+                var resolution = (tName.width + "x" + tName.height);
+                #endif
+
+                var issue = ProjectIssue.Create(k_TexturesIssueLayout.category, tName.name).WithCustomProperties(
+                    new object[((int)TextureProperties.Num)]
+                    {
+                        tName.name,
+                        t.textureShape,
+                        t.textureType,
+                        platformSettings.format,
+                        platformSettings.textureCompression,
+                        t.mipmapEnabled,
+                        t.isReadable,
+                        resolution,
+                        tSize,
+                        currentPlatform
+                    })
                     .WithLocation(location);
+
                 issues.Add(issue);
 
                 progress?.Advance();

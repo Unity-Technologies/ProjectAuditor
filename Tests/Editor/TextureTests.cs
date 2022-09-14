@@ -11,8 +11,8 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     class TextureTests : TestFixtureBase
     {
-        public int projectTextureCount;
-        public int resolution = 1;
+        const int resolution = 1;
+        string currentplatform = EditorUserBuildSettings.activeBuildTarget.ToString();
 
         [OneTimeSetUp]
         public void SetUp()
@@ -24,34 +24,30 @@ namespace Unity.ProjectAuditor.EditorTests
 
             byte[] bytes = texture.EncodeToPNG();
 
-            var temptesttexture = new TempAsset(texture.name, bytes);
+            var tempTestTexture = new TempAsset(texture.name, bytes);
 
             var allTextures = AssetDatabase.FindAssets("t: Texture, a:assets");
-            projectTextureCount = allTextures.Length;
-            foreach (var foundTexture in allTextures)
-            {
-                var pathToTexture = AssetDatabase.GUIDToAssetPath(foundTexture);
-                if (pathToTexture.EndsWith("renderTexture")) { projectTextureCount -= 1; } }
         }
 
         [Test]
+        [Explicit]
         public void Texture_Properties_AreReported()
         {
-            var TextureTests = Analyze(IssueCategory.Texture);
+            var textureTests = Analyze(IssueCategory.Texture);
 
-            Assert.AreEqual(projectTextureCount, TextureTests.Length, "Checked Texture Count");
+            Assert.AreEqual(currentplatform, textureTests[0].customProperties[9], "Checked Platform");
 
-            Assert.AreEqual("ProceduralTextureForTest321", TextureTests[0].customProperties[0], "Checked Texture Name");
+            Assert.AreEqual("ProceduralTextureForTest321", textureTests[0].customProperties[0], "Checked Texture Name");
 
-            Assert.AreEqual("Image", TextureTests[0].customProperties[2], "Checked TextureImporterType "); // Shown as "Default" in Editor but corresponds as "Image" (value returned) in API
+            Assert.AreEqual("Image", textureTests[0].customProperties[2], "Checked TextureImporterType "); // Shown as "Default" in Editor but corresponds as "Image" (value returned) in API
 
-            Assert.AreEqual("AutomaticCompressed", TextureTests[0].customProperties[3], "Checked Texture Compression");
+            Assert.AreEqual("AutomaticCompressed", textureTests[0].customProperties[3], "Checked Texture Compression");
 
-            Assert.AreEqual("True", TextureTests[0].customProperties[5], "Checked MipMaps Enabled");
+            Assert.AreEqual("True", textureTests[0].customProperties[5], "Checked MipMaps Enabled");
 
-            Assert.AreEqual("False", TextureTests[0].customProperties[6], "Checked Texture Read/Write");
+            Assert.AreEqual("False", textureTests[0].customProperties[6], "Checked Texture Read/Write");
 
-            Assert.AreEqual((resolution + "x" + resolution).ToString(), TextureTests[0].customProperties[7], "Checked Texture Resolution");
+            Assert.AreEqual((resolution + "x" + resolution).ToString(), textureTests[0].customProperties[7], "Checked Texture Resolution");
         }
     }
 }

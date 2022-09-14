@@ -53,7 +53,7 @@ namespace Unity.ProjectAuditor.Editor
     public class IssueLayout
     {
         public IssueCategory category;
-        public bool hierarchy = false;
+        public bool hierarchy;
         public PropertyDefinition[] properties;
         public int defaultGroupPropertyIndex { get; }
         public IssueLayout() {}
@@ -153,7 +153,7 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectIssue
     {
-        public int depth = 0;
+        public int depth;
         public IssueCategory category { get; }
         public string[] customProperties { get; }
         public Core.DependencyNode dependencies { get; }
@@ -510,7 +510,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
         ImporterType = 2,
         MipMapEnabled = 5,
         Name = 0,
-        Num = 9,
+        Num = 10,
+        Platform = 9,
         Readable = 6,
         Resolution = 7,
         Shape = 1,
