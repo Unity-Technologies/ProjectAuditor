@@ -454,6 +454,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showRightPanels = true,
                 onOpenIssue = (location) =>
                 {
+#if UNITY_2020_2_OR_NEWER
                     var guid = AssetDatabase.GUIDFromAssetPath(location.Path);
                     if (guid.Empty())
                     {
@@ -463,6 +464,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         EditorUtil.FocusOnAssetInProjectWindow(location);
                     }
+#else
+                    EditorUtil.OpenProjectSettings(location);
+#endif
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ProjectSettings
             });
