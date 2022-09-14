@@ -362,8 +362,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     category = IssueCategory.AudioClip,
                     name = "AudioClip",
-                    menuLabel = "Experimental/AudioClip",
+                    menuLabel = "Experimental/Audio Clips",
                     menuOrder = 107,
+                    showFilters = true,
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AudioClip
                 });

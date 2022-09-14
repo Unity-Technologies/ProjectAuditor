@@ -62,17 +62,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 var importer = AssetImporter.GetAtPath(path) as AudioImporter;
+                var sampleSettings = importer.GetOverrideSampleSettings(platform.ToString());
                 var audioClipIssue = ProjectIssue.Create(IssueCategory.AudioClip, Path.GetFileNameWithoutExtension(path)).WithCustomProperties(new object[(int)AudioClipProperty.Num]
                 {
                     importer.forceToMono,
                     importer.loadInBackground,
 #if UNITY_2022_2_OR_NEWER
-                    importer.GetOverrideSampleSettings(platform.ToString()).preloadAudioData,
+                    sampleSettings.preloadAudioData,
 #else
                     importer.preloadAudioData,
 #endif
-                    importer.GetOverrideSampleSettings(platform.ToString()).loadType,
-                    importer.GetOverrideSampleSettings(platform.ToString()).compressionFormat
+                    sampleSettings.loadType,
+                    sampleSettings.compressionFormat
                 }).WithLocation(path);
                 issues.Add(audioClipIssue);
             }

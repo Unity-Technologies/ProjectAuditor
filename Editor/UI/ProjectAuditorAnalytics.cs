@@ -209,7 +209,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 case UIButton.PackageVersion:
                     return "package_version";
                 case UIButton.AudioClip:
-                    return "audio-clip";
+                    return "audio_clip";
                 default:
                     Debug.LogFormat("SendUIButtonEvent: Unsupported button type : {0}", uiButton);
                     return "";
