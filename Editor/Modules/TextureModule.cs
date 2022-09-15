@@ -62,17 +62,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var location = new Location(pathToTexture);
 
                 var t = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
-                if (t == null) { continue; } //continues if the object found is not a member of the Texture Group:(Texture2D, Texture3D, CubeMap, 2D Array), so that RenderTextures won't be analyzed.
+                if (t == null) { continue; } //continues if the object found is not a member of the Texture Group:(Texture2D, Texture3D, CubeMap, 2D Array) - Example Use: RenderTextures won't be analyzed.
 
                 var tName = (Texture)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture));
                 var tSize = Profiler.GetRuntimeMemorySizeLong(tName);
                 var platformSettings = t.GetPlatformTextureSettings(currentPlatform.ToString());
 
-                #if UNITY_2021_2_OR_NEWER
-                var resolution =  t.GetSourceTextureWidthAndHeight.width + "x" + t.GetSourceTextureWidthAndHeight.height,             //Not avail before Unity 2021.2
-                #else
                 var resolution = (tName.width + "x" + tName.height);
-                #endif
 
                 var issue = ProjectIssue.Create(k_TexturesIssueLayout.category, tName.name).WithCustomProperties(
                     new object[((int)TextureProperties.Num)]
