@@ -35,7 +35,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             Shaders = 1 << 2,
             Resources = 1 << 3,
             BuildReport = 1 << 4,
-            Texture = 1 << 5,
 
             Everything = ~0
         }
@@ -380,7 +379,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     category = IssueCategory.Texture,
                     name = "Texture",
-                    menuLabel = "Texture/Diagnostics",
+                    menuLabel = "Experimental/Textures",
                     menuOrder = 6,
                     showInfoPanel = true,
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,

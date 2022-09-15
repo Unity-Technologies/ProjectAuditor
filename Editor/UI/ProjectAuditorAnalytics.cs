@@ -207,7 +207,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 case UIButton.Packages:
                     return "packages";
                 case UIButton.Textures:
-                    return "texture";
+                    return "textures";
                 case UIButton.PackageVersion:
                     return "package_version";
                 default:
