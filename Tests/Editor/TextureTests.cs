@@ -17,6 +17,7 @@ namespace Unity.ProjectAuditor.EditorTests
         const int resolution = 1;
         string currentPlatform = EditorUserBuildSettings.activeBuildTarget.ToString();
         Texture textureToCompare;
+        TextureImporter textureViaImporter;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -33,6 +34,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var allTextures = AssetDatabase.FindAssets("t: Texture, a:assets");
 
             textureToCompare = (Texture)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(allTextures[0]), typeof(Texture));
+            textureViaImporter = (AssetImporter.GetAtPath(AssetDatabase.GUIDToAssetPath(allTextures[0])) as TextureImporter); //Needed to compare apples to apples, since the texture/texture via TextureImporter properties are both used/mixed-use in the TextureModule script
         }
 
         [Test]
@@ -41,21 +43,23 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var textureTests = Analyze(IssueCategory.Texture);
 
-            Assert.AreEqual(currentPlatform, textureTests[0].customProperties[9], "Checked Platform");
-
             Assert.AreEqual(textureToCompare.name, textureTests[0].customProperties[0], "Checked Texture Name");
 
-            Assert.AreEqual(textureToCompare.dimension.ToString(), textureTests[0].customProperties[1], "Checked Texture Shape/Dimension");
+            Assert.AreEqual(textureViaImporter.textureShape.ToString(), textureTests[0].customProperties[1], "Checked Texture Shape/Dimension");
 
             Assert.AreEqual("Image", textureTests[0].customProperties[2], "Checked TextureImporterType "); // Shown as "Default" in Editor but corresponds as "Image" (value returned) in API
 
             Assert.AreEqual("AutomaticCompressed", textureTests[0].customProperties[3], "Checked Texture Compression");
+
+            Assert.AreEqual(textureViaImporter.textureCompression.ToString(), textureTests[0].customProperties[4], "Checked Texture Shape/Dimension");
 
             Assert.AreEqual("True", textureTests[0].customProperties[5], "Checked MipMaps Enabled");
 
             Assert.AreEqual("False", textureTests[0].customProperties[6], "Checked Texture Read/Write");
 
             Assert.AreEqual((resolution + "x" + resolution).ToString(), textureTests[0].customProperties[7], "Checked Texture Resolution");
+
+            Assert.AreEqual(currentPlatform, textureTests[0].customProperties[9], "Checked Platform");
         }
     }
 }

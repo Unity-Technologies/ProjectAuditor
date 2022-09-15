@@ -61,9 +61,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var pathToTexture = AssetDatabase.GUIDToAssetPath(aTexture);
                 var location = new Location(pathToTexture);
 
-                //next 2 lines: Grabs actual texture for inspecting its properties & continues if the object found is not a member of the Texture Group:(Texture2D, Texture3D, CubeMap, 2D Array)
                 var t = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
-                if (t == null) { continue; }
+                if (t == null) { continue; } //continues if the object found is not a member of the Texture Group:(Texture2D, Texture3D, CubeMap, 2D Array), so that RenderTextures won't be analyzed.
 
                 var tName = (Texture)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture));
                 var tSize = Profiler.GetRuntimeMemorySizeLong(tName);
@@ -79,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     new object[((int)TextureProperties.Num)]
                     {
                         tName.name,
-                        tName.dimension,
+                        t.textureShape,
                         t.textureType,
                         platformSettings.format,
                         platformSettings.textureCompression,
