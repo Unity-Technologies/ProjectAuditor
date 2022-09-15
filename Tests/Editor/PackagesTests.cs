@@ -47,9 +47,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
         [Test]
         [TestCase("Project Auditor", "com.unity.project-auditor", "Local", new string[] { "com.unity.nuget.mono-cecil" })]
+        [TestCase("Audio", "com.unity.modules.audio", "BuiltIn")]
 #if UNITY_2019_1_OR_NEWER
-        [TestCase("Unity UI", "com.unity.ugui", "BuiltIn", new string[] { "com.unity.modules.ui", "com.unity.modules.imgui" })]
-        [TestCase("Test Framework", "com.unity.test-framework", "Registry")]
+        [TestCase("Test Framework", "com.unity.test-framework", "Registry", new[] { "com.unity.ext.nunit", "com.unity.modules.imgui", "com.unity.modules.jsonserialize"})]
 #endif
         public void Package_Installed_IsReported(string description, string name, string source, string[] dependencies = null)
         {
@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(matchIssue.customProperties[0], name);
             Assert.IsTrue(matchIssue.customProperties[2].StartsWith(source), "Package: " + description);
 
-            if (dependencies != null && dependencies.Length != 0)
+            if (dependencies != null)
             {
                 for (var i = 0; i < dependencies.Length; i++)
                 {
