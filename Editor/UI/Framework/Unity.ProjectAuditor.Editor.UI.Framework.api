@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor
         public bool ignoreCase = true;
         public bool searchDependencies;
         public string searchString;
-        public TextFilter() {}
+        public TextFilter(PropertyDefinition[] propertyDefinitions = default(PropertyDefinition[])) {}
         public bool Match(ProjectIssue issue);
     }
 }

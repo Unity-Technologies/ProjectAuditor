@@ -463,7 +463,22 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showInfoPanel = true,
                 showMuteOptions = true,
                 showRightPanels = true,
-                onOpenIssue = EditorUtil.OpenProjectSettings,
+                onOpenIssue = (location) =>
+                {
+#if UNITY_2020_2_OR_NEWER
+                    var guid = AssetDatabase.GUIDFromAssetPath(location.Path);
+                    if (guid.Empty())
+                    {
+                        EditorUtil.OpenProjectSettings(location);
+                    }
+                    else
+                    {
+                        EditorUtil.FocusOnAssetInProjectWindow(location);
+                    }
+#else
+                    EditorUtil.OpenProjectSettings(location);
+#endif
+                },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ProjectSettings
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -586,6 +601,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 view.Clear();
             }
 
+            var platform = m_ProjectReport.GetIssues(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));
             var projectAuditorParams = new ProjectAuditorParams
             {
                 onIncomingIssues = issues =>
@@ -598,6 +614,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ProjectReport.AddIssues(issues);
                 }
             };
+
+            if (platform != null)
+                projectAuditorParams.platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), platform.GetCustomProperty(MetaDataProperty.Value));
             module.Audit(projectAuditorParams, new ProgressBar());
         }
 

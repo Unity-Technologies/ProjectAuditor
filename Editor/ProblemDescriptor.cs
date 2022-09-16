@@ -74,6 +74,7 @@ namespace Unity.ProjectAuditor.Editor
         public string[] platforms;
         public string problem;
         public string solution;
+        public string documentation;
         public string minimumVersion;
         public string maximumVersion;
 
