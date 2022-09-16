@@ -2,6 +2,7 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -9,13 +10,13 @@ namespace Unity.ProjectAuditor.EditorTests
     {
         const int resolution = 1;
         string currentPlatform = EditorUserBuildSettings.activeBuildTarget.ToString();
-        Texture textureToCompare;
+        Texture2D texture;
         TextureImporter textureViaImporter;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            var texture = new Texture2D(resolution, resolution); //defaults: mipmaps = true & format = automatic
+            texture = new Texture2D(resolution, resolution); //defaults: mipmaps = true & format = automatic
             texture.SetPixel(0, 0, Random.ColorHSV());
             texture.name = "ProceduralTextureForTest321.png";
             texture.Apply();
@@ -24,10 +25,10 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var tempTestTexture = new TempAsset(texture.name, bytes);
 
-            var allTextures = AssetDatabase.FindAssets("t: Texture, a:assets");
+            // var allTextures = AssetDatabase.FindAssets("t: Texture, a:assets");
 
-            textureToCompare = (Texture)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(allTextures[0]), typeof(Texture));
-            textureViaImporter = (AssetImporter.GetAtPath(AssetDatabase.GUIDToAssetPath(allTextures[0])) as TextureImporter); //Needed since the texture/texture via TextureImporter properties are both used in the TextureModule script to access varying properties.
+            //  textureToCompare = (Texture)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(allTextures[0]), typeof(Texture));
+            textureViaImporter = (AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(texture)) as TextureImporter); //Needed since the texture/texture via TextureImporter properties are both used in the TextureModule script to access varying properties.
         }
 
         [Test]
@@ -36,21 +37,23 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var textureTests = Analyze(IssueCategory.Texture);
 
-            Assert.AreEqual(textureToCompare.name, textureTests[0].customProperties[0], "Checked Texture Name");
+            Assert.AreEqual((AssetDatabase.GetAssetPath(texture)), textureTests[0].customProperties[0], "Checked Texture Name");
 
             Assert.AreEqual(textureViaImporter.textureShape.ToString(), textureTests[0].customProperties[1], "Checked Texture Shape/Dimension");
 
             Assert.AreEqual(textureViaImporter.textureType.ToString(), textureTests[0].customProperties[2], "Checked TextureImporterType ");
 
-            Assert.AreEqual("AutomaticCompressed", textureTests[0].customProperties[3], "Checked Texture Compression");
+            Assert.AreEqual(texture.format, textureTests[0].customProperties[3], "Checked Texture Format");
 
-            Assert.AreEqual(textureViaImporter.textureCompression.ToString(), textureTests[0].customProperties[4], "Checked Texture Shape/Dimension");
+            Assert.AreEqual(textureViaImporter.textureCompression.ToString(), textureTests[0].customProperties[4], "Checked Texture Compression");
 
-            Assert.AreEqual("True", textureTests[0].customProperties[5], "Checked MipMaps Enabled");
+            Assert.AreEqual(textureViaImporter.mipmapEnabled, textureTests[0].customProperties[5], "Checked MipMaps Enabled");
 
-            Assert.AreEqual("False", textureTests[0].customProperties[6], "Checked Texture Read/Write");
+            Assert.AreEqual(textureViaImporter.isReadable, textureTests[0].customProperties[6], "Checked Texture Read/Write");
 
-            Assert.AreEqual((resolution + "x" + resolution).ToString(), textureTests[0].customProperties[7], "Checked Texture Resolution");
+            Assert.AreEqual((resolution + "x" + resolution), textureTests[0].customProperties[7], "Checked Texture Resolution");
+
+            Assert.AreEqual(Profiler.GetRuntimeMemorySizeLong(texture), textureTests[0].customProperties[8], "Checked Texture Size");
 
             Assert.AreEqual(currentPlatform, textureTests[0].customProperties[9], "Checked Platform");
         }
