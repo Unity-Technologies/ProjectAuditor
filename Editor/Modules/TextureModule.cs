@@ -66,6 +66,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 var tName = (Texture)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture));
                 var tSize = Profiler.GetRuntimeMemorySizeLong(tName);
+
                 var platformSettings = t.GetPlatformTextureSettings(currentPlatform.ToString());
 
                 var resolution = (tName.width + "x" + tName.height);

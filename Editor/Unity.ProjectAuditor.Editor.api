@@ -53,7 +53,7 @@ namespace Unity.ProjectAuditor.Editor
     public class IssueLayout
     {
         public IssueCategory category;
-        public bool hierarchy;
+        public bool hierarchy = false;
         public PropertyDefinition[] properties;
         public int defaultGroupPropertyIndex { get; }
         public IssueLayout() {}
@@ -154,7 +154,7 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectIssue
     {
-        public int depth;
+        public int depth = 0;
         public IssueCategory category { get; }
         public string[] customProperties { get; }
         public Core.DependencyNode dependencies { get; }
@@ -446,6 +446,23 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         Num = 1,
         Value = 0,
+    }
+
+    public enum PackageProperty
+    {
+        Num = 3,
+        PackageID = 0,
+        Source = 2,
+        Version = 1,
+    }
+
+    public enum PackageVersionProperty
+    {
+        CurrentVersion = 1,
+        Experimental = 3,
+        Num = 4,
+        PackageID = 0,
+        RecommendedVersion = 2,
     }
 
     public enum PrecompiledAssemblyProperty
