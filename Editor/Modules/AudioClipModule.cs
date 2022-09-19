@@ -41,6 +41,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override string name => "AudioClip";
 
+        public override bool isEnabledByDefault => false;
+
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_AudioClipLayout,
@@ -55,7 +57,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
-        private void AnalyzeAudioClip(List<ProjectIssue> issues, BuildTarget platform)
+        void AnalyzeAudioClip(List<ProjectIssue> issues, BuildTarget platform)
         {
             var GUIDsAudioClip = AssetDatabase.FindAssets("t:AudioClip");
             foreach (var guid in GUIDsAudioClip)
@@ -78,7 +80,5 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 issues.Add(audioClipIssue);
             }
         }
-
-        public override bool isEnabledByDefault => false;
     }
 }
