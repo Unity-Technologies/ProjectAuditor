@@ -31,16 +31,17 @@ namespace Unity.ProjectAuditor.Editor
     public enum IssueCategory
     {
         Assembly = 11,
+        AudioClip = 15,
         BuildFile = 8,
         BuildStep = 9,
         BuildSummary = 10,
         Code = 4,
         CodeCompilerMessage = 5,
-        FirstCustomCategory = 16,
+        FirstCustomCategory = 17,
         GenericInstance = 6,
         MetaData = 0,
         Package = 14,
-        PackageVersion = 15,
+        PackageVersion = 16,
         PrecompiledAssembly = 12,
         ProjectSetting = 7,
         Resource = 1,
@@ -400,6 +401,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
         CompileTime = 1,
         Num = 2,
         ReadOnly = 0,
+    }
+
+    public enum AudioClipProperty
+    {
+        CompressionFormat = 4,
+        ForceToMono = 0,
+        LoadInBackground = 1,
+        LoadType = 3,
+        Num = 5,
+        PreloadAudioData = 2,
     }
 
     public enum BuildReportFileProperty
