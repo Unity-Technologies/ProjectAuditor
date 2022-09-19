@@ -54,13 +54,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             ShaderCompilerMessages,
             PrecompiledAssemblies,
             Packages,
-<<<<<<< HEAD
             Textures,
-            PackageVersion
-=======
             PackageVersion,
             AudioClip
->>>>>>> master
         }
 
         // -------------------------------------------------------------------------------------------------------------
