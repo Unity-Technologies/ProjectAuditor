@@ -54,8 +54,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             ShaderCompilerMessages,
             PrecompiledAssemblies,
             Packages,
+<<<<<<< HEAD
             Textures,
             PackageVersion
+=======
+            PackageVersion,
+            AudioClip
+>>>>>>> master
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -210,6 +215,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "textures";
                 case UIButton.PackageVersion:
                     return "package_version";
+                case UIButton.AudioClip:
+                    return "audio_clip";
                 default:
                     Debug.LogFormat("SendUIButtonEvent: Unsupported button type : {0}", uiButton);
                     return "";
