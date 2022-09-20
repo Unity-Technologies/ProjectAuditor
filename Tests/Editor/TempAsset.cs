@@ -34,10 +34,10 @@ namespace Unity.ProjectAuditor.EditorTests
             AssetDatabase.ImportAsset(relativePath, ImportAssetOptions.ForceUpdate);
         }
 
-        public TempAsset(string fileName, byte[] bytecontent) :
+        public TempAsset(string fileName, byte[] byteContent) :
             this(fileName)
         {
-            File.WriteAllBytes(relativePath, bytecontent);
+            File.WriteAllBytes(relativePath, byteContent);
 
             Assert.True(File.Exists(relativePath));
 

@@ -358,6 +358,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageVersion
                 });
 
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.AudioClip,
+                    name = "AudioClip",
+                    menuLabel = "Experimental/Audio Clips",
+                    menuOrder = 107,
+                    showFilters = true,
+                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AudioClip
+                });
+
 #if UNITY_2019_1_OR_NEWER
                 ViewDescriptor.Register(new ViewDescriptor
                 {
@@ -383,7 +394,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     menuOrder = 6,
                     showInfoPanel = true,
                     showFilters = true,
-                    showMuteOptions = true,
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
                 });
