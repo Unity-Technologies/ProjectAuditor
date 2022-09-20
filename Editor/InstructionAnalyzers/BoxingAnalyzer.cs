@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 if (genericType.HasReferenceTypeConstraint)
                     isValueType = false;
                 else
-#if UNITY_2022_2_OR_NEWER
+#if UNITY_MONO_CECIL_1_11_4_OR_NEWER
                     foreach (var constraint in genericType.Constraints)
                         if (!constraint.ConstraintType.IsValueType)
                             isValueType = false;

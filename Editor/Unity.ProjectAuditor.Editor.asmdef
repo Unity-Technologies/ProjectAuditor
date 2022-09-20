@@ -36,6 +36,11 @@
             "name": "com.unity.entities",
             "expression": "",
             "define": "ENTITIES_PACKAGE_INSTALLED"
+        },
+        {
+            "name": "com.unity.nuget.mono-cecil",
+            "expression": "1.11.4",
+            "define": "UNITY_MONO_CECIL_1_11_4_OR_NEWER"
         }
     ],
     "noEngineReferences": false
