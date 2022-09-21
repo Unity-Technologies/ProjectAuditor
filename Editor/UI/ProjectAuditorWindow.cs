@@ -385,6 +385,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                     },
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
                 });
+
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.Texture,
+                    name = "Texture",
+                    menuLabel = "Experimental/Textures",
+                    menuOrder = 6,
+                    showInfoPanel = true,
+                    showFilters = true,
+                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
+                });
 #endif
 
                 ViewDescriptor.Register(new ViewDescriptor

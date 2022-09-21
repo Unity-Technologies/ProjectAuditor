@@ -6,7 +6,7 @@ namespace Unity.ProjectAuditor.Editor
     public class TextFilter : IProjectIssueFilter
     {
         public bool ignoreCase = true;
-        public bool searchDependencies = false;
+        public bool searchDependencies;
         public string searchString;
         public TextFilter(PropertyDefinition[] propertyDefinitions = default(PropertyDefinition[])) {}
         public bool Match(ProjectIssue issue);

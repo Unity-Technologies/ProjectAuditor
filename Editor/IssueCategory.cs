@@ -21,6 +21,7 @@ namespace Unity.ProjectAuditor.Editor
         ShaderCompilerMessage,
         Package,
         PackageVersion,
+        Texture,
         AudioClip,
         FirstCustomCategory
     }
