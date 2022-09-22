@@ -186,6 +186,8 @@ namespace Unity.ProjectAuditor.Editor
     public sealed class ProjectReport
     {
         public int NumTotalIssues { get; }
+        public void AddIssues(System.Collections.Generic.IEnumerable<ProjectIssue> issues);
+        public void ClearIssues(IssueCategory category);
         public void ExportToCSV(string path, IssueLayout layout, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
         public void ExportToHTML(string path, IssueLayout layout, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
         public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> GetAllIssues();
