@@ -369,6 +369,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AudioClip
                 });
 
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.Texture,
+                    name = "Textures",
+                    menuLabel = "Experimental/Textures",
+                    menuOrder = 6,
+                    showFilters = true,
+                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
+                });
+
 #if UNITY_2019_1_OR_NEWER
                 ViewDescriptor.Register(new ViewDescriptor
                 {
@@ -386,17 +397,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
                 });
 
-                ViewDescriptor.Register(new ViewDescriptor
-                {
-                    category = IssueCategory.Texture,
-                    name = "Texture",
-                    menuLabel = "Experimental/Textures",
-                    menuOrder = 6,
-                    showInfoPanel = true,
-                    showFilters = true,
-                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
-                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
-                });
 #endif
 
                 ViewDescriptor.Register(new ViewDescriptor
