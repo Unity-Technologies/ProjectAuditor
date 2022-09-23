@@ -195,7 +195,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public IssueCategory[] GetCategories()
         {
-            return m_Modules.Where(module => module.isSupported).SelectMany(m => m.GetCategories()).ToArray();
+            return m_Modules.Where(module => module.isSupported).SelectMany(m => m.categories).ToArray();
         }
 
         public IssueLayout GetLayout(IssueCategory category)

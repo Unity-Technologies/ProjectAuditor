@@ -596,7 +596,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_ProjectReport == null)
                 m_ProjectReport = new ProjectReport();
 
-            var categories = module.GetCategories();
+            var categories = module.categories;
             foreach (var category in categories)
             {
                 m_ProjectReport.ClearIssues(category);
@@ -689,15 +689,15 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var requestedCategories = new List<IssueCategory>(new[] {IssueCategory.MetaData});
             if ((m_SelectedModules.HasFlag(BuiltInModules.Code)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<CodeModule>().GetCategories());
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<CodeModule>().categories);
             if (m_SelectedModules.HasFlag(BuiltInModules.Settings))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<SettingsModule>().GetCategories());
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<SettingsModule>().categories);
             if ((m_SelectedModules.HasFlag(BuiltInModules.Shaders)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<ShadersModule>().GetCategories());
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<ShadersModule>().categories);
             if ((m_SelectedModules.HasFlag(BuiltInModules.Resources)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().GetCategories());
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().categories);
             if ((m_SelectedModules.HasFlag(BuiltInModules.BuildReport)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().GetCategories());
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().categories);
 
             return requestedCategories.ToArray();
         }

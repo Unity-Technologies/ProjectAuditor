@@ -14,6 +14,11 @@ namespace Unity.ProjectAuditor.Editor.Core
             get;
         }
 
+        public IssueCategory[] categories
+        {
+            get { return supportedLayouts.Select(l => l.category).ToArray(); }
+        }
+
         public virtual bool isEnabledByDefault => true;
 
         public virtual bool isSupported => true;
@@ -23,11 +28,6 @@ namespace Unity.ProjectAuditor.Editor.Core
         public abstract IReadOnlyCollection<IssueLayout> supportedLayouts
         {
             get;
-        }
-
-        public IssueCategory[] GetCategories()
-        {
-            return supportedLayouts.Select(l => l.category).ToArray();
         }
 
         public virtual void Initialize(ProjectAuditorConfig config)
