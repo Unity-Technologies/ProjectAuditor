@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.SettingsAnalysis;
 using UnityEngine.Profiling;
 using UnityEditor;
 using UnityEngine;
@@ -42,11 +44,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
         public override string name => "Textures";
 
+        List<ITextureAnalyzer> m_Analyzers;
+        HashSet<ProblemDescriptor> m_ProblemDescriptors;
+
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_TexturesIssueLayout,
         };
 
+        public override IReadOnlyCollection<ProblemDescriptor> supportedDescriptors => m_ProblemDescriptors;
+
+        public override void Initialize(ProjectAuditorConfig config)
+        {
+            m_Analyzers = new List<ITextureAnalyzer>();
+            m_ProblemDescriptors = new HashSet<ProblemDescriptor>();
+
+            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ITextureAnalyzer)))
+                AddAnalyzer(Activator.CreateInstance(type) as ITextureAnalyzer);
+        }
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
@@ -100,5 +115,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         }
 
         public override bool isEnabledByDefault => false;
+
+
+        void AddAnalyzer(ITextureAnalyzer analyzer)
+        {
+            analyzer.Initialize(this);
+            m_Analyzers.Add(analyzer);
+        }
     }
 }
