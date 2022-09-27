@@ -352,6 +352,19 @@ namespace Unity.ProjectAuditor.Editor.Core
         protected override void WriteIssue(ProjectIssue issue);
     }
 
+    public interface IInstructionAnalyzer
+    {
+        public System.Collections.Generic.IReadOnlyCollection<Mono.Cecil.Cil.OpCode> opCodes { get; }
+        public ProjectIssueBuilder Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
+        public void Initialize(ProjectAuditorModule module);
+    }
+
+    public interface ISettingsAnalyzer
+    {
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform);
+        public void Initialize(ProjectAuditorModule module);
+    }
+
     public class PackageDependencyNode : DependencyNode
     {
         public PackageDependencyNode(string name, string[] deps = default(string[])) {}
@@ -384,16 +397,6 @@ namespace Unity.ProjectAuditor.Editor.Core
         public ProjectIssueBuilder WithLocation(Location location);
         public ProjectIssueBuilder WithLocation(string path, int line = 0);
         public ProjectIssueBuilder WithSeverity(Rule.Severity severity);
-    }
-}
-
-namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
-{
-    public interface IInstructionAnalyzer
-    {
-        public System.Collections.Generic.IReadOnlyCollection<Mono.Cecil.Cil.OpCode> opCodes { get; }
-        public Unity.ProjectAuditor.Editor.Core.ProjectIssueBuilder Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
-        public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
     }
 }
 
@@ -531,14 +534,5 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Shape = 1,
         SizeOnDisk = 8,
         TextureCompression = 4,
-    }
-}
-
-namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
-{
-    public interface ISettingsAnalyzer
-    {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform);
-        public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
     }
 }
