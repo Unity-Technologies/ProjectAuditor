@@ -104,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #endif
         }
 
-        public static int GetVariantCount(Shader shader)
+        public static ulong GetVariantCount(Shader shader)
         {
             if (s_TypeShaderUtil == null)
                 Init();
@@ -112,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             if (s_MethodGetShaderVariantCount == null)
                 return 0;
 
-            return (int)s_MethodGetShaderVariantCount.Invoke(null, new object[] { shader});
+            return (ulong)s_MethodGetShaderVariantCount.Invoke(null, new object[] { shader});
         }
 
         public static bool HasInstancing(Shader shader)
