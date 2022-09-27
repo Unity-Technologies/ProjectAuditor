@@ -109,6 +109,31 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
+        static readonly ProblemDescriptor k_DescriptorInitializeOnLoad = new ProblemDescriptor
+            (
+            "PAC0233",
+            "InitializeOnLoad attribute",
+            Area.CPU,
+            "InitializeOnLoad allows you to initialize an Editor class when Unity loads, and when your scripts are recompiled. This can slow down Editor iteration times.",
+            "Try to avoid InitializeOnLoad when possible."
+            )
+        {
+            messageFormat = "InitializeOnLoad attribute on '{0}'"
+        };
+
+        static readonly ProblemDescriptor k_DescriptorInitializeOnLoadMethod = new ProblemDescriptor
+            (
+            "PAC0234",
+            "InitializeOnLoadMethod attribute",
+            Area.CPU,
+            "InitializeOnLoadMethod allows you to initialize an Editor class method when Unity loads, and when your scripts are recompiled. This can slow down Editor iteration times.",
+            "Try to avoid InitializeOnLoadMethod when possible."
+            )
+        {
+            messageFormat = "InitializeOnLoadMethod attribute on '{0}'"
+        };
+
+
         ProjectAuditorConfig m_Config;
         List<IInstructionAnalyzer> m_Analyzers;
         List<OpCode> m_OpCodes;
@@ -325,13 +350,33 @@ namespace Unity.ProjectAuditor.Editor.Modules
             using (var assembly = AssemblyDefinition.ReadAssembly(assemblyInfo.path,
                 new ReaderParameters {ReadSymbols = true, AssemblyResolver = assemblyResolver, MetadataResolver = new MetadataResolverWithCache(assemblyResolver)}))
             {
-                foreach (var methodDefinition in MonoCecilHelper.AggregateAllTypeDefinitions(assembly.MainModule.Types)
-                         .SelectMany(t => t.Methods))
+                foreach (var typeDefinition in MonoCecilHelper.AggregateAllTypeDefinitions(assembly.MainModule.Types))
                 {
-                    if (!methodDefinition.HasBody)
-                        continue;
+                    var customAttribute = MonoCecilHelper.GetCustomAttribute<InitializeOnLoadAttribute>(typeDefinition);
+                    if (customAttribute != null)
+                    {
+                        onIssueFound(
+                            ProjectIssue.Create(IssueCategory.Code, k_DescriptorInitializeOnLoad, typeDefinition.FullName)
+                                .WithCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.name})
+                        );
+                    }
 
-                    AnalyzeMethodBody(assemblyInfo, methodDefinition, onCallFound, onIssueFound);
+                    foreach (var methodDefinition in typeDefinition.Methods)
+                    {
+                        if (!methodDefinition.HasBody)
+                            continue;
+
+                        customAttribute = MonoCecilHelper.GetCustomAttribute<InitializeOnLoadMethodAttribute>(methodDefinition);
+                        if (customAttribute != null)
+                        {
+                            onIssueFound(
+                                ProjectIssue.Create(IssueCategory.Code, k_DescriptorInitializeOnLoadMethod, $"{typeDefinition.FullName}.{methodDefinition.Name}")
+                                    .WithCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.name})
+                            );
+                        }
+
+                        AnalyzeMethodBody(assemblyInfo, methodDefinition, onCallFound, onIssueFound);
+                    }
                 }
             }
 

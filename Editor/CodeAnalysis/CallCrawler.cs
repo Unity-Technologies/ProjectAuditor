@@ -82,6 +82,8 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
                     const int depth = 0;
                     var root = issue.dependencies;
+                    if (root == null)
+                        continue;
                     BuildHierarchy(root as CallTreeNode, depth);
 
                     // temp fix for null location (code analysis was unable to get sequence point)

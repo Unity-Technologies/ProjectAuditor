@@ -40,5 +40,14 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
             return false;
         }
+
+        public static CustomAttribute GetCustomAttribute<T>(IMemberDefinition memberDefinition)
+        {
+            if (!memberDefinition.HasCustomAttributes)
+                return null;
+
+            var attrNameHash = typeof(T).FullName.GetHashCode();
+            return memberDefinition.CustomAttributes.SingleOrDefault(attr => attr.AttributeType.FullName.GetHashCode() == attrNameHash);
+        }
     }
 }
