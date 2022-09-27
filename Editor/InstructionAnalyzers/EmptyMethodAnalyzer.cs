@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Core;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
@@ -19,6 +20,13 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         {
             messageFormat = "MonoBehaviour method '{0}' is empty"
         };
+
+        readonly OpCode[] m_OpCodes =
+        {
+            OpCodes.Ret
+        };
+
+        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
         public void Initialize(ProjectAuditorModule module)
         {
@@ -43,11 +51,6 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 return null;
 
             return ProjectIssue.Create(IssueCategory.Code, k_Descriptor, methodDefinition.Name);
-        }
-
-        public IEnumerable<OpCode> GetOpCodes()
-        {
-            yield return OpCodes.Ret;
         }
 
         public static ProblemDescriptor GetDescriptor()

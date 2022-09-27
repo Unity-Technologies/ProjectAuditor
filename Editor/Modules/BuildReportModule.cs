@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -121,19 +122,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             get { return s_BuildReportProvider; }
         }
 
-        public override IEnumerable<IssueLayout> GetLayouts()
-        {
-            yield return k_FileLayout;
-            yield return k_StepLayout;
-        }
+        public override string name => "Build Report";
 
 #if !BUILD_REPORT_API_SUPPORT
-        public override bool IsSupported()
-        {
-            return false;
-        }
-
+        public override bool isSupported => false;
 #endif
+
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        {
+            k_FileLayout,
+            k_StepLayout
+        };
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {

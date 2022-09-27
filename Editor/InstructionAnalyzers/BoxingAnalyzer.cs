@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Unity.ProjectAuditor.Editor.Core;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
@@ -19,6 +20,13 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             messageFormat = "Conversion from value type '{0}' to ref type"
         };
 
+        readonly OpCode[] m_OpCodes =
+        {
+            OpCodes.Box
+        };
+
+        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_Descriptor);
@@ -34,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 if (genericType.HasReferenceTypeConstraint)
                     isValueType = false;
                 else
-#if UNITY_2022_2_OR_NEWER
+#if UNITY_MONO_CECIL_1_11_4_OR_NEWER
                     foreach (var constraint in genericType.Constraints)
                         if (!constraint.ConstraintType.IsValueType)
                             isValueType = false;
@@ -55,11 +63,6 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 typeName = "double";
 
             return ProjectIssue.Create(IssueCategory.Code, k_Descriptor, typeName);
-        }
-
-        public IEnumerable<OpCode> GetOpCodes()
-        {
-            yield return OpCodes.Box;
         }
     }
 }

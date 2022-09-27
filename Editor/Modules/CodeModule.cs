@@ -7,7 +7,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
-using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -115,19 +115,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         Thread m_AssemblyAnalysisThread;
 
-        public override IEnumerable<ProblemDescriptor> GetDescriptors()
-        {
-            return m_ProblemDescriptors;
-        }
+        public override string name => "Code";
 
-        public override IEnumerable<IssueLayout> GetLayouts()
+        public override IReadOnlyCollection<ProblemDescriptor> supportedDescriptors => m_ProblemDescriptors;
+
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
-            yield return k_AssemblyLayout;
-            yield return k_PrecompiledAssemblyLayout;
-            yield return k_IssueLayout;
-            yield return k_CompilerMessageLayout;
-            yield return k_GenericIssueLayout;
-        }
+            k_AssemblyLayout,
+            k_PrecompiledAssemblyLayout,
+            k_IssueLayout,
+            k_CompilerMessageLayout,
+            k_GenericIssueLayout,
+        };
 
         public override void Initialize(ProjectAuditorConfig config)
         {
@@ -393,7 +392,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 Profiler.BeginSample("CodeModule.Analyzing " + inst.OpCode.Name);
                 foreach (var analyzer in m_Analyzers)
-                    if (analyzer.GetOpCodes().Contains(inst.OpCode))
+                    if (analyzer.opCodes.Contains(inst.OpCode))
                     {
                         Profiler.BeginSample("CodeModule " + analyzer.GetType().Name);
                         var issueBuilder = analyzer.Analyze(caller, inst);
@@ -416,7 +415,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             analyzer.Initialize(this);
             m_Analyzers.Add(analyzer);
-            m_OpCodes.AddRange(analyzer.GetOpCodes());
+            m_OpCodes.AddRange(analyzer.opCodes);
         }
 
         void ProcessCompilerMessages(AssemblyCompilationTask compilationTask, CompilerMessage[] compilerMessages, Action<ProjectIssue> onIssueFound)

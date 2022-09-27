@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 
-namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
+namespace Unity.ProjectAuditor.Editor.Core
 {
     public interface ISettingsAnalyzer
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -131,7 +132,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onOpenIssue);
 
             if (m_TextFilter == null)
-                m_TextFilter = new TextFilter();
+                m_TextFilter = new TextFilter(layout.properties);
 
             var helpButtonTooltip = string.Format("Open Reference for {0}", m_Desc.name);
             m_HelpButtonContent = Utility.GetIcon(Utility.IconType.Help, helpButtonTooltip);
@@ -262,13 +263,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUI.BeginChangeCheck();
             m_TextFilter.ignoreCase = !EditorGUILayout.ToggleLeft(Contents.TextSearchCaseSensitive, !m_TextFilter.ignoreCase, GUILayout.Width(160));
 
-            if (UserPreferences.developerMode)
+            if (UserPreferences.developerMode && m_Desc.showDependencyView)
             {
                 // this is only available in developer mode because it is still too slow at the moment
-                GUI.enabled = m_Desc.showDependencyView;
-                m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Call Tree (slow)",
+                m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Dependencies (might be slow)",
                     m_TextFilter.searchDependencies, GUILayout.Width(160));
-                GUI.enabled = true;
             }
 
             if (EditorGUI.EndChangeCheck())
@@ -322,7 +321,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawViewOptions()
         {
-            if (!m_Module.IsEnabledByDefault() && m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeNow, EditorStyles.toolbarButton, GUILayout.Width(120)))
+            if (!m_Module.isEnabledByDefault && m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeNow, EditorStyles.toolbarButton, GUILayout.Width(120)))
             {
                 m_ViewManager.onAnalyze(m_Module);
             }
@@ -631,8 +630,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
-            public static readonly GUIContent FlatModeButton = new GUIContent("Flat View");
-            public static readonly GUIContent Zoom = new GUIContent("Zoom");
 
             public static readonly GUIContent InfoFoldout = new GUIContent("Information");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");

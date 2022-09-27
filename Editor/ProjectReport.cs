@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
@@ -61,14 +62,14 @@ namespace Unity.ProjectAuditor.Editor
             return result;
         }
 
-        internal void AddIssues(IEnumerable<ProjectIssue> issues)
+        public void AddIssues(IEnumerable<ProjectIssue> issues)
         {
             s_Mutex.WaitOne();
             m_Issues.AddRange(issues);
             s_Mutex.ReleaseMutex();
         }
 
-        internal void ClearIssues(IssueCategory category)
+        public void ClearIssues(IssueCategory category)
         {
             s_Mutex.WaitOne();
             m_Issues.RemoveAll(issue => issue.category == category);

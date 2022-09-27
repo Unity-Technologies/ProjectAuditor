@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
-namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
+namespace Unity.ProjectAuditor.Editor.Core
 {
     public interface IInstructionAnalyzer
     {
+        IReadOnlyCollection<OpCode> opCodes { get; }
+
         void Initialize(ProjectAuditorModule module);
 
         ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst);
-
-        IEnumerable<OpCode> GetOpCodes();
     }
 }

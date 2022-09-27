@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.Core
 {
     public class CSVExporter : Exporter
     {

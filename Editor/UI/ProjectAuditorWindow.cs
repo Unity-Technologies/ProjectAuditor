@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -258,7 +259,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Asset,
+                category = IssueCategory.Resource,
                 name = "Resources",
                 menuLabel = "Assets/Resources",
                 menuOrder = 1,
@@ -347,6 +348,38 @@ namespace Unity.ProjectAuditor.Editor.UI
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Packages
                 });
 
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.PackageVersion,
+                    name = "Packages Version",
+                    menuLabel = "Experimental/Package Version",
+                    menuOrder = 106,
+                    showRightPanels = true,
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageVersion
+                });
+
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.AudioClip,
+                    name = "AudioClip",
+                    menuLabel = "Experimental/Audio Clips",
+                    menuOrder = 107,
+                    showFilters = true,
+                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AudioClip
+                });
+
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.Texture,
+                    name = "Textures",
+                    menuLabel = "Experimental/Textures",
+                    menuOrder = 6,
+                    showFilters = true,
+                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
+                });
+
 #if UNITY_2019_1_OR_NEWER
                 ViewDescriptor.Register(new ViewDescriptor
                 {
@@ -363,6 +396,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     },
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
                 });
+
 #endif
 
                 ViewDescriptor.Register(new ViewDescriptor
@@ -441,7 +475,22 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showInfoPanel = true,
                 showMuteOptions = true,
                 showRightPanels = true,
-                onOpenIssue = EditorUtil.OpenProjectSettings,
+                onOpenIssue = (location) =>
+                {
+#if UNITY_2020_2_OR_NEWER
+                    var guid = AssetDatabase.GUIDFromAssetPath(location.Path);
+                    if (guid.Empty())
+                    {
+                        EditorUtil.OpenProjectSettings(location);
+                    }
+                    else
+                    {
+                        EditorUtil.FocusOnAssetInProjectWindow(location);
+                    }
+#else
+                    EditorUtil.OpenProjectSettings(location);
+#endif
+                },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ProjectSettings
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -536,7 +585,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         void AuditSingleModule<T>() where T : ProjectAuditorModule
         {
             var module = m_ProjectAuditor.GetModule<T>();
-            if (!module.IsSupported())
+            if (!module.isSupported)
                 return;
 
             AuditSingleModule(module);
@@ -547,7 +596,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_ProjectReport == null)
                 m_ProjectReport = new ProjectReport();
 
-            var categories = module.GetCategories();
+            var categories = module.categories;
             foreach (var category in categories)
             {
                 m_ProjectReport.ClearIssues(category);
@@ -564,6 +613,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 view.Clear();
             }
 
+            var platform = m_ProjectReport.GetIssues(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));
             var projectAuditorParams = new ProjectAuditorParams
             {
                 onIncomingIssues = issues =>
@@ -576,6 +626,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ProjectReport.AddIssues(issues);
                 }
             };
+
+            if (platform != null)
+                projectAuditorParams.platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), platform.GetCustomProperty(MetaDataProperty.Value));
             module.Audit(projectAuditorParams, new ProgressBar());
         }
 
@@ -636,15 +689,15 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var requestedCategories = new List<IssueCategory>(new[] {IssueCategory.MetaData});
             if ((m_SelectedModules.HasFlag(BuiltInModules.Code)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<CodeModule>().GetCategories());
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<CodeModule>().categories);
             if (m_SelectedModules.HasFlag(BuiltInModules.Settings))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<SettingsModule>().GetCategories());
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<SettingsModule>().categories);
             if ((m_SelectedModules.HasFlag(BuiltInModules.Shaders)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<ShadersModule>().GetCategories());
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<ShadersModule>().categories);
             if ((m_SelectedModules.HasFlag(BuiltInModules.Resources)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().GetCategories());
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().categories);
             if ((m_SelectedModules.HasFlag(BuiltInModules.BuildReport)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().GetCategories());
+                requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().categories);
 
             return requestedCategories.ToArray();
         }

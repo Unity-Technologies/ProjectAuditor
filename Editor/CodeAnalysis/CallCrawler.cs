@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Mono.Cecil;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine.Profiling;
 
