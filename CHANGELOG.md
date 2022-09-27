@@ -8,10 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added 'documentation' support to descriptor
 * Added diagnostic area _Quality_, _Support_ and _Requirement_ 
 * Added Packages module to report installed packages and dependencies
-* Fixed analysis platform on incremental audit
-* Fixed compilation error due to newer com.unity.nuget.mono-cecil 
 * Fixed package version parsing exception
 * Improved text search to match custom properties
+
+## [0.8.4-preview] - 2022-09-27
+* Fixed analysis platform on incremental audit
+* Fixed compilation error due to newer com.unity.nuget.mono-cecil
 
 ## [0.8.3-preview] - 2022-09-05
 * Fixed *NullReferenceException* on Draw2D shader not being found
