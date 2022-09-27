@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.SettingsAnalysis;
 using UnityEngine.Profiling;
 using UnityEditor;
 using UnityEngine;
@@ -102,10 +101,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     })
                     .WithLocation(location);
 
+                foreach (var analyzer in m_Analyzers)
+                {
+                    analyzer.Analyze(currentPlatform, t, platformSettings);             //  run per texture that is audited
+                }
+
                 issues.Add(issue);
 
                 progress?.Advance();
             }
+
 
             if (issues.Count > 0)
                 projectAuditorParams.onIncomingIssues(issues);
@@ -115,7 +120,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         }
 
         public override bool isEnabledByDefault => false;
-
 
         void AddAnalyzer(ITextureAnalyzer analyzer)
         {
