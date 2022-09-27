@@ -523,7 +523,7 @@ Shader ""Custom/MyEditorShader""
 
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
-            Assert.AreEqual(ShadersModule.k_NotAvailable, shaderIssue.GetCustomProperty(ShaderProperty.NumVariants), "Num Variants: " + shaderIssue.GetCustomProperty(ShaderProperty.NumVariants));
+            Assert.AreEqual(ShadersModule.k_NotAvailable, shaderIssue.GetCustomProperty(ShaderProperty.NumBuiltVariants), "Num Variants: " + shaderIssue.GetCustomProperty(ShaderProperty.NumBuiltVariants));
 
 #if UNITY_2021_1_OR_NEWER
             var expectedNumPasses = 2;
