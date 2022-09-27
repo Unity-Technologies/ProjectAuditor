@@ -352,6 +352,12 @@ namespace Unity.ProjectAuditor.Editor.Core
         protected override void WriteIssue(ProjectIssue issue);
     }
 
+    public interface ITextureAnalyzer
+    {
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.TextureImporter currentimporter, UnityEditor.TextureImporterPlatformSettings tips);
+        public void Initialize(ProjectAuditorModule module);
+    }
+
     public class PackageDependencyNode : DependencyNode
     {
         public PackageDependencyNode(string name, string[] deps = default(string[])) {}
@@ -537,12 +543,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     public interface ISettingsAnalyzer
-    {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform);
-        public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
-    }
-
-    public interface ITextureAnalyzer
     {
         public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform);
         public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
