@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
+using UnityEngine;
 
 
 namespace Unity.ProjectAuditor.Editor.Modules
@@ -113,9 +114,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var recommendedVersionString = PackageUtils.GetPackageRecommendedVersion(package);
             if (!String.IsNullOrEmpty(package.version) && !String.IsNullOrEmpty(recommendedVersionString))
             {
-                var currentVersion = new Version(package.version);
-                var recommendedVersion = new Version(recommendedVersionString);
-                result = currentVersion.CompareTo(recommendedVersion);
+                try
+                {
+                    var currentVersion = new Version(package.version);
+                    var recommendedVersion = new Version(recommendedVersionString);
+                    result = currentVersion.CompareTo(recommendedVersion);
+                }
+                catch (ArgumentException e)
+                {
+                    Debug.LogWarningFormat("Package '{0}' with incorrect version format: {1}", package.name, package.version);
+                }
             }
 
             if (package.version.Contains("pre") || package.version.Contains("exp"))
