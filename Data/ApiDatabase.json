@@ -1472,6 +1472,14 @@
           "areas": ["CPU"],
           "problem": "<b>System.AppDomain.GetAssemblies</b> is expensive.",
           "solution": "Try to minimize calls to <b>System.AppDomain.GetAssemblies</b> by caching the returned assemblies. When possible, use <b>UnityEditor.TypeCache</b> for fast access to types, methods and fields."
+        },
+        {
+          "id": "PAC0232",
+          "type": "UnityEditor.AssetDatabase",
+          "method": "FindAssets",
+          "areas": ["CPU"],
+          "problem": "<b>UnityEditor.AssetDatabase.FindAssets</b> is expensive and can slow down the Editor for long periods of time on large projects.",
+          "solution": "Try to minimize calls to <b>UnityEditor.AssetDatabase.FindAssets</b>."
         }
     ]
 }

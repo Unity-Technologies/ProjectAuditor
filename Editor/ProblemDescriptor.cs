@@ -36,7 +36,22 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Load times
         /// </summary>
-        LoadTime
+        LoadTime,
+
+        /// <summary>
+        /// Quality. For example, using deprecated APIs that might be removed in the future.
+        /// </summary>
+        Quality,
+
+        /// <summary>
+        /// Lack of platform support. For example, using APIs that are not supported on a specific platform and might fail at runtime.
+        /// </summary>
+        Support,
+
+        /// <summary>
+        /// Required by platform. Typically this issue must be fixed before submitting to the platform store.
+        /// </summary>
+        Requirement
     }
 
     /// <summary>
@@ -59,6 +74,7 @@ namespace Unity.ProjectAuditor.Editor
         public string[] platforms;
         public string problem;
         public string solution;
+        public string documentation;
         public string minimumVersion;
         public string maximumVersion;
 

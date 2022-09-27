@@ -11,6 +11,9 @@ namespace Unity.ProjectAuditor.Editor
         GPU = 1,
         LoadTime = 5,
         Memory = 2,
+        Quality = 6,
+        Requirement = 8,
+        Support = 7,
     }
 
     public interface IProgress
@@ -28,22 +31,25 @@ namespace Unity.ProjectAuditor.Editor
     public enum IssueCategory
     {
         Assembly = 11,
+        AudioClip = 17,
         BuildFile = 8,
         BuildStep = 9,
         BuildSummary = 10,
         Code = 4,
         CodeCompilerMessage = 5,
-        ComputeShaderVariant = 15,
-        FirstCustomCategory = 16,
+        ComputeShaderVariant = 18,
+        FirstCustomCategory = 19,
         GenericInstance = 6,
         MetaData = 0,
         Package = 14,
+        PackageVersion = 15,
         PrecompiledAssembly = 12,
         ProjectSetting = 7,
         Resource = 1,
         Shader = 2,
         ShaderCompilerMessage = 13,
         ShaderVariant = 3,
+        Texture = 16,
     }
 
     public class IssueLayout
@@ -74,6 +80,7 @@ namespace Unity.ProjectAuditor.Editor
         public bool critical = false;
         public string customevaluator;
         public string description;
+        public string documentation;
         public string id;
         public string maximumVersion;
         public string messageFormat = @"{0}";
@@ -180,6 +187,8 @@ namespace Unity.ProjectAuditor.Editor
     public sealed class ProjectReport
     {
         public int NumTotalIssues { get; }
+        public void AddIssues(System.Collections.Generic.IEnumerable<ProjectIssue> issues);
+        public void ClearIssues(IssueCategory category);
         public void ExportToCSV(string path, IssueLayout layout, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
         public void ExportToHTML(string path, IssueLayout layout, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
         public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> GetAllIssues();
@@ -344,6 +353,19 @@ namespace Unity.ProjectAuditor.Editor.Core
         protected override void WriteIssue(ProjectIssue issue);
     }
 
+    public interface IInstructionAnalyzer
+    {
+        public System.Collections.Generic.IReadOnlyCollection<Mono.Cecil.Cil.OpCode> opCodes { get; }
+        public ProjectIssueBuilder Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
+        public void Initialize(ProjectAuditorModule module);
+    }
+
+    public interface ISettingsAnalyzer
+    {
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform);
+        public void Initialize(ProjectAuditorModule module);
+    }
+
     public class PackageDependencyNode : DependencyNode
     {
         public PackageDependencyNode(string name, string[] deps = default(string[])) {}
@@ -354,6 +376,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
     public abstract class ProjectAuditorModule
     {
+        public IssueCategory[] categories { get; }
         public virtual bool isEnabledByDefault { get; }
         public virtual bool isSupported { get; }
         public abstract string name { get; }
@@ -361,7 +384,6 @@ namespace Unity.ProjectAuditor.Editor.Core
         public abstract System.Collections.Generic.IReadOnlyCollection<IssueLayout> supportedLayouts { get; }
         protected ProjectAuditorModule() {}
         public abstract void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = default(IProgress));
-        public IssueCategory[] GetCategories();
         public virtual void Initialize(ProjectAuditorConfig config);
         public virtual void RegisterDescriptor(ProblemDescriptor descriptor);
     }
@@ -379,16 +401,6 @@ namespace Unity.ProjectAuditor.Editor.Core
     }
 }
 
-namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
-{
-    public interface IInstructionAnalyzer
-    {
-        public System.Collections.Generic.IReadOnlyCollection<Mono.Cecil.Cil.OpCode> opCodes { get; }
-        public Unity.ProjectAuditor.Editor.Core.ProjectIssueBuilder Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
-        public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
-    }
-}
-
 namespace Unity.ProjectAuditor.Editor.Modules
 {
     public enum AssemblyProperty
@@ -396,6 +408,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
         CompileTime = 1,
         Num = 2,
         ReadOnly = 0,
+    }
+
+    public enum AudioClipProperty
+    {
+        CompressionFormat = 4,
+        ForceToMono = 0,
+        LoadInBackground = 1,
+        LoadType = 3,
+        Num = 5,
+        PreloadAudioData = 2,
     }
 
     public enum BuildReportFileProperty
@@ -455,10 +477,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public enum PackageProperty
     {
-        Name = 0,
         Num = 3,
+        PackageID = 0,
         Source = 2,
         Version = 1,
+    }
+
+    public enum PackageVersionProperty
+    {
+        CurrentVersion = 1,
+        Experimental = 3,
+        Num = 4,
+        PackageID = 0,
+        RecommendedVersion = 2,
     }
 
     public enum PrecompiledAssemblyProperty
@@ -501,13 +532,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Stage = 3,
         Tier = 2,
     }
-}
 
-namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
-{
-    public interface ISettingsAnalyzer
+    public enum TextureProperties
     {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform);
-        public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
+        Format = 3,
+        ImporterType = 2,
+        MipMapEnabled = 5,
+        Name = 0,
+        Num = 10,
+        Platform = 9,
+        Readable = 6,
+        Resolution = 7,
+        Shape = 1,
+        SizeOnDisk = 8,
+        TextureCompression = 4,
     }
 }

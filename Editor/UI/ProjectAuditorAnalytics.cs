@@ -54,7 +54,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             ShaderCompilerMessages,
             PrecompiledAssemblies,
             Packages,
-            ComputeShaderVariants,
+            Textures,
+            PackageVersion,
+            AudioClip,
+            ComputeShaderVariants
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -169,6 +172,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "shader_compiler_messages_tab";
                 case UIButton.ShaderVariants:
                     return "shader_variants_tab";
+                case UIButton.ComputeShaderVariants:
+                    return "compute_shader_variants_tab";
                 case UIButton.ProjectSettings:
                     return "settings_tab";
                 case UIButton.Generics:
@@ -205,6 +210,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "load";
                 case UIButton.Packages:
                     return "packages";
+                case UIButton.Textures:
+                    return "textures";
+                case UIButton.PackageVersion:
+                    return "package_version";
+                case UIButton.AudioClip:
+                    return "audio_clip";
                 default:
                     Debug.LogFormat("SendUIButtonEvent: Unsupported button type : {0}", uiButton);
                     return "";
