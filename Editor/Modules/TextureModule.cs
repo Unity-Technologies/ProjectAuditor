@@ -42,50 +42,52 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
         public override string name => "Textures";
 
+        public override bool isEnabledByDefault => false;
+
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_TexturesIssueLayout,
         };
 
-
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var allTextures = AssetDatabase.FindAssets("t: Texture, a:assets");
             var issues = new List<ProjectIssue>();
-            var currentPlatform = projectAuditorParams.platform;
+            var currentPlatform = projectAuditorParams.platform.ToString();
 
             progress?.Start("Finding Textures", "Search in Progress...", allTextures.Length);
 
-            foreach (var aTexture in allTextures)
+            foreach (var guid in allTextures)
             {
-                var pathToTexture = AssetDatabase.GUIDToAssetPath(aTexture);
-                var location = new Location(pathToTexture);
+                var pathToTexture = AssetDatabase.GUIDToAssetPath(guid);
+                var textureImporter = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
+                if (textureImporter == null)
+                {
+                    continue; //continues if the object found is not a member of the Texture Group:(Texture2D, Texture3D, CubeMap, 2D Array) - Example Use: RenderTextures won't be analyzed.
+                }
 
-                var t = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
-                if (t == null) { continue; } //continues if the object found is not a member of the Texture Group:(Texture2D, Texture3D, CubeMap, 2D Array) - Example Use: RenderTextures won't be analyzed.
+                var texture = AssetDatabase.LoadAssetAtPath<Texture>(pathToTexture);
+                var tSize = Profiler.GetRuntimeMemorySizeLong(texture);
+                var platformSettings = textureImporter.GetPlatformTextureSettings(currentPlatform);
 
-                var tName = (Texture)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture));
-                var tSize = Profiler.GetRuntimeMemorySizeLong(tName);
+                var resolution = (texture.width + "x" + texture.height);
 
-                var platformSettings = t.GetPlatformTextureSettings(currentPlatform.ToString());
-
-                var resolution = (tName.width + "x" + tName.height);
-
-                var issue = ProjectIssue.Create(k_TexturesIssueLayout.category, tName.name).WithCustomProperties(
-                    new object[((int)TextureProperties.Num)]
-                    {
-                        tName.name,
-                        t.textureShape,
-                        t.textureType,
-                        platformSettings.format,
-                        platformSettings.textureCompression,
-                        t.mipmapEnabled,
-                        t.isReadable,
-                        resolution,
-                        tSize,
-                        currentPlatform
-                    })
-                    .WithLocation(location);
+                var issue = ProjectIssue.Create(k_TexturesIssueLayout.category, texture.name)
+                    .WithCustomProperties(
+                        new object[((int)TextureProperties.Num)]
+                        {
+                            texture.name,
+                            textureImporter.textureShape,
+                            textureImporter.textureType,
+                            platformSettings.format,
+                            platformSettings.textureCompression,
+                            textureImporter.mipmapEnabled,
+                            textureImporter.isReadable,
+                            resolution,
+                            tSize,
+                            currentPlatform
+                        })
+                    .WithLocation(new Location(pathToTexture));
 
                 issues.Add(issue);
 
@@ -98,7 +100,5 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
-
-        public override bool isEnabledByDefault => false;
     }
 }
