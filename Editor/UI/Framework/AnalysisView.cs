@@ -263,13 +263,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUI.BeginChangeCheck();
             m_TextFilter.ignoreCase = !EditorGUILayout.ToggleLeft(Contents.TextSearchCaseSensitive, !m_TextFilter.ignoreCase, GUILayout.Width(160));
 
-            if (UserPreferences.developerMode)
+            if (UserPreferences.developerMode && m_Desc.showDependencyView)
             {
                 // this is only available in developer mode because it is still too slow at the moment
-                GUI.enabled = m_Desc.showDependencyView;
-                m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Call Tree (slow)",
+                m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Dependencies (might be slow)",
                     m_TextFilter.searchDependencies, GUILayout.Width(160));
-                GUI.enabled = true;
             }
 
             if (EditorGUI.EndChangeCheck())
