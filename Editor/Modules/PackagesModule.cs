@@ -120,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     var recommendedVersion = new Version(recommendedVersionString);
                     result = currentVersion.CompareTo(recommendedVersion);
                 }
-                catch (ArgumentException e)
+                catch (ArgumentException)
                 {
                     Debug.LogWarningFormat("Package '{0}' with incorrect version format: {1}", package.name, package.version);
                 }
