@@ -47,11 +47,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.PackageVersion,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Name", longName = "Package Name"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.PackageID), format = PropertyFormat.String, name = "ID", longName = "Package ID", defaultGroup = true},
+                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Package Issue"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.CurrentVersion), format = PropertyFormat.String, name = "Current Version" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.RecommendedVersion), format = PropertyFormat.String, name = "Recommended Version"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.Experimental), format = PropertyFormat.Bool, name = "Experimental/Preview" }
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.Experimental), format = PropertyFormat.Bool, name = "Experimental/Preview" },
+                new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true},
             }
         };
 
@@ -60,16 +60,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "PAP0001",
             "Upgradable packages",
             new[] { Area.Quality },
-            "A newer version of this package is available",
-            "we strongly encourage you to update from the Unity Package Manager."
-        );
+            "A newer recommended version of this package is available.",
+            "Upgrade the package via Package Manager."
+        )
+        {
+            messageFormat = "'{0}' is not up to date",
+        };
+
 
         static readonly ProblemDescriptor k_RecommendPackagePreView = new ProblemDescriptor(
             "PAP0002",
             "Experimental/Preview packages",
             new[] { Area.Quality },
-            "Preview Packages are in the early stages of development and not yet ready for production. We recommend using these only for testing purposes and to give us direct feedback"
-        );
+            "Experimental or Preview packages are in the early stages of development and not yet ready for production.",
+            "We recommend using these only for testing purposes and to give us direct feedback"
+        )
+        {
+            messageFormat = "'{0}' is in preview/experimental mode"
+        };
 
         public override string name => "Packages";
 
@@ -86,19 +94,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var issues = new List<ProjectIssue>();
             foreach (var package in request.Result)
             {
-                AddInstalledPackage(package, issues);
-                AddPackageVersionIssue(package, issues);
+                issues.AddRange(ProcessInstalledPackages(package));
+                issues.AddRange(ProcessPackageVersions(package));
             }
             if (issues.Count > 0)
                 projectAuditorParams.onIncomingIssues(issues);
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
-        void AddInstalledPackage(UnityEditor.PackageManager.PackageInfo package, List<ProjectIssue> issues)
+        IEnumerable<ProjectIssue> ProcessInstalledPackages(UnityEditor.PackageManager.PackageInfo package)
         {
             var dependencies = package.dependencies.Select(d => d.name + " [" + d.version + "]").ToArray();
             var node = new PackageDependencyNode(package.displayName, dependencies);
-            var packageIssue = ProjectIssue.Create(IssueCategory.Package, package.displayName)
+            yield return ProjectIssue.Create(IssueCategory.Package, package.displayName)
                 .WithCustomProperties(new object[(int)PackageProperty.Num]
                 {
                     package.name,
@@ -106,17 +114,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     package.source
                 })
                 .WithDependencies(node);
-            issues.Add(packageIssue);
         }
 
-        void AddPackageVersionIssue(UnityEditor.PackageManager.PackageInfo package, List<ProjectIssue> issues)
+        IEnumerable<ProjectIssue> ProcessPackageVersions(UnityEditor.PackageManager.PackageInfo package)
         {
             var recommendedVersionString = PackageUtils.GetPackageRecommendedVersion(package);
             if (!string.IsNullOrEmpty(package.version) && !string.IsNullOrEmpty(recommendedVersionString))
             {
                 if (!recommendedVersionString.Equals(package.version))
                 {
-                    var packageVersionIssue = ProjectIssue.Create(IssueCategory.PackageVersion, k_RecommendPackageUpgrade, package.displayName)
+                    yield return ProjectIssue.Create(IssueCategory.PackageVersion, k_RecommendPackageUpgrade, package.name)
                         .WithCustomProperties(new object[(int)PackageVersionProperty.Num]
                         {
                             package.name,
@@ -124,12 +131,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             recommendedVersionString,
                             false
                         });
-                    issues.Add(packageVersionIssue);
                 }
             }
             else if (package.version.Contains("pre") || package.version.Contains("exp"))
             {
-                var packageVersionIssue = ProjectIssue.Create(IssueCategory.PackageVersion, k_RecommendPackagePreView, package.displayName)
+                yield return ProjectIssue.Create(IssueCategory.PackageVersion, k_RecommendPackagePreView, package.name)
                     .WithCustomProperties(new object[(int)PackageVersionProperty.Num]
                     {
                         package.name,
@@ -137,7 +143,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         recommendedVersionString,
                         true
                     });
-                issues.Add(packageVersionIssue);
             }
         }
     }
