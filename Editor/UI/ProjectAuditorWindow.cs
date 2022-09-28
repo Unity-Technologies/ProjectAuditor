@@ -393,6 +393,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     name = "Textures",
                     menuLabel = "Experimental/Textures",
                     menuOrder = 6,
+                    descriptionWithIcon = true,
                     showFilters = true,
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
