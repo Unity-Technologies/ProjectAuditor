@@ -57,8 +57,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var matchIssue = installedPackages.FirstOrDefault(issue => issue.description == description);
 
             Assert.IsNotNull(matchIssue, "Package {0} not found. Packages: {1}", description, string.Join(", ", installedPackages.Select(p => p.description).ToArray()));
-            Assert.AreEqual(matchIssue.customProperties[0], name);
-            Assert.IsTrue(matchIssue.customProperties[2].StartsWith(source), "Package: " + description);
+            Assert.AreEqual(matchIssue.GetCustomProperty(PackageProperty.PackageID), name);
+            Assert.IsTrue(matchIssue.GetCustomProperty(PackageVersionProperty.RecommendedVersion).StartsWith(source), "Package: " + description);
 
             if (dependencies != null)
             {
@@ -73,22 +73,23 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Package_Upgrade_IsRecommended()
         {
             var issuePackages = Analyze(IssueCategory.PackageVersion);
-            var matchIssue = issuePackages.FirstOrDefault(issue => issue.customProperties[0] == "com.unity.2d.pixel-perfect");
+            var matchIssue = issuePackages.FirstOrDefault(issue => issue.GetCustomProperty(PackageVersionProperty.PackageID) == "com.unity.2d.pixel-perfect");
 
             Assert.IsNotNull(matchIssue, "Cannot find the upgrade package: com.unity.2d.pixel-perfect");
             Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.PackageID), "com.unity.2d.pixel-perfect");
             Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.CurrentVersion), "3.0.2");
-            var currentVersion = System.Version.Parse(matchIssue.GetCustomProperty(PackageVersionProperty.CurrentVersion));
-            var recommendedVersion = System.Version.Parse(matchIssue.GetCustomProperty(PackageVersionProperty.RecommendedVersion));
-            Assert.IsTrue(recommendedVersion.CompareTo(currentVersion) > 0, "The recommended version is wrong");
-            Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.Experimental), "False");
+
+            var currentVersion = matchIssue.GetCustomProperty(PackageVersionProperty.CurrentVersion);
+            var recommendedVersion = matchIssue.GetCustomProperty(PackageVersionProperty.RecommendedVersion);
+
+            Assert.AreNotEqual(currentVersion, recommendedVersion, "The current and recommended versions should be different");
         }
 
         [Test]
         public void Package_Preview_IsReported()
         {
             var issuePackages = Analyze(IssueCategory.PackageVersion);
-            var matchIssue = issuePackages.FirstOrDefault(issue => issue.customProperties[0] == "com.unity.services.vivox");
+            var matchIssue = issuePackages.FirstOrDefault(issue => issue.GetCustomProperty(PackageVersionProperty.PackageID) == "com.unity.services.vivox");
 
             Assert.IsNotNull(matchIssue, "Cannot find the upgrade package: com.unity.services.vivox");
             Assert.AreEqual(matchIssue.GetCustomProperty(PackageVersionProperty.PackageID), "com.unity.services.vivox");

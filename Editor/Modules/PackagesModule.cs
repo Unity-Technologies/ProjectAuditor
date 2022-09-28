@@ -98,47 +98,44 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var dependencies = package.dependencies.Select(d => d.name + " [" + d.version + "]").ToArray();
             var node = new PackageDependencyNode(package.displayName, dependencies);
-            var packageIssue = ProjectIssue.Create(IssueCategory.Package, package.displayName).WithCustomProperties(new object[(int)PackageProperty.Num]
-            {
-                package.name,
-                package.version,
-                package.source
-            }).WithDependencies(node);
+            var packageIssue = ProjectIssue.Create(IssueCategory.Package, package.displayName)
+                .WithCustomProperties(new object[(int)PackageProperty.Num]
+                {
+                    package.name,
+                    package.version,
+                    package.source
+                })
+                .WithDependencies(node);
             issues.Add(packageIssue);
         }
 
         void AddPackageVersionIssue(UnityEditor.PackageManager.PackageInfo package, List<ProjectIssue> issues)
         {
-            var result = 0;
-            var isPreview = false;
             var recommendedVersionString = PackageUtils.GetPackageRecommendedVersion(package);
-            if (!String.IsNullOrEmpty(package.version) && !String.IsNullOrEmpty(recommendedVersionString))
+            if (!string.IsNullOrEmpty(package.version) && !string.IsNullOrEmpty(recommendedVersionString))
             {
-                try
+                if (!recommendedVersionString.Equals(package.version))
                 {
-                    var currentVersion = new Version(package.version);
-                    var recommendedVersion = new Version(recommendedVersionString);
-                    result = currentVersion.CompareTo(recommendedVersion);
-                }
-                catch (ArgumentException)
-                {
-                    Debug.LogWarningFormat("Package '{0}' with incorrect version format: {1}", package.name, package.version);
+                    var packageVersionIssue = ProjectIssue.Create(IssueCategory.PackageVersion, k_RecommendPackageUpgrade, package.displayName)
+                        .WithCustomProperties(new object[(int)PackageVersionProperty.Num]
+                        {
+                            package.name,
+                            package.version,
+                            recommendedVersionString,
+                            false
+                        });
+                    issues.Add(packageVersionIssue);
                 }
             }
-
-            if (package.version.Contains("pre") || package.version.Contains("exp"))
+            else if (package.version.Contains("pre") || package.version.Contains("exp"))
             {
-                isPreview = true;
-            }
-            if (result < 0 || isPreview)
-            {
-                var packageVersionIssue = ProjectIssue.Create(IssueCategory.PackageVersion, isPreview ? k_RecommendPackagePreView : k_RecommendPackageUpgrade, package.displayName)
+                var packageVersionIssue = ProjectIssue.Create(IssueCategory.PackageVersion, k_RecommendPackagePreView, package.displayName)
                     .WithCustomProperties(new object[(int)PackageVersionProperty.Num]
                     {
                         package.name,
                         package.version,
                         recommendedVersionString,
-                        isPreview
+                        true
                     });
                 issues.Add(packageVersionIssue);
             }
