@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            AddRequest addRequest = Client.Add("com.unity.2d.pixel-perfect@3.0.2");
+            var addRequest = Client.Add("com.unity.2d.pixel-perfect@3.0.2");
             while (!addRequest.IsCompleted)
                 System.Threading.Thread.Sleep(10);
             Assert.True(addRequest.Status == StatusCode.Success, "Could not install the required package (com.unity.services.vivox). Make sure the package is able to be installed, and try again.");
@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeTearDown]
         public void TearDown()
         {
-            RemoveRequest removeRequest = Client.Remove("com.unity.2d.pixel-perfect");
+            var removeRequest = Client.Remove("com.unity.2d.pixel-perfect");
             while (!removeRequest.IsCompleted)
                 System.Threading.Thread.Sleep(10);
             Assert.True(removeRequest.Status == StatusCode.Success, "Could not uninstall the required package (com.unity.2d.pixel-perfect). Make sure the package is able to be uninstall, and try again.");
