@@ -1025,9 +1025,16 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 EditorGUILayout.LabelField(Utility.GetIcon(Utility.IconType.ZoomTool), EditorStyles.label,
                     GUILayout.ExpandWidth(false), GUILayout.Width(20));
-                m_ViewStates.fontSize = (int)GUILayout.HorizontalSlider(m_ViewStates.fontSize, ViewStates.k_MinFontSize,
+
+                var fontSize = (int)GUILayout.HorizontalSlider(m_ViewStates.fontSize, ViewStates.k_MinFontSize,
                     ViewStates.k_MaxFontSize, GUILayout.ExpandWidth(false),
                     GUILayout.Width(AnalysisView.toolbarButtonSize));
+                if (fontSize != m_ViewStates.fontSize)
+                {
+                    m_ViewStates.fontSize = fontSize;
+                    SharedStyles.Label.fontSize = m_ViewStates.fontSize;
+                    SharedStyles.TextArea.fontSize = m_ViewStates.fontSize;
+                }
             }
         }
 

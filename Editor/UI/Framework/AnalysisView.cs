@@ -324,9 +324,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             m_Table.SetFontSize(m_ViewStates.fontSize);
 
-            SharedStyles.Label.fontSize = m_ViewStates.fontSize;
-            SharedStyles.TextArea.fontSize = m_ViewStates.fontSize;
-
             if (!m_Layout.hierarchy)
             {
                 // (optional) collapse/expand buttons
