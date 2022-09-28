@@ -94,15 +94,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var issues = new List<ProjectIssue>();
             foreach (var package in request.Result)
             {
-                issues.AddRange(ProcessInstalledPackages(package));
-                issues.AddRange(ProcessPackageVersions(package));
+                issues.AddRange(EnumerateInstalledPackages(package));
+                issues.AddRange(EnumeratePackageDiagnostics(package));
             }
             if (issues.Count > 0)
                 projectAuditorParams.onIncomingIssues(issues);
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
-        IEnumerable<ProjectIssue> ProcessInstalledPackages(UnityEditor.PackageManager.PackageInfo package)
+        IEnumerable<ProjectIssue> EnumerateInstalledPackages(UnityEditor.PackageManager.PackageInfo package)
         {
             var dependencies = package.dependencies.Select(d => d.name + " [" + d.version + "]").ToArray();
             var node = new PackageDependencyNode(package.displayName, dependencies);
@@ -116,7 +116,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .WithDependencies(node);
         }
 
-        IEnumerable<ProjectIssue> ProcessPackageVersions(UnityEditor.PackageManager.PackageInfo package)
+        IEnumerable<ProjectIssue> EnumeratePackageDiagnostics(UnityEditor.PackageManager.PackageInfo package)
         {
             var recommendedVersionString = PackageUtils.GetPackageRecommendedVersion(package);
             if (!string.IsNullOrEmpty(package.version) && !string.IsNullOrEmpty(recommendedVersionString))
