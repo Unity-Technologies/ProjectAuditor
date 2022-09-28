@@ -38,6 +38,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get => m_GroupPropertyIndex;
             set
             {
+                if (value >= m_Layout.properties.Length)
+                    return;
                 if (value >= 0)
                     m_GroupPropertyIndex = value;
             }
