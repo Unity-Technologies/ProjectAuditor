@@ -230,18 +230,25 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ViewManager.ChangeView(IssueCategory.MetaData);
             }
 
-            if (m_AnalysisState != AnalysisState.Initializing && m_AnalysisState != AnalysisState.Initialized)
+            using (new EditorGUILayout.VerticalScope())
             {
-                DrawToolbar();
-            }
+                if (m_AnalysisState != AnalysisState.Initializing && m_AnalysisState != AnalysisState.Initialized)
+                {
+                    DrawToolbar();
+                }
 
-            if (IsAnalysisValid())
-            {
-                DrawReport();
-            }
-            else
-            {
-                DrawHome();
+                if (IsAnalysisValid())
+                {
+                    DrawPanels();
+
+                    GUILayout.FlexibleSpace();
+
+                    DrawStatusBar();
+                }
+                else
+                {
+                    DrawHome();
+                }
             }
         }
 
@@ -988,6 +995,31 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndVertical();
         }
 
+        void DrawPanels()
+        {
+            DrawReport();
+        }
+
+        void DrawStatusBar()
+        {
+            using (new EditorGUILayout.HorizontalScope(GUILayout.Height(20)))
+            {
+                var selectedItems = activeView.table.GetSelectedItems();
+                var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
+
+                var info = selectedIssues.Length + " / " + activeView.table.GetNumMatchingIssues() + " Items selected";
+                EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
+
+                GUILayout.FlexibleSpace();
+
+                EditorGUILayout.LabelField(Utility.GetIcon(Utility.IconType.ZoomTool), EditorStyles.label,
+                    GUILayout.ExpandWidth(false), GUILayout.Width(20));
+                m_ViewStates.fontSize = (int)GUILayout.HorizontalSlider(m_ViewStates.fontSize, ViewStates.k_MinFontSize,
+                    ViewStates.k_MaxFontSize, GUILayout.ExpandWidth(false),
+                    GUILayout.Width(AnalysisView.toolbarButtonSize));
+            }
+        }
+
         void DrawReport()
         {
             activeView.DrawTopPanel();
@@ -1234,7 +1266,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         static class LayoutSize
         {
             public static readonly int MinWindowWidth = 410;
-            public static readonly int MinWindowHeight = 340;
+            public static readonly int MinWindowHeight = 540;
             public static readonly int FilterOptionsLeftLabelWidth = 100;
             public static readonly int FilterOptionsEnumWidth = 50;
         }
