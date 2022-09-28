@@ -15,17 +15,11 @@ namespace Unity.ProjectAuditor.EditorTests
             AddRequest addRequest = Client.Add("com.unity.2d.pixel-perfect@3.0.2");
             while (!addRequest.IsCompleted)
                 System.Threading.Thread.Sleep(10);
-            if (addRequest.Status == StatusCode.Failure)
-            {
-                throw new System.Exception("Could not install the required package (com.unity.2d.pixel-perfect@3.0.2). Make sure the package is able to be installed, and try again.");
-            }
+            Assert.True(addRequest.Status == StatusCode.Success, "Could not install the required package (com.unity.services.vivox). Make sure the package is able to be installed, and try again.");
             addRequest = Client.Add("com.unity.services.vivox");
             while (!addRequest.IsCompleted)
                 System.Threading.Thread.Sleep(10);
-            if (addRequest.Status == StatusCode.Failure)
-            {
-                throw new System.Exception("Could not install the required package (com.unity.services.vivox). Make sure the package is able to be installed, and try again.");
-            }
+            Assert.True(addRequest.Status == StatusCode.Success, "Could not install the required package (com.unity.services.vivox). Make sure the package is able to be installed, and try again.");
         }
 
         [OneTimeTearDown]
@@ -34,17 +28,11 @@ namespace Unity.ProjectAuditor.EditorTests
             RemoveRequest removeRequest = Client.Remove("com.unity.2d.pixel-perfect");
             while (!removeRequest.IsCompleted)
                 System.Threading.Thread.Sleep(10);
-            if (removeRequest.Status == StatusCode.Failure)
-            {
-                throw new System.Exception("Could not uninstall the required package (com.unity.2d.pixel-perfect). Make sure the package is able to be uninstall, and try again.");
-            }
+            Assert.True(removeRequest.Status == StatusCode.Success, "Could not uninstall the required package (com.unity.2d.pixel-perfect). Make sure the package is able to be uninstall, and try again.");
             removeRequest = Client.Remove("com.unity.services.vivox");
             while (!removeRequest.IsCompleted)
                 System.Threading.Thread.Sleep(10);
-            if (removeRequest.Status == StatusCode.Failure)
-            {
-                throw new System.Exception("Could not uninstall the required package (com.unity.services.vivox). Make sure the package is able to be uninstall, and try again.");
-            }
+            Assert.True(removeRequest.Status == StatusCode.Success, "Could not uninstall the required package (com.unity.2d.pixel-perfect). Make sure the package is able to be uninstall, and try again.");
         }
 
         [Test]
