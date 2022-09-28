@@ -353,6 +353,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                     name = "Installed Packages",
                     menuLabel = "Experimental/Installed Packages",
                     menuOrder = 105,
+                    onDrawToolbar = (viewManager) =>
+                    {
+                        AnalysisView.DrawToolbarButton(new GUIContent("Diagnostics"), () => viewManager.ChangeView(IssueCategory.PackageVersion));
+                    },
                     showDependencyView = true,
                     dependencyViewGuiContent = new GUIContent("Package Dependencies"),
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Packages
@@ -361,9 +365,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ViewDescriptor.Register(new ViewDescriptor
                 {
                     category = IssueCategory.PackageVersion,
-                    name = "Packages Version",
-                    menuLabel = "Experimental/Package Version",
+                    name = "Package Diagnostics",
+                    menuLabel = "Experimental/Package Diagnostics",
                     menuOrder = 106,
+                    onDrawToolbar = (viewManager) =>
+                    {
+                        AnalysisView.DrawToolbarButton(new GUIContent("Installed"), () => viewManager.ChangeView(IssueCategory.Package));
+                    },
                     showRightPanels = true,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageVersion
                 });
