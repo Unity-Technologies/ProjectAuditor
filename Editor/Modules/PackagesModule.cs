@@ -90,7 +90,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var request = Client.List();
-            while (request.Status != StatusCode.Success) {}
+            while (!request.IsCompleted)
+                System.Threading.Thread.Sleep(10);
+            if (request.Status == StatusCode.Failure)
+            {
+                projectAuditorParams.onModuleCompleted?.Invoke();
+                return;
+            }
             var issues = new List<ProjectIssue>();
             foreach (var package in request.Result)
             {
