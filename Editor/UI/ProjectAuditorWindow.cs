@@ -241,9 +241,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     DrawPanels();
 
-                    GUILayout.FlexibleSpace();
+                    if (m_ViewManager.GetActiveView().desc.category != IssueCategory.MetaData)
+                    {
+                        GUILayout.FlexibleSpace();
 
-                    DrawStatusBar();
+                        DrawStatusBar();
+                    }
                 }
                 else
                 {
