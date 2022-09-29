@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             get
             {
                 if (m_Instance == null)
-                    ShowWindow();
+                    m_Instance = ShowWindow();
                 return m_Instance;
             }
         }
@@ -150,7 +150,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             Profiler.EndSample();
 
             // are we reloading from a valid state?
-            if (currentState == AnalysisState.Valid)
+            if (currentState == AnalysisState.Valid &&
+                m_ProjectReport.GetAllIssues().All(i => i.IsValid()))
             {
                 m_ProjectAuditor = new ProjectAuditor();
 
@@ -170,8 +171,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             Profiler.BeginSample("Refresh");
             RefreshWindow();
             Profiler.EndSample();
-
-            m_Instance = this;
         }
 
         void InitializeViews(IssueCategory[] categories, bool reload)

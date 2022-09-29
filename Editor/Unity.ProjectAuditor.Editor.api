@@ -173,6 +173,7 @@ namespace Unity.ProjectAuditor.Editor
         public double GetCustomPropertyAsDouble<T>(T propertyEnum) where T : struct, new();
         public float GetCustomPropertyAsFloat<T>(T propertyEnum) where T : struct, new();
         public int GetNumCustomProperties();
+        public bool IsValid();
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct, new();
     }
 
