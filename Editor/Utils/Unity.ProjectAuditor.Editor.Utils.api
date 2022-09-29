@@ -30,6 +30,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
     public static class PackageUtils
     {
         public static string GetPackageRecommendedVersion(UnityEditor.PackageManager.PackageInfo package);
+        public static string GetPackageVersion(string packageId);
     }
 
     public static class PathUtils
