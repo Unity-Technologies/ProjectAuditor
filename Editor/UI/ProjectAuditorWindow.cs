@@ -355,7 +355,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 category = IssueCategory.ComputeShaderVariant,
                 name = "Compute Shader Variants",
                 menuOrder = 3,
-                menuLabel = "Assets/Compute Shader Variants",
+                menuLabel = "Assets/Shaders/Compute Variants",
                 showFilters = true,
                 showInfoPanel = true,
                 showRightPanels = true,
