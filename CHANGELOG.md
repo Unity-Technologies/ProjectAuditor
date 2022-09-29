@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added Compute Shader Variants support
 * Added Packages module to report installed packages and dependencies
 * Fixed package version parsing exception
+* Fixed over-reporting of built shader variants count
 * Improved text search to match custom properties
 
 ## [0.8.4-preview] - 2022-09-27
