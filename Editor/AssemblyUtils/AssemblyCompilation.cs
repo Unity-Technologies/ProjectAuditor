@@ -92,7 +92,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         public CodeOptimization codeOptimization = CodeOptimization.Release;
         public CompilationMode compilationMode = CompilationMode.Player;
         public BuildTarget platform = EditorUserBuildSettings.activeBuildTarget;
-        public string[] roslynAnalyzers = new string[] {};
+        public string[] roslynAnalyzers;
 
         public Action<AssemblyCompilationTask, CompilerMessage[]> onAssemblyCompilationFinished;
 
@@ -289,7 +289,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                     AllowUnsafeCode = assembly.compilerOptions.AllowUnsafeCode,
                     ApiCompatibilityLevel = assembly.compilerOptions.ApiCompatibilityLevel,
                     CodeOptimization = codeOptimization == CodeOptimization.Release ? UnityEditor.Compilation.CodeOptimization.Release : UnityEditor.Compilation.CodeOptimization.Debug, // assembly.compilerOptions.CodeOptimization,
-                    RoslynAnalyzerDllPaths = roslynAnalyzers
+                    RoslynAnalyzerDllPaths = roslynAnalyzers ?? Array.Empty<string>()
                 };
 #else
                 assemblyBuilder.compilerOptions = assembly.compilerOptions;
