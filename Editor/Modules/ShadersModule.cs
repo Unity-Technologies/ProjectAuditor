@@ -401,13 +401,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
         void AddShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)
         {
             // set initial state (-1: info not available)
-            var variantCount = s_ShaderVariantData.Count > 0 ? 0 : -1;
+            var variantCountPerCompilerPlatform = s_ShaderVariantData.Count > 0 ? 0 : -1;
 
             // add variants first
             if (s_ShaderVariantData.ContainsKey(shader))
             {
                 var variants = s_ShaderVariantData[shader];
-                variantCount = variants.Count(v => v.shaderType == ShaderType.Fragment);
+                var numCompilerPlatforms = variants.Select(v => v.compilerPlatform).Distinct().Count();
+                variantCountPerCompilerPlatform = variants.Count(v => ShaderTypeIsFragment(v.shaderType, v.compilerPlatform)) / numCompilerPlatforms;
 
                 AddVariants(shader, assetPath, variants, onIssueFound);
             }
@@ -475,7 +476,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     assetSize,
                     ShaderUtilProxy.GetVariantCount(shader),
-                    variantCount == -1 ? k_NotAvailable : variantCount.ToString(),
+                    variantCountPerCompilerPlatform == -1 ? k_NotAvailable : variantCountPerCompilerPlatform.ToString(),
                     passCount == -1 ? k_NotAvailable : passCount.ToString(),
                     (globalKeywords == null || localKeywords == null) ? k_NotAvailable : (globalKeywords.Length + localKeywords.Length).ToString(),
                     shader.renderQueue,
@@ -785,6 +786,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     builtinShaderDefines.Add(value);
 
             return builtinShaderDefines.Select(d => d.ToString()).ToArray();
+        }
+
+        static bool ShaderTypeIsFragment(ShaderType shaderType, ShaderCompilerPlatform shaderCompilerPlatform)
+        {
+            switch (shaderCompilerPlatform)
+            {
+                case ShaderCompilerPlatform.GLES20:
+                case ShaderCompilerPlatform.GLES3x:
+                case ShaderCompilerPlatform.OpenGLCore:
+                    return shaderType == ShaderType.Vertex;
+                default:
+                    return shaderType == ShaderType.Fragment;
+            }
         }
     }
 }
