@@ -407,7 +407,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (s_ShaderVariantData.ContainsKey(shader))
             {
                 var variants = s_ShaderVariantData[shader];
-                variantCount = variants.Count;
+                variantCount = variants.Count(v => v.shaderType == ShaderType.Fragment);
 
                 AddVariants(shader, assetPath, variants, onIssueFound);
             }
