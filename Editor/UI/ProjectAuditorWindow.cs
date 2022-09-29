@@ -230,18 +230,28 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ViewManager.ChangeView(IssueCategory.MetaData);
             }
 
-            if (m_AnalysisState != AnalysisState.Initializing && m_AnalysisState != AnalysisState.Initialized)
+            using (new EditorGUILayout.VerticalScope())
             {
-                DrawToolbar();
-            }
+                if (m_AnalysisState != AnalysisState.Initializing && m_AnalysisState != AnalysisState.Initialized)
+                {
+                    DrawToolbar();
+                }
 
-            if (IsAnalysisValid())
-            {
-                DrawReport();
-            }
-            else
-            {
-                DrawHome();
+                if (IsAnalysisValid())
+                {
+                    DrawPanels();
+
+                    if (m_ViewManager.GetActiveView().desc.category != IssueCategory.MetaData)
+                    {
+                        GUILayout.FlexibleSpace();
+
+                        DrawStatusBar();
+                    }
+                }
+                else
+                {
+                    DrawHome();
+                }
             }
         }
 
@@ -366,6 +376,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                     name = "Installed Packages",
                     menuLabel = "Experimental/Installed Packages",
                     menuOrder = 105,
+                    onDrawToolbar = (viewManager) =>
+                    {
+                        AnalysisView.DrawToolbarButton(new GUIContent("Diagnostics"), () => viewManager.ChangeView(IssueCategory.PackageVersion));
+                    },
                     showDependencyView = true,
                     dependencyViewGuiContent = new GUIContent("Package Dependencies"),
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Packages
@@ -374,9 +388,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ViewDescriptor.Register(new ViewDescriptor
                 {
                     category = IssueCategory.PackageVersion,
-                    name = "Packages Version",
-                    menuLabel = "Experimental/Package Version",
+                    name = "Package Diagnostics",
+                    menuLabel = "Experimental/Package Diagnostics",
                     menuOrder = 106,
+                    onDrawToolbar = (viewManager) =>
+                    {
+                        AnalysisView.DrawToolbarButton(new GUIContent("Installed"), () => viewManager.ChangeView(IssueCategory.Package));
+                    },
                     showRightPanels = true,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageVersion
                 });
@@ -387,6 +405,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     name = "AudioClip",
                     menuLabel = "Experimental/Audio Clips",
                     menuOrder = 107,
+                    descriptionWithIcon = true,
                     showFilters = true,
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AudioClip
@@ -398,6 +417,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     name = "Textures",
                     menuLabel = "Experimental/Textures",
                     menuOrder = 6,
+                    descriptionWithIcon = true,
                     showFilters = true,
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
@@ -1011,6 +1031,38 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndVertical();
         }
 
+        void DrawPanels()
+        {
+            DrawReport();
+        }
+
+        void DrawStatusBar()
+        {
+            using (new EditorGUILayout.HorizontalScope(GUILayout.Height(20)))
+            {
+                var selectedItems = activeView.table.GetSelectedItems();
+                var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
+
+                var info = selectedIssues.Length + " / " + activeView.table.GetNumMatchingIssues() + " Items selected";
+                EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
+
+                GUILayout.FlexibleSpace();
+
+                EditorGUILayout.LabelField(Utility.GetIcon(Utility.IconType.ZoomTool), EditorStyles.label,
+                    GUILayout.ExpandWidth(false), GUILayout.Width(20));
+
+                var fontSize = (int)GUILayout.HorizontalSlider(m_ViewStates.fontSize, ViewStates.k_MinFontSize,
+                    ViewStates.k_MaxFontSize, GUILayout.ExpandWidth(false),
+                    GUILayout.Width(AnalysisView.toolbarButtonSize));
+                if (fontSize != m_ViewStates.fontSize)
+                {
+                    m_ViewStates.fontSize = fontSize;
+                    SharedStyles.Label.fontSize = m_ViewStates.fontSize;
+                    SharedStyles.TextArea.fontSize = m_ViewStates.fontSize;
+                }
+            }
+        }
+
         void DrawReport()
         {
             activeView.DrawTopPanel();
@@ -1257,7 +1309,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         static class LayoutSize
         {
             public static readonly int MinWindowWidth = 410;
-            public static readonly int MinWindowHeight = 340;
+            public static readonly int MinWindowHeight = 540;
             public static readonly int FilterOptionsLeftLabelWidth = 100;
             public static readonly int FilterOptionsEnumWidth = 50;
         }

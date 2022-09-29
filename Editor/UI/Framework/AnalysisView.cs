@@ -189,16 +189,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var selectedItems = m_Table.GetSelectedItems();
             var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
 
-            EditorGUILayout.BeginHorizontal();
-
-            DrawTable(selectedIssues);
-
-            if (m_Desc.showRightPanels)
+            using (new EditorGUILayout.HorizontalScope(GUILayout.MinHeight(400)))
             {
-                DrawRightPanels(selectedIssues);
-            }
+                DrawTable(selectedIssues);
 
-            EditorGUILayout.EndHorizontal();
+                if (m_Desc.showRightPanels)
+                {
+                    DrawRightPanels(selectedIssues);
+                }
+            }
 
             if (m_Desc.showDependencyView)
             {
@@ -211,18 +210,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (!m_Desc.showInfoPanel)
                 return;
 
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
-
-            m_ViewStates.info = Utility.BoldFoldout(m_ViewStates.info, Contents.InfoFoldout);
-            if (m_ViewStates.info)
+            using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
             {
-                EditorGUI.indentLevel++;
+                m_ViewStates.info = Utility.BoldFoldout(m_ViewStates.info, Contents.InfoFoldout);
+                if (m_ViewStates.info)
+                {
+                    EditorGUI.indentLevel++;
 
-                DrawInfo();
+                    DrawInfo();
 
-                EditorGUI.indentLevel--;
+                    EditorGUI.indentLevel--;
+                }
             }
-            EditorGUILayout.EndVertical();
         }
 
         protected virtual void DrawInfo()
@@ -244,9 +243,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Table.OnGUI(r);
             Profiler.EndSample();
 
-            var info = selectedIssues.Length + " / " + m_Table.GetNumMatchingIssues() + " Items selected";
-            EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
-
             EditorGUILayout.EndVertical();
         }
 
@@ -263,13 +259,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUI.BeginChangeCheck();
             m_TextFilter.ignoreCase = !EditorGUILayout.ToggleLeft(Contents.TextSearchCaseSensitive, !m_TextFilter.ignoreCase, GUILayout.Width(160));
 
-            if (UserPreferences.developerMode)
+            if (UserPreferences.developerMode && m_Desc.showDependencyView)
             {
                 // this is only available in developer mode because it is still too slow at the moment
-                GUI.enabled = m_Desc.showDependencyView;
-                m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Call Tree (slow)",
+                m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Dependencies (might be slow)",
                     m_TextFilter.searchDependencies, GUILayout.Width(160));
-                GUI.enabled = true;
             }
 
             if (EditorGUI.EndChangeCheck())
@@ -328,12 +322,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_ViewManager.onAnalyze(m_Module);
             }
 
-            EditorGUILayout.LabelField(Utility.GetIcon(Utility.IconType.ZoomTool), EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(20));
-            m_ViewStates.fontSize = (int)GUILayout.HorizontalSlider(m_ViewStates.fontSize, ViewStates.k_MinFontSize, ViewStates.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(AnalysisView.toolbarButtonSize));
             m_Table.SetFontSize(m_ViewStates.fontSize);
-
-            SharedStyles.Label.fontSize = m_ViewStates.fontSize;
-            SharedStyles.TextArea.fontSize = m_ViewStates.fontSize;
 
             if (!m_Layout.hierarchy)
             {

@@ -162,26 +162,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (precompiledAssemblies.Any())
                 projectAuditorParams.onIncomingIssues(precompiledAssemblies);
 
-            var roslynAnalyzers = new string[] {};
-            if (m_Config.UseRoslynAnalyzers)
-            {
-                roslynAnalyzers = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath)
-                    .ToArray();
+            var roslynAnalyzerAssets = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath)
+                .ToArray();
+            var roslynAnalyzerIssues = roslynAnalyzerAssets
+                .Select(roslynAnalyzerDllPath => (ProjectIssue)ProjectIssue.Create(
+                IssueCategory.PrecompiledAssembly,
+                Path.GetFileNameWithoutExtension(roslynAnalyzerDllPath))
+                .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
+                {
+                    true
+                })
+                .WithLocation(roslynAnalyzerDllPath));
 
-                var roslynAnalyzerDLLs = roslynAnalyzers
-                    .Select(roslynAnalyzerDllPath => (ProjectIssue)ProjectIssue.Create(
-                    IssueCategory.PrecompiledAssembly,
-                    Path.GetFileNameWithoutExtension(roslynAnalyzerDllPath))
-                    .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
-                    {
-                        true
-                    })
-                    .WithLocation(roslynAnalyzerDllPath))
-                    .ToArray();
-
-                if (roslynAnalyzerDLLs.Any())
-                    projectAuditorParams.onIncomingIssues(roslynAnalyzerDLLs);
-            }
+            projectAuditorParams.onIncomingIssues(roslynAnalyzerIssues);
 
             var compilationIssues = new List<ProjectIssue>();
             var compilationPipeline = new AssemblyCompilation
@@ -190,7 +183,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 codeOptimization = projectAuditorParams.codeOptimization,
                 compilationMode = m_Config.CompilationMode,
                 platform = projectAuditorParams.platform,
-                roslynAnalyzers = roslynAnalyzers,
+                roslynAnalyzers = m_Config.UseRoslynAnalyzers ? roslynAnalyzerAssets : null,
                 assemblyNames = projectAuditorParams.assemblyNames
             };
 
