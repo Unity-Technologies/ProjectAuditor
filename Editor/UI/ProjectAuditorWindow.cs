@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             get
             {
                 if (m_Instance == null)
-                    ShowWindow();
+                    m_Instance = ShowWindow();
                 return m_Instance;
             }
         }
@@ -150,7 +150,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             Profiler.EndSample();
 
             // are we reloading from a valid state?
-            if (currentState == AnalysisState.Valid)
+            if (currentState == AnalysisState.Valid &&
+                m_ProjectReport.GetAllIssues().All(i => i.IsValid()))
             {
                 m_ProjectAuditor = new ProjectAuditor();
 
@@ -170,8 +171,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             Profiler.BeginSample("Refresh");
             RefreshWindow();
             Profiler.EndSample();
-
-            m_Instance = this;
         }
 
         void InitializeViews(IssueCategory[] categories, bool reload)
@@ -285,7 +284,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 category = IssueCategory.Shader,
                 name = "Shaders",
                 menuOrder = 2,
-                menuLabel = "Assets/Shaders",
+                menuLabel = "Assets/Shaders/Shaders",
                 descriptionWithIcon = true,
                 showFilters = true,
                 onContextMenu = (menu, viewManager, issue) =>
@@ -304,13 +303,33 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Shaders
             });
+
+#if UNITY_2019_1_OR_NEWER
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.ShaderCompilerMessage,
+                name = "Shader Messages",
+                menuLabel = "Assets/Shaders/Compiler Messages",
+                menuOrder = 4,
+                descriptionWithIcon = true,
+                onOpenIssue = EditorUtil.OpenTextFile<Shader>,
+                onDrawToolbar = (viewManager) =>
+                {
+                    AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
+                    AnalysisView.DrawToolbarButton(Contents.ShaderVariants, () => viewManager.ChangeView(IssueCategory.ShaderVariant));
+                },
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
+            });
+
+#endif
+
             ViewDescriptor.Register(new ViewDescriptor
             {
                 type = typeof(ShaderVariantsView),
                 category = IssueCategory.ShaderVariant,
                 name = "Variants",
                 menuOrder = 3,
-                menuLabel = "Assets/Shader Variants",
+                menuLabel = "Assets/Shaders/Variants",
                 showFilters = true,
                 showInfoPanel = true,
                 showRightPanels = true,
@@ -422,25 +441,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
                 });
-
-#if UNITY_2019_1_OR_NEWER
-                ViewDescriptor.Register(new ViewDescriptor
-                {
-                    category = IssueCategory.ShaderCompilerMessage,
-                    name = "Shader Messages",
-                    menuLabel = "Experimental/Shader Compiler Messages",
-                    menuOrder = 4,
-                    descriptionWithIcon = true,
-                    onOpenIssue = EditorUtil.OpenTextFile<Shader>,
-                    onDrawToolbar = (viewManager) =>
-                    {
-                        AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
-                        AnalysisView.DrawToolbarButton(Contents.ShaderVariants, () => viewManager.ChangeView(IssueCategory.ShaderVariant));
-                    },
-                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
-                });
-
-#endif
 
                 ViewDescriptor.Register(new ViewDescriptor
                 {

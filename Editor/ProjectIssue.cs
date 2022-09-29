@@ -105,6 +105,11 @@ namespace Unity.ProjectAuditor.Editor
             internal set => m_Severity = value;
         }
 
+        public bool IsValid()
+        {
+            return description != null;
+        }
+
         public int GetNumCustomProperties()
         {
             return m_CustomProperties != null ? m_CustomProperties.Length : 0;

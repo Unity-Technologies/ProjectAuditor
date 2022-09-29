@@ -109,6 +109,8 @@ namespace Unity.ProjectAuditor.Editor
 
     public sealed class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport
     {
+        public const string PackageId = @"com.unity.project-auditor";
+        public const string PackagePath = @"Packages/com.unity.project-auditor";
         public int callbackOrder { get; }
         public ProjectAuditorConfig config { get; }
         public ProjectAuditor() {}
@@ -174,6 +176,7 @@ namespace Unity.ProjectAuditor.Editor
         public double GetCustomPropertyAsDouble<T>(T propertyEnum) where T : struct, new();
         public float GetCustomPropertyAsFloat<T>(T propertyEnum) where T : struct, new();
         public int GetNumCustomProperties();
+        public bool IsValid();
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct, new();
     }
 
