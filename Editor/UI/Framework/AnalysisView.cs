@@ -317,7 +317,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawViewOptions()
         {
-            if (!m_Module.isEnabledByDefault && m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeNowButton, EditorStyles.toolbarButton, GUILayout.Width(LayoutSize.ToolbarIconSize)))
+            if (m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeNowButton, EditorStyles.toolbarButton, GUILayout.Width(LayoutSize.ToolbarIconSize)))
             {
                 m_ViewManager.onAnalyze(m_Module);
             }
