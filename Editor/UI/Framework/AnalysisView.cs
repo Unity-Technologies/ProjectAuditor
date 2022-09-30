@@ -317,7 +317,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawViewOptions()
         {
-            if (!m_Module.isEnabledByDefault && m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeNow, EditorStyles.toolbarButton, GUILayout.Width(120)))
+            if (!m_Module.isEnabledByDefault && m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeNowButton, EditorStyles.toolbarButton, GUILayout.Width(LayoutSize.ToolbarIconSize)))
             {
                 m_ViewManager.onAnalyze(m_Module);
             }
@@ -326,39 +326,36 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             if (!m_Layout.hierarchy)
             {
-                // (optional) collapse/expand buttons
-                GUI.enabled = !m_Table.flatView;
-                if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(AnalysisView.toolbarButtonSize)))
-                    SetRowsExpanded(false);
-                if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(AnalysisView.toolbarButtonSize)))
-                    SetRowsExpanded(true);
-                GUI.enabled = true;
-
                 EditorGUI.BeginChangeCheck();
-                m_Table.flatView = !GUILayout.Toggle(!m_Table.flatView, Utility.GetIcon(Utility.IconType.Hierarchy, "Show/Hide Hierarchy"), EditorStyles.toolbarButton, GUILayout.Width(LayoutSize.ToolbarIconSize));
+                m_Table.flatView = !GUILayout.Toggle(!m_Table.flatView, Contents.HierarchyButton, EditorStyles.toolbarButton, GUILayout.Width(LayoutSize.ToolbarIconSize));
                 if (EditorGUI.EndChangeCheck())
                 {
                     MarkDirty();
                 }
 
-                GUI.enabled = !m_Table.flatView;
+                using (new EditorGUI.DisabledScope(m_Table.flatView))
+                {
+                    // collapse/expand buttons
+                    if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(LayoutSize.ToolbarButtonSize)))
+                        SetRowsExpanded(false);
+                    if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(LayoutSize.ToolbarButtonSize)))
+                        SetRowsExpanded(true);
 
-                Utility.ToolbarDropdownList(m_GroupDropdownItems, m_Table.groupPropertyIndex,
-                    (data) =>
-                    {
-                        var groupPropertyIndex = (int)data;
-                        if (groupPropertyIndex != m_Table.groupPropertyIndex)
+                    Utility.ToolbarDropdownList(m_GroupDropdownItems, m_Table.groupPropertyIndex,
+                        (data) =>
                         {
-                            SetRowsExpanded(false);
+                            var groupPropertyIndex = (int)data;
+                            if (groupPropertyIndex != m_Table.groupPropertyIndex)
+                            {
+                                SetRowsExpanded(false);
 
-                            m_Table.groupPropertyIndex = groupPropertyIndex;
-                            m_Table.Clear();
-                            m_Table.AddIssues(m_Issues);
-                            m_Table.Reload();
-                        }
-                    }, GUILayout.Width(toolbarButtonSize * 2));
-
-                GUI.enabled = true;
+                                m_Table.groupPropertyIndex = groupPropertyIndex;
+                                m_Table.Clear();
+                                m_Table.AddIssues(m_Issues);
+                                m_Table.Reload();
+                            }
+                        }, GUILayout.Width(toolbarButtonSize * 2));
+                }
             }
 
             if (m_Desc.showSeverityFilters)
@@ -617,7 +614,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         static class Contents
         {
-            public static readonly GUIContent AnalyzeNow = new GUIContent("Analyze Now!");
+            public static readonly GUIContent AnalyzeNowButton = Utility.GetIcon(Utility.IconType.Refresh, "Analyze Now!");
+            public static readonly GUIContent HierarchyButton = Utility.GetIcon(Utility.IconType.Hierarchy, "Show/Hide Hierarchy");
+
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
