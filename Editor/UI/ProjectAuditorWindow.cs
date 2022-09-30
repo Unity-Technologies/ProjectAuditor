@@ -1037,6 +1037,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     SharedStyles.Label.fontSize = m_ViewStates.fontSize;
                     SharedStyles.TextArea.fontSize = m_ViewStates.fontSize;
                 }
+
+                EditorGUILayout.LabelField("Ver. " + ProjectAuditor.PackageVersion, EditorStyles.label, GUILayout.Width(120));
             }
         }
 
