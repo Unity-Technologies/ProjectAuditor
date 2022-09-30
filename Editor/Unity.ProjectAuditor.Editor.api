@@ -80,6 +80,7 @@ namespace Unity.ProjectAuditor.Editor
         public string customevaluator;
         public string description;
         public string documentation;
+        public System.Action<ProjectIssue> fixer;
         public string id;
         public string maximumVersion;
         public string messageFormat = @"{0}";
@@ -95,6 +96,7 @@ namespace Unity.ProjectAuditor.Editor
         public ProblemDescriptor(string id, string description, Area[] areas, string problem = default(string), string solution = default(string)) {}
         public override bool Equals(object obj);
         public bool Equals(ProblemDescriptor other);
+        public void Fix(ProjectIssue issue = default(ProjectIssue));
         public override int GetHashCode();
     }
 

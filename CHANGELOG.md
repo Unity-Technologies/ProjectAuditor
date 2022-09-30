@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 * Added 'documentation' support to descriptor
 * Added diagnostic area _Quality_, _Support_ and _Requirement_ 
+* Added issue fixer support
 * Added Packages module to report installed packages and dependencies
 * Fixed package version parsing exception
 * Improved text search to match custom properties

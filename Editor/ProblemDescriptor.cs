@@ -75,6 +75,7 @@ namespace Unity.ProjectAuditor.Editor
         public string problem;
         public string solution;
         public string documentation;
+        public Action<ProjectIssue> fixer;
         public string minimumVersion;
         public string maximumVersion;
 
@@ -120,6 +121,12 @@ namespace Unity.ProjectAuditor.Editor
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             return obj.GetType() == GetType() && Equals((ProblemDescriptor)obj);
+        }
+
+        public void Fix(ProjectIssue issue = null)
+        {
+            if (fixer != null)
+                fixer(issue);
         }
 
         public override int GetHashCode()
