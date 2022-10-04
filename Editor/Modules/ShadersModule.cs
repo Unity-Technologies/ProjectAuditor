@@ -249,6 +249,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             ProcessComputeShaders(projectAuditorParams.onIncomingIssues);
 
+            // clear collected variants before next build
+            ClearBuildData();
+
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
