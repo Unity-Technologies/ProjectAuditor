@@ -126,7 +126,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
         [TestCase(false)]
         [TestCase(true)]
-        public void SettingsAnalysis_GraphicsMixedStandardShaderQuality_IsReported(bool isMixed)
+        public void SettingsAnalysis_GraphicsMixedStandardShaderQuality_WithBuiltinRenderPipeline_IsReported(bool isMixed)
         {
             var buildTarget = EditorUserBuildSettings.activeBuildTarget;
             var buildGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
@@ -137,6 +137,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var tier1settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier1);
             var tier2settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier2);
             var tier3settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier3);
+
+            var defaultRenderPipeline = GraphicsSettings.defaultRenderPipeline;
 
             tier1settings.standardShaderQuality = ShaderQuality.High;
             tier2settings.standardShaderQuality = ShaderQuality.High;
@@ -146,16 +148,20 @@ namespace Unity.ProjectAuditor.EditorTests
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, tier2settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, tier3settings);
 
-            Assert.AreEqual(isMixed, Evaluators.GraphicsMixedStandardShaderQuality(buildTarget));
+            GraphicsSettings.defaultRenderPipeline = null;
+
+            Assert.AreEqual(isMixed, Evaluators.GraphicsMixedStandardShaderQuality_WithBuiltinRenderPipeline(buildTarget));
 
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, savedTier1settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, savedTier2settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, savedTier3settings);
+            
+            GraphicsSettings.defaultRenderPipeline = defaultRenderPipeline;
         }
 
         [TestCase(RenderingPath.Forward)]
         [TestCase(RenderingPath.DeferredShading)]
-        public void SettingsAnalysis_GraphicsUsingRenderingPath_IsReported(RenderingPath renderingPath)
+        public void SettingsAnalysis_GraphicsUsingRenderingPath_WithBuiltinRenderPipeline_IsReported(RenderingPath renderingPath)
         {
             var buildTarget = EditorUserBuildSettings.activeBuildTarget;
             var buildGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
@@ -167,6 +173,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var tier2settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier2);
             var tier3settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier3);
 
+            var defaultRenderPipeline = GraphicsSettings.defaultRenderPipeline;
+            
             tier1settings.renderingPath = renderingPath;
             tier2settings.renderingPath = renderingPath;
             tier3settings.renderingPath = renderingPath;
@@ -175,20 +183,24 @@ namespace Unity.ProjectAuditor.EditorTests
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, tier2settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, tier3settings);
 
+            GraphicsSettings.defaultRenderPipeline = null;
+
             if (renderingPath == RenderingPath.Forward)
             {
-                Assert.AreEqual(true, Evaluators.GraphicsUsingForwardRendering(buildTarget));
-                Assert.AreEqual(false, Evaluators.GraphicsUsingDeferredRendering(buildTarget));
+                Assert.AreEqual(true, Evaluators.GraphicsUsingForwardRendering_WithBuiltinRenderPipeline(buildTarget));
+                Assert.AreEqual(false, Evaluators.GraphicsUsingDeferredRendering_WithBuiltinRenderPipeline(buildTarget));
             }
             else
             {
-                Assert.AreEqual(false, Evaluators.GraphicsUsingForwardRendering(buildTarget));
-                Assert.AreEqual(true, Evaluators.GraphicsUsingDeferredRendering(buildTarget));
+                Assert.AreEqual(false, Evaluators.GraphicsUsingForwardRendering_WithBuiltinRenderPipeline(buildTarget));
+                Assert.AreEqual(true, Evaluators.GraphicsUsingDeferredRendering_WithBuiltinRenderPipeline(buildTarget));
             }
 
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, savedTier1settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, savedTier2settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, savedTier3settings);
+            
+            GraphicsSettings.defaultRenderPipeline = defaultRenderPipeline;
         }
     }
 }
