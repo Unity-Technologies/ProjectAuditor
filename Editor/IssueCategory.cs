@@ -23,6 +23,8 @@ namespace Unity.ProjectAuditor.Editor
         PackageVersion,
         Texture,
         AudioClip,
+        ComputeShaderVariant,
+
         FirstCustomCategory
     }
 }

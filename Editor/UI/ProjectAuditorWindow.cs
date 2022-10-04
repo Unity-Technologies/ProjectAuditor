@@ -349,6 +349,29 @@ namespace Unity.ProjectAuditor.Editor.UI
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderVariants
             });
 
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                type = typeof(ShaderVariantsView),
+                category = IssueCategory.ComputeShaderVariant,
+                name = "Compute Shader Variants",
+                menuOrder = 3,
+                menuLabel = "Assets/Shaders/Compute Variants",
+                showFilters = true,
+                showInfoPanel = true,
+                showRightPanels = true,
+                onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                onDrawToolbar = (viewManager) =>
+                {
+                    GUILayout.FlexibleSpace();
+
+                    AnalysisView.DrawToolbarButton(Contents.Refresh, () => Instance.AnalyzeShaderVariants());
+                    AnalysisView.DrawToolbarButton(Contents.Clear, () => Instance.ClearShaderVariants());
+
+                    GUILayout.FlexibleSpace();
+                },
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ComputeShaderVariants
+            });
+
             if (UserPreferences.developerMode)
             {
                 ViewDescriptor.Register(new ViewDescriptor

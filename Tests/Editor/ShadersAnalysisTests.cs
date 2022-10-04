@@ -321,12 +321,27 @@ Shader ""Custom/MyEditorShader""
         }
 
         [Test]
-        public void ShadersAnalysis_Variants_RequireBuild()
+        public void ShadersAnalysis_Variants_AreNotReported()
         {
             ShadersModule.ClearBuildData();
             var issues = Analyze(IssueCategory.ShaderVariant);
             Assert.Zero(issues.Length);
             Assert.False(ShadersModule.BuildDataAvailable());
+        }
+
+        [Test]
+        public void ShadersAnalysis_VariantsData_IsAvailableAfterBuild()
+        {
+            ShadersModule.ClearBuildData();
+            Build();
+            Assert.True(ShadersModule.BuildDataAvailable(), "Build Data is not available");
+        }
+
+        [Test]
+        public void ShadersAnalysis_VariantsData_IsClearedAfterAnalysis()
+        {
+            AnalyzeBuild(IssueCategory.Shader);
+            Assert.False(ShadersModule.BuildDataAvailable(), "Build Data was not cleared after analysis");
         }
 
 #if BUILD_REPORT_API_SUPPORT
@@ -337,7 +352,6 @@ Shader ""Custom/MyEditorShader""
         public void ShadersAnalysis_Sizes_AreReported()
         {
             var shaders = AnalyzeBuild(IssueCategory.Shader);
-            Assert.True(ShadersModule.BuildDataAvailable());
 
             var builtInShader = shaders.FirstOrDefault(s => s.description.Equals("Hidden/BlitCopy"));
             Assert.NotNull(builtInShader);
@@ -355,8 +369,6 @@ Shader ""Custom/MyEditorShader""
         public void ShadersAnalysis_Variants_AreReported()
         {
             var issues = AnalyzeBuild(IssueCategory.ShaderVariant);
-            Assert.True(ShadersModule.BuildDataAvailable(), "Build Data not available");
-
             var keywords = issues.Select(i => i.GetCustomProperty(ShaderVariantProperty.Keywords));
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
 

@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added package diagnostics
 * Added on-demand _Texture_ module
 * Added on-demand _AudioClip_ module
+* Added Compute Shader Variants support
+* Fixed over-reporting of built shader variants count
 * Improved text search to match custom properties
 
 ## [0.8.4-preview] - 2022-09-27

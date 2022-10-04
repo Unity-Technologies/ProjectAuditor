@@ -56,7 +56,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             Packages,
             Textures,
             PackageVersion,
-            AudioClip
+            AudioClip,
+            ComputeShaderVariants
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -171,6 +172,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "shader_compiler_messages_tab";
                 case UIButton.ShaderVariants:
                     return "shader_variants_tab";
+                case UIButton.ComputeShaderVariants:
+                    return "compute_shader_variants_tab";
                 case UIButton.ProjectSettings:
                     return "settings_tab";
                 case UIButton.Generics:
