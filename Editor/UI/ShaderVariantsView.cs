@@ -15,9 +15,9 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         const string k_BulletPointUnicode = " \u2022";
 
-        static readonly string k_BuildInstructions = $@"This view shows the built Shader Variants.
-
-To record and view the Shader Variants for this project, follow these steps:
+        private static readonly string k_Description = $@"This view shows the built Shader Variants.";
+        static readonly string k_BuildInstructions =
+            $@"To record and view the Shader Variants for this project, follow these steps:
 {k_BulletPointUnicode} Click the <b>Clear</b> button
 {k_BulletPointUnicode} Build the project and/or Addressables/AssetBundles
 {k_BulletPointUnicode} Click the <b>Refresh</b> button";
@@ -181,8 +181,18 @@ To record and view the Shader Variants for this project, follow these steps:
         protected override void DrawInfo()
         {
             EditorGUILayout.BeginVertical();
-            EditorGUILayout.LabelField(k_BuildInstructions, SharedStyles.TextArea);
-            EditorGUILayout.HelpBox(k_ClearInstructions, MessageType.Warning);
+
+            EditorGUILayout.LabelField(k_Description, SharedStyles.TextArea);
+            var numBuiltVariants = ShadersModule.NumBuiltVariants();
+            if (numBuiltVariants > 0)
+            {
+                EditorGUILayout.HelpBox("Total Variants from Build: " + numBuiltVariants + ". Click on Refresh to update this view", MessageType.Info);
+            }
+            else
+            {
+                EditorGUILayout.LabelField(k_BuildInstructions, SharedStyles.TextArea);
+                EditorGUILayout.HelpBox(k_ClearInstructions, MessageType.Warning);
+            }
 
             if (numIssues > 0 && m_Desc.category == IssueCategory.ShaderVariant)
             {

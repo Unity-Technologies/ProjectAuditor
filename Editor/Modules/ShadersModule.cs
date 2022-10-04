@@ -537,6 +537,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #endif
         }
 
+        internal static int NumBuiltVariants()
+        {
+            return s_ShaderVariantData.Count;
+        }
+
         public int callbackOrder { get { return Int32.MaxValue; } }
 
 #if COMPUTE_SHADER_ANALYSIS
