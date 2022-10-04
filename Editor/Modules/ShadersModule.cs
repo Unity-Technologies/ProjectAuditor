@@ -561,6 +561,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public void OnProcessShader(Shader shader, ShaderSnippetData snippet, IList<ShaderCompilerData> data)
         {
+            if (data.Count == 0)
+                return; // no variants
+
             if (!s_ShaderVariantData.ContainsKey(shader))
             {
                 s_ShaderVariantData.Add(shader, new List<ShaderVariantData>());
