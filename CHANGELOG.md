@@ -5,23 +5,26 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-* Added 'documentation' support to descriptor
 * Added diagnostic area _Quality_, _Support_ and _Requirement_
+* Added _documentation_ support to descriptor
+* Added issue _fixer_ support to descriptor
+* Added package diagnostics
+* Added on-demand _Texture_ module
+* Added on-demand _AudioClip_ module
 * Added Compute Shader Variants support
-* Added Packages module to report installed packages and dependencies
-* Fixed package version parsing exception
 * Fixed over-reporting of built shader variants count
 * Improved text search to match custom properties
 
 ## [0.8.4-preview] - 2022-09-27
+* Added Packages module to report installed packages and dependencies
 * Fixed analysis platform on incremental audit
 * Fixed compilation error due to newer com.unity.nuget.mono-cecil
 
 ## [0.8.3-preview] - 2022-09-05
-* Fixed *NullReferenceException* on Draw2D shader not being found
 * Added HTML export support
 * Added _Packages_ module as _Experimental_
 * Added _params_ array allocation diagnostic
+* Fixed *NullReferenceException* on Draw2D shader not being found
 
 ## [0.8.2-preview] - 2022-07-25
 * Added user preferences

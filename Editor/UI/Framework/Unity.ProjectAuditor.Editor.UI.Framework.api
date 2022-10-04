@@ -203,21 +203,22 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
         public enum IconType
         {
-            Download = 8,
+            Download = 9,
             Error = 2,
-            Fix = 7,
-            GreenCheckMark = 14,
+            Fix = 8,
+            GreenCheckMark = 15,
             Help = 3,
-            Hierarchy = 5,
+            Hierarchy = 6,
             Info = 0,
-            Load = 9,
-            Save = 10,
-            StatusWheel = 4,
-            Trash = 11,
-            View = 12,
+            Load = 10,
+            Refresh = 4,
+            Save = 11,
+            StatusWheel = 5,
+            Trash = 12,
+            View = 13,
             Warning = 1,
-            WhiteCheckMark = 13,
-            ZoomTool = 6,
+            WhiteCheckMark = 14,
+            ZoomTool = 7,
         }
     }
 

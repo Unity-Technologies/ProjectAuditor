@@ -15,7 +15,7 @@ using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    class ProjectAuditorWindow : EditorWindow, IProjectIssueFilter
+    class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IProjectIssueFilter
     {
         enum AnalysisState
         {
@@ -1060,6 +1060,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     SharedStyles.Label.fontSize = m_ViewStates.fontSize;
                     SharedStyles.TextArea.fontSize = m_ViewStates.fontSize;
                 }
+
+                EditorGUILayout.LabelField("Ver. " + ProjectAuditor.PackageVersion, EditorStyles.label, GUILayout.Width(120));
             }
         }
 
@@ -1286,6 +1288,20 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        public void AddItemsToMenu(GenericMenu menu)
+        {
+            menu.AddItem(Contents.PreferencesMenuItem, false, OpenPreferences);
+        }
+
+        static void OpenPreferences()
+        {
+            var preferencesWindow = SettingsService.OpenUserPreferences(UserPreferences.Path);
+            if (preferencesWindow == null)
+            {
+                Debug.LogError("Could not find Preferences for 'Analysis/Project Auditor'");
+            }
+        }
+
         [MenuItem("Window/Analysis/Project Auditor")]
         public static ProjectAuditorWindow ShowWindow()
         {
@@ -1336,6 +1352,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 #endif
 
             public static readonly GUIContent HelpButton = Utility.GetIcon(Utility.IconType.Help, "Open Manual (in a web browser)");
+            public static readonly GUIContent PreferencesMenuItem = EditorGUIUtility.TrTextContent("Preferences", "Open User Preferences for Project Auditor");
 
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");
