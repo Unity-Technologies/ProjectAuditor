@@ -133,5 +133,10 @@ namespace Unity.ProjectAuditor.Editor
         {
             return id.GetHashCode();
         }
+
+        public bool IsValid()
+        {
+            return !string.IsNullOrEmpty(id);
+        }
     }
 }

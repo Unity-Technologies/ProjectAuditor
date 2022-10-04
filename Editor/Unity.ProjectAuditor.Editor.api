@@ -99,6 +99,7 @@ namespace Unity.ProjectAuditor.Editor
         public bool Equals(ProblemDescriptor other);
         public void Fix(ProjectIssue issue = default(ProjectIssue));
         public override int GetHashCode();
+        public bool IsValid();
     }
 
     public static class ProblemDescriptorExtensions
