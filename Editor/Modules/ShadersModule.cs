@@ -798,10 +798,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             switch (shaderCompilerPlatform)
             {
+                // On OpenGL and Vulkan, all stages supported by the shader are combined into a single ShaderType (Vertex).
                 case ShaderCompilerPlatform.GLES20:
                 case ShaderCompilerPlatform.GLES3x:
                 case ShaderCompilerPlatform.OpenGLCore:
-                    return shaderType == ShaderType.Vertex;
+                case ShaderCompilerPlatform.Vulkan:
+                    return true;
                 default:
                     return shaderType == ShaderType.Fragment;
             }
