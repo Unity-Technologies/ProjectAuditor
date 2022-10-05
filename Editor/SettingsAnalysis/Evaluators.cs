@@ -207,24 +207,42 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             return usingDefaultAsyncUploadBufferSize;
         }
 
-        public static bool GraphicsMixedStandardShaderQuality(BuildTarget platform)
+        public static bool GraphicsMixedStandardShaderQuality_WithBuiltinRenderPipeline(BuildTarget platform)
         {
+            // Only check for Built-In Rendering Pipeline 
+            if (GraphicsSettings.defaultRenderPipeline != null)
+            {
+                return false;
+            }
+            
             var buildGroup = BuildPipeline.GetBuildTargetGroup(platform);
             var standardShaderQualities = k_GraphicsTiers.Select(tier => EditorGraphicsSettings.GetTierSettings(buildGroup, tier).standardShaderQuality);
 
             return standardShaderQualities.Distinct().Count() > 1;
         }
 
-        public static bool GraphicsUsingForwardRendering(BuildTarget platform)
+        public static bool GraphicsUsingForwardRendering_WithBuiltinRenderPipeline(BuildTarget platform)
         {
+            // Only check for Built-In Rendering Pipeline 
+            if (GraphicsSettings.defaultRenderPipeline != null)
+            {
+                return false;
+            }
+
             var buildGroup = BuildPipeline.GetBuildTargetGroup(platform);
             var renderingPaths = k_GraphicsTiers.Select(tier => EditorGraphicsSettings.GetTierSettings(buildGroup, tier).renderingPath);
 
             return renderingPaths.Any(path => path == RenderingPath.Forward);
         }
 
-        public static bool GraphicsUsingDeferredRendering(BuildTarget platform)
+        public static bool GraphicsUsingDeferredRendering_WithBuiltinRenderPipeline(BuildTarget platform)
         {
+            // Only check for Built-In Rendering Pipeline 
+            if (GraphicsSettings.defaultRenderPipeline != null)
+            {
+                return false;
+            }
+
             var buildGroup = BuildPipeline.GetBuildTargetGroup(platform);
             var renderingPaths = k_GraphicsTiers.Select(tier => EditorGraphicsSettings.GetTierSettings(buildGroup, tier).renderingPath);
 
