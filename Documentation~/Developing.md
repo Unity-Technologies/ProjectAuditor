@@ -17,6 +17,7 @@ In order to be able to run (existing or new) tests in VS/Rider or within Unity u
 
 ## Pull Requests
 1. Start a new pull request on [GitHub](https://github.com/Unity-Technologies/ProjectAuditor/compare).
+   2. Make sure to select `Unity-Technologies/ProjectAuditor` as base repository and `master` as base branch.
 2. Describe the problem you are trying to solve.
 3. Describe the solution you are trying to implement.
 4. Add [mtrive](https://github.com/mtrive) as reviewer to the pull request.
