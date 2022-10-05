@@ -18,9 +18,9 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="category"> Issue category </param>
         /// <param name="descriptor"> Diagnostic descriptor </param>
         /// <param name="args"> Arguments to be used in the message formatting</param>
-        public static ProjectIssueBuilder Create(IssueCategory category, ProblemDescriptor descriptor, params object[] args)
+        public static IssueBuilder Create(IssueCategory category, ProblemDescriptor descriptor, params object[] args)
         {
-            return new ProjectIssueBuilder(category, descriptor, args);
+            return new IssueBuilder(category, descriptor, args);
         }
 
         /// <summary>
@@ -28,9 +28,9 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="category"> Issue category </param>
         /// <param name="description"> User-friendly description </param>
-        public static ProjectIssueBuilder Create(IssueCategory category, string description)
+        public static IssueBuilder Create(IssueCategory category, string description)
         {
-            return new ProjectIssueBuilder(category, description);
+            return new IssueBuilder(category, description);
         }
 
         [SerializeField] IssueCategory m_Category;

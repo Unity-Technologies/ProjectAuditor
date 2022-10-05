@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             m_WholeNamespaceDescriptors = descriptors.Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
         }
 
-        public ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             var callee = (MethodReference)inst.Operand;
             var description = string.Empty;

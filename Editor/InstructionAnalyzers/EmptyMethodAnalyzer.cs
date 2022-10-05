@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_Descriptor);
         }
 
-        public ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             // skip any no-op
             var previousIL = inst.Previous;

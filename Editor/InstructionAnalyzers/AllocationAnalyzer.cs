@@ -78,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_ParamArrayAllocationDescriptor);
         }
 
-        public ProjectIssueBuilder Analyze(MethodDefinition callerMethodDefinition, Instruction inst)
+        public IssueBuilder Analyze(MethodDefinition callerMethodDefinition, Instruction inst)
         {
             if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
             {

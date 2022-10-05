@@ -11,6 +11,6 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         void Initialize(ProjectAuditorModule module);
 
-        ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst);
+        IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst);
     }
 }

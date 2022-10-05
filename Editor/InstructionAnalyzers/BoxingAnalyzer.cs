@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_Descriptor);
         }
 
-        public ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             var type = (TypeReference)inst.Operand;
             if (type.IsGenericParameter)
