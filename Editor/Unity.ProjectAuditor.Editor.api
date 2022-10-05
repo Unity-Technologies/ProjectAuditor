@@ -52,15 +52,6 @@ namespace Unity.ProjectAuditor.Editor
         Texture = 16,
     }
 
-    public class IssueLayout
-    {
-        public IssueCategory category;
-        public bool hierarchy = false;
-        public PropertyDefinition[] properties;
-        public int defaultGroupPropertyIndex { get; }
-        public IssueLayout() {}
-    }
-
     public class Location
     {
         public string Extension { get; }
@@ -123,7 +114,7 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = default(IProgress));
         public void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = default(IProgress));
         public IssueCategory[] GetCategories();
-        public IssueLayout GetLayout(IssueCategory category);
+        public Core.IssueLayout GetLayout(IssueCategory category);
         public static IssueCategory GetOrRegisterCategory(string name);
         public static int NumCategories();
         public void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
@@ -173,8 +164,8 @@ namespace Unity.ProjectAuditor.Editor
         public Location location { get; }
         public string relativePath { get; }
         public Rule.Severity severity { get; }
-        public static Core.ProjectIssueBuilder Create(IssueCategory category, string description);
-        public static Core.ProjectIssueBuilder Create(IssueCategory category, ProblemDescriptor descriptor, params object[] args);
+        public static Core.IssueBuilder Create(IssueCategory category, string description);
+        public static Core.IssueBuilder Create(IssueCategory category, ProblemDescriptor descriptor, params object[] args);
         public string GetCustomProperty<T>(T propertyEnum) where T : struct, new();
         public double GetCustomPropertyAsDouble<T>(T propertyEnum) where T : struct, new();
         public float GetCustomPropertyAsFloat<T>(T propertyEnum) where T : struct, new();
@@ -186,8 +177,8 @@ namespace Unity.ProjectAuditor.Editor
     public static class ProjectIssueExtensions
     {
         public static string GetContext(this ProjectIssue issue);
-        public static string GetProperty(this ProjectIssue issue, PropertyType propertyType);
-        public static string GetPropertyGroup(this ProjectIssue issue, PropertyDefinition propertyDefinition);
+        public static string GetProperty(this ProjectIssue issue, Core.PropertyType propertyType);
+        public static string GetPropertyGroup(this ProjectIssue issue, Core.PropertyDefinition propertyDefinition);
     }
 
     public sealed class ProjectReport
@@ -195,52 +186,13 @@ namespace Unity.ProjectAuditor.Editor
         public int NumTotalIssues { get; }
         public void AddIssues(System.Collections.Generic.IEnumerable<ProjectIssue> issues);
         public void ClearIssues(IssueCategory category);
-        public void ExportToCSV(string path, IssueLayout layout, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
-        public void ExportToHTML(string path, IssueLayout layout, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
+        public void ExportToCSV(string path, Core.IssueLayout layout, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
+        public void ExportToHTML(string path, Core.IssueLayout layout, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
         public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> GetAllIssues();
         public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> GetIssues(IssueCategory category);
         public int GetNumIssues(IssueCategory category);
         public static ProjectReport Load(string path);
         public void Save(string path);
-    }
-
-    public struct PropertyDefinition
-    {
-        public bool defaultGroup;
-        public PropertyFormat format;
-        public string longName;
-        public string name;
-        public PropertyType type;
-    }
-
-    public enum PropertyFormat
-    {
-        Bool = 1,
-        Bytes = 3,
-        Integer = 2,
-        String = 0,
-        Time = 4,
-    }
-
-    public enum PropertyType
-    {
-        Area = 3,
-        CriticalContext = 8,
-        Description = 0,
-        Descriptor = 1,
-        Directory = 5,
-        Filename = 6,
-        FileType = 7,
-        Num = 9,
-        Path = 4,
-        Severity = 2,
-    }
-
-    public struct PropertyTypeUtil
-    {
-        public static PropertyType FromCustom<T>(T customPropEnum) where T : struct, new();
-        public static bool IsCustom(PropertyType type);
-        public static int ToCustomIndex(PropertyType type);
     }
 
     public class Rule : System.IEquatable<Rule>
@@ -363,7 +315,7 @@ namespace Unity.ProjectAuditor.Editor.Core
     public interface IInstructionAnalyzer
     {
         public System.Collections.Generic.IReadOnlyCollection<Mono.Cecil.Cil.OpCode> opCodes { get; }
-        public ProjectIssueBuilder Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
+        public IssueBuilder Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
         public void Initialize(ProjectAuditorModule module);
     }
 
@@ -371,6 +323,27 @@ namespace Unity.ProjectAuditor.Editor.Core
     {
         public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform);
         public void Initialize(ProjectAuditorModule module);
+    }
+
+    public class IssueBuilder
+    {
+        public static ProjectIssue op_Implicit(IssueBuilder builder);
+        public IssueBuilder WithCustomProperties(object[] properties);
+        public IssueBuilder WithCustomProperties(int numProperties, object property);
+        public IssueBuilder WithDependencies(DependencyNode dependencies);
+        public IssueBuilder WithDescription(string description);
+        public IssueBuilder WithLocation(Location location);
+        public IssueBuilder WithLocation(string path, int line = 0);
+        public IssueBuilder WithSeverity(Rule.Severity severity);
+    }
+
+    public class IssueLayout
+    {
+        public IssueCategory category;
+        public bool hierarchy = false;
+        public PropertyDefinition[] properties;
+        public int defaultGroupPropertyIndex { get; }
+        public IssueLayout() {}
     }
 
     public class PackageDependencyNode : DependencyNode
@@ -395,16 +368,43 @@ namespace Unity.ProjectAuditor.Editor.Core
         public virtual void RegisterDescriptor(ProblemDescriptor descriptor);
     }
 
-    public class ProjectIssueBuilder
+    public struct PropertyDefinition
     {
-        public static ProjectIssue op_Implicit(ProjectIssueBuilder builder);
-        public ProjectIssueBuilder WithCustomProperties(object[] properties);
-        public ProjectIssueBuilder WithCustomProperties(int numProperties, object property);
-        public ProjectIssueBuilder WithDependencies(DependencyNode dependencies);
-        public ProjectIssueBuilder WithDescription(string description);
-        public ProjectIssueBuilder WithLocation(Location location);
-        public ProjectIssueBuilder WithLocation(string path, int line = 0);
-        public ProjectIssueBuilder WithSeverity(Rule.Severity severity);
+        public bool defaultGroup;
+        public PropertyFormat format;
+        public string longName;
+        public string name;
+        public PropertyType type;
+    }
+
+    public enum PropertyFormat
+    {
+        Bool = 1,
+        Bytes = 3,
+        Integer = 2,
+        String = 0,
+        Time = 4,
+    }
+
+    public enum PropertyType
+    {
+        Area = 3,
+        CriticalContext = 8,
+        Description = 0,
+        Descriptor = 1,
+        Directory = 5,
+        Filename = 6,
+        FileType = 7,
+        Num = 9,
+        Path = 4,
+        Severity = 2,
+    }
+
+    public struct PropertyTypeUtil
+    {
+        public static PropertyType FromCustom<T>(T customPropEnum) where T : struct, new();
+        public static bool IsCustom(PropertyType type);
+        public static int ToCustomIndex(PropertyType type);
     }
 }
 
