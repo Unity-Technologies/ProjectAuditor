@@ -1,6 +1,6 @@
 using System;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.Core
 {
     public enum PropertyType
     {
