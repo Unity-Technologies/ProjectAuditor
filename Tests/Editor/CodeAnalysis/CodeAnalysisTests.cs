@@ -374,7 +374,7 @@ class GenericInstantiation
             var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'System.Linq.Enumerable.Sum' usage"));
 
             Assert.NotNull(issue);
-            Assert.AreEqual("System.Linq.*", issue.descriptor.description);
+            Assert.AreEqual("System.Linq.*", issue.descriptor.title);
         }
 
         [Test]

@@ -310,7 +310,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 else if (selectedDescriptors.Length > 1)
                     GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 else // if (selectedDescriptors.Length == 1)
-                    GUILayout.TextArea(selectedDescriptors[0].problem, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(selectedDescriptors[0].description, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
             EditorGUILayout.EndVertical();
         }

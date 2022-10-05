@@ -79,13 +79,13 @@ namespace Unity.ProjectAuditor.Editor
         public string method;
         public string minimumVersion;
         public string[] platforms;
-        public string problem;
         public Rule.Severity severity;
         public string solution;
+        public string title;
         public string type;
         public string value;
-        public ProblemDescriptor(string id, string description, Area area, string problem = default(string), string solution = default(string)) {}
-        public ProblemDescriptor(string id, string description, Area[] areas, string problem = default(string), string solution = default(string)) {}
+        public ProblemDescriptor(string id, string title, Area area, string description = default(string), string solution = default(string)) {}
+        public ProblemDescriptor(string id, string title, Area[] areas, string description = default(string), string solution = default(string)) {}
         public override bool Equals(object obj);
         public bool Equals(ProblemDescriptor other);
         public void Fix(ProjectIssue issue = default(ProjectIssue));

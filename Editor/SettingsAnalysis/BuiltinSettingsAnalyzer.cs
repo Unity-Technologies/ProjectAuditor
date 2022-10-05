@@ -79,14 +79,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                     descriptor.type, methodName, paramTypes, args);
 
                 if (value.ToString() == descriptor.value)
-                    return NewIssue(descriptor, descriptor.description);
+                    return NewIssue(descriptor, descriptor.title);
             }
             else
             {
                 var evalType = typeof(Evaluators);
                 var method = evalType.GetMethod(descriptor.customevaluator);
                 if ((bool)method.Invoke(null, new object[] {platform}))
-                    return NewIssue(descriptor, descriptor.description);
+                    return NewIssue(descriptor, descriptor.title);
             }
 
             return null;

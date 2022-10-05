@@ -209,7 +209,7 @@ namespace Unity.ProjectAuditor.EditorTests
             foreach (var desc in descriptors)
             {
                 Assert.False(string.IsNullOrEmpty(desc.id));
-                Assert.False(string.IsNullOrEmpty(desc.problem), desc.id + " has no problem description");
+                Assert.False(string.IsNullOrEmpty(desc.description), desc.id + " has no problem description");
                 Assert.False(string.IsNullOrEmpty(desc.solution), desc.id + " has no solution description");
 
                 var type = types.FirstOrDefault(t => t.FullName.Equals(desc.type));

@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.Description:
                     return issue.description;
                 case PropertyType.Descriptor:
-                    return issue.descriptor.description;
+                    return issue.descriptor.title;
                 case PropertyType.Filename:
                     if (string.IsNullOrEmpty(issue.filename))
                         return k_NotAvailable;

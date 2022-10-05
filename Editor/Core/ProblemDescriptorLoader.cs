@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.Core
                 if (!IsVersionCompatible(rawDescriptor))
                     continue;
 
-                var desc = new ProblemDescriptor(rawDescriptor.id, rawDescriptor.description, rawDescriptor.areas)
+                var desc = new ProblemDescriptor(rawDescriptor.id, rawDescriptor.title, rawDescriptor.areas)
                 {
                     customevaluator = rawDescriptor.customevaluator,
                     type = rawDescriptor.type ?? string.Empty,
@@ -30,15 +30,15 @@ namespace Unity.ProjectAuditor.Editor.Core
                     value = rawDescriptor.value,
                     platforms = rawDescriptor.platforms,
                     critical = rawDescriptor.critical,
-                    problem = rawDescriptor.problem,
+                    description = rawDescriptor.description,
                     solution = rawDescriptor.solution
                 };
-                if (string.IsNullOrEmpty(desc.description))
+                if (string.IsNullOrEmpty(desc.title))
                 {
                     if (string.IsNullOrEmpty(desc.type) || string.IsNullOrEmpty(desc.method))
-                        desc.description = string.Empty;
+                        desc.title = string.Empty;
                     else
-                        desc.description = desc.GetFullTypeName();
+                        desc.title = desc.GetFullTypeName();
                 }
 
                 descriptors.Add(desc);

@@ -50,8 +50,8 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual("PAC2000", boxingInt.descriptor.id);
             Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.type));
             Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.method));
-            Assert.False(string.IsNullOrEmpty(boxingInt.descriptor.description));
-            Assert.AreEqual("Boxing Allocation", boxingInt.descriptor.description);
+            Assert.False(string.IsNullOrEmpty(boxingInt.descriptor.title));
+            Assert.AreEqual("Boxing Allocation", boxingInt.descriptor.title);
         }
 
         [Test]
@@ -77,8 +77,8 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual("PAC2000", boxingFloat.descriptor.id);
             Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.type));
             Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.method));
-            Assert.False(string.IsNullOrEmpty(boxingFloat.descriptor.description));
-            Assert.AreEqual("Boxing Allocation", boxingFloat.descriptor.description);
+            Assert.False(string.IsNullOrEmpty(boxingFloat.descriptor.title));
+            Assert.AreEqual("Boxing Allocation", boxingFloat.descriptor.title);
         }
 
         [Test]

@@ -29,9 +29,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             const string prefix = "CS";
             const string baseURL = "https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/";
-            if (descriptor.description.StartsWith(prefix))
+            if (descriptor.title.StartsWith(prefix))
             {
-                Application.OpenURL(baseURL + descriptor.description);
+                Application.OpenURL(baseURL + descriptor.title);
             }
         }
 

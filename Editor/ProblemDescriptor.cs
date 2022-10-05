@@ -39,45 +39,88 @@ namespace Unity.ProjectAuditor.Editor
         LoadTime,
 
         /// <summary>
-        /// Quality. For example, using deprecated APIs that might be removed in the future.
+        /// Quality. For example, using deprecated APIs that might be removed in the future
         /// </summary>
         Quality,
 
         /// <summary>
-        /// Lack of platform support. For example, using APIs that are not supported on a specific platform and might fail at runtime.
+        /// Lack of platform support. For example, using APIs that are not supported on a specific platform and might fail at runtime
         /// </summary>
         Support,
 
         /// <summary>
-        /// Required by platform. Typically this issue must be fixed before submitting to the platform store.
+        /// Required by platform. Typically this issue must be fixed before submitting to the platform store
         /// </summary>
         Requirement
     }
 
     /// <summary>
-    /// ProblemDescriptor defines the problem and a possible recommendation.
+    /// ProblemDescriptor defines the problem and a possible recommendation
     /// </summary>
     [Serializable]
     public sealed class ProblemDescriptor : IEquatable<ProblemDescriptor>
     {
-        // An unique identifier for the diagnostic
+        /// <summary>
+        /// An unique identifier for the diagnostic
+        /// </summary>
         public string id;
-        public string description;
+
+        /// <summary>
+        /// Diagnostic title
+        /// </summary>
+        public string title;
+
+        /// <summary>
+        /// Message used to describe a specific instance of the diagnostic
+        /// </summary>
         public string messageFormat;
 
-        public bool critical;
+        /// <summary>
+        /// Default severity of the diagnostic
+        /// </summary>
         public Rule.Severity severity;
 
-        // affected areas
+        /// <summary>
+        /// Affected areas
+        /// </summary>
         public string[] areas;
-        // affected platforms
+
+        /// <summary>
+        /// Affected platforms. If null, the diagnostic applies to all platforms
+        /// </summary>
         public string[] platforms;
-        public string problem;
+
+        /// <summary>
+        /// Description of the diagnostic
+        /// </summary>
+        public string description;
+
+        /// <summary>
+        /// Recommendation to fix the diagnostic
+        /// </summary>
         public string solution;
+
+        /// <summary>
+        /// Url to documentation
+        /// </summary>
         public string documentation;
-        public Action<ProjectIssue> fixer;
+
+        /// <summary>
+        /// Minimum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions
+        /// </summary>
         public string minimumVersion;
+
+        /// <summary>
+        /// Maximum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions
+        /// </summary>
         public string maximumVersion;
+
+        /// <summary>
+        /// Optional Auto-fixer
+        /// </summary>
+        public Action<ProjectIssue> fixer;
+
+        public bool critical;
 
         // TODO: remove auditor-specific fields
         public string customevaluator;
@@ -85,13 +128,13 @@ namespace Unity.ProjectAuditor.Editor
         public string method;
         public string value;
 
-        internal ProblemDescriptor(string id, string description, string[] areas, string problem = null, string solution = null)
+        internal ProblemDescriptor(string id, string title, string[] areas, string description = null, string solution = null)
         {
             this.id = id;
-            this.description = description;
+            this.title = title;
             this.areas = areas;
             this.messageFormat = "{0}";
-            this.problem = problem;
+            this.description = description;
             this.solution = solution;
 
             type = string.Empty;
@@ -99,13 +142,13 @@ namespace Unity.ProjectAuditor.Editor
             critical = false;
         }
 
-        public ProblemDescriptor(string id, string description, Area area, string problem = null, string solution = null)
-            : this(id, description, new[] {area.ToString()}, problem, solution)
+        public ProblemDescriptor(string id, string title, Area area, string description = null, string solution = null)
+            : this(id, title, new[] {area.ToString()}, description, solution)
         {
         }
 
-        public ProblemDescriptor(string id, string description, Area[] areas, string problem = null, string solution = null)
-            : this(id, description, areas.Select(a => a.ToString()).ToArray(), problem, solution)
+        public ProblemDescriptor(string id, string title, Area[] areas, string description = null, string solution = null)
+            : this(id, title, areas.Select(a => a.ToString()).ToArray(), description, solution)
         {
         }
 
