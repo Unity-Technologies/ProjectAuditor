@@ -250,13 +250,8 @@ namespace Unity.ProjectAuditor.Editor.Core
 
     public interface ISettingsAnalyzer
     {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ISettingsAnalyzer.Context context);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext context);
         public void Initialize(ProjectAuditorModule module);
-        public class Context
-        {
-            public UnityEditor.BuildTarget platform;
-            public Context() {}
-        }
     }
 
     public class IssueBuilder
@@ -339,6 +334,12 @@ namespace Unity.ProjectAuditor.Editor.Core
         public static PropertyType FromCustom<T>(T customPropEnum) where T : struct, new();
         public static bool IsCustom(PropertyType type);
         public static int ToCustomIndex(PropertyType type);
+    }
+
+    public class SettingsAnalyzerContext
+    {
+        public UnityEditor.BuildTarget platform;
+        public SettingsAnalyzerContext() {}
     }
 }
 
