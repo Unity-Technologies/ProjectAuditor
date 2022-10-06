@@ -209,12 +209,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public static bool GraphicsMixedStandardShaderQuality_WithBuiltinRenderPipeline(BuildTarget platform)
         {
-            // Only check for Built-In Rendering Pipeline 
+            // Only check for Built-In Rendering Pipeline
             if (GraphicsSettings.defaultRenderPipeline != null)
             {
                 return false;
             }
-            
+
             var buildGroup = BuildPipeline.GetBuildTargetGroup(platform);
             var standardShaderQualities = k_GraphicsTiers.Select(tier => EditorGraphicsSettings.GetTierSettings(buildGroup, tier).standardShaderQuality);
 
@@ -223,7 +223,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public static bool GraphicsUsingForwardRendering_WithBuiltinRenderPipeline(BuildTarget platform)
         {
-            // Only check for Built-In Rendering Pipeline 
+            // Only check for Built-In Rendering Pipeline
             if (GraphicsSettings.defaultRenderPipeline != null)
             {
                 return false;
@@ -237,7 +237,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public static bool GraphicsUsingDeferredRendering_WithBuiltinRenderPipeline(BuildTarget platform)
         {
-            // Only check for Built-In Rendering Pipeline 
+            // Only check for Built-In Rendering Pipeline
             if (GraphicsSettings.defaultRenderPipeline != null)
             {
                 return false;

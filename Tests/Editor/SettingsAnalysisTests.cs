@@ -155,7 +155,7 @@ namespace Unity.ProjectAuditor.EditorTests
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, savedTier1settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, savedTier2settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, savedTier3settings);
-            
+
             GraphicsSettings.defaultRenderPipeline = defaultRenderPipeline;
         }
 
@@ -174,7 +174,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var tier3settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier3);
 
             var defaultRenderPipeline = GraphicsSettings.defaultRenderPipeline;
-            
+
             tier1settings.renderingPath = renderingPath;
             tier2settings.renderingPath = renderingPath;
             tier3settings.renderingPath = renderingPath;
@@ -199,7 +199,7 @@ namespace Unity.ProjectAuditor.EditorTests
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, savedTier1settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, savedTier2settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, savedTier3settings);
-            
+
             GraphicsSettings.defaultRenderPipeline = defaultRenderPipeline;
         }
     }
