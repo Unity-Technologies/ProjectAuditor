@@ -180,7 +180,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var compilationIssues = new List<ProjectIssue>();
             var compilationPipeline = new AssemblyCompilation
             {
-                onAssemblyCompilationFinished = (compilationTask, compilerMessages) => ProcessCompilerMessages(compilationTask, compilerMessages, compilationIssues.Add),
+                onAssemblyCompilationFinished = (compilationTask, compilerMessages) =>
+                {
+                    projectAuditorParams.onIncomingIssues(ProcessCompilerMessages(compilationTask, compilerMessages));
+                },
                 codeOptimization = projectAuditorParams.codeOptimization,
                 compilationMode = m_Config.CompilationMode,
                 platform = projectAuditorParams.platform,
@@ -191,9 +194,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Profiler.BeginSample("CodeModule.Audit.Compilation");
             var assemblyInfos = compilationPipeline.Compile(progress);
             Profiler.EndSample();
-
-            if (compilationIssues.Any())
-                projectAuditorParams.onIncomingIssues(compilationIssues);
 
             if (projectAuditorParams.assemblyNames != null)
             {
@@ -412,7 +412,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             m_OpCodes.AddRange(analyzer.opCodes);
         }
 
-        void ProcessCompilerMessages(AssemblyCompilationTask compilationTask, CompilerMessage[] compilerMessages, Action<ProjectIssue> onIssueFound)
+        IEnumerable<ProjectIssue> ProcessCompilerMessages(AssemblyCompilationTask compilationTask, CompilerMessage[] compilerMessages)
         {
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
 
@@ -423,7 +423,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 severity = Rule.Severity.Error;
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.assemblyPath);
-            var assemblyIssue = ProjectIssue.Create(IssueCategory.Assembly, assemblyInfo.name)
+            yield return ProjectIssue.Create(IssueCategory.Assembly, assemblyInfo.name)
                 .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                 {
                     assemblyInfo.packageReadOnly,
@@ -433,7 +433,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     compilationTask.dependencies.Select(d => d.assemblyName).ToArray()))
                 .WithLocation(assemblyInfo.asmDefPath)
                 .WithSeverity(severity);
-            onIssueFound(assemblyIssue);
 
             foreach (var message in compilerMessages)
             {
@@ -444,7 +443,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 
                 var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.file);
-                var issue = ProjectIssue.Create(IssueCategory.CodeCompilerMessage, message.message)
+                yield return ProjectIssue.Create(IssueCategory.CodeCompilerMessage, message.message)
                     .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
                     {
                         message.code,
@@ -452,7 +451,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     })
                     .WithLocation(relativePath, message.line)
                     .WithSeverity(CompilerMessageTypeToSeverity(message.type));
-                onIssueFound(issue);
             }
 
             Profiler.EndSample();
