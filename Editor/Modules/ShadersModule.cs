@@ -333,8 +333,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         void ProcessShaders(Dictionary<Shader, string> shaderPathMap,
             Action<IEnumerable<ProjectIssue>> onIncomingIssues)
         {
-            var issues = new List<ProjectIssue>();
-
             var alwaysIncludedShaders = GetAlwaysIncludedShaders();
             var buildReportInfoAvailable = false;
 #if BUILD_REPORT_API_SUPPORT
@@ -368,11 +366,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     }
                 }
 #endif
-                AddShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader), issues.Add);
+                onIncomingIssues(ProcessShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader)));
+                onIncomingIssues(ProcessVariants(shader, assetPath));
             }
-
-            if (issues.Any())
-                onIncomingIssues(issues);
         }
 
         void ProcessComputeShaders(Action<IEnumerable<ProjectIssue>> onIncomingIssues)
@@ -401,7 +397,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #endif
         }
 
-        void AddShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded, Action<ProjectIssue> onIssueFound)
+        IEnumerable<ProjectIssue> ProcessShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded)
         {
             // set initial state (-1: info not available)
             var variantCountPerCompilerPlatform = s_ShaderVariantData.Count > 0 ? 0 : -1;
@@ -412,8 +408,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var variants = s_ShaderVariantData[shader];
                 var numCompilerPlatforms = variants.Select(v => v.compilerPlatform).Distinct().Count();
                 variantCountPerCompilerPlatform = variants.Count(v => ShaderTypeIsFragment(v.shaderType, v.compilerPlatform)) / numCompilerPlatforms;
-
-                AddVariants(shader, assetPath, variants, onIssueFound);
             }
 
             var shaderName = shader.name;
@@ -423,7 +417,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var shaderMessages = ShaderUtil.GetShaderMessages(shader);
             foreach (var message in shaderMessages)
             {
-                var messageIssue = ProjectIssue.Create(IssueCategory.ShaderCompilerMessage, message.message)
+                yield return ProjectIssue.Create(IssueCategory.ShaderCompilerMessage, message.message)
                     .WithCustomProperties(new object[(int)ShaderMessageProperty.Num]
                     {
                         shaderName,
@@ -433,7 +427,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithSeverity(message.severity == ShaderCompilerMessageSeverity.Error
                         ? Rule.Severity.Error
                         : Rule.Severity.Warning);
-                onIssueFound(messageIssue);
             }
 
             shaderHasError = ShaderUtil.ShaderHasError(shader);
@@ -446,73 +439,72 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (shaderHasError)
             {
-                var issueWithError = ProjectIssue.Create(IssueCategory.Shader, Path.GetFileNameWithoutExtension(assetPath))
+                yield return ProjectIssue.Create(IssueCategory.Shader, Path.GetFileNameWithoutExtension(assetPath))
                     .WithCustomProperties((int)ShaderProperty.Num, k_NotAvailable)
                     .WithLocation(assetPath)
                     .WithSeverity(severity);
-
-                onIssueFound(issueWithError);
-
-                return;
             }
-
-/*
-            var usedBySceneOnly = false;
-            if (m_GetShaderVariantCountMethod != null)
+            else
             {
-                var value = (ulong)m_GetShaderVariantCountMethod.Invoke(null, new object[] { shader, usedBySceneOnly});
-                variantCount = value.ToString();
-            }
+/*
+                var usedBySceneOnly = false;
+                if (m_GetShaderVariantCountMethod != null)
+                {
+                    var value = (ulong)m_GetShaderVariantCountMethod.Invoke(null, new object[] { shader, usedBySceneOnly});
+                    variantCount = value.ToString();
+                }
 */
-            var passCount = -1;
-            var globalKeywords = ShaderUtilProxy.GetShaderGlobalKeywords(shader);
-            var localKeywords = ShaderUtilProxy.GetShaderLocalKeywords(shader);
-            var hasInstancing = ShaderUtilProxy.HasInstancing(shader);
-            var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(shader);
-            var isSrpBatcherCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(shader, subShaderIndex) == 0;
+                var passCount = -1;
+                var globalKeywords = ShaderUtilProxy.GetShaderGlobalKeywords(shader);
+                var localKeywords = ShaderUtilProxy.GetShaderLocalKeywords(shader);
+                var hasInstancing = ShaderUtilProxy.HasInstancing(shader);
+                var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(shader);
+                var isSrpBatcherCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(shader, subShaderIndex) == 0;
 
 #if UNITY_2019_1_OR_NEWER
-            passCount = shader.passCount;
+                passCount = shader.passCount;
 #endif
-            var issue = ProjectIssue.Create(IssueCategory.Shader, shaderName)
-                .WithCustomProperties(new object[(int)ShaderProperty.Num]
-                {
-                    assetSize,
-                    ShaderUtilProxy.GetVariantCount(shader),
-                    variantCountPerCompilerPlatform == -1 ? k_NotAvailable : variantCountPerCompilerPlatform.ToString(),
-                    passCount == -1 ? k_NotAvailable : passCount.ToString(),
-                    (globalKeywords == null || localKeywords == null) ? k_NotAvailable : (globalKeywords.Length + localKeywords.Length).ToString(),
-                    shader.renderQueue,
-                    hasInstancing,
-                    isSrpBatcherCompatible,
-                    isAlwaysIncluded
-                })
-                .WithLocation(assetPath)
-                .WithSeverity(severity);
-
-            onIssueFound(issue);
+                yield return ProjectIssue.Create(IssueCategory.Shader, shaderName)
+                    .WithCustomProperties(new object[(int)ShaderProperty.Num]
+                    {
+                        assetSize,
+                        ShaderUtilProxy.GetVariantCount(shader),
+                        variantCountPerCompilerPlatform == -1 ? k_NotAvailable : variantCountPerCompilerPlatform.ToString(),
+                        passCount == -1 ? k_NotAvailable : passCount.ToString(),
+                        (globalKeywords == null || localKeywords == null) ? k_NotAvailable : (globalKeywords.Length + localKeywords.Length).ToString(),
+                        shader.renderQueue,
+                        hasInstancing,
+                        isSrpBatcherCompatible,
+                        isAlwaysIncluded
+                    })
+                    .WithLocation(assetPath)
+                    .WithSeverity(severity);
+            }
         }
 
-        void AddVariants(Shader shader, string assetPath, List<ShaderVariantData> shaderVariants, Action<ProjectIssue> onIssueFound)
+        IEnumerable<ProjectIssue> ProcessVariants(Shader shader, string assetPath)
         {
-            foreach (var shaderVariantData in shaderVariants)
+            if (s_ShaderVariantData.ContainsKey(shader))
             {
-                var issue = ProjectIssue.Create(IssueCategory.ShaderVariant, shader.name)
-                    .WithLocation(assetPath)
-                    .WithCustomProperties(new object[(int)ShaderVariantProperty.Num]
-                    {
-                        k_NoRuntimeData,
-                        shaderVariantData.compilerPlatform,
-                        shaderVariantData.graphicsTier,
-                        shaderVariantData.shaderType,
-                        shaderVariantData.passType,
-                        shaderVariantData.passName,
-                        CombineKeywords(shaderVariantData.keywords),
-                        CombineKeywords(shaderVariantData.platformKeywords),
-                        CombineKeywords(shaderVariantData.requirements.Select(r => r.ToString()).ToArray())
-                    });
+                var shaderVariants = s_ShaderVariantData[shader];
 
-                onIssueFound(issue);
+                foreach (var shaderVariantData in shaderVariants)
+                {
+                    yield return ProjectIssue.Create(IssueCategory.ShaderVariant, shader.name)
+                        .WithLocation(assetPath)
+                        .WithCustomProperties(new object[(int)ShaderVariantProperty.Num]
+                        {
+                            k_NoRuntimeData,
+                            shaderVariantData.compilerPlatform,
+                            shaderVariantData.graphicsTier,
+                            shaderVariantData.shaderType,
+                            shaderVariantData.passType,
+                            shaderVariantData.passName,
+                            CombineKeywords(shaderVariantData.keywords),
+                            CombineKeywords(shaderVariantData.platformKeywords),
+                            CombineKeywords(shaderVariantData.requirements.Select(r => r.ToString()).ToArray())
+                        });
+                }
             }
         }
 
