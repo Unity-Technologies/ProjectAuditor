@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectIssue
     {
         /// <summary>
-        /// Create Diagnostics-specific ProjectIssueBuilder
+        /// Create Diagnostics-specific IssueBuilder
         /// </summary>
         /// <param name="category"> Issue category </param>
         /// <param name="descriptor"> Diagnostic descriptor </param>
@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Create General-purpose ProjectIssueBuilder
+        /// Create General-purpose IssueBuilder
         /// </summary>
         /// <param name="category"> Issue category </param>
         /// <param name="description"> User-friendly description </param>
@@ -73,6 +73,9 @@ namespace Unity.ProjectAuditor.Editor
             internal set => m_Description = value;
         }
 
+        /// <summary>
+        /// Optional descriptor. Only used for diagnostics
+        /// </summary>
         public Descriptor descriptor => m_Descriptor;
 
         public DependencyNode dependencies
@@ -89,13 +92,14 @@ namespace Unity.ProjectAuditor.Editor
 
         public int line => m_Location == null ? 0 : m_Location.Line;
 
+        /// <summary>
+        /// Location of the item or diagnostic
+        /// </summary>
         public Location location
         {
             get => m_Location;
             internal set => m_Location = value;
         }
-
-        public bool isPerfCriticalContext => descriptor.critical || (m_Dependencies != null && m_Dependencies.IsPerfCritical());
 
         /// <summary>
         /// Diagnostics-specific severity
@@ -105,6 +109,8 @@ namespace Unity.ProjectAuditor.Editor
             get => m_Severity == Severity.Default && descriptor != null ? descriptor.severity : m_Severity;
             internal set => m_Severity = value;
         }
+
+        public bool isPerfCriticalContext => descriptor.critical || (m_Dependencies != null && m_Dependencies.IsPerfCritical());
 
         public bool IsValid()
         {
