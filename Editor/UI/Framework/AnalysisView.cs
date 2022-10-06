@@ -263,7 +263,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (UserPreferences.developerMode && m_Desc.showDependencyView)
             {
                 // this is only available in developer mode because it is still too slow at the moment
-                m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Dependencies (might be slow)",
+                m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Dependencies (slow)",
                     m_TextFilter.searchDependencies, GUILayout.Width(160));
             }
 
