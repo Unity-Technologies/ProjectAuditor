@@ -137,9 +137,9 @@ namespace Unity.ProjectAuditor.EditorTests
             var tier1settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier1);
             var tier2settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier2);
             var tier3settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier3);
-
+#if UNITY_2019_3_OR_NEWER
             var defaultRenderPipeline = GraphicsSettings.defaultRenderPipeline;
-
+#endif
             tier1settings.standardShaderQuality = ShaderQuality.High;
             tier2settings.standardShaderQuality = ShaderQuality.High;
             tier3settings.standardShaderQuality = isMixed ? ShaderQuality.Low : ShaderQuality.High;
@@ -147,16 +147,17 @@ namespace Unity.ProjectAuditor.EditorTests
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, tier1settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, tier2settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, tier3settings);
-
+#if UNITY_2019_3_OR_NEWER
             GraphicsSettings.defaultRenderPipeline = null;
-
+#endif
             Assert.AreEqual(isMixed, Evaluators.GraphicsMixedStandardShaderQuality_WithBuiltinRenderPipeline(buildTarget));
 
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, savedTier1settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, savedTier2settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, savedTier3settings);
-
+#if UNITY_2019_3_OR_NEWER
             GraphicsSettings.defaultRenderPipeline = defaultRenderPipeline;
+#endif
         }
 
         [TestCase(RenderingPath.Forward)]
@@ -172,9 +173,9 @@ namespace Unity.ProjectAuditor.EditorTests
             var tier1settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier1);
             var tier2settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier2);
             var tier3settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier3);
-
+#if UNITY_2019_3_OR_NEWER
             var defaultRenderPipeline = GraphicsSettings.defaultRenderPipeline;
-
+#endif
             tier1settings.renderingPath = renderingPath;
             tier2settings.renderingPath = renderingPath;
             tier3settings.renderingPath = renderingPath;
@@ -182,9 +183,9 @@ namespace Unity.ProjectAuditor.EditorTests
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, tier1settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, tier2settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, tier3settings);
-
+#if UNITY_2019_3_OR_NEWER
             GraphicsSettings.defaultRenderPipeline = null;
-
+#endif
             if (renderingPath == RenderingPath.Forward)
             {
                 Assert.AreEqual(true, Evaluators.GraphicsUsingForwardRendering_WithBuiltinRenderPipeline(buildTarget));
@@ -199,8 +200,9 @@ namespace Unity.ProjectAuditor.EditorTests
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, savedTier1settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, savedTier2settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, savedTier3settings);
-
+#if UNITY_2019_3_OR_NEWER
             GraphicsSettings.defaultRenderPipeline = defaultRenderPipeline;
+#endif
         }
     }
 }

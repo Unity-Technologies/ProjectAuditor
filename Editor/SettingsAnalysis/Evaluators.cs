@@ -210,7 +210,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         public static bool GraphicsMixedStandardShaderQuality_WithBuiltinRenderPipeline(BuildTarget platform)
         {
             // Only check for Built-In Rendering Pipeline
-            if (GraphicsSettings.defaultRenderPipeline != null)
+            if (!GraphicsUsingBuiltinRenderPipeline())
             {
                 return false;
             }
@@ -224,7 +224,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         public static bool GraphicsUsingForwardRendering_WithBuiltinRenderPipeline(BuildTarget platform)
         {
             // Only check for Built-In Rendering Pipeline
-            if (GraphicsSettings.defaultRenderPipeline != null)
+            if (!GraphicsUsingBuiltinRenderPipeline())
             {
                 return false;
             }
@@ -238,7 +238,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         public static bool GraphicsUsingDeferredRendering_WithBuiltinRenderPipeline(BuildTarget platform)
         {
             // Only check for Built-In Rendering Pipeline
-            if (GraphicsSettings.defaultRenderPipeline != null)
+            if (!GraphicsUsingBuiltinRenderPipeline())
             {
                 return false;
             }
@@ -247,6 +247,15 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             var renderingPaths = k_GraphicsTiers.Select(tier => EditorGraphicsSettings.GetTierSettings(buildGroup, tier).renderingPath);
 
             return renderingPaths.Any(path => path == RenderingPath.DeferredShading);
+        }
+
+        static bool GraphicsUsingBuiltinRenderPipeline()
+        {
+#if UNITY_2019_3_OR_NEWER
+            return GraphicsSettings.defaultRenderPipeline == null;
+#else
+            return true;
+#endif
         }
     }
 }
