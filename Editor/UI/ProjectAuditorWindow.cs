@@ -112,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 Profiler.BeginSample("IsMuted");
                 var muted = m_ProjectAuditor.config.GetAction(issue.descriptor, issue.GetContext()) ==
-                    Rule.Severity.None;
+                    Severity.None;
                 Profiler.EndSample();
                 if (muted)
                     return false;
@@ -960,7 +960,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                                 foreach (var item in selectedItems)
                                 {
-                                    SetRuleForItem(item, Rule.Severity.None);
+                                    SetRuleForItem(item, Severity.None);
                                 }
 
                                 if (!m_ViewStates.mutedIssues)
@@ -1175,7 +1175,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_AssemblySelectionSummary = GetSelectedAssembliesSummary();
         }
 
-        void SetRuleForItem(IssueTableItem item, Rule.Severity ruleSeverity)
+        void SetRuleForItem(IssueTableItem item, Severity ruleSeverity)
         {
             if (item.ProjectIssue == null)
                 return;

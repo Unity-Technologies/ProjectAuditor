@@ -87,7 +87,7 @@ namespace Unity.ProjectAuditor.Editor
                 m_Rules.Remove(rule);
         }
 
-        public Rule.Severity GetAction(ProblemDescriptor descriptor, string filter = "")
+        public Severity GetAction(ProblemDescriptor descriptor, string filter = "")
         {
             // is there a rule that matches the filter?
             var projectRule = GetRule(descriptor, filter);

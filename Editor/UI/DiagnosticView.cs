@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_Desc.category == IssueCategory.Code)
             {
                 var compilerMessages = allIssues.Where(i => i.category == IssueCategory.CodeCompilerMessage);
-                m_NumCompilerErrors += compilerMessages.Count(i => i.severity == Rule.Severity.Error);
+                m_NumCompilerErrors += compilerMessages.Count(i => i.severity == Severity.Error);
             }
         }
 

@@ -290,7 +290,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     rule = m_Config.GetRule(descriptor, issue.GetContext());
                     if (rule == null)
                         rule = m_Config.GetRule(descriptor); // try to find non-specific rule
-                    if (rule != null && rule.severity == Rule.Severity.None)
+                    if (rule != null && rule.severity == Severity.None)
                         GUI.enabled = false;
                 }
 
@@ -378,7 +378,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                         break;
                 }
-                if (rule != null && rule.severity == Rule.Severity.None)
+                if (rule != null && rule.severity == Severity.None)
                     GUI.enabled = true;
             }
 

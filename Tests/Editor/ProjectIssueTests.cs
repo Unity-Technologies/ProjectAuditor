@@ -69,7 +69,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(2, issue.GetNumCustomProperties());
             Assert.AreEqual("dummy issue", issue.GetProperty(PropertyType.Description));
 
-            Assert.AreEqual(Rule.Severity.Default.ToString(), issue.GetProperty(PropertyType.Severity));
+            Assert.AreEqual(Severity.Default.ToString(), issue.GetProperty(PropertyType.Severity));
             Assert.AreEqual(Area.CPU.ToString(), issue.GetProperty(PropertyType.Area));
             Assert.AreEqual("Assets/Dummy.cs:0", issue.GetProperty(PropertyType.Path));
             Assert.AreEqual("Dummy.cs:0", issue.GetProperty(PropertyType.Filename));

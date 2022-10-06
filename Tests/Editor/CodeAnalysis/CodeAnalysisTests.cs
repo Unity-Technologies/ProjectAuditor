@@ -242,7 +242,7 @@ class GenericInstantiation
             Assert.NotNull(myIssue);
             Assert.NotNull(myIssue.descriptor);
 
-            Assert.AreEqual(Rule.Severity.Default, myIssue.descriptor.severity);
+            Assert.AreEqual(Severity.Default, myIssue.descriptor.severity);
             Assert.AreEqual(typeof(string), myIssue.descriptor.id.GetType());
             Assert.AreEqual("PAC0066", myIssue.descriptor.id);
             Assert.AreEqual("UnityEngine.Camera", myIssue.descriptor.type);

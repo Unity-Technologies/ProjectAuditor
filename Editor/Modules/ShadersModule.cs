@@ -412,7 +412,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             var shaderName = shader.name;
             var shaderHasError = false;
-            var severity = Rule.Severity.None;
+            var severity = Severity.None;
 #if UNITY_2019_1_OR_NEWER
             var shaderMessages = ShaderUtil.GetShaderMessages(shader);
             foreach (var message in shaderMessages)
@@ -425,16 +425,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     })
                     .WithLocation(assetPath, message.line)
                     .WithSeverity(message.severity == ShaderCompilerMessageSeverity.Error
-                        ? Rule.Severity.Error
-                        : Rule.Severity.Warning);
+                        ? Severity.Error
+                        : Severity.Warning);
             }
 
             shaderHasError = ShaderUtil.ShaderHasError(shader);
 
             if (shaderHasError)
-                severity = Rule.Severity.Error;
+                severity = Severity.Error;
             else if (shaderMessages.Length > 0)
-                severity = Rule.Severity.Warning;
+                severity = Severity.Warning;
 #endif
 
             if (shaderHasError)

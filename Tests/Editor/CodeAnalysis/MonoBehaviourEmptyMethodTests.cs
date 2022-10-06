@@ -43,7 +43,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(issue);
             Assert.NotNull(issue.descriptor);
 
-            Assert.AreEqual(Rule.Severity.Default, issue.descriptor.severity);
+            Assert.AreEqual(Severity.Default, issue.descriptor.severity);
             Assert.AreEqual(EmptyMethodAnalyzer.GetDescriptor().id, issue.descriptor.id);
             Assert.True(string.IsNullOrEmpty(issue.descriptor.type));
             Assert.True(string.IsNullOrEmpty(issue.descriptor.method));

@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField] Location m_Location;
 
         [SerializeField] string[] m_CustomProperties;
-        [SerializeField] Rule.Severity m_Severity;
+        [SerializeField] Severity m_Severity;
 
         internal ProjectIssue(IssueCategory category, ProblemDescriptor descriptor, params object[] args)
         {
@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor
             m_Description = description;
             m_Category = category;
 
-            m_Severity = Rule.Severity.Default;
+            m_Severity = Severity.Default;
         }
 
         public IssueCategory category => m_Category;
@@ -99,9 +99,9 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Diagnostics-specific severity
         /// </summary>
-        public Rule.Severity severity
+        public Severity severity
         {
-            get => m_Severity == Rule.Severity.Default && descriptor != null ? descriptor.severity : m_Severity;
+            get => m_Severity == Severity.Default && descriptor != null ? descriptor.severity : m_Severity;
             internal set => m_Severity = value;
         }
 

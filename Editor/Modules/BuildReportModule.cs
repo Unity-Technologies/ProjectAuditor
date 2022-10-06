@@ -171,7 +171,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         Formatting.FormatBuildTime(step.duration)
                     })
                     .WithDepth(depth)
-                    .WithSeverity(Rule.Severity.Info));
+                    .WithSeverity(Severity.Info));
 
                 foreach (var message in step.messages)
                 {
@@ -220,18 +220,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
             issues.Add(issue);
         }
 
-        Rule.Severity LogTypeToSeverity(LogType logType)
+        Severity LogTypeToSeverity(LogType logType)
         {
             switch (logType)
             {
                 case LogType.Assert:
                 case LogType.Error:
                 case LogType.Exception:
-                    return Rule.Severity.Error;
+                    return Severity.Error;
                 case LogType.Warning:
-                    return Rule.Severity.Warning;
+                    return Severity.Warning;
                 default:
-                    return Rule.Severity.Info;
+                    return Severity.Info;
             }
         }
 

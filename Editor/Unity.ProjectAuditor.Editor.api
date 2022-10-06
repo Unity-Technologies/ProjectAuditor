@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor
         public string method;
         public string minimumVersion;
         public string[] platforms;
-        public Rule.Severity severity;
+        public Severity severity;
         public string solution;
         public string title;
         public string type;
@@ -133,7 +133,7 @@ namespace Unity.ProjectAuditor.Editor
         public void AddRule(Rule ruleToAdd);
         public void ClearAllRules();
         public void ClearRules(ProblemDescriptor descriptor, string filter = @"");
-        public Rule.Severity GetAction(ProblemDescriptor descriptor, string filter = @"");
+        public Severity GetAction(ProblemDescriptor descriptor, string filter = @"");
         public Rule GetRule(ProblemDescriptor descriptor, string filter = @"");
     }
 
@@ -163,7 +163,7 @@ namespace Unity.ProjectAuditor.Editor
         public int line { get; }
         public Location location { get; }
         public string relativePath { get; }
-        public Rule.Severity severity { get; }
+        public Severity severity { get; }
         public static Core.IssueBuilder Create(IssueCategory category, string description);
         public static Core.IssueBuilder Create(IssueCategory category, ProblemDescriptor descriptor, params object[] args);
         public string GetCustomProperty<T>(T propertyEnum) where T : struct, new();
@@ -199,22 +199,23 @@ namespace Unity.ProjectAuditor.Editor
     {
         public string filter;
         public string id;
-        public Rule.Severity severity;
+        public Severity severity;
         public Rule() {}
         public override bool Equals(object obj);
         public bool Equals(Rule other);
         public override int GetHashCode();
         public static bool operator ==(Rule a, Rule b);
         public static bool operator !=(Rule a, Rule b);
-        public enum Severity
-        {
-            Default = 0,
-            Error = 1,
-            Hidden = 5,
-            Info = 3,
-            None = 4,
-            Warning = 2,
-        }
+    }
+
+    public enum Severity
+    {
+        Default = 0,
+        Error = 1,
+        Hidden = 5,
+        Info = 3,
+        None = 4,
+        Warning = 2,
     }
 
     public class UserPreferences
@@ -334,7 +335,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         public IssueBuilder WithDescription(string description);
         public IssueBuilder WithLocation(Location location);
         public IssueBuilder WithLocation(string path, int line = 0);
-        public IssueBuilder WithSeverity(Rule.Severity severity);
+        public IssueBuilder WithSeverity(Severity severity);
     }
 
     public class IssueLayout

@@ -78,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Default severity of the diagnostic
         /// </summary>
-        public Rule.Severity severity;
+        public Severity severity;
 
         /// <summary>
         /// Affected areas

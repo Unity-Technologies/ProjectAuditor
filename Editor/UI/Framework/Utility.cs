@@ -198,30 +198,30 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return null;
         }
 
-        public static GUIContent GetSeverityIcon(Rule.Severity severity, string tooltip = null)
+        public static GUIContent GetSeverityIcon(Severity severity, string tooltip = null)
         {
             switch (severity)
             {
-                case Rule.Severity.Info:
+                case Severity.Info:
                     return GetIcon(IconType.Info, tooltip);
-                case Rule.Severity.Warning:
+                case Severity.Warning:
                     return GetIcon(IconType.Warning, tooltip);
-                case Rule.Severity.Error:
+                case Severity.Error:
                     return GetIcon(IconType.Error, tooltip);
                 default:
                     return null;
             }
         }
 
-        public static GUIContent GetTextWithSeverityIcon(string text, string tooltip, Rule.Severity severity)
+        public static GUIContent GetTextWithSeverityIcon(string text, string tooltip, Severity severity)
         {
             switch (severity)
             {
-                case Rule.Severity.Info:
+                case Severity.Info:
                     return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, MessageType.Info);
-                case Rule.Severity.Warning:
+                case Severity.Warning:
                     return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, MessageType.Warning);
-                case Rule.Severity.Error:
+                case Severity.Error:
                     return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, MessageType.Error);
                 default:
                     return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, MessageType.None);

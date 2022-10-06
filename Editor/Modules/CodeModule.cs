@@ -416,11 +416,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
 
-            var severity = Rule.Severity.None;
+            var severity = Severity.None;
             if (compilationTask.status == CompilationStatus.MissingDependency)
-                severity = Rule.Severity.Warning;
+                severity = Severity.Warning;
             else if (compilerMessages.Any(m => m.type == CompilerMessageType.Error))
-                severity = Rule.Severity.Error;
+                severity = Severity.Error;
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.assemblyPath);
             yield return ProjectIssue.Create(IssueCategory.Assembly, assemblyInfo.name)
@@ -456,19 +456,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Profiler.EndSample();
         }
 
-        static Rule.Severity CompilerMessageTypeToSeverity(CompilerMessageType compilerMessageType)
+        static Severity CompilerMessageTypeToSeverity(CompilerMessageType compilerMessageType)
         {
             switch (compilerMessageType)
             {
                 case CompilerMessageType.Error:
-                    return Rule.Severity.Error;
+                    return Severity.Error;
                 case CompilerMessageType.Warning:
-                    return Rule.Severity.Warning;
+                    return Severity.Warning;
                 case CompilerMessageType.Info:
-                    return Rule.Severity.Info;
+                    return Severity.Info;
             }
 
-            return Rule.Severity.Info;
+            return Severity.Info;
         }
 
         static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)

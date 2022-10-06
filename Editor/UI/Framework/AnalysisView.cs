@@ -488,7 +488,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     exporter.WriteHeader();
 
                     var matchingIssues = m_Issues.Where(issue => predicate == null || predicate(issue));
-                    matchingIssues = matchingIssues.Where(issue => issue.descriptor.IsValid() || m_Config.GetAction(issue.descriptor, issue.GetContext()) != Rule.Severity.None);
+                    matchingIssues = matchingIssues.Where(issue => issue.descriptor.IsValid() || m_Config.GetAction(issue.descriptor, issue.GetContext()) != Severity.None);
                     exporter.WriteIssues(matchingIssues.ToArray());
                 }
 
@@ -507,15 +507,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 switch (issue.severity)
                 {
-                    case Rule.Severity.Info:
+                    case Severity.Info:
                         if (!m_ShowInfo)
                             return false;
                         break;
-                    case Rule.Severity.Warning:
+                    case Severity.Warning:
                         if (!m_ShowWarn)
                             return false;
                         break;
-                    case Rule.Severity.Error:
+                    case Severity.Error:
                         if (!m_ShowError)
                             return false;
                         break;

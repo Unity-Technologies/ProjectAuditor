@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             return this;
         }
 
-        public IssueBuilder WithSeverity(Rule.Severity severity)
+        public IssueBuilder WithSeverity(Severity severity)
         {
             m_Issue.severity = severity;
             return this;

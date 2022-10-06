@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.EditorTests
             m_SerializedConfig.AddRule(new Rule
             {
                 id = "someid",
-                severity = Rule.Severity.None
+                severity = Severity.None
             });
 
             Assert.AreEqual(1, m_SerializedConfig.NumRules);
@@ -73,7 +73,7 @@ namespace Unity.ProjectAuditor.EditorTests
             m_Config.AddRule(new Rule
             {
                 id = issue.descriptor.id,
-                severity = Rule.Severity.None,
+                severity = Severity.None,
                 filter = callingMethod
             });
 
@@ -82,7 +82,7 @@ namespace Unity.ProjectAuditor.EditorTests
             action = m_Config.GetAction(issue.descriptor, callingMethod);
 
             // issue has been muted so it should not be reported
-            Assert.AreEqual(Rule.Severity.None, action);
+            Assert.AreEqual(Severity.None, action);
         }
 
 #if UNITY_2019_4_OR_NEWER
@@ -104,7 +104,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var action = m_SerializedConfig.GetAction(issues[0].descriptor, callingMethod);
 
             // issue has been muted so it should not be reported
-            Assert.AreEqual(Rule.Severity.None, action);
+            Assert.AreEqual(Severity.None, action);
         }
 
 #endif
@@ -128,7 +128,7 @@ namespace Unity.ProjectAuditor.EditorTests
             config.AddRule(new Rule
             {
                 id = firstDescriptor.id,
-                severity = Rule.Severity.None,
+                severity = Severity.None,
                 filter = filter
             });
 
@@ -144,7 +144,7 @@ namespace Unity.ProjectAuditor.EditorTests
             config.AddRule(new Rule
             {
                 id = firstDescriptor.id,
-                severity = Rule.Severity.None
+                severity = Severity.None
             });
 
             // search for specific rule again
@@ -172,7 +172,7 @@ namespace Unity.ProjectAuditor.EditorTests
             config.AddRule(new Rule
             {
                 id = firstDescriptor.id,
-                severity = Rule.Severity.None
+                severity = Severity.None
             });
             Assert.AreEqual(1, config.NumRules);
 

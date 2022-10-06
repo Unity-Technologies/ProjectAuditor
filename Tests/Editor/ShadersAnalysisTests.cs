@@ -563,7 +563,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShadersAnalysis_ShaderWithError_IsReported()
         {
-            var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.severity == Rule.Severity.Error);
+            var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.severity == Severity.Error);
 
             Assert.Positive(shadersWithErrors.Count());
             var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.relativePath.Equals(m_ShaderWithErrorResource.relativePath));
@@ -584,7 +584,7 @@ Shader ""Custom/MyEditorShader""
             var allowedPlatforms = new[] {ShaderCompilerPlatform.Metal, ShaderCompilerPlatform.D3D, ShaderCompilerPlatform.OpenGLCore}.Select(p => p.ToString());
             Assert.True(allowedPlatforms.Contains(message.GetCustomProperty(ShaderMessageProperty.Platform)), "Platform: {0}", message.GetCustomProperty(ShaderMessageProperty.Platform));
             Assert.AreEqual(k_ShaderName, message.GetCustomProperty(ShaderMessageProperty.ShaderName), "Shader Name: {0}", message.GetCustomProperty(ShaderMessageProperty.ShaderName));
-            Assert.AreEqual(Rule.Severity.Warning, message.severity);
+            Assert.AreEqual(Severity.Warning, message.severity);
             Assert.AreEqual(40, message.line);
         }
 
