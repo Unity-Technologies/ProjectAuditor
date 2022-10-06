@@ -217,6 +217,20 @@ namespace Unity.ProjectAuditor.Editor
             return s_CustomCategories[name];
         }
 
+        public static string GetCategoryName(IssueCategory category)
+        {
+            if (category < IssueCategory.FirstCustomCategory)
+                return category.ToString();
+
+            foreach (var pair in s_CustomCategories)
+            {
+                if (pair.Value == category)
+                    return pair.Key;
+            }
+
+            return "Unknown";
+        }
+
         /// <summary>
         /// Number of available built-in and registered categories
         /// </summary>

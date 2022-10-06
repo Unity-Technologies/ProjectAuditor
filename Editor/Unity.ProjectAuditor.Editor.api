@@ -65,6 +65,7 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = default(IProgress));
         public void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = default(IProgress));
         public IssueCategory[] GetCategories();
+        public static string GetCategoryName(IssueCategory category);
         public Core.IssueLayout GetLayout(IssueCategory category);
         public static IssueCategory GetOrRegisterCategory(string name);
         public static int NumCategories();
