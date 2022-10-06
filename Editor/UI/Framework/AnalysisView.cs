@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -299,7 +300,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndVertical();
         }
 
-        void DrawDetails(ProblemDescriptor[] selectedDescriptors)
+        void DrawDetails(Descriptor[] selectedDescriptors)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
             m_ViewStates.details = Utility.BoldFoldout(m_ViewStates.details, Contents.DetailsFoldout);
@@ -404,7 +405,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        void DrawRecommendation(ProblemDescriptor[] selectedDescriptors)
+        void DrawRecommendation(Descriptor[] selectedDescriptors)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
             m_ViewStates.recommendation = Utility.BoldFoldout(m_ViewStates.recommendation, Contents.RecommendationFoldout);

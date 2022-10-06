@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="category"> Issue category </param>
         /// <param name="descriptor"> Diagnostic descriptor </param>
         /// <param name="args"> Arguments to be used in the message formatting</param>
-        public static IssueBuilder Create(IssueCategory category, ProblemDescriptor descriptor, params object[] args)
+        public static IssueBuilder Create(IssueCategory category, Descriptor descriptor, params object[] args)
         {
             return new IssueBuilder(category, descriptor, args);
         }
@@ -35,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor
 
         [SerializeField] IssueCategory m_Category;
         [SerializeField] string m_Description;
-        [SerializeField] ProblemDescriptor m_Descriptor;
+        [SerializeField] Descriptor m_Descriptor;
 
         [SerializeField] DependencyNode m_Dependencies;
         [SerializeField] Location m_Location;
@@ -43,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField] string[] m_CustomProperties;
         [SerializeField] Severity m_Severity;
 
-        internal ProjectIssue(IssueCategory category, ProblemDescriptor descriptor, params object[] args)
+        internal ProjectIssue(IssueCategory category, Descriptor descriptor, params object[] args)
         {
             m_Descriptor = descriptor;
             m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
@@ -72,7 +73,7 @@ namespace Unity.ProjectAuditor.Editor
             internal set => m_Description = value;
         }
 
-        public ProblemDescriptor descriptor => m_Descriptor;
+        public Descriptor descriptor => m_Descriptor;
 
         public DependencyNode dependencies
         {

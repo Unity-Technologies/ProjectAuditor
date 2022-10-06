@@ -4,12 +4,13 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     class EmptyMethodAnalyzer : IInstructionAnalyzer
     {
-        static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
+        static readonly Descriptor k_Descriptor = new Descriptor
             (
             "PAC2001",
             "Empty MonoBehaviour Method",
@@ -53,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             return ProjectIssue.Create(IssueCategory.Code, k_Descriptor, methodDefinition.Name);
         }
 
-        public static ProblemDescriptor GetDescriptor()
+        public static Descriptor GetDescriptor()
         {
             return k_Descriptor;
         }

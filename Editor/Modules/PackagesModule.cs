@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -56,7 +57,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
 
-        static readonly ProblemDescriptor k_RecommendPackageUpgrade  = new ProblemDescriptor(
+        static readonly Descriptor k_RecommendPackageUpgrade  = new Descriptor(
             "PAP0001",
             "Upgradable packages",
             new[] { Area.Quality },
@@ -68,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
 
-        static readonly ProblemDescriptor k_RecommendPackagePreView = new ProblemDescriptor(
+        static readonly Descriptor k_RecommendPackagePreView = new Descriptor(
             "PAP0002",
             "Experimental/Preview packages",
             new[] { Area.Quality },

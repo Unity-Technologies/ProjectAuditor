@@ -5,12 +5,13 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     class AllocationAnalyzer : IInstructionAnalyzer
     {
-        static readonly ProblemDescriptor k_ObjectAllocationDescriptor = new ProblemDescriptor
+        static readonly Descriptor k_ObjectAllocationDescriptor = new Descriptor
             (
             "PAC2002",
             "Object Allocation",
@@ -22,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             messageFormat = "'{0}' allocation"
         };
 
-        static readonly ProblemDescriptor k_ClosureAllocationDescriptor = new ProblemDescriptor
+        static readonly Descriptor k_ClosureAllocationDescriptor = new Descriptor
             (
             "PAC2003",
             "Closure Allocation",
@@ -34,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             messageFormat = "Closure allocation in '{0}.{1}'"
         };
 
-        static readonly ProblemDescriptor k_ArrayAllocationDescriptor = new ProblemDescriptor
+        static readonly Descriptor k_ArrayAllocationDescriptor = new Descriptor
             (
             "PAC2004",
             "Array Allocation",
@@ -46,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             messageFormat = "'{0}' array allocation"
         };
 
-        static readonly ProblemDescriptor k_ParamArrayAllocationDescriptor = new ProblemDescriptor
+        static readonly Descriptor k_ParamArrayAllocationDescriptor = new Descriptor
             (
             "PAC2005",
             "Param Object Allocation",

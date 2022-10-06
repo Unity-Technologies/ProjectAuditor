@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     class BoxingAnalyzer : IInstructionAnalyzer
     {
-        static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor
+        static readonly Descriptor k_Descriptor = new Descriptor
             (
             "PAC2000",
             "Boxing Allocation",

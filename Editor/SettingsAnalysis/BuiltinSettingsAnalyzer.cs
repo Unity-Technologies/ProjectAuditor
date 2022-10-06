@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Macros;
@@ -15,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         readonly List<Assembly> m_Assemblies = new List<Assembly>();
         readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping =
             new List<KeyValuePair<string, string>>();
-        List<ProblemDescriptor> m_ProblemDescriptors;
+        List<Descriptor> m_ProblemDescriptors;
 
         public void Initialize(ProjectAuditorModule module)
         {
@@ -59,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
-        ProjectIssue Evaluate(ProblemDescriptor descriptor, BuildTarget platform)
+        ProjectIssue Evaluate(Descriptor descriptor, BuildTarget platform)
         {
             if (string.IsNullOrEmpty(descriptor.customevaluator))
             {
@@ -92,7 +93,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             return null;
         }
 
-        ProjectIssue NewIssue(ProblemDescriptor descriptor, string description)
+        ProjectIssue NewIssue(Descriptor descriptor, string description)
         {
             var projectWindowPath = string.Empty;
             var mappings = m_ProjectSettingsMapping.Where(p => descriptor.type.StartsWith(p.Key)).ToArray();

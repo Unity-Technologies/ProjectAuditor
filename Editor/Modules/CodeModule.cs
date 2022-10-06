@@ -8,6 +8,7 @@ using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -112,13 +113,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
         ProjectAuditorConfig m_Config;
         List<IInstructionAnalyzer> m_Analyzers;
         List<OpCode> m_OpCodes;
-        HashSet<ProblemDescriptor> m_ProblemDescriptors;
+        HashSet<Descriptor> m_ProblemDescriptors;
 
         Thread m_AssemblyAnalysisThread;
 
         public override string name => "Code";
 
-        public override IReadOnlyCollection<ProblemDescriptor> supportedDescriptors => m_ProblemDescriptors;
+        public override IReadOnlyCollection<Descriptor> supportedDescriptors => m_ProblemDescriptors;
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
@@ -137,7 +138,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             m_Config = config;
             m_Analyzers = new List<IInstructionAnalyzer>();
             m_OpCodes = new List<OpCode>();
-            m_ProblemDescriptors = new HashSet<ProblemDescriptor>();
+            m_ProblemDescriptors = new HashSet<Descriptor>();
 
             foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IInstructionAnalyzer)))
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
@@ -305,7 +306,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             onComplete?.Invoke(progress);
         }
 
-        public override void RegisterDescriptor(ProblemDescriptor descriptor)
+        public override void RegisterDescriptor(Descriptor descriptor)
         {
             if (!m_ProblemDescriptors.Add(descriptor))
                 throw new Exception("Duplicate descriptor with id: " + descriptor.id);

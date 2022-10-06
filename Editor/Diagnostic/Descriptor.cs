@@ -1,64 +1,13 @@
 using System;
 using System.Linq;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
-    /// <summary>
-    /// Affected area
-    /// </summary>
-    public enum Area
-    {
-        /// <summary>
-        /// CPU Performance
-        /// </summary>
-        CPU,
-
-        /// <summary>
-        /// GPU Performance
-        /// </summary>
-        GPU,
-
-        /// <summary>
-        /// Memory consumption
-        /// </summary>
-        Memory,
-
-        /// <summary>
-        /// Application size
-        /// </summary>
-        BuildSize,
-
-        /// <summary>
-        /// Build time
-        /// </summary>
-        BuildTime,
-
-        /// <summary>
-        /// Load times
-        /// </summary>
-        LoadTime,
-
-        /// <summary>
-        /// Quality. For example, using deprecated APIs that might be removed in the future
-        /// </summary>
-        Quality,
-
-        /// <summary>
-        /// Lack of platform support. For example, using APIs that are not supported on a specific platform and might fail at runtime
-        /// </summary>
-        Support,
-
-        /// <summary>
-        /// Required by platform. Typically this issue must be fixed before submitting to the platform store
-        /// </summary>
-        Requirement
-    }
-
     /// <summary>
     /// ProblemDescriptor defines the problem and a possible recommendation
     /// </summary>
     [Serializable]
-    public sealed class ProblemDescriptor : IEquatable<ProblemDescriptor>
+    public sealed class Descriptor : IEquatable<Descriptor>
     {
         /// <summary>
         /// An unique identifier for the diagnostic
@@ -128,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor
         public string method;
         public string value;
 
-        internal ProblemDescriptor(string id, string title, string[] areas, string description = null, string solution = null)
+        internal Descriptor(string id, string title, string[] areas, string description = null, string solution = null)
         {
             this.id = id;
             this.title = title;
@@ -142,17 +91,17 @@ namespace Unity.ProjectAuditor.Editor
             critical = false;
         }
 
-        public ProblemDescriptor(string id, string title, Area area, string description = null, string solution = null)
+        public Descriptor(string id, string title, Area area, string description = null, string solution = null)
             : this(id, title, new[] {area.ToString()}, description, solution)
         {
         }
 
-        public ProblemDescriptor(string id, string title, Area[] areas, string description = null, string solution = null)
+        public Descriptor(string id, string title, Area[] areas, string description = null, string solution = null)
             : this(id, title, areas.Select(a => a.ToString()).ToArray(), description, solution)
         {
         }
 
-        public bool Equals(ProblemDescriptor other)
+        public bool Equals(Descriptor other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -163,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == GetType() && Equals((ProblemDescriptor)obj);
+            return obj.GetType() == GetType() && Equals((Descriptor)obj);
         }
 
         public void Fix(ProjectIssue issue = null)

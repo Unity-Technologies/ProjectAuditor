@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditorInternal;
@@ -10,10 +11,10 @@ namespace Unity.ProjectAuditor.Editor.Core
 {
     static class ProblemDescriptorLoader
     {
-        public static List<ProblemDescriptor> LoadFromJson(string path, string name)
+        public static List<Descriptor> LoadFromJson(string path, string name)
         {
-            var rawDescriptors = Json.FromFile<ProblemDescriptor>(Path.Combine(path, name + ".json"));
-            var descriptors = new List<ProblemDescriptor>(rawDescriptors.Length);
+            var rawDescriptors = Json.FromFile<Descriptor>(Path.Combine(path, name + ".json"));
+            var descriptors = new List<Descriptor>(rawDescriptors.Length);
             foreach (var rawDescriptor in rawDescriptors)
             {
                 if (!IsPlatformCompatible(rawDescriptor))
@@ -22,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Core
                 if (!IsVersionCompatible(rawDescriptor))
                     continue;
 
-                var desc = new ProblemDescriptor(rawDescriptor.id, rawDescriptor.title, rawDescriptor.areas)
+                var desc = new Descriptor(rawDescriptor.id, rawDescriptor.title, rawDescriptor.areas)
                 {
                     customevaluator = rawDescriptor.customevaluator,
                     type = rawDescriptor.type ?? string.Empty,
@@ -47,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             return descriptors;
         }
 
-        internal static bool IsPlatformCompatible(ProblemDescriptor desc)
+        internal static bool IsPlatformCompatible(Descriptor desc)
         {
             var platforms = desc.platforms;
             if (platforms == null)
@@ -63,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             return false;
         }
 
-        internal static bool IsVersionCompatible(ProblemDescriptor desc)
+        internal static bool IsVersionCompatible(Descriptor desc)
         {
             var unityVersion = InternalEditorUtility.GetUnityVersion();
             var minimumVersion = (Version)null;

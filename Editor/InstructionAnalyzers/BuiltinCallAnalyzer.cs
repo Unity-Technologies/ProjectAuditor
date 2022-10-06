@@ -5,6 +5,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -14,8 +15,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     class BuiltinCallAnalyzer : IInstructionAnalyzer
     {
-        Dictionary<string, List<ProblemDescriptor>> m_Descriptors; // method name as key, list of type names as value
-        Dictionary<string, ProblemDescriptor> m_WholeNamespaceDescriptors; // namespace as key
+        Dictionary<string, List<Descriptor>> m_Descriptors; // method name as key, list of type names as value
+        Dictionary<string, Descriptor> m_WholeNamespaceDescriptors; // namespace as key
 
         readonly OpCode[] m_OpCodes =
         {
@@ -35,12 +36,12 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
             var methodDescriptors = descriptors.Where(descriptor => !descriptor.method.Equals("*") && !string.IsNullOrEmpty(descriptor.type));
 
-            m_Descriptors = new Dictionary<string, List<ProblemDescriptor>>();
+            m_Descriptors = new Dictionary<string, List<Descriptor>>();
             foreach (var d in methodDescriptors)
             {
                 if (!m_Descriptors.ContainsKey(d.method))
                 {
-                    m_Descriptors.Add(d.method, new List<ProblemDescriptor>());
+                    m_Descriptors.Add(d.method, new List<Descriptor>());
                 }
                 m_Descriptors[d.method].Add(d);
             }
@@ -54,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             var description = string.Empty;
             var methodName = callee.Name;
 
-            ProblemDescriptor descriptor;
+            Descriptor descriptor;
             var declaringType = callee.DeclaringType;
 
             // Are we trying to warn about a whole namespace?
@@ -67,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 if (methodName.StartsWith("get_"))
                     methodName = methodName.Substring("get_".Length);
 
-                List<ProblemDescriptor> descriptors;
+                List<Descriptor> descriptors;
                 if (!m_Descriptors.TryGetValue(methodName, out descriptors))
                     return null;
 

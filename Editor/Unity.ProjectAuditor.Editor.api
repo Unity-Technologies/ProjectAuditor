@@ -3,19 +3,6 @@
 // make sure the XML doc file is present and located next to the scraped dll
 namespace Unity.ProjectAuditor.Editor
 {
-    public enum Area
-    {
-        BuildSize = 3,
-        BuildTime = 4,
-        CPU = 0,
-        GPU = 1,
-        LoadTime = 5,
-        Memory = 2,
-        Quality = 6,
-        Requirement = 8,
-        Support = 7,
-    }
-
     public interface IProgress
     {
         public void Advance(string description = @"");
@@ -65,42 +52,6 @@ namespace Unity.ProjectAuditor.Editor
         public bool IsValid();
     }
 
-    public sealed class ProblemDescriptor : System.IEquatable<ProblemDescriptor>
-    {
-        public string[] areas;
-        public bool critical = false;
-        public string customevaluator;
-        public string description;
-        public string documentation;
-        public System.Action<ProjectIssue> fixer;
-        public string id;
-        public string maximumVersion;
-        public string messageFormat = @"{0}";
-        public string method;
-        public string minimumVersion;
-        public string[] platforms;
-        public Severity severity;
-        public string solution;
-        public string title;
-        public string type;
-        public string value;
-        public ProblemDescriptor(string id, string title, Area area, string description = default(string), string solution = default(string)) {}
-        public ProblemDescriptor(string id, string title, Area[] areas, string description = default(string), string solution = default(string)) {}
-        public override bool Equals(object obj);
-        public bool Equals(ProblemDescriptor other);
-        public void Fix(ProjectIssue issue = default(ProjectIssue));
-        public override int GetHashCode();
-        public bool IsValid();
-    }
-
-    public static class ProblemDescriptorExtensions
-    {
-        public static Area[] GetAreas(this ProblemDescriptor descriptor);
-        public static string GetAreasSummary(this ProblemDescriptor descriptor);
-        public static string GetFullTypeName(this ProblemDescriptor descriptor);
-        public static bool IsPlatformCompatible(this ProblemDescriptor descriptor, UnityEditor.BuildTarget buildTarget);
-    }
-
     public sealed class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport
     {
         public const string PackageId = @"com.unity.project-auditor";
@@ -130,11 +81,11 @@ namespace Unity.ProjectAuditor.Editor
         public bool UseRoslynAnalyzers;
         public int NumRules { get; }
         public ProjectAuditorConfig() {}
-        public void AddRule(Rule ruleToAdd);
+        public void AddRule(Diagnostic.Rule ruleToAdd);
         public void ClearAllRules();
-        public void ClearRules(ProblemDescriptor descriptor, string filter = @"");
-        public Severity GetAction(ProblemDescriptor descriptor, string filter = @"");
-        public Rule GetRule(ProblemDescriptor descriptor, string filter = @"");
+        public void ClearRules(Diagnostic.Descriptor descriptor, string filter = @"");
+        public Diagnostic.Severity GetAction(Diagnostic.Descriptor descriptor, string filter = @"");
+        public Diagnostic.Rule GetRule(Diagnostic.Descriptor descriptor, string filter = @"");
     }
 
     public class ProjectAuditorParams
@@ -157,15 +108,15 @@ namespace Unity.ProjectAuditor.Editor
         public string[] customProperties { get; }
         public Core.DependencyNode dependencies { get; }
         public string description { get; }
-        public ProblemDescriptor descriptor { get; }
+        public Diagnostic.Descriptor descriptor { get; }
         public string filename { get; }
         public bool isPerfCriticalContext { get; }
         public int line { get; }
         public Location location { get; }
         public string relativePath { get; }
-        public Severity severity { get; }
+        public Diagnostic.Severity severity { get; }
         public static Core.IssueBuilder Create(IssueCategory category, string description);
-        public static Core.IssueBuilder Create(IssueCategory category, ProblemDescriptor descriptor, params object[] args);
+        public static Core.IssueBuilder Create(IssueCategory category, Diagnostic.Descriptor descriptor, params object[] args);
         public string GetCustomProperty<T>(T propertyEnum) where T : struct, new();
         public double GetCustomPropertyAsDouble<T>(T propertyEnum) where T : struct, new();
         public float GetCustomPropertyAsFloat<T>(T propertyEnum) where T : struct, new();
@@ -193,29 +144,6 @@ namespace Unity.ProjectAuditor.Editor
         public int GetNumIssues(IssueCategory category);
         public static ProjectReport Load(string path);
         public void Save(string path);
-    }
-
-    public class Rule : System.IEquatable<Rule>
-    {
-        public string filter;
-        public string id;
-        public Severity severity;
-        public Rule() {}
-        public override bool Equals(object obj);
-        public bool Equals(Rule other);
-        public override int GetHashCode();
-        public static bool operator ==(Rule a, Rule b);
-        public static bool operator !=(Rule a, Rule b);
-    }
-
-    public enum Severity
-    {
-        Default = 0,
-        Error = 1,
-        Hidden = 5,
-        Info = 3,
-        None = 4,
-        Warning = 2,
     }
 
     public class UserPreferences
@@ -340,7 +268,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         public IssueBuilder WithDescription(string description);
         public IssueBuilder WithLocation(Location location);
         public IssueBuilder WithLocation(string path, int line = 0);
-        public IssueBuilder WithSeverity(Severity severity);
+        public IssueBuilder WithSeverity(Unity.ProjectAuditor.Editor.Diagnostic.Severity severity);
     }
 
     public class IssueLayout
@@ -366,12 +294,12 @@ namespace Unity.ProjectAuditor.Editor.Core
         public virtual bool isEnabledByDefault { get; }
         public virtual bool isSupported { get; }
         public abstract string name { get; }
-        public virtual System.Collections.Generic.IReadOnlyCollection<ProblemDescriptor> supportedDescriptors { get; }
+        public virtual System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.Diagnostic.Descriptor> supportedDescriptors { get; }
         public abstract System.Collections.Generic.IReadOnlyCollection<IssueLayout> supportedLayouts { get; }
         protected ProjectAuditorModule() {}
         public abstract void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = default(IProgress));
         public virtual void Initialize(ProjectAuditorConfig config);
-        public virtual void RegisterDescriptor(ProblemDescriptor descriptor);
+        public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.Diagnostic.Descriptor descriptor);
     }
 
     public struct PropertyDefinition
@@ -411,6 +339,81 @@ namespace Unity.ProjectAuditor.Editor.Core
         public static PropertyType FromCustom<T>(T customPropEnum) where T : struct, new();
         public static bool IsCustom(PropertyType type);
         public static int ToCustomIndex(PropertyType type);
+    }
+}
+
+namespace Unity.ProjectAuditor.Editor.Diagnostic
+{
+    public enum Area
+    {
+        BuildSize = 3,
+        BuildTime = 4,
+        CPU = 0,
+        GPU = 1,
+        LoadTime = 5,
+        Memory = 2,
+        Quality = 6,
+        Requirement = 8,
+        Support = 7,
+    }
+
+    public sealed class Descriptor : System.IEquatable<Descriptor>
+    {
+        public string[] areas;
+        public bool critical = false;
+        public string customevaluator;
+        public string description;
+        public string documentation;
+        public System.Action<ProjectIssue> fixer;
+        public string id;
+        public string maximumVersion;
+        public string messageFormat = @"{0}";
+        public string method;
+        public string minimumVersion;
+        public string[] platforms;
+        public Severity severity;
+        public string solution;
+        public string title;
+        public string type;
+        public string value;
+        public Descriptor(string id, string title, Area area, string description = default(string), string solution = default(string)) {}
+        public Descriptor(string id, string title, Area[] areas, string description = default(string), string solution = default(string)) {}
+        public override bool Equals(object obj);
+        public bool Equals(Descriptor other);
+        public void Fix(ProjectIssue issue = default(ProjectIssue));
+        public override int GetHashCode();
+        public bool IsValid();
+    }
+
+    public static class DescriptorExtensions
+    {
+        public static Area[] GetAreas(this Descriptor descriptor);
+        public static string GetAreasSummary(this Descriptor descriptor);
+        public static string GetFullTypeName(this Descriptor descriptor);
+        public static bool IsPlatformCompatible(this Descriptor descriptor, UnityEditor.BuildTarget buildTarget);
+    }
+
+    public class Rule : System.IEquatable<Rule>
+    {
+        public string filter;
+        public string id;
+        public Severity severity;
+        public Rule() {}
+        public override bool Equals(object obj);
+        public bool Equals(Rule other);
+        public override int GetHashCode();
+        public static bool operator ==(Rule a, Rule b);
+        public static bool operator !=(Rule a, Rule b);
+    }
+
+    public enum Severity
+    {
+        Default = 0,
+        Error = 1,
+        Hidden = 5,
+        Info = 3,
+        None = 4,
+        Warning = 2,
     }
 }
 

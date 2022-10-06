@@ -3,13 +3,14 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     class ProjectIssueTests
     {
-        ProblemDescriptor s_Descriptor = new ProblemDescriptor
+        Descriptor s_Descriptor = new Descriptor
             (
             "TD2001",
             "test",
