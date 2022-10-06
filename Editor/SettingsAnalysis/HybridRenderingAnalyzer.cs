@@ -1,4 +1,4 @@
-#if HYBRID_RENDERER_ANALYZER_SUPPORT
+#if PACKAGE_HYBRID_RENDERER
 
 using System;
 using System.Collections.Generic;

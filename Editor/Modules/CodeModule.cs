@@ -478,7 +478,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (MonoBehaviourAnalysis.IsMonoBehaviour(methodDefinition.DeclaringType) &&
                 MonoBehaviourAnalysis.IsMonoBehaviourUpdateMethod(methodDefinition))
                 return true;
-#if ENTITIES_PACKAGE_INSTALLED
+#if PACKAGE_ENTITIES
             if (ComponentSystemAnalysis.IsComponentSystem(methodDefinition.DeclaringType) &&
                 ComponentSystemAnalysis.IsOnUpdateMethod(methodDefinition))
                 return true;

@@ -1,4 +1,4 @@
-#if HDRP_ANALYZER_SUPPORT
+#if PACKAGE_HDRP
 
 using System;
 using System.Collections.Generic;
