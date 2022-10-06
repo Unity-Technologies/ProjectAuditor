@@ -51,12 +51,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (progress != null)
                 progress.Start("Analyzing Settings", "Analyzing project settings", m_Analyzers.Count);
 
+            var context = new SettingsAnalyzerContext { platform = projectAuditorParams.platform};
+
             foreach (var analyzer in m_Analyzers)
             {
                 if (progress != null)
                     progress.Advance();
 
-                var issues = analyzer.Analyze(projectAuditorParams.platform).ToArray();
+                var issues = analyzer.Analyze(context).ToArray();
                 if (issues.Any())
                     projectAuditorParams.onIncomingIssues(issues);
             }

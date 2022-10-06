@@ -322,8 +322,13 @@ namespace Unity.ProjectAuditor.Editor.Core
 
     public interface ISettingsAnalyzer
     {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ISettingsAnalyzer.Context context);
         public void Initialize(ProjectAuditorModule module);
+        public class Context
+        {
+            public UnityEditor.BuildTarget platform;
+            public Context() {}
+        }
     }
 
     public class IssueBuilder
