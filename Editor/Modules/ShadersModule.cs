@@ -493,11 +493,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             onIssueFound(issue);
         }
 
-        public static bool BuildDataAvailable()
-        {
-            return s_ShaderVariantData.Any();
-        }
-
         void AddVariants(Shader shader, string assetPath, List<ShaderVariantData> shaderVariants, Action<ProjectIssue> onIssueFound)
         {
             foreach (var shaderVariantData in shaderVariants)

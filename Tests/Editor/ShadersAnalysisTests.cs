@@ -326,7 +326,7 @@ Shader ""Custom/MyEditorShader""
             ShadersModule.ClearBuildData();
             var issues = Analyze(IssueCategory.ShaderVariant);
             Assert.Zero(issues.Length);
-            Assert.False(ShadersModule.BuildDataAvailable());
+            Assert.Zero(ShadersModule.NumBuiltVariants());
         }
 
         [Test]
@@ -334,14 +334,14 @@ Shader ""Custom/MyEditorShader""
         {
             ShadersModule.ClearBuildData();
             Build();
-            Assert.True(ShadersModule.BuildDataAvailable(), "Build Data is not available");
+            Assert.Positive(ShadersModule.NumBuiltVariants(), "Build Data is not available");
         }
 
         [Test]
         public void ShadersAnalysis_VariantsData_IsClearedAfterAnalysis()
         {
             AnalyzeBuild(IssueCategory.Shader);
-            Assert.False(ShadersModule.BuildDataAvailable(), "Build Data was not cleared after analysis");
+            Assert.Zero(ShadersModule.NumBuiltVariants(), "Build Data was not cleared after analysis");
         }
 
 #if BUILD_REPORT_API_SUPPORT
