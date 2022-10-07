@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
@@ -46,7 +47,7 @@ class ScriptWithWarning {
             Assert.AreEqual("The variable 'i' is assigned but its value is never used", issue.description);
             Assert.True(issue.relativePath.StartsWith("Assets/"), "Relative path: " + issue.relativePath);
             Assert.That(issue.line, Is.EqualTo(5));
-            Assert.That(issue.severity, Is.EqualTo(Rule.Severity.Warning));
+            Assert.That(issue.severity, Is.EqualTo(Severity.Warning));
 
             // check properties
             Assert.AreEqual((int)CompilerMessageProperty.Num, issue.GetNumCustomProperties());

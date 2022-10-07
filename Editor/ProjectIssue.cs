@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
@@ -13,40 +14,40 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectIssue
     {
         /// <summary>
-        /// Create Diagnostics-specific ProjectIssueBuilder
+        /// Create Diagnostics-specific IssueBuilder
         /// </summary>
         /// <param name="category"> Issue category </param>
         /// <param name="descriptor"> Diagnostic descriptor </param>
         /// <param name="args"> Arguments to be used in the message formatting</param>
-        public static ProjectIssueBuilder Create(IssueCategory category, ProblemDescriptor descriptor, params object[] args)
+        public static IssueBuilder Create(IssueCategory category, Descriptor descriptor, params object[] args)
         {
-            return new ProjectIssueBuilder(category, descriptor, args);
+            return new IssueBuilder(category, descriptor, args);
         }
 
         /// <summary>
-        /// Create General-purpose ProjectIssueBuilder
+        /// Create General-purpose IssueBuilder
         /// </summary>
         /// <param name="category"> Issue category </param>
         /// <param name="description"> User-friendly description </param>
-        public static ProjectIssueBuilder Create(IssueCategory category, string description)
+        public static IssueBuilder Create(IssueCategory category, string description)
         {
-            return new ProjectIssueBuilder(category, description);
+            return new IssueBuilder(category, description);
         }
 
         [SerializeField] IssueCategory m_Category;
         [SerializeField] string m_Description;
-        [SerializeField] ProblemDescriptor m_Descriptor;
+        [SerializeField] Descriptor m_Descriptor;
 
         [SerializeField] DependencyNode m_Dependencies;
         [SerializeField] Location m_Location;
 
         [SerializeField] string[] m_CustomProperties;
-        [SerializeField] Rule.Severity m_Severity;
+        [SerializeField] Severity m_Severity;
 
-        internal ProjectIssue(IssueCategory category, ProblemDescriptor descriptor, params object[] args)
+        internal ProjectIssue(IssueCategory category, Descriptor descriptor, params object[] args)
         {
             m_Descriptor = descriptor;
-            m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.description;
+            m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
             this.m_Category = category;
         }
 
@@ -55,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor
             m_Description = description;
             m_Category = category;
 
-            m_Severity = Rule.Severity.Default;
+            m_Severity = Severity.Default;
         }
 
         public IssueCategory category => m_Category;
@@ -72,7 +73,10 @@ namespace Unity.ProjectAuditor.Editor
             internal set => m_Description = value;
         }
 
-        public ProblemDescriptor descriptor => m_Descriptor;
+        /// <summary>
+        /// Optional descriptor. Only used for diagnostics
+        /// </summary>
+        public Descriptor descriptor => m_Descriptor;
 
         public DependencyNode dependencies
         {
@@ -88,21 +92,29 @@ namespace Unity.ProjectAuditor.Editor
 
         public int line => m_Location == null ? 0 : m_Location.Line;
 
+        /// <summary>
+        /// Location of the item or diagnostic
+        /// </summary>
         public Location location
         {
             get => m_Location;
             internal set => m_Location = value;
         }
 
-        public bool isPerfCriticalContext => descriptor.critical || (m_Dependencies != null && m_Dependencies.IsPerfCritical());
-
         /// <summary>
         /// Diagnostics-specific severity
         /// </summary>
-        public Rule.Severity severity
+        public Severity severity
         {
-            get => m_Severity == Rule.Severity.Default && descriptor != null ? descriptor.severity : m_Severity;
+            get => m_Severity == Severity.Default && descriptor != null ? descriptor.severity : m_Severity;
             internal set => m_Severity = value;
+        }
+
+        public bool isPerfCriticalContext => descriptor.critical || (m_Dependencies != null && m_Dependencies.IsPerfCritical());
+
+        public bool IsValid()
+        {
+            return description != null;
         }
 
         public int GetNumCustomProperties()

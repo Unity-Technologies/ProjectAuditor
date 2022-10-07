@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
@@ -40,7 +41,7 @@ class MyClass
             Assert.NotNull(myIssue);
             Assert.NotNull(myIssue.descriptor);
 
-            Assert.AreEqual(Rule.Severity.Default, myIssue.descriptor.severity);
+            Assert.AreEqual(Severity.Default, myIssue.descriptor.severity);
             Assert.AreEqual("PAC1000", myIssue.descriptor.id);
             Assert.AreEqual("System.Linq", myIssue.descriptor.type);
             Assert.AreEqual("*", myIssue.descriptor.method);

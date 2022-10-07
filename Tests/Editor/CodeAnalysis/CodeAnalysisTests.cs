@@ -5,6 +5,7 @@ using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
@@ -242,7 +243,7 @@ class GenericInstantiation
             Assert.NotNull(myIssue);
             Assert.NotNull(myIssue.descriptor);
 
-            Assert.AreEqual(Rule.Severity.Default, myIssue.descriptor.severity);
+            Assert.AreEqual(Severity.Default, myIssue.descriptor.severity);
             Assert.AreEqual(typeof(string), myIssue.descriptor.id.GetType());
             Assert.AreEqual("PAC0066", myIssue.descriptor.id);
             Assert.AreEqual("UnityEngine.Camera", myIssue.descriptor.type);
@@ -374,7 +375,7 @@ class GenericInstantiation
             var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'System.Linq.Enumerable.Sum' usage"));
 
             Assert.NotNull(issue);
-            Assert.AreEqual("System.Linq.*", issue.descriptor.description);
+            Assert.AreEqual("System.Linq.*", issue.descriptor.title);
         }
 
         [Test]

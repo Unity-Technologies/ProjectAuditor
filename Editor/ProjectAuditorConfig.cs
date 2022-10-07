@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
@@ -63,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor
             m_Rules.Add(ruleToAdd);
         }
 
-        public Rule GetRule(ProblemDescriptor descriptor, string filter = "")
+        public Rule GetRule(Descriptor descriptor, string filter = "")
         {
             // do not use Linq to avoid managed allocations
             foreach (var r in m_Rules)
@@ -79,7 +80,7 @@ namespace Unity.ProjectAuditor.Editor
             m_Rules.Clear();
         }
 
-        public void ClearRules(ProblemDescriptor descriptor, string filter = "")
+        public void ClearRules(Descriptor descriptor, string filter = "")
         {
             var rules = m_Rules.Where(r => r.id == descriptor.id && r.filter.Equals(filter)).ToArray();
 
@@ -87,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor
                 m_Rules.Remove(rule);
         }
 
-        public Rule.Severity GetAction(ProblemDescriptor descriptor, string filter = "")
+        public Severity GetAction(Descriptor descriptor, string filter = "")
         {
             // is there a rule that matches the filter?
             var projectRule = GetRule(descriptor, filter);

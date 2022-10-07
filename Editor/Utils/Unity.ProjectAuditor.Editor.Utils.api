@@ -30,6 +30,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
     public static class PackageUtils
     {
         public static string GetPackageRecommendedVersion(UnityEditor.PackageManager.PackageInfo package);
+        public static string GetPackageVersion(string packageId);
     }
 
     public static class PathUtils
@@ -54,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static string[] GetShaderGlobalKeywords(UnityEngine.Shader shader);
         public static string[] GetShaderLocalKeywords(UnityEngine.Shader shader);
         public static int GetSRPBatcherCompatibilityCode(UnityEngine.Shader shader, int subShaderIdx);
-        public static int GetVariantCount(UnityEngine.Shader shader);
+        public static System.UInt64 GetVariantCount(UnityEngine.Shader shader);
         public static bool HasInstancing(UnityEngine.Shader shader);
         public static bool HasSurfaceShaders(UnityEngine.Shader shader);
     }
