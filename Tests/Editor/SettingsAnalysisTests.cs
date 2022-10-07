@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void SettingsAnalysis_Evaluators_Exist()
         {
-            var descriptors = ProblemDescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, "ProjectSettings").Where(d => !string.IsNullOrEmpty(d.customevaluator));
+            var descriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, "ProjectSettings").Where(d => !string.IsNullOrEmpty(d.customevaluator));
             foreach (var desc in descriptors)
             {
                 var evalType = typeof(Evaluators);
