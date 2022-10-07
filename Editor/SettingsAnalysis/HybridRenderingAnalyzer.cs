@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Modules;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class HybridRenderingAnalyzer : ISettingsAnalyzer
     {
-        static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor(
+        static readonly Descriptor k_Descriptor = new Descriptor(
             "PAS1000",
             "Player Settings: Static batching is enabled",
             Area.CPU,
@@ -22,9 +24,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_Descriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(BuildTarget platform)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext context)
         {
-            if (Evaluators.PlayerSettingsIsStaticBatchingEnabled(platform))
+            if (Evaluators.PlayerSettingsIsStaticBatchingEnabled(context.platform))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_Descriptor);
             }
