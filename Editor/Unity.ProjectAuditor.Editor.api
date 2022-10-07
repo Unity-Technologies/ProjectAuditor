@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor
         BuildSummary = 10,
         Code = 4,
         CodeCompilerMessage = 5,
-        FirstCustomCategory = 19,
+        FirstCustomCategory = 18,
         GenericInstance = 6,
         MetaData = 0,
         Package = 14,
@@ -360,6 +360,12 @@ namespace Unity.ProjectAuditor.Editor.Core
         public override void WriteFooter();
         public override void WriteHeader();
         protected override void WriteIssue(ProjectIssue issue);
+    }
+
+    public interface ITextureAnalyzer
+    {
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.TextureImporter currentimporter, UnityEditor.TextureImporterPlatformSettings tips);
+        public void Initialize(ProjectAuditorModule module);
     }
 
     public class PackageDependencyNode : DependencyNode
