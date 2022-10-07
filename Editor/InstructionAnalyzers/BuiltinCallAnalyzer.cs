@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public void Initialize(ProjectAuditorModule module)
         {
-            var descriptors = ProblemDescriptorLoader.LoadFromJson(ProjectAuditor.DataPath, "ApiDatabase");
+            var descriptors = DescriptorLoader.LoadFromJson(ProjectAuditor.DataPath, "ApiDatabase");
             foreach (var descriptor in descriptors)
             {
                 module.RegisterDescriptor(descriptor);

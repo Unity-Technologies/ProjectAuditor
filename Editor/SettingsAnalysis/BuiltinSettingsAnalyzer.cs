@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         readonly List<Assembly> m_Assemblies = new List<Assembly>();
         readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping =
             new List<KeyValuePair<string, string>>();
-        List<Descriptor> m_ProblemDescriptors;
+        List<Descriptor> m_Descriptors;
 
         public void Initialize(ProjectAuditorModule module)
         {
@@ -41,8 +41,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.AudioModule",
                 "Project/Audio"));
 
-            m_ProblemDescriptors = ProblemDescriptorLoader.LoadFromJson(ProjectAuditor.DataPath, "ProjectSettings");
-            foreach (var descriptor in m_ProblemDescriptors)
+            m_Descriptors = DescriptorLoader.LoadFromJson(ProjectAuditor.DataPath, "ProjectSettings");
+            foreach (var descriptor in m_Descriptors)
             {
                 module.RegisterDescriptor(descriptor);
             }
@@ -50,10 +50,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext settingsAnalyzer)
         {
-            if (m_ProblemDescriptors == null)
+            if (m_Descriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
 
-            foreach (var descriptor in m_ProblemDescriptors.Where(d => d.IsPlatformCompatible(settingsAnalyzer.platform)))
+            foreach (var descriptor in m_Descriptors.Where(d => d.IsPlatformCompatible(settingsAnalyzer.platform)))
             {
                 var issue = Evaluate(descriptor, settingsAnalyzer.platform);
                 if (issue != null)

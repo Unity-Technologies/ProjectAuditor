@@ -4,7 +4,7 @@ using System.Linq;
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     /// <summary>
-    /// ProblemDescriptor defines the problem and a possible recommendation
+    /// Descriptor defines the problem and a possible recommendation
     /// </summary>
     [Serializable]
     public sealed class Descriptor : IEquatable<Descriptor>

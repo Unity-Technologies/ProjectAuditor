@@ -113,13 +113,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
         ProjectAuditorConfig m_Config;
         List<IInstructionAnalyzer> m_Analyzers;
         List<OpCode> m_OpCodes;
-        HashSet<Descriptor> m_ProblemDescriptors;
+        HashSet<Descriptor> m_Descriptors;
 
         Thread m_AssemblyAnalysisThread;
 
         public override string name => "Code";
 
-        public override IReadOnlyCollection<Descriptor> supportedDescriptors => m_ProblemDescriptors;
+        public override IReadOnlyCollection<Descriptor> supportedDescriptors => m_Descriptors;
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
@@ -138,7 +138,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             m_Config = config;
             m_Analyzers = new List<IInstructionAnalyzer>();
             m_OpCodes = new List<OpCode>();
-            m_ProblemDescriptors = new HashSet<Descriptor>();
+            m_Descriptors = new HashSet<Descriptor>();
 
             foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IInstructionAnalyzer)))
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
@@ -146,7 +146,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            if (m_ProblemDescriptors == null)
+            if (m_Descriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
 
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
@@ -308,7 +308,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void RegisterDescriptor(Descriptor descriptor)
         {
-            if (!m_ProblemDescriptors.Add(descriptor))
+            if (!m_Descriptors.Add(descriptor))
                 throw new Exception("Duplicate descriptor with id: " + descriptor.id);
         }
 
