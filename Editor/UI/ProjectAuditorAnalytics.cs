@@ -55,6 +55,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             PrecompiledAssemblies,
             Packages,
             Textures,
+            AndroidTexture,
             PackageVersion,
             AudioClip
         }
@@ -212,6 +213,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 case UIButton.PackageVersion:
                     return "package_version";
                 case UIButton.AudioClip:
+                    return "audio_clip";
+                case UIButton.AndroidTexture:
                     return "audio_clip";
                 default:
                     Debug.LogFormat("SendUIButtonEvent: Unsupported button type : {0}", uiButton);

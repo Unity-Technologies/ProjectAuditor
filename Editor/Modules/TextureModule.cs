@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Google.Android.OptimizationTool.Editor;
 using Unity.ProjectAuditor.Editor.Core;
 using UnityEngine.Profiling;
 using UnityEditor;
@@ -103,7 +105,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in m_Analyzers)
                 {
-                    analyzer.Analyze(currentPlatform, t, platformSettings);             //  run per texture that is audited
+                    var analyzerFoundIssues = analyzer.Analyze(currentPlatform, tName, platformSettings).ToArray();
+
+                    foreach (var foundissue in analyzerFoundIssues)
+                        if (analyzerFoundIssues.Any())
+                        {
+                            issues.Add(foundissue);
+                        }
+
+                    // if (analyzerFoundIssues.Any()) {   projectAuditorParams.onIncomingIssues(analyzerFoundIssues);}
+
+                    Debug.Log("Analyzed this texture: " + tName + "  Added any found issue to the ? separate category ? list of reported issues");
                 }
 
                 issues.Add(issue);
@@ -114,12 +126,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (issues.Count > 0)
                 projectAuditorParams.onIncomingIssues(issues);
+
             progress?.Clear();
 
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
-        public override bool isEnabledByDefault => false;
+        public override bool isEnabledByDefault => true;  // NEEDS TO BE SET BACK TO FALSE
 
         void AddAnalyzer(ITextureAnalyzer analyzer)
         {
