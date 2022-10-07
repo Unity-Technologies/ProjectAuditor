@@ -22,6 +22,7 @@ namespace Unity.ProjectAuditor.Editor
         Package,
         PackageVersion,
         Texture,
+        PlatformTexture,
         AudioClip,
         FirstCustomCategory
     }

@@ -24,6 +24,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
+    public enum PlatformTextureProperty
+    {
+        Name,
+        TextureCompression,
+        Num
+    }
+
+
     class TextureModule : ProjectAuditorModule
     {
         private static readonly IssueLayout k_TexturesIssueLayout = new IssueLayout
@@ -43,6 +51,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"}
             }
         };
+
+        static readonly IssueLayout k_PlatformTextureIssueLayout = new IssueLayout
+        {
+            category = IssueCategory.PlatformTexture,
+            properties = new[]
+            {
+                new PropertyDefinition {type = PropertyTypeUtil.FromCustom(PlatformTextureProperty.Name), format = PropertyFormat.String, name = "Name", longName = "Texture Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PlatformTextureProperty.TextureCompression), format = PropertyFormat.String, name = "Compression", longName = "Texture Compression" },
+                new PropertyDefinition { type = PropertyType.Path, name = "Path"}
+            }
+        };
+
         public override string name => "Textures";
 
         List<ITextureAnalyzer> m_Analyzers;
@@ -51,6 +71,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_TexturesIssueLayout,
+            k_PlatformTextureIssueLayout
         };
 
         public override IReadOnlyCollection<ProblemDescriptor> supportedDescriptors => m_ProblemDescriptors;
