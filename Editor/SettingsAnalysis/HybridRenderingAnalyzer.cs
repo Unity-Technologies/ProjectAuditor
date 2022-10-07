@@ -1,17 +1,15 @@
-#if PACKAGE_HYBRID_RENDERER
+#if HYBRID_RENDERER_ANALYZER_SUPPORT
 
 using System;
 using System.Collections.Generic;
 using UnityEditor;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Modules;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class HybridRenderingAnalyzer : ISettingsAnalyzer
     {
-        static readonly Descriptor k_Descriptor = new Descriptor(
+        static readonly ProblemDescriptor k_Descriptor = new ProblemDescriptor(
             "PAS1000",
             "Player Settings: Static batching is enabled",
             Area.CPU,
@@ -24,9 +22,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_Descriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext context)
+        public IEnumerable<ProjectIssue> Analyze(BuildTarget platform)
         {
-            if (Evaluators.PlayerSettingsIsStaticBatchingEnabled(context.platform))
+            if (Evaluators.PlayerSettingsIsStaticBatchingEnabled(platform))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_Descriptor);
             }

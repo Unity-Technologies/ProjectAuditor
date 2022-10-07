@@ -24,21 +24,19 @@ namespace Unity.ProjectAuditor.Editor
 
         internal const string DataPath = PackagePath + "/Data";
         internal const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
-
-        public const string PackageId = "com.unity.project-auditor";
-        public const string PackagePath = "Packages/" + PackageId;
-
+        internal const string PackagePath = "Packages/com.unity.project-auditor";
         internal static string PackageVersion
         {
             get
             {
-                if (string.IsNullOrEmpty(m_PackageVersion))
-                    m_PackageVersion = PackageUtils.GetPackageVersion(PackageId);
-                return m_PackageVersion;
+#if UNITY_2019_3_OR_NEWER
+                var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(PackagePath +  "/Editor/Unity.ProjectAuditor.Editor.asmdef");
+                return packageInfo.version;
+#else
+                return "Unknown";
+#endif
             }
         }
-
-        static string m_PackageVersion;
 
         readonly List<ProjectAuditorModule> m_Modules = new List<ProjectAuditorModule>();
         ProjectAuditorConfig m_Config;
@@ -215,20 +213,6 @@ namespace Unity.ProjectAuditor.Editor
             if (!s_CustomCategories.ContainsKey(name))
                 s_CustomCategories.Add(name, IssueCategory.FirstCustomCategory + s_CustomCategories.Count);
             return s_CustomCategories[name];
-        }
-
-        public static string GetCategoryName(IssueCategory category)
-        {
-            if (category < IssueCategory.FirstCustomCategory)
-                return category.ToString();
-
-            foreach (var pair in s_CustomCategories)
-            {
-                if (pair.Value == category)
-                    return pair.Key;
-            }
-
-            return "Unknown";
         }
 
         /// <summary>

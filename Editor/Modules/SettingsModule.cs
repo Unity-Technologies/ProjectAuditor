@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.SettingsAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -24,26 +23,26 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         List<ISettingsAnalyzer> m_Analyzers;
-        HashSet<Descriptor> m_Descriptors;
+        HashSet<ProblemDescriptor> m_ProblemDescriptors;
 
         public override string name => "Settings";
 
-        public override IReadOnlyCollection<Descriptor> supportedDescriptors => m_Descriptors;
+        public override IReadOnlyCollection<ProblemDescriptor> supportedDescriptors => m_ProblemDescriptors;
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
 
         public override void Initialize(ProjectAuditorConfig config)
         {
             m_Analyzers = new List<ISettingsAnalyzer>();
-            m_Descriptors = new HashSet<Descriptor>();
+            m_ProblemDescriptors = new HashSet<ProblemDescriptor>();
 
             foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ISettingsAnalyzer)))
                 AddAnalyzer(Activator.CreateInstance(type) as ISettingsAnalyzer);
         }
 
-        public override void RegisterDescriptor(Descriptor descriptor)
+        public override void RegisterDescriptor(ProblemDescriptor descriptor)
         {
-            if (!m_Descriptors.Add(descriptor))
+            if (!m_ProblemDescriptors.Add(descriptor))
                 throw new Exception("Duplicate descriptor with id: " + descriptor.id);
         }
 
@@ -52,14 +51,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (progress != null)
                 progress.Start("Analyzing Settings", "Analyzing project settings", m_Analyzers.Count);
 
-            var context = new SettingsAnalyzerContext { platform = projectAuditorParams.platform};
-
             foreach (var analyzer in m_Analyzers)
             {
                 if (progress != null)
                     progress.Advance();
 
-                var issues = analyzer.Analyze(context).ToArray();
+                var issues = analyzer.Analyze(projectAuditorParams.platform).ToArray();
                 if (issues.Any())
                     projectAuditorParams.onIncomingIssues(issues);
             }

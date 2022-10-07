@@ -1,5 +1,4 @@
 using System;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -14,7 +13,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Warning,
             Error,
             Help,
-            Refresh,
             StatusWheel,
             Hierarchy,
             ZoomTool,
@@ -32,7 +30,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_WarningIconName = "console.warnicon";
         static readonly string k_ErrorIconName = "console.erroricon";
         static readonly string k_HelpIconName = "_Help";
-        static readonly string k_RefreshIconName = "Refresh";
         static readonly string k_WhiteCheckMarkIconName = "FilterSelectedOnly";
         static readonly string k_GreenCheckMarkIconName = "TestPassed";
         static readonly string k_HierarchyIconName = "UnityEditor.SceneHierarchyWindow";
@@ -180,8 +177,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     return EditorGUIUtility.TrIconContent(k_ViewIconName, tooltip);
                 case IconType.Help:
                     return EditorGUIUtility.TrIconContent(k_HelpIconName, tooltip);
-                case IconType.Refresh:
-                    return EditorGUIUtility.TrIconContent(k_RefreshIconName, tooltip);
                 case IconType.Load:
                     return EditorGUIUtility.TrIconContent(k_LoadIconName, tooltip);
                 case IconType.Save:
@@ -199,30 +194,30 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return null;
         }
 
-        public static GUIContent GetSeverityIcon(Severity severity, string tooltip = null)
+        public static GUIContent GetSeverityIcon(Rule.Severity severity, string tooltip = null)
         {
             switch (severity)
             {
-                case Severity.Info:
+                case Rule.Severity.Info:
                     return GetIcon(IconType.Info, tooltip);
-                case Severity.Warning:
+                case Rule.Severity.Warning:
                     return GetIcon(IconType.Warning, tooltip);
-                case Severity.Error:
+                case Rule.Severity.Error:
                     return GetIcon(IconType.Error, tooltip);
                 default:
                     return null;
             }
         }
 
-        public static GUIContent GetTextWithSeverityIcon(string text, string tooltip, Severity severity)
+        public static GUIContent GetTextWithSeverityIcon(string text, string tooltip, Rule.Severity severity)
         {
             switch (severity)
             {
-                case Severity.Info:
+                case Rule.Severity.Info:
                     return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, MessageType.Info);
-                case Severity.Warning:
+                case Rule.Severity.Warning:
                     return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, MessageType.Warning);
-                case Severity.Error:
+                case Rule.Severity.Error:
                     return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, MessageType.Error);
                 default:
                     return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, MessageType.None);

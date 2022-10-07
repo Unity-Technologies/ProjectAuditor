@@ -2,15 +2,13 @@ using System;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
-using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     class ProjectIssueTests
     {
-        Descriptor s_Descriptor = new Descriptor
+        ProblemDescriptor s_Descriptor = new ProblemDescriptor
             (
             "TD2001",
             "test",
@@ -70,7 +68,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(2, issue.GetNumCustomProperties());
             Assert.AreEqual("dummy issue", issue.GetProperty(PropertyType.Description));
 
-            Assert.AreEqual(Severity.Default.ToString(), issue.GetProperty(PropertyType.Severity));
+            Assert.AreEqual(Rule.Severity.Default.ToString(), issue.GetProperty(PropertyType.Severity));
             Assert.AreEqual(Area.CPU.ToString(), issue.GetProperty(PropertyType.Area));
             Assert.AreEqual("Assets/Dummy.cs:0", issue.GetProperty(PropertyType.Path));
             Assert.AreEqual("Dummy.cs:0", issue.GetProperty(PropertyType.Filename));

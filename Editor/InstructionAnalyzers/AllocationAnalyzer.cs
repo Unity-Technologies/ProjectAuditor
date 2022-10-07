@@ -5,13 +5,12 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     class AllocationAnalyzer : IInstructionAnalyzer
     {
-        static readonly Descriptor k_ObjectAllocationDescriptor = new Descriptor
+        static readonly ProblemDescriptor k_ObjectAllocationDescriptor = new ProblemDescriptor
             (
             "PAC2002",
             "Object Allocation",
@@ -23,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             messageFormat = "'{0}' allocation"
         };
 
-        static readonly Descriptor k_ClosureAllocationDescriptor = new Descriptor
+        static readonly ProblemDescriptor k_ClosureAllocationDescriptor = new ProblemDescriptor
             (
             "PAC2003",
             "Closure Allocation",
@@ -35,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             messageFormat = "Closure allocation in '{0}.{1}'"
         };
 
-        static readonly Descriptor k_ArrayAllocationDescriptor = new Descriptor
+        static readonly ProblemDescriptor k_ArrayAllocationDescriptor = new ProblemDescriptor
             (
             "PAC2004",
             "Array Allocation",
@@ -47,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             messageFormat = "'{0}' array allocation"
         };
 
-        static readonly Descriptor k_ParamArrayAllocationDescriptor = new Descriptor
+        static readonly ProblemDescriptor k_ParamArrayAllocationDescriptor = new ProblemDescriptor
             (
             "PAC2005",
             "Param Object Allocation",
@@ -79,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_ParamArrayAllocationDescriptor);
         }
 
-        public IssueBuilder Analyze(MethodDefinition callerMethodDefinition, Instruction inst)
+        public ProjectIssueBuilder Analyze(MethodDefinition callerMethodDefinition, Instruction inst)
         {
             if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
             {

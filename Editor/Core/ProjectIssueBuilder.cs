@@ -1,21 +1,20 @@
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    public class IssueBuilder
+    public class ProjectIssueBuilder
     {
         ProjectIssue m_Issue;
 
-        public static implicit operator ProjectIssue(IssueBuilder builder) => builder.m_Issue;
+        public static implicit operator ProjectIssue(ProjectIssueBuilder builder) => builder.m_Issue;
 
-        internal IssueBuilder(IssueCategory category, Descriptor descriptor, params object[] args)
+        internal ProjectIssueBuilder(IssueCategory category, ProblemDescriptor descriptor, params object[] args)
         {
             m_Issue = new ProjectIssue(category, descriptor, args);
         }
 
-        internal IssueBuilder(IssueCategory category, string description)
+        internal ProjectIssueBuilder(IssueCategory category, string description)
         {
             m_Issue = new ProjectIssue(category, description);
         }
@@ -25,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         /// </summary>
         /// <param name="numProperties"> total number of custom properties </param>
         /// <param name="property"> value the properties will be set to </param>
-        public IssueBuilder WithCustomProperties(int numProperties, object property)
+        public ProjectIssueBuilder WithCustomProperties(int numProperties, object property)
         {
             m_Issue.customProperties = new string[numProperties];
             for (var i = 0; i < numProperties; i++)
@@ -37,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         /// Initialize custom properties
         /// </summary>
         /// <param name="properties"> Issue-specific properties </param>
-        public IssueBuilder WithCustomProperties(object[] properties)
+        public ProjectIssueBuilder WithCustomProperties(object[] properties)
         {
             if (properties != null)
                 m_Issue.customProperties = properties.Select(p => p != null ? p.ToString() : string.Empty).ToArray();
@@ -47,37 +46,37 @@ namespace Unity.ProjectAuditor.Editor.Core
             return this;
         }
 
-        public IssueBuilder WithDescription(string description)
+        public ProjectIssueBuilder WithDescription(string description)
         {
             m_Issue.description = description;
             return this;
         }
 
-        public IssueBuilder WithDependencies(DependencyNode dependencies)
+        public ProjectIssueBuilder WithDependencies(DependencyNode dependencies)
         {
             m_Issue.dependencies = dependencies;
             return this;
         }
 
-        internal IssueBuilder WithDepth(int depth)
+        internal ProjectIssueBuilder WithDepth(int depth)
         {
             m_Issue.depth = depth;
             return this;
         }
 
-        public IssueBuilder WithLocation(Location location)
+        public ProjectIssueBuilder WithLocation(Location location)
         {
             m_Issue.location = location;
             return this;
         }
 
-        public IssueBuilder WithLocation(string path, int line = 0)
+        public ProjectIssueBuilder WithLocation(string path, int line = 0)
         {
             m_Issue.location = new Location(path, line);
             return this;
         }
 
-        public IssueBuilder WithSeverity(Severity severity)
+        public ProjectIssueBuilder WithSeverity(Rule.Severity severity)
         {
             m_Issue.severity = severity;
             return this;

@@ -1,4 +1,4 @@
-#if PACKAGE_ENTITIES
+#if ENTITIES_PACKAGE_INSTALLED
 using System;
 using System.Linq;
 using Mono.Cecil;

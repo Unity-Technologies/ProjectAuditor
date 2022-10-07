@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -22,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_Desc.category == IssueCategory.Code)
             {
                 var compilerMessages = allIssues.Where(i => i.category == IssueCategory.CodeCompilerMessage);
-                m_NumCompilerErrors += compilerMessages.Count(i => i.severity == Severity.Error);
+                m_NumCompilerErrors += compilerMessages.Count(i => i.severity == Rule.Severity.Error);
             }
         }
 

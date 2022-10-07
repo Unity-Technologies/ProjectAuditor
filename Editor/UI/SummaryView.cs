@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
@@ -42,9 +41,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Stats.numPackages += allIssues.Count(i => i.category == IssueCategory.Package);
 
             var compilerMessages = allIssues.Where(i => i.category == IssueCategory.CodeCompilerMessage);
-            m_Stats.numCompilerErrors += compilerMessages.Count(i => i.severity == Severity.Error);
+            m_Stats.numCompilerErrors += compilerMessages.Count(i => i.severity == Rule.Severity.Error);
 
-            m_Stats.numCompiledAssemblies += allIssues.Count(i => i.category == IssueCategory.Assembly && i.severity != Severity.Error);
+            m_Stats.numCompiledAssemblies += allIssues.Count(i => i.category == IssueCategory.Assembly && i.severity != Rule.Severity.Error);
             m_Stats.numTotalAssemblies += allIssues.Count(i => i.category == IssueCategory.Assembly);
         }
 

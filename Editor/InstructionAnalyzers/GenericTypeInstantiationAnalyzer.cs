@@ -22,12 +22,12 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         {
         }
 
-        public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             return AnalyzeType(inst.OpCode == OpCodes.Newobj ? ((MethodReference)inst.Operand).DeclaringType : (TypeReference)inst.Operand);
         }
 
-        IssueBuilder AnalyzeType(TypeReference typeReference)
+        ProjectIssueBuilder AnalyzeType(TypeReference typeReference)
         {
             if (!typeReference.IsGenericInstance)
                 return null;

@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 var desc = ViewDescriptor.GetAll().FirstOrDefault(d => d.category == category);
                 if (desc == null)
                 {
-                    Debug.LogWarning("[Project Auditor] Descriptor for " + ProjectAuditor.GetCategoryName(category) + " was not registered.");
+                    Debug.Log("Descriptor for " + category + " was not registered.");
                     continue;
                 }
                 var layout = projectAuditor.GetLayout(category);
@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 if (!isSupported)
                 {
-                    Debug.LogWarning("[Project Auditor] Layout for category " + ProjectAuditor.GetCategoryName(category) + " was not found.");
+                    Debug.Log("Project Auditor module " + category + " is not supported.");
                     continue;
                 }
 

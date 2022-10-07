@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor
         public bool ignoreCase = true;
         public bool searchDependencies = false;
         public string searchString;
-        public TextFilter(Core.PropertyDefinition[] propertyDefinitions = default(Core.PropertyDefinition[])) {}
+        public TextFilter(PropertyDefinition[] propertyDefinitions = default(PropertyDefinition[])) {}
         public bool Match(ProjectIssue issue);
     }
 }
@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public AnalysisView(ViewManager viewManager) {}
         public virtual void AddIssues(System.Collections.Generic.IEnumerable<ProjectIssue> allIssues);
         public virtual void Clear();
-        public virtual void Create(ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.Core.IssueLayout layout, ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module, ViewStates viewStates, IProjectIssueFilter filter);
+        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module, ViewStates viewStates, IProjectIssueFilter filter);
         public virtual void DrawContent();
         public virtual void DrawFilters();
         protected virtual void DrawInfo();
@@ -76,8 +76,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     public static class EditorUtil
     {
         public static void FocusOnAssetInProjectWindow(Location location);
-        public static void OpenCodeDescriptor(Unity.ProjectAuditor.Editor.Diagnostic.Descriptor descriptor);
-        public static void OpenCompilerMessageDescriptor(Unity.ProjectAuditor.Editor.Diagnostic.Descriptor descriptor);
+        public static void OpenCodeDescriptor(ProblemDescriptor descriptor);
+        public static void OpenCompilerMessageDescriptor(ProblemDescriptor descriptor);
         public static void OpenProjectSettings(Location location);
         public static void OpenTextFile<T>(Location location) where T : UnityEngine.Object;
     }
@@ -188,9 +188,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static void DrawHelpButton(UnityEngine.GUIContent content, string page);
         public static void DrawSelectedText(string text);
         public static UnityEngine.GUIContent GetIcon(Utility.IconType iconType, string tooltip = default(string));
-        public static UnityEngine.GUIContent GetSeverityIcon(Unity.ProjectAuditor.Editor.Diagnostic.Severity severity, string tooltip = default(string));
+        public static UnityEngine.GUIContent GetSeverityIcon(Rule.Severity severity, string tooltip = default(string));
         public static UnityEngine.GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath);
-        public static UnityEngine.GUIContent GetTextWithSeverityIcon(string text, string tooltip, Unity.ProjectAuditor.Editor.Diagnostic.Severity severity);
+        public static UnityEngine.GUIContent GetTextWithSeverityIcon(string text, string tooltip, Rule.Severity severity);
         public static string GetTreeViewSelectedSummary(TreeViewSelection selection, string[] names);
         public static void ToolbarDropdownList(Utility.DropdownItem[] items, int selectionIndex, UnityEditor.GenericMenu.MenuFunction2 callback, params UnityEngine.GUILayoutOption[] options);
         public class DropdownItem
@@ -203,22 +203,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
         public enum IconType
         {
-            Download = 9,
+            Download = 8,
             Error = 2,
-            Fix = 8,
-            GreenCheckMark = 15,
+            Fix = 7,
+            GreenCheckMark = 14,
             Help = 3,
-            Hierarchy = 6,
+            Hierarchy = 5,
             Info = 0,
-            Load = 10,
-            Refresh = 4,
-            Save = 11,
-            StatusWheel = 5,
-            Trash = 12,
-            View = 13,
+            Load = 9,
+            Save = 10,
+            StatusWheel = 4,
+            Trash = 11,
+            View = 12,
             Warning = 1,
-            WhiteCheckMark = 14,
-            ZoomTool = 7,
+            WhiteCheckMark = 13,
+            ZoomTool = 6,
         }
     }
 
@@ -235,7 +234,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public System.Action<UnityEditor.GenericMenu, ViewManager, ProjectIssue> onContextMenu;
         public System.Action<ViewManager> onDrawToolbar;
         public System.Action<Location> onOpenIssue;
-        public System.Action<Unity.ProjectAuditor.Editor.Diagnostic.Descriptor> onOpenManual;
+        public System.Action<ProblemDescriptor> onOpenManual;
         public bool showActions;
         public bool showAreaSelection;
         public bool showAssemblySelection;

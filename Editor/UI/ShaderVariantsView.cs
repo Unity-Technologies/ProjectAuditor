@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -15,9 +13,9 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         const string k_BulletPointUnicode = " \u2022";
 
-        private static readonly string k_Description = $@"This view shows the built Shader Variants.";
-        static readonly string k_BuildInstructions =
-            $@"To record and view the Shader Variants for this project, follow these steps:
+        static readonly string k_BuildInstructions = $@"This view shows the built Shader Variants.
+
+To record and view the Shader Variants for this project, follow these steps:
 {k_BulletPointUnicode} Click the <b>Clear</b> button
 {k_BulletPointUnicode} Build the project and/or Addressables/AssetBundles
 {k_BulletPointUnicode} Click the <b>Refresh</b> button";
@@ -50,43 +48,33 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         struct PropertyFoldout
         {
-            public int id;
+            public ShaderVariantProperty id;
             public bool enabled;
             public GUIContent content;
             public Vector2 scroll;
         }
 
-        PropertyFoldout[] m_PropertyFoldouts;
-
-        public override void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config,
-            ProjectAuditorModule module, ViewStates viewStates, IProjectIssueFilter filter)
+        readonly PropertyFoldout[] m_PropertyFoldouts =
         {
-            var propertyFoldouts = new List<PropertyFoldout>();
-
-            propertyFoldouts.Add(new PropertyFoldout
+            new PropertyFoldout
             {
-                id = descriptor.category == IssueCategory.ShaderVariant ? (int)ShaderVariantProperty.Keywords : (int)ComputeShaderVariantProperty.Keywords,
+                id = ShaderVariantProperty.Keywords,
                 enabled = true,
                 content = new GUIContent("Keywords")
-            });
-            propertyFoldouts.Add(new PropertyFoldout
+            },
+            new PropertyFoldout
             {
-                id = descriptor.category == IssueCategory.ShaderVariant ? (int)ShaderVariantProperty.PlatformKeywords : (int)ComputeShaderVariantProperty.PlatformKeywords,
+                id = ShaderVariantProperty.PlatformKeywords,
                 enabled = true,
                 content = new GUIContent("Platform Keywords")
-            });
-
-            if (descriptor.category == IssueCategory.ShaderVariant)
-                propertyFoldouts.Add(new PropertyFoldout
-                {
-                    id = (int)ShaderVariantProperty.Requirements,
-                    enabled = true,
-                    content = new GUIContent("Requirements")
-                });
-            m_PropertyFoldouts = propertyFoldouts.ToArray();
-
-            base.Create(descriptor, layout, config, module, viewStates, filter);
-        }
+            },
+            new PropertyFoldout
+            {
+                id = ShaderVariantProperty.Requirements,
+                enabled = true,
+                content = new GUIContent("Requirements")
+            }
+        };
 
         void ParsePlayerLog(string logFilename)
         {
@@ -122,23 +110,20 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public override void DrawFilters()
         {
-            if (m_Desc.category == IssueCategory.ShaderVariant)
+            GUI.enabled = numIssues > 0;
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Extra :", GUILayout.Width(80));
+            EditorGUI.BeginChangeCheck();
+            m_ShowCompiledVariants = EditorGUILayout.ToggleLeft("Compiled Variants", m_ShowCompiledVariants, GUILayout.Width(180));
+            m_ShowUncompiledVariants = EditorGUILayout.ToggleLeft("Uncompiled Variants", m_ShowUncompiledVariants, GUILayout.Width(180));
+            if (EditorGUI.EndChangeCheck())
             {
-                GUI.enabled = numIssues > 0;
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Extra :", GUILayout.Width(80));
-                EditorGUI.BeginChangeCheck();
-                m_ShowCompiledVariants = EditorGUILayout.ToggleLeft("Compiled Variants", m_ShowCompiledVariants, GUILayout.Width(180));
-                m_ShowUncompiledVariants = EditorGUILayout.ToggleLeft("Uncompiled Variants", m_ShowUncompiledVariants, GUILayout.Width(180));
-                if (EditorGUI.EndChangeCheck())
-                {
-                    MarkDirty();
-                }
-                EditorGUILayout.EndHorizontal();
-
-                GUI.enabled = true;
+                MarkDirty();
             }
+            EditorGUILayout.EndHorizontal();
+
+            GUI.enabled = true;
         }
 
         public override void DrawRightPanels(ProjectIssue[] selectedIssues)
@@ -181,20 +166,10 @@ namespace Unity.ProjectAuditor.Editor.UI
         protected override void DrawInfo()
         {
             EditorGUILayout.BeginVertical();
+            EditorGUILayout.LabelField(k_BuildInstructions, SharedStyles.TextArea);
+            EditorGUILayout.HelpBox(k_ClearInstructions, MessageType.Warning);
 
-            EditorGUILayout.LabelField(k_Description, SharedStyles.TextArea);
-            var numBuiltVariants = ShadersModule.NumBuiltVariants();
-            if (numBuiltVariants > 0)
-            {
-                EditorGUILayout.HelpBox("Total Variants from Build: " + numBuiltVariants + ". Click on Refresh to update this view", MessageType.Info);
-            }
-            else
-            {
-                EditorGUILayout.LabelField(k_BuildInstructions, SharedStyles.TextArea);
-                EditorGUILayout.HelpBox(k_ClearInstructions, MessageType.Warning);
-            }
-
-            if (numIssues > 0 && m_Desc.category == IssueCategory.ShaderVariant)
+            if (numIssues > 0)
             {
                 EditorGUILayout.LabelField(k_PlayerLogInstructions, SharedStyles.TextArea);
                 if (!GraphicsSettingsProxy.logShaderCompilationSupported)
@@ -270,9 +245,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             if (!base.Match(issue))
                 return false;
-            if (m_Desc.category == IssueCategory.ComputeShaderVariant)
-                return true;
-
             var compiled = issue.GetCustomPropertyAsBool(ShaderVariantProperty.Compiled);
             if (compiled && m_ShowCompiledVariants)
                 return true;

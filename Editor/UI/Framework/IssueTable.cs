@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -40,8 +38,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get => m_GroupPropertyIndex;
             set
             {
-                if (value >= m_Layout.properties.Length)
-                    return;
                 if (value >= 0)
                     m_GroupPropertyIndex = value;
             }
@@ -291,7 +287,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     rule = m_Config.GetRule(descriptor, issue.GetContext());
                     if (rule == null)
                         rule = m_Config.GetRule(descriptor); // try to find non-specific rule
-                    if (rule != null && rule.severity == Severity.None)
+                    if (rule != null && rule.severity == Rule.Severity.None)
                         GUI.enabled = false;
                 }
 
@@ -379,7 +375,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                         break;
                 }
-                if (rule != null && rule.severity == Severity.None)
+                if (rule != null && rule.severity == Rule.Severity.None)
                     GUI.enabled = true;
             }
 

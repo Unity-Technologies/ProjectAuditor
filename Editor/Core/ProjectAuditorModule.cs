@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
@@ -24,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public virtual bool isSupported => true;
 
-        public virtual IReadOnlyCollection<Descriptor> supportedDescriptors => Array.Empty<Descriptor>();
+        public virtual IReadOnlyCollection<ProblemDescriptor> supportedDescriptors => Array.Empty<ProblemDescriptor>();
 
         public abstract IReadOnlyCollection<IssueLayout> supportedLayouts
         {
@@ -35,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         {
         }
 
-        public virtual void RegisterDescriptor(Descriptor descriptor)
+        public virtual void RegisterDescriptor(ProblemDescriptor descriptor)
         {}
 
         /// <summary>

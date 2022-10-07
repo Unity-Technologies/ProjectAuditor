@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -172,7 +171,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         Formatting.FormatBuildTime(step.duration)
                     })
                     .WithDepth(depth)
-                    .WithSeverity(Severity.Info));
+                    .WithSeverity(Rule.Severity.Info));
 
                 foreach (var message in step.messages)
                 {
@@ -221,18 +220,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
             issues.Add(issue);
         }
 
-        Severity LogTypeToSeverity(LogType logType)
+        Rule.Severity LogTypeToSeverity(LogType logType)
         {
             switch (logType)
             {
                 case LogType.Assert:
                 case LogType.Error:
                 case LogType.Exception:
-                    return Severity.Error;
+                    return Rule.Severity.Error;
                 case LogType.Warning:
-                    return Severity.Warning;
+                    return Rule.Severity.Warning;
                 default:
-                    return Severity.Info;
+                    return Rule.Severity.Info;
             }
         }
 

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Macros;
@@ -17,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         readonly List<Assembly> m_Assemblies = new List<Assembly>();
         readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping =
             new List<KeyValuePair<string, string>>();
-        List<Descriptor> m_Descriptors;
+        List<ProblemDescriptor> m_ProblemDescriptors;
 
         public void Initialize(ProjectAuditorModule module)
         {
@@ -41,27 +39,27 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             m_ProjectSettingsMapping.Add(new KeyValuePair<string, string>("UnityEngine.AudioModule",
                 "Project/Audio"));
 
-            m_Descriptors = DescriptorLoader.LoadFromJson(ProjectAuditor.DataPath, "ProjectSettings");
-            foreach (var descriptor in m_Descriptors)
+            m_ProblemDescriptors = ProblemDescriptorLoader.LoadFromJson(ProjectAuditor.DataPath, "ProjectSettings");
+            foreach (var descriptor in m_ProblemDescriptors)
             {
                 module.RegisterDescriptor(descriptor);
             }
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext settingsAnalyzer)
+        public IEnumerable<ProjectIssue> Analyze(BuildTarget platform)
         {
-            if (m_Descriptors == null)
+            if (m_ProblemDescriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
 
-            foreach (var descriptor in m_Descriptors.Where(d => d.IsPlatformCompatible(settingsAnalyzer.platform)))
+            foreach (var descriptor in m_ProblemDescriptors.Where(d => d.IsPlatformCompatible(platform)))
             {
-                var issue = Evaluate(descriptor, settingsAnalyzer.platform);
+                var issue = Evaluate(descriptor, platform);
                 if (issue != null)
                     yield return issue;
             }
         }
 
-        ProjectIssue Evaluate(Descriptor descriptor, BuildTarget platform)
+        ProjectIssue Evaluate(ProblemDescriptor descriptor, BuildTarget platform)
         {
             if (string.IsNullOrEmpty(descriptor.customevaluator))
             {
@@ -81,20 +79,20 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                     descriptor.type, methodName, paramTypes, args);
 
                 if (value.ToString() == descriptor.value)
-                    return NewIssue(descriptor, descriptor.title);
+                    return NewIssue(descriptor, descriptor.description);
             }
             else
             {
                 var evalType = typeof(Evaluators);
                 var method = evalType.GetMethod(descriptor.customevaluator);
                 if ((bool)method.Invoke(null, new object[] {platform}))
-                    return NewIssue(descriptor, descriptor.title);
+                    return NewIssue(descriptor, descriptor.description);
             }
 
             return null;
         }
 
-        ProjectIssue NewIssue(Descriptor descriptor, string description)
+        ProjectIssue NewIssue(ProblemDescriptor descriptor, string description)
         {
             var projectWindowPath = string.Empty;
             var mappings = m_ProjectSettingsMapping.Where(p => descriptor.type.StartsWith(p.Key)).ToArray();

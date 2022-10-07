@@ -1,5 +1,4 @@
 using System;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditorInternal;
@@ -9,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public static class EditorUtil
     {
-        public static void OpenCodeDescriptor(Descriptor descriptor)
+        public static void OpenCodeDescriptor(ProblemDescriptor descriptor)
         {
             var unityVersion = InternalEditorUtility.GetUnityVersion();
             if (unityVersion.Major < 2017)
@@ -26,13 +25,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public static void OpenCompilerMessageDescriptor(Descriptor descriptor)
+        public static void OpenCompilerMessageDescriptor(ProblemDescriptor descriptor)
         {
             const string prefix = "CS";
             const string baseURL = "https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/";
-            if (descriptor.title.StartsWith(prefix))
+            if (descriptor.description.StartsWith(prefix))
             {
-                Application.OpenURL(baseURL + descriptor.title);
+                Application.OpenURL(baseURL + descriptor.description);
             }
         }
 

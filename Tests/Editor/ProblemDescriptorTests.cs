@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditorInternal;
@@ -20,7 +19,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProblemDescriptor_Comparison_Works()
         {
-            var a = new Descriptor
+            var a = new ProblemDescriptor
                 (
                 "TD2001",
                 "test",
@@ -28,7 +27,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "this is not actually a problem",
                 "do nothing"
                 );
-            var b = new Descriptor
+            var b = new ProblemDescriptor
                 (
                 "TD2001",
                 "test",
@@ -49,7 +48,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProblemDescriptor_Hash_IsId()
         {
-            var p = new Descriptor
+            var p = new ProblemDescriptor
                 (
                 "TD2001",
                 "test",
@@ -64,7 +63,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProblemDescriptor_Version_IsCompatible()
         {
-            var desc = new Descriptor
+            var desc = new ProblemDescriptor
                 (
                 "TD2001",
                 "test",
@@ -114,7 +113,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProblemDescriptor_MultipleAreas_AreCorrect()
         {
-            var desc = new Descriptor
+            var desc = new ProblemDescriptor
                 (
                 "TD2001",
                 "test",
@@ -130,7 +129,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProblemDescriptor_AnyPlatform_IsCompatible()
         {
-            var desc = new Descriptor
+            var desc = new ProblemDescriptor
                 (
                 "TD2001",
                 "test",
@@ -143,7 +142,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProblemDescriptor_Platform_IsCompatible()
         {
-            var desc = new Descriptor
+            var desc = new ProblemDescriptor
                 (
                 "TD2001",
                 "test",
@@ -163,7 +162,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProblemDescriptor_Platform_IsNotCompatible()
         {
-            var desc = new Descriptor
+            var desc = new ProblemDescriptor
                 (
                 "TD2001",
                 "test",
@@ -210,7 +209,7 @@ namespace Unity.ProjectAuditor.EditorTests
             foreach (var desc in descriptors)
             {
                 Assert.False(string.IsNullOrEmpty(desc.id));
-                Assert.False(string.IsNullOrEmpty(desc.description), desc.id + " has no problem description");
+                Assert.False(string.IsNullOrEmpty(desc.problem), desc.id + " has no problem description");
                 Assert.False(string.IsNullOrEmpty(desc.solution), desc.id + " has no solution description");
 
                 var type = types.FirstOrDefault(t => t.FullName.Equals(desc.type));
@@ -237,7 +236,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase("ProjectSettings")]
         public void ProblemDescriptor_Areas_Exist(string jsonFilename)
         {
-            var descriptors = Json.FromFile<Descriptor>(PathUtils.Combine(Editor.ProjectAuditor.DataPath, jsonFilename) + ".json");
+            var descriptors = Json.FromFile<ProblemDescriptor>(PathUtils.Combine(Editor.ProjectAuditor.DataPath, jsonFilename) + ".json");
             foreach (var desc in descriptors)
             {
                 for (int i = 0; i < desc.areas.Length; i++)
@@ -253,7 +252,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProblemDescriptor_Platform_IsCorrect()
         {
-            var descriptors = Json.FromFile<Descriptor>(PathUtils.Combine(Editor.ProjectAuditor.DataPath, "ProjectSettings") + ".json");
+            var descriptors = Json.FromFile<ProblemDescriptor>(PathUtils.Combine(Editor.ProjectAuditor.DataPath, "ProjectSettings") + ".json");
             var platDescriptor = descriptors.FirstOrDefault(d => d.id.Equals("PAS0004"));
             Assert.NotNull(platDescriptor);
             Assert.NotNull(platDescriptor.platforms);

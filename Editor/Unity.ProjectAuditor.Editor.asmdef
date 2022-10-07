@@ -25,17 +25,17 @@
         {
             "name": "com.unity.render-pipelines.high-definition",
             "expression": "",
-            "define": "PACKAGE_HDRP"
+            "define": "HDRP_ANALYZER_SUPPORT"
         },
         {
             "name": "com.unity.rendering.hybrid",
             "expression": "",
-            "define": "PACKAGE_HYBRID_RENDERER"
+            "define": "HYBRID_RENDERER_ANALYZER_SUPPORT"
         },
         {
             "name": "com.unity.entities",
             "expression": "",
-            "define": "PACKAGE_ENTITIES"
+            "define": "ENTITIES_PACKAGE_INSTALLED"
         },
         {
             "name": "com.unity.nuget.mono-cecil",

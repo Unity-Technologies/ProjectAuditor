@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Unity.ProjectAuditor.Editor.Core;
 
-namespace Unity.ProjectAuditor.Editor.Core
+namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     public interface IInstructionAnalyzer
     {
@@ -11,6 +12,6 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         void Initialize(ProjectAuditorModule module);
 
-        IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst);
+        ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst);
     }
 }

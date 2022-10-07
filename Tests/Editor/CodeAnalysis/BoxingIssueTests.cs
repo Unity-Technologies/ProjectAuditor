@@ -3,7 +3,6 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
@@ -47,12 +46,12 @@ namespace Unity.ProjectAuditor.EditorTests
 
             // check descriptor
             Assert.NotNull(boxingInt.descriptor);
-            Assert.AreEqual(Severity.Default, boxingInt.descriptor.severity);
+            Assert.AreEqual(Rule.Severity.Default, boxingInt.descriptor.severity);
             Assert.AreEqual("PAC2000", boxingInt.descriptor.id);
             Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.type));
             Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.method));
-            Assert.False(string.IsNullOrEmpty(boxingInt.descriptor.title));
-            Assert.AreEqual("Boxing Allocation", boxingInt.descriptor.title);
+            Assert.False(string.IsNullOrEmpty(boxingInt.descriptor.description));
+            Assert.AreEqual("Boxing Allocation", boxingInt.descriptor.description);
         }
 
         [Test]
@@ -74,12 +73,12 @@ namespace Unity.ProjectAuditor.EditorTests
 
             // check descriptor
             Assert.NotNull(boxingFloat.descriptor);
-            Assert.AreEqual(Severity.Default, boxingFloat.descriptor.severity);
+            Assert.AreEqual(Rule.Severity.Default, boxingFloat.descriptor.severity);
             Assert.AreEqual("PAC2000", boxingFloat.descriptor.id);
             Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.type));
             Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.method));
-            Assert.False(string.IsNullOrEmpty(boxingFloat.descriptor.title));
-            Assert.AreEqual("Boxing Allocation", boxingFloat.descriptor.title);
+            Assert.False(string.IsNullOrEmpty(boxingFloat.descriptor.description));
+            Assert.AreEqual("Boxing Allocation", boxingFloat.descriptor.description);
         }
 
         [Test]

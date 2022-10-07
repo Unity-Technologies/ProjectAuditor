@@ -1,7 +1,5 @@
 using System;
 using System.Runtime.CompilerServices;
-using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor
@@ -37,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.Description:
                     return issue.description;
                 case PropertyType.Descriptor:
-                    return issue.descriptor.title;
+                    return issue.descriptor.description;
                 case PropertyType.Filename:
                     if (string.IsNullOrEmpty(issue.filename))
                         return k_NotAvailable;

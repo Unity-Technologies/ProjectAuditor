@@ -29,17 +29,12 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectAuditor_Category_IsRegistered()
         {
-            const string testCategoryName = "TestCategory";
-
-            Assert.IsNull(Editor.ProjectAuditor.GetCategoryName((IssueCategory)999));
-
+            var testCategoryName = "TestCategory";
             var numCategories = Unity.ProjectAuditor.Editor.ProjectAuditor.NumCategories();
             var category = Unity.ProjectAuditor.Editor.ProjectAuditor.GetOrRegisterCategory(testCategoryName);
 
             // check category is registered
             Assert.True(category >= IssueCategory.FirstCustomCategory);
-
-            Assert.AreEqual(testCategoryName, Editor.ProjectAuditor.GetCategoryName(category));
 
             // check num category increased by 1
             Assert.AreEqual(numCategories + 1, Unity.ProjectAuditor.Editor.ProjectAuditor.NumCategories());
