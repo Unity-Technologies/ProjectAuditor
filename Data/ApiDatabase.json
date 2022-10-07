@@ -5,7 +5,7 @@
             "type": "UnityEngine.Camera",
             "method": "main",
             "areas": ["CPU"],
-            "problem": "<b>Camera.main</b> property uses <b>FindGameObjectsWithTag()</b> internally and doesn't cache the result.",
+            "description": "<b>Camera.main</b> property uses <b>FindGameObjectsWithTag()</b> internally and doesn't cache the result.",
             "solution": "It is advised to cache and use the camera component obtained from Game object instead.",
             "maximumVersion": "2019.4.8"
         },
@@ -14,7 +14,7 @@
             "type": "UnityEngine.WebCamTexture",
             "method": "GetPixels",
             "areas": ["Memory"],
-            "problem": "<b>WebCamTexture.GetPixels()</b> allocates managed memory.",
+            "description": "<b>WebCamTexture.GetPixels()</b> allocates managed memory.",
             "solution": "Use WebCamTexture.GetPixels32() instead."
         },
         {
@@ -22,7 +22,7 @@
             "type": "UnityEngine.WebCamTexture",
             "method": "GetPixels32",
             "areas": ["Memory"],
-            "problem": "<b>WebCamTexture.GetPixels32()</b> allocates managed memory if a suitable array is not provided as a parameter.",
+            "description": "<b>WebCamTexture.GetPixels32()</b> allocates managed memory if a suitable array is not provided as a parameter.",
             "solution": "Ensure that you pass an array of <b>Color32[]</b> to this API method for it to fill out, to avoid creating a new array every time the method is called."
         },
         {
@@ -30,7 +30,7 @@
             "type": "UnityEngine.GeometryUtility",
             "method": "CalculateFrustumPlanes",
             "areas": ["Memory"],
-            "problem": "Some versions of <b>GeometryUtility.CalculateFrustumPlanes()</b> allocate managed memory.",
+            "description": "Some versions of <b>GeometryUtility.CalculateFrustumPlanes()</b> allocate managed memory.",
             "solution": "Ensure that you use the <b>CalculateFrustumPlanes(Matrix4x4 worldToProjectionMatrix, Plane[] planes)</b> version of this API method, in order to be able to pass a pre-allocated Array of Planes."
         },
         {
@@ -38,7 +38,7 @@
             "type": "UnityEngine.Resources",
             "method": "FindObjectsOfTypeAll",
             "areas": ["Memory"],
-            "problem": "<b>Resources.FindObjectsOfTypeAll()</b> allocates managed memory.",
+            "description": "<b>Resources.FindObjectsOfTypeAll()</b> allocates managed memory.",
             "solution": "Use <b>Resources.FindObjectsOfTypeNonAlloc()</b> instead."
         },
         {
@@ -46,7 +46,7 @@
             "type": "UnityEngine.Texture2D",
             "method": "GetPixels",
             "areas": ["Memory"],
-            "problem": "<b>Texture2D.GetPixels()</b> allocates managed memory.",
+            "description": "<b>Texture2D.GetPixels()</b> allocates managed memory.",
             "solution": "Use <b>Texture2D.GetRawTextureData()</b> instead. This method returns a NativeArray of pixel data, and so does not allocate managed memory."
         },
         {
@@ -54,7 +54,7 @@
             "type": "UnityEngine.Texture2D",
             "method": "GetPixels32",
             "areas": ["Memory"],
-            "problem": "<b>Texture2D.GetPixels32()</b> allocates managed memory.",
+            "description": "<b>Texture2D.GetPixels32()</b> allocates managed memory.",
             "solution": "Use <b>Texture2D.GetRawTextureData()</b> instead. This method returns a NativeArray of pixel data, and so does not allocate managed memory."
         },
         {
@@ -62,7 +62,7 @@
             "type": "UnityEngine.Rigidbody",
             "method": "SweepTestAll",
             "areas": ["Memory"],
-            "problem": "<b>Rigidbody.SweepTestAll()</b> allocates managed memory.",
+            "description": "<b>Rigidbody.SweepTestAll()</b> allocates managed memory.",
             "solution": "Use <b>Rigidbody.SweepTestNonAlloc()</b> instead."
         },
         {
@@ -70,7 +70,7 @@
             "type": "UnityEngine.Physics",
             "method": "RaycastAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics.RaycastAll()</b> allocates managed memory.",
+            "description": "<b>Physics.RaycastAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics.RaycastNonAlloc()</b> instead."
         },
         {
@@ -78,7 +78,7 @@
             "type": "UnityEngine.Physics",
             "method": "CapsuleCastAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics.CapsuleCastAll()</b> allocates managed memory.",
+            "description": "<b>Physics.CapsuleCastAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics.CapsuleCastNonAlloc()</b> instead."
         },
         {
@@ -86,7 +86,7 @@
             "type": "UnityEngine.Physics",
             "method": "SphereCastAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics.SphereCastAll()</b> allocates managed memory.",
+            "description": "<b>Physics.SphereCastAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics.SphereCastNonAlloc()</b> instead."
         },
         {
@@ -94,7 +94,7 @@
             "type": "UnityEngine.Physics",
             "method": "BoxCastAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics.BoxCastAll()</b> allocates managed memory.",
+            "description": "<b>Physics.BoxCastAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics.BoxCastNonAlloc()</b> instead."
         },
         {
@@ -102,7 +102,7 @@
             "type": "UnityEngine.Physics",
             "method": "OverlapCapsule",
             "areas": ["Memory"],
-            "problem": "<b>Physics.OverlapCapsule()</b> allocates managed memory.",
+            "description": "<b>Physics.OverlapCapsule()</b> allocates managed memory.",
             "solution": "Use <b>Physics.OverlapCapsuleNonAlloc()</b> instead."
         },
         {
@@ -110,7 +110,7 @@
             "type": "UnityEngine.Physics",
             "method": "OverlapSphere",
             "areas": ["Memory"],
-            "problem": "<b>Physics.OverlapSphere()</b> allocates managed memory.",
+            "description": "<b>Physics.OverlapSphere()</b> allocates managed memory.",
             "solution": "Use <b>Physics.OverlapSphereNonAlloc()</b> instead."
         },
         {
@@ -118,7 +118,7 @@
             "type": "UnityEngine.Physics",
             "method": "OverlapBox",
             "areas": ["Memory"],
-            "problem": "<b>Physics.OverlapBox()</b> allocates managed memory.",
+            "description": "<b>Physics.OverlapBox()</b> allocates managed memory.",
             "solution": "Use <b>Physics.OverlapBoxNonAlloc()</b> instead."
         },
         {
@@ -126,7 +126,7 @@
             "type": "UnityEngine.Physics2D",
             "method": "LinecastAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics2D.LinecastAll()</b> allocates managed memory.",
+            "description": "<b>Physics2D.LinecastAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics2D.LinecastNonAlloc()</b> instead."
         },
         {
@@ -134,7 +134,7 @@
             "type": "UnityEngine.Physics2D",
             "method": "RaycastAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics2D.RaycastAll()</b> allocates managed memory.",
+            "description": "<b>Physics2D.RaycastAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics2D.RaycastNonAlloc()</b> instead."
         },
         {
@@ -142,7 +142,7 @@
             "type": "UnityEngine.Physics2D",
             "method": "CircleCastAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics2D.CircleCastAll()</b> allocates managed memory.",
+            "description": "<b>Physics2D.CircleCastAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics2D.CircleCastNonAlloc()</b> instead."
         },
         {
@@ -150,7 +150,7 @@
             "type": "UnityEngine.Physics2D",
             "method": "BoxCastAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics2D.BoxCastAll()</b> allocates managed memory.",
+            "description": "<b>Physics2D.BoxCastAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics2D.BoxCastNonAlloc()</b> instead."
         },
         {
@@ -158,7 +158,7 @@
             "type": "UnityEngine.Physics2D",
             "method": "CapsuleCastAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics2D.CapsuleCastAll()</b> allocates managed memory.",
+            "description": "<b>Physics2D.CapsuleCastAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics2D.CapsuleCastNonAlloc()</b> instead."
         },
         {
@@ -166,7 +166,7 @@
             "type": "UnityEngine.Physics2D",
             "method": "GetRayIntersectionAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics2D.GetRayIntersectionAll()</b> allocates managed memory.",
+            "description": "<b>Physics2D.GetRayIntersectionAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics2D.GetRayIntersectionNonAlloc()</b> instead."
         },
         {
@@ -174,7 +174,7 @@
             "type": "UnityEngine.Physics2D",
             "method": "OverlapPointAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics2D.OverlapPointAll()</b> allocates managed memory.",
+            "description": "<b>Physics2D.OverlapPointAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics2D.OverlapPointNonAlloc()</b> instead."
         },
         {
@@ -182,7 +182,7 @@
             "type": "UnityEngine.Physics2D",
             "method": "OverlapCircleAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics2D.OverlapCircleAll()</b> allocates managed memory.",
+            "description": "<b>Physics2D.OverlapCircleAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics2D.OverlapCircleNonAlloc()</b> instead."
         },
         {
@@ -190,7 +190,7 @@
             "type": "UnityEngine.Physics2D",
             "method": "OverlapBoxAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics2D.OverlapBoxAll()</b> allocates managed memory.",
+            "description": "<b>Physics2D.OverlapBoxAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics2D.OverlapBoxNonAlloc()</b> instead."
         },
         {
@@ -198,7 +198,7 @@
             "type": "UnityEngine.Physics2D",
             "method": "OverlapAreaAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics2D.OverlapAreaAll()</b> allocates managed memory.",
+            "description": "<b>Physics2D.OverlapAreaAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics2D.OverlapAreaNonAlloc()</b> instead."
         },
         {
@@ -206,7 +206,7 @@
             "type": "UnityEngine.Physics2D",
             "method": "OverlapCapsuleAll",
             "areas": ["Memory"],
-            "problem": "<b>Physics2D.OverlapCapsuleAll()</b> allocates managed memory.",
+            "description": "<b>Physics2D.OverlapCapsuleAll()</b> allocates managed memory.",
             "solution": "Use <b>Physics2D.OverlapCapsuleNonAlloc()</b> instead."
         },
         {
@@ -214,7 +214,7 @@
             "type": "UnityEngine.Component",
             "method": "GetComponentsInChildren",
             "areas": ["Memory"],
-            "problem": "<b>Component.GetComponentsInChildren()</b> allocates managed memory.",
+            "description": "<b>Component.GetComponentsInChildren()</b> allocates managed memory.",
             "solution": "Ensure you are using one of the versions of <b>GameObject.GetComponentsInChildren()</b> which accepts a List<T> as a parameter and populates it with the components it finds."
         },
         {
@@ -222,7 +222,7 @@
             "type": "UnityEngine.Component",
             "method": "GetComponentsInParent",
             "areas": ["Memory"],
-            "problem": "<b>Component.GetComponentsInParent()</b> allocates managed memory.",
+            "description": "<b>Component.GetComponentsInParent()</b> allocates managed memory.",
             "solution": "Ensure you are using one of the versions of <b>GameObject.GetComponentsInParent()</b> which accepts a List<T> as a parameter and populates it with the components it finds."
         },
         {
@@ -230,7 +230,7 @@
             "type": "UnityEngine.GameObject",
             "method": "GetComponentsInChildren",
             "areas": ["Memory"],
-            "problem": "Some versions of <b>GameObject.GetComponentsInChildren()</b> allocate managed memory.",
+            "description": "Some versions of <b>GameObject.GetComponentsInChildren()</b> allocate managed memory.",
             "solution": "Ensure you are using one of the versions of <b>GameObject.GetComponentsInChildren()</b> which accepts a List<T> as a parameter and populates it with the components it finds."
         },
         {
@@ -238,7 +238,7 @@
             "type": "UnityEngine.GameObject",
             "method": "GetComponentsInParent",
             "areas": ["Memory"],
-            "problem": "Some versions of <b>GameObject.GetComponentsInParent()</b> allocate managed memory.",
+            "description": "Some versions of <b>GameObject.GetComponentsInParent()</b> allocate managed memory.",
             "solution": "Ensure you are using one of the versions of <b>GameObject.GetComponentsInParent()</b> which accepts a List<T> as a parameter and populates it with the components it finds."
         },
         {
@@ -246,7 +246,7 @@
             "type": "UnityEngine.Collider",
             "method": "OnTriggerStay",
             "areas": ["CPU"],
-            "problem": "<b>OnTriggerStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many Colliders which implement this method.",
+            "description": "<b>OnTriggerStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many Colliders which implement this method.",
             "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnTriggerStay()</b> methods, and consider refactoring code to not use them."
         },
         {
@@ -254,7 +254,7 @@
             "type": "UnityEngine.MonoBehaviour",
             "method": "OnTriggerStay",
             "areas": ["CPU"],
-            "problem": "<b>OnTriggerStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many MonoBehaviours which implement this method.",
+            "description": "<b>OnTriggerStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many MonoBehaviours which implement this method.",
             "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnTriggerStay()</b> methods, and consider refactoring code to not use them."
         },
         {
@@ -262,7 +262,7 @@
             "type": "UnityEngine.Collider2D",
             "method": "OnTriggerStay2D",
             "areas": ["CPU"],
-            "problem": "<b>OnTriggerStay2D()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many Collider2Ds which implement this method.",
+            "description": "<b>OnTriggerStay2D()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many Collider2Ds which implement this method.",
             "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnTriggerStay2D()</b> methods, and consider refactoring code to not use them."
         },
         {
@@ -270,7 +270,7 @@
             "type": "UnityEngine.MonoBehaviour",
             "method": "OnTriggerStay2D",
             "areas": ["CPU"],
-            "problem": "<b>OnTriggerStay2D()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many MonoBehaviours which implement this method.",
+            "description": "<b>OnTriggerStay2D()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many MonoBehaviours which implement this method.",
             "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnTriggerStay2D()</b> methods, and consider refactoring code to not use them."
         },
         {
@@ -278,7 +278,7 @@
             "type": "UnityEngine.Collider",
             "method": "OnCollisionStay",
             "areas": ["CPU"],
-            "problem": "<b>OnCollisionStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many Colliders which implement this method.",
+            "description": "<b>OnCollisionStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many Colliders which implement this method.",
             "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnCollisionStay()</b> methods, and consider refactoring code to not use them."
         },
         {
@@ -286,7 +286,7 @@
             "type": "UnityEngine.MonoBehaviour",
             "method": "OnCollisionStay",
             "areas": ["CPU"],
-            "problem": "<b>OnCollisionStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many MonoBehaviours which implement this method.",
+            "description": "<b>OnCollisionStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many MonoBehaviours which implement this method.",
             "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnCollisionStay()</b> methods, and consider refactoring code to not use them."
         },
         {
@@ -294,7 +294,7 @@
             "type": "UnityEngine.Rigidbody",
             "method": "OnCollisionStay",
             "areas": ["CPU"],
-            "problem": "<b>OnCollisionStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many RigidBodies which implement this method.",
+            "description": "<b>OnCollisionStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many RigidBodies which implement this method.",
             "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnCollisionStay()</b> methods, and consider refactoring code to not use them."
         },
         {
@@ -302,7 +302,7 @@
             "type": "UnityEngine.ImageConversion",
             "method": "LoadImage",
             "areas": ["Memory"],
-            "problem": "<b>ImageConversion.LoadImage()</b> defaults to maintaining a CPU-accessible copy of the image. This is a waste of memory if not needed.",
+            "description": "<b>ImageConversion.LoadImage()</b> defaults to maintaining a CPU-accessible copy of the image. This is a waste of memory if not needed.",
             "solution": "If a CPU-accessible copy of the texture is not required, ensure that the markNonReadable flag passed into the method is set to true."
         },
         {
@@ -310,7 +310,7 @@
             "type": "UnityEngine.Renderer",
             "method": "material",
             "areas": ["GPU"],
-            "problem": "The <b>Renderer.material</b> property creates a unique copy of the Renderer's material. This breaks draw call batching and results in a higher number of draw calls, impacting rendering performance.",
+            "description": "The <b>Renderer.material</b> property creates a unique copy of the Renderer's material. This breaks draw call batching and results in a higher number of draw calls, impacting rendering performance.",
             "solution": "If possible, use <b>Renderer.sharedMaterial</b> instead."
         },
         {
@@ -318,7 +318,7 @@
             "type": "UnityEngine.ComputeBuffer",
             "method": "GetData",
             "areas": ["CPU"],
-            "problem": "<b>ComputeBuffer.GetData()</b> stalls the CPU until the GPU has finished accessing the buffer. This can lead to significant CPU performance problems",
+            "description": "<b>ComputeBuffer.GetData()</b> stalls the CPU until the GPU has finished accessing the buffer. This can lead to significant CPU performance problems",
             "solution": "Avoid reading back from ComputeBuffers if it is at all possible. If it's unavoidable, profile your project carefully and regularly to monitor the performance impact."
         },
         {
@@ -326,7 +326,7 @@
             "type": "UnityEngine.Texture2D",
             "method": "SetPixels",
             "areas": ["CPU"],
-            "problem": "<b>Texture2D.SetPixels()</b> is slower than <b>Texture2D.SetPixels32()</b>.",
+            "description": "<b>Texture2D.SetPixels()</b> is slower than <b>Texture2D.SetPixels32()</b>.",
             "solution": "Use <b>Texture2D.SetPixels32()</b>, <b>Texture2D.GetRawTextureData()</b>, or <b>Texture2D.Apply()</b> instead."
         },
         {
@@ -334,7 +334,7 @@
             "type": "UnityEngine.Texture3D",
             "method": "SetPixels",
             "areas": ["CPU"],
-            "problem": "<b>Texture3D.SetPixels()</b> is slower than <b>Texture3D.SetPixels32()</b>.",
+            "description": "<b>Texture3D.SetPixels()</b> is slower than <b>Texture3D.SetPixels32()</b>.",
             "solution": "Use <b>Texture3D.SetPixels32()</b> instead."
         },
         {
@@ -342,7 +342,7 @@
             "type": "UnityEngine.Texture2DArray",
             "method": "SetPixels",
             "areas": ["CPU"],
-            "problem": "<b>Texture2DArray.SetPixels()</b> is slower than <b>Texture2DArray.SetPixels32()</b>.",
+            "description": "<b>Texture2DArray.SetPixels()</b> is slower than <b>Texture2DArray.SetPixels32()</b>.",
             "solution": "Use <b>Texture2DArray.SetPixels32()</b> instead."
         },
         {
@@ -350,7 +350,7 @@
             "type": "UnityEngine.CubemapArray",
             "method": "SetPixels",
             "areas": ["CPU"],
-            "problem": "<b>CubemapArray.SetPixels()</b> is slower than <b>CubemapArray.SetPixels32()</b>.",
+            "description": "<b>CubemapArray.SetPixels()</b> is slower than <b>CubemapArray.SetPixels32()</b>.",
             "solution": "Use <b>CubemapArray.SetPixels32()</b> instead."
         },
         {
@@ -358,7 +358,7 @@
             "type": "UnityEngine.GameObject",
             "method": "SendMessage",
             "areas": ["CPU"],
-            "problem": "<b>GameObject.SendMessage()</b> is a very slow and CPU-intensive method.",
+            "description": "<b>GameObject.SendMessage()</b> is a very slow and CPU-intensive method.",
             "solution": "Implement a custom system to replace SendMessage - get the components you want to send messages and call methods directly on them."
         },
         {
@@ -366,7 +366,7 @@
             "type": "UnityEngine.Component",
             "method": "SendMessage",
             "areas": ["CPU"],
-            "problem": "<b>Component.SendMessage()</b> is a very slow and CPU-intensive method.",
+            "description": "<b>Component.SendMessage()</b> is a very slow and CPU-intensive method.",
             "solution": "Implement a custom system to replace SendMessage - get the components you want to send messages and call methods directly on them."
         },
         {
@@ -374,7 +374,7 @@
             "type": "UnityEngine.MonoBehaviour",
             "method": "OnGUI",
             "areas": ["CPU"],
-            "problem": "<b>OnGUI()</b> is used by the legacy Immediate Mode GUI (IMGUI), which is extremely CPU-intensive. If a single OnGUI() method is present in a project's code, IMGUI will initialize and consume CPU time.",
+            "description": "<b>OnGUI()</b> is used by the legacy Immediate Mode GUI (IMGUI), which is extremely CPU-intensive. If a single OnGUI() method is present in a project's code, IMGUI will initialize and consume CPU time.",
             "solution": "Remove all <b>OnGUI()</b> methods from the project code."
         },
         {
@@ -382,7 +382,7 @@
             "type": "UnityEngine.AI.NavMeshPath",
             "method": "corners",
             "areas": ["Memory"],
-            "problem": "The property <b>AI.NavMeshPath.corners</b> allocates managed memory.",
+            "description": "The property <b>AI.NavMeshPath.corners</b> allocates managed memory.",
             "solution": "Use <b>AI.NavMeshPath.GetCornersNonAlloc()</b> instead"
         },
         {
@@ -390,7 +390,7 @@
             "type": "UnityEngine.Animator",
             "method": "parameters",
             "areas": ["Memory"],
-            "problem": "The property Animator.parameters allocates managed memory.",
+            "description": "The property Animator.parameters allocates managed memory.",
             "solution": "Use <b>Animator.GetParameter()</b> instead."
         },
         {
@@ -398,7 +398,7 @@
             "type": "UnityEngine.Animations.ParentConstraint",
             "method": "translationOffsets",
             "areas": ["Memory"],
-            "problem": "The property <b>Animations.ParentConstraint.translationOffsets</b> allocates managed memory.",
+            "description": "The property <b>Animations.ParentConstraint.translationOffsets</b> allocates managed memory.",
             "solution": "Use <b>Animations.ParentConstraint.GetTranslationOffset()</b> instead."
         },
         {
@@ -406,7 +406,7 @@
             "type": "UnityEngine.Animations.ParentConstraint",
             "method": "rotationOffsets",
             "areas": ["Memory"],
-            "problem": "The property <b>Animations.ParentConstraint.rotationOffsets</b> allocates managed memory.",
+            "description": "The property <b>Animations.ParentConstraint.rotationOffsets</b> allocates managed memory.",
             "solution": "Use <b>Animations.ParentConstraint.GetRotationOffset()</b> instead."
         },
         {
@@ -414,7 +414,7 @@
             "type": "UnityEngine.AnimationCurve",
             "method": "keys",
             "areas": ["Memory"],
-            "problem": "The property <b>AnimationCurve.keys</b> allocates managed memory.",
+            "description": "The property <b>AnimationCurve.keys</b> allocates managed memory.",
             "solution": "Use <b>AnimationCurve.AddKey()</b>, <b>AnimationCurve.MoveKey()</b> or <b>AnimationCurve.RemoveKey()</b> instead."
         },
         {
@@ -422,7 +422,7 @@
             "type": "UnityEngine.Camera",
             "method": "allCameras",
             "areas": ["Memory"],
-            "problem": "The property <b>Camera.allCameras</b> allocates managed memory.",
+            "description": "The property <b>Camera.allCameras</b> allocates managed memory.",
             "solution": "Use <b>Camera.GetAllCameras()</b> instead."
         },
         {
@@ -430,7 +430,7 @@
             "type": "UnityEngine.Mesh",
             "method": "boneWeights",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.boneWeights</b> allocates managed memory.",
+            "description": "The property <b>Mesh.boneWeights</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetAllBoneWeights()</b> instead. This method returns a NativeArray of BoneWeight1, and so does not allocate managed memory."
         },
         {
@@ -438,7 +438,7 @@
             "type": "UnityEngine.Mesh",
             "method": "bindposes",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.bindposes</b> allocates managed memory.",
+            "description": "The property <b>Mesh.bindposes</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetBindposes()</b> instead."
         },
         {
@@ -446,7 +446,7 @@
             "type": "UnityEngine.Mesh",
             "method": "vertices",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.vertices</b> allocates managed memory.",
+            "description": "The property <b>Mesh.vertices</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetVertices()</b> instead."
         },
         {
@@ -454,7 +454,7 @@
             "type": "UnityEngine.Mesh",
             "method": "normals",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.normals</b> allocates managed memory.",
+            "description": "The property <b>Mesh.normals</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetNormals()</b> instead."
         },
         {
@@ -462,7 +462,7 @@
             "type": "UnityEngine.Mesh",
             "method": "tangents",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.tangents</b> allocates managed memory.",
+            "description": "The property <b>Mesh.tangents</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetTangents()</b> instead."
         },
         {
@@ -470,7 +470,7 @@
             "type": "UnityEngine.Mesh",
             "method": "uv",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.uv</b> allocates managed memory.",
+            "description": "The property <b>Mesh.uv</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetUVs()</b> instead."
         },
         {
@@ -478,7 +478,7 @@
             "type": "UnityEngine.Mesh",
             "method": "uv1",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.uv1</b> allocates managed memory.",
+            "description": "The property <b>Mesh.uv1</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetUVs()</b> instead."
         },
         {
@@ -486,7 +486,7 @@
             "type": "UnityEngine.Mesh",
             "method": "uv2",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.uv2</b> allocates managed memory.",
+            "description": "The property <b>Mesh.uv2</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetUVs()</b> instead."
         },
         {
@@ -494,7 +494,7 @@
             "type": "UnityEngine.Mesh",
             "method": "uv3",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.uv3</b> allocates managed memory.",
+            "description": "The property <b>Mesh.uv3</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetUVs()</b> instead."
         },
         {
@@ -502,7 +502,7 @@
             "type": "UnityEngine.Mesh",
             "method": "uv4",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.uv4</b> allocates managed memory.",
+            "description": "The property <b>Mesh.uv4</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetUVs()</b> instead."
         },
         {
@@ -510,7 +510,7 @@
             "type": "UnityEngine.Mesh",
             "method": "uv5",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.uv5</b> allocates managed memory.",
+            "description": "The property <b>Mesh.uv5</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetUVs()</b> instead."
         },
         {
@@ -518,7 +518,7 @@
             "type": "UnityEngine.Mesh",
             "method": "uv6",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.uv6</b> allocates managed memory.",
+            "description": "The property <b>Mesh.uv6</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetUVs()</b> instead."
         },
         {
@@ -526,7 +526,7 @@
             "type": "UnityEngine.Mesh",
             "method": "uv7",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.uv7</b> allocates managed memory.",
+            "description": "The property <b>Mesh.uv7</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetUVs()</b> instead."
         },
         {
@@ -534,7 +534,7 @@
             "type": "UnityEngine.Mesh",
             "method": "uv8",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.uv8</b> allocates managed memory.",
+            "description": "The property <b>Mesh.uv8</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetUVs()</b> instead."
         },
         {
@@ -542,7 +542,7 @@
             "type": "UnityEngine.Mesh",
             "method": "colors",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.colors</b> allocates managed memory.",
+            "description": "The property <b>Mesh.colors</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetColors()</b> instead."
         },
         {
@@ -550,7 +550,7 @@
             "type": "UnityEngine.Mesh",
             "method": "colors32",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.colors32</b> allocates managed memory.",
+            "description": "The property <b>Mesh.colors32</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetColors()</b> instead."
         },
         {
@@ -558,7 +558,7 @@
             "type": "UnityEngine.Mesh",
             "method": "triangles",
             "areas": ["Memory"],
-            "problem": "The property <b>Mesh.triangles</b> allocates managed memory.",
+            "description": "The property <b>Mesh.triangles</b> allocates managed memory.",
             "solution": "Use <b>Mesh.GetTriangles()</b> instead."
         },
         {
@@ -566,7 +566,7 @@
             "type": "UnityEngine.Renderer",
             "method": "materials",
             "areas": ["Memory"],
-            "problem": "The property <b>Renderer.materials</b> allocates managed memory.",
+            "description": "The property <b>Renderer.materials</b> allocates managed memory.",
             "solution": "Use <b>Renderer.GetMaterials()</b> instead."
         },
         {
@@ -574,7 +574,7 @@
             "type": "UnityEngine.Renderer",
             "method": "sharedMaterials",
             "areas": ["Memory"],
-            "problem": "The property <b>Renderer.sharedMaterials</b> allocates managed memory.",
+            "description": "The property <b>Renderer.sharedMaterials</b> allocates managed memory.",
             "solution": "Use <b>Renderer.GetSharedMaterials()</b> instead."
         },
         {
@@ -582,7 +582,7 @@
             "type": "UnityEngine.Input",
             "method": "touches",
             "areas": ["Memory"],
-            "problem": "The property <b>Input.touches</b> allocates managed memory.",
+            "description": "The property <b>Input.touches</b> allocates managed memory.",
             "solution": "Use <b>Input.GetTouch()</b> instead."
         },
         {
@@ -590,7 +590,7 @@
             "type": "UnityEngine.Input",
             "method": "accelerationEvents",
             "areas": ["Memory"],
-            "problem": "The property <b>Input.accelerationEvents</b> allocates managed memory.",
+            "description": "The property <b>Input.accelerationEvents</b> allocates managed memory.",
             "solution": "Use <b>Input.GetAccelerationEvent()</b> instead."
         },
         {
@@ -598,7 +598,7 @@
             "type": "UnityEngine.iOS.NotificationServices",
             "method": "localNotifications",
             "areas": ["Memory"],
-            "problem": "The property <b>iOS.NotificationServices.localNotifications</b> allocates managed memory.",
+            "description": "The property <b>iOS.NotificationServices.localNotifications</b> allocates managed memory.",
             "solution": "Use <b>iOS.NotificationServices.GetLocalNotification()</b> instead.",
             "maximumVersion": "2021.3",
             "platforms": ["iOS"]
@@ -608,7 +608,7 @@
             "type": "UnityEngine.iOS.NotificationServices",
             "method": "remoteNotifications",
             "areas": ["Memory"],
-            "problem": "The property <b>iOS.NotificationServices.remoteNotifications</b> allocates managed memory.",
+            "description": "The property <b>iOS.NotificationServices.remoteNotifications</b> allocates managed memory.",
             "solution": "Use <b>iOS.NotificationServices.GetRemoteNotification()</b> instead.",
             "maximumVersion": "2021.3",
             "platforms": ["iOS"]
@@ -618,7 +618,7 @@
             "type": "UnityEngine.GUISkin",
             "method": "customStyles",
             "areas": ["Memory"],
-            "problem": "The property <b>GUISkin.customStyles</b> allocates managed memory.",
+            "description": "The property <b>GUISkin.customStyles</b> allocates managed memory.",
             "solution": "Use <b>GUISkin.GetStyle()</b> or <b>GUISkin.FindStyle()</b> instead."
         },
         {
@@ -626,7 +626,7 @@
             "type": "UnityEngine.Collision",
             "method": "contacts",
             "areas": ["Memory"],
-            "problem": "The property <b>Collision.contacts</b> allocates managed memory.",
+            "description": "The property <b>Collision.contacts</b> allocates managed memory.",
             "solution": "Use <b>Collision.GetContacts()</b> instead."
         },
         {
@@ -634,7 +634,7 @@
             "type": "UnityEngine.Collision2D",
             "method": "contacts",
             "areas": ["Memory"],
-            "problem": "The property <b>Collision2D.contacts</b> allocates managed memory.",
+            "description": "The property <b>Collision2D.contacts</b> allocates managed memory.",
             "solution": "Use <b>Collision2D.GetContacts()</b> instead."
         },
         {
@@ -642,7 +642,7 @@
             "type": "UnityEngine.TerrainData",
             "method": "treeInstances",
             "areas": ["Memory"],
-            "problem": "The property <b>TerrainData.treeInstances</b> allocates managed memory.",
+            "description": "The property <b>TerrainData.treeInstances</b> allocates managed memory.",
             "solution": "Use <b>TerrainData.GetTreeInstance()</b> instead."
         },
         {
@@ -650,7 +650,7 @@
             "type": "UnityEngine.TerrainData",
             "method": "alphamapTextures",
             "areas": ["Memory"],
-            "problem": "The property <b>TerrainData.alphamapTextures</b> allocates managed memory.",
+            "description": "The property <b>TerrainData.alphamapTextures</b> allocates managed memory.",
             "solution": "Use <b>TerrainData.GetAlphamapTexture()</b> instead."
         },
         {
@@ -658,7 +658,7 @@
             "type": "UnityEngine.Font",
             "method": "characterInfo",
             "areas": ["Memory"],
-            "problem": "The property <b>Font.characterInfo</b> allocates managed memory.",
+            "description": "The property <b>Font.characterInfo</b> allocates managed memory.",
             "solution": "Use <b>Font.GetCharacterInfo()</b> instead."
         },
         {
@@ -666,7 +666,7 @@
             "type": "UnityEngine.Animator",
             "method": "GetCurrentAnimationClipState",
             "areas": ["Memory"],
-            "problem": "<b>Animator.GetCurrentAnimationClipState()</b> allocates managed memory.",
+            "description": "<b>Animator.GetCurrentAnimationClipState()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -674,7 +674,7 @@
             "type": "UnityEngine.Animator",
             "method": "GetBehaviours",
             "areas": ["Memory"],
-            "problem": "<b>Animator.GetBehaviours()</b> allocates managed memory.",
+            "description": "<b>Animator.GetBehaviours()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -682,7 +682,7 @@
             "type": "UnityEngine.AssetBundle",
             "method": "LoadAssetWithSubAssets",
             "areas": ["Memory"],
-            "problem": "<b>AssetBundle.LoadAssetWithSubAssets()</b> allocates managed memory.",
+            "description": "<b>AssetBundle.LoadAssetWithSubAssets()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -690,7 +690,7 @@
             "type": "UnityEngine.AssetBundle",
             "method": "LoadAllAssets",
             "areas": ["Memory"],
-            "problem": "<b>AssetBundle.LoadAllAssets()</b> allocates managed memory.",
+            "description": "<b>AssetBundle.LoadAllAssets()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -698,7 +698,7 @@
             "type": "UnityEngine.AssetBundleManifest",
             "method": "GetAllAssetBundles",
             "areas": ["Memory"],
-            "problem": "<b>AssetBundleManifest.GetAllAssetBundles()</b> allocates managed memory.",
+            "description": "<b>AssetBundleManifest.GetAllAssetBundles()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -706,7 +706,7 @@
             "type": "UnityEngine.Resources",
             "method": "LoadAll",
             "areas": ["Memory"],
-            "problem": "<b>Resources.LoadAll()</b> allocates managed memory.",
+            "description": "<b>Resources.LoadAll()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -714,7 +714,7 @@
             "type": "UnityEngine.Texture2D",
             "method": "PackTextures",
             "areas": ["Memory"],
-            "problem": "<b>Texture2D.PackTextures()</b> allocates managed memory.",
+            "description": "<b>Texture2D.PackTextures()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -722,7 +722,7 @@
             "type": "UnityEngine.Cubemap",
             "method": "GetPixels",
             "areas": ["Memory"],
-            "problem": "<b>Cubemap.GetPixels()</b> allocates managed memory.",
+            "description": "<b>Cubemap.GetPixels()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -730,7 +730,7 @@
             "type": "UnityEngine.Texture3D",
             "method": "GetPixels",
             "areas": ["Memory"],
-            "problem": "<b>Texture3D.GetPixels()</b> allocates managed memory.",
+            "description": "<b>Texture3D.GetPixels()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -738,7 +738,7 @@
             "type": "UnityEngine.Texture3D",
             "method": "GetPixels32",
             "areas": ["Memory"],
-            "problem": "<b>Texture3D.GetPixels32()</b> allocates managed memory.",
+            "description": "<b>Texture3D.GetPixels32()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -746,7 +746,7 @@
             "type": "UnityEngine.Texture2DArray",
             "method": "GetPixels",
             "areas": ["Memory"],
-            "problem": "<b>Texture2DArray.GetPixels()</b> allocates managed memory.",
+            "description": "<b>Texture2DArray.GetPixels()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -754,7 +754,7 @@
             "type": "UnityEngine.Texture2DArray",
             "method": "GetPixels32",
             "areas": ["Memory"],
-            "problem": "<b>Texture2DArray.GetPixels32()</b> allocates managed memory.",
+            "description": "<b>Texture2DArray.GetPixels32()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -762,7 +762,7 @@
             "type": "UnityEngine.CubemapArray",
             "method": "GetPixels",
             "areas": ["Memory"],
-            "problem": "<b>CubemapArray.GetPixels()</b> allocates managed memory.",
+            "description": "<b>CubemapArray.GetPixels()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -770,7 +770,7 @@
             "type": "UnityEngine.CubemapArray",
             "method": "GetPixels32",
             "areas": ["Memory"],
-            "problem": "<b>CubemapArray.GetPixels32()</b> allocates managed memory.",
+            "description": "<b>CubemapArray.GetPixels32()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -778,7 +778,7 @@
             "type": "UnityEngine.Object",
             "method": "FindObjectsOfType",
             "areas": ["Memory"],
-            "problem": "<b>Object.FindObjectsOfType()</b> allocates managed memory.",
+            "description": "<b>Object.FindObjectsOfType()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -786,7 +786,7 @@
             "type": "UnityEngine.Windows.Crypto",
             "method": "ComputeMD5Hash",
             "areas": ["Memory"],
-            "problem": "<b>Windows.Crypto.ComputeMD5Hash()</b> allocates managed memory.",
+            "description": "<b>Windows.Crypto.ComputeMD5Hash()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -794,7 +794,7 @@
             "type": "UnityEngine.Windows.File",
             "method": "ReadAllBytes",
             "areas": ["Memory"],
-            "problem": "<b>Windows.File.ReadAllBytes()</b> allocates managed memory.",
+            "description": "<b>Windows.File.ReadAllBytes()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -802,7 +802,7 @@
             "type": "UnityEngine.ImageConversion",
             "method": "EncodeToJPG",
             "areas": ["Memory"],
-            "problem": "<b>ImageConversion.EncodeToJPG()</b> allocates managed memory.",
+            "description": "<b>ImageConversion.EncodeToJPG()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -810,7 +810,7 @@
             "type": "UnityEngine.ImageConversion",
             "method": "EncodeToEXR",
             "areas": ["Memory"],
-            "problem": "<b>ImageConversion.EncodeToEXR()</b> allocates managed memory.",
+            "description": "<b>ImageConversion.EncodeToEXR()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -818,7 +818,7 @@
             "type": "UnityEngine.ImageConversion",
             "method": "EncodeToTGA",
             "areas": ["Memory"],
-            "problem": "<b>ImageConversion.EncodeToTGA()</b> allocates managed memory.",
+            "description": "<b>ImageConversion.EncodeToTGA()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -826,7 +826,7 @@
             "type": "UnityEngine.ImageConversion",
             "method": "EncodeToPNG",
             "areas": ["Memory"],
-            "problem": "<b>ImageConversion.EncodeToPNG()</b> allocates managed memory.",
+            "description": "<b>ImageConversion.EncodeToPNG()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -834,7 +834,7 @@
             "type": "UnityEngine.U2D.SpriteShapeUtility",
             "method": "Generate",
             "areas": ["Memory"],
-            "problem": "<b>U2D.SpriteShapeUtility.Generate()</b> allocates managed memory.",
+            "description": "<b>U2D.SpriteShapeUtility.Generate()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used.",
             "minimumVersion": "2019.3"
         },
@@ -843,7 +843,7 @@
             "type": "UnityEngine.AI.NavMeshTriangulation",
             "method": "layers",
             "areas": ["Memory"],
-            "problem": "The property <b>AI.NavMeshTriangulation.layers</b> allocates managed memory.",
+            "description": "The property <b>AI.NavMeshTriangulation.layers</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -851,7 +851,7 @@
             "type": "UnityEngine.AnimationClip",
             "method": "events",
             "areas": ["Memory"],
-            "problem": "The property <b>AnimationClip.events</b> allocates managed memory.",
+            "description": "The property <b>AnimationClip.events</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -859,7 +859,7 @@
             "type": "UnityEngine.AnimatorOverrideController",
             "method": "animationClips",
             "areas": ["Memory"],
-            "problem": "The property <b>AnimatorOverrideController.animationClips<b> allocates managed memory.",
+            "description": "The property <b>AnimatorOverrideController.animationClips<b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -867,7 +867,7 @@
             "type": "UnityEngine.HumanTrait",
             "method": "MuscleName",
             "areas": ["Memory"],
-            "problem": "The property <b>HumanTrait.MuscleName</b> allocates managed memory.",
+            "description": "The property <b>HumanTrait.MuscleName</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -875,7 +875,7 @@
             "type": "UnityEngine.HumanTrait",
             "method": "BoneName",
             "areas": ["Memory"],
-            "problem": "The property <b>HumanTrait.BoneName</b> allocates managed memory.",
+            "description": "The property <b>HumanTrait.BoneName</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -883,7 +883,7 @@
             "type": "UnityEngine.RuntimeAnimatorController",
             "method": "animationClips",
             "areas": ["Memory"],
-            "problem": "The property <b>RuntimeAnimatorController.animationClips</b> allocates managed memory.",
+            "description": "The property <b>RuntimeAnimatorController.animationClips</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -891,7 +891,7 @@
             "type": "UnityEngine.AssetBundleRequest",
             "method": "allAssets",
             "areas": ["Memory"],
-            "problem": "The property <b>AssetBundleRequest.allAssets</b> allocates managed memory.",
+            "description": "The property <b>AssetBundleRequest.allAssets</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -899,7 +899,7 @@
             "type": "UnityEngine.Microphone",
             "method": "devices",
             "areas": ["Memory"],
-            "problem": "The property <b>Microphone.devices</b> allocates managed memory.",
+            "description": "The property <b>Microphone.devices</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -907,7 +907,7 @@
             "type": "UnityEngine.WebCamDevice",
             "method": "availableResolutions",
             "areas": ["Memory"],
-            "problem": "The property <b>WebCamDevice.availableResolutions</b> allocates managed memory.",
+            "description": "The property <b>WebCamDevice.availableResolutions</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -915,7 +915,7 @@
             "type": "UnityEngine.WebCamTexture",
             "method": "devices",
             "areas": ["Memory"],
-            "problem": "The property <b>WebCamTexture.devices</b> allocates managed memory.",
+            "description": "The property <b>WebCamTexture.devices</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -923,7 +923,7 @@
             "type": "UnityEngine.Cloth",
             "method": "vertices",
             "areas": ["Memory"],
-            "problem": "The property <b>Cloth.vertices</b> allocates managed memory.",
+            "description": "The property <b>Cloth.vertices</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -931,7 +931,7 @@
             "type": "UnityEngine.Cloth",
             "method": "normals",
             "areas": ["Memory"],
-            "problem": "The property <b>Cloth.normals</b> allocates managed memory.",
+            "description": "The property <b>Cloth.normals</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -939,7 +939,7 @@
             "type": "UnityEngine.Cloth",
             "method": "coefficients",
             "areas": ["Memory"],
-            "problem": "The property <b>Cloth.coefficients</b> allocates managed memory.",
+            "description": "The property <b>Cloth.coefficients</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -947,7 +947,7 @@
             "type": "UnityEngine.Cloth",
             "method": "capsuleColliders",
             "areas": ["Memory"],
-            "problem": "The property <b>Cloth.capsuleColliders</b> allocates managed memory.",
+            "description": "The property <b>Cloth.capsuleColliders</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -955,7 +955,7 @@
             "type": "UnityEngine.Cloth",
             "method": "sphereColliders",
             "areas": ["Memory"],
-            "problem": "The property <b>Cloth.sphereColliders</b> allocates managed memory.",
+            "description": "The property <b>Cloth.sphereColliders</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -963,7 +963,7 @@
             "type": "UnityEngine.Camera",
             "method": "layerCullDistances",
             "areas": ["Memory"],
-            "problem": "The property <b>Camera.layerCullDistances</b> allocates managed memory.",
+            "description": "The property <b>Camera.layerCullDistances</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -971,7 +971,7 @@
             "type": "UnityEngine.CrashReport",
             "method": "reports",
             "areas": ["Memory"],
-            "problem": "The property CrashReport.reports allocates managed memory.",
+            "description": "The property CrashReport.reports allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -979,7 +979,7 @@
             "type": "UnityEngine.Gradient",
             "method": "colorKeys",
             "areas": ["Memory"],
-            "problem": "The property <b>Gradient.colorKeys</b> allocates managed memory.",
+            "description": "The property <b>Gradient.colorKeys</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -987,7 +987,7 @@
             "type": "UnityEngine.Gradient",
             "method": "alphaKeys",
             "areas": ["Memory"],
-            "problem": "The property <b>Gradient.alphaKeys</b> allocates managed memory.",
+            "description": "The property <b>Gradient.alphaKeys</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -995,7 +995,7 @@
             "type": "UnityEngine.Screen",
             "method": "resolutions",
             "areas": ["Memory"],
-            "problem": "The property <b>Screen.resolutions</b> allocates managed memory.",
+            "description": "The property <b>Screen.resolutions</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1003,7 +1003,7 @@
             "type": "UnityEngine.LightmapSettings",
             "method": "lightmaps",
             "areas": ["Memory"],
-            "problem": "The property <b>LightmapSettings.lightmaps</b> allocates managed memory.",
+            "description": "The property <b>LightmapSettings.lightmaps</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1011,7 +1011,7 @@
             "type": "UnityEngine.LightProbes",
             "method": "positions",
             "areas": ["Memory"],
-            "problem": "The property <b>LightProbes.positions</b> allocates managed memory.",
+            "description": "The property <b>LightProbes.positions</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1019,7 +1019,7 @@
             "type": "UnityEngine.LightProbes",
             "method": "bakedProbes",
             "areas": ["Memory"],
-            "problem": "The property <b>LightProbes.bakedProbes</b> allocates managed memory.",
+            "description": "The property <b>LightProbes.bakedProbes</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1027,7 +1027,7 @@
             "type": "UnityEngine.LightProbes",
             "method": "coefficients",
             "areas": ["Memory"],
-            "problem": "The property <b>LightProbes.coefficients</b> allocates managed memory.",
+            "description": "The property <b>LightProbes.coefficients</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1035,7 +1035,7 @@
             "type": "UnityEngine.QualitySettings",
             "method": "names",
             "areas": ["Memory"],
-            "problem": "The property <b>QualitySettings.names</b> allocates managed memory.",
+            "description": "The property <b>QualitySettings.names</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1043,7 +1043,7 @@
             "type": "UnityEngine.Material",
             "method": "shaderKeywords",
             "areas": ["Memory"],
-            "problem": "The property <b>Material.shaderKeywords</b> allocates managed memory.",
+            "description": "The property <b>Material.shaderKeywords</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1051,7 +1051,7 @@
             "type": "UnityEngine.Light",
             "method": "layerShadowCullDistances",
             "areas": ["Memory"],
-            "problem": "The property <b>Light.layerShadowCullDistances</b> allocates managed memory.",
+            "description": "The property <b>Light.layerShadowCullDistances</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1059,7 +1059,7 @@
             "type": "UnityEngine.Rendering.RenderTargetBinding",
             "method": "colorRenderTargets",
             "areas": ["Memory"],
-            "problem": "The property <b>Rendering.RenderTargetBinding.colorRenderTargets</b> allocates managed memory.",
+            "description": "The property <b>Rendering.RenderTargetBinding.colorRenderTargets</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1067,7 +1067,7 @@
             "type": "UnityEngine.Rendering.RenderTargetBinding",
             "method": "colorLoadActions",
             "areas": ["Memory"],
-            "problem": "The property <b>Rendering.RenderTargetBinding.colorLoadActions</b> allocates managed memory.",
+            "description": "The property <b>Rendering.RenderTargetBinding.colorLoadActions</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1075,7 +1075,7 @@
             "type": "UnityEngine.Rendering.RenderTargetBinding",
             "method": "colorStoreActions",
             "areas": ["Memory"],
-            "problem": "The property <b>Rendering.RenderTargetBinding.colorStoreActions</b> allocates managed memory.",
+            "description": "The property <b>Rendering.RenderTargetBinding.colorStoreActions</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1083,7 +1083,7 @@
             "type": "UnityEngine.SkinnedMeshRenderer",
             "method": "bones",
             "areas": ["Memory"],
-            "problem": "The property <b>SkinnedMeshRenderer.bones</b> allocates managed memory.",
+            "description": "The property <b>SkinnedMeshRenderer.bones</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1091,7 +1091,7 @@
             "type": "UnityEngine.LightProbeGroup",
             "method": "probePositions",
             "areas": ["Memory"],
-            "problem": "The property <b>LightProbeGroup.probePositions</b> allocates managed memory.",
+            "description": "The property <b>LightProbeGroup.probePositions</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1099,7 +1099,7 @@
             "type": "UnityEngine.Network",
             "method": "connections",
             "areas": ["Memory"],
-            "problem": "The property <b>Network.connections</b> allocates managed memory.",
+            "description": "The property <b>Network.connections</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
             "maximumVersion": "2018.4"
         },
@@ -1108,7 +1108,7 @@
             "type": "UnityEngine.HostData",
             "method": "ip",
             "areas": ["Memory"],
-            "problem": "The property <b>HostData.ip</b> allocates managed memory.",
+            "description": "The property <b>HostData.ip</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
             "maximumVersion": "2018.4"
         },
@@ -1117,7 +1117,7 @@
             "type": "UnityEngine.SortingLayer",
             "method": "layers",
             "areas": ["Memory"],
-            "problem": "The property <b>SortingLayer.layers</b> allocates managed memory.",
+            "description": "The property <b>SortingLayer.layers</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1125,7 +1125,7 @@
             "type": "UnityEngine.TextAsset",
             "method": "bytes",
             "areas": ["Memory"],
-            "problem": "The property <b>TextAsset.bytes</b> allocates managed memory.",
+            "description": "The property <b>TextAsset.bytes</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1133,7 +1133,7 @@
             "type": "UnityEngine.iOS.NotificationServices",
             "method": "deviceToken",
             "areas": ["Memory"],
-            "problem": "The property <b>iOS.NotificationServices.deviceToken</b> allocates managed memory.",
+            "description": "The property <b>iOS.NotificationServices.deviceToken</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
             "maximumVersion": "2021.3",
             "platforms": ["iOS"]
@@ -1143,7 +1143,7 @@
             "type": "UnityEngine.iOS.NotificationServices",
             "method": "scheduledLocalNotifications",
             "areas": ["Memory"],
-            "problem": "The property <b>iOS.NotificationServices.scheduledLocalNotifications</b> allocates managed memory.",
+            "description": "The property <b>iOS.NotificationServices.scheduledLocalNotifications</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
             "maximumVersion": "2021.3",
             "platforms": ["iOS"]
@@ -1153,7 +1153,7 @@
             "type": "UnityEngine.Sprite",
             "method": "vertices",
             "areas": ["Memory"],
-            "problem": "The property <b>Sprite.vertices</b> allocates managed memory.",
+            "description": "The property <b>Sprite.vertices</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1161,7 +1161,7 @@
             "type": "UnityEngine.Sprite",
             "method": "triangles",
             "areas": ["Memory"],
-            "problem": "The property <b>Sprite.triangles</b> allocates managed memory.",
+            "description": "The property <b>Sprite.triangles</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1169,7 +1169,7 @@
             "type": "UnityEngine.Sprite",
             "method": "uv",
             "areas": ["Memory"],
-            "problem": "The property <b>Sprite.uv</b> allocates managed memory.",
+            "description": "The property <b>Sprite.uv</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1177,7 +1177,7 @@
             "type": "UnityEngine.SocialPlatforms.ILocalUser",
             "method": "friends",
             "areas": ["Memory"],
-            "problem": "The property <b>SocialPlatforms.ILocalUser.friends</b> allocates managed memory.",
+            "description": "The property <b>SocialPlatforms.ILocalUser.friends</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1185,7 +1185,7 @@
             "type": "UnityEngine.SocialPlatforms.ILeaderboard",
             "method": "scores",
             "areas": ["Memory"],
-            "problem": "The property <b>SocialPlatforms.ILeaderboard.scores</b> allocates managed memory.",
+            "description": "The property <b>SocialPlatforms.ILeaderboard.scores</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1193,7 +1193,7 @@
             "type": "UnityEngine.GUIStyleState",
             "method": "scaledBackgrounds",
             "areas": ["Memory"],
-            "problem": "The property <b>GUIStyleState.scaledBackgrounds</b> allocates managed memory.",
+            "description": "The property <b>GUIStyleState.scaledBackgrounds</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1201,7 +1201,7 @@
             "type": "UnityEngine.EdgeCollider2D",
             "method": "points",
             "areas": ["Memory"],
-            "problem": "The property <b>EdgeCollider2D.points</b> allocates managed memory.",
+            "description": "The property <b>EdgeCollider2D.points</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1209,7 +1209,7 @@
             "type": "UnityEngine.PolygonCollider2D",
             "method": "points",
             "areas": ["Memory"],
-            "problem": "The property <b>PolygonCollider2D.points</b> allocates managed memory.",
+            "description": "The property <b>PolygonCollider2D.points</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1217,7 +1217,7 @@
             "type": "UnityEngine.Terrain",
             "method": "activeTerrains",
             "areas": ["Memory"],
-            "problem": "The property <b>Terrain.activeTerrains</b> allocates managed memory.",
+            "description": "The property <b>Terrain.activeTerrains</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1225,7 +1225,7 @@
             "type": "UnityEngine.TerrainData",
             "method": "detailPrototypes",
             "areas": ["Memory"],
-            "problem": "The property <b>TerrainData.detailPrototypes</b> allocates managed memory.",
+            "description": "The property <b>TerrainData.detailPrototypes</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1233,7 +1233,7 @@
             "type": "UnityEngine.TerrainData",
             "method": "treePrototypes",
             "areas": ["Memory"],
-            "problem": "The property <b>TerrainData.treePrototypes</b> allocates managed memory.",
+            "description": "The property <b>TerrainData.treePrototypes</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1241,7 +1241,7 @@
             "type": "UnityEngine.TerrainData",
             "method": "splatPrototypes",
             "areas": ["Memory"],
-            "problem": "The property <b>TerrainData.splatPrototypes</b> allocates managed memory.",
+            "description": "The property <b>TerrainData.splatPrototypes</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1249,7 +1249,7 @@
             "type": "UnityEngine.TerrainData",
             "method": "terrainLayers",
             "areas": ["Memory"],
-            "problem": "The property <b>TerrainData.terrainLayers</b> allocates managed memory.",
+            "description": "The property <b>TerrainData.terrainLayers</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1257,7 +1257,7 @@
             "type": "UnityEngine.Tilemaps.TileAnimationData",
             "method": "animatedSprites",
             "areas": ["Memory"],
-            "problem": "The property <b>Tilemaps.TileAnimationData.animatedSprites</b> allocates managed memory.",
+            "description": "The property <b>Tilemaps.TileAnimationData.animatedSprites</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1265,7 +1265,7 @@
             "type": "UnityEngine.UIElements.UxmlAttributeDescription",
             "method": "obsoleteNames",
             "areas": ["Memory"],
-            "problem": "The property <b>UIElements.UxmlAttributeDescription.obsoleteNames</b> allocates managed memory.",
+            "description": "The property <b>UIElements.UxmlAttributeDescription.obsoleteNames</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
             "minimumVersion": "2019.1"
         },
@@ -1274,7 +1274,7 @@
             "type": "UnityEngine.Networking.IMultipartFormSection",
             "method": "sectionData",
             "areas": ["Memory"],
-            "problem": "The property <b>Networking.IMultipartFormSection.sectionData</b> allocates managed memory.",
+            "description": "The property <b>Networking.IMultipartFormSection.sectionData</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1282,7 +1282,7 @@
             "type": "UnityEngine.Networking.MultipartFormDataSection",
             "method": "sectionData",
             "areas": ["Memory"],
-            "problem": "The property <b>Networking.MultipartFormDataSection.sectionData</b> allocates managed memory.",
+            "description": "The property <b>Networking.MultipartFormDataSection.sectionData</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1290,7 +1290,7 @@
             "type": "UnityEngine.Networking.MultipartFormFileSection",
             "method": "sectionData",
             "areas": ["Memory"],
-            "problem": "The property <b>Networking.MultipartFormFileSection.sectionData</b> allocates managed memory.",
+            "description": "The property <b>Networking.MultipartFormFileSection.sectionData</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1298,7 +1298,7 @@
             "type": "UnityEngine.WWWForm",
             "method": "data",
             "areas": ["Memory"],
-            "problem": "The property <b>WWWForm.data</b> allocates managed memory.",
+            "description": "The property <b>WWWForm.data</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1306,7 +1306,7 @@
             "type": "UnityEngine.Networking.DownloadHandler",
             "method": "data",
             "areas": ["Memory"],
-            "problem": "The property Networking.DownloadHandler.data allocates managed memory.",
+            "description": "The property Networking.DownloadHandler.data allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1314,7 +1314,7 @@
             "type": "UnityEngine.Networking.UploadHandler",
             "method": "data",
             "areas": ["Memory"],
-            "problem": "The property <b>Networking.UploadHandler.data</b> allocates managed memory.",
+            "description": "The property <b>Networking.UploadHandler.data</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1322,7 +1322,7 @@
             "type": "UnityEngine.Networking.NetworkMigrationManager",
             "method": "peers",
             "areas": ["Memory"],
-            "problem": "The property <b>Networking.NetworkMigrationManager.peers</b> allocates managed memory.",
+            "description": "The property <b>Networking.NetworkMigrationManager.peers</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
             "maximumVersion": "2018.4"
         },
@@ -1331,7 +1331,7 @@
             "type": "UnityEngine.Networking.NetworkServerSimple",
             "method": "messageBuffer",
             "areas": ["Memory"],
-            "problem": "The property <b>Networking.NetworkServerSimple.messageBuffer</b> allocates managed memory.",
+            "description": "The property <b>Networking.NetworkServerSimple.messageBuffer</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
             "maximumVersion": "2018.4"
         },
@@ -1340,7 +1340,7 @@
             "type": "UnityEngine.WWW",
             "method": "bytes",
             "areas": ["Memory"],
-            "problem": "The property <b>WWW.bytes</b> allocates managed memory.",
+            "description": "The property <b>WWW.bytes</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1348,7 +1348,7 @@
             "type": "UnityEngine.XR.XRSettings",
             "method": "supportedDevices",
             "areas": ["Memory"],
-            "problem": "The property <b>XR.XRSettings.supportedDevices</b> allocates managed memory.",
+            "description": "The property <b>XR.XRSettings.supportedDevices</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1356,7 +1356,7 @@
             "type": "UnityEngine.TestTools.Constraints.AllocatingGCMemoryConstraint",
             "method": "Arguments",
             "areas": ["Memory"],
-            "problem": "The property <b>TestTools.Constraints.AllocatingGCMemoryConstraint.Arguments</b> allocates managed memory.",
+            "description": "The property <b>TestTools.Constraints.AllocatingGCMemoryConstraint.Arguments</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1364,7 +1364,7 @@
             "type": "UnityEngine.TestTools.UnityPlatformAttribute",
             "method": "include",
             "areas": ["Memory"],
-            "problem": "The property <b>TestTools.UnityPlatformAttribute.include</b> allocates managed memory.",
+            "description": "The property <b>TestTools.UnityPlatformAttribute.include</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1372,7 +1372,7 @@
             "type": "UnityEngine.TestTools.UnityPlatformAttribute",
             "method": "exclude",
             "areas": ["Memory"],
-            "problem": "The property <b>TestTools.UnityPlatformAttribute.exclude</b> allocates managed memory.",
+            "description": "The property <b>TestTools.UnityPlatformAttribute.exclude</b> allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1380,7 +1380,7 @@
             "type": "UnityEngine.GameObject",
             "method": "tag",
             "areas": ["Memory"],
-            "problem": "The <b>GameObject.tag</b> property allocates managed memory.",
+            "description": "The <b>GameObject.tag</b> property allocates managed memory.",
             "solution": "Try to avoid getting this property in frequently-updated code. Prefer using <b>GameObject.CompareTag()</b> instead, as this does not result in managed allocations."
         },
         {
@@ -1388,7 +1388,7 @@
             "type": "UnityEngine.Object",
             "method": "Instantiate",
             "areas": ["CPU"],
-            "problem": "Instantiating Objects at runtime can be a very expensive operation.",
+            "description": "Instantiating Objects at runtime can be a very expensive operation.",
             "solution": "Try to avoid calling <b>Object.Instantiate</b> frequently-updated code."
         },
         {
@@ -1396,7 +1396,7 @@
             "type": "UnityEngine.GameObject",
             "method": "AddComponent",
             "areas": ["CPU"],
-            "problem": "Adding components to GameObjects at runtime can be a very expensive operation.",
+            "description": "Adding components to GameObjects at runtime can be a very expensive operation.",
             "solution": "Try to avoid getting this property in frequently-updated code. Prefer instantiating GameObjects from Prefabs will all the necessary components instead."
         },
         {
@@ -1405,7 +1405,7 @@
           "method": "WarmupAllShaders",
           "areas": ["CPU"],
           "critical": "true",
-          "problem": "<b>WarmupAllShaders</b> does not work properly on Metal and Vulkan. This might result in unexpected CPU spikes due to shader compilation.",
+          "description": "<b>WarmupAllShaders</b> does not work properly on Metal and Vulkan. This might result in unexpected CPU spikes due to shader compilation.",
           "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader used at runtime."
         },
         {
@@ -1414,7 +1414,7 @@
           "method": "WarmUp",
           "areas": ["CPU"],
           "critical": "true",
-          "problem": "<b>WarmUp</b> does not work properly on Metal and Vulkan. This might result in unexpected CPU spikes due to shader compilation.",
+          "description": "<b>WarmUp</b> does not work properly on Metal and Vulkan. This might result in unexpected CPU spikes due to shader compilation.",
           "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader variant used at runtime."
         },
         {
@@ -1422,7 +1422,7 @@
           "type": "UnityEngine.Component",
           "method": "tag",
           "areas": ["Memory"],
-          "problem": "The <b>Component.tag</b> property allocates managed memory.",
+          "description": "The <b>Component.tag</b> property allocates managed memory.",
           "solution": "Try to avoid getting this property in frequently-updated code. Prefer using <b>CompareTag()</b> instead, as this does not result in managed allocations."
         },
         {
@@ -1430,7 +1430,7 @@
           "type": "UnityEngine.Object",
           "method": "name",
           "areas": ["Memory"],
-          "problem": "The <b>Object.name</b> property allocates managed memory.",
+          "description": "The <b>Object.name</b> property allocates managed memory.",
           "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1438,7 +1438,7 @@
           "type": "System.Linq",
           "method": "*",
           "areas": ["Memory"],
-          "problem": "Linq allocates large amounts of managed memory.",
+          "description": "Linq allocates large amounts of managed memory.",
           "solution": "We strongly advise against using Linq in any frequently-updated code. Ban its usage from the project entirely, or confine it to initialization code and use it sparingly."
         },
         {
@@ -1446,7 +1446,7 @@
           "type": "System.Reflection",
           "method": "*",
           "areas": ["CPU"],
-          "problem": "Reflection is slow, and not generally considered performant enough for runtime code.",
+          "description": "Reflection is slow, and not generally considered performant enough for runtime code.",
           "solution": "Remove code which relies on reflection, or minimise its usage, particularly outside of initialization."
         },
         {
@@ -1454,7 +1454,7 @@
           "type": "System.String",
           "method": "Concat",
           "areas": ["Memory"],
-          "problem": "String concatenation operations allocates managed memory",
+          "description": "String concatenation operations allocates managed memory",
           "solution": "Try to avoid concatenating strings in frequently-updated code. Prefer using a StringBuilder instead, as this minimizes managed allocations."
         },
         {
@@ -1462,7 +1462,7 @@
           "type": "System.DateTime",
           "method": "Now",
           "areas": ["CPU"],
-          "problem": "<b>System.DateTime.Now</b> is expensive because it needs to figure out the current timezone and daylight saving time information.",
+          "description": "<b>System.DateTime.Now</b> is expensive because it needs to figure out the current timezone and daylight saving time information.",
           "solution": "Try to avoid using this method in frequently-updated code. Prefer UnityEngine.Time.time or, if precise time is needed, use DateTime.UtcNow."
         },
         {
@@ -1470,7 +1470,7 @@
           "type": "System.AppDomain",
           "method": "GetAssemblies",
           "areas": ["CPU"],
-          "problem": "<b>System.AppDomain.GetAssemblies</b> is expensive.",
+          "description": "<b>System.AppDomain.GetAssemblies</b> is expensive.",
           "solution": "Try to minimize calls to <b>System.AppDomain.GetAssemblies</b> by caching the returned assemblies. When possible, use <b>UnityEditor.TypeCache</b> for fast access to types, methods and fields."
         },
         {
@@ -1478,7 +1478,7 @@
           "type": "UnityEditor.AssetDatabase",
           "method": "FindAssets",
           "areas": ["CPU"],
-          "problem": "<b>UnityEditor.AssetDatabase.FindAssets</b> is expensive and can slow down the Editor for long periods of time on large projects.",
+          "description": "<b>UnityEditor.AssetDatabase.FindAssets</b> is expensive and can slow down the Editor for long periods of time on large projects.",
           "solution": "Try to minimize calls to <b>UnityEditor.AssetDatabase.FindAssets</b>."
         }
     ]

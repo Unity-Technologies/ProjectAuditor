@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -321,12 +322,27 @@ Shader ""Custom/MyEditorShader""
         }
 
         [Test]
-        public void ShadersAnalysis_Variants_RequireBuild()
+        public void ShadersAnalysis_Variants_AreNotReported()
         {
             ShadersModule.ClearBuildData();
             var issues = Analyze(IssueCategory.ShaderVariant);
             Assert.Zero(issues.Length);
-            Assert.False(ShadersModule.BuildDataAvailable());
+            Assert.Zero(ShadersModule.NumBuiltVariants());
+        }
+
+        [Test]
+        public void ShadersAnalysis_VariantsData_IsAvailableAfterBuild()
+        {
+            ShadersModule.ClearBuildData();
+            Build();
+            Assert.Positive(ShadersModule.NumBuiltVariants(), "Build Data is not available");
+        }
+
+        [Test]
+        public void ShadersAnalysis_VariantsData_IsClearedAfterAnalysis()
+        {
+            AnalyzeBuild(IssueCategory.Shader);
+            Assert.Zero(ShadersModule.NumBuiltVariants(), "Build Data was not cleared after analysis");
         }
 
 #if BUILD_REPORT_API_SUPPORT
@@ -337,7 +353,6 @@ Shader ""Custom/MyEditorShader""
         public void ShadersAnalysis_Sizes_AreReported()
         {
             var shaders = AnalyzeBuild(IssueCategory.Shader);
-            Assert.True(ShadersModule.BuildDataAvailable());
 
             var builtInShader = shaders.FirstOrDefault(s => s.description.Equals("Hidden/BlitCopy"));
             Assert.NotNull(builtInShader);
@@ -355,8 +370,6 @@ Shader ""Custom/MyEditorShader""
         public void ShadersAnalysis_Variants_AreReported()
         {
             var issues = AnalyzeBuild(IssueCategory.ShaderVariant);
-            Assert.True(ShadersModule.BuildDataAvailable(), "Build Data not available");
-
             var keywords = issues.Select(i => i.GetCustomProperty(ShaderVariantProperty.Keywords));
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
 
@@ -523,7 +536,7 @@ Shader ""Custom/MyEditorShader""
 
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
-            Assert.AreEqual(ShadersModule.k_NotAvailable, shaderIssue.GetCustomProperty(ShaderProperty.NumVariants), "Num Variants: " + shaderIssue.GetCustomProperty(ShaderProperty.NumVariants));
+            Assert.AreEqual(ShadersModule.k_NotAvailable, shaderIssue.GetCustomProperty(ShaderProperty.NumBuiltVariants), "Num Variants: " + shaderIssue.GetCustomProperty(ShaderProperty.NumBuiltVariants));
 
 #if UNITY_2021_1_OR_NEWER
             var expectedNumPasses = 2;
@@ -551,7 +564,7 @@ Shader ""Custom/MyEditorShader""
         [Test]
         public void ShadersAnalysis_ShaderWithError_IsReported()
         {
-            var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.severity == Rule.Severity.Error);
+            var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.severity == Severity.Error);
 
             Assert.Positive(shadersWithErrors.Count());
             var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.relativePath.Equals(m_ShaderWithErrorResource.relativePath));
@@ -572,7 +585,7 @@ Shader ""Custom/MyEditorShader""
             var allowedPlatforms = new[] {ShaderCompilerPlatform.Metal, ShaderCompilerPlatform.D3D, ShaderCompilerPlatform.OpenGLCore}.Select(p => p.ToString());
             Assert.True(allowedPlatforms.Contains(message.GetCustomProperty(ShaderMessageProperty.Platform)), "Platform: {0}", message.GetCustomProperty(ShaderMessageProperty.Platform));
             Assert.AreEqual(k_ShaderName, message.GetCustomProperty(ShaderMessageProperty.ShaderName), "Shader Name: {0}", message.GetCustomProperty(ShaderMessageProperty.ShaderName));
-            Assert.AreEqual(Rule.Severity.Warning, message.severity);
+            Assert.AreEqual(Severity.Warning, message.severity);
             Assert.AreEqual(40, message.line);
         }
 

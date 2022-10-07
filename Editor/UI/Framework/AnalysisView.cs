@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -189,16 +190,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var selectedItems = m_Table.GetSelectedItems();
             var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
 
-            EditorGUILayout.BeginHorizontal();
-
-            DrawTable(selectedIssues);
-
-            if (m_Desc.showRightPanels)
+            using (new EditorGUILayout.HorizontalScope(GUILayout.MinHeight(400)))
             {
-                DrawRightPanels(selectedIssues);
-            }
+                DrawTable(selectedIssues);
 
-            EditorGUILayout.EndHorizontal();
+                if (m_Desc.showRightPanels)
+                {
+                    DrawRightPanels(selectedIssues);
+                }
+            }
 
             if (m_Desc.showDependencyView)
             {
@@ -211,18 +211,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (!m_Desc.showInfoPanel)
                 return;
 
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
-
-            m_ViewStates.info = Utility.BoldFoldout(m_ViewStates.info, Contents.InfoFoldout);
-            if (m_ViewStates.info)
+            using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
             {
-                EditorGUI.indentLevel++;
+                m_ViewStates.info = Utility.BoldFoldout(m_ViewStates.info, Contents.InfoFoldout);
+                if (m_ViewStates.info)
+                {
+                    EditorGUI.indentLevel++;
 
-                DrawInfo();
+                    DrawInfo();
 
-                EditorGUI.indentLevel--;
+                    EditorGUI.indentLevel--;
+                }
             }
-            EditorGUILayout.EndVertical();
         }
 
         protected virtual void DrawInfo()
@@ -244,9 +244,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Table.OnGUI(r);
             Profiler.EndSample();
 
-            var info = selectedIssues.Length + " / " + m_Table.GetNumMatchingIssues() + " Items selected";
-            EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
-
             EditorGUILayout.EndVertical();
         }
 
@@ -263,13 +260,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUI.BeginChangeCheck();
             m_TextFilter.ignoreCase = !EditorGUILayout.ToggleLeft(Contents.TextSearchCaseSensitive, !m_TextFilter.ignoreCase, GUILayout.Width(160));
 
-            if (UserPreferences.developerMode)
+            if (UserPreferences.developerMode && m_Desc.showDependencyView)
             {
                 // this is only available in developer mode because it is still too slow at the moment
-                GUI.enabled = m_Desc.showDependencyView;
-                m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Call Tree (slow)",
+                m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Dependencies (slow)",
                     m_TextFilter.searchDependencies, GUILayout.Width(160));
-                GUI.enabled = true;
             }
 
             if (EditorGUI.EndChangeCheck())
@@ -305,7 +300,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndVertical();
         }
 
-        void DrawDetails(ProblemDescriptor[] selectedDescriptors)
+        void DrawDetails(Descriptor[] selectedDescriptors)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
             m_ViewStates.details = Utility.BoldFoldout(m_ViewStates.details, Contents.DetailsFoldout);
@@ -316,60 +311,52 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 else if (selectedDescriptors.Length > 1)
                     GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 else // if (selectedDescriptors.Length == 1)
-                    GUILayout.TextArea(selectedDescriptors[0].problem, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(selectedDescriptors[0].description, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
             EditorGUILayout.EndVertical();
         }
 
         void DrawViewOptions()
         {
-            if (!m_Module.isEnabledByDefault && m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeNow, EditorStyles.toolbarButton, GUILayout.Width(120)))
+            if (m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeNowButton, EditorStyles.toolbarButton, GUILayout.Width(LayoutSize.ToolbarIconSize)))
             {
                 m_ViewManager.onAnalyze(m_Module);
             }
 
-            EditorGUILayout.LabelField(Utility.GetIcon(Utility.IconType.ZoomTool), EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(20));
-            m_ViewStates.fontSize = (int)GUILayout.HorizontalSlider(m_ViewStates.fontSize, ViewStates.k_MinFontSize, ViewStates.k_MaxFontSize, GUILayout.ExpandWidth(false), GUILayout.Width(AnalysisView.toolbarButtonSize));
             m_Table.SetFontSize(m_ViewStates.fontSize);
-
-            SharedStyles.Label.fontSize = m_ViewStates.fontSize;
-            SharedStyles.TextArea.fontSize = m_ViewStates.fontSize;
 
             if (!m_Layout.hierarchy)
             {
-                // (optional) collapse/expand buttons
-                GUI.enabled = !m_Table.flatView;
-                if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(AnalysisView.toolbarButtonSize)))
-                    SetRowsExpanded(false);
-                if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(AnalysisView.toolbarButtonSize)))
-                    SetRowsExpanded(true);
-                GUI.enabled = true;
-
                 EditorGUI.BeginChangeCheck();
-                m_Table.flatView = !GUILayout.Toggle(!m_Table.flatView, Utility.GetIcon(Utility.IconType.Hierarchy, "Show/Hide Hierarchy"), EditorStyles.toolbarButton, GUILayout.Width(LayoutSize.ToolbarIconSize));
+                m_Table.flatView = !GUILayout.Toggle(!m_Table.flatView, Contents.HierarchyButton, EditorStyles.toolbarButton, GUILayout.Width(LayoutSize.ToolbarIconSize));
                 if (EditorGUI.EndChangeCheck())
                 {
                     MarkDirty();
                 }
 
-                GUI.enabled = !m_Table.flatView;
+                using (new EditorGUI.DisabledScope(m_Table.flatView))
+                {
+                    // collapse/expand buttons
+                    if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(LayoutSize.ToolbarButtonSize)))
+                        SetRowsExpanded(false);
+                    if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(LayoutSize.ToolbarButtonSize)))
+                        SetRowsExpanded(true);
 
-                Utility.ToolbarDropdownList(m_GroupDropdownItems, m_Table.groupPropertyIndex,
-                    (data) =>
-                    {
-                        var groupPropertyIndex = (int)data;
-                        if (groupPropertyIndex != m_Table.groupPropertyIndex)
+                    Utility.ToolbarDropdownList(m_GroupDropdownItems, m_Table.groupPropertyIndex,
+                        (data) =>
                         {
-                            SetRowsExpanded(false);
+                            var groupPropertyIndex = (int)data;
+                            if (groupPropertyIndex != m_Table.groupPropertyIndex)
+                            {
+                                SetRowsExpanded(false);
 
-                            m_Table.groupPropertyIndex = groupPropertyIndex;
-                            m_Table.Clear();
-                            m_Table.AddIssues(m_Issues);
-                            m_Table.Reload();
-                        }
-                    }, GUILayout.Width(toolbarButtonSize * 2));
-
-                GUI.enabled = true;
+                                m_Table.groupPropertyIndex = groupPropertyIndex;
+                                m_Table.Clear();
+                                m_Table.AddIssues(m_Issues);
+                                m_Table.Reload();
+                            }
+                        }, GUILayout.Width(toolbarButtonSize * 2));
+                }
             }
 
             if (m_Desc.showSeverityFilters)
@@ -418,7 +405,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        void DrawRecommendation(ProblemDescriptor[] selectedDescriptors)
+        void DrawRecommendation(Descriptor[] selectedDescriptors)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
             m_ViewStates.recommendation = Utility.BoldFoldout(m_ViewStates.recommendation, Contents.RecommendationFoldout);
@@ -501,8 +488,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     exporter.WriteHeader();
 
-                    var matchingIssues = m_Issues.Where(issue => issue.descriptor == null || m_Config.GetAction(issue.descriptor, issue.GetContext()) !=
-                        Rule.Severity.None && (predicate == null || predicate(issue)));
+                    var matchingIssues = m_Issues.Where(issue => predicate == null || predicate(issue));
+                    matchingIssues = matchingIssues.Where(issue => issue.descriptor.IsValid() || m_Config.GetAction(issue.descriptor, issue.GetContext()) != Severity.None);
                     exporter.WriteIssues(matchingIssues.ToArray());
                 }
 
@@ -521,15 +508,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 switch (issue.severity)
                 {
-                    case Rule.Severity.Info:
+                    case Severity.Info:
                         if (!m_ShowInfo)
                             return false;
                         break;
-                    case Rule.Severity.Warning:
+                    case Severity.Warning:
                         if (!m_ShowWarn)
                             return false;
                         break;
-                    case Rule.Severity.Error:
+                    case Severity.Error:
                         if (!m_ShowError)
                             return false;
                         break;
@@ -628,12 +615,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         static class Contents
         {
-            public static readonly GUIContent AnalyzeNow = new GUIContent("Analyze Now!");
+            public static readonly GUIContent AnalyzeNowButton = Utility.GetIcon(Utility.IconType.Refresh, "Analyze Now!");
+            public static readonly GUIContent HierarchyButton = Utility.GetIcon(Utility.IconType.Hierarchy, "Show/Hide Hierarchy");
+
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
-            public static readonly GUIContent FlatModeButton = new GUIContent("Flat View");
-            public static readonly GUIContent Zoom = new GUIContent("Zoom");
 
             public static readonly GUIContent InfoFoldout = new GUIContent("Information");
             public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");

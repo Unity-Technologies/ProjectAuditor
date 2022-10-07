@@ -9,9 +9,8 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public enum TextureProperties
+    public enum TextureProperty
     {
-        Name,
         Shape,
         ImporterType,
         Format,
@@ -39,15 +38,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.Texture,
             properties = new[]
             {
-                new PropertyDefinition {type = PropertyTypeUtil.FromCustom(TextureProperties.Name), format = PropertyFormat.String, name = "Name", longName = "Texture Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Shape), format = PropertyFormat.String, name = "Shape", longName = "Texture Shape" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.ImporterType), format = PropertyFormat.String, name = "Importer Type", longName = "Texture Importer Type" },
-                new PropertyDefinition {type = PropertyTypeUtil.FromCustom(TextureProperties.Format), format = PropertyFormat.String, name = "Format", longName = "Texture Format" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.TextureCompression), format = PropertyFormat.String, name = "Compression", longName = "Texture Compression" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.MipMapEnabled), format = PropertyFormat.Bool, name = "MipMaps", longName = "Texture MipMaps Enabled" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Readable), format = PropertyFormat.Bool, name = "Readable", longName = "Readable" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.Resolution), format = PropertyFormat.String, name = "Resolution", longName = "Texture Resolution" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperties.SizeOnDisk), format = PropertyFormat.Bytes, name = "Size", longName = "Texture Size" },
+                new PropertyDefinition {type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Texture Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.Shape), format = PropertyFormat.String, name = "Shape", longName = "Texture Shape" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.ImporterType), format = PropertyFormat.String, name = "Importer Type", longName = "Texture Importer Type" },
+                new PropertyDefinition {type = PropertyTypeUtil.FromCustom(TextureProperty.Format), format = PropertyFormat.String, name = "Format", longName = "Texture Format" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.TextureCompression), format = PropertyFormat.String, name = "Compression", longName = "Texture Compression" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.MipMapEnabled), format = PropertyFormat.Bool, name = "MipMaps", longName = "Texture MipMaps Enabled" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.Readable), format = PropertyFormat.Bool, name = "Readable", longName = "Readable" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.Resolution), format = PropertyFormat.String, name = "Resolution", longName = "Texture Resolution" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.SizeOnDisk), format = PropertyFormat.Bytes, name = "Size", longName = "Texture Size" },
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"}
             }
         };
@@ -65,8 +64,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override string name => "Textures";
 
+
         List<ITextureAnalyzer> m_Analyzers;
         HashSet<ProblemDescriptor> m_ProblemDescriptors;
+
+        public override bool isEnabledByDefault => false;
+
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
@@ -89,40 +92,40 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var allTextures = AssetDatabase.FindAssets("t: Texture, a:assets");
             var issues = new List<ProjectIssue>();
-            var currentPlatform = projectAuditorParams.platform;
+            var currentPlatform = projectAuditorParams.platform.ToString();
 
             progress?.Start("Finding Textures", "Search in Progress...", allTextures.Length);
 
-            foreach (var aTexture in allTextures)
+            foreach (var guid in allTextures)
             {
-                var pathToTexture = AssetDatabase.GUIDToAssetPath(aTexture);
-                var location = new Location(pathToTexture);
+                var pathToTexture = AssetDatabase.GUIDToAssetPath(guid);
+                var textureImporter = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
+                if (textureImporter == null)
+                {
+                    continue; //continues if the object found is not a member of the Texture Group:(Texture2D, Texture3D, CubeMap, 2D Array) - Example Use: RenderTextures won't be analyzed.
+                }
 
-                var t = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
-                if (t == null) { continue; } //continues if the object found is not a member of the Texture Group:(Texture2D, Texture3D, CubeMap, 2D Array) - Example Use: RenderTextures won't be analyzed.
+                var texture = AssetDatabase.LoadAssetAtPath<Texture>(pathToTexture);
+                var size = Profiler.GetRuntimeMemorySizeLong(texture);
+                var platformSettings = textureImporter.GetPlatformTextureSettings(currentPlatform);
 
-                var tName = (Texture)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture));
-                var tSize = Profiler.GetRuntimeMemorySizeLong(tName);
+                var resolution = (texture.width + "x" + texture.height);
 
-                var platformSettings = t.GetPlatformTextureSettings(currentPlatform.ToString());
-
-                var resolution = (tName.width + "x" + tName.height);
-
-                var issue = ProjectIssue.Create(k_TexturesIssueLayout.category, tName.name).WithCustomProperties(
-                    new object[((int)TextureProperties.Num)]
-                    {
-                        tName.name,
-                        t.textureShape,
-                        t.textureType,
-                        platformSettings.format,
-                        platformSettings.textureCompression,
-                        t.mipmapEnabled,
-                        t.isReadable,
-                        resolution,
-                        tSize,
-                        currentPlatform
-                    })
-                    .WithLocation(location);
+                var issue = ProjectIssue.Create(k_TexturesIssueLayout.category, texture.name)
+                    .WithCustomProperties(
+                        new object[((int)TextureProperty.Num)]
+                        {
+                            textureImporter.textureShape,
+                            textureImporter.textureType,
+                            platformSettings.format,
+                            platformSettings.textureCompression,
+                            textureImporter.mipmapEnabled,
+                            textureImporter.isReadable,
+                            resolution,
+                            size,
+                            currentPlatform
+                        })
+                    .WithLocation(new Location(pathToTexture));
 
                 foreach (var analyzer in m_Analyzers)
                 {
@@ -153,12 +156,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
-        public override bool isEnabledByDefault => true;  // NEEDS TO BE SET BACK TO FALSE
+
 
         void AddAnalyzer(ITextureAnalyzer analyzer)
         {
             analyzer.Initialize(this);
             m_Analyzers.Add(analyzer);
         }
+
     }
 }

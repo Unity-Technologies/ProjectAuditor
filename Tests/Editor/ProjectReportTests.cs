@@ -5,6 +5,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -45,7 +46,7 @@ class MyClass : MonoBehaviour
         public void ProjectReport_Issue_IsAdded()
         {
             var projectReport = new ProjectReport();
-            var p = new ProblemDescriptor
+            var p = new Descriptor
                 (
                 "TD2001",
                 "test",

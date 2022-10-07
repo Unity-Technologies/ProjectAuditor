@@ -5,6 +5,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -14,8 +15,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     class BuiltinCallAnalyzer : IInstructionAnalyzer
     {
-        Dictionary<string, List<ProblemDescriptor>> m_Descriptors; // method name as key, list of type names as value
-        Dictionary<string, ProblemDescriptor> m_WholeNamespaceDescriptors; // namespace as key
+        Dictionary<string, List<Descriptor>> m_Descriptors; // method name as key, list of type names as value
+        Dictionary<string, Descriptor> m_WholeNamespaceDescriptors; // namespace as key
 
         readonly OpCode[] m_OpCodes =
         {
@@ -27,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public void Initialize(ProjectAuditorModule module)
         {
-            var descriptors = ProblemDescriptorLoader.LoadFromJson(ProjectAuditor.DataPath, "ApiDatabase");
+            var descriptors = DescriptorLoader.LoadFromJson(ProjectAuditor.DataPath, "ApiDatabase");
             foreach (var descriptor in descriptors)
             {
                 module.RegisterDescriptor(descriptor);
@@ -35,12 +36,12 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
             var methodDescriptors = descriptors.Where(descriptor => !descriptor.method.Equals("*") && !string.IsNullOrEmpty(descriptor.type));
 
-            m_Descriptors = new Dictionary<string, List<ProblemDescriptor>>();
+            m_Descriptors = new Dictionary<string, List<Descriptor>>();
             foreach (var d in methodDescriptors)
             {
                 if (!m_Descriptors.ContainsKey(d.method))
                 {
-                    m_Descriptors.Add(d.method, new List<ProblemDescriptor>());
+                    m_Descriptors.Add(d.method, new List<Descriptor>());
                 }
                 m_Descriptors[d.method].Add(d);
             }
@@ -48,13 +49,13 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             m_WholeNamespaceDescriptors = descriptors.Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
         }
 
-        public ProjectIssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             var callee = (MethodReference)inst.Operand;
             var description = string.Empty;
             var methodName = callee.Name;
 
-            ProblemDescriptor descriptor;
+            Descriptor descriptor;
             var declaringType = callee.DeclaringType;
 
             // Are we trying to warn about a whole namespace?
@@ -67,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 if (methodName.StartsWith("get_"))
                     methodName = methodName.Substring("get_".Length);
 
-                List<ProblemDescriptor> descriptors;
+                List<Descriptor> descriptors;
                 if (!m_Descriptors.TryGetValue(methodName, out descriptors))
                     return null;
 
@@ -79,13 +80,13 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                     return null;
 
                 // by default use descriptor issue description
-                description = string.Format("'{0}' usage", descriptor.description);
+                description = string.Format("'{0}' usage", descriptor.title);
 
                 var genericInstanceMethod = callee as GenericInstanceMethod;
                 if (genericInstanceMethod != null && genericInstanceMethod.HasGenericArguments)
                 {
                     var genericTypeNames = genericInstanceMethod.GenericArguments.Select(a => a.FullName).ToArray();
-                    description = string.Format("'{0}' usage (with generic argument '{1}')", descriptor.description, string.Join(", ", genericTypeNames));
+                    description = string.Format("'{0}' usage (with generic argument '{1}')", descriptor.title, string.Join(", ", genericTypeNames));
                 }
             }
 

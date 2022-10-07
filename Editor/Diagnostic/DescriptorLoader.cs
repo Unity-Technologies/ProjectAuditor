@@ -6,14 +6,14 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.Core
+namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
-    static class ProblemDescriptorLoader
+    static class DescriptorLoader
     {
-        public static List<ProblemDescriptor> LoadFromJson(string path, string name)
+        public static List<Descriptor> LoadFromJson(string path, string name)
         {
-            var rawDescriptors = Json.FromFile<ProblemDescriptor>(Path.Combine(path, name + ".json"));
-            var descriptors = new List<ProblemDescriptor>(rawDescriptors.Length);
+            var rawDescriptors = Json.FromFile<Descriptor>(Path.Combine(path, name + ".json"));
+            var descriptors = new List<Descriptor>(rawDescriptors.Length);
             foreach (var rawDescriptor in rawDescriptors)
             {
                 if (!IsPlatformCompatible(rawDescriptor))
@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.Core
                 if (!IsVersionCompatible(rawDescriptor))
                     continue;
 
-                var desc = new ProblemDescriptor(rawDescriptor.id, rawDescriptor.description, rawDescriptor.areas)
+                var desc = new Descriptor(rawDescriptor.id, rawDescriptor.title, rawDescriptor.areas)
                 {
                     customevaluator = rawDescriptor.customevaluator,
                     type = rawDescriptor.type ?? string.Empty,
@@ -30,15 +30,15 @@ namespace Unity.ProjectAuditor.Editor.Core
                     value = rawDescriptor.value,
                     platforms = rawDescriptor.platforms,
                     critical = rawDescriptor.critical,
-                    problem = rawDescriptor.problem,
+                    description = rawDescriptor.description,
                     solution = rawDescriptor.solution
                 };
-                if (string.IsNullOrEmpty(desc.description))
+                if (string.IsNullOrEmpty(desc.title))
                 {
                     if (string.IsNullOrEmpty(desc.type) || string.IsNullOrEmpty(desc.method))
-                        desc.description = string.Empty;
+                        desc.title = string.Empty;
                     else
-                        desc.description = desc.GetFullTypeName();
+                        desc.title = desc.GetFullTypeName();
                 }
 
                 descriptors.Add(desc);
@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             return descriptors;
         }
 
-        internal static bool IsPlatformCompatible(ProblemDescriptor desc)
+        internal static bool IsPlatformCompatible(Descriptor desc)
         {
             var platforms = desc.platforms;
             if (platforms == null)
@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             return false;
         }
 
-        internal static bool IsVersionCompatible(ProblemDescriptor desc)
+        internal static bool IsVersionCompatible(Descriptor desc)
         {
             var unityVersion = InternalEditorUtility.GetUnityVersion();
             var minimumVersion = (Version)null;

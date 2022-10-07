@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
@@ -120,7 +121,7 @@ class ScriptWithError {
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
             Assert.AreEqual(k_ExpectedDescription, issue.description, "Description: " + issue.description);
             Assert.That(issue.line, Is.EqualTo(6));
-            Assert.That(issue.severity, Is.EqualTo(Rule.Severity.Error));
+            Assert.That(issue.severity, Is.EqualTo(Severity.Error));
 
             // check properties
             Assert.AreEqual((int)CompilerMessageProperty.Num, issue.GetNumCustomProperties());
@@ -134,7 +135,7 @@ class ScriptWithError {
         {
             LogAssert.ignoreFailingMessages = true;
 
-            var issues = Analyze(IssueCategory.Assembly, i => i.severity == Rule.Severity.Error && i.relativePath.Equals(m_TempAsmdef.relativePath));
+            var issues = Analyze(IssueCategory.Assembly, i => i.severity == Severity.Error && i.relativePath.Equals(m_TempAsmdef.relativePath));
 
             LogAssert.ignoreFailingMessages = false;
 
@@ -147,7 +148,7 @@ class ScriptWithError {
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.Assembly));
-            Assert.That(issue.severity, Is.EqualTo(Rule.Severity.Error));
+            Assert.That(issue.severity, Is.EqualTo(Severity.Error));
             Assert.That(issue.filename, Is.EqualTo(m_TempAsmdef.fileName));
         }
 
@@ -157,7 +158,7 @@ class ScriptWithError {
         {
             LogAssert.ignoreFailingMessages = true;
 
-            var issues = Analyze(IssueCategory.Assembly, i => i.severity == Rule.Severity.Error && i.description.Equals(k_TempAssemblyName));
+            var issues = Analyze(IssueCategory.Assembly, i => i.severity == Severity.Error && i.description.Equals(k_TempAssemblyName));
 
             LogAssert.ignoreFailingMessages = false;
 
@@ -170,7 +171,7 @@ class ScriptWithError {
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.Assembly));
-            Assert.That(issue.severity, Is.EqualTo(Rule.Severity.Error));
+            Assert.That(issue.severity, Is.EqualTo(Severity.Error));
             Assert.AreEqual(k_TempAssemblyFileName, issue.filename);
         }
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -31,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Action<GenericMenu, ViewManager, ProjectIssue> onContextMenu;
         public Action<ViewManager> onDrawToolbar;
         public Action<Location> onOpenIssue;
-        public Action<ProblemDescriptor> onOpenManual;
+        public Action<Descriptor> onOpenManual;
         public int analyticsEvent;
 
         static readonly Dictionary<int, ViewDescriptor> s_ViewDescriptorsRegistry = new Dictionary<int, ViewDescriptor>();

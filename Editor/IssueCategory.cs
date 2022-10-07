@@ -24,6 +24,8 @@ namespace Unity.ProjectAuditor.Editor
         Texture,
         PlatformTexture,
         AudioClip,
+        ComputeShaderVariant,
+
         FirstCustomCategory
     }
 }

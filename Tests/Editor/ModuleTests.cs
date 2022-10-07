@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -12,7 +13,7 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     class CustomAuditor// : IAuditor
     {
-        readonly ProblemDescriptor m_Descriptor = new ProblemDescriptor("666", "This is a test descriptor", Area.CPU);
+        readonly Descriptor m_Descriptor = new Descriptor("666", "This is a test descriptor", Area.CPU);
 
         readonly IssueLayout m_Layout = new IssueLayout
         {
@@ -23,7 +24,7 @@ namespace Unity.ProjectAuditor.EditorTests
             }
         };
 
-        public IEnumerable<ProblemDescriptor> GetDescriptors()
+        public IEnumerable<Descriptor> GetDescriptors()
         {
             yield return m_Descriptor;
         }
@@ -41,7 +42,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
         }
 
-        public void RegisterDescriptor(ProblemDescriptor descriptor)
+        public void RegisterDescriptor(Descriptor descriptor)
         {
         }
 

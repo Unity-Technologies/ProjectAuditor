@@ -8,12 +8,13 @@ using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
 using Object = System.Object;
+using PropertyDefinition = Unity.ProjectAuditor.Editor.Core.PropertyDefinition;
 using ThreadPriority = System.Threading.ThreadPriority;
 
 namespace Unity.ProjectAuditor.Editor.Modules
@@ -112,13 +113,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
         ProjectAuditorConfig m_Config;
         List<IInstructionAnalyzer> m_Analyzers;
         List<OpCode> m_OpCodes;
-        HashSet<ProblemDescriptor> m_ProblemDescriptors;
+        HashSet<Descriptor> m_Descriptors;
 
         Thread m_AssemblyAnalysisThread;
 
         public override string name => "Code";
 
-        public override IReadOnlyCollection<ProblemDescriptor> supportedDescriptors => m_ProblemDescriptors;
+        public override IReadOnlyCollection<Descriptor> supportedDescriptors => m_Descriptors;
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
@@ -137,7 +138,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             m_Config = config;
             m_Analyzers = new List<IInstructionAnalyzer>();
             m_OpCodes = new List<OpCode>();
-            m_ProblemDescriptors = new HashSet<ProblemDescriptor>();
+            m_Descriptors = new HashSet<Descriptor>();
 
             foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IInstructionAnalyzer)))
                 AddAnalyzer(Activator.CreateInstance(type) as IInstructionAnalyzer);
@@ -145,7 +146,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            if (m_ProblemDescriptors == null)
+            if (m_Descriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
 
             if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
@@ -163,44 +164,37 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (precompiledAssemblies.Any())
                 projectAuditorParams.onIncomingIssues(precompiledAssemblies);
 
-            var roslynAnalyzers = new string[] {};
-            if (m_Config.UseRoslynAnalyzers)
-            {
-                roslynAnalyzers = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath)
-                    .ToArray();
+            var roslynAnalyzerAssets = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath)
+                .ToArray();
+            var roslynAnalyzerIssues = roslynAnalyzerAssets
+                .Select(roslynAnalyzerDllPath => (ProjectIssue)ProjectIssue.Create(
+                IssueCategory.PrecompiledAssembly,
+                Path.GetFileNameWithoutExtension(roslynAnalyzerDllPath))
+                .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
+                {
+                    true
+                })
+                .WithLocation(roslynAnalyzerDllPath));
 
-                var roslynAnalyzerDLLs = roslynAnalyzers
-                    .Select(roslynAnalyzerDllPath => (ProjectIssue)ProjectIssue.Create(
-                    IssueCategory.PrecompiledAssembly,
-                    Path.GetFileNameWithoutExtension(roslynAnalyzerDllPath))
-                    .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
-                    {
-                        true
-                    })
-                    .WithLocation(roslynAnalyzerDllPath))
-                    .ToArray();
-
-                if (roslynAnalyzerDLLs.Any())
-                    projectAuditorParams.onIncomingIssues(roslynAnalyzerDLLs);
-            }
+            projectAuditorParams.onIncomingIssues(roslynAnalyzerIssues);
 
             var compilationIssues = new List<ProjectIssue>();
             var compilationPipeline = new AssemblyCompilation
             {
-                onAssemblyCompilationFinished = (compilationTask, compilerMessages) => ProcessCompilerMessages(compilationTask, compilerMessages, compilationIssues.Add),
+                onAssemblyCompilationFinished = (compilationTask, compilerMessages) =>
+                {
+                    projectAuditorParams.onIncomingIssues(ProcessCompilerMessages(compilationTask, compilerMessages));
+                },
                 codeOptimization = projectAuditorParams.codeOptimization,
                 compilationMode = m_Config.CompilationMode,
                 platform = projectAuditorParams.platform,
-                roslynAnalyzers = roslynAnalyzers,
+                roslynAnalyzers = m_Config.UseRoslynAnalyzers ? roslynAnalyzerAssets : null,
                 assemblyNames = projectAuditorParams.assemblyNames
             };
 
             Profiler.BeginSample("CodeModule.Audit.Compilation");
             var assemblyInfos = compilationPipeline.Compile(progress);
             Profiler.EndSample();
-
-            if (compilationIssues.Any())
-                projectAuditorParams.onIncomingIssues(compilationIssues);
 
             if (projectAuditorParams.assemblyNames != null)
             {
@@ -312,9 +306,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             onComplete?.Invoke(progress);
         }
 
-        public override void RegisterDescriptor(ProblemDescriptor descriptor)
+        public override void RegisterDescriptor(Descriptor descriptor)
         {
-            if (!m_ProblemDescriptors.Add(descriptor))
+            if (!m_Descriptors.Add(descriptor))
                 throw new Exception("Duplicate descriptor with id: " + descriptor.id);
         }
 
@@ -419,18 +413,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
             m_OpCodes.AddRange(analyzer.opCodes);
         }
 
-        void ProcessCompilerMessages(AssemblyCompilationTask compilationTask, CompilerMessage[] compilerMessages, Action<ProjectIssue> onIssueFound)
+        IEnumerable<ProjectIssue> ProcessCompilerMessages(AssemblyCompilationTask compilationTask, CompilerMessage[] compilerMessages)
         {
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
 
-            var severity = Rule.Severity.None;
+            var severity = Severity.None;
             if (compilationTask.status == CompilationStatus.MissingDependency)
-                severity = Rule.Severity.Warning;
+                severity = Severity.Warning;
             else if (compilerMessages.Any(m => m.type == CompilerMessageType.Error))
-                severity = Rule.Severity.Error;
+                severity = Severity.Error;
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.assemblyPath);
-            var assemblyIssue = ProjectIssue.Create(IssueCategory.Assembly, assemblyInfo.name)
+            yield return ProjectIssue.Create(IssueCategory.Assembly, assemblyInfo.name)
                 .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                 {
                     assemblyInfo.packageReadOnly,
@@ -440,7 +434,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     compilationTask.dependencies.Select(d => d.assemblyName).ToArray()))
                 .WithLocation(assemblyInfo.asmDefPath)
                 .WithSeverity(severity);
-            onIssueFound(assemblyIssue);
 
             foreach (var message in compilerMessages)
             {
@@ -451,7 +444,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 
                 var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.file);
-                var issue = ProjectIssue.Create(IssueCategory.CodeCompilerMessage, message.message)
+                yield return ProjectIssue.Create(IssueCategory.CodeCompilerMessage, message.message)
                     .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
                     {
                         message.code,
@@ -459,25 +452,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     })
                     .WithLocation(relativePath, message.line)
                     .WithSeverity(CompilerMessageTypeToSeverity(message.type));
-                onIssueFound(issue);
             }
 
             Profiler.EndSample();
         }
 
-        static Rule.Severity CompilerMessageTypeToSeverity(CompilerMessageType compilerMessageType)
+        static Severity CompilerMessageTypeToSeverity(CompilerMessageType compilerMessageType)
         {
             switch (compilerMessageType)
             {
                 case CompilerMessageType.Error:
-                    return Rule.Severity.Error;
+                    return Severity.Error;
                 case CompilerMessageType.Warning:
-                    return Rule.Severity.Warning;
+                    return Severity.Warning;
                 case CompilerMessageType.Info:
-                    return Rule.Severity.Info;
+                    return Severity.Info;
             }
 
-            return Rule.Severity.Info;
+            return Severity.Info;
         }
 
         static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)
@@ -485,7 +477,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (MonoBehaviourAnalysis.IsMonoBehaviour(methodDefinition.DeclaringType) &&
                 MonoBehaviourAnalysis.IsMonoBehaviourUpdateMethod(methodDefinition))
                 return true;
-#if ENTITIES_PACKAGE_INSTALLED
+#if PACKAGE_ENTITIES
             if (ComponentSystemAnalysis.IsComponentSystem(methodDefinition.DeclaringType) &&
                 ComponentSystemAnalysis.IsOnUpdateMethod(methodDefinition))
                 return true;
