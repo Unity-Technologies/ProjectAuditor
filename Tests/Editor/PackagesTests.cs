@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.EditorTests
             while (!addRequest.IsCompleted)
                 System.Threading.Thread.Sleep(10);
             Assert.True(addRequest.Status == StatusCode.Success, "Could not install the required package (com.unity.services.vivox). Make sure the package is able to be installed, and try again.");
-            addRequest = Client.Add("com.unity.services.vivox");
+            addRequest = Client.Add("com.unity.services.vivox@15.1.180001-pre.5");
             while (!addRequest.IsCompleted)
                 System.Threading.Thread.Sleep(10);
             Assert.True(addRequest.Status == StatusCode.Success, "Could not install the required package (com.unity.services.vivox). Make sure the package is able to be installed, and try again.");

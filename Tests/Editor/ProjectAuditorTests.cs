@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             const string testCategoryName = "TestCategory";
 
-            Assert.IsNull(Editor.ProjectAuditor.GetCategoryName((IssueCategory)999));
+            Assert.AreEqual("Unknown", Editor.ProjectAuditor.GetCategoryName((IssueCategory)999));
 
             var numCategories = Unity.ProjectAuditor.Editor.ProjectAuditor.NumCategories();
             var category = Unity.ProjectAuditor.Editor.ProjectAuditor.GetOrRegisterCategory(testCategoryName);
