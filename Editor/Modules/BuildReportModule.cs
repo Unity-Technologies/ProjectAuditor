@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         }
     }
 
-    class BuildReportModule : ProjectAuditorModule
+    public class BuildReportModule : ProjectAuditorModule
     {
 #if BUILD_REPORT_API_SUPPORT
         const string k_KeyBuildPath = "Path";
