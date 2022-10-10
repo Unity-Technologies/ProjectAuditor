@@ -96,7 +96,7 @@ namespace Unity.ProjectAuditor.EditorTests
             // 0.02f is the default Time.fixedDeltaTime value and will be reported as an issue
             Time.fixedDeltaTime = 0.02f;
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.method.Equals("fixedDeltaTime"));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.title.Equals("Time: Fixed Timestep"));
             var fixedDeltaTimeIssue = issues.FirstOrDefault();
             Assert.NotNull(fixedDeltaTimeIssue);
             Assert.AreEqual("Time: Fixed Timestep", fixedDeltaTimeIssue.description);
@@ -105,7 +105,7 @@ namespace Unity.ProjectAuditor.EditorTests
             // "fix" fixedDeltaTime so it's not reported anymore
             Time.fixedDeltaTime = 0.021f;
 
-            issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.method.Equals("fixedDeltaTime"));
+            issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.title.Equals("Time: Fixed Timestep"));
             Assert.Null(issues.FirstOrDefault());
 
             // restore Time.fixedDeltaTime

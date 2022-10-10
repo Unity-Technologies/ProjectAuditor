@@ -565,3 +565,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
         TextureCompression = 3,
     }
 }
+
+namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
+{
+    public class TimeSettingsAnalyzer : Unity.ProjectAuditor.Editor.Modules.ISettingsAnalyzer
+    {
+        public TimeSettingsAnalyzer() {}
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(Unity.ProjectAuditor.Editor.Modules.SettingsAnalyzerContext context);
+        public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
+    }
+}
