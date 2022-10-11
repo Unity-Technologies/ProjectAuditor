@@ -441,6 +441,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Value = 0,
     }
 
+    public class BuildReportModule : Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule
+    {
+        public static IBuildReportProvider BuildReportProvider { get; set; }
+        public static IBuildReportProvider DefaultBuildReportProvider { get; }
+        public override string name { get; }
+        public override System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.Core.IssueLayout> supportedLayouts { get; }
+        public BuildReportModule() {}
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = default(IProgress));
+    }
+
     public enum BuildReportStepProperty
     {
         Duration = 0,

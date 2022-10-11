@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     class BuiltinCallAnalyzer : IInstructionAnalyzer
     {
         Dictionary<string, List<Descriptor>> m_Descriptors; // method name as key, list of type names as value
-        Dictionary<string, Descriptor> m_WholeNamespaceDescriptors; // namespace as key
+        Dictionary<string, Descriptor> m_NamespaceOrClassDescriptors; // namespace as key
 
         readonly OpCode[] m_OpCodes =
         {
@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 m_Descriptors[d.method].Add(d);
             }
 
-            m_WholeNamespaceDescriptors = descriptors.Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
+            m_NamespaceOrClassDescriptors = descriptors.Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
         }
 
         public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
@@ -59,7 +59,11 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             var declaringType = callee.DeclaringType;
 
             // Are we trying to warn about a whole namespace?
-            if (m_WholeNamespaceDescriptors.TryGetValue(declaringType.Namespace, out descriptor))
+            if (m_NamespaceOrClassDescriptors.TryGetValue(declaringType.FullName, out descriptor))
+            {
+                description = string.Format("'{0}.{1}' usage", declaringType, methodName);
+            }
+            else if (m_NamespaceOrClassDescriptors.TryGetValue(declaringType.Namespace, out descriptor))
             {
                 description = string.Format("'{0}.{1}' usage", declaringType, methodName);
             }

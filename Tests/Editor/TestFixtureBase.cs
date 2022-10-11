@@ -17,6 +17,7 @@ namespace Unity.ProjectAuditor.EditorTests
     public abstract class TestFixtureBase
     {
         protected CodeOptimization m_CodeOptimization = CodeOptimization.Release;
+        protected BuildTarget m_Platform = EditorUserBuildSettings.activeBuildTarget;
         protected ProjectAuditorConfig m_Config;
 
         [OneTimeSetUp]
@@ -44,6 +45,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 {
                     foundIssues.AddRange(predicate == null ? issues : issues.Where(predicate));
                 },
+                platform = m_Platform
             };
             projectAuditor.Audit(projectAuditorParams);
 
@@ -63,7 +65,8 @@ namespace Unity.ProjectAuditor.EditorTests
                     var categoryIssues = issues.Where(issue => issue.category == category);
 
                     foundIssues.AddRange(predicate == null ? categoryIssues : categoryIssues.Where(predicate));
-                }
+                },
+                platform = m_Platform
             };
 
             module.Audit(projectAuditorParams);

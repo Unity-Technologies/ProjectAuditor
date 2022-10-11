@@ -1480,6 +1480,15 @@
           "areas": ["CPU"],
           "description": "<b>UnityEditor.AssetDatabase.FindAssets</b> is expensive and can slow down the Editor for long periods of time on large projects.",
           "solution": "Try to minimize calls to <b>UnityEditor.AssetDatabase.FindAssets</b>."
+        },
+        {
+          "id": "PAC0233",
+          "type": "UnityEngine.Microphone",
+          "method": "*",
+          "areas": ["Support"],
+          "platforms": ["WebGL"],
+          "description": "The <b>UnityEngine.Microphone</b> API is not supported on this platform. Using Microphone might lead to build/runtime errors.",
+          "solution": "Do not use the Microphone API on this platform."
         }
     ]
 }
