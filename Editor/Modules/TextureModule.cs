@@ -27,7 +27,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
     public enum PlatformTextureProperty
     {
         Name,
-        TextureCompression,
+        Format,
+        Platform,
         Num
     }
 
@@ -58,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition {type = PropertyTypeUtil.FromCustom(PlatformTextureProperty.Name), format = PropertyFormat.String, name = "Name", longName = "Texture Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PlatformTextureProperty.TextureCompression), format = PropertyFormat.String, name = "Compression", longName = "Texture Compression" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PlatformTextureProperty.Format), format = PropertyFormat.String, name = "Compression", longName = "Texture Compression" },
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"}
             }
         };
@@ -99,7 +100,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var location = new Location(pathToTexture);
 
                 var t = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
-                if (t == null) { continue; } //continues if the object found is not a member of the Texture Group:(Texture2D, Texture3D, CubeMap, 2D Array) - Example Use: RenderTextures won't be analyzed.
+                if (t == null) { continue; }
 
                 var tName = (Texture)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture));
                 var tSize = Profiler.GetRuntimeMemorySizeLong(tName);
@@ -133,10 +134,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         {
                             issues.Add(foundissue);
                         }
-
-                    // if (analyzerFoundIssues.Any()) {   projectAuditorParams.onIncomingIssues(analyzerFoundIssues);}
-
-                    Debug.Log("Analyzed this texture: " + tName + "  Added any found issue to the ? separate category ? list of reported issues");
                 }
 
                 issues.Add(issue);
@@ -153,7 +150,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
-        public override bool isEnabledByDefault => true;  // NEEDS TO BE SET BACK TO FALSE
+        public override bool isEnabledByDefault => false;
 
         void AddAnalyzer(ITextureAnalyzer analyzer)
         {
