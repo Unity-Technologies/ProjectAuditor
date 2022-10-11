@@ -234,6 +234,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 callCrawler.BuildCallHierarchies(diagnostics, bar);
                 Profiler.EndSample();
 
+                // remove issues if platform does not match
+                var platformString = projectAuditorParams.platform.ToString();
+                foundIssues.RemoveAll(i => i.descriptor.platforms != null && i.descriptor.platforms.Length > 0 && !i.descriptor.platforms.Contains(platformString));
+
                 // workaround for empty 'relativePath' strings which are not all available when 'onIssueFoundInternal' is called
                 if (foundIssues.Any())
                     projectAuditorParams.onIncomingIssues(foundIssues);
