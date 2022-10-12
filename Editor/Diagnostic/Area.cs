@@ -1,4 +1,4 @@
-﻿namespace Unity.ProjectAuditor.Editor.Diagnostic
+namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     /// <summary>
     /// Affected area
