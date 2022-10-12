@@ -273,7 +273,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
     public interface ITextureAnalyzer
     {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEngine.Texture textureToAnalyze, UnityEditor.TextureImporterPlatformSettings textureToAnalyzePlatformSettings);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEngine.Texture texture, UnityEditor.TextureImporterPlatformSettings textureImporterPlatformSettings);
         public void Initialize(ProjectAuditorModule module);
     }
 

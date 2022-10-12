@@ -10,6 +10,6 @@ namespace Unity.ProjectAuditor.Editor.Core
     {
         void Initialize(ProjectAuditorModule module);
 
-        IEnumerable<ProjectIssue> Analyze(BuildTarget platform, Texture textureToAnalyze, TextureImporterPlatformSettings textureToAnalyzePlatformSettings);
+        IEnumerable<ProjectIssue> Analyze(BuildTarget platform, Texture texture, TextureImporterPlatformSettings textureImporterPlatformSettings);
     }
 }
