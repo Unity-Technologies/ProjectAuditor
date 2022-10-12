@@ -26,7 +26,7 @@ class MicrophoneUsageTest
         }
 
         [Test]
-        //[RequirePlatformSupport(BuildTarget.WebGL)]
+        [RequirePlatformSupport(BuildTarget.WebGL)]
         public void CodeAnalysis_PlatformIssue_IsReported()
         {
             m_Platform = BuildTarget.WebGL;
