@@ -4,7 +4,7 @@ using Unity.ProjectAuditor.Editor.Core;
 using UnityEditor;
 using UnityEngine;
 
-namespace Google.Android.OptimizationTool.Editor
+namespace Unity.ProjectAuditor.Editor.Core
 {
     public interface ITextureAnalyzer
     {

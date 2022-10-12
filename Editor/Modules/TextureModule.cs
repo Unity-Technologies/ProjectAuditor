@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Google.Android.OptimizationTool.Editor;
 using Unity.ProjectAuditor.Editor.Core;
 using UnityEngine.Profiling;
 using UnityEditor;
@@ -26,7 +25,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public enum PlatformTextureProperty
     {
-        Name,
         Format,
         Platform,
         Num
@@ -58,13 +56,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.PlatformTexture,
             properties = new[]
             {
-                new PropertyDefinition {type = PropertyTypeUtil.FromCustom(PlatformTextureProperty.Name), format = PropertyFormat.String, name = "Name", longName = "Texture Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PlatformTextureProperty.Format), format = PropertyFormat.String, name = "Compression", longName = "Texture Compression" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PlatformTextureProperty.Format), format = PropertyFormat.String, name = "Format", longName = "Compression Format" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PlatformTextureProperty.Platform), format = PropertyFormat.String, name = "Platform" },
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"}
             }
         };
 
         public override string name => "Textures";
+
+        public override bool isEnabledByDefault => false;
 
         List<ITextureAnalyzer> m_Analyzers;
         HashSet<ProblemDescriptor> m_ProblemDescriptors;
@@ -100,7 +100,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var location = new Location(pathToTexture);
 
                 var t = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
-                if (t == null) { continue; }
+                if (t == null)
+                    continue; // RenderTextures won't be analyzed.
 
                 var tName = (Texture)AssetDatabase.LoadAssetAtPath(pathToTexture, typeof(Texture));
                 var tSize = Profiler.GetRuntimeMemorySizeLong(tName);
@@ -149,8 +150,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
-
-        public override bool isEnabledByDefault => false;
 
         void AddAnalyzer(ITextureAnalyzer analyzer)
         {
