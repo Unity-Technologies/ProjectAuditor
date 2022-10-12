@@ -440,7 +440,29 @@ namespace Unity.ProjectAuditor.Editor.UI
                     descriptionWithIcon = true,
                     showFilters = true,
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                    onDrawToolbar = (viewManager) =>
+                    {
+                        AnalysisView.DrawToolbarButton(new GUIContent("Diagnostics"), () => viewManager.ChangeView(IssueCategory.PlatformTexture));
+                    },
+
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
+                });
+
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.PlatformTexture,
+                    name = "Texture Diagnostics",
+                    menuLabel = "Experimental/Texture Diagnostics",
+                    menuOrder = 7,
+                    descriptionWithIcon = true,
+                    showFilters = true,
+                    showRightPanels = true,
+                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                    onDrawToolbar = (viewManager) =>
+                    {
+                        AnalysisView.DrawToolbarButton(new GUIContent("Textures"), () => viewManager.ChangeView(IssueCategory.Texture));
+                    },
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
                 });
 
                 ViewDescriptor.Register(new ViewDescriptor
