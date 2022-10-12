@@ -26,7 +26,6 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        [Explicit]
         public void Texture_Properties_AreReported()
         {
             var textureTests = AnalyzeAndFindAssetIssues(m_TempTexture, IssueCategory.Texture);
