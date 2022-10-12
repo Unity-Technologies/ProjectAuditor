@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
     class BuiltinCallAnalyzer : IInstructionAnalyzer
     {
         Dictionary<string, List<Descriptor>> m_Descriptors; // method name as key, list of type names as value
-        Dictionary<string, Descriptor> m_NamespaceOrClassDescriptors; // namespace as key
+        Dictionary<string, Descriptor> m_NamespaceOrClassDescriptors; // namespace/class name as key
 
         readonly OpCode[] m_OpCodes =
         {
@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             Descriptor descriptor;
             var declaringType = callee.DeclaringType;
 
-            // Are we trying to warn about a whole namespace?
+            // first check if type name, then namespace, then method/property name
             if (m_NamespaceOrClassDescriptors.TryGetValue(declaringType.FullName, out descriptor))
             {
                 description = string.Format("'{0}.{1}' usage", declaringType, methodName);
