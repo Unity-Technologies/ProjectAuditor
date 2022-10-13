@@ -398,7 +398,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     menuOrder = 105,
                     onDrawToolbar = (viewManager) =>
                     {
-                        AnalysisView.DrawToolbarButton(new GUIContent("Diagnostics"), () => viewManager.ChangeView(IssueCategory.PackageVersion));
+                        AnalysisView.DrawToolbarButton(Contents.PackageDiagnostics, () => viewManager.ChangeView(IssueCategory.PackageVersion));
                     },
                     showDependencyView = true,
                     dependencyViewGuiContent = new GUIContent("Package Dependencies"),
@@ -413,7 +413,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     menuOrder = 106,
                     onDrawToolbar = (viewManager) =>
                     {
-                        AnalysisView.DrawToolbarButton(new GUIContent("Installed"), () => viewManager.ChangeView(IssueCategory.Package));
+                        AnalysisView.DrawToolbarButton(Contents.Packages, () => viewManager.ChangeView(IssueCategory.Package));
                     },
                     showRightPanels = true,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageVersion
@@ -442,7 +442,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     onDrawToolbar = (viewManager) =>
                     {
-                        AnalysisView.DrawToolbarButton(new GUIContent("Diagnostics"), () => viewManager.ChangeView(IssueCategory.PlatformTexture));
+                        AnalysisView.DrawToolbarButton(Contents.TextureDiagnostics, () => viewManager.ChangeView(IssueCategory.PlatformTexture));
                     },
 
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
@@ -460,7 +460,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     onDrawToolbar = (viewManager) =>
                     {
-                        AnalysisView.DrawToolbarButton(new GUIContent("Textures"), () => viewManager.ChangeView(IssueCategory.Texture));
+                        AnalysisView.DrawToolbarButton(Contents.Textures, () => viewManager.ChangeView(IssueCategory.Texture));
                     },
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
                 });
@@ -1428,8 +1428,14 @@ A view allows the user to browse through the listed items and filter by string o
             public static readonly GUIContent ShaderCompilerMessages = new GUIContent("Messages", "Show Shader Compiler Messages");
             public static readonly GUIContent ShaderVariants = new GUIContent("Variants", "Inspect Shader Variants");
 
+            public static readonly GUIContent Textures = new GUIContent("Textures");
+            public static readonly GUIContent TextureDiagnostics = new GUIContent("Diagnostics", "Texture Diagnostics");
+
             public static readonly GUIContent BuildFiles = new GUIContent("Build Size");
             public static readonly GUIContent BuildSteps = new GUIContent("Build Steps");
+
+            public static readonly GUIContent Packages = new GUIContent( "Packages", "Installed Packages");
+            public static readonly GUIContent PackageDiagnostics = new GUIContent( "Diagnostics", "Package Diagnostics");
         }
 
         [PostProcessBuild(1)]
