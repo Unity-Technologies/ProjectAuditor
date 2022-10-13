@@ -54,6 +54,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         protected override void DrawInfo()
         {
+            if (m_GroupStats == null)
+            {
+                EditorGUILayout.LabelField("Build Report is not available. Please build your project and try again.");
+                return;
+            }
+
             EditorGUILayout.BeginVertical();
             foreach (var issue in m_MetaData)
             {
