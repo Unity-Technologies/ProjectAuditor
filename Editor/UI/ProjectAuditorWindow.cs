@@ -508,6 +508,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
+                onDrawToolbar = (viewManager) =>
+                {
+                    AnalysisView.DrawToolbarButton(Contents.CodeCompilerMessages, () => viewManager.ChangeView(IssueCategory.CodeCompilerMessage));
+                },
                 onOpenIssue = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenManual = EditorUtil.OpenCodeDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ApiCalls
@@ -524,6 +528,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showSeverityFilters = true,
                 showInfoPanel = true,
                 //getAssemblyName = issue => issue.GetCustomProperty(CompilerMessageProperty.Assembly),
+                onDrawToolbar = (viewManager) =>
+                {
+                    AnalysisView.DrawToolbarButton(Contents.CodeDiagnostics, () => viewManager.ChangeView(IssueCategory.Code));
+                },
                 onOpenIssue = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenManual = EditorUtil.OpenCompilerMessageDescriptor,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.CodeCompilerMessages
@@ -1412,6 +1420,9 @@ A view allows the user to browse through the listed items and filter by string o
 
             public static readonly GUIContent Clear = new GUIContent("Clear");
             public static readonly GUIContent Refresh = new GUIContent("Refresh");
+
+            public static readonly GUIContent CodeDiagnostics = new GUIContent("Diagnostics", "Code Diagnostics");
+            public static readonly GUIContent CodeCompilerMessages = new GUIContent("Messages", "Compiler Messages");
 
             public static readonly GUIContent Shaders = new GUIContent("Shaders", "Inspect Shaders");
             public static readonly GUIContent ShaderCompilerMessages = new GUIContent("Messages", "Show Shader Compiler Messages");
