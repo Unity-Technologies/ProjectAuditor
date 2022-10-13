@@ -178,7 +178,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             projectAuditorParams.onIncomingIssues(roslynAnalyzerIssues);
 
-            var compilationIssues = new List<ProjectIssue>();
             var compilationPipeline = new AssemblyCompilation
             {
                 onAssemblyCompilationFinished = (compilationTask, compilerMessages) =>
