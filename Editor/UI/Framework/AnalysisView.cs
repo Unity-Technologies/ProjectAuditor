@@ -254,11 +254,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             // note that we don't need to detect string changes (with EditorGUI.Begin/EndChangeCheck(), because the TreeViewController already triggers a BuildRows() when the text changes
             EditorGUILayout.LabelField(Contents.SearchStringLabel, GUILayout.Width(80));
 
-            m_TextFilter.searchString = EditorGUILayout.DelayedTextField(m_TextFilter.searchString, GUILayout.Width(180));
+            m_TextFilter.searchString = EditorGUILayout.DelayedTextField(m_TextFilter.searchString, GUILayout.Width(280));
             m_Table.searchString = m_TextFilter.searchString;
 
             EditorGUI.BeginChangeCheck();
-            m_TextFilter.ignoreCase = !EditorGUILayout.ToggleLeft(Contents.TextSearchCaseSensitive, !m_TextFilter.ignoreCase, GUILayout.Width(160));
 
             if (UserPreferences.developerMode && m_Desc.showDependencyView)
             {
@@ -302,9 +301,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawDetails(Descriptor[] selectedDescriptors)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
-            m_ViewStates.details = Utility.BoldFoldout(m_ViewStates.details, Contents.DetailsFoldout);
-            if (m_ViewStates.details)
+            EditorGUILayout.LabelField(Contents.Details, EditorStyles.boldLabel);
             {
                 if (selectedDescriptors.Length == 0)
                     GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
@@ -313,7 +310,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 else // if (selectedDescriptors.Length == 1)
                     GUILayout.TextArea(selectedDescriptors[0].description, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
-            EditorGUILayout.EndVertical();
+        }
+
+        void DrawRecommendation(Descriptor[] selectedDescriptors)
+        {
+            EditorGUILayout.LabelField(Contents.Recommendation, EditorStyles.boldLabel);
+            {
+                if (selectedDescriptors.Length == 0)
+                    GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                else if (selectedDescriptors.Length > 1)
+                    GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                else // if (selectedDescriptors.Length == 1)
+                    GUILayout.TextArea(selectedDescriptors[0].solution, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+            }
         }
 
         void DrawViewOptions()
@@ -403,22 +412,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 GUIUtility.ExitGUI();
             }
-        }
-
-        void DrawRecommendation(Descriptor[] selectedDescriptors)
-        {
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(LayoutSize.FoldoutWidth));
-            m_ViewStates.recommendation = Utility.BoldFoldout(m_ViewStates.recommendation, Contents.RecommendationFoldout);
-            if (m_ViewStates.recommendation)
-            {
-                if (selectedDescriptors.Length == 0)
-                    GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-                else if (selectedDescriptors.Length > 1)
-                    GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-                else // if (selectedDescriptors.Length == 1)
-                    GUILayout.TextArea(selectedDescriptors[0].solution, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-            }
-            EditorGUILayout.EndVertical();
         }
 
         void DrawDependencyView(ProjectIssue[] issues)
@@ -623,11 +616,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
 
             public static readonly GUIContent InfoFoldout = new GUIContent("Information");
-            public static readonly GUIContent DetailsFoldout = new GUIContent("Details", "Issue Details");
-            public static readonly GUIContent RecommendationFoldout =
-                new GUIContent("Recommendation", "Recommendation on how to solve the issue");
+            public static readonly GUIContent Details = new GUIContent("Details:", "Issue Details");
+            public static readonly GUIContent Recommendation =
+                new GUIContent("Recommendation:", "Recommendation on how to solve the issue");
             public static readonly GUIContent SearchStringLabel = new GUIContent("Search : ", "Text search options");
-            public static readonly GUIContent TextSearchCaseSensitive = new GUIContent("Match Case", "Case-sensitive search");
             public static readonly GUIContent Dependencies = new GUIContent("Dependencies");
         }
     }

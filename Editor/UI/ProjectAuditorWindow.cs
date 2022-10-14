@@ -923,7 +923,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             {
                                 bool wasShowingCritical = m_ViewStates.onlyCriticalIssues;
                                 m_ViewStates.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
-                                    m_ViewStates.onlyCriticalIssues, GUILayout.Width(180));
+                                    m_ViewStates.onlyCriticalIssues, GUILayout.Width(170));
 
                                 if (wasShowingCritical != m_ViewStates.onlyCriticalIssues)
                                 {
@@ -939,7 +939,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             {
                                 bool wasDisplayingMuted = m_ViewStates.mutedIssues;
                                 m_ViewStates.mutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
-                                    m_ViewStates.mutedIssues, GUILayout.Width(127));
+                                    m_ViewStates.mutedIssues, GUILayout.Width(120));
 
                                 if (wasDisplayingMuted != m_ViewStates.mutedIssues)
                                 {
@@ -1434,8 +1434,8 @@ A view allows the user to browse through the listed items and filter by string o
             public static readonly GUIContent BuildFiles = new GUIContent("Build Size");
             public static readonly GUIContent BuildSteps = new GUIContent("Build Steps");
 
-            public static readonly GUIContent Packages = new GUIContent( "Packages", "Installed Packages");
-            public static readonly GUIContent PackageDiagnostics = new GUIContent( "Diagnostics", "Package Diagnostics");
+            public static readonly GUIContent Packages = new GUIContent("Packages", "Installed Packages");
+            public static readonly GUIContent PackageDiagnostics = new GUIContent("Diagnostics", "Package Diagnostics");
         }
 
         [PostProcessBuild(1)]

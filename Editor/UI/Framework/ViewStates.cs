@@ -16,8 +16,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool filters = true;
         public bool actions = true;
         public bool dependencies = true;
-        public bool details = true;
-        public bool recommendation = true;
 
         // diagnostic preferences
         public bool onlyCriticalIssues;
