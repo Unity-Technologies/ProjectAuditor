@@ -327,10 +327,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawViewOptions()
         {
-            if (m_ViewManager.onAnalyze != null && GUILayout.Button(Contents.AnalyzeNowButton, EditorStyles.toolbarButton, GUILayout.Width(LayoutSize.ToolbarIconSize)))
-            {
-                m_ViewManager.onAnalyze(m_Module);
-            }
+            if (m_ViewManager.onAnalyze != null)
+                DrawToolbarButton(Contents.AnalyzeNowButton,  () => m_ViewManager.onAnalyze(m_Module));
 
             m_Table.SetFontSize(m_ViewStates.fontSize);
 
@@ -346,10 +344,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 using (new EditorGUI.DisabledScope(m_Table.flatView))
                 {
                     // collapse/expand buttons
-                    if (GUILayout.Button(Contents.CollapseAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(LayoutSize.ToolbarButtonSize)))
-                        SetRowsExpanded(false);
-                    if (GUILayout.Button(Contents.ExpandAllButton, EditorStyles.toolbarButton, GUILayout.ExpandWidth(true), GUILayout.Width(LayoutSize.ToolbarButtonSize)))
-                        SetRowsExpanded(true);
+                    DrawToolbarButton(Contents.CollapseAllButton,  () => SetRowsExpanded(false));
+                    DrawToolbarButton(Contents.ExpandAllButton,  () => SetRowsExpanded(true));
 
                     Utility.ToolbarDropdownList(m_GroupDropdownItems, m_Table.groupPropertyIndex,
                         (data) =>
