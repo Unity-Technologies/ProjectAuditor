@@ -64,7 +64,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var matchIssue = installedPackages.FirstOrDefault(issue => issue.description == description);
 
             Assert.IsNotNull(matchIssue, "Package {0} not found. Packages: {1}", description, string.Join(", ", installedPackages.Select(p => p.description).ToArray()));
-            Assert.AreEqual(matchIssue.GetCustomProperty(PackageProperty.Name), name);
+            Assert.AreEqual(name, matchIssue.GetCustomProperty(PackageProperty.Name));
+            Assert.AreEqual("Packages/" + name, matchIssue.location.Path);
             Assert.IsTrue(matchIssue.GetCustomProperty(PackageVersionProperty.RecommendedVersion).StartsWith(source), "Package: " + description);
 
             if (dependencies != null)
@@ -83,8 +84,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.GetCustomProperty(PackageVersionProperty.Name) == "com.unity.2d.pixel-perfect");
 
             Assert.IsNotNull(diagnostic, "Cannot find the upgrade package: com.unity.2d.pixel-perfect");
-            Assert.AreEqual(diagnostic.GetCustomProperty(PackageVersionProperty.Name), "com.unity.2d.pixel-perfect");
-            Assert.AreEqual(diagnostic.GetCustomProperty(PackageVersionProperty.CurrentVersion), "3.0.2");
+            Assert.AreEqual("com.unity.2d.pixel-perfect", diagnostic.GetCustomProperty(PackageVersionProperty.Name));
+            Assert.AreEqual("3.0.2", diagnostic.GetCustomProperty(PackageVersionProperty.CurrentVersion));
 
             var currentVersion = diagnostic.GetCustomProperty(PackageVersionProperty.CurrentVersion);
             var recommendedVersion = diagnostic.GetCustomProperty(PackageVersionProperty.RecommendedVersion);
@@ -99,10 +100,10 @@ namespace Unity.ProjectAuditor.EditorTests
             var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.GetCustomProperty(PackageVersionProperty.Name) == "com.unity.services.vivox");
 
             Assert.IsNotNull(diagnostic, "Cannot find the upgrade package: com.unity.services.vivox");
-            Assert.AreEqual(diagnostic.GetCustomProperty(PackageVersionProperty.Name), "com.unity.services.vivox");
-            Assert.AreEqual(diagnostic.GetCustomProperty(PackageVersionProperty.CurrentVersion), "15.1.180001-pre.5");
-            Assert.AreEqual(diagnostic.GetCustomProperty(PackageVersionProperty.RecommendedVersion), "");
-            Assert.AreEqual(diagnostic.GetCustomProperty(PackageVersionProperty.Experimental), "True");
+            Assert.AreEqual("com.unity.services.vivox", diagnostic.GetCustomProperty(PackageVersionProperty.Name));
+            Assert.AreEqual("15.1.180001-pre.5", diagnostic.GetCustomProperty(PackageVersionProperty.CurrentVersion));
+            Assert.AreEqual(string.Empty, diagnostic.GetCustomProperty(PackageVersionProperty.RecommendedVersion));
+            Assert.IsTrue(diagnostic.GetCustomPropertyAsBool(PackageVersionProperty.Experimental));
         }
     }
 }
