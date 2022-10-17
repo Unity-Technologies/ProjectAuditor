@@ -507,8 +507,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public enum PackageProperty
     {
+        Name = 0,
         Num = 3,
-        PackageID = 0,
         Source = 2,
         Version = 1,
     }
@@ -517,8 +517,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         CurrentVersion = 1,
         Experimental = 3,
+        Name = 0,
         Num = 4,
-        PackageID = 0,
         RecommendedVersion = 2,
     }
 

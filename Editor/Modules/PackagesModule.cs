@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     public enum PackageProperty
     {
-        PackageID = 0,
+        Name = 0,
         Version,
         Source,
         Num
@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public enum PackageVersionProperty
     {
-        PackageID = 0,
+        Name = 0,
         CurrentVersion,
         RecommendedVersion,
         Experimental,
@@ -35,8 +35,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.Package,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Name", longName = "Package Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.PackageID), format = PropertyFormat.String, name = "ID", longName = "Package ID" },
+                new PropertyDefinition { type = PropertyType.Description, name = "Package" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Name), format = PropertyFormat.String, name = "Name", hidden = true },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Version), format = PropertyFormat.String, name = "Version" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Source), format = PropertyFormat.String, name = "Source", defaultGroup = true }
             }
