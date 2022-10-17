@@ -38,10 +38,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyType.Description, name = "Package" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Name), format = PropertyFormat.String, name = "Name", hidden = true },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Version), format = PropertyFormat.String, name = "Version" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Source), format = PropertyFormat.String, name = "Source", defaultGroup = true }
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Source), format = PropertyFormat.String, name = "Source", defaultGroup = true },
+                new PropertyDefinition { type = PropertyType.Path, format = PropertyFormat.String, name = "Path" }
             }
         };
-
 
         static readonly IssueLayout k_PackageVersionLayout = new IssueLayout
         {
@@ -120,7 +120,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     package.version,
                     package.source
                 })
-                .WithDependencies(node);
+                .WithDependencies(node)
+                .WithLocation(package.assetPath);
         }
 
         IEnumerable<ProjectIssue> EnumeratePackageDiagnostics(UnityEditor.PackageManager.PackageInfo package)
