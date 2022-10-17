@@ -50,5 +50,6 @@ namespace Unity.ProjectAuditor.Editor.Core
         public string name;
         public string longName;
         public bool defaultGroup;
+        public bool hidden;
     }
 }

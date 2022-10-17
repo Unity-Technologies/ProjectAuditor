@@ -99,6 +99,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 var property = layout.properties[i];
 
+                var minWidth = 20;
                 var width = 80;
                 switch (property.type)
                 {
@@ -113,11 +114,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         break;
                 }
 
+                if (property.hidden)
+                    minWidth = width = 0;
+
                 columns[i] = new MultiColumnHeaderState.Column
                 {
                     headerContent = new GUIContent(property.name, layout.properties[i].longName),
                     width = width,
-                    minWidth = 20,
+                    minWidth = minWidth,
                     autoResize = true
                 };
             }

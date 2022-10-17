@@ -303,6 +303,7 @@ namespace Unity.ProjectAuditor.Editor.Core
     {
         public bool defaultGroup;
         public PropertyFormat format;
+        public bool hidden;
         public string longName;
         public string name;
         public PropertyType type;

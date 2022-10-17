@@ -212,6 +212,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int columnIndex, ref RowGUIArgs args)
         {
             var property = m_Layout.properties[columnIndex];
+            if (property.hidden)
+                return;
+
             var propertyType = property.type;
             var labelStyle = SharedStyles.Label;
             var item = treeViewItem as IssueTableItem;
