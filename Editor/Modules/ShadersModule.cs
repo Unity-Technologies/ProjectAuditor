@@ -416,16 +416,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var severity = Severity.None;
 #if UNITY_2019_1_OR_NEWER
             var shaderMessages = ShaderUtil.GetShaderMessages(shader);
-            foreach (var message in shaderMessages)
+            foreach (var shaderMessage in shaderMessages)
             {
-                yield return ProjectIssue.Create(IssueCategory.ShaderCompilerMessage, message.message)
+                var message = shaderMessage.message;
+                if (message.EndsWith("\n"))
+                    message = message.Substring(0, message.Length - 2);
+                yield return ProjectIssue.Create(IssueCategory.ShaderCompilerMessage, message)
                     .WithCustomProperties(new object[(int)ShaderMessageProperty.Num]
                     {
                         shaderName,
-                        message.platform
+                        shaderMessage.platform
                     })
-                    .WithLocation(assetPath, message.line)
-                    .WithSeverity(message.severity == ShaderCompilerMessageSeverity.Error
+                    .WithLocation(assetPath, shaderMessage.line)
+                    .WithSeverity(shaderMessage.severity == ShaderCompilerMessageSeverity.Error
                         ? Severity.Error
                         : Severity.Warning);
             }
