@@ -288,7 +288,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 Rule rule = null;
                 var issue = item.ProjectIssue;
-                if (issue.descriptor != null)
+                if (issue.descriptor != null && issue.descriptor.IsValid())
                 {
                     var descriptor = issue.descriptor;
                     rule = m_Config.GetRule(descriptor, issue.GetContext());
