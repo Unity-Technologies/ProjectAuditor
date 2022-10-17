@@ -493,7 +493,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var columns = m_Table.multiColumnHeader.state.columns;
             for (int i = 0; i < m_Layout.properties.Length; i++)
             {
-                columns[i].width = EditorPrefs.GetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width);
+                columns[i].width = m_Layout.properties[i].hidden ? 0 : EditorPrefs.GetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width);
             }
 
             var defaultGroupPropertyIndex = m_Layout.defaultGroupPropertyIndex;
