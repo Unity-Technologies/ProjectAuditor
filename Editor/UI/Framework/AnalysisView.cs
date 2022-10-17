@@ -198,10 +198,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 DrawTable(selectedIssues);
 
-                if (m_Desc.showRightPanels)
-                {
-                    DrawRightPanels(selectedIssues);
-                }
+                DrawDetails(selectedIssues);
             }
 
             if (m_Desc.showDependencyView)
@@ -291,42 +288,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndHorizontal();
         }
 
-        public virtual void DrawRightPanels(ProjectIssue[] selectedIssues)
+        public virtual void DrawDetails(ProjectIssue[] selectedIssues)
         {
-            var selectedDescriptors = selectedIssues.Select(i => i.descriptor).Distinct().ToArray();
-
             EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
-
-            DrawDetails(selectedDescriptors);
-            DrawRecommendation(selectedDescriptors);
-
             EditorGUILayout.EndVertical();
-        }
-
-        void DrawDetails(Descriptor[] selectedDescriptors)
-        {
-            EditorGUILayout.LabelField(Contents.Details, EditorStyles.boldLabel);
-            {
-                if (selectedDescriptors.Length == 0)
-                    GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-                else if (selectedDescriptors.Length > 1)
-                    GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-                else // if (selectedDescriptors.Length == 1)
-                    GUILayout.TextArea(selectedDescriptors[0].description, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-            }
-        }
-
-        void DrawRecommendation(Descriptor[] selectedDescriptors)
-        {
-            EditorGUILayout.LabelField(Contents.Recommendation, EditorStyles.boldLabel);
-            {
-                if (selectedDescriptors.Length == 0)
-                    GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-                else if (selectedDescriptors.Length > 1)
-                    GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-                else // if (selectedDescriptors.Length == 1)
-                    GUILayout.TextArea(selectedDescriptors[0].solution, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-            }
         }
 
         void DrawViewOptions()
@@ -578,9 +543,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         const string k_SearchStringKey = "SearchString";
 
         // UI strings
-        const string k_NoSelectionText = "<No selection>";
-        const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
-        const string k_MultipleSelectionText = "<Multiple selection>";
+        protected const string k_NoSelectionText = "<No selection>";
+        protected const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
+        protected const string k_MultipleSelectionText = "<Multiple selection>";
 
         public static int toolbarButtonSize
         {
@@ -597,7 +562,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             "Selected"
         };
 
-        static class LayoutSize
+        protected static class LayoutSize
         {
             public static readonly int FoldoutWidth = 300;
             public static readonly int FoldoutMaxHeight = 220;
@@ -616,9 +581,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
 
             public static readonly GUIContent InfoFoldout = new GUIContent("Information");
-            public static readonly GUIContent Details = new GUIContent("Details:", "Issue Details");
-            public static readonly GUIContent Recommendation =
-                new GUIContent("Recommendation:", "Recommendation on how to solve the issue");
             public static readonly GUIContent SearchStringLabel = new GUIContent("Search : ", "Text search options");
             public static readonly GUIContent Dependencies = new GUIContent("Dependencies");
         }

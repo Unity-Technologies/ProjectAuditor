@@ -26,7 +26,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool showSeverityFilters;
         public bool showInfoPanel;
         public bool showMuteOptions;
-        public bool showRightPanels;
         public GUIContent dependencyViewGuiContent;
         public Func<ProjectIssue, string> getAssemblyName;
         public Action<GenericMenu, ViewManager, ProjectIssue> onContextMenu;

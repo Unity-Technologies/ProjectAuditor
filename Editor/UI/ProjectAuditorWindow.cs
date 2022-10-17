@@ -326,14 +326,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                type = typeof(ShaderVariantsView),
                 category = IssueCategory.ShaderVariant,
                 name = "Variants",
                 menuOrder = 3,
                 menuLabel = "Assets/Shaders/Variants",
                 showFilters = true,
                 showInfoPanel = true,
-                showRightPanels = true,
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbar = (viewManager) =>
                 {
@@ -347,19 +345,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                     AnalysisView.DrawToolbarButton(Contents.ShaderCompilerMessages, () => viewManager.ChangeView(IssueCategory.ShaderCompilerMessage));
                     AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
                 },
+                type = typeof(ShaderVariantsView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderVariants
             });
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                type = typeof(ShaderVariantsView),
                 category = IssueCategory.ComputeShaderVariant,
                 name = "Compute Shader Variants",
                 menuOrder = 3,
                 menuLabel = "Assets/Shaders/Compute Variants",
                 showFilters = true,
                 showInfoPanel = true,
-                showRightPanels = true,
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbar = (viewManager) =>
                 {
@@ -370,6 +367,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     GUILayout.FlexibleSpace();
                 },
+                type = typeof(ShaderVariantsView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ComputeShaderVariants
             });
 
@@ -415,7 +413,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         AnalysisView.DrawToolbarButton(Contents.Packages, () => viewManager.ChangeView(IssueCategory.Package));
                     },
-                    showRightPanels = true,
+                    type = typeof(DiagnosticView),
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageVersion
                 });
 
@@ -444,7 +442,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         AnalysisView.DrawToolbarButton(Contents.TextureDiagnostics, () => viewManager.ChangeView(IssueCategory.PlatformTexture));
                     },
-
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
                 });
 
@@ -456,12 +453,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                     menuOrder = 7,
                     descriptionWithIcon = true,
                     showFilters = true,
-                    showRightPanels = true,
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     onDrawToolbar = (viewManager) =>
                     {
                         AnalysisView.DrawToolbarButton(Contents.Textures, () => viewManager.ChangeView(IssueCategory.Texture));
                     },
+                    type = typeof(DiagnosticView),
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
                 });
 
@@ -492,7 +489,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                type = typeof(DiagnosticView),
                 category = IssueCategory.Code,
                 name = "Code",
                 menuLabel = "Code/Diagnostics",
@@ -505,7 +501,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showInfoPanel = true,
                 showMuteOptions = true,
-                showRightPanels = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
                 onDrawToolbar = (viewManager) =>
@@ -514,11 +509,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 onOpenIssue = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenManual = EditorUtil.OpenCodeDescriptor,
+                type = typeof(CodeDiagnosticView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ApiCalls
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                type = typeof(CompilerMessagesView),
                 category = IssueCategory.CodeCompilerMessage,
                 name = "Compiler Messages",
                 menuOrder = 98,
@@ -534,11 +529,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 onOpenIssue = EditorUtil.OpenTextFile<TextAsset>,
                 onOpenManual = EditorUtil.OpenCompilerMessageDescriptor,
+                type = typeof(CompilerMessagesView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.CodeCompilerMessages
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                type = typeof(DiagnosticView),
                 category = IssueCategory.ProjectSetting,
                 name = "Settings",
                 menuLabel = "Settings/Diagnostics",
@@ -548,7 +543,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showInfoPanel = true,
                 showMuteOptions = true,
-                showRightPanels = true,
                 onOpenIssue = (location) =>
                 {
 #if UNITY_2020_2_OR_NEWER
@@ -565,11 +559,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                     EditorUtil.OpenProjectSettings(location);
 #endif
                 },
+                type = typeof(DiagnosticView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ProjectSettings
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                type = typeof(BuildReportView),
                 category = IssueCategory.BuildStep,
                 name = "Build Steps",
                 menuLabel = "Build Report/Steps",
@@ -580,11 +574,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     AnalysisView.DrawToolbarButton(Contents.BuildFiles, () => viewManager.ChangeView(IssueCategory.BuildFile));
                 },
+                type = typeof(BuildReportView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildSteps
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                type = typeof(BuildReportView),
                 category = IssueCategory.BuildFile,
                 name = "Build Size",
                 menuLabel = "Build Report/Size",
@@ -597,6 +591,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     AnalysisView.DrawToolbarButton(Contents.BuildSteps, () => viewManager.ChangeView(IssueCategory.BuildStep));
                 },
+                type = typeof(BuildReportView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
             });
         }

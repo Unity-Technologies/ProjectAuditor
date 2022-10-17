@@ -7,11 +7,11 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    internal class DiagnosticView : AnalysisView
+    internal class CodeDiagnosticView : DiagnosticView
     {
         int m_NumCompilerErrors = 0;
 
-        public DiagnosticView(ViewManager viewManager) : base(viewManager)
+        public CodeDiagnosticView(ViewManager viewManager) : base(viewManager)
         {
         }
 

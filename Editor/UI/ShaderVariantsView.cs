@@ -141,7 +141,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        public override void DrawRightPanels(ProjectIssue[] selectedIssues)
+        public override void DrawDetails(ProjectIssue[] selectedIssues)
         {
             EditorGUILayout.BeginVertical(GUILayout.Width(300));
 

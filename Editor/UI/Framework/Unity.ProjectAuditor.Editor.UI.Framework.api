@@ -17,6 +17,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class AnalysisView : IProjectIssueFilter
     {
+        protected const string k_AnalysisIsRequiredText = @"<Missing Data: Please Analyze>";
+        protected const string k_MultipleSelectionText = @"<Multiple selection>";
+        protected const string k_NoSelectionText = @"<No selection>";
         protected Draw2D m_2D;
         protected IProjectIssueFilter m_BaseFilter;
         protected ProjectAuditorConfig m_Config;
@@ -35,9 +38,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void Clear();
         public virtual void Create(ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.Core.IssueLayout layout, ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module, ViewStates viewStates, IProjectIssueFilter filter);
         public virtual void DrawContent();
+        public virtual void DrawDetails(ProjectIssue[] selectedIssues);
         public virtual void DrawFilters();
         protected virtual void DrawInfo();
-        public virtual void DrawRightPanels(ProjectIssue[] selectedIssues);
         public virtual void DrawSearch();
         public static void DrawToolbarButton(UnityEngine.GUIContent guiContent, System.Action onClick);
         public void DrawTopPanel();
@@ -48,6 +51,20 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual bool Match(ProjectIssue issue);
         public virtual void SaveSettings();
         public void SetSearch(string filter);
+        protected static class LayoutSize
+        {
+            public static readonly int DependencyViewHeight = 200;
+            public static readonly int FoldoutMaxHeight = 220;
+            public static readonly int FoldoutWidth = 300;
+            public static readonly int ToolbarButtonSize = 80;
+            public static readonly int ToolbarIconSize = 40;
+        }
+    }
+
+    public class DiagnosticView : AnalysisView
+    {
+        public DiagnosticView(ViewManager viewManager) {}
+        public override void DrawDetails(ProjectIssue[] selectedIssues);
     }
 
     public class Draw2D
@@ -244,7 +261,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool showFilters;
         public bool showInfoPanel;
         public bool showMuteOptions;
-        public bool showRightPanels;
         public bool showSeverityFilters;
         public System.Type type;
         public ViewDescriptor() {}
