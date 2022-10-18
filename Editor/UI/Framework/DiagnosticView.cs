@@ -36,6 +36,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     GUILayout.TextArea(selectedDescriptors[0].solution, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
 
+            const int buttonHeight = 30;
+            const int buttonWidth = 200;
+            if (selectedDescriptors.Length == 1 && !string.IsNullOrEmpty(selectedDescriptors[0].documentationUrl) && GUILayout.Button(Contents.Documentation, GUILayout.MaxWidth(buttonWidth), GUILayout.Height(buttonHeight)))
+            {
+                Application.OpenURL(selectedDescriptors[0].documentationUrl);
+            }
+
             EditorGUILayout.EndVertical();
         }
 
@@ -44,6 +51,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly GUIContent Details = new GUIContent("Details:", "Issue Details");
             public static readonly GUIContent Recommendation =
                 new GUIContent("Recommendation:", "Recommendation on how to solve the issue");
+            public static readonly GUIContent Documentation = new GUIContent("Documentation");
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Try to avoid Boxing when possible."
             )
         {
+            documentationUrl = "https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/types/boxing-and-unboxing",
             messageFormat = "Conversion from value type '{0}' to ref type"
         };
 
