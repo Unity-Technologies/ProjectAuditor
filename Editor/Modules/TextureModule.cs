@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PlatformTextureProperty.Format), format = PropertyFormat.String, name = "Format", longName = "Compression Format" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PlatformTextureProperty.Platform), format = PropertyFormat.String, name = "Platform" },
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"},
-                new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true},
+                new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
             }
         };
 
