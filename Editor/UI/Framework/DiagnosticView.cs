@@ -1,4 +1,8 @@
+using System;
+using System.IO;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEditor;
 using UnityEngine;
 
@@ -44,6 +48,36 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
 
             EditorGUILayout.EndVertical();
+        }
+
+        protected override void DrawInfo()
+        {
+            EditorGUILayout.LabelField("\u2022 Use the Filters to reduce the number of reported issues");
+            EditorGUILayout.LabelField("\u2022 Use the Mute button to mark an issue as false-positive");
+        }
+
+        protected override void Export(Func<ProjectIssue, bool> predicate = null)
+        {
+            var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.loadSavePath, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
+                "csv");
+            if (path.Length != 0)
+            {
+                using (var exporter = new CSVExporter(path, m_Layout))
+                {
+                    exporter.WriteHeader();
+
+                    var matchingIssues = m_Issues.Where(issue => predicate == null || predicate(issue));
+                    matchingIssues = matchingIssues.Where(issue => issue.descriptor.IsValid() || m_Config.GetAction(issue.descriptor, issue.GetContext()) != Severity.None);
+                    exporter.WriteIssues(matchingIssues.ToArray());
+                }
+
+                EditorUtility.RevealInFinder(path);
+
+                if (m_ViewManager.onViewExported != null)
+                    m_ViewManager.onViewExported();
+
+                UserPreferences.loadSavePath = Path.GetDirectoryName(path);
+            }
         }
 
         static class Contents

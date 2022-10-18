@@ -520,7 +520,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuLabel = "Code/C# Compiler Messages",
                 //showAssemblySelection = true,
                 showFilters = true,
-                showSeverityFilters = true,
                 showInfoPanel = true,
                 //getAssemblyName = issue => issue.GetCustomProperty(CompilerMessageProperty.Assembly),
                 onDrawToolbar = (viewManager) =>

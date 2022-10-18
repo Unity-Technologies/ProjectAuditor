@@ -2,10 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -30,17 +27,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected ViewDescriptor m_Desc;
         protected IProjectIssueFilter m_BaseFilter;
         protected List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+        protected IssueLayout m_Layout;
         protected TextFilter m_TextFilter;
         protected ViewManager m_ViewManager;
 
         DependencyView m_DependencyView;
-        bool m_ShowInfo;
-        bool m_ShowWarn;
-        bool m_ShowError;
         GUIContent m_HelpButtonContent;
-        IssueTable m_Table;
-        IssueLayout m_Layout;
         Utility.DropdownItem[] m_GroupDropdownItems;
+        IssueTable m_Table;
 
         public ViewDescriptor desc
         {
@@ -68,7 +62,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public AnalysisView(ViewManager viewManager)
         {
             m_2D = new Draw2D("Unlit/ProjectAuditor");
-            m_ShowInfo = m_ShowWarn = m_ShowError = true;
 
             m_ViewManager = viewManager;
         }
@@ -194,11 +187,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var selectedItems = m_Table.GetSelectedItems();
             var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
 
-            using (new EditorGUILayout.HorizontalScope(GUILayout.MinHeight(400)))
+            using (new EditorGUILayout.HorizontalScope(GUI.skin.box, GUILayout.MinHeight(400)))
             {
-                DrawTable(selectedIssues);
+                DrawTable();
+
+                EditorGUILayout.BeginVertical();
+
+                EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+                EditorGUILayout.Space();
+                EditorGUILayout.EndHorizontal();
 
                 DrawDetails(selectedIssues);
+                EditorGUILayout.EndVertical();
             }
 
             if (m_Desc.showDependencyView)
@@ -230,12 +230,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
         }
 
-        void DrawTable(ProjectIssue[] selectedIssues)
+        void DrawTable()
         {
             RefreshIfDirty();
 
             EditorGUILayout.BeginVertical();
-            EditorGUILayout.Space();
 
             DrawToolbar();
 
@@ -294,7 +293,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndVertical();
         }
 
-        void DrawViewOptions()
+        public virtual void DrawViewOptions()
         {
             if (m_ViewManager.onAnalyze != null)
                 DrawToolbarButton(Contents.AnalyzeNowButton,  () => m_ViewManager.onAnalyze(m_Module));
@@ -330,18 +329,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                 m_Table.Reload();
                             }
                         }, GUILayout.Width(toolbarButtonSize * 2));
-                }
-            }
-
-            if (m_Desc.showSeverityFilters)
-            {
-                EditorGUI.BeginChangeCheck();
-                m_ShowInfo = GUILayout.Toggle(m_ShowInfo, Utility.GetIcon(Utility.IconType.Info, "Show info messages"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(false));
-                m_ShowWarn = GUILayout.Toggle(m_ShowWarn, Utility.GetIcon(Utility.IconType.Warning, "Show warnings"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(false));
-                m_ShowError = GUILayout.Toggle(m_ShowError, Utility.GetIcon(Utility.IconType.Error, "Show errors"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(false));
-                if (EditorGUI.EndChangeCheck())
-                {
-                    MarkDirty();
                 }
             }
         }
@@ -447,7 +434,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     exporter.WriteHeader();
 
                     var matchingIssues = m_Issues.Where(issue => predicate == null || predicate(issue));
-                    matchingIssues = matchingIssues.Where(issue => issue.descriptor.IsValid() || m_Config.GetAction(issue.descriptor, issue.GetContext()) != Severity.None);
                     exporter.WriteIssues(matchingIssues.ToArray());
                 }
 
@@ -462,24 +448,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public virtual bool Match(ProjectIssue issue)
         {
-            if (m_Desc.showSeverityFilters)
-            {
-                switch (issue.severity)
-                {
-                    case Severity.Info:
-                        if (!m_ShowInfo)
-                            return false;
-                        break;
-                    case Severity.Warning:
-                        if (!m_ShowWarn)
-                            return false;
-                        break;
-                    case Severity.Error:
-                        if (!m_ShowError)
-                            return false;
-                        break;
-                }
-            }
             return m_BaseFilter.Match(issue) && m_TextFilter.Match(issue);
         }
 
