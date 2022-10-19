@@ -311,10 +311,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 using (new EditorGUI.DisabledScope(m_Table.flatView))
                 {
-                    // collapse/expand buttons
-                    DrawToolbarButton(Contents.CollapseAllButton,  () => SetRowsExpanded(false));
-                    DrawToolbarButton(Contents.ExpandAllButton,  () => SetRowsExpanded(true));
-
                     Utility.ToolbarDropdownList(m_GroupDropdownItems, m_Table.groupPropertyIndex,
                         (data) =>
                         {
@@ -329,6 +325,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                 m_Table.Reload();
                             }
                         }, GUILayout.Width(toolbarButtonSize * 2));
+
+                    // collapse/expand buttons
+                    DrawToolbarButton(Contents.CollapseAllButton,  () => SetRowsExpanded(false));
+                    DrawToolbarButton(Contents.ExpandAllButton,  () => SetRowsExpanded(true));
                 }
             }
         }
