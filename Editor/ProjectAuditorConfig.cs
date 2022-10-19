@@ -45,10 +45,7 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField]
         List<Rule> m_Rules = new List<Rule>();
 
-        public int NumRules
-        {
-            get { return m_Rules.Count; }
-        }
+        public int NumRules => m_Rules.Count;
 
         public void AddRule(Rule ruleToAdd)
         {

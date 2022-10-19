@@ -43,10 +43,7 @@ namespace Unity.ProjectAuditor.Editor
         readonly List<ProjectAuditorModule> m_Modules = new List<ProjectAuditorModule>();
         ProjectAuditorConfig m_Config;
 
-        public ProjectAuditorConfig config
-        {
-            get { return m_Config; }
-        }
+        public ProjectAuditorConfig config => m_Config;
 
         public ProjectAuditor()
         {
@@ -240,10 +237,7 @@ namespace Unity.ProjectAuditor.Editor
             return (int)IssueCategory.FirstCustomCategory + s_CustomCategories.Count;
         }
 
-        public int callbackOrder
-        {
-            get { return 0; }
-        }
+        public int callbackOrder => 0;
 
         public void OnPreprocessBuild(BuildReport report)
         {

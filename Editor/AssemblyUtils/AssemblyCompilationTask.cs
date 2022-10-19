@@ -14,37 +14,13 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         CompilationStatus m_CompilationStatus = CompilationStatus.NotStarted;
 
-        public string assemblyName
-        {
-            get
-            {
-                return Path.GetFileNameWithoutExtension(builder.assemblyPath);
-            }
-        }
+        public string assemblyName => Path.GetFileNameWithoutExtension(builder.assemblyPath);
 
-        public string assemblyPath
-        {
-            get
-            {
-                return builder.assemblyPath;
-            }
-        }
+        public string assemblyPath => builder.assemblyPath;
 
-        public long durationInMs
-        {
-            get
-            {
-                return stopWatch != null ? stopWatch.ElapsedMilliseconds : 0;
-            }
-        }
+        public long durationInMs => stopWatch != null ? stopWatch.ElapsedMilliseconds : 0;
 
-        public CompilationStatus status
-        {
-            get
-            {
-                return m_CompilationStatus;
-            }
-        }
+        public CompilationStatus status => m_CompilationStatus;
 
         public bool IsDone()
         {

@@ -19,10 +19,7 @@ namespace Unity.ProjectAuditor.Editor
 
         static Mutex s_Mutex = new Mutex();
 
-        public int NumTotalIssues
-        {
-            get { return m_Issues.Count; }
-        }
+        public int NumTotalIssues => m_Issues.Count;
 
         // for internal use only
         internal ProjectReport()

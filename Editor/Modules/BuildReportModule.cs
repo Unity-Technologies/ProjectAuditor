@@ -114,14 +114,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public static IBuildReportProvider BuildReportProvider
         {
-            get { return s_BuildReportProvider != null ? s_BuildReportProvider : s_DefaultBuildReportProvider;  }
-            set { s_BuildReportProvider = value;  }
+            get => s_BuildReportProvider != null ? s_BuildReportProvider : s_DefaultBuildReportProvider;
+            set => s_BuildReportProvider = value;
         }
 
-        public static IBuildReportProvider DefaultBuildReportProvider
-        {
-            get { return s_BuildReportProvider; }
-        }
+        public static IBuildReportProvider DefaultBuildReportProvider => s_BuildReportProvider;
 
         public override string name => "Build Report";
 

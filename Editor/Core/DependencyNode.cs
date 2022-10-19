@@ -12,15 +12,9 @@ namespace Unity.ProjectAuditor.Editor.Core
         public Location location;
         public bool perfCriticalContext;
 
-        public string name
-        {
-            get { return GetName(); }
-        }
+        public string name => GetName();
 
-        public string prettyName
-        {
-            get { return GetPrettyName(); }
-        }
+        public string prettyName => GetPrettyName();
 
         public bool HasValidChildren()
         {

@@ -6,10 +6,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
     class AssemblyInfo
     {
         public const string DefaultAssemblyFileName = "Assembly-CSharp.dll";
-        public static string DefaultAssemblyName
-        {
-            get { return Path.GetFileNameWithoutExtension(DefaultAssemblyFileName); }
-        }
+        public static string DefaultAssemblyName => Path.GetFileNameWithoutExtension(DefaultAssemblyFileName);
 
         public string name;            // assembly name without extension
         public string path;            // absolute path

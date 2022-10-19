@@ -255,7 +255,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                             if (messageParts.Length < 2)
                                 continue;
 
-                            var messageBody = messageWithCode.Substring(messageWithCode.IndexOf(": ") + 2);
+                            var messageBody = messageWithCode.Substring(messageWithCode.IndexOf(": ", StringComparison.Ordinal) + 2);
                             messages[i] = new CompilerMessage
                             {
                                 message = messageBody,

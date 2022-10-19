@@ -108,11 +108,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var size = Profiler.GetRuntimeMemorySizeLong(texture);
                 var platformSettings = textureImporter.GetPlatformTextureSettings(currentPlatformString);
 
-                var resolution = (texture.width + "x" + texture.height);
+                var resolution = texture.width + "x" + texture.height;
 
                 var issue = ProjectIssue.Create(k_TextureLayout.category, texture.name)
                     .WithCustomProperties(
-                        new object[((int)TextureProperty.Num)]
+                        new object[(int)TextureProperty.Num]
                         {
                             textureImporter.textureShape,
                             textureImporter.textureType,

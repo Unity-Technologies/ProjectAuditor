@@ -77,10 +77,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] ViewStates m_ViewStates = new ViewStates();
         [SerializeField] ViewManager m_ViewManager;
 
-        AnalysisView activeView
-        {
-            get { return m_ViewManager.GetActiveView(); }
-        }
+        AnalysisView activeView => m_ViewManager.GetActiveView();
 
         public bool Match(ProjectIssue issue)
         {

@@ -301,7 +301,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         continue;
                     }
 
-                    AnalyzeAssembly(assemblyInfo, assemblyResolver, onCallFound, (assemblyFilters == null || assemblyFilters.Contains(assemblyInfo.name)) ? onIssueFound : null);
+                    AnalyzeAssembly(assemblyInfo, assemblyResolver, onCallFound, assemblyFilters == null || assemblyFilters.Contains(assemblyInfo.name) ? onIssueFound : null);
                 }
             }
 

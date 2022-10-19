@@ -16,10 +16,7 @@ namespace Unity.ProjectAuditor.Editor
 
         internal static string loadSavePath = string.Empty;
 
-        public static string Path
-        {
-            get => k_PreferencesKey;
-        }
+        public static string Path => k_PreferencesKey;
 
         public static bool developerMode
         {

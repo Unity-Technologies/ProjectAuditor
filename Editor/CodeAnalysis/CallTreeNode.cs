@@ -21,14 +21,14 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             assemblyName = methodReference.Module.Name;
 
             // check if it's a coroutine
-            if (methodReference.DeclaringType.FullName.IndexOf("/<") >= 0)
+            if (methodReference.DeclaringType.FullName.IndexOf("/<", StringComparison.Ordinal) >= 0)
             {
                 var fullName = methodReference.DeclaringType.FullName;
-                var methodStartIndex = fullName.IndexOf("<") + 1;
+                var methodStartIndex = fullName.IndexOf("<", StringComparison.Ordinal) + 1;
                 if (methodStartIndex > 0)
                 {
-                    var length = fullName.IndexOf(">") - methodStartIndex;
-                    typeName = fullName.Substring(0, fullName.IndexOf("/"));
+                    var length = fullName.IndexOf(">", StringComparison.Ordinal) - methodStartIndex;
+                    typeName = fullName.Substring(0, fullName.IndexOf("/", StringComparison.Ordinal));
                     if (length > 0)
                     {
                         methodName = fullName.Substring(methodStartIndex, length);

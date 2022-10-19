@@ -475,7 +475,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         ShaderUtilProxy.GetVariantCount(shader),
                         variantCountPerCompilerPlatform == -1 ? k_NotAvailable : variantCountPerCompilerPlatform.ToString(),
                         passCount == -1 ? k_NotAvailable : passCount.ToString(),
-                        (globalKeywords == null || localKeywords == null) ? k_NotAvailable : (globalKeywords.Length + localKeywords.Length).ToString(),
+                        globalKeywords == null || localKeywords == null ? k_NotAvailable : (globalKeywords.Length + localKeywords.Length).ToString(),
                         shader.renderQueue,
                         hasInstancing,
                         isSrpBatcherCompatible,
@@ -533,7 +533,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return s_ShaderVariantData.Count;
         }
 
-        public int callbackOrder { get { return Int32.MaxValue; } }
+        public int callbackOrder => Int32.MaxValue;
 
 #if COMPUTE_SHADER_ANALYSIS
         public void OnProcessComputeShader(ComputeShader shader, string kernelName, IList<ShaderCompilerData> data)
@@ -703,7 +703,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     while ((line = file.ReadLine()) != null)
                     {
                         const string prefix = "Compiled shader: ";
-                        var compilationLogIndex = line.IndexOf(prefix);
+                        var compilationLogIndex = line.IndexOf(prefix, StringComparison.Ordinal);
                         if (compilationLogIndex >= 0)
                             compilationLines.Add(line.Substring(compilationLogIndex + prefix.Length));
                     }
