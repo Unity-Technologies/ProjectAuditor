@@ -19,21 +19,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Readable,
         Resolution,
         SizeOnDisk,
-        Platform,
         Num
     }
 
     public enum PlatformTextureProperty
     {
         Format,
-        Platform,
         Num
     }
 
 
     class TextureModule : ProjectAuditorModule
     {
-        private static readonly IssueLayout k_TexturesIssueLayout = new IssueLayout
+        private static readonly IssueLayout k_TextureLayout = new IssueLayout
         {
             category = IssueCategory.Texture,
             properties = new[]
@@ -51,14 +49,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        static readonly IssueLayout k_PlatformTextureIssueLayout = new IssueLayout
+        static readonly IssueLayout k_TextureDiagnosticLayout = new IssueLayout
         {
             category = IssueCategory.PlatformTexture,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Texture Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PlatformTextureProperty.Format), format = PropertyFormat.String, name = "Format", longName = "Compression Format" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PlatformTextureProperty.Platform), format = PropertyFormat.String, name = "Platform" },
+                new PropertyDefinition { type = PropertyType.Area, format = PropertyFormat.String, name = "Area", longName = "Impacted Area" },
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"},
                 new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
             }
@@ -73,8 +70,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
-            k_TexturesIssueLayout,
-            k_PlatformTextureIssueLayout
+            k_TextureLayout,
+            k_TextureDiagnosticLayout
         };
 
         public override IReadOnlyCollection<Descriptor> supportedDescriptors => m_DiagnosticDescriptors;
@@ -90,7 +87,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var allTextures = AssetDatabase.FindAssets("t: Texture, a:assets");
+            var allTextures = AssetDatabase.FindAssets("t:texture, a:assets");
             var issues = new List<ProjectIssue>();
             var currentPlatform = projectAuditorParams.platform;
             var currentPlatformString = projectAuditorParams.platform.ToString();
@@ -112,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 var resolution = (texture.width + "x" + texture.height);
 
-                var issue = ProjectIssue.Create(k_TexturesIssueLayout.category, texture.name)
+                var issue = ProjectIssue.Create(k_TextureLayout.category, texture.name)
                     .WithCustomProperties(
                         new object[((int)TextureProperty.Num)]
                         {
@@ -123,8 +120,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             textureImporter.mipmapEnabled,
                             textureImporter.isReadable,
                             resolution,
-                            size,
-                            currentPlatform
+                            size
                         })
                     .WithLocation(new Location(pathToTexture));
 
@@ -132,7 +128,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in m_Analyzers)
                 {
-                    var platformDiagnostics = analyzer.Analyze(currentPlatform, texture, platformSettings).ToArray();
+                    var platformDiagnostics = analyzer.Analyze(currentPlatform, textureImporter, platformSettings).ToArray();
 
                     issues.AddRange(platformDiagnostics);
                 }
