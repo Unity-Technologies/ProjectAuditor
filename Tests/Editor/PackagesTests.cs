@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var installedPackages = Analyze(IssueCategory.Package);
 #if !UNITY_2019_1_OR_NEWER
             // for some reason com.unity.ads is missing the description in 2018.x
-            installedPackages = installedPackages.Where(p => !p.GetCustomProperty(PackageProperty.PackageID).Equals("com.unity.ads")).ToArray();
+            installedPackages = installedPackages.Where(p => !p.GetCustomProperty(PackageProperty.Name).Equals("com.unity.ads")).ToArray();
 #endif
             foreach (var package in installedPackages)
             {
