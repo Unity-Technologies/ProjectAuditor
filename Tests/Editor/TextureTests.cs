@@ -28,38 +28,31 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Texture_Properties_AreReported()
         {
-            var textureTests = AnalyzeAndFindAssetIssues(m_TempTexture, IssueCategory.Texture);
-
-            Assert.AreEqual(1, textureTests.Length);
-
-            var reportedTexture = textureTests[0];
             var textureImporter = (AssetImporter.GetAtPath(m_TempTexture.relativePath) as TextureImporter);
 
             Assert.NotNull(textureImporter);
-            Assert.AreEqual(k_TextureName, reportedTexture.description, "Checked Texture Name");
 
-            Assert.AreEqual(textureImporter.textureShape.ToString(), reportedTexture.GetCustomProperty(TextureProperty.Shape), "Checked Texture Shape/Dimension");
+            var reportedTextures = AnalyzeAndFindAssetIssues(m_TempTexture, IssueCategory.Texture);
 
-            Assert.AreEqual(textureImporter.textureType.ToString(), reportedTexture.GetCustomProperty(TextureProperty.ImporterType), "Checked TextureImporterType ");
+            Assert.AreEqual(1, reportedTextures.Length);
 
-            Assert.AreEqual("AutomaticCompressed", reportedTexture.GetCustomProperty(TextureProperty.Format), "Checked Texture Format");
+            var texture = reportedTextures[0];
+            Assert.AreEqual(k_TextureName, texture.description);
 
-            Assert.AreEqual(textureImporter.textureCompression.ToString(), reportedTexture.GetCustomProperty(TextureProperty.TextureCompression), "Checked Texture Compression");
+            Assert.AreEqual(textureImporter.textureShape.ToString(), texture.GetCustomProperty(TextureProperty.Shape));
+            Assert.AreEqual(textureImporter.textureType.ToString(), texture.GetCustomProperty(TextureProperty.ImporterType));
+            Assert.AreEqual(textureImporter.textureCompression.ToString(), texture.GetCustomProperty(TextureProperty.TextureCompression));
 
-            Assert.AreEqual("True", reportedTexture.GetCustomProperty(TextureProperty.MipMapEnabled), "Checked MipMaps Enabled");
-
-            Assert.AreEqual("False", reportedTexture.GetCustomProperty(TextureProperty.Readable), "Checked Texture Read/Write");
-
-            Assert.AreEqual((k_Resolution + "x" + k_Resolution), reportedTexture.GetCustomProperty(TextureProperty.Resolution), "Checked Texture Resolution");
-
-            var texture = AssetDatabase.LoadAssetAtPath<Texture>(m_TempTexture.relativePath);
+            Assert.AreEqual("AutomaticCompressed", texture.GetCustomProperty(TextureProperty.Format));
+            Assert.True(texture.GetCustomPropertyAsBool(TextureProperty.MipMapEnabled));
+            Assert.False(texture.GetCustomPropertyAsBool(TextureProperty.Readable));
+            Assert.AreEqual((k_Resolution + "x" + k_Resolution), texture.GetCustomProperty(TextureProperty.Resolution));
 
             /*
+            var texture = AssetDatabase.LoadAssetAtPath<Texture>(m_TempTexture.relativePath);
             Assert.NotNull(texture);
             Assert.AreEqual(Profiler.GetRuntimeMemorySizeLong(texture).ToString(), reportedTexture.GetCustomProperty(TextureProperty.SizeOnDisk), "Checked Texture Size");
             */
-
-            Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget.ToString(), reportedTexture.GetCustomProperty(TextureProperty.Platform), "Checked Platform");
         }
     }
 }
