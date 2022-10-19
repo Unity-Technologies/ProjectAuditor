@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Unity.ProjectAuditor.Editor.Core;
 
-namespace Unity.ProjectAuditor.Editor.Core
+namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public interface IInstructionAnalyzer
+    public interface ICodeModuleInstructionAnalyzer
     {
         IReadOnlyCollection<OpCode> opCodes { get; }
 

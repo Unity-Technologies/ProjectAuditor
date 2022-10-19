@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    public class TimeSettingsAnalyzer : ISettingsAnalyzer
+    public class TimeSettingsAnalyzer : ISettingsModuleAnalyzer
     {
         static readonly Descriptor k_FixedTimestepDescriptor = new Descriptor(
             "PAS0016",

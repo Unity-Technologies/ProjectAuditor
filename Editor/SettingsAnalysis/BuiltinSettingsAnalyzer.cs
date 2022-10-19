@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class BuiltinSettingsAnalyzer : ISettingsAnalyzer
+    class BuiltinSettingsAnalyzer : ISettingsModuleAnalyzer
     {
         readonly List<Assembly> m_Assemblies = new List<Assembly>();
         readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping =

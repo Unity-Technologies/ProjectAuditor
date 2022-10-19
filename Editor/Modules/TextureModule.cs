@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override bool isEnabledByDefault => false;
 
-        List<ITextureAnalyzer> m_Analyzers;
+        List<ITextureModuleAnalyzer> m_Analyzers;
         HashSet<Descriptor> m_DiagnosticDescriptors;
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
@@ -81,11 +81,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Initialize(ProjectAuditorConfig config)
         {
-            m_Analyzers = new List<ITextureAnalyzer>();
+            m_Analyzers = new List<ITextureModuleAnalyzer>();
             m_DiagnosticDescriptors = new HashSet<Descriptor>();
 
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ITextureAnalyzer)))
-                AddAnalyzer(Activator.CreateInstance(type) as ITextureAnalyzer);
+            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ITextureModuleAnalyzer)))
+                AddAnalyzer(Activator.CreateInstance(type) as ITextureModuleAnalyzer);
         }
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
@@ -149,10 +149,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
-        void AddAnalyzer(ITextureAnalyzer analyzer)
+        void AddAnalyzer(ITextureModuleAnalyzer moduleAnalyzer)
         {
-            analyzer.Initialize(this);
-            m_Analyzers.Add(analyzer);
+            moduleAnalyzer.Initialize(this);
+            m_Analyzers.Add(moduleAnalyzer);
         }
     }
 }

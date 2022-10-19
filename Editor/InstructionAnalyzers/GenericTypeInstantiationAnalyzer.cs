@@ -4,11 +4,12 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Modules;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class GenericTypeInstantiationAnalyzer : IInstructionAnalyzer
+    class GenericTypeInstantiationAnalyzer : ICodeModuleInstructionAnalyzer
     {
         readonly OpCode[] m_OpCodes =
         {

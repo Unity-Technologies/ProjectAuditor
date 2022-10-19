@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        List<ISettingsAnalyzer> m_Analyzers;
+        List<ISettingsModuleAnalyzer> m_Analyzers;
         HashSet<Descriptor> m_Descriptors;
 
         public override string name => "Settings";
@@ -34,11 +34,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Initialize(ProjectAuditorConfig config)
         {
-            m_Analyzers = new List<ISettingsAnalyzer>();
+            m_Analyzers = new List<ISettingsModuleAnalyzer>();
             m_Descriptors = new HashSet<Descriptor>();
 
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ISettingsAnalyzer)))
-                AddAnalyzer(Activator.CreateInstance(type) as ISettingsAnalyzer);
+            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ISettingsModuleAnalyzer)))
+                AddAnalyzer(Activator.CreateInstance(type) as ISettingsModuleAnalyzer);
         }
 
         public override void RegisterDescriptor(Descriptor descriptor)
@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
-        void AddAnalyzer(ISettingsAnalyzer analyzer)
+        void AddAnalyzer(ISettingsModuleAnalyzer analyzer)
         {
             analyzer.Initialize(this);
             m_Analyzers.Add(analyzer);

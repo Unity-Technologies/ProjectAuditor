@@ -5,10 +5,11 @@ using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Modules;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class EmptyMethodAnalyzer : IInstructionAnalyzer
+    class EmptyMethodAnalyzer : ICodeModuleInstructionAnalyzer
     {
         static readonly Descriptor k_Descriptor = new Descriptor
             (

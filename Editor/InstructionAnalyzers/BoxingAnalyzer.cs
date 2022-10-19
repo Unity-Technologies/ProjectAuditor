@@ -4,10 +4,11 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Modules;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class BoxingAnalyzer : IInstructionAnalyzer
+    class BoxingAnalyzer : ICodeModuleInstructionAnalyzer
     {
         static readonly Descriptor k_Descriptor = new Descriptor
             (

@@ -6,6 +6,7 @@ using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -13,7 +14,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class BuiltinCallAnalyzer : IInstructionAnalyzer
+    class BuiltinCallAnalyzer : ICodeModuleInstructionAnalyzer
     {
         Dictionary<string, List<Descriptor>> m_Descriptors; // method name as key, list of type names as value
         Dictionary<string, Descriptor> m_NamespaceOrClassDescriptors; // namespace/class name as key
