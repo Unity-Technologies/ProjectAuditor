@@ -296,7 +296,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void DrawViewOptions()
         {
             if (m_ViewManager.onAnalyze != null)
-                DrawToolbarButton(Contents.AnalyzeNowButton,  () => m_ViewManager.onAnalyze(m_Module));
+                DrawToolbarButtonIcon(Contents.AnalyzeNowButton,  () => m_ViewManager.onAnalyze(m_Module));
 
             m_Table.SetFontSize(m_ViewStates.fontSize);
 
@@ -496,6 +496,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (GUILayout.Button(
                 guiContent, EditorStyles.toolbarButton,
                 GUILayout.Width(toolbarButtonSize)))
+            {
+                onClick();
+            }
+        }
+
+        public static void DrawToolbarButtonIcon(GUIContent guiContent, Action onClick)
+        {
+            if (GUILayout.Button(
+                    guiContent, EditorStyles.toolbarButton,
+                    GUILayout.Width(LayoutSize.ToolbarIconSize)))
             {
                 onClick();
             }
