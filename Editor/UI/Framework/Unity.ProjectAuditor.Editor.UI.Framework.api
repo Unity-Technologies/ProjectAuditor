@@ -26,6 +26,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected ViewDescriptor m_Desc;
         protected bool m_Dirty = true;
         protected System.Collections.Generic.List<ProjectIssue> m_Issues;
+        protected Unity.ProjectAuditor.Editor.Core.IssueLayout m_Layout;
         protected Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule m_Module;
         protected TextFilter m_TextFilter;
         protected ViewManager m_ViewManager;
@@ -44,6 +45,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void DrawSearch();
         public static void DrawToolbarButton(UnityEngine.GUIContent guiContent, System.Action onClick);
         public void DrawTopPanel();
+        public virtual void DrawViewOptions();
         protected virtual void Export(System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
         public bool IsValid();
         public virtual void LoadSettings();
@@ -65,6 +67,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     {
         public DiagnosticView(ViewManager viewManager) {}
         public override void DrawDetails(ProjectIssue[] selectedIssues);
+        protected override void DrawInfo();
+        protected override void Export(System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
     }
 
     public class Draw2D
@@ -261,7 +265,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool showFilters;
         public bool showInfoPanel;
         public bool showMuteOptions;
-        public bool showSeverityFilters;
         public System.Type type;
         public ViewDescriptor() {}
         public static ViewDescriptor[] GetAll();

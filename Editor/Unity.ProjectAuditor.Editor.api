@@ -243,13 +243,6 @@ namespace Unity.ProjectAuditor.Editor.Core
         protected override void WriteIssue(ProjectIssue issue);
     }
 
-    public interface IInstructionAnalyzer
-    {
-        public System.Collections.Generic.IReadOnlyCollection<Mono.Cecil.Cil.OpCode> opCodes { get; }
-        public IssueBuilder Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
-        public void Initialize(ProjectAuditorModule module);
-    }
-
     public class IssueBuilder
     {
         public static ProjectIssue op_Implicit(IssueBuilder builder);
@@ -269,12 +262,6 @@ namespace Unity.ProjectAuditor.Editor.Core
         public PropertyDefinition[] properties;
         public int defaultGroupPropertyIndex { get; }
         public IssueLayout() {}
-    }
-
-    public interface ITextureAnalyzer
-    {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEngine.Texture texture, UnityEditor.TextureImporterPlatformSettings textureImporterPlatformSettings);
-        public void Initialize(ProjectAuditorModule module);
     }
 
     public class PackageDependencyNode : DependencyNode
@@ -321,14 +308,15 @@ namespace Unity.ProjectAuditor.Editor.Core
     public enum PropertyType
     {
         Area = 3,
-        CriticalContext = 8,
+        CriticalContext = 9,
         Description = 0,
         Descriptor = 1,
-        Directory = 5,
-        Filename = 6,
-        FileType = 7,
-        Num = 9,
-        Path = 4,
+        Directory = 6,
+        Filename = 7,
+        FileType = 8,
+        Num = 10,
+        Path = 5,
+        Platform = 4,
         Severity = 2,
     }
 
@@ -361,7 +349,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public bool critical = false;
         public string customevaluator;
         public string description;
-        public string documentation;
+        public string documentationUrl;
         public System.Action<ProjectIssue> fixer;
         public string id;
         public string maximumVersion;
@@ -388,6 +376,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public static Area[] GetAreas(this Descriptor descriptor);
         public static string GetAreasSummary(this Descriptor descriptor);
         public static string GetFullTypeName(this Descriptor descriptor);
+        public static string GetPlatformsSummary(this Descriptor descriptor);
         public static bool IsPlatformCompatible(this Descriptor descriptor, UnityEditor.BuildTarget buildTarget);
     }
 
@@ -493,9 +482,22 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public UnityEditor.Build.Reporting.BuildReport GetBuildReport();
     }
 
-    public interface ISettingsAnalyzer
+    public interface ICodeModuleInstructionAnalyzer
+    {
+        public System.Collections.Generic.IReadOnlyCollection<Mono.Cecil.Cil.OpCode> opCodes { get; }
+        public Unity.ProjectAuditor.Editor.Core.IssueBuilder Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
+        public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
+    }
+
+    public interface ISettingsModuleAnalyzer
     {
         public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext context);
+        public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
+    }
+
+    public interface ITextureModuleAnalyzer
+    {
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.TextureImporter textureImporter, UnityEditor.TextureImporterPlatformSettings textureImporterPlatformSettings);
         public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
     }
 
@@ -525,8 +527,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     public enum PlatformTextureProperty
     {
         Format = 0,
-        Num = 2,
-        Platform = 1,
+        Num = 1,
     }
 
     public enum PrecompiledAssemblyProperty
@@ -581,8 +582,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Format = 2,
         ImporterType = 1,
         MipMapEnabled = 4,
-        Num = 9,
-        Platform = 8,
+        Num = 8,
         Readable = 5,
         Resolution = 6,
         Shape = 0,
@@ -593,7 +593,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    public class TimeSettingsAnalyzer : Unity.ProjectAuditor.Editor.Modules.ISettingsAnalyzer
+    public class TimeSettingsAnalyzer : Unity.ProjectAuditor.Editor.Modules.ISettingsModuleAnalyzer
     {
         public TimeSettingsAnalyzer() {}
         public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(Unity.ProjectAuditor.Editor.Modules.SettingsAnalyzerContext context);
