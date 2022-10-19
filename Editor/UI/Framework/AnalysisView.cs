@@ -504,8 +504,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static void DrawToolbarButtonIcon(GUIContent guiContent, Action onClick)
         {
             if (GUILayout.Button(
-                    guiContent, EditorStyles.toolbarButton,
-                    GUILayout.Width(LayoutSize.ToolbarIconSize)))
+                guiContent, EditorStyles.toolbarButton,
+                GUILayout.Width(LayoutSize.ToolbarIconSize)))
             {
                 onClick();
             }
