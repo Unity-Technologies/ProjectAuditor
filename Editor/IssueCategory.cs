@@ -20,11 +20,11 @@ namespace Unity.ProjectAuditor.Editor
         PrecompiledAssembly,
         ShaderCompilerMessage,
         Package,
-        PackageVersion,
+        PackageDiagnostic,
         Texture,
+        TextureDiagnostic,
         AudioClip,
         ComputeShaderVariant,
-        PlatformTexture,
 
         FirstCustomCategory
     }

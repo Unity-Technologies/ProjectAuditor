@@ -371,6 +371,68 @@ namespace Unity.ProjectAuditor.Editor.UI
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ComputeShaderVariants
             });
 
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.Package,
+                name = "Installed Packages",
+                menuLabel = "Experimental/Packages/Installed",
+                menuOrder = 105,
+                onDrawToolbar = (viewManager) =>
+                {
+                    AnalysisView.DrawToolbarButton(Contents.PackageDiagnostics, () => viewManager.ChangeView(IssueCategory.PackageDiagnostic));
+                },
+                showDependencyView = true,
+                dependencyViewGuiContent = new GUIContent("Package Dependencies"),
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Packages
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.PackageDiagnostic,
+                name = "Package Diagnostics",
+                menuLabel = "Experimental/Packages/Diagnostics",
+                menuOrder = 106,
+                onDrawToolbar = (viewManager) =>
+                {
+                    AnalysisView.DrawToolbarButton(Contents.Packages, () => viewManager.ChangeView(IssueCategory.Package));
+                },
+                type = typeof(DiagnosticView),
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageVersion
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.Texture,
+                name = "Textures",
+                menuLabel = "Assets/Textures/Textures",
+                menuOrder = 6,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                onDrawToolbar = (viewManager) =>
+                {
+                    AnalysisView.DrawToolbarButton(Contents.TextureDiagnostics, () => viewManager.ChangeView(IssueCategory.TextureDiagnostic));
+                },
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.TextureDiagnostic,
+                name = "Texture Diagnostics",
+                menuLabel = "Assets/Textures/Diagnostics",
+                menuOrder = 7,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                onDrawToolbar = (viewManager) =>
+                {
+                    AnalysisView.DrawToolbarButton(Contents.Textures, () => viewManager.ChangeView(IssueCategory.Texture));
+                },
+                type = typeof(DiagnosticView),
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
+            });
+
             if (UserPreferences.developerMode)
             {
                 ViewDescriptor.Register(new ViewDescriptor
@@ -390,35 +452,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 ViewDescriptor.Register(new ViewDescriptor
                 {
-                    category = IssueCategory.Package,
-                    name = "Installed Packages",
-                    menuLabel = "Experimental/Installed Packages",
-                    menuOrder = 105,
-                    onDrawToolbar = (viewManager) =>
-                    {
-                        AnalysisView.DrawToolbarButton(Contents.PackageDiagnostics, () => viewManager.ChangeView(IssueCategory.PackageVersion));
-                    },
-                    showDependencyView = true,
-                    dependencyViewGuiContent = new GUIContent("Package Dependencies"),
-                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Packages
-                });
-
-                ViewDescriptor.Register(new ViewDescriptor
-                {
-                    category = IssueCategory.PackageVersion,
-                    name = "Package Diagnostics",
-                    menuLabel = "Experimental/Package Diagnostics",
-                    menuOrder = 106,
-                    onDrawToolbar = (viewManager) =>
-                    {
-                        AnalysisView.DrawToolbarButton(Contents.Packages, () => viewManager.ChangeView(IssueCategory.Package));
-                    },
-                    type = typeof(DiagnosticView),
-                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageVersion
-                });
-
-                ViewDescriptor.Register(new ViewDescriptor
-                {
                     category = IssueCategory.AudioClip,
                     name = "AudioClip",
                     menuLabel = "Experimental/Audio Clips",
@@ -427,39 +460,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     showFilters = true,
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AudioClip
-                });
-
-                ViewDescriptor.Register(new ViewDescriptor
-                {
-                    category = IssueCategory.Texture,
-                    name = "Textures",
-                    menuLabel = "Experimental/Textures",
-                    menuOrder = 6,
-                    descriptionWithIcon = true,
-                    showFilters = true,
-                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
-                    onDrawToolbar = (viewManager) =>
-                    {
-                        AnalysisView.DrawToolbarButton(Contents.TextureDiagnostics, () => viewManager.ChangeView(IssueCategory.PlatformTexture));
-                    },
-                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
-                });
-
-                ViewDescriptor.Register(new ViewDescriptor
-                {
-                    category = IssueCategory.PlatformTexture,
-                    name = "Texture Diagnostics",
-                    menuLabel = "Experimental/Texture Diagnostics",
-                    menuOrder = 7,
-                    descriptionWithIcon = true,
-                    showFilters = true,
-                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
-                    onDrawToolbar = (viewManager) =>
-                    {
-                        AnalysisView.DrawToolbarButton(Contents.Textures, () => viewManager.ChangeView(IssueCategory.Texture));
-                    },
-                    type = typeof(DiagnosticView),
-                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
                 });
 
                 ViewDescriptor.Register(new ViewDescriptor

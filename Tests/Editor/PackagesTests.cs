@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsNotNull(matchIssue, "Package {0} not found. Packages: {1}", description, string.Join(", ", installedPackages.Select(p => p.description).ToArray()));
             Assert.AreEqual(name, matchIssue.GetCustomProperty(PackageProperty.Name));
             Assert.AreEqual("Packages/" + name, matchIssue.location.Path);
-            Assert.IsTrue(matchIssue.GetCustomProperty(PackageVersionProperty.RecommendedVersion).StartsWith(source), "Package: " + description);
+            Assert.IsTrue(matchIssue.GetCustomProperty(PackageDiagnosticProperty.RecommendedVersion).StartsWith(source), "Package: " + description);
 
             if (dependencies != null)
             {
@@ -80,15 +80,15 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Package_Upgrade_IsRecommended()
         {
-            var packageDiagnostics = Analyze(IssueCategory.PackageVersion);
-            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.GetCustomProperty(PackageVersionProperty.Name) == "com.unity.2d.pixel-perfect");
+            var packageDiagnostics = Analyze(IssueCategory.PackageDiagnostic);
+            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.GetCustomProperty(PackageDiagnosticProperty.Name) == "com.unity.2d.pixel-perfect");
 
             Assert.IsNotNull(diagnostic, "Cannot find the upgrade package: com.unity.2d.pixel-perfect");
-            Assert.AreEqual("com.unity.2d.pixel-perfect", diagnostic.GetCustomProperty(PackageVersionProperty.Name));
-            Assert.AreEqual("3.0.2", diagnostic.GetCustomProperty(PackageVersionProperty.CurrentVersion));
+            Assert.AreEqual("com.unity.2d.pixel-perfect", diagnostic.GetCustomProperty(PackageDiagnosticProperty.Name));
+            Assert.AreEqual("3.0.2", diagnostic.GetCustomProperty(PackageDiagnosticProperty.CurrentVersion));
 
-            var currentVersion = diagnostic.GetCustomProperty(PackageVersionProperty.CurrentVersion);
-            var recommendedVersion = diagnostic.GetCustomProperty(PackageVersionProperty.RecommendedVersion);
+            var currentVersion = diagnostic.GetCustomProperty(PackageDiagnosticProperty.CurrentVersion);
+            var recommendedVersion = diagnostic.GetCustomProperty(PackageDiagnosticProperty.RecommendedVersion);
 
             Assert.AreNotEqual(currentVersion, recommendedVersion, "The current and recommended versions should be different");
         }
@@ -96,14 +96,14 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Package_Preview_IsReported()
         {
-            var packageDiagnostics = Analyze(IssueCategory.PackageVersion);
-            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.GetCustomProperty(PackageVersionProperty.Name) == "com.unity.services.vivox");
+            var packageDiagnostics = Analyze(IssueCategory.PackageDiagnostic);
+            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.GetCustomProperty(PackageDiagnosticProperty.Name) == "com.unity.services.vivox");
 
             Assert.IsNotNull(diagnostic, "Cannot find the upgrade package: com.unity.services.vivox");
-            Assert.AreEqual("com.unity.services.vivox", diagnostic.GetCustomProperty(PackageVersionProperty.Name));
-            Assert.AreEqual("15.1.180001-pre.5", diagnostic.GetCustomProperty(PackageVersionProperty.CurrentVersion));
-            Assert.AreEqual(string.Empty, diagnostic.GetCustomProperty(PackageVersionProperty.RecommendedVersion));
-            Assert.IsTrue(diagnostic.GetCustomPropertyAsBool(PackageVersionProperty.Experimental));
+            Assert.AreEqual("com.unity.services.vivox", diagnostic.GetCustomProperty(PackageDiagnosticProperty.Name));
+            Assert.AreEqual("15.1.180001-pre.5", diagnostic.GetCustomProperty(PackageDiagnosticProperty.CurrentVersion));
+            Assert.AreEqual(string.Empty, diagnostic.GetCustomProperty(PackageDiagnosticProperty.RecommendedVersion));
+            Assert.IsTrue(diagnostic.GetCustomPropertyAsBool(PackageDiagnosticProperty.Experimental));
         }
     }
 }

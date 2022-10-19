@@ -51,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         static readonly IssueLayout k_TextureDiagnosticLayout = new IssueLayout
         {
-            category = IssueCategory.PlatformTexture,
+            category = IssueCategory.TextureDiagnostic,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Texture Name" },

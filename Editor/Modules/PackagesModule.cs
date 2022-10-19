@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    public enum PackageVersionProperty
+    public enum PackageDiagnosticProperty
     {
         Name = 0,
         CurrentVersion,
@@ -45,13 +45,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         static readonly IssueLayout k_PackageVersionLayout = new IssueLayout
         {
-            category = IssueCategory.PackageVersion,
+            category = IssueCategory.PackageDiagnostic,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Package Issue"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.CurrentVersion), format = PropertyFormat.String, name = "Current Version" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.RecommendedVersion), format = PropertyFormat.String, name = "Recommended Version"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageVersionProperty.Experimental), format = PropertyFormat.Bool, name = "Experimental/Preview" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageDiagnosticProperty.CurrentVersion), format = PropertyFormat.String, name = "Current Version" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageDiagnosticProperty.RecommendedVersion), format = PropertyFormat.String, name = "Recommended Version"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageDiagnosticProperty.Experimental), format = PropertyFormat.Bool, name = "Experimental/Preview" },
                 new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
             }
         };
@@ -131,8 +131,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 if (!recommendedVersionString.Equals(package.version))
                 {
-                    yield return ProjectIssue.Create(IssueCategory.PackageVersion, k_RecommendPackageUpgrade, package.name)
-                        .WithCustomProperties(new object[(int)PackageVersionProperty.Num]
+                    yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade, package.name)
+                        .WithCustomProperties(new object[(int)PackageDiagnosticProperty.Num]
                         {
                             package.name,
                             package.version,
@@ -143,8 +143,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
             else if (package.version.Contains("pre") || package.version.Contains("exp"))
             {
-                yield return ProjectIssue.Create(IssueCategory.PackageVersion, k_RecommendPackagePreView, package.name)
-                    .WithCustomProperties(new object[(int)PackageVersionProperty.Num]
+                yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView, package.name)
+                    .WithCustomProperties(new object[(int)PackageDiagnosticProperty.Num]
                     {
                         package.name,
                         package.version,
