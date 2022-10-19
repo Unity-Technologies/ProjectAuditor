@@ -44,6 +44,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected virtual void DrawInfo();
         public virtual void DrawSearch();
         public static void DrawToolbarButton(UnityEngine.GUIContent guiContent, System.Action onClick);
+        public static void DrawToolbarButtonIcon(UnityEngine.GUIContent guiContent, System.Action onClick);
         public void DrawTopPanel();
         public virtual void DrawViewOptions();
         protected virtual void Export(System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
