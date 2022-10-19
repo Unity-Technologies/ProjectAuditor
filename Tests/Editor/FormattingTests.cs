@@ -7,9 +7,10 @@ namespace Unity.ProjectAuditor.EditorTests
     class FormattingTests
     {
         [Test]
-        [TestCase((ulong)512, "512 B")]
-        [TestCase((ulong)1024, "1.00 KB")]
-        [TestCase((ulong)1024 * 1024, "1.00 MB")]
+        [TestCase((ulong)16, "16 B")]
+        [TestCase((ulong)512, "0.5 KB")]
+        [TestCase((ulong)1024, "1.0 KB")]
+        [TestCase((ulong)1024 * 1024, "1.0 MB")]
         [TestCase((ulong)1024 * 1024 * 1024, "1.00 GB")]
         public void Formatting_Size_IsFormatted(ulong asNumber, string asString)
         {
