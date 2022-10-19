@@ -470,6 +470,39 @@ namespace Unity.ProjectAuditor.Editor.UI
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PrecompiledAssemblies
                 });
+                
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.Mesh,
+                    name = "Meshes",
+                    menuLabel = "Assets/Meshes/Meshes",
+                    menuOrder = 7,
+                    descriptionWithIcon = true,
+                    showFilters = true,
+                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                    onDrawToolbar = (viewManager) =>
+                    {
+                        AnalysisView.DrawToolbarButton(Contents.MeshDiagnostics, () => viewManager.ChangeView(IssueCategory.MeshDiagnostic));
+                    },
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Meshes
+                });
+                
+                ViewDescriptor.Register(new ViewDescriptor
+                {
+                    category = IssueCategory.MeshDiagnostic,
+                    name = "Mesh Diagnostics",
+                    menuLabel = "Assets/Meshes/Diagnostics",
+                    menuOrder = 8,
+                    descriptionWithIcon = true,
+                    showFilters = true,
+                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
+                    onDrawToolbar = (viewManager) =>
+                    {
+                        AnalysisView.DrawToolbarButton(Contents.Meshes, () => viewManager.ChangeView(IssueCategory.Mesh));
+                    },
+                    type = typeof(DiagnosticView),
+                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Meshes
+                });
             }
             ViewDescriptor.Register(new ViewDescriptor
             {
@@ -1421,6 +1454,9 @@ A view allows the user to browse through the listed items and filter by string o
 
             public static readonly GUIContent Textures = new GUIContent("Textures");
             public static readonly GUIContent TextureDiagnostics = new GUIContent("Diagnostics", "Texture Diagnostics");
+
+            public static readonly GUIContent Meshes = new GUIContent("Meshes");
+            public static readonly GUIContent MeshDiagnostics = new GUIContent("Diagnostics", "Mesh Diagnostics");
 
             public static readonly GUIContent BuildFiles = new GUIContent("Build Size");
             public static readonly GUIContent BuildSteps = new GUIContent("Build Steps");
