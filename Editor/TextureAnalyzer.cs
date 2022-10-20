@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor
     public class TextureAnalyzer : ITextureModuleAnalyzer
     {
         internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
-            "PAS1003",
+            "PAT0000",
             "Texture: Mip Maps not enabled",
             new[] {Area.GPU, Area.Quality},
             "Texture's Mip Maps are not enabled.\n\nGenerally enabling mip maps improves rendering quality (avoids aliasing effects) and improves performance.",
@@ -21,10 +21,10 @@ namespace Unity.ProjectAuditor.Editor
         };
         
         internal static readonly Descriptor k_TextureMipMapEnabledDescriptor = new Descriptor(
-            "PAS1004",
+            "PAT0001",
             "Texture: Mip Maps enabled on 2D texture",
             new[] {Area.Quality},
-            "Texture's Mip Maps are enabled on textures that may reduce rendering quality for Sprites or GUI.\n\nPlease verify if this is relevant for this texture.",
+            "Texture's Mip Maps are enabled on textures that may reduce rendering quality for Sprites or GUI. Disabling Mip Maps also reduces your build size.\n\nPlease verify if this is relevant for this texture.",
             "Select the texture asset and, if applicable, disable texture importer option <b>Advanced / Generate Mip Maps</b>."
         )
         {

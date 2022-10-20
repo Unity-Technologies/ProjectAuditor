@@ -32,30 +32,32 @@ namespace Unity.ProjectAuditor.EditorTests
             texture.name = k_TextureName;
             texture.Apply();
 
-            m_TempTexture = new TempAsset(k_TextureName + ".png", texture.EncodeToPNG());
+            var encodedPNG = texture.EncodeToPNG();
 
-            m_TempTextureMipMapDefault = new TempAsset(k_TextureNameMipMapDefault + ".png", texture.EncodeToPNG());
+            m_TempTexture = new TempAsset(k_TextureName + ".png", encodedPNG);
+
+            m_TempTextureMipMapDefault = new TempAsset(k_TextureNameMipMapDefault + ".png", encodedPNG);
             
             var textureImporter = AssetImporter.GetAtPath(m_TempTextureMipMapDefault.relativePath) as TextureImporter;
             textureImporter.textureType = TextureImporterType.Default;
             textureImporter.mipmapEnabled = true;
             textureImporter.SaveAndReimport();
 
-            m_TempTextureNoMipMapDefault = new TempAsset(k_TextureNameNoMipMapDefault + ".png", texture.EncodeToPNG());
+            m_TempTextureNoMipMapDefault = new TempAsset(k_TextureNameNoMipMapDefault + ".png", encodedPNG);
 
             textureImporter = AssetImporter.GetAtPath(m_TempTextureNoMipMapDefault.relativePath) as TextureImporter;
             textureImporter.textureType = TextureImporterType.Default;
             textureImporter.mipmapEnabled = false;
             textureImporter.SaveAndReimport();
             
-            m_TempTextureMipMapGUI = new TempAsset(k_TextureNameMipMapGUI + ".png", texture.EncodeToPNG());
+            m_TempTextureMipMapGUI = new TempAsset(k_TextureNameMipMapGUI + ".png", encodedPNG);
             
             textureImporter = AssetImporter.GetAtPath(m_TempTextureMipMapGUI.relativePath) as TextureImporter;
             textureImporter.textureType = TextureImporterType.GUI;
             textureImporter.mipmapEnabled = true;
             textureImporter.SaveAndReimport();
             
-            m_TempTextureMipMapSprite = new TempAsset(k_TextureNameMipMapSprite + ".png", texture.EncodeToPNG());
+            m_TempTextureMipMapSprite = new TempAsset(k_TextureNameMipMapSprite + ".png", encodedPNG);
             
             textureImporter = AssetImporter.GetAtPath(m_TempTextureMipMapSprite.relativePath) as TextureImporter;
             textureImporter.textureType = TextureImporterType.Sprite;
