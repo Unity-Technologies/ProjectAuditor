@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Modules;
@@ -10,9 +11,18 @@ namespace Unity.ProjectAuditor.EditorTests
     class TextureTests : TestFixtureBase
     {
         const string k_TextureName = "ProceduralTextureForTest3212";
+        const string k_TextureNameMipMapDefault = k_TextureName + "MipMapDefaultTest1234";
+        const string k_TextureNameNoMipMapDefault = k_TextureName + "NoMipMapDefaultTest1234";
+        const string k_TextureNameMipMapGUI = k_TextureName + "MipMapGUITest1234";
+        const string k_TextureNameMipMapSprite = k_TextureName + "MipMapSpriteTest1234";
+
         const int k_Resolution = 1;
 
         TempAsset m_TempTexture;
+        TempAsset m_TempTextureMipMapDefault;
+        TempAsset m_TempTextureNoMipMapDefault;
+        TempAsset m_TempTextureMipMapGUI;
+        TempAsset m_TempTextureMipMapSprite;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -22,7 +32,37 @@ namespace Unity.ProjectAuditor.EditorTests
             texture.name = k_TextureName;
             texture.Apply();
 
-            m_TempTexture = new TempAsset(k_TextureName + ".png", texture.EncodeToPNG());
+            var encodedPNG = texture.EncodeToPNG();
+
+            m_TempTexture = new TempAsset(k_TextureName + ".png", encodedPNG);
+
+            m_TempTextureMipMapDefault = new TempAsset(k_TextureNameMipMapDefault + ".png", encodedPNG);
+            
+            var textureImporter = AssetImporter.GetAtPath(m_TempTextureMipMapDefault.relativePath) as TextureImporter;
+            textureImporter.textureType = TextureImporterType.Default;
+            textureImporter.mipmapEnabled = true;
+            textureImporter.SaveAndReimport();
+
+            m_TempTextureNoMipMapDefault = new TempAsset(k_TextureNameNoMipMapDefault + ".png", encodedPNG);
+
+            textureImporter = AssetImporter.GetAtPath(m_TempTextureNoMipMapDefault.relativePath) as TextureImporter;
+            textureImporter.textureType = TextureImporterType.Default;
+            textureImporter.mipmapEnabled = false;
+            textureImporter.SaveAndReimport();
+            
+            m_TempTextureMipMapGUI = new TempAsset(k_TextureNameMipMapGUI + ".png", encodedPNG);
+            
+            textureImporter = AssetImporter.GetAtPath(m_TempTextureMipMapGUI.relativePath) as TextureImporter;
+            textureImporter.textureType = TextureImporterType.GUI;
+            textureImporter.mipmapEnabled = true;
+            textureImporter.SaveAndReimport();
+            
+            m_TempTextureMipMapSprite = new TempAsset(k_TextureNameMipMapSprite + ".png", encodedPNG);
+            
+            textureImporter = AssetImporter.GetAtPath(m_TempTextureMipMapSprite.relativePath) as TextureImporter;
+            textureImporter.textureType = TextureImporterType.Sprite;
+            textureImporter.mipmapEnabled = true;
+            textureImporter.SaveAndReimport();
         }
 
         [Test]
@@ -54,5 +94,39 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(Profiler.GetRuntimeMemorySizeLong(texture).ToString(), reportedTexture.GetCustomProperty(TextureProperty.SizeOnDisk), "Checked Texture Size");
             */
         }
+        
+        
+        [Test]
+        public void Texture_MipMapUnused_IsReported() 
+        {
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureNoMipMapDefault, IssueCategory.TextureDiagnostic).FirstOrDefault(i => i.descriptor == TextureAnalyzer.k_TextureMipMapNotEnabledDescriptor);
+
+            Assert.NotNull(textureDiagnostic);
+        }
+        
+        [Test]
+        public void Texture_MipMapUnused_IsNotReported() 
+        {
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureMipMapDefault, IssueCategory.TextureDiagnostic).FirstOrDefault(i => i.descriptor == TextureAnalyzer.k_TextureMipMapNotEnabledDescriptor);
+
+            Assert.Null(textureDiagnostic);
+        }
+        
+        [Test]
+        public void Texture_MipMapUsedForGUI_IsReported() 
+        {
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureMipMapGUI, IssueCategory.TextureDiagnostic).FirstOrDefault(i => i.descriptor == TextureAnalyzer.k_TextureMipMapEnabledDescriptor);
+
+            Assert.NotNull(textureDiagnostic);
+        }
+        
+        [Test]
+        public void Texture_MipMapUsedForSprite_IsReported() 
+        {
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureMipMapSprite, IssueCategory.TextureDiagnostic).FirstOrDefault(i => i.descriptor == TextureAnalyzer.k_TextureMipMapEnabledDescriptor);
+
+            Assert.NotNull(textureDiagnostic);
+        }
+
     }
 }
