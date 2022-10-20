@@ -85,7 +85,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var modelImporter = AssetImporter.GetAtPath(pathToMesh) as ModelImporter;
                 if (modelImporter == null)
                 {
-                    continue; //continues if the object found is not a member of the Texture Group:(Texture2D, Texture3D, CubeMap, 2D Array) - Example Use: RenderTextures won't be analyzed.
+                    continue;
                 }
                 
                 var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(pathToMesh);
@@ -95,8 +95,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithCustomProperties(
                         new object[((int)MeshProperty.Num)]
                         {
-                            mesh.vertexCount, // vertices
-                            mesh.triangles.Length, // triangles
+                            mesh.vertexCount,
+                            mesh.triangles.Length / 3, 
                             modelImporter.meshCompression,
                             size,
                             currentPlatform
