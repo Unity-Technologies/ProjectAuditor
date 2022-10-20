@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         protected override void DrawInfo()
         {
-            if (m_GroupStats == null)
+            if (m_Issues.Any(i => i.category == IssueCategory.BuildSummary))
             {
                 EditorGUILayout.LabelField("Build Report is not available. Please build your project and try again.");
                 return;
@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
             EditorGUILayout.EndVertical();
 
-            if (m_Desc.category == IssueCategory.BuildFile && m_GroupStats.Length > 0)
+            if (m_Desc.category == IssueCategory.BuildFile && m_GroupStats != null && m_GroupStats.Length > 0)
             {
                 EditorGUILayout.Space();
 
