@@ -14,7 +14,7 @@ using Unity.ProjectAuditor.Editor.Modules;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class HDRenderPipelineAnalyzer : ISettingsAnalyzer
+    class HDRenderPipelineAnalyzer : ISettingsModuleAnalyzer
     {
         static readonly Descriptor k_AssetLitShaderModeBothOrMixed = new Descriptor(
             "PAS1001",

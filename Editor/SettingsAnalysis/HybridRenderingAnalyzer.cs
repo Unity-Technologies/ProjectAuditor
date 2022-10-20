@@ -9,7 +9,7 @@ using Unity.ProjectAuditor.Editor.Modules;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class HybridRenderingAnalyzer : ISettingsAnalyzer
+    class HybridRenderingAnalyzer : ISettingsModuleAnalyzer
     {
         static readonly Descriptor k_Descriptor = new Descriptor(
             "PAS1000",
