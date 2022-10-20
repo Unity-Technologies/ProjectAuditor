@@ -25,6 +25,8 @@ namespace Unity.ProjectAuditor.Editor
         TextureDiagnostic,
         AudioClip,
         ComputeShaderVariant,
+        Mesh,
+        MeshDiagnostic,
 
         FirstCustomCategory
     }
