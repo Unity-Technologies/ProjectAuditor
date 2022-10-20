@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor
             "PAS1003",
             "Texture: Mip Maps not enabled",
             new[] {Area.GPU, Area.Quality},
-            "Texture's Mip Maps are not enabled.",
+            "Texture's Mip Maps are not enabled.\n\nGenerally enabling mip maps improves rendering quality (avoids aliasing effects) and improves performance.",
             "Select the texture asset and, if applicable, enable texture importer option <b>Advanced / Generate Mip Maps</b>."
         )
         {
