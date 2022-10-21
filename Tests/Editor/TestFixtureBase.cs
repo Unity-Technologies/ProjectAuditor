@@ -106,8 +106,8 @@ namespace Unity.ProjectAuditor.EditorTests
             {
                 scenes = new string[] {},
                 locationPathName = Path.Combine(buildPath, "test"),
-                target = EditorUserBuildSettings.activeBuildTarget,
-                targetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget),
+                target = m_Platform,
+                targetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform),
                 options = BuildOptions.Development
             };
             var buildReport = BuildPipeline.BuildPlayer(buildPlayerOptions);
