@@ -36,6 +36,20 @@ namespace Unity.ProjectAuditor.EditorTests
 #if !BUILD_REPORT_API_SUPPORT
         [Ignore("Not Supported in this version of Unity")]
 #endif
+        public void BuildReport_ObjectName_IsCorrect()
+        {
+            Build();
+            var buildReport = BuildReportModule.BuildReportProvider.GetBuildReport();
+            var assetPath = AssetDatabase.GetAssetPath(buildReport);
+            var assetName = Path.GetFileNameWithoutExtension(assetPath);
+            Assert.AreEqual(assetName, buildReport.name);
+            Assert.True(assetName.StartsWith("Build_"));
+        }
+
+        [Test]
+#if !BUILD_REPORT_API_SUPPORT
+        [Ignore("Not Supported in this version of Unity")]
+#endif
         public void BuildReport_Files_AreReported()
         {
             var issues = AnalyzeBuild(IssueCategory.BuildFile, i => i.relativePath.Equals(m_TempAsset.relativePath));

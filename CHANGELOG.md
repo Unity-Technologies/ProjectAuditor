@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added on-demand _AudioClip_ module
 * Added Compute Shader Variants support
 * Fixed over-reporting of built shader variants count
+* Fixed Build Report object name
 * Improved text search to match custom properties
 * Fix export of filtered/selected non-diagnostic issues
 

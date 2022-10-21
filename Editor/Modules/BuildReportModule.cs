@@ -54,14 +54,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 Directory.CreateDirectory(k_BuildReportDir);
 
             var date = File.GetLastWriteTime(k_LastBuildReportPath);
-            var assetPath = k_BuildReportDir + "/Build_" + date.ToString("yyyy-MM-dd-HH-mm-ss") + ".buildreport";
+            var targetAssetName = "Build_" + date.ToString("yyyy-MM-dd-HH-mm-ss");
+            var assetPath = $"{k_BuildReportDir}/{targetAssetName}.buildreport";
 
             if (!File.Exists(assetPath))
             {
                 if (!File.Exists(k_LastBuildReportPath))
                     return null; // the project was never built
-                File.Copy(k_LastBuildReportPath, assetPath, true);
-                AssetDatabase.ImportAsset(assetPath);
+
+                var tempAssetPath = k_BuildReportDir + "/New Report.buildreport";
+                File.Copy(k_LastBuildReportPath, tempAssetPath, true);
+                AssetDatabase.ImportAsset(tempAssetPath);
+                AssetDatabase.RenameAsset(tempAssetPath, targetAssetName);
             }
 
             return AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
