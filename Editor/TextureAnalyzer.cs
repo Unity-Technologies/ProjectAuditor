@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             messageFormat = "Texture '{0}' mip maps are not enabled"
         };
-        
+
         internal static readonly Descriptor k_TextureMipMapEnabledDescriptor = new Descriptor(
             "PAT0001",
             "Texture: Mip Maps enabled on 2D texture",
@@ -45,22 +45,21 @@ namespace Unity.ProjectAuditor.Editor
                 var textureName = Path.GetFileNameWithoutExtension(assetPath);
 
                 yield return ProjectIssue.Create(IssueCategory.TextureDiagnostic,
-                        k_TextureMipMapNotEnabledDescriptor, textureName)
+                    k_TextureMipMapNotEnabledDescriptor, textureName)
                     .WithLocation(assetPath);
             }
-            
+
             if (textureImporter.mipmapEnabled == true &&
                 (textureImporter.textureType == TextureImporterType.Sprite || textureImporter.textureType == TextureImporterType.GUI)
-                )
+            )
             {
                 var assetPath = textureImporter.assetPath;
                 var textureName = Path.GetFileNameWithoutExtension(assetPath);
 
                 yield return ProjectIssue.Create(IssueCategory.TextureDiagnostic,
-                        k_TextureMipMapEnabledDescriptor, textureName)
+                    k_TextureMipMapEnabledDescriptor, textureName)
                     .WithLocation(assetPath);
             }
-            
         }
     }
 }

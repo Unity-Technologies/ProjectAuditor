@@ -470,7 +470,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PrecompiledAssemblies
                 });
-                
+
                 ViewDescriptor.Register(new ViewDescriptor
                 {
                     category = IssueCategory.Mesh,
@@ -486,7 +486,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     },
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Meshes
                 });
-                
+
                 ViewDescriptor.Register(new ViewDescriptor
                 {
                     category = IssueCategory.MeshDiagnostic,
