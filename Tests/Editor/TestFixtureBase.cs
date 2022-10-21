@@ -94,7 +94,7 @@ namespace Unity.ProjectAuditor.EditorTests
             return Analyze(category, predicate);
         }
 
-        protected static void Build()
+        protected void Build()
         {
             const string tempSceneFilename = "Assets/TestScene.unity";
             // We must save the scene or the build will fail https://unity.slack.com/archives/C3F85MBDL/p1615991512002200
