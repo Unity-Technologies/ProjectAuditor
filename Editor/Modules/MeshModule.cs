@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class MeshModule : ProjectAuditorModule
     {
-        private static readonly IssueLayout k_MeshIssueLayout = new IssueLayout
+        static readonly IssueLayout k_MeshIssueLayout = new IssueLayout
         {
             category = IssueCategory.Mesh,
             properties = new[]

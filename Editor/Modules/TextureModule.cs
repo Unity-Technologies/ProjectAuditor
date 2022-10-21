@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class TextureModule : ProjectAuditorModule
     {
-        private static readonly IssueLayout k_TextureLayout = new IssueLayout
+        static readonly IssueLayout k_TextureLayout = new IssueLayout
         {
             category = IssueCategory.Texture,
             properties = new[]

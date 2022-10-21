@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         const string k_BulletPointUnicode = " \u2022";
 
-        private static readonly string k_Description = $@"This view shows the built Shader Variants.";
+        static readonly string k_Description = $@"This view shows the built Shader Variants.";
         static readonly string k_BuildInstructions =
             $@"To record and view the Shader Variants for this project, follow these steps:
 {k_BulletPointUnicode} Click the <b>Clear</b> button
