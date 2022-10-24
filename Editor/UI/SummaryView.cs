@@ -104,8 +104,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         void DrawKeyValue(string key, string value)
         {
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(string.Format("{0}:", key), GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField(value,  GUILayout.ExpandWidth(true));
+            EditorGUILayout.LabelField(string.Format("{0}:", key), SharedStyles.Label, GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(value, SharedStyles.Label,  GUILayout.ExpandWidth(true));
             EditorGUILayout.EndHorizontal();
         }
 
@@ -124,7 +124,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(title, GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(title, SharedStyles.Label, GUILayout.ExpandWidth(false));
 
             if (viewLink)
             {
@@ -142,7 +142,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField(valueAsString, GUILayout.MaxWidth(90), GUILayout.ExpandWidth(false));
             }
             if (icon != null)
-                EditorGUILayout.LabelField(icon);
+                EditorGUILayout.LabelField(icon, SharedStyles.Label);
             EditorGUILayout.EndHorizontal();
         }
     }

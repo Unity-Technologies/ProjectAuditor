@@ -47,18 +47,18 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
             {
                 if (!selectedIssues.Any())
                 {
-                    GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                     return;
                 }
 
                 var selectedDescriptors = selectedIssues.Select(i => i.descriptor).Distinct().ToArray();
                 if (selectedDescriptors.Length > 1)
                 {
-                    GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                     return;
                 }
 
-                GUILayout.TextArea(selectedIssues[0].description, SharedStyles.TextArea,
+                GUILayout.TextArea(selectedIssues[0].description, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
         }

@@ -6,9 +6,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     public static class SharedStyles
     {
         static GUIStyle s_Foldout;
-        static GUIStyle s_Label;
+        static GUIStyle s_LabelFixedSize;
         static GUIStyle s_LinkLabel;
         static GUIStyle s_TextArea;
+
+        static GUIStyle s_LabelWithDynamicSize;
+        static GUIStyle s_TextAreaWithDynamicSize;
 
         public static GUIStyle Foldout
         {
@@ -27,9 +30,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             get
             {
-                if (s_Label == null)
-                    s_Label = new GUIStyle(EditorStyles.label);
-                return s_Label;
+                if (s_LabelFixedSize == null)
+                    s_LabelFixedSize = new GUIStyle(EditorStyles.label)
+                    {
+                        wordWrap = false
+                    };
+                return s_LabelFixedSize;
             }
         }
 
@@ -38,7 +44,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get
             {
                 if (s_LinkLabel == null)
-                    s_LinkLabel = GetStyle("LinkLabel");
+                    s_LinkLabel = new GUIStyle(GetStyle("LinkLabel"))
+                    {
+                        alignment   = TextAnchor.MiddleLeft
+                    };
                 return s_LinkLabel;
             }
         }
@@ -59,6 +68,36 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+
+        public static GUIStyle LabelWithDynamicSizeWithDynamicSize
+        {
+            get
+            {
+                if (s_LabelWithDynamicSize == null)
+                    s_LabelWithDynamicSize = new GUIStyle(EditorStyles.label)
+                    {
+                        wordWrap = false
+                    };
+                return s_LabelWithDynamicSize;
+            }
+        }
+
+        public static GUIStyle TextAreaWithDynamicSize
+        {
+            get
+            {
+                if (s_TextAreaWithDynamicSize == null)
+                {
+                    s_TextAreaWithDynamicSize = new GUIStyle(EditorStyles.label);
+                    s_TextAreaWithDynamicSize.richText = true;
+                    s_TextAreaWithDynamicSize.wordWrap = true;
+                    s_TextAreaWithDynamicSize.alignment = TextAnchor.UpperLeft;
+                }
+
+                return s_TextAreaWithDynamicSize;
+            }
+        }
+
         static GUIStyle GetStyle(string styleName)
         {
             var s = GUI.skin.FindStyle(styleName);
@@ -70,6 +109,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 s = new GUIStyle();
             }
             return s;
+        }
+
+        public static void SetFontDynamicSize(int fontSize)
+        {
+            LabelWithDynamicSizeWithDynamicSize.fontSize = fontSize;
+            TextAreaWithDynamicSize.fontSize = fontSize;
         }
     }
 }

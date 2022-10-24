@@ -155,18 +155,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_PropertyFoldouts[i].scroll = GUILayout.BeginScrollView(m_PropertyFoldouts[i].scroll, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.MaxHeight(maxHeight));
 
                     if (selectedIssues.Length == 0)
-                        GUILayout.TextArea("<No selection>", SharedStyles.TextArea, GUILayout.ExpandHeight(true));
+                        GUILayout.TextArea("<No selection>", SharedStyles.TextAreaWithDynamicSize, GUILayout.ExpandHeight(true));
                     else
                     {
                         // check if they are all the same
                         var props = selectedIssues.Select(issue =>
                             issue.GetCustomProperty(m_PropertyFoldouts[i].id)).Distinct().ToArray();
                         if (props.Length > 1)
-                            GUILayout.TextArea("<Multiple values>", SharedStyles.TextArea, GUILayout.ExpandHeight(true));
+                            GUILayout.TextArea("<Multiple values>", SharedStyles.TextAreaWithDynamicSize, GUILayout.ExpandHeight(true));
                         else // if (props.Length == 1)
                         {
                             var text = Formatting.ReplaceStringSeparators(props[0], "\n");
-                            GUILayout.TextArea(text, SharedStyles.TextArea, GUILayout.ExpandHeight(true));
+                            GUILayout.TextArea(text, SharedStyles.TextAreaWithDynamicSize, GUILayout.ExpandHeight(true));
                         }
                     }
 

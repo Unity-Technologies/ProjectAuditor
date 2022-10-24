@@ -74,8 +74,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 var width = 180;
                 var dataSize = m_GroupStats.Sum(g => g.size);
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Size of Data (Uncompressed)", GUILayout.Width(width));
-                EditorGUILayout.LabelField(Formatting.FormatSize((ulong)dataSize));
+                EditorGUILayout.LabelField("Size of Data (Uncompressed)", SharedStyles.Label, GUILayout.Width(width));
+                EditorGUILayout.LabelField(Formatting.FormatSize((ulong)dataSize), SharedStyles.Label);
                 EditorGUILayout.EndHorizontal();
                 EditorGUILayout.LabelField("Size By Asset Importer", EditorStyles.boldLabel);
                 EditorGUI.indentLevel++;
@@ -89,7 +89,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     var groupSize = group.size;
                     EditorGUILayout.BeginHorizontal();
 
-                    EditorGUILayout.LabelField(string.Format("{0} ({1}):", group.assetGroup, group.count), GUILayout.Width(260));
+                    EditorGUILayout.LabelField(string.Format("{0} ({1}):", group.assetGroup, group.count), SharedStyles.Label, GUILayout.Width(260));
 
                     var rect = EditorGUILayout.GetControlRect(GUILayout.Width(width));
                     if (m_2D.DrawStart(rect))
@@ -98,7 +98,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         m_2D.DrawEnd();
                     }
 
-                    EditorGUILayout.LabelField(string.Format("{0} / {1:0.0}%", Formatting.FormatSize((ulong)group.size), 100 * groupSize / (float)dataSize));
+                    EditorGUILayout.LabelField(string.Format("{0} / {1:0.0}%", Formatting.FormatSize((ulong)group.size), 100 * groupSize / (float)dataSize), SharedStyles.Label);
                     EditorGUILayout.Space();
                     EditorGUILayout.EndHorizontal();
                 }
@@ -108,11 +108,25 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        public override void DrawDetails(ProjectIssue[] selectedIssues)
+        {
+            EditorGUILayout.BeginVertical();
+
+            if (selectedIssues.Length == 0)
+                GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+            else if (selectedIssues.Length > 1)
+                GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+            else // if (selectedDescriptors.Length == 1)
+                GUILayout.TextArea(selectedIssues[0].description, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+
+            EditorGUILayout.EndVertical();
+        }
+
         void DrawKeyValue(string key, string value)
         {
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(string.Format("{0}:", key), GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField(value,  GUILayout.ExpandWidth(true));
+            EditorGUILayout.LabelField(string.Format("{0}:", key), SharedStyles.Label, GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(value, SharedStyles.Label, GUILayout.ExpandWidth(true));
             EditorGUILayout.EndHorizontal();
         }
     }
