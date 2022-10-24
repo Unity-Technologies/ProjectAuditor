@@ -23,13 +23,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    public enum PlatformTextureProperty
-    {
-        Format,
-        Num
-    }
-
-
     class TextureModule : ProjectAuditorModule
     {
         static readonly IssueLayout k_TextureLayout = new IssueLayout
