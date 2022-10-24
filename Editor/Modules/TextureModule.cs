@@ -97,14 +97,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (var guid in allTextures)
             {
-                var pathToTexture = AssetDatabase.GUIDToAssetPath(guid);
-                var textureImporter = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
+                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                var textureImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
                 if (textureImporter == null)
                 {
                     continue; // skip render textures
                 }
 
-                var texture = AssetDatabase.LoadAssetAtPath<Texture>(pathToTexture);
+                var texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath);
                 var size = Profiler.GetRuntimeMemorySizeLong(texture);
                 var platformSettings = textureImporter.GetPlatformTextureSettings(currentPlatformString);
 
@@ -123,7 +123,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             resolution,
                             size
                         })
-                    .WithLocation(new Location(pathToTexture));
+                    .WithLocation(new Location(assetPath));
 
                 issues.Add(issue);
 
