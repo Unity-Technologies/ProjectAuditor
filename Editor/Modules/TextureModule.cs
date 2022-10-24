@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var analyzers = m_Analyzers.Where(a => CoreUtils.HasPlatformAttribute(a.GetType(), projectAuditorParams.platform)).ToArray();
+            var analyzers = m_Analyzers.Where(a => CoreUtils.SupportsPlatform(a.GetType(), projectAuditorParams.platform)).ToArray();
             var allTextures = AssetDatabase.FindAssets("t:texture, a:assets");
             var issues = new List<ProjectIssue>();
             var currentPlatform = projectAuditorParams.platform;
