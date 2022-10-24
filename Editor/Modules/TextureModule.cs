@@ -81,6 +81,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
+            var analyzers = m_Analyzers.Where(a => CoreUtils.HasPlatformAttribute(a.GetType(), projectAuditorParams.platform)).ToArray();
             var allTextures = AssetDatabase.FindAssets("t:texture, a:assets");
             var issues = new List<ProjectIssue>();
             var currentPlatform = projectAuditorParams.platform;
@@ -119,13 +120,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(new Location(assetPath));
 
                 issues.Add(issue);
-
-                foreach (var analyzer in m_Analyzers)
-                {
-                    var platformDiagnostics = analyzer.Analyze(currentPlatform, textureImporter, platformSettings).ToArray();
-
-                    issues.AddRange(platformDiagnostics);
-                }
+                issues.AddRange(analyzers.SelectMany(a => a.Analyze(currentPlatform, textureImporter, platformSettings)));
 
                 progress?.Advance();
             }
