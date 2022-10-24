@@ -125,7 +125,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             var result = new ProjectReport();
             var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.Select(GetModule).Distinct() : m_Modules.Where(m => m.isEnabledByDefault);
-            var supportedModules = requestedModules.Where(m => m != null && m.isSupported).ToArray();
+            var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.platform)).ToArray();
             var numModules = supportedModules.Length;
             if (numModules == 0)
             {
