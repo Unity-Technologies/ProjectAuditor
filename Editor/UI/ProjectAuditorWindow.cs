@@ -1050,7 +1050,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
 
-            EditorGUILayout.LabelField(Contents.WelcomeText, SharedStyles.TextArea);
+            EditorGUILayout.LabelField(Contents.WelcomeText, SharedStyles.TextAreaWithDynamicSize);
             EditorGUILayout.Space();
 
             m_SelectedModules = (BuiltInModules)EditorGUILayout.EnumFlagsField(Contents.ModulesSelection, m_SelectedModules, GUILayout.ExpandWidth(true));
@@ -1112,8 +1112,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (fontSize != m_ViewStates.fontSize)
                 {
                     m_ViewStates.fontSize = fontSize;
-                    SharedStyles.Label.fontSize = m_ViewStates.fontSize;
-                    SharedStyles.TextArea.fontSize = m_ViewStates.fontSize;
+                    SharedStyles.SetFontDynamicSize(m_ViewStates.fontSize);
                 }
 
                 EditorGUILayout.LabelField("Ver. " + ProjectAuditor.PackageVersion, EditorStyles.label, GUILayout.Width(120));

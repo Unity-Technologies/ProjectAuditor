@@ -375,11 +375,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 if (issues.Length == 0)
                 {
-                    EditorGUILayout.LabelField(k_NoSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    EditorGUILayout.LabelField(k_NoSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 }
                 else if (issues.Length > 1)
                 {
-                    EditorGUILayout.LabelField(k_MultipleSelectionText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                    EditorGUILayout.LabelField(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                 }
                 else// if (issues.Length == 1)
                 {
@@ -396,7 +396,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     }
                     else
                     {
-                        EditorGUILayout.LabelField(k_AnalysisIsRequiredText, SharedStyles.TextArea, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                        EditorGUILayout.LabelField(k_AnalysisIsRequiredText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                     }
                 }
             }
