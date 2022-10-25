@@ -945,15 +945,17 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                             if (activeView.desc.showCritical)
                             {
-                                bool wasShowingCritical = m_ViewStates.onlyCriticalIssues;
+                                var wasShowingCritical = m_ViewStates.onlyCriticalIssues;
                                 m_ViewStates.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
                                     m_ViewStates.onlyCriticalIssues, GUILayout.Width(170));
 
                                 if (wasShowingCritical != m_ViewStates.onlyCriticalIssues)
                                 {
                                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                                    var payload = new Dictionary<string, string>();
-                                    payload["selected"] = activeView.desc.showCritical ? "true" : "false";
+                                    var payload = new Dictionary<string, string>
+                                    {
+                                        ["selected"] = m_ViewStates.onlyCriticalIssues ? "true" : "false"
+                                    };
                                     ProjectAuditorAnalytics.SendEventWithKeyValues(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues,
                                         analytic, payload);
                                 }
@@ -961,15 +963,17 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                             if (activeView.desc.showMuteOptions)
                             {
-                                bool wasDisplayingMuted = m_ViewStates.mutedIssues;
+                                var wasDisplayingMuted = m_ViewStates.mutedIssues;
                                 m_ViewStates.mutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
                                     m_ViewStates.mutedIssues, GUILayout.Width(120));
 
                                 if (wasDisplayingMuted != m_ViewStates.mutedIssues)
                                 {
                                     var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                                    var payload = new Dictionary<string, string>();
-                                    payload["selected"] = m_ViewStates.mutedIssues ? "true" : "false";
+                                    var payload = new Dictionary<string, string>
+                                    {
+                                        ["selected"] = m_ViewStates.mutedIssues ? "true" : "false"
+                                    };
                                     ProjectAuditorAnalytics.SendEventWithKeyValues(
                                         ProjectAuditorAnalytics.UIButton.ShowMuted,
                                         analytic, payload);
