@@ -55,10 +55,14 @@ namespace Unity.ProjectAuditor.EditorTests
             var issues = AnalyzeBuild(IssueCategory.BuildFile, i => i.relativePath.Equals(m_TempAsset.relativePath));
             var matchingIssue = issues.FirstOrDefault();
 
+            var buildFile = matchingIssue.GetCustomProperty(BuildReportFileProperty.BuildFile);
+            var buildReport = BuildReportModule.BuildReportProvider.GetBuildReport();
+            var reportedCorrectAssetBuildFile = buildReport.packedAssets.Any(p => p.shortPath == buildFile && p.contents.Any(c => c.sourceAssetPath == m_TempAsset.relativePath));
+
             Assert.NotNull(matchingIssue);
             Assert.AreEqual(Path.GetFileNameWithoutExtension(m_TempAsset.relativePath), matchingIssue.description);
             Assert.That(matchingIssue.GetNumCustomProperties(), Is.EqualTo((int)BuildReportFileProperty.Num));
-            Assert.AreEqual("resources.assets", matchingIssue.GetCustomProperty(BuildReportFileProperty.BuildFile));
+            Assert.True(reportedCorrectAssetBuildFile);
             Assert.AreEqual(typeof(AssetImporter).FullName, matchingIssue.GetCustomProperty(BuildReportFileProperty.ImporterType));
             Assert.AreEqual(typeof(Material).FullName, matchingIssue.GetCustomProperty(BuildReportFileProperty.RuntimeType));
             Assert.That(matchingIssue.GetCustomPropertyAsInt(BuildReportFileProperty.Size), Is.Positive);
