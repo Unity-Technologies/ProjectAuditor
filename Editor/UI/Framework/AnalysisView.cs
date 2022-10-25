@@ -191,7 +191,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 DrawTable();
 
-                EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
+                EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.DetailsPanelWidth));
 
                 EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
                 EditorGUILayout.Space();
@@ -545,6 +545,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int FoldoutWidth = 260;
             public static readonly int FoldoutMaxHeight = 220;
             public static readonly int DependencyViewHeight = 200;
+            public static readonly int DetailsPanelWidth = 200;
             public static readonly int ToolbarButtonSize = 80;
             public static readonly int ToolbarIconSize = 40;
         }
