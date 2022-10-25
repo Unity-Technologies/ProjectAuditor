@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             public static readonly int DependencyViewHeight = 200;
             public static readonly int FoldoutMaxHeight = 220;
-            public static readonly int FoldoutWidth = 300;
+            public static readonly int FoldoutWidth = 260;
             public static readonly int ToolbarButtonSize = 80;
             public static readonly int ToolbarIconSize = 40;
         }
@@ -165,8 +165,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     {
         public static UnityEngine.GUIStyle Foldout { get; }
         public static UnityEngine.GUIStyle Label { get; }
+        public static UnityEngine.GUIStyle LabelWithDynamicSizeWithDynamicSize { get; }
         public static UnityEngine.GUIStyle LinkLabel { get; }
         public static UnityEngine.GUIStyle TextArea { get; }
+        public static UnityEngine.GUIStyle TextAreaWithDynamicSize { get; }
+        public static void SetFontDynamicSize(int fontSize);
     }
 
     public struct TreeItemIdentifier
