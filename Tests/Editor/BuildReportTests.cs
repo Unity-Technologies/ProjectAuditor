@@ -46,10 +46,8 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(assetName.StartsWith("Build_"));
         }
 
+#if BUILD_REPORT_API_SUPPORT
         [Test]
-#if !BUILD_REPORT_API_SUPPORT
-        [Ignore("Not Supported in this version of Unity")]
-#endif
         public void BuildReport_Files_AreReported()
         {
             var issues = AnalyzeBuild(IssueCategory.BuildFile, i => i.relativePath.Equals(m_TempAsset.relativePath));
@@ -67,6 +65,8 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(typeof(Material).FullName, matchingIssue.GetCustomProperty(BuildReportFileProperty.RuntimeType));
             Assert.That(matchingIssue.GetCustomPropertyAsInt(BuildReportFileProperty.Size), Is.Positive);
         }
+#endif
+
 
         [Test]
 #if !BUILD_REPORT_API_SUPPORT
