@@ -16,9 +16,12 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     public abstract class TestFixtureBase
     {
+        protected const string k_TempSceneFilename = "Assets/TestScene.unity";
+        
         protected CodeOptimization m_CodeOptimization = CodeOptimization.Release;
         protected BuildTarget m_Platform = EditorUserBuildSettings.activeBuildTarget;
         protected ProjectAuditorConfig m_Config;
+        protected string m_BuildPath;
 
         [OneTimeSetUp]
         public void FixtureSetUp()
@@ -80,43 +83,58 @@ namespace Unity.ProjectAuditor.EditorTests
             return Analyze(category, i => i.relativePath.Equals(tempAsset.relativePath));
         }
 
-        protected ProjectIssue[] AnalyzeBuild(Func<ProjectIssue, bool> predicate = null)
+        protected ProjectIssue[] AnalyzeBuild(Func<ProjectIssue, bool> predicate = null, bool isDevelopment = true, string buildFileName = "test", Action preBuildAction = null, Action postBuildAction = null)
         {
-            Build();
+            Build(isDevelopment, buildFileName, preBuildAction, postBuildAction);
 
-            return Analyze(predicate);
+            var res = Analyze(predicate);
+
+            CleanupBuild();
+
+            return res;
         }
 
-        protected ProjectIssue[] AnalyzeBuild(IssueCategory category, Func<ProjectIssue, bool> predicate = null)
+        protected ProjectIssue[] AnalyzeBuild(IssueCategory category, Func<ProjectIssue, bool> predicate = null, bool isDevelopment = true, string buildFileName = "test", Action preBuildAction = null, Action postBuildAction = null)
         {
-            Build();
+            Build(isDevelopment, buildFileName, preBuildAction, postBuildAction);
 
-            return Analyze(category, predicate);
+            var res = Analyze(category, predicate);
+
+            CleanupBuild();
+
+            return res;
         }
 
-        protected void Build()
+        protected void Build(bool isDevelopment = true, string buildFileName = "test", Action preBuildAction = null, Action postBuildAction = null)
         {
-            const string tempSceneFilename = "Assets/TestScene.unity";
             // We must save the scene or the build will fail https://unity.slack.com/archives/C3F85MBDL/p1615991512002200
-            EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), tempSceneFilename);
+            EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), k_TempSceneFilename);
 
-            var buildPath = FileUtil.GetUniqueTempPathInProject();
-            Directory.CreateDirectory(buildPath);
+            m_BuildPath = FileUtil.GetUniqueTempPathInProject();
+            Directory.CreateDirectory(m_BuildPath);
             var buildPlayerOptions = new BuildPlayerOptions
             {
                 scenes = new string[] {},
-                locationPathName = Path.Combine(buildPath, "test"),
+                locationPathName = Path.Combine(m_BuildPath, buildFileName),
                 target = m_Platform,
                 targetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform),
-                options = BuildOptions.Development
+                options = isDevelopment ? BuildOptions.Development : BuildOptions.None
             };
+            
+            preBuildAction?.Invoke();
+            
             var buildReport = BuildPipeline.BuildPlayer(buildPlayerOptions);
 
+            postBuildAction?.Invoke();
+
             Assert.True(buildReport.summary.result == BuildResult.Succeeded);
+        }
 
-            Directory.Delete(buildPath, true);
+        protected void CleanupBuild()
+        {
+            Directory.Delete(m_BuildPath, true);
 
-            AssetDatabase.DeleteAsset(tempSceneFilename);
+            AssetDatabase.DeleteAsset(k_TempSceneFilename);
         }
     }
 }
