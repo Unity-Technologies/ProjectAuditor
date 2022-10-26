@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class ProjectAuditorTests
+    class ProjectAuditorTests : TestFixtureBase
     {
         [Test]
         public void ProjectAuditor_IsInstantiated()
@@ -105,6 +105,29 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.AreEqual(1, numModules);
             Assert.NotNull(projectReport);
+        }
+
+        [Test]
+        public void ProjectAuditor_Report_IsUpdated()
+        {
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
+            var report = projectAuditor.Audit(new ProjectAuditorParams
+            {
+                categories = new[] { IssueCategory.ProjectSetting}
+            });
+            Assert.Positive(report.GetIssues(IssueCategory.ProjectSetting).Count);
+
+            report.ClearIssues(IssueCategory.ProjectSetting);
+
+            Assert.Zero(report.GetIssues(IssueCategory.ProjectSetting).Count);
+
+            projectAuditor.Audit(new ProjectAuditorParams
+            {
+                categories = new[] { IssueCategory.ProjectSetting},
+                existingReport = report
+            });
+
+            Assert.Positive(report.GetIssues(IssueCategory.ProjectSetting).Count);
         }
     }
 }

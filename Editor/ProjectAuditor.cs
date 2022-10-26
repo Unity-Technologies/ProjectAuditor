@@ -123,14 +123,25 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="progress"> Progress bar, if applicable </param>
         public void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var result = new ProjectReport();
             var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.Select(GetModule).Distinct() : m_Modules.Where(m => m.isEnabledByDefault);
             var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.platform)).ToArray();
+            var report = projectAuditorParams.existingReport;
+            if (report == null)
+                report = new ProjectReport();
+
+            if (projectAuditorParams.categories != null)
+            {
+                foreach (var category in projectAuditorParams.categories)
+                {
+                    report.ClearIssues(category);
+                }
+            }
+
             var numModules = supportedModules.Length;
             if (numModules == 0)
             {
                 // early out if, for any reason, there are no registered modules
-                projectAuditorParams.onCompleted(result);
+                projectAuditorParams.onCompleted(report);
                 return;
             }
 
@@ -138,19 +149,22 @@ namespace Unity.ProjectAuditor.Editor
             var stopwatch = Stopwatch.StartNew();
             foreach (var module in supportedModules)
             {
-                var startTime = stopwatch.ElapsedMilliseconds;
+                var moduleStartTime = DateTime.Now;
                 module.Audit(new ProjectAuditorParams(projectAuditorParams)
                 {
                     onIncomingIssues = issues =>
                     {
-                        result.AddIssues(issues);
+                        report.AddIssues(issues);
                         projectAuditorParams.onIncomingIssues?.Invoke(issues);
                     },
                     onModuleCompleted = () =>
                     {
+                        var moduleEndTime = DateTime.Now;
                         if (logTimingsInfo)
                             Debug.Log(module.name + " module took: " +
-                                (stopwatch.ElapsedMilliseconds - startTime) / 1000.0f + " seconds.");
+                                (moduleEndTime - moduleStartTime).TotalMilliseconds / 1000.0 + " seconds.");
+
+                        report.RecordModuleInfo(module.name, moduleStartTime, moduleEndTime);
 
                         projectAuditorParams.onModuleCompleted?.Invoke();
 
@@ -161,7 +175,7 @@ namespace Unity.ProjectAuditor.Editor
                             if (logTimingsInfo)
                                 Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
 
-                            projectAuditorParams.onCompleted?.Invoke(result);
+                            projectAuditorParams.onCompleted?.Invoke(report);
                         }
                     }
                 }, progress);

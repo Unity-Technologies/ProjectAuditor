@@ -15,6 +15,16 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public sealed class ProjectReport
     {
+        [Serializable]
+        class ModuleInfo
+        {
+            public string name;
+            public DateTime startTime;
+            public DateTime endTime;
+        }
+
+        [SerializeField] List<ModuleInfo> m_ModuleInfos = new List<ModuleInfo>();
+
         [SerializeField] List<ProjectIssue> m_Issues = new List<ProjectIssue>();
 
         static Mutex s_Mutex = new Mutex();
@@ -24,6 +34,25 @@ namespace Unity.ProjectAuditor.Editor
         // for internal use only
         internal ProjectReport()
         {}
+
+        public void RecordModuleInfo(string name, DateTime startTime, DateTime endTime)
+        {
+            var info = m_ModuleInfos.FirstOrDefault(m => m.name.Equals(name));
+            if (info != null)
+            {
+                info.startTime = startTime;
+                info.endTime = endTime;
+            }
+            else
+            {
+                m_ModuleInfos.Add(new ModuleInfo
+                {
+                    name = name,
+                    startTime = startTime,
+                    endTime = endTime
+                });
+            }
+        }
 
         public IReadOnlyCollection<ProjectIssue> GetAllIssues()
         {
@@ -59,14 +88,14 @@ namespace Unity.ProjectAuditor.Editor
             return result;
         }
 
-        public void AddIssues(IEnumerable<ProjectIssue> issues)
+        internal void AddIssues(IEnumerable<ProjectIssue> issues)
         {
             s_Mutex.WaitOne();
             m_Issues.AddRange(issues);
             s_Mutex.ReleaseMutex();
         }
 
-        public void ClearIssues(IssueCategory category)
+        internal void ClearIssues(IssueCategory category)
         {
             s_Mutex.WaitOne();
             m_Issues.RemoveAll(issue => issue.category == category);
