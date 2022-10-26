@@ -19,6 +19,7 @@ namespace Unity.ProjectAuditor.Editor
         class ModuleInfo
         {
             public string name;
+            public IssueCategory[] categories;
             public DateTime startTime;
             public DateTime endTime;
         }
@@ -35,11 +36,14 @@ namespace Unity.ProjectAuditor.Editor
         internal ProjectReport()
         {}
 
-        public void RecordModuleInfo(string name, DateTime startTime, DateTime endTime)
+        internal void RecordModuleInfo(ProjectAuditorModule module, DateTime startTime, DateTime endTime)
         {
+            var name = module.name;
             var info = m_ModuleInfos.FirstOrDefault(m => m.name.Equals(name));
             if (info != null)
             {
+                info.name = module.name;
+                info.categories = module.categories;
                 info.startTime = startTime;
                 info.endTime = endTime;
             }
@@ -47,11 +51,17 @@ namespace Unity.ProjectAuditor.Editor
             {
                 m_ModuleInfos.Add(new ModuleInfo
                 {
-                    name = name,
+                    name = module.name,
+                    categories = module.categories,
                     startTime = startTime,
                     endTime = endTime
                 });
             }
+        }
+
+        public bool HasCategory(IssueCategory category)
+        {
+            return m_ModuleInfos.Any(m => m.categories.Contains(category));
         }
 
         public IReadOnlyCollection<ProjectIssue> GetAllIssues()
@@ -99,6 +109,13 @@ namespace Unity.ProjectAuditor.Editor
         {
             s_Mutex.WaitOne();
             m_Issues.RemoveAll(issue => issue.category == category);
+            foreach (var info in m_ModuleInfos)
+            {
+                var categories = info.categories.ToList();
+                categories.RemoveAll(c => c == category);
+                info.categories = categories.ToArray();
+            }
+            m_ModuleInfos.RemoveAll(info => info.categories.Length == 0);
             s_Mutex.ReleaseMutex();
         }
 

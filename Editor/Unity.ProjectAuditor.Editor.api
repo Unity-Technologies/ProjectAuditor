@@ -145,8 +145,8 @@ namespace Unity.ProjectAuditor.Editor
         public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> GetAllIssues();
         public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> GetIssues(IssueCategory category);
         public int GetNumIssues(IssueCategory category);
+        public bool HasCategory(IssueCategory category);
         public static ProjectReport Load(string path);
-        public void RecordModuleInfo(string name, System.DateTime startTime, System.DateTime endTime);
         public void Save(string path);
     }
 

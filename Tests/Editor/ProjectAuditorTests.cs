@@ -115,10 +115,13 @@ namespace Unity.ProjectAuditor.EditorTests
             {
                 categories = new[] { IssueCategory.ProjectSetting}
             });
+
+            Assert.True(report.HasCategory(IssueCategory.ProjectSetting));
             Assert.Positive(report.GetIssues(IssueCategory.ProjectSetting).Count);
 
             report.ClearIssues(IssueCategory.ProjectSetting);
 
+            Assert.False(report.HasCategory(IssueCategory.ProjectSetting));
             Assert.Zero(report.GetIssues(IssueCategory.ProjectSetting).Count);
 
             projectAuditor.Audit(new ProjectAuditorParams
@@ -127,6 +130,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 existingReport = report
             });
 
+            Assert.True(report.HasCategory(IssueCategory.ProjectSetting));
             Assert.Positive(report.GetIssues(IssueCategory.ProjectSetting).Count);
         }
     }

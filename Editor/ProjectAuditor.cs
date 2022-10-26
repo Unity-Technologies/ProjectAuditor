@@ -164,7 +164,7 @@ namespace Unity.ProjectAuditor.Editor
                             Debug.Log(module.name + " module took: " +
                                 (moduleEndTime - moduleStartTime).TotalMilliseconds / 1000.0 + " seconds.");
 
-                        report.RecordModuleInfo(module.name, moduleStartTime, moduleEndTime);
+                        report.RecordModuleInfo(module, moduleStartTime, moduleEndTime);
 
                         projectAuditorParams.onModuleCompleted?.Invoke();
 
