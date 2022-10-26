@@ -691,9 +691,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void AuditSingleModule(ProjectAuditorModule module)
         {
-            if (m_ProjectReport == null)
-                m_ProjectReport = new ProjectReport();
-
             var categories = module.categories;
             var views = categories
                 .Select(c => m_ViewManager.GetView(c))
