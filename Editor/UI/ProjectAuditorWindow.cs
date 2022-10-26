@@ -691,15 +691,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void AuditSingleModule(ProjectAuditorModule module)
         {
-            if (m_ProjectReport == null)
-                m_ProjectReport = new ProjectReport();
-
             var categories = module.categories;
-            foreach (var category in categories)
-            {
-                m_ProjectReport.ClearIssues(category);
-            }
-
             var views = categories
                 .Select(c => m_ViewManager.GetView(c))
                 .Where(v => v != null)
@@ -711,23 +703,23 @@ namespace Unity.ProjectAuditor.Editor.UI
                 view.Clear();
             }
 
-            var platform = m_ProjectReport.GetIssues(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));
             var projectAuditorParams = new ProjectAuditorParams
             {
+                categories = categories,
                 onIncomingIssues = issues =>
                 {
                     foreach (var view in views)
                     {
                         view.AddIssues(issues);
                     }
-
-                    m_ProjectReport.AddIssues(issues);
-                }
+                },
+                existingReport = m_ProjectReport
             };
 
+            var platform = m_ProjectReport.GetIssues(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));
             if (platform != null)
                 projectAuditorParams.platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), platform.GetCustomProperty(MetaDataProperty.Value));
-            module.Audit(projectAuditorParams, new ProgressBar());
+            m_ProjectAuditor.Audit(projectAuditorParams, new ProgressBar());
         }
 
         public void AnalyzeShaderVariants()

@@ -15,6 +15,17 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public sealed class ProjectReport
     {
+        [Serializable]
+        class ModuleInfo
+        {
+            public string name;
+            public IssueCategory[] categories;
+            public DateTime startTime;
+            public DateTime endTime;
+        }
+
+        [SerializeField] List<ModuleInfo> m_ModuleInfos = new List<ModuleInfo>();
+
         [SerializeField] List<ProjectIssue> m_Issues = new List<ProjectIssue>();
 
         static Mutex s_Mutex = new Mutex();
@@ -24,6 +35,34 @@ namespace Unity.ProjectAuditor.Editor
         // for internal use only
         internal ProjectReport()
         {}
+
+        internal void RecordModuleInfo(ProjectAuditorModule module, DateTime startTime, DateTime endTime)
+        {
+            var name = module.name;
+            var info = m_ModuleInfos.FirstOrDefault(m => m.name.Equals(name));
+            if (info != null)
+            {
+                info.name = module.name;
+                info.categories = module.categories;
+                info.startTime = startTime;
+                info.endTime = endTime;
+            }
+            else
+            {
+                m_ModuleInfos.Add(new ModuleInfo
+                {
+                    name = module.name,
+                    categories = module.categories,
+                    startTime = startTime,
+                    endTime = endTime
+                });
+            }
+        }
+
+        public bool HasCategory(IssueCategory category)
+        {
+            return m_ModuleInfos.Any(m => m.categories.Contains(category));
+        }
 
         public IReadOnlyCollection<ProjectIssue> GetAllIssues()
         {
@@ -59,17 +98,24 @@ namespace Unity.ProjectAuditor.Editor
             return result;
         }
 
-        public void AddIssues(IEnumerable<ProjectIssue> issues)
+        internal void AddIssues(IEnumerable<ProjectIssue> issues)
         {
             s_Mutex.WaitOne();
             m_Issues.AddRange(issues);
             s_Mutex.ReleaseMutex();
         }
 
-        public void ClearIssues(IssueCategory category)
+        internal void ClearIssues(IssueCategory category)
         {
             s_Mutex.WaitOne();
             m_Issues.RemoveAll(issue => issue.category == category);
+            foreach (var info in m_ModuleInfos)
+            {
+                var categories = info.categories.ToList();
+                categories.RemoveAll(c => c == category);
+                info.categories = categories.ToArray();
+            }
+            m_ModuleInfos.RemoveAll(info => info.categories.Length == 0);
             s_Mutex.ReleaseMutex();
         }
 

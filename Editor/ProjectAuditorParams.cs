@@ -42,6 +42,8 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public Action onModuleCompleted;
 
+        public ProjectReport existingReport;
+
         public ProjectAuditorParams()
         {
             platform = EditorUserBuildSettings.activeBuildTarget;
@@ -58,6 +60,8 @@ namespace Unity.ProjectAuditor.Editor
             onIncomingIssues = original.onIncomingIssues;
             onCompleted = original.onCompleted;
             onModuleCompleted = original.onModuleCompleted;
+
+            existingReport = original.existingReport;
         }
     }
 }

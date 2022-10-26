@@ -97,6 +97,7 @@ namespace Unity.ProjectAuditor.Editor
         public string[] assemblyNames;
         public IssueCategory[] categories;
         public AssemblyUtils.CodeOptimization codeOptimization = AssemblyUtils.CodeOptimization.Release;
+        public ProjectReport existingReport;
         public System.Action<ProjectReport> onCompleted;
         public System.Action<System.Collections.Generic.IEnumerable<ProjectIssue>> onIncomingIssues;
         public System.Action onModuleCompleted;
@@ -139,13 +140,12 @@ namespace Unity.ProjectAuditor.Editor
     public sealed class ProjectReport
     {
         public int NumTotalIssues { get; }
-        public void AddIssues(System.Collections.Generic.IEnumerable<ProjectIssue> issues);
-        public void ClearIssues(IssueCategory category);
         public void ExportToCSV(string path, Core.IssueLayout layout, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
         public void ExportToHTML(string path, Core.IssueLayout layout, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
         public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> GetAllIssues();
         public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> GetIssues(IssueCategory category);
         public int GetNumIssues(IssueCategory category);
+        public bool HasCategory(IssueCategory category);
         public static ProjectReport Load(string path);
         public void Save(string path);
     }
