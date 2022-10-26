@@ -110,6 +110,9 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectAuditor_Report_IsUpdated()
         {
+            var savedSetting = PlayerSettings.bakeCollisionMeshes;
+            PlayerSettings.bakeCollisionMeshes = false;
+
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
             var report = projectAuditor.Audit(new ProjectAuditorParams
             {
@@ -132,6 +135,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));
             Assert.Positive(report.GetIssues(IssueCategory.ProjectSetting).Count);
+
+            PlayerSettings.bakeCollisionMeshes = savedSetting;
         }
     }
 }
