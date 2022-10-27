@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.EditorTests
     public abstract class TestFixtureBase
     {
         protected const string k_TempSceneFilename = "Assets/TestScene.unity";
-        
+
         protected CodeOptimization m_CodeOptimization = CodeOptimization.Release;
         protected BuildTarget m_Platform = EditorUserBuildSettings.activeBuildTarget;
         protected ProjectAuditorConfig m_Config;
@@ -120,9 +120,9 @@ namespace Unity.ProjectAuditor.EditorTests
                 targetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform),
                 options = isDevelopment ? BuildOptions.Development : BuildOptions.None
             };
-            
+
             preBuildAction?.Invoke();
-            
+
             var buildReport = BuildPipeline.BuildPlayer(buildPlayerOptions);
 
             postBuildAction?.Invoke();

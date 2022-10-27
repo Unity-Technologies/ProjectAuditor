@@ -57,6 +57,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected static class LayoutSize
         {
             public static readonly int DependencyViewHeight = 200;
+            public static readonly int DetailsPanelWidth = 200;
             public static readonly int FoldoutMaxHeight = 220;
             public static readonly int FoldoutWidth = 260;
             public static readonly int ToolbarButtonSize = 80;

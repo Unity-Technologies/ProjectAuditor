@@ -65,6 +65,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(typeof(Material).FullName, matchingIssue.GetCustomProperty(BuildReportFileProperty.RuntimeType));
             Assert.That(matchingIssue.GetCustomPropertyAsInt(BuildReportFileProperty.Size), Is.Positive);
         }
+
 #endif
 
 
