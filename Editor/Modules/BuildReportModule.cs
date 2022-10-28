@@ -30,6 +30,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     public enum BuildReportStepProperty
     {
         Duration = 0,
+        Message,
         Num
     }
 
@@ -170,14 +171,22 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 issues.Add(ProjectIssue.Create(IssueCategory.BuildStep, step.name)
                     .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                     {
-                        Formatting.FormatBuildTime(step.duration)
+                        Formatting.FormatBuildTime(step.duration),
+                        step.name
                     })
                     .WithDepth(depth)
                     .WithSeverity(Severity.Info));
 
                 foreach (var message in step.messages)
                 {
-                    var issue = ProjectIssue.Create(IssueCategory.BuildStep, message.content)
+                    var logMessage = message.content;
+                    var description = new StringReader(logMessage).ReadLine(); // only take first line
+                    var issue = ProjectIssue.Create(IssueCategory.BuildStep, description)
+                        .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
+                        {
+                            0,
+                            logMessage
+                        })
                         .WithDepth(depth + 1)
                         .WithSeverity(LogTypeToSeverity(message.type));
                     issues.Add(issue);

@@ -117,7 +117,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             else if (selectedIssues.Length > 1)
                 GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             else // if (selectedDescriptors.Length == 1)
-                GUILayout.TextArea(selectedIssues[0].description, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+            {
+                var description = selectedIssues[0].description;
+                if (m_Desc.category == IssueCategory.BuildStep)
+                {
+                    description = selectedIssues[0].GetCustomProperty(BuildReportStepProperty.Message);
+                }
+                GUILayout.TextArea(description, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+            }
 
             EditorGUILayout.EndVertical();
         }
