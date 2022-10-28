@@ -94,10 +94,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Source Asset"},
                 new PropertyDefinition { type = PropertyType.FileType, name = "File Type", longName = "File Extension"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.ImporterType), format = PropertyFormat.String, name = "Importer Type", defaultGroup = true},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.RuntimeType), format = PropertyFormat.String, name = "Runtime Type"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.ImporterType), format = PropertyFormat.String, name = "Importer Type"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.RuntimeType), format = PropertyFormat.String, name = "Runtime Type", defaultGroup = true},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size in the Build"},
-                new PropertyDefinition { type = PropertyType.Path, name = "Path"},
+                new PropertyDefinition { type = PropertyType.Path, name = "Path", hidden = true},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.BuildFile), format = PropertyFormat.String, name = "Build File"}
             }
         };
