@@ -123,6 +123,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     description = selectedIssues[0].GetCustomProperty(BuildReportStepProperty.Message);
                 }
+                else if (m_Desc.category == IssueCategory.BuildFile)
+                {
+                    description = selectedIssues[0].relativePath;
+                }
+
                 GUILayout.TextArea(description, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
 
