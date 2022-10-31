@@ -184,18 +184,19 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ViewManager.onViewChanged += i =>
             {
+                var viewDesc = m_ViewManager.GetView(i).desc;
                 ProjectAuditorAnalytics.SendEvent(
-                    (ProjectAuditorAnalytics.UIButton)m_ViewManager.GetView(i).desc.analyticsEvent,
+                    (ProjectAuditorAnalytics.UIButton)viewDesc.analyticsEvent,
                     ProjectAuditorAnalytics.BeginAnalytic());
+                if (!m_ProjectReport.HasCategory(activeView.desc.category) && EditorUtility.DisplayDialog("Project Auditor", $"Would you like to analyze {ProjectAuditor.GetCategoryName(viewDesc.category)} now?", "Ok", "No"))
+                {
+                    AuditCategories(new[] {viewDesc.category});
+                }
             };
 
-            m_ViewManager.onAnalyze += (category) =>
+            m_ViewManager.onAnalyze += category =>
             {
-                var modules = m_ProjectAuditor.GetModules(category);
-                foreach (var module in modules)
-                {
-                    AuditSingleModule(module);
-                }
+                AuditCategories(new[] {category});
             };
             m_ViewManager.onViewExported += () =>
             {
@@ -660,12 +661,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!module.isSupported)
                 return;
 
-            AuditSingleModule(module);
+            AuditCategories(module.categories);
         }
 
-        void AuditSingleModule(ProjectAuditorModule module)
+        void AuditCategories(IssueCategory[] categories)
         {
-            var categories = module.categories;
             var views = categories
                 .Select(c => m_ViewManager.GetView(c))
                 .Where(v => v != null)
