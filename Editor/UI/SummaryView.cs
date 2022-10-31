@@ -104,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         void DrawKeyValue(string key, string value)
         {
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(string.Format("{0}:", key), SharedStyles.Label, GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField($"{key}:", SharedStyles.Label, GUILayout.Width(160));
             EditorGUILayout.LabelField(value, SharedStyles.Label,  GUILayout.ExpandWidth(true));
             EditorGUILayout.EndHorizontal();
         }
