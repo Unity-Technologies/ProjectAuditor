@@ -1270,14 +1270,6 @@
             "minimumVersion": "2019.1"
         },
         {
-            "id": "PAC0192",
-            "type": "UnityEngine.Debug",
-            "method": "Log",
-            "areas": ["CPU"],
-            "description": "Debug.Log causes slowdowns, especially if used frequently.",
-            "solution": "Instead of manually removing the code an option is to strip this code by using scripting symbols for conditional compilation (#if ... #endif) or the ConditionalAttribute on a method where you use Debug.Log(). When logging is still used in your code a small optimization can be to leave out the callstack, if not required, by setting 'Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)' via code."
-        },
-        {
             "id": "PAC0200",
             "type": "UnityEngine.Networking.IMultipartFormSection",
             "method": "sectionData",
