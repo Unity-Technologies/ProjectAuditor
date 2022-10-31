@@ -86,7 +86,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField("Select a View from the toolbar to start browsing the report");
         }
 
-        public override void DrawContent()
+        public override void DrawContent(bool showDetails = false)
         {
             EditorGUILayout.Space();
             EditorGUILayout.BeginVertical();

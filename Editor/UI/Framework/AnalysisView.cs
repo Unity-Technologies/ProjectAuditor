@@ -182,7 +182,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
         }
 
-        public virtual void DrawContent()
+        public virtual void DrawContent(bool showDetails = false)
         {
             var selectedItems = m_Table.GetSelectedItems();
             var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
@@ -191,14 +191,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 DrawTable();
 
-                EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.DetailsPanelWidth));
+                if (showDetails)
+                {
+                    EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.DetailsPanelWidth));
 
-                EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
-                EditorGUILayout.Space();
-                EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+                    EditorGUILayout.Space();
+                    EditorGUILayout.EndHorizontal();
 
-                DrawDetails(selectedIssues);
-                EditorGUILayout.EndVertical();
+                    DrawDetails(selectedIssues);
+                    EditorGUILayout.EndVertical();
+                }
             }
 
             if (m_Desc.showDependencyView)

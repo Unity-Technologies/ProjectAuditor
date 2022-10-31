@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void AddIssues(System.Collections.Generic.IEnumerable<ProjectIssue> allIssues);
         public virtual void Clear();
         public virtual void Create(ViewDescriptor descriptor, Unity.ProjectAuditor.Editor.Core.IssueLayout layout, ProjectAuditorConfig config, Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module, ViewStates viewStates, IProjectIssueFilter filter);
-        public virtual void DrawContent();
+        public virtual void DrawContent(bool showDetails = false);
         public virtual void DrawDetails(ProjectIssue[] selectedIssues);
         public virtual void DrawFilters();
         protected virtual void DrawInfo();
