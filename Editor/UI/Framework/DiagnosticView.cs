@@ -10,6 +10,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class DiagnosticView : AnalysisView
     {
+        const int k_ActionButtonHeight = 30;
+        const int k_ActionButtonWidth = 200;
+
         public DiagnosticView(ViewManager viewManager) : base(viewManager)
         {
         }
@@ -40,11 +43,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     GUILayout.TextArea(selectedDescriptors[0].solution, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
 
-            const int buttonHeight = 30;
-            const int buttonWidth = 200;
-            if (selectedDescriptors.Length == 1 && !string.IsNullOrEmpty(selectedDescriptors[0].documentationUrl) && GUILayout.Button(Contents.Documentation, GUILayout.MaxWidth(buttonWidth), GUILayout.Height(buttonHeight)))
+            if (selectedDescriptors.Length == 1)
             {
-                Application.OpenURL(selectedDescriptors[0].documentationUrl);
+                if (!string.IsNullOrEmpty(selectedDescriptors[0].documentationUrl) && GUILayout.Button(
+                    Contents.Documentation, GUILayout.MaxWidth(k_ActionButtonWidth), GUILayout.Height(k_ActionButtonHeight)))
+                {
+                    Application.OpenURL(selectedDescriptors[0].documentationUrl);
+                }
+                if (selectedDescriptors[0].fixer != null && GUILayout.Button(
+                    Contents.QuickFix, GUILayout.MaxWidth(k_ActionButtonWidth), GUILayout.Height(k_ActionButtonHeight)))
+                {
+                    foreach (var issue in selectedIssues)
+                    {
+                        selectedDescriptors[0].fixer(issue);
+                    }
+                }
             }
 
             EditorGUILayout.EndVertical();
@@ -86,6 +99,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly GUIContent Recommendation =
                 new GUIContent("Recommendation:", "Recommendation on how to solve the issue");
             public static readonly GUIContent Documentation = new GUIContent("Documentation");
+            public static readonly GUIContent QuickFix = new GUIContent("Quick Fix");
         }
     }
 }
