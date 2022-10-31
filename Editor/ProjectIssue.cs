@@ -107,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor
         public Severity severity
         {
             get => m_Severity == Severity.Default && descriptor != null ? descriptor.severity : m_Severity;
-            internal set => m_Severity = value;
+            set => m_Severity = value;
         }
 
         public bool isPerfCriticalContext => descriptor.critical || (m_Dependencies != null && m_Dependencies.IsPerfCritical());
