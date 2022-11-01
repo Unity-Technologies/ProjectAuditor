@@ -43,18 +43,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        static readonly IssueLayout k_TextureDiagnosticLayout = new IssueLayout
-        {
-            category = IssueCategory.TextureDiagnostic,
-            properties = new[]
-            {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Texture Name" },
-                new PropertyDefinition { type = PropertyType.Area, format = PropertyFormat.String, name = "Area", longName = "Impacted Area" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path"},
-                new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
-            }
-        };
-
         public override string name => "Textures";
 
         public override bool isEnabledByDefault => false;
@@ -65,7 +53,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_TextureLayout,
-            k_TextureDiagnosticLayout
         };
 
         public override IReadOnlyCollection<Descriptor> supportedDescriptors => m_DiagnosticDescriptors;

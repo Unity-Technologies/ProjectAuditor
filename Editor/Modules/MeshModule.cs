@@ -35,19 +35,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"}
             }
         };
-        
-        static readonly IssueLayout k_MeshDiagnosticLayout = new IssueLayout
-        {
-            category = IssueCategory.MeshDiagnostic,
-            properties = new[]
-            {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Mesh Name" },
-                new PropertyDefinition { type = PropertyType.Area, format = PropertyFormat.String, name = "Area", longName = "Impacted Area" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path"},
-                new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
-            }
-        };
-        
+
         public override string name => "Meshes";
 
         public override bool isEnabledByDefault => false;
@@ -57,8 +45,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
-            k_MeshIssueLayout,
-            k_MeshDiagnosticLayout
+            k_MeshIssueLayout
         };
 
         public override IReadOnlyCollection<Descriptor> supportedDescriptors => m_DiagnosticDescriptors;
@@ -88,7 +75,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     continue;
                 }
-                
+
                 var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(pathToMesh);
                 var size = Profiler.GetRuntimeMemorySizeLong(mesh);
 
@@ -97,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         new object[((int)MeshProperty.Num)]
                         {
                             mesh.vertexCount,
-                            mesh.triangles.Length / 3, 
+                            mesh.triangles.Length / 3,
                             modelImporter.meshCompression,
                             size,
                             currentPlatform
@@ -105,7 +92,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(new Location(pathToMesh));
 
                 issues.Add(issue);
-                
+
                 foreach (var analyzer in m_Analyzers)
                 {
                     var platformDiagnostics = analyzer.Analyze(currentPlatform, modelImporter).ToArray();

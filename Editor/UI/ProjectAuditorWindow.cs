@@ -266,16 +266,17 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Resource,
-                name = "Resources",
-                menuLabel = "Assets/Resources",
+                category = IssueCategory.AssetDiagnostic,
+                name = "Assets Diagnostics",
+                menuLabel = "Assets/Diagnostics",
                 menuOrder = 1,
                 descriptionWithIcon = true,
                 showDependencyView = true,
                 showFilters = true,
                 dependencyViewGuiContent = new GUIContent("Asset Dependencies"),
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
-                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assets
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assets,
+                type = typeof(DiagnosticView),
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
@@ -408,26 +409,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                 onDrawToolbar = (viewManager) =>
                 {
-                    AnalysisView.DrawToolbarButton(Contents.TextureDiagnostics, () => viewManager.ChangeView(IssueCategory.TextureDiagnostic));
+                    AnalysisView.DrawToolbarButton(Contents.TextureDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
-            });
-
-            ViewDescriptor.Register(new ViewDescriptor
-            {
-                category = IssueCategory.TextureDiagnostic,
-                name = "Texture Diagnostics",
-                menuLabel = "Assets/Textures/Diagnostics",
-                menuOrder = 7,
-                descriptionWithIcon = true,
-                showFilters = true,
-                onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.Textures, () => viewManager.ChangeView(IssueCategory.Texture));
-                },
-                type = typeof(DiagnosticView),
-                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
             });
 
             if (UserPreferences.developerMode)
@@ -482,25 +466,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
                     onDrawToolbar = (viewManager) =>
                     {
-                        AnalysisView.DrawToolbarButton(Contents.MeshDiagnostics, () => viewManager.ChangeView(IssueCategory.MeshDiagnostic));
+                        AnalysisView.DrawToolbarButton(Contents.MeshDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
                     },
-                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Meshes
-                });
-
-                ViewDescriptor.Register(new ViewDescriptor
-                {
-                    category = IssueCategory.MeshDiagnostic,
-                    name = "Mesh Diagnostics",
-                    menuLabel = "Assets/Meshes/Diagnostics",
-                    menuOrder = 8,
-                    descriptionWithIcon = true,
-                    showFilters = true,
-                    onOpenIssue = EditorUtil.FocusOnAssetInProjectWindow,
-                    onDrawToolbar = (viewManager) =>
-                    {
-                        AnalysisView.DrawToolbarButton(Contents.Meshes, () => viewManager.ChangeView(IssueCategory.Mesh));
-                    },
-                    type = typeof(DiagnosticView),
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Meshes
                 });
             }
