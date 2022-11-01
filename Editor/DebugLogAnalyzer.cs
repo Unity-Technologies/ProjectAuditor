@@ -25,12 +25,12 @@ namespace Unity.ProjectAuditor.Editor
             messageFormat = "Use of Debug.{0} in '{1}'"
         };
 
-        static readonly Descriptor k_DebugWarningIssueDescriptor = new Descriptor
+        static readonly Descriptor k_DebugLogWarningIssueDescriptor = new Descriptor
             (
             "PAC0193",
-            "Debug.Warning / Debug.WarningFormat",
+            "Debug.LogWarning / Debug.LogWarningFormat",
             Area.CPU,
-            "Debug.Warning methods cause slowdowns, especially if used frequently.",
+            "Debug.LogWarning methods cause slowdowns, especially if used frequently.",
             "Instead of removing code an option is to strip this code on release builds by using scripting symbols for conditional compilation (#if ... #endif) or the ConditionalAttribute on a method where you call this. When logging is still used in your code a small optimization can be to leave out the callstack, if not required, by setting 'Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None)' via code."
             )
         {
@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_DebugLogIssueDescriptor);
-            module.RegisterDescriptor(k_DebugWarningIssueDescriptor);
+            module.RegisterDescriptor(k_DebugLogWarningIssueDescriptor);
         }
 
         public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
@@ -75,7 +75,7 @@ namespace Unity.ProjectAuditor.Editor
 
             if (methodName == "LogWarning" || methodName == "LogWarningFormat")
             {
-                return ProjectIssue.Create(IssueCategory.Code, k_DebugWarningIssueDescriptor, methodName, methodDefinition.Name);
+                return ProjectIssue.Create(IssueCategory.Code, k_DebugLogWarningIssueDescriptor, methodName, methodDefinition.Name);
             }
 
             return null;
