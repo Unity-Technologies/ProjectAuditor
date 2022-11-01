@@ -9,7 +9,7 @@ using Unity.ProjectAuditor.Editor.Modules;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class DebugLogAnalyzer : ICodeModuleInstructionAnalyzer
+    class DebugLogAnalyzer : ICodeModuleInstructionAnalyzer
     {
         static readonly int k_ConditionalAttributeHashCode = "System.Diagnostics.ConditionalAttribute".GetHashCode();
 
