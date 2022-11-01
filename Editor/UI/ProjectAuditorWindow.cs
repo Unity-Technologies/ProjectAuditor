@@ -1130,7 +1130,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ShouldRefresh = false;
                 }
 
-                activeView.DrawContent();
+                activeView.DrawContent(true);
             }
         }
 

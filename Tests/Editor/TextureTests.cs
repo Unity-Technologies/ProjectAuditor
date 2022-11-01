@@ -98,7 +98,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Texture_MipMapUnused_IsReported()
         {
-            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureNoMipMapDefault, IssueCategory.TextureDiagnostic).FirstOrDefault(i => i.descriptor == TextureAnalyzer.k_TextureMipMapNotEnabledDescriptor);
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureNoMipMapDefault, IssueCategory.TextureDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureMipMapNotEnabledDescriptor));
 
             Assert.NotNull(textureDiagnostic);
         }
@@ -106,7 +106,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Texture_MipMapUnused_IsNotReported()
         {
-            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureMipMapDefault, IssueCategory.TextureDiagnostic).FirstOrDefault(i => i.descriptor == TextureAnalyzer.k_TextureMipMapNotEnabledDescriptor);
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureMipMapDefault, IssueCategory.TextureDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureMipMapNotEnabledDescriptor));
 
             Assert.Null(textureDiagnostic);
         }
@@ -114,7 +114,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Texture_MipMapUsedForGUI_IsReported()
         {
-            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureMipMapGUI, IssueCategory.TextureDiagnostic).FirstOrDefault(i => i.descriptor == TextureAnalyzer.k_TextureMipMapEnabledDescriptor);
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureMipMapGUI, IssueCategory.TextureDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureMipMapEnabledDescriptor));
 
             Assert.NotNull(textureDiagnostic);
         }
@@ -122,7 +122,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Texture_MipMapUsedForSprite_IsReported()
         {
-            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureMipMapSprite, IssueCategory.TextureDiagnostic).FirstOrDefault(i => i.descriptor == TextureAnalyzer.k_TextureMipMapEnabledDescriptor);
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureMipMapSprite, IssueCategory.TextureDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureMipMapEnabledDescriptor));
 
             Assert.NotNull(textureDiagnostic);
         }
