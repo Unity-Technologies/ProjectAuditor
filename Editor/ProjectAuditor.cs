@@ -123,7 +123,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="progress"> Progress bar, if applicable </param>
         public void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.SelectMany(GetModules) : m_Modules.Where(m => m.isEnabledByDefault).ToArray();
+            var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.SelectMany(GetModules).Distinct() : m_Modules.Where(m => m.isEnabledByDefault).ToArray();
             var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.platform)).ToArray();
             var report = projectAuditorParams.existingReport;
             if (report == null)
