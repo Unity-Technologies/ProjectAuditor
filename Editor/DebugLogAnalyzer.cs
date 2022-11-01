@@ -22,6 +22,7 @@ namespace Unity.ProjectAuditor.Editor
             "Instead of removing code an option is to strip this code on release builds by using scripting symbols for conditional compilation (#if ... #endif) or the ConditionalAttribute on a method where you call this. When logging is still used in your code a small optimization can be to leave out the callstack, if not required, by setting 'Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)' via code."
             )
         {
+            messageFormat = "Use of Debug.{0} in '{1}'"
         };
 
         static readonly Descriptor k_DebugWarningIssueDescriptor = new Descriptor
@@ -33,6 +34,7 @@ namespace Unity.ProjectAuditor.Editor
             "Instead of removing code an option is to strip this code on release builds by using scripting symbols for conditional compilation (#if ... #endif) or the ConditionalAttribute on a method where you call this. When logging is still used in your code a small optimization can be to leave out the callstack, if not required, by setting 'Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None)' via code."
             )
         {
+            messageFormat = "Use of Debug.{0} in '{1}'"
         };
 
         readonly OpCode[] m_OpCodes =
@@ -68,14 +70,12 @@ namespace Unity.ProjectAuditor.Editor
 
             if (methodName == "Log" || methodName == "LogFormat")
             {
-                return ProjectIssue.Create(IssueCategory.Code, k_DebugLogIssueDescriptor)
-                    .WithDescription($"Use of Debug.{methodName} in '{methodDefinition.Name}'");
+                return ProjectIssue.Create(IssueCategory.Code, k_DebugLogIssueDescriptor, methodName, methodDefinition.Name);
             }
 
             if (methodName == "LogWarning" || methodName == "LogWarningFormat")
             {
-                return ProjectIssue.Create(IssueCategory.Code, k_DebugWarningIssueDescriptor)
-                    .WithDescription($"Use of Debug.{methodName} in '{methodDefinition.Name}'");
+                return ProjectIssue.Create(IssueCategory.Code, k_DebugWarningIssueDescriptor, methodName, methodDefinition.Name);
             }
 
             return null;
