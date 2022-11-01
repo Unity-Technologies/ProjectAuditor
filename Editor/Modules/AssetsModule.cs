@@ -9,9 +9,9 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class AssetsModule : ProjectAuditorModule
+    internal class AssetsModule : ProjectAuditorModule
     {
-        static readonly IssueLayout k_IssueLayout = new IssueLayout
+        internal static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
             category = IssueCategory.AssetDiagnostic,
             properties = new[]

@@ -22,7 +22,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected Draw2D m_2D;
         protected bool m_Dirty = true;
         protected ProjectAuditorConfig m_Config;
-        protected ProjectAuditorModule m_Module;
         protected ViewStates m_ViewStates;
         protected ViewDescriptor m_Desc;
         protected IProjectIssueFilter m_BaseFilter;
@@ -66,11 +65,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_ViewManager = viewManager;
         }
 
-        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ProjectAuditorModule module, ViewStates viewStates, IProjectIssueFilter filter)
+        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ViewStates viewStates, IProjectIssueFilter filter)
         {
             m_Desc = descriptor;
             m_Config = config;
-            m_Module = module;
             m_ViewStates = viewStates;
             m_BaseFilter = filter;
             m_Layout = layout;
@@ -299,7 +297,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void DrawViewOptions()
         {
             if (m_ViewManager.onAnalyze != null)
-                DrawToolbarButtonIcon(Contents.AnalyzeNowButton,  () => m_ViewManager.onAnalyze(m_Module));
+                DrawToolbarButtonIcon(Contents.AnalyzeNowButton,  () => m_ViewManager.onAnalyze(m_Desc.category));
 
             m_Table.SetFontSize(m_ViewStates.fontSize);
 

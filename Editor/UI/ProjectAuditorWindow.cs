@@ -189,7 +189,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                     ProjectAuditorAnalytics.BeginAnalytic());
             };
 
-            m_ViewManager.onAnalyze += AuditSingleModule;
+            m_ViewManager.onAnalyze += (category) =>
+            {
+                var modules = m_ProjectAuditor.GetModules(category);
+                foreach (var module in modules)
+                {
+                    AuditSingleModule(module);
+                }
+            };
             m_ViewManager.onViewExported += () =>
             {
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Export,
