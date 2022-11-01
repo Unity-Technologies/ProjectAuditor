@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor
                 var assetPath = textureImporter.assetPath;
                 var textureName = Path.GetFileNameWithoutExtension(assetPath);
 
-                yield return ProjectIssue.Create(IssueCategory.TextureDiagnostic,
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
                     k_TextureMipMapNotEnabledDescriptor, textureName)
                     .WithLocation(assetPath);
             }
@@ -56,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor
                 var assetPath = textureImporter.assetPath;
                 var textureName = Path.GetFileNameWithoutExtension(assetPath);
 
-                yield return ProjectIssue.Create(IssueCategory.TextureDiagnostic,
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
                     k_TextureMipMapEnabledDescriptor, textureName)
                     .WithLocation(assetPath);
             }
