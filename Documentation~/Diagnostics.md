@@ -12,6 +12,7 @@ Note that there are different ranges within both Code and Settings diagnostic ID
   - `PAS0xxx`: Unity settings 
   - `PAS1xxx`: other settings IDs defined in code rather than in the json
   - `PAT0xxx`: texture related settings
+  - `PAM0xxx`: mesh related settings
 
 # Settings Diagnostics
 This is a full list of all builtin settings diagnostics:
@@ -53,3 +54,6 @@ This is a full list of all builtin settings diagnostics:
 | PAS1002 | Camera Lit Shader Mode Forward and Deferred | HDRP      | Any                      |
 | PAT0000 | Texture: Mip Maps not enabled               | Graphics  | Any                      |
 | PAT0001 | Texture: Mip Maps enabled on 2D texture     | Graphics  | Any                      |
+| PAT0002 | Texture: Read/Write enabled                 | Graphics  | Any                      |
+| PAM0000 | Mesh: Read/Write enabled                    | Graphics  | Any                      |
+| PAM0001 | Mesh: Index Format is 32 bits               | Graphics  | Any                      |
