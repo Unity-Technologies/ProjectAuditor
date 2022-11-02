@@ -74,9 +74,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var issues = new List<ProjectIssue>();
             AnalyzeResources(issues);
-            
-            if (projectAuditorParams.platform == BuildTarget.Android || projectAuditorParams.platform == BuildTarget.iOS)
-                Mobile_AnalyzeStreamingAssets(issues);
+
+            if (k_StreamingAssetsFolderDescriptor.platforms.Contains(projectAuditorParams.platform.ToString()))
+                AnalyzeStreamingAssets(issues);
 
             if (issues.Any())
                 projectAuditorParams.onIncomingIssues(issues);
@@ -110,7 +110,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        static void Mobile_AnalyzeStreamingAssets(IList<ProjectIssue> issues)
+        static void AnalyzeStreamingAssets(IList<ProjectIssue> issues)
         {
             if (Directory.Exists("Assets/StreamingAssets"))
             {
