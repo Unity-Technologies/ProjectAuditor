@@ -15,6 +15,7 @@ namespace Unity.ProjectAuditor.EditorTests
         const string k_TextureNameNoMipMapDefault = k_TextureName + "NoMipMapDefaultTest1234";
         const string k_TextureNameMipMapGUI = k_TextureName + "MipMapGUITest1234";
         const string k_TextureNameMipMapSprite = k_TextureName + "MipMapSpriteTest1234";
+        const string k_TextureNameReadWriteEnabled = k_TextureName + "ReadWriteEnabledTest1234";
 
         const int k_Resolution = 1;
 
@@ -23,6 +24,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempTextureNoMipMapDefault;
         TempAsset m_TempTextureMipMapGUI;
         TempAsset m_TempTextureMipMapSprite;
+        TempAsset m_TempTextureReadWriteEnabled;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -62,6 +64,12 @@ namespace Unity.ProjectAuditor.EditorTests
             textureImporter = AssetImporter.GetAtPath(m_TempTextureMipMapSprite.relativePath) as TextureImporter;
             textureImporter.textureType = TextureImporterType.Sprite;
             textureImporter.mipmapEnabled = true;
+            textureImporter.SaveAndReimport();
+
+            m_TempTextureReadWriteEnabled = new TempAsset(k_TextureNameReadWriteEnabled + ".png", encodedPNG);
+
+            textureImporter = AssetImporter.GetAtPath(m_TempTextureReadWriteEnabled.relativePath) as TextureImporter;
+            textureImporter.isReadable = true;
             textureImporter.SaveAndReimport();
         }
 
@@ -125,6 +133,22 @@ namespace Unity.ProjectAuditor.EditorTests
             var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureMipMapSprite, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureMipMapEnabledDescriptor));
 
             Assert.NotNull(textureDiagnostic);
+        }
+
+        [Test]
+        public void Texture_ReadWriteEnabled_IsReported()
+        {
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureReadWriteEnabled, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureReadWriteEnabledDescriptor));
+
+            Assert.NotNull(textureDiagnostic);
+        }
+
+        [Test]
+        public void Texture_ReadWriteEnabled_IsNotReported()
+        {
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureNoMipMapDefault, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureReadWriteEnabledDescriptor));
+
+            Assert.IsNull(textureDiagnostic);
         }
     }
 }
