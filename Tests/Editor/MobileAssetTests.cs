@@ -51,26 +51,36 @@ namespace Unity.ProjectAuditor.EditorTests
         [RequirePlatformSupport(BuildTarget.Android)]
         public void Android_StreamingAssetsFolderTooLarge_IsReported()
         {
+            var platform = m_Platform;
+            m_Platform = BuildTarget.Android;
+
             CreateTemporaryStreamingAssets();
 
-            var textureDiagnostic = Analyze(IssueCategory.AssetDiagnostic, issue => issue.descriptor.id == "PAA0001");
+            var assetDiagnostic = Analyze(IssueCategory.AssetDiagnostic, issue => issue.descriptor.id == "PAA0001");
 
             RemoveTemporaryStreamingAssets();
 
-            Assert.IsNotEmpty(textureDiagnostic);
+            Assert.IsNotEmpty(assetDiagnostic);
+
+            m_Platform = platform;
         }
 
         [Test]
         [RequirePlatformSupport(BuildTarget.iOS)]
         public void iOS_StreamingAssetsFolderTooLarge_IsReported()
         {
+            var platform = m_Platform;
+            m_Platform = BuildTarget.iOS;
+
             CreateTemporaryStreamingAssets();
 
-            var textureDiagnostic = Analyze(IssueCategory.AssetDiagnostic, issue => issue.descriptor.id == "PAA0001");
+            var assetDiagnostic = Analyze(IssueCategory.AssetDiagnostic, issue => issue.descriptor.id == "PAA0001");
 
             RemoveTemporaryStreamingAssets();
 
-            Assert.IsNotEmpty(textureDiagnostic);
+            Assert.IsNotEmpty(assetDiagnostic);
+
+            m_Platform = platform;
         }
     }
 }

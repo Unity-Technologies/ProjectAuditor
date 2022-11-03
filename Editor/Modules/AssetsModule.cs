@@ -43,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             platforms = new[] {"Android", "iOS"},
-            messageFormat = "StreamingAssets folder contains {0} mb of data",
+            messageFormat = "StreamingAssets folder contains {0} of data",
         };
 
         static readonly long k_StreamingAssetsFolderSizeLimitMb = 50;
@@ -126,7 +126,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     issues.Add(
                         ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor,
-                            totalBytes / 1024 / 1024)
+                            Formatting.FormatSize((ulong)totalBytes))
                     );
                 }
             }
