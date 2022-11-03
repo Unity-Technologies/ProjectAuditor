@@ -7,7 +7,7 @@ using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     class DebugLogAnalyzer : ICodeModuleInstructionAnalyzer
     {
@@ -68,17 +68,17 @@ namespace Unity.ProjectAuditor.Editor
                 return null;
             }
 
-            if (methodName == "Log" || methodName == "LogFormat")
+            switch (methodName)
             {
-                return ProjectIssue.Create(IssueCategory.Code, k_DebugLogIssueDescriptor, methodName, methodDefinition.Name);
+                case "Log":
+                case "LogFormat":
+                    return ProjectIssue.Create(IssueCategory.Code, k_DebugLogIssueDescriptor, methodName, methodDefinition.Name);
+                case "LogWarning":
+                case "LogWarningFormat":
+                    return ProjectIssue.Create(IssueCategory.Code, k_DebugLogWarningIssueDescriptor, methodName, methodDefinition.Name);
+                default:
+                    return null;
             }
-
-            if (methodName == "LogWarning" || methodName == "LogWarningFormat")
-            {
-                return ProjectIssue.Create(IssueCategory.Code, k_DebugLogWarningIssueDescriptor, methodName, methodDefinition.Name);
-            }
-
-            return null;
         }
     }
 }
