@@ -52,13 +52,13 @@ namespace Unity.ProjectAuditor.Editor
             if (mesh.isReadable)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor, meshName)
-                    .WithLocation(modelImporter.assetPath);;
+                    .WithLocation(modelImporter.assetPath);
             }
 
             if (modelImporter.indexFormat == ModelImporterIndexFormat.UInt32 && mesh.vertexCount <= 65535)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_Mesh23BitIndexFormatUsedDescriptor, meshName)
-                    .WithLocation(modelImporter.assetPath);;
+                    .WithLocation(modelImporter.assetPath);
             }
         }
     }
