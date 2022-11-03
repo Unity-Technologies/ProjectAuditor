@@ -58,9 +58,11 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAsset);
 
-            Assert.AreEqual(1, issues.Count());
+            var allCamerasIssues = issues.Where(i => i.descriptor.id == "PAC0066").ToArray();
 
-            var issue = issues.FirstOrDefault();
+            Assert.AreEqual(1, allCamerasIssues.Count());
+
+            var issue = allCamerasIssues.FirstOrDefault();
 
             m_Config.ClearAllRules();
 
@@ -101,8 +103,12 @@ namespace Unity.ProjectAuditor.EditorTests
             // retry after domain reload
             var issues = AnalyzeAndFindAssetIssues(m_TempAsset);
 
-            var callingMethod = issues[0].GetContext();
-            var action = m_SerializedConfig.GetAction(issues[0].descriptor, callingMethod);
+            var allCamerasIssues = issues.Where(i => i.descriptor.id == "PAC0066").ToArray();
+
+            Assert.AreEqual(1, allCamerasIssues.Count());
+
+            var callingMethod = allCamerasIssues[0].GetContext();
+            var action = m_SerializedConfig.GetAction(allCamerasIssues[0].descriptor, callingMethod);
 
             // issue has been muted so it should not be reported
             Assert.AreEqual(Severity.None, action);
