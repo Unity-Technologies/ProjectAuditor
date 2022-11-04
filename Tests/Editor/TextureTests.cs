@@ -125,14 +125,30 @@ namespace Unity.ProjectAuditor.EditorTests
             var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureMipMapGUI, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureMipMapEnabledDescriptor));
 
             Assert.NotNull(textureDiagnostic);
+            Assert.NotNull(textureDiagnostic.descriptor);
+            Assert.NotNull(textureDiagnostic.descriptor.fixer);
+
+            textureDiagnostic.descriptor.Fix(textureDiagnostic);
+
+            textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureMipMapGUI, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureMipMapEnabledDescriptor));
+
+            Assert.Null(textureDiagnostic);
         }
 
         [Test]
-        public void Texture_MipMapUsedForSprite_IsReported()
+        public void Texture_MipMapUsedForSprite_IsReportedAndFixed()
         {
             var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureMipMapSprite, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureMipMapEnabledDescriptor));
 
             Assert.NotNull(textureDiagnostic);
+            Assert.NotNull(textureDiagnostic.descriptor);
+            Assert.NotNull(textureDiagnostic.descriptor.fixer);
+
+            textureDiagnostic.descriptor.Fix(textureDiagnostic);
+
+            textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureMipMapSprite, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureMipMapEnabledDescriptor));
+
+            Assert.Null(textureDiagnostic);
         }
 
         [Test]
@@ -141,6 +157,14 @@ namespace Unity.ProjectAuditor.EditorTests
             var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureReadWriteEnabled, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureReadWriteEnabledDescriptor));
 
             Assert.NotNull(textureDiagnostic);
+            Assert.NotNull(textureDiagnostic.descriptor);
+            Assert.NotNull(textureDiagnostic.descriptor.fixer);
+
+            textureDiagnostic.descriptor.Fix(textureDiagnostic);
+
+            textureDiagnostic = AnalyzeAndFindAssetIssues(m_TempTextureReadWriteEnabled, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureReadWriteEnabledDescriptor));
+
+            Assert.Null(textureDiagnostic);
         }
 
         [Test]
