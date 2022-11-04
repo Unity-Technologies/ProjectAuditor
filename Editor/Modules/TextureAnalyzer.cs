@@ -5,7 +5,7 @@ using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.Modules
 {
     public class TextureAnalyzer : ITextureModuleAnalyzer
     {
@@ -31,20 +31,35 @@ namespace Unity.ProjectAuditor.Editor
             messageFormat = "Texture '{0}' mip maps are enabled"
         };
 
+        internal static readonly Descriptor k_TextureReadWriteEnabledDescriptor = new Descriptor(
+            "PAT0002",
+            "Texture: Read/Write enabled",
+            Area.Memory,
+            "Mesh's Read/Write flag is enabled. This causes the texture data to be duplicated in memory." +
+            "\n\nEnabling Read/Write access may be needed if this mesh is read or written to at run-time." +
+            "\n\nRefer to the 'Texture.isReadable' documentation for more details on cases when this should stay enabled.",
+            "Select the asset and disable import settings <b>Read/Write Enabled</b> option, then click the <b>Apply</b> button."
+        )
+        {
+            messageFormat = "Texture '{0}' Read/Write is enabled",
+            documentationUrl = "https://docs.unity3d.com/ScriptReference/Texture-isReadable.html"
+        };
+
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_TextureMipMapNotEnabledDescriptor);
             module.RegisterDescriptor(k_TextureMipMapEnabledDescriptor);
+            module.RegisterDescriptor(k_TextureReadWriteEnabledDescriptor);
         }
 
         public IEnumerable<ProjectIssue> Analyze(BuildTarget platform, TextureImporter textureImporter, TextureImporterPlatformSettings textureImporterPlatformSettings)
         {
+            var assetPath = textureImporter.assetPath;
+            var textureName = Path.GetFileNameWithoutExtension(assetPath);
+
             if (textureImporter.mipmapEnabled == false && textureImporter.textureType == TextureImporterType.Default)
             {
-                var assetPath = textureImporter.assetPath;
-                var textureName = Path.GetFileNameWithoutExtension(assetPath);
-
-                yield return ProjectIssue.Create(IssueCategory.TextureDiagnostic,
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
                     k_TextureMipMapNotEnabledDescriptor, textureName)
                     .WithLocation(assetPath);
             }
@@ -53,12 +68,15 @@ namespace Unity.ProjectAuditor.Editor
                 (textureImporter.textureType == TextureImporterType.Sprite || textureImporter.textureType == TextureImporterType.GUI)
             )
             {
-                var assetPath = textureImporter.assetPath;
-                var textureName = Path.GetFileNameWithoutExtension(assetPath);
-
-                yield return ProjectIssue.Create(IssueCategory.TextureDiagnostic,
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
                     k_TextureMipMapEnabledDescriptor, textureName)
                     .WithLocation(assetPath);
+            }
+
+            if (textureImporter.isReadable)
+            {
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureReadWriteEnabledDescriptor, textureName)
+                    .WithLocation(textureImporter.assetPath);;
             }
         }
     }

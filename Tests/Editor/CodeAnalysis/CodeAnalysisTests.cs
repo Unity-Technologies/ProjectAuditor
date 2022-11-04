@@ -37,7 +37,7 @@ class MyClass
 {
     void Dummy()
     {
-        Debug.Log(Camera.allCameras.Length.ToString());
+        Debug.LogError(Camera.allCameras.Length.ToString());
     }
 }
 ");
@@ -58,7 +58,7 @@ class ClassWithConditionalAttribute
     [Conditional(""ENABLE_LOG_NOT_DEFINED"")]
     void MethodWithConditionalAttribute()
     {
-        Debug.Log(6); // boxing
+        Debug.LogError(6); // boxing
     }
 }
 ");
@@ -80,7 +80,7 @@ class MyPlugin
 {
     void Dummy()
     {
-        Debug.Log(Camera.allCameras.Length.ToString());
+        Debug.LogError(Camera.allCameras.Length.ToString());
     }
 }
 ");
@@ -93,7 +93,7 @@ class MyClassWithNested
     {
         void Dummy()
         {
-            Debug.Log(Camera.allCameras.Length.ToString());
+            Debug.LogError(Camera.allCameras.Length.ToString());
         }
     }
 }
@@ -105,7 +105,7 @@ class GenericClass<T>
 {
     void Dummy()
     {
-        Debug.Log(Camera.allCameras.Length.ToString());
+        Debug.LogError(Camera.allCameras.Length.ToString());
     }
 }
 ");
@@ -116,7 +116,7 @@ abstract class AbstractClass
 {
     public virtual void Dummy()
     {
-        Debug.Log(Camera.allCameras.Length.ToString());
+        Debug.LogError(Camera.allCameras.Length.ToString());
     }
 }
 ");
@@ -133,7 +133,7 @@ class DerivedClass : BaseClass
 {
     public override void Dummy()
     {
-        Debug.Log(Camera.allCameras.Length.ToString());
+        Debug.LogError(Camera.allCameras.Length.ToString());
     }
 }
 ");
@@ -144,7 +144,7 @@ class MyMonoBehaviour : MonoBehaviour
 {
     void Start()
     {
-        Debug.Log(Camera.allCameras.Length.ToString());
+        Debug.LogError(Camera.allCameras.Length.ToString());
     }
 }
 ");
@@ -177,7 +177,7 @@ class ClassWithDelegate
     {
         myFunc = () =>
         {
-            Debug.Log(Camera.allCameras.Length.ToString());
+            Debug.LogError(Camera.allCameras.Length.ToString());
             return 0;
         };
     }

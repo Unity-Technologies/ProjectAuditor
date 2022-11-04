@@ -3,33 +3,80 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class AssetsModule : ProjectAuditorModule
+    internal class AssetsModule : ProjectAuditorModule
     {
-        static readonly IssueLayout k_IssueLayout = new IssueLayout
+        internal static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
-            category = IssueCategory.Resource,
+            category = IssueCategory.AssetDiagnostic,
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Asset Name"},
                 new PropertyDefinition { type = PropertyType.FileType, name = "File Type", longName = "File Extension"},
+                new PropertyDefinition { type = PropertyType.Area, format = PropertyFormat.String, name = "Area", longName = "Impacted Area" },
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"},
-                new PropertyDefinition { type = PropertyType.Directory, name = "Directory", defaultGroup = true}
+                new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
             }
         };
 
-        public override string name => "Resources";
+        static readonly Descriptor k_ResourcesFolderDescriptor = new Descriptor
+            (
+            "PAA0000",
+            "Resources folder asset & dependencies",
+            Area.BuildSize,
+            "The Resources folder is a common source of many problems in Unity projects. Improper use of the Resources folder can bloat the size of a project’s build, lead to uncontrollable excessive memory utilization, and significantly increase application startup times.",
+            "Use AssetBundles when possible"
+            );
+
+        static readonly Descriptor k_StreamingAssetsFolderDescriptor = new Descriptor(
+            "PAA0001",
+            "StreamingAssets folder size",
+            Area.BuildSize,
+            $"There are many files in the 'Assets/StreamingAssets' folder. Keeping them in the StreamingAssets folder will increase the build size.",
+            $"Try to move files outside this folder and use Asset Bundles or Addressables when possible."
+        )
+        {
+            platforms = new[] {"Android", "iOS"},
+            messageFormat = "StreamingAssets folder contains {0} of data",
+        };
+
+        static readonly long k_StreamingAssetsFolderSizeLimitMb = 50;
+
+        HashSet<Descriptor> m_Descriptors;
+
+        public override string name => "Assets";
+
+        public override IReadOnlyCollection<Descriptor> supportedDescriptors => m_Descriptors;
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
+
+        public override void Initialize(ProjectAuditorConfig config)
+        {
+            m_Descriptors = new HashSet<Descriptor>();
+
+            RegisterDescriptor(k_ResourcesFolderDescriptor);
+            RegisterDescriptor(k_StreamingAssetsFolderDescriptor);
+        }
+
+        public override void RegisterDescriptor(Descriptor descriptor)
+        {
+            if (!m_Descriptors.Add(descriptor))
+                throw new Exception("Duplicate descriptor with id: " + descriptor.id);
+        }
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var issues = new List<ProjectIssue>();
             AnalyzeResources(issues);
+
+            if (k_StreamingAssetsFolderDescriptor.platforms.Contains(projectAuditorParams.platform.ToString()))
+                AnalyzeStreamingAssets(issues);
 
             if (issues.Any())
                 projectAuditorParams.onIncomingIssues(issues);
@@ -39,8 +86,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
         static void AnalyzeResources(IList<ProjectIssue> issues)
         {
             var allAssetPaths = AssetDatabase.GetAllAssetPaths();
-            var allResources = allAssetPaths.Where(path => path.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) >= 0);
-            var allPlayerResources = allResources.Where(path => path.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) == -1);
+            var allResources =
+                allAssetPaths.Where(path => path.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) >= 0);
+            var allPlayerResources =
+                allResources.Where(path => path.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) == -1);
 
             var assetPathsDict = new Dictionary<string, DependencyNode>();
             foreach (var assetPath in allPlayerResources)
@@ -57,6 +106,28 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         continue;
 
                     AddResourceAsset(depAssetPath, assetPathsDict, issues, root);
+                }
+            }
+        }
+
+        static void AnalyzeStreamingAssets(IList<ProjectIssue> issues)
+        {
+            if (Directory.Exists("Assets/StreamingAssets"))
+            {
+                long totalBytes = 0;
+                string[] files = Directory.GetFiles("Assets/StreamingAssets", "*", SearchOption.AllDirectories);
+                foreach (var file in files)
+                {
+                    var fileInfo = new FileInfo(file);
+                    totalBytes += fileInfo.Length;
+                }
+
+                if (totalBytes > k_StreamingAssetsFolderSizeLimitMb * 1024 * 1024)
+                {
+                    issues.Add(
+                        ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor,
+                            Formatting.FormatSize((ulong)totalBytes))
+                    );
                 }
             }
         }
@@ -86,8 +157,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             issues.Add(ProjectIssue.Create
                 (
-                    IssueCategory.Resource,
-                    Path.GetFileNameWithoutExtension(location.Path)
+                    IssueCategory.AssetDiagnostic,
+                    k_ResourcesFolderDescriptor
                 )
                 .WithDependencies(dependencyNode)
                 .WithLocation(location));

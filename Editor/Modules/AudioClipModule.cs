@@ -46,6 +46,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_AudioClipLayout,
+            AssetsModule.k_IssueLayout
         };
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)

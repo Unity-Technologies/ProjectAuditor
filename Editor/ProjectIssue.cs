@@ -78,6 +78,11 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public Descriptor descriptor => m_Descriptor;
 
+        /// <summary>
+        /// Determines whether the issue was fixed. Only used for diagnostics
+        /// </summary>
+        public bool wasFixed = false;
+
         public DependencyNode dependencies
         {
             get => m_Dependencies;
