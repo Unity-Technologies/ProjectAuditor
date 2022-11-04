@@ -5,7 +5,7 @@ using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.Modules
 {
     public class TextureAnalyzer : ITextureModuleAnalyzer
     {
