@@ -50,13 +50,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     Application.OpenURL(selectedDescriptors[0].documentationUrl);
                 }
-                if (selectedDescriptors[0].fixer != null && GUILayout.Button(
-                    Contents.QuickFix, GUILayout.MaxWidth(k_ActionButtonWidth), GUILayout.Height(k_ActionButtonHeight)))
+
+                if (selectedDescriptors[0].fixer != null)
                 {
-                    foreach (var issue in selectedIssues)
+                    GUI.enabled = selectedIssues.Any(i => !i.wasFixed);
+
+                    if (GUILayout.Button(
+                        Contents.QuickFix, GUILayout.MaxWidth(k_ActionButtonWidth), GUILayout.Height(k_ActionButtonHeight)))
                     {
-                        selectedDescriptors[0].fixer(issue);
+                        foreach (var issue in selectedIssues)
+                        {
+                            selectedDescriptors[0].Fix(issue);
+                        }
                     }
+
+                    GUI.enabled = true;
                 }
             }
 

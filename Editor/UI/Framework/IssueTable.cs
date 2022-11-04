@@ -288,7 +288,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 Rule rule = null;
                 var issue = item.ProjectIssue;
-                if (issue.descriptor != null && issue.descriptor.IsValid())
+                if (issue.wasFixed)
+                    GUI.enabled = false;
+                else if (issue.descriptor != null && issue.descriptor.IsValid())
                 {
                     var descriptor = issue.descriptor;
                     rule = m_Config.GetRule(descriptor, issue.GetContext());
@@ -382,7 +384,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                         break;
                 }
-                if (rule != null && rule.severity == Severity.None)
+                if (issue.wasFixed)
+                    GUI.enabled = true;
+                else if (rule != null && rule.severity == Severity.None)
                     GUI.enabled = true;
             }
 

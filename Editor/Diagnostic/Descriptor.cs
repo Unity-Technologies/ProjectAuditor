@@ -118,7 +118,10 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public void Fix(ProjectIssue issue = null)
         {
             if (fixer != null)
+            {
                 fixer(issue);
+                issue.wasFixed = true;
+            }
         }
 
         public override int GetHashCode()
