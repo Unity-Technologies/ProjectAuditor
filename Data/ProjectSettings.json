@@ -318,6 +318,16 @@
             "areas": [ "BuildSize"],
             "description": "<b>UnityEngine.AudioSettings.speakerMode</b> is not set to <b>UnityEngine.AudioSpeakerMode.Mono</b>. The generated build will be larger than necessary.",
             "solution": "Change <b>Project Settings ➔ Audio ➔ Default Speaker Mode</b> to <b>Mono</b> to reduce the size of the build on disk."
+        },
+        {
+            "id": "PAS0034",
+            "title": "Player: Use incremental GC disabled",
+            "type": "UnityEditor.PlayerSettings",
+            "method": "gcIncremental",
+            "value": "False",
+            "areas": ["CPU"],
+            "description": "The Incremental Garbage Collection feature is disabled. This might lead to CPU spikes due to Garbage Collection.",
+            "solution": "To enable this feature, enable option <b>Project Settings ➔ Player ➔ Other Settings ➔ Configuration ➔ Use incremental GC</b>. Note this is not a substitute for reducing per-frame managed allocations."
         }
     ]
 }
