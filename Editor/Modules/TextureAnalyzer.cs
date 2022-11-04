@@ -103,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (textureImporter.isReadable)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureReadWriteEnabledDescriptor, textureName)
-                    .WithLocation(textureImporter.assetPath);;
+                    .WithLocation(textureImporter.assetPath);
             }
         }
     }
