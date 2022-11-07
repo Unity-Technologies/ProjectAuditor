@@ -327,7 +327,8 @@
             "value": "False",
             "areas": ["CPU"],
             "description": "The Incremental Garbage Collection feature is disabled. This might lead to CPU spikes due to Garbage Collection.",
-            "solution": "To enable this feature, enable option <b>Project Settings ➔ Player ➔ Other Settings ➔ Configuration ➔ Use incremental GC</b>. Note this is not a substitute for reducing per-frame managed allocations."
+            "solution": "To enable this feature, enable option <b>Project Settings ➔ Player ➔ Other Settings ➔ Configuration ➔ Use incremental GC</b>. Note this is not a substitute for reducing per-frame managed allocations.",
+            "minimumVersion": "2019.1"
         }
     ]
 }
