@@ -76,8 +76,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.Code,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
                 new PropertyDefinition { type = PropertyType.CriticalContext, format = PropertyFormat.Bool, name = "Critical", longName = "Critical code path"},
+                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
                 new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" },
