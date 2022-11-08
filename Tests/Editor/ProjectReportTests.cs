@@ -5,6 +5,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -345,13 +346,13 @@ class MyClass : MonoBehaviour
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
             var issues = AnalyzeAndExport(category,  path, "csv");
             var issue = issues.FirstOrDefault(i => i.descriptor.method.Equals("bakeCollisionMeshes"));
-            var expectedIssueLine = $"\"{issue.description}\",\"{issue.descriptor.GetAreasSummary()}\",\"{issue.relativePath}\"";
+            var expectedIssueLine = $"\"{issue.description}\",\"False\",\"{issue.descriptor.GetAreasSummary()}\",\"{issue.relativePath}\"";
 
             var issueFound = false;
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.AreEqual("Issue,Area,Settings", line, "Header was: " + line);
+                Assert.AreEqual("Issue,Critical,Area,Settings", line, "Header was: " + line);
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();
@@ -391,6 +392,8 @@ class MyClass : MonoBehaviour
                 line = file.ReadLine();
                 Assert.AreEqual("<th>Issue</th>", line);
                 line = file.ReadLine();
+                Assert.AreEqual("<th>Critical</th>", line);
+                line = file.ReadLine();
                 Assert.AreEqual("<th>Area</th>", line);
                 line = file.ReadLine();
                 Assert.AreEqual("<th>Settings</th>", line);
@@ -413,6 +416,11 @@ class MyClass : MonoBehaviour
                             index++;
                         }
                         line = file.ReadLine();
+                        if (line.Equals($"<td>{issue.GetProperty(PropertyType.CriticalContext)}</td>"))
+                        {
+                            index++;
+                        }
+                        line = file.ReadLine();
                         if (line.Equals($"<td>{issue.descriptor.GetAreasSummary()}</td>"))
                         {
                             index++;
@@ -427,7 +435,7 @@ class MyClass : MonoBehaviour
                         {
                             index++;
                         }
-                        if (index == 5)
+                        if (index == 6)
                         {
                             issueFound = true;
                         }
