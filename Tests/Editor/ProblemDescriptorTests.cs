@@ -152,8 +152,10 @@ namespace Unity.ProjectAuditor.EditorTests
             {
 #if UNITY_EDITOR_WIN
                 platforms = new[] { BuildTarget.StandaloneWindows64.ToString() }
-#else
+#elif UNITY_EDITOR_OSX
                 platforms = new[] { BuildTarget.StandaloneOSX.ToString() }
+#else
+                platforms = new[] { BuildTarget.StandaloneLinux64.ToString() }
 #endif
             };
 
