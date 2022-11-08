@@ -42,6 +42,7 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField] Location m_Location;
 
         [SerializeField] string[] m_CustomProperties;
+        [SerializeField] Priority m_Priority;
         [SerializeField] Severity m_Severity;
 
         internal ProjectIssue(IssueCategory category, Descriptor descriptor, params object[] args)
@@ -56,6 +57,7 @@ namespace Unity.ProjectAuditor.Editor
             m_Description = description;
             m_Category = category;
 
+            m_Priority = Priority.Default;
             m_Severity = Severity.Default;
         }
 
@@ -115,7 +117,18 @@ namespace Unity.ProjectAuditor.Editor
             set => m_Severity = value;
         }
 
-        public bool isPerfCriticalContext => descriptor.critical || (m_Dependencies != null && m_Dependencies.IsPerfCritical());
+        public Priority priority
+        {
+            get
+            {
+                if (m_Priority != Priority.Default)
+                    return m_Priority;
+                if (m_Dependencies != null && m_Dependencies.IsPerfCritical())
+                    return Priority.High;
+                return descriptor.priority;
+            }
+            set => m_Priority = value;
+        }
 
         public bool IsValid()
         {

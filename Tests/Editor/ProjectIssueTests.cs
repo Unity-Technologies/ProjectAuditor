@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(string.Empty, uninitialised.relativePath);
             Assert.AreEqual(string.Empty, uninitialised.GetContext());
             Assert.AreEqual(description, uninitialised.description);
-            Assert.False(uninitialised.isPerfCriticalContext);
+            Assert.AreNotEqual(Priority.Critical, uninitialised.priority);
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual("Assets/Dummy.cs:0", issue.GetProperty(PropertyType.Path));
             Assert.AreEqual("Dummy.cs:0", issue.GetProperty(PropertyType.Filename));
             Assert.AreEqual("cs", issue.GetProperty(PropertyType.FileType));
-            Assert.AreEqual(false.ToString(), issue.GetProperty(PropertyType.CriticalContext));
+            Assert.AreEqual(false.ToString(), issue.GetProperty(PropertyType.Priority));
             Assert.AreEqual(properties[0], issue.GetProperty(PropertyType.Num));
             Assert.AreEqual(properties[1], issue.GetProperty(PropertyType.Num + 1));
         }

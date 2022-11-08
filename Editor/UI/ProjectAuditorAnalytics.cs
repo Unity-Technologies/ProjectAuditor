@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Analytics;
@@ -287,8 +288,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
 
                 ++stats.numOccurrences;
-
-                if (issue.isPerfCriticalContext)
+                if (issue.dependencies != null && issue.dependencies.IsPerfCritical())
                 {
                     ++stats.numHotPathOccurrences;
                 }

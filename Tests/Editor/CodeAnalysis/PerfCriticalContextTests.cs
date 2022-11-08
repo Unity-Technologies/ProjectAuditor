@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -112,65 +113,65 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void CodeAnalysis_IssueInSimpleClass_IsNotCritical()
+        public void CodeAnalysis_IssueInSimpleClass_IsNormalPriority()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInSimpleClass);
             var issue = issues.First();
-            Assert.False(issue.isPerfCriticalContext);
+            Assert.AreEqual(Priority.Normal, issue.priority);
         }
 
         [Test]
-        public void CodeAnalysis_IssueInMonoBehaviourUpdate_IsCritical()
+        public void CodeAnalysis_IssueInMonoBehaviourUpdate_IsHighPriority()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourUpdate);
             var issue = issues.First();
-            Assert.True(issue.isPerfCriticalContext);
+            Assert.AreEqual(Priority.High, issue.priority);
         }
 
         [Test]
-        public void CodeAnalysis_IssueInMonoBehaviourOnAnimatorMove_IsCritical()
+        public void CodeAnalysis_IssueInMonoBehaviourOnAnimatorMove_IsHighPriority()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnAnimatorMove);
             var issue = issues.First();
-            Assert.True(issue.isPerfCriticalContext);
+            Assert.AreEqual(Priority.High, issue.priority);
         }
 
         [Test]
-        public void CodeAnalysis_MonoBehaviourOnRenderObject_IsCriticalContext()
+        public void CodeAnalysis_MonoBehaviourOnRenderObject_IsHighPriority()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnRenderObject);
             var issue = issues.First();
-            Assert.True(issue.isPerfCriticalContext);
+            Assert.AreEqual(Priority.High, issue.priority);
         }
 
         [Test]
-        public void CodeAnalysis_IssueInClassMethodCalledFromMonoBehaviourUpdate_IsCritical()
+        public void CodeAnalysis_IssueInClassMethodCalledFromMonoBehaviourUpdate_IsHighPriority()
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetIssueInClassMethodCalledFromMonoBehaviourUpdate);
             var issue = issues.First();
-            Assert.True(issue.isPerfCriticalContext);
+            Assert.AreEqual(Priority.High, issue.priority);
         }
 
         [Test]
-        public void CodeAnalysis_IssueInClassInheritedFromMonoBehaviour_IsCritical()
+        public void CodeAnalysis_IssueInClassInheritedFromMonoBehaviour_IsHighPriority()
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetIssueInClassInheritedFromMonoBehaviour);
             var issue = issues.First();
-            Assert.True(issue.isPerfCriticalContext);
+            Assert.AreEqual(Priority.High, issue.priority);
         }
 
         [Test]
-        public void CodeAnalysis_ShaderWarmupIssue_IsCritical()
+        public void CodeAnalysis_ShaderWarmupIssue_IsHighPriority()
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetShaderWarmupIssueIsCritical);
             var issue = issues.First();
-            Assert.True(issue.isPerfCriticalContext);
+            Assert.AreEqual(Priority.High, issue.priority);
         }
     }
 }

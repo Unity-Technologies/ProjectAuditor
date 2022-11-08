@@ -302,10 +302,32 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 switch (propertyType)
                 {
-                    case PropertyType.CriticalContext:
+                    case PropertyType.Priority:
                     {
-                        if (issue.isPerfCriticalContext)
-                            EditorGUI.LabelField(cellRect, Utility.GetIcon(Utility.IconType.Warning, Tooltip.HotPath), labelStyle);
+                        var color = Color.white;
+                        switch (issue.priority)
+                        {
+                            case Priority.Critical:
+                                color = Color.red;
+                                break;
+                            case Priority.High:
+                                color = Color.yellow;
+                                break;
+                            case Priority.Normal:
+                                color = Color.cyan;
+                                break;
+                        }
+
+                        color.a = 0.3f;
+                        var style = new GUIStyle(EditorStyles.label)
+                        {
+                            normal =
+                            {
+                                background = SharedStyles.MakeColorTexture(color)
+                            }
+                        };
+
+                        EditorGUI.LabelField(cellRect, new GUIContent(issue.priority.ToString()), style);
                     }
                     break;
                     case PropertyType.Severity:

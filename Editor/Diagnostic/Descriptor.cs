@@ -69,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// </summary>
         public Action<ProjectIssue> fixer;
 
-        public bool critical;
+        public Priority priority;
 
         // TODO: remove auditor-specific fields
         public string customevaluator;
@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
             type = string.Empty;
             method = string.Empty;
-            critical = false;
+            priority = Priority.Normal;
         }
 
         public Descriptor(string id, string title, Area area, string description = null, string solution = null)

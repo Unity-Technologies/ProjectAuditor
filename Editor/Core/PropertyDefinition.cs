@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         Directory,
         Filename,
         FileType,
-        CriticalContext,
+        Priority,
         Num
     }
 

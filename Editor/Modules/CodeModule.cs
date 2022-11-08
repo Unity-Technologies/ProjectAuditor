@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
-                new PropertyDefinition { type = PropertyType.CriticalContext, format = PropertyFormat.Bool, name = "Critical", longName = "Critical code path"},
+                new PropertyDefinition { type = PropertyType.Priority, format = PropertyFormat.String, name = "Priority"},
                 new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" },
@@ -227,15 +227,22 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var onIssueFoundInternal = new Action<ProjectIssue>(foundIssues.Add);
             var onCompleteInternal = new Action<IProgress>(bar =>
             {
+                // remove issues if platform does not match
+                var platformString = projectAuditorParams.platform.ToString();
+                foundIssues.RemoveAll(i => i.descriptor != null && i.descriptor.platforms != null && i.descriptor.platforms.Length > 0 && !i.descriptor.platforms.Contains(platformString));
+
                 var diagnostics = foundIssues.Where(i => i.category != IssueCategory.GenericInstance).ToList();
                 Profiler.BeginSample("CodeModule.Audit.BuildCallHierarchies");
                 compilationPipeline.Dispose();
                 callCrawler.BuildCallHierarchies(diagnostics, bar);
                 Profiler.EndSample();
 
-                // remove issues if platform does not match
-                var platformString = projectAuditorParams.platform.ToString();
-                foundIssues.RemoveAll(i => i.descriptor != null && i.descriptor.platforms != null && i.descriptor.platforms.Length > 0 && !i.descriptor.platforms.Contains(platformString));
+                foreach (var d in diagnostics)
+                {
+                    // assume high-priority issue if found in a hot-path
+                    if (d.dependencies != null && d.dependencies.perfCriticalContext)
+                        d.priority = Priority.High;
+                }
 
                 // workaround for empty 'relativePath' strings which are not all available when 'onIssueFoundInternal' is called
                 if (foundIssues.Any())

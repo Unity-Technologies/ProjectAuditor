@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                     method = rawDescriptor.method ?? string.Empty,
                     value = rawDescriptor.value,
                     platforms = rawDescriptor.platforms,
-                    critical = rawDescriptor.critical,
+                    priority = rawDescriptor.priority,
                     description = rawDescriptor.description,
                     solution = rawDescriptor.solution
                 };
@@ -39,6 +39,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                         desc.title = string.Empty;
                     else
                         desc.title = desc.GetFullTypeName();
+                }
+
+                if (desc.priority == Priority.Default)
+                {
+                    desc.priority = Priority.Normal;
                 }
 
                 descriptors.Add(desc);
