@@ -217,6 +217,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static UnityEngine.GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath);
         public static UnityEngine.GUIContent GetTextWithSeverityIcon(string text, string tooltip, Unity.ProjectAuditor.Editor.Diagnostic.Severity severity);
         public static string GetTreeViewSelectedSummary(TreeViewSelection selection, string[] names);
+        public static UnityEngine.Texture2D MakeColorTexture(UnityEngine.Color col);
         public static void ToolbarDropdownList(Utility.DropdownItem[] items, int selectionIndex, UnityEditor.GenericMenu.MenuFunction2 callback, params UnityEngine.GUILayoutOption[] options);
         public class DropdownItem
         {

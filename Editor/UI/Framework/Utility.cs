@@ -247,5 +247,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var icon = AssetDatabase.GetCachedIcon(assetPath);
             return EditorGUIUtility.TrTextContentWithIcon(displayName, assetPath, icon);
         }
+
+        public static Texture2D MakeColorTexture(Color col)
+        {
+            var pix = new Color[1];
+            pix[0] = col;
+
+            var result = new Texture2D(1, 1);
+            result.SetPixels(pix);
+            result.Apply();
+
+            return result;
+        }
     }
 }
