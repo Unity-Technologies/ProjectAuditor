@@ -114,7 +114,7 @@ namespace Unity.ProjectAuditor.Editor
         public string description { get; }
         public Diagnostic.Descriptor descriptor { get; }
         public string filename { get; }
-        public bool isPerfCriticalContext { get; }
+        public bool isCritical { get; set; }
         public int line { get; }
         public Location location { get; }
         public string relativePath { get; }
