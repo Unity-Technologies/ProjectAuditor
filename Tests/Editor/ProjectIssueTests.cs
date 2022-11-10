@@ -28,11 +28,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(string.Empty, uninitialised.relativePath);
             Assert.AreEqual(string.Empty, uninitialised.GetContext());
             Assert.AreEqual(description, uninitialised.description);
-            << << << < HEAD
             Assert.AreNotEqual(Priority.Critical, uninitialised.priority);
-            == == == =
-                Assert.False(uninitialised.isCritical);
-            >> >> >> > origin / critical
         }
 
         [Test]

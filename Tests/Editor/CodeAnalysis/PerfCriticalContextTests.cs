@@ -117,11 +117,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInSimpleClass);
             var issue = issues.First();
-            << << << < HEAD
             Assert.AreEqual(Priority.Normal, issue.priority);
-            == == == =
-                Assert.False(issue.isCritical);
-            >> >> >> > origin / critical
         }
 
         [Test]
@@ -129,11 +125,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourUpdate);
             var issue = issues.First();
-            << << << < HEAD
             Assert.AreEqual(Priority.High, issue.priority);
-            == == == =
-                Assert.True(issue.isCritical);
-            >> >> >> > origin / critical
         }
 
         [Test]
@@ -141,11 +133,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnAnimatorMove);
             var issue = issues.First();
-            << << << < HEAD
             Assert.AreEqual(Priority.High, issue.priority);
-            == == == =
-                Assert.True(issue.isCritical);
-            >> >> >> > origin / critical
         }
 
         [Test]
@@ -153,11 +141,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnRenderObject);
             var issue = issues.First();
-            << << << < HEAD
             Assert.AreEqual(Priority.High, issue.priority);
-            == == == =
-                Assert.True(issue.isCritical);
-            >> >> >> > origin / critical
         }
 
         [Test]
@@ -167,11 +151,7 @@ class ShaderWarmUpIssueIsCritical
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetIssueInClassMethodCalledFromMonoBehaviourUpdate);
             var issue = issues.First();
-            << << << < HEAD
             Assert.AreEqual(Priority.High, issue.priority);
-            == == == =
-                Assert.True(issue.isCritical);
-            >> >> >> > origin / critical
         }
 
         [Test]
@@ -181,11 +161,7 @@ class ShaderWarmUpIssueIsCritical
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetIssueInClassInheritedFromMonoBehaviour);
             var issue = issues.First();
-            << << << < HEAD
             Assert.AreEqual(Priority.High, issue.priority);
-            == == == =
-                Assert.True(issue.isCritical);
-            >> >> >> > origin / critical
         }
 
         [Test]
@@ -195,11 +171,7 @@ class ShaderWarmUpIssueIsCritical
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetShaderWarmupIssueIsCritical);
             var issue = issues.First();
-            << << << < HEAD
             Assert.AreEqual(Priority.High, issue.priority);
-            == == == =
-                Assert.True(issue.isCritical);
-            >> >> >> > origin / critical
         }
     }
 }
