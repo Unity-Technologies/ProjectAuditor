@@ -50,13 +50,14 @@ namespace Unity.ProjectAuditor.Editor
             m_Descriptor = descriptor;
             m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
             m_Category = category;
+            m_Priority = Priority.Default;
+            m_Severity = Severity.Default;
         }
 
         internal ProjectIssue(IssueCategory category, string description)
         {
             m_Description = description;
             m_Category = category;
-
             m_Priority = Priority.Default;
             m_Severity = Severity.Default;
         }
@@ -123,8 +124,6 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (m_Priority != Priority.Default)
                     return m_Priority;
-                if (m_Dependencies != null && m_Dependencies.IsPerfCritical())
-                    return Priority.High;
                 return descriptor.priority;
             }
             set => m_Priority = value;

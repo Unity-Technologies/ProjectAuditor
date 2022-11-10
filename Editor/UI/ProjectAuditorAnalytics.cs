@@ -288,7 +288,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
 
                 ++stats.numOccurrences;
-                if (issue.dependencies != null && issue.dependencies.IsPerfCritical())
+
+                if (issue.priority != Priority.Normal)
                 {
                     ++stats.numHotPathOccurrences;
                 }
