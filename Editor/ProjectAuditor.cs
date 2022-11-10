@@ -87,7 +87,15 @@ namespace Unity.ProjectAuditor.Editor
             foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ProjectAuditorModule)))
             {
                 var instance = Activator.CreateInstance(type) as ProjectAuditorModule;
-                instance.Initialize(m_Config);
+                try
+                {
+                    instance.Initialize(m_Config);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Project Auditor [{instance.name}]: " + e.Message);
+                    continue;
+                }
                 m_Modules.Add(instance);
             }
         }
