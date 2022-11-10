@@ -65,7 +65,11 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             else if (type.FullName.Equals("System.Double"))
                 typeName = "double";
 
-            return ProjectIssue.Create(IssueCategory.Code, k_Descriptor, typeName);
+            var occurrencesInScenes = CodeModule.GetMethodSceneCount(methodDefinition);
+            var occurrencesInPrefabs = CodeModule.GetMethodPrefabCount(methodDefinition);
+
+            return ProjectIssue.Create(IssueCategory.Code, k_Descriptor, typeName)
+                .WithCustomProperties(new object[(int)CodeProperty.Num] { "", occurrencesInScenes.ToString(), occurrencesInPrefabs.ToString() });
         }
     }
 }

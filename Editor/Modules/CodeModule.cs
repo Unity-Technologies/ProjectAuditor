@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -9,11 +10,11 @@ using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.Editor.MonoBehaviourCollectors;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Profiling;
-using Object = System.Object;
 using PropertyDefinition = Unity.ProjectAuditor.Editor.Core.PropertyDefinition;
 using ThreadPriority = System.Threading.ThreadPriority;
 
@@ -35,6 +36,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
     public enum CodeProperty
     {
         Assembly = 0,
+        MonoBehaviourCount = 1,
+        PrefabMonoBehaviourCount = 2,
         Num
     }
 
@@ -81,6 +84,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.MonoBehaviourCount), format = PropertyFormat.String, name = "Scene Count", longName = "Use of MonoBehaviour in Scenes" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.PrefabMonoBehaviourCount), format = PropertyFormat.String, name = "Prefab Count", longName = "Use of MonoBehaviour in Prefabs" },
                 new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
             }
         };
@@ -117,6 +122,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         Thread m_AssemblyAnalysisThread;
 
+        static SceneMonoBehaviourCollector m_MonoBehaviourCollector;
+        static ScenePrefabMonoBehaviourCollector m_PrefabMonoBehaviourCollector;
+
+        static public SceneMonoBehaviourCollector MonoBehaviourCollector
+        {
+            get { return m_MonoBehaviourCollector; }
+        }
+
+        static public ScenePrefabMonoBehaviourCollector PrefabMonoBehaviourCollector
+        {
+            get { return m_PrefabMonoBehaviourCollector; }
+        }
+
         public override string name => "Code";
 
         public override IReadOnlyCollection<Descriptor> supportedDescriptors => m_Descriptors;
@@ -144,8 +162,53 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 AddAnalyzer(Activator.CreateInstance(type) as ICodeModuleInstructionAnalyzer);
         }
 
+        private void CollectSceneMonoBehaviours(string path,
+            SceneMonoBehaviourCollector sceneMonoBehaviourCollector,
+            ScenePrefabMonoBehaviourCollector scenePrefabMonoBehaviourCollector)
+        {
+            if (!File.Exists(path))
+                return;
+
+            var scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+            var collector = new SceneMonoBehaviourCollector();
+            var prefabCollector = new ScenePrefabMonoBehaviourCollector();
+
+            collector.Collect(scene);
+            prefabCollector.Collect(scene);
+
+            sceneMonoBehaviourCollector.Merge(collector);
+            scenePrefabMonoBehaviourCollector.Merge(prefabCollector);
+        }
+
+        public void CollectMonoBehaviours(IProgress progress)
+        {
+            var prevSceneSetups =  EditorSceneManager.GetSceneManagerSetup();
+
+            m_MonoBehaviourCollector = new SceneMonoBehaviourCollector();
+            m_PrefabMonoBehaviourCollector = new ScenePrefabMonoBehaviourCollector();
+
+            foreach (var editorBuildSettingsScene in EditorBuildSettings.scenes)
+            {
+                var path = editorBuildSettingsScene.path;
+                if (progress != null)
+                    progress.Advance(path);
+
+                // skip scene if it does not contribute to the build
+                if (!editorBuildSettingsScene.enabled)
+                    continue;
+
+                CollectSceneMonoBehaviours(path, m_MonoBehaviourCollector, m_PrefabMonoBehaviourCollector);
+            }
+
+            // restore previously-loaded scenes
+            if (prevSceneSetups.Length > 0)
+                EditorSceneManager.RestoreSceneManagerSetup(prevSceneSetups);
+        }
+
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
+            CollectMonoBehaviours(progress);
+
             if (m_Descriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
 
@@ -393,12 +456,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (analyzer.opCodes.Contains(inst.OpCode))
                     {
                         Profiler.BeginSample("CodeModule " + analyzer.GetType().Name);
+
                         var issueBuilder = analyzer.Analyze(caller, inst);
                         if (issueBuilder != null)
                         {
+                            var fullName = caller.DeclaringType.FullName;
+
+                            var occurrencesInScenes = GetMethodSceneCount(caller);
+                            var occurrencesInPrefabs = GetMethodPrefabCount(caller);
+
                             issueBuilder.WithDependencies(callerNode); // set root
                             issueBuilder.WithLocation(location);
-                            issueBuilder.WithCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.name});
+                            issueBuilder.WithCustomProperties(new object[(int)CodeProperty.Num] { assemblyInfo.name, occurrencesInScenes.ToString(), occurrencesInPrefabs.ToString() });
 
                             onIssueFound(issueBuilder);
                         }
@@ -486,6 +555,40 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 return true;
 #endif
             return false;
+        }
+
+        static public int GetMethodPrefabCount(MethodDefinition methodInfo)
+        {
+            var fullName = methodInfo.DeclaringType.FullName;
+
+            int index = fullName.IndexOf("/");
+            if (index >= 0)
+                fullName = fullName.Substring(0, index);
+
+            int occurrencesInScenes = 0;
+            if (m_PrefabMonoBehaviourCollector.MonoBehaviourCounts.ContainsKey(fullName))
+            {
+                return m_PrefabMonoBehaviourCollector.MonoBehaviourCounts[fullName];
+            }
+
+            return 0;
+        }
+
+        static public int GetMethodSceneCount(MethodDefinition methodInfo)
+        {
+            var fullName = methodInfo.DeclaringType.FullName;
+
+            int index = fullName.IndexOf("/");
+            if (index >= 0)
+                fullName = fullName.Substring(0, index);
+
+            int occurrencesInScenes = 0;
+            if (m_MonoBehaviourCollector.MonoBehaviourCounts.ContainsKey(fullName))
+            {
+                return m_MonoBehaviourCollector.MonoBehaviourCounts[fullName];
+            }
+
+            return 0;
         }
     }
 }
