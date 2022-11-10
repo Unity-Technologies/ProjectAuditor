@@ -38,6 +38,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Assembly = 0,
         MonoBehaviourCount = 1,
         PrefabMonoBehaviourCount = 2,
+        PlayModeMonoBehaviourCount = 3,
         Num
     }
 
@@ -86,6 +87,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.MonoBehaviourCount), format = PropertyFormat.String, name = "Scene Count", longName = "Use of MonoBehaviour in Scenes" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.PrefabMonoBehaviourCount), format = PropertyFormat.String, name = "Prefab Count", longName = "Use of MonoBehaviour in Prefabs" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.PlayModeMonoBehaviourCount), format = PropertyFormat.String, name = "PlayMode Count", longName = "Use of MonoBehaviour in Play Mode" },
                 new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
             }
         };
@@ -460,14 +462,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         var issueBuilder = analyzer.Analyze(caller, inst);
                         if (issueBuilder != null)
                         {
-                            var fullName = caller.DeclaringType.FullName;
-
                             var occurrencesInScenes = GetMethodSceneCount(caller);
                             var occurrencesInPrefabs = GetMethodPrefabCount(caller);
+                            var occurrencesInPlayMode = GetMethodPlayModeSceneCount(caller);
 
                             issueBuilder.WithDependencies(callerNode); // set root
                             issueBuilder.WithLocation(location);
-                            issueBuilder.WithCustomProperties(new object[(int)CodeProperty.Num] { assemblyInfo.name, occurrencesInScenes.ToString(), occurrencesInPrefabs.ToString() });
+                            issueBuilder.WithCustomProperties(new object[(int)CodeProperty.Num] { assemblyInfo.name, occurrencesInScenes.ToString(), occurrencesInPrefabs.ToString(), occurrencesInPlayMode.ToString() });
 
                             onIssueFound(issueBuilder);
                         }
@@ -586,6 +587,23 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (m_MonoBehaviourCollector.MonoBehaviourCounts.ContainsKey(fullName))
             {
                 return m_MonoBehaviourCollector.MonoBehaviourCounts[fullName];
+            }
+
+            return 0;
+        }
+
+        static public int GetMethodPlayModeSceneCount(MethodDefinition methodInfo)
+        {
+            var fullName = methodInfo.DeclaringType.FullName;
+
+            int index = fullName.IndexOf("/");
+            if (index >= 0)
+                fullName = fullName.Substring(0, index);
+
+            int occurrencesInScenes = 0;
+            if (PlayModeMonoBehaviourCollector.m_MonoBehaviourMap.ContainsKey(fullName))
+            {
+                return PlayModeMonoBehaviourCollector.m_MonoBehaviourMap[fullName];
             }
 
             return 0;

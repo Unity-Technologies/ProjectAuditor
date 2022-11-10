@@ -67,9 +67,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
             var occurrencesInScenes = CodeModule.GetMethodSceneCount(methodDefinition);
             var occurrencesInPrefabs = CodeModule.GetMethodPrefabCount(methodDefinition);
+            var occurrencesInPlayMode = CodeModule.GetMethodPlayModeSceneCount(methodDefinition);
 
             return ProjectIssue.Create(IssueCategory.Code, k_Descriptor, typeName)
-                .WithCustomProperties(new object[(int)CodeProperty.Num] { "", occurrencesInScenes.ToString(), occurrencesInPrefabs.ToString() });
+                .WithCustomProperties(new object[(int)CodeProperty.Num] { "", occurrencesInScenes.ToString(), occurrencesInPrefabs.ToString(), occurrencesInPlayMode.ToString() });
         }
     }
 }
