@@ -134,6 +134,8 @@ namespace Unity.ProjectAuditor.Editor
 
         internal string GetCustomProperty(int index)
         {
+            if (index >= m_CustomProperties.Length)
+                return string.Empty; // fail gracefully if layout changed
             return m_CustomProperties != null && m_CustomProperties.Length > 0 ? m_CustomProperties[index] : string.Empty;
         }
 
