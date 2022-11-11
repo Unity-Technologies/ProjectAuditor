@@ -492,6 +492,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return $"{k_PrefKeyPrefix}.{m_Desc.name}.{key}";
         }
 
+        public static void DrawAction(GUIContent guiContent, Action onClick)
+        {
+            if (GUILayout.Button(guiContent, GUILayout.MaxWidth(LayoutSize.ActionButtonWidth), GUILayout.Height(LayoutSize.ActionButtonHeight)))
+            {
+                onClick();
+            }
+        }
+
         public static void DrawToolbarButton(GUIContent guiContent, Action onClick)
         {
             if (GUILayout.Button(
@@ -549,6 +557,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int DetailsPanelWidth = 200;
             public static readonly int ToolbarButtonSize = 80;
             public static readonly int ToolbarIconSize = 40;
+            public static readonly int ActionButtonHeight = 30;
+            public static readonly int ActionButtonWidth = 200;
         }
 
         static class Contents

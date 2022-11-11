@@ -10,9 +10,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class DiagnosticView : AnalysisView
     {
-        const int k_ActionButtonHeight = 30;
-        const int k_ActionButtonWidth = 200;
-
         public DiagnosticView(ViewManager viewManager) : base(viewManager)
         {
         }
@@ -45,24 +42,25 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             if (selectedDescriptors.Length == 1)
             {
-                if (!string.IsNullOrEmpty(selectedDescriptors[0].documentationUrl) && GUILayout.Button(
-                    Contents.Documentation, GUILayout.MaxWidth(k_ActionButtonWidth), GUILayout.Height(k_ActionButtonHeight)))
+                if (!string.IsNullOrEmpty(selectedDescriptors[0].documentationUrl))
                 {
-                    Application.OpenURL(selectedDescriptors[0].documentationUrl);
+                    DrawAction(Contents.Documentation, () =>
+                    {
+                        Application.OpenURL(selectedDescriptors[0].documentationUrl);
+                    });
                 }
 
                 if (selectedDescriptors[0].fixer != null)
                 {
                     GUI.enabled = selectedIssues.Any(i => !i.wasFixed);
 
-                    if (GUILayout.Button(
-                        Contents.QuickFix, GUILayout.MaxWidth(k_ActionButtonWidth), GUILayout.Height(k_ActionButtonHeight)))
+                    DrawAction(Contents.QuickFix, () =>
                     {
                         foreach (var issue in selectedIssues)
                         {
                             selectedDescriptors[0].Fix(issue);
                         }
-                    }
+                    });
 
                     GUI.enabled = true;
                 }
