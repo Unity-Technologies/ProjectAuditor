@@ -2,8 +2,8 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     public enum Priority
     {
-        Default,
-        Normal,
+        Default = -1,
+        Normal = 0,
         High,
         Critical
     }

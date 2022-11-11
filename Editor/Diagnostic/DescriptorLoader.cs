@@ -41,11 +41,6 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                         desc.title = desc.GetFullTypeName();
                 }
 
-                if (desc.priority == Priority.Default)
-                {
-                    desc.priority = Priority.Normal;
-                }
-
                 descriptors.Add(desc);
             }
 

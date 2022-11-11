@@ -387,10 +387,10 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
     public enum Priority
     {
-        Critical = 3,
-        Default = 0,
-        High = 2,
-        Normal = 1,
+        Critical = 2,
+        Default = -1,
+        High = 1,
+        Normal = 0,
     }
 
     public class Rule : System.IEquatable<Rule>
