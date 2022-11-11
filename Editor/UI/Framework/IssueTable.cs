@@ -260,7 +260,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             foreach (var childItem in item.children)
                             {
                                 var issueTableItem = childItem as IssueTableItem;
-                                var value = issueTableItem.ProjectIssue.GetCustomPropertyAsULong(customPropertyIndex);
+                                var value = issueTableItem.ProjectIssue.GetCustomPropertyUInt64(customPropertyIndex);
                                 sum += value;
                             }
 
@@ -272,7 +272,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             foreach (var childItem in item.children)
                             {
                                 var issueTableItem = childItem as IssueTableItem;
-                                var value = issueTableItem.ProjectIssue.GetCustomPropertyAsFloat(customPropertyIndex);
+                                var value = issueTableItem.ProjectIssue.GetCustomPropertyFloat(customPropertyIndex);
                                 sum += value;
                             }
                             label = Formatting.FormatTime(sum);
@@ -358,10 +358,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                         EditorGUI.LabelField(cellRect, Utility.GetIcon(Utility.IconType.WhiteCheckMark), labelStyle);
                                     break;
                                 case PropertyFormat.Bytes:
-                                    EditorGUI.LabelField(cellRect, Formatting.FormatSize(issue.GetCustomPropertyAsULong(customPropertyIndex)), labelStyle);
+                                    EditorGUI.LabelField(cellRect, Formatting.FormatSize(issue.GetCustomPropertyUInt64(customPropertyIndex)), labelStyle);
                                     break;
                                 case PropertyFormat.Time:
-                                    EditorGUI.LabelField(cellRect, Formatting.FormatTime(issue.GetCustomPropertyAsFloat(customPropertyIndex)), labelStyle);
+                                    EditorGUI.LabelField(cellRect, Formatting.FormatTime(issue.GetCustomPropertyFloat(customPropertyIndex)), labelStyle);
                                     break;
                                 case PropertyFormat.Integer:
                                     var intAsString = issue.GetCustomProperty(customPropertyIndex);

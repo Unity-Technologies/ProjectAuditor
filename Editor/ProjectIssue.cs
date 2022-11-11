@@ -137,7 +137,7 @@ namespace Unity.ProjectAuditor.Editor
             return m_CustomProperties != null && m_CustomProperties.Length > 0 ? m_CustomProperties[index] : string.Empty;
         }
 
-        internal bool GetCustomPropertyAsBool<T>(T propertyEnum) where T : struct
+        public bool GetCustomPropertyBool<T>(T propertyEnum) where T : struct
         {
             var valueAsString = GetCustomProperty(propertyEnum);
             var value = false;
@@ -146,7 +146,7 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
-        internal int GetCustomPropertyAsInt<T>(T propertyEnum) where T : struct
+        public int GetCustomPropertyInt32<T>(T propertyEnum) where T : struct
         {
             var valueAsString = GetCustomProperty(propertyEnum);
             var value = 0;
@@ -155,7 +155,7 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
-        internal long GetCustomPropertyAsLong<T>(T propertyEnum) where T : struct
+        public long GetCustomPropertyInt64<T>(T propertyEnum) where T : struct
         {
             var valueAsString = GetCustomProperty(propertyEnum);
             var value = (long)0;
@@ -164,7 +164,7 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
-        internal ulong GetCustomPropertyAsULong<T>(T propertyEnum) where T : struct
+        public ulong GetCustomPropertyUInt64<T>(T propertyEnum) where T : struct
         {
             var valueAsString = GetCustomProperty(propertyEnum);
             var value = (ulong)0;
@@ -173,13 +173,13 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
-        public float GetCustomPropertyAsFloat<T>(T propertyEnum) where T : struct
+        public float GetCustomPropertyFloat<T>(T propertyEnum) where T : struct
         {
             float value;
             return float.TryParse(GetCustomProperty(propertyEnum), out value) ? value : 0.0f;
         }
 
-        public double GetCustomPropertyAsDouble<T>(T propertyEnum) where T : struct
+        public double GetCustomPropertyDouble<T>(T propertyEnum) where T : struct
         {
             double value;
             return double.TryParse(GetCustomProperty(propertyEnum), out value) ? value : 0.0;

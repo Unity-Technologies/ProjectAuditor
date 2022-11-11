@@ -272,7 +272,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_Desc.category == IssueCategory.ComputeShaderVariant)
                 return true;
 
-            var compiled = issue.GetCustomPropertyAsBool(ShaderVariantProperty.Compiled);
+            var compiled = issue.GetCustomPropertyBool(ShaderVariantProperty.Compiled);
             if (compiled && m_ShowCompiledVariants)
                 return true;
             if (!compiled && m_ShowUncompiledVariants)

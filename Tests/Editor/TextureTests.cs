@@ -92,8 +92,8 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(textureImporter.textureCompression.ToString(), texture.GetCustomProperty(TextureProperty.TextureCompression));
 
             Assert.AreEqual("AutomaticCompressed", texture.GetCustomProperty(TextureProperty.Format));
-            Assert.True(texture.GetCustomPropertyAsBool(TextureProperty.MipMapEnabled));
-            Assert.False(texture.GetCustomPropertyAsBool(TextureProperty.Readable));
+            Assert.True(texture.GetCustomPropertyBool(TextureProperty.MipMapEnabled));
+            Assert.False(texture.GetCustomPropertyBool(TextureProperty.Readable));
             Assert.AreEqual((k_Resolution + "x" + k_Resolution), texture.GetCustomProperty(TextureProperty.Resolution));
 
             /*

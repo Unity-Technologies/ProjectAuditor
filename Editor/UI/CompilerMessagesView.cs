@@ -38,7 +38,7 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
                 m_CompilationMode = (CompilationMode)Enum.Parse(typeof(CompilationMode), metaData.GetCustomProperty(MetaDataProperty.Value));
             metaData = allIssues.FirstOrDefault(i => i.category == IssueCategory.MetaData && i.description.Equals(MetaDataModule.k_KeyRoslynAnalysis));
             if (metaData != null)
-                m_RoslynAnalysis = metaData.GetCustomPropertyAsBool(MetaDataProperty.Value);
+                m_RoslynAnalysis = metaData.GetCustomPropertyBool(MetaDataProperty.Value);
         }
 
         public override void DrawDetails(ProjectIssue[] selectedIssues)

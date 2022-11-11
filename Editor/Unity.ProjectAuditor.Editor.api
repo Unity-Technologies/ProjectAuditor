@@ -122,8 +122,12 @@ namespace Unity.ProjectAuditor.Editor
         public static Core.IssueBuilder Create(IssueCategory category, string description);
         public static Core.IssueBuilder Create(IssueCategory category, Diagnostic.Descriptor descriptor, params object[] args);
         public string GetCustomProperty<T>(T propertyEnum) where T : struct, new();
-        public double GetCustomPropertyAsDouble<T>(T propertyEnum) where T : struct, new();
-        public float GetCustomPropertyAsFloat<T>(T propertyEnum) where T : struct, new();
+        public bool GetCustomPropertyBool<T>(T propertyEnum) where T : struct, new();
+        public double GetCustomPropertyDouble<T>(T propertyEnum) where T : struct, new();
+        public float GetCustomPropertyFloat<T>(T propertyEnum) where T : struct, new();
+        public int GetCustomPropertyInt32<T>(T propertyEnum) where T : struct, new();
+        public long GetCustomPropertyInt64<T>(T propertyEnum) where T : struct, new();
+        public System.UInt64 GetCustomPropertyUInt64<T>(T propertyEnum) where T : struct, new();
         public int GetNumCustomProperties();
         public bool IsValid();
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct, new();

@@ -103,7 +103,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual("com.unity.services.vivox", diagnostic.GetCustomProperty(PackageDiagnosticProperty.Name));
             Assert.AreEqual("15.1.180001-pre.5", diagnostic.GetCustomProperty(PackageDiagnosticProperty.CurrentVersion));
             Assert.AreEqual(string.Empty, diagnostic.GetCustomProperty(PackageDiagnosticProperty.RecommendedVersion));
-            Assert.IsTrue(diagnostic.GetCustomPropertyAsBool(PackageDiagnosticProperty.Experimental));
+            Assert.IsTrue(diagnostic.GetCustomPropertyBool(PackageDiagnosticProperty.Experimental));
         }
     }
 }
