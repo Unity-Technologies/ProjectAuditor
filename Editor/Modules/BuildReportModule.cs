@@ -188,7 +188,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             logMessage
                         })
                         .WithDepth(depth + 1)
-                        .WithSeverity(LogTypeToSeverity(message.type));
+                        .WithSeverity(Diagnostic.Utils.LogTypeToSeverity(message.type));
                     issues.Add(issue);
                 }
             }
@@ -229,21 +229,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var issue = ProjectIssue.Create(IssueCategory.BuildSummary, key)
                 .WithCustomProperties(new object[(int)BuildReportMetaData.Num] { value });
             issues.Add(issue);
-        }
-
-        Severity LogTypeToSeverity(LogType logType)
-        {
-            switch (logType)
-            {
-                case LogType.Assert:
-                case LogType.Error:
-                case LogType.Exception:
-                    return Severity.Error;
-                case LogType.Warning:
-                    return Severity.Warning;
-                default:
-                    return Severity.Info;
-            }
         }
 
 #endif
