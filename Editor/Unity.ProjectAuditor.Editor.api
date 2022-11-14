@@ -540,15 +540,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Value = 0,
     }
 
-    public enum PackageDiagnosticProperty
-    {
-        CurrentVersion = 1,
-        Experimental = 3,
-        Name = 0,
-        Num = 4,
-        RecommendedVersion = 2,
-    }
-
     public enum PackageProperty
     {
         Name = 0,

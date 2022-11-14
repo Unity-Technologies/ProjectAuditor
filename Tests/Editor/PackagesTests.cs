@@ -61,18 +61,18 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Package_Installed_IsReported(string description, string name, string source, string[] dependencies = null)
         {
             var installedPackages = Analyze(IssueCategory.Package);
-            var matchIssue = installedPackages.FirstOrDefault(issue => issue.description == description);
+            var package = installedPackages.FirstOrDefault(issue => issue.description == description);
 
-            Assert.IsNotNull(matchIssue, "Package {0} not found. Packages: {1}", description, string.Join(", ", installedPackages.Select(p => p.description).ToArray()));
-            Assert.AreEqual(name, matchIssue.GetCustomProperty(PackageProperty.Name));
-            Assert.AreEqual("Packages/" + name, matchIssue.location.Path);
-            Assert.IsTrue(matchIssue.GetCustomProperty(PackageDiagnosticProperty.RecommendedVersion).StartsWith(source), "Package: " + description);
+            Assert.IsNotNull(package, "Package {0} not found. Packages: {1}", description, string.Join(", ", installedPackages.Select(p => p.description).ToArray()));
+            Assert.AreEqual(name, package.GetCustomProperty(PackageProperty.Name));
+            Assert.AreEqual(source, package.GetCustomProperty(PackageProperty.Source));
+            Assert.AreEqual("Packages/" + name, package.location.Path);
 
             if (dependencies != null)
             {
                 for (var i = 0; i < dependencies.Length; i++)
                 {
-                    Assert.IsTrue(matchIssue.dependencies.GetChild(i).GetName().Contains(dependencies[i]), "Package: " + description);
+                    Assert.IsTrue(package.dependencies.GetChild(i).GetName().Contains(dependencies[i]), "Package: " + description);
                 }
             }
         }
@@ -81,29 +81,20 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Package_Upgrade_IsRecommended()
         {
             var packageDiagnostics = Analyze(IssueCategory.PackageDiagnostic);
-            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.GetCustomProperty(PackageDiagnosticProperty.Name) == "com.unity.2d.pixel-perfect");
+            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.description.Contains("com.unity.2d.pixel-perfect"));
 
             Assert.IsNotNull(diagnostic, "Cannot find the upgrade package: com.unity.2d.pixel-perfect");
-            Assert.AreEqual("com.unity.2d.pixel-perfect", diagnostic.GetCustomProperty(PackageDiagnosticProperty.Name));
-            Assert.AreEqual("3.0.2", diagnostic.GetCustomProperty(PackageDiagnosticProperty.CurrentVersion));
-
-            var currentVersion = diagnostic.GetCustomProperty(PackageDiagnosticProperty.CurrentVersion);
-            var recommendedVersion = diagnostic.GetCustomProperty(PackageDiagnosticProperty.RecommendedVersion);
-
-            Assert.AreNotEqual(currentVersion, recommendedVersion, "The current and recommended versions should be different");
+            Assert.IsTrue(diagnostic.description.StartsWith("'com.unity.2d.pixel-perfect' could be updated from version '3.0.2' to "), "Description: " + diagnostic.description);
         }
 
         [Test]
         public void Package_Preview_IsReported()
         {
             var packageDiagnostics = Analyze(IssueCategory.PackageDiagnostic);
-            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.GetCustomProperty(PackageDiagnosticProperty.Name) == "com.unity.services.vivox");
+            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.description.Contains("com.unity.services.vivox"));
 
             Assert.IsNotNull(diagnostic, "Cannot find the upgrade package: com.unity.services.vivox");
-            Assert.AreEqual("com.unity.services.vivox", diagnostic.GetCustomProperty(PackageDiagnosticProperty.Name));
-            Assert.AreEqual("15.1.180001-pre.5", diagnostic.GetCustomProperty(PackageDiagnosticProperty.CurrentVersion));
-            Assert.AreEqual(string.Empty, diagnostic.GetCustomProperty(PackageDiagnosticProperty.RecommendedVersion));
-            Assert.IsTrue(diagnostic.GetCustomPropertyBool(PackageDiagnosticProperty.Experimental));
+            Assert.IsTrue(diagnostic.description.StartsWith("'com.unity.services.vivox' version "), "Description: " + diagnostic.description);
         }
     }
 }
