@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -44,6 +45,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 // open text file in the text editor
                 AssetDatabase.OpenAsset(obj, location.Line);
             }
+        }
+
+        public static void OpenPackage(Location location)
+        {
+            var packageName = Path.GetFileName(location.Path);
+            UnityEditor.PackageManager.UI.Window.Open(packageName);
         }
 
         public static void OpenProjectSettings(Location location)

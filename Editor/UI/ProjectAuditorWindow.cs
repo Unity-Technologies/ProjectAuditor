@@ -387,6 +387,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     AnalysisView.DrawToolbarButton(Contents.PackageDiagnostics, () => viewManager.ChangeView(IssueCategory.PackageDiagnostic));
                 },
+                onOpenIssue = EditorUtil.OpenPackage,
                 showDependencyView = true,
                 dependencyViewGuiContent = new GUIContent("Package Dependencies"),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Packages
@@ -402,6 +403,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     AnalysisView.DrawToolbarButton(Contents.Packages, () => viewManager.ChangeView(IssueCategory.Package));
                 },
+                onOpenIssue = EditorUtil.OpenPackage,
                 type = typeof(DiagnosticView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageVersion
             });

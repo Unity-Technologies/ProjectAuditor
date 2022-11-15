@@ -103,6 +103,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static void FocusOnAssetInProjectWindow(Location location);
         public static void OpenCodeDescriptor(Unity.ProjectAuditor.Editor.Diagnostic.Descriptor descriptor);
         public static void OpenCompilerMessageDescriptor(Unity.ProjectAuditor.Editor.Diagnostic.Descriptor descriptor);
+        public static void OpenPackage(Location location);
         public static void OpenProjectSettings(Location location);
         public static void OpenTextFile<T>(Location location) where T : UnityEngine.Object;
     }

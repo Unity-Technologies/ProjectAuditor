@@ -117,12 +117,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 if (!recommendedVersionString.Equals(package.version))
                 {
-                    yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade, package.name, package.version, recommendedVersionString);
+                    yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade, package.name, package.version, recommendedVersionString)
+                        .WithLocation(package.assetPath);
                 }
             }
             else if (package.version.Contains("pre") || package.version.Contains("exp"))
             {
-                yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView, package.name, package.version);
+                yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView, package.name, package.version)
+                    .WithLocation(package.assetPath);
             }
         }
     }
