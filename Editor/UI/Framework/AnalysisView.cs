@@ -492,7 +492,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return $"{k_PrefKeyPrefix}.{m_Desc.name}.{key}";
         }
 
-        public static void DrawAction(GUIContent guiContent, Action onClick)
+        public static void DrawActionButton(GUIContent guiContent, Action onClick)
         {
             if (GUILayout.Button(guiContent, GUILayout.MaxWidth(LayoutSize.ActionButtonWidth), GUILayout.Height(LayoutSize.ActionButtonHeight)))
             {

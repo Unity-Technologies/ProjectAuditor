@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 if (!string.IsNullOrEmpty(selectedDescriptors[0].documentationUrl))
                 {
-                    DrawAction(Contents.Documentation, () =>
+                    DrawActionButton(Contents.Documentation, () =>
                     {
                         Application.OpenURL(selectedDescriptors[0].documentationUrl);
                     });
@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     GUI.enabled = selectedIssues.Any(i => !i.wasFixed);
 
-                    DrawAction(Contents.QuickFix, () =>
+                    DrawActionButton(Contents.QuickFix, () =>
                     {
                         foreach (var issue in selectedIssues)
                         {
