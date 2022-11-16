@@ -551,9 +551,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showMuteOptions = true,
                 onOpenIssue = (location) =>
                 {
-#if UNITY_2020_2_OR_NEWER
-                    var guid = AssetDatabase.GUIDFromAssetPath(location.Path);
-                    if (guid.Empty())
+                    var guid = AssetDatabase.AssetPathToGUID(location.Path);
+                    if (string.IsNullOrEmpty(guid))
                     {
                         if (location.Path.Equals("Project/Build"))
                             BuildPlayerWindow.ShowBuildPlayerWindow();
@@ -564,9 +563,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         EditorInterop.FocusOnAssetInProjectWindow(location);
                     }
-#else
-                    EditorUtil.OpenProjectSettings(location);
-#endif
                 },
                 type = typeof(DiagnosticView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ProjectSettings
