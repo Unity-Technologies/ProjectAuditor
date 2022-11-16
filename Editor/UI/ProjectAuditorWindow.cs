@@ -667,10 +667,13 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void AuditCategories(IssueCategory[] categories)
         {
-            var views = categories
+            // a module might report more categories than requested so we need to make sure we clean up the views accordingly
+            var modules = categories.SelectMany(m_ProjectAuditor.GetModules).ToArray();
+            var actualCategories = modules.SelectMany(m => m.categories).Distinct().ToArray();
+
+            var views = actualCategories
                 .Select(c => m_ViewManager.GetView(c))
                 .Where(v => v != null)
-                .Distinct()
                 .ToArray();
 
             foreach (var view in views)
@@ -680,7 +683,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var projectAuditorParams = new ProjectAuditorParams
             {
-                categories = categories,
+                categories = actualCategories,
                 onIncomingIssues = issues =>
                 {
                     foreach (var view in views)

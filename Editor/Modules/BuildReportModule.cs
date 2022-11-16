@@ -87,6 +87,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
         const string k_Unknown = "Unknown";
 #endif
 
+        static readonly IssueLayout k_MetaDataLayout = new IssueLayout
+        {
+            category = IssueCategory.BuildSummary,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Key" }
+            }
+        };
+
         static readonly IssueLayout k_FileLayout = new IssueLayout
         {
             category = IssueCategory.BuildFile,
@@ -133,6 +142,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
+            k_MetaDataLayout,
             k_FileLayout,
             k_StepLayout
         };
