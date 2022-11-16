@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.IsNotNull(package, "Package {0} not found. Packages: {1}", description, string.Join(", ", installedPackages.Select(p => p.description).ToArray()));
             Assert.AreEqual(name, package.GetCustomProperty(PackageProperty.Name));
-            Assert.AreEqual(source, package.GetCustomProperty(PackageProperty.Source));
+            Assert.AreEqual(source.ToString(), package.GetCustomProperty(PackageProperty.Source));
             Assert.AreEqual("Packages/" + name, package.location.Path);
 
             if (dependencies != null)
