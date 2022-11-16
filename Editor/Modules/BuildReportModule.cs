@@ -147,8 +147,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath, issues);
                 NewMetaData(k_KeyPlatform, buildReport.summary.platform, issues);
                 NewMetaData(k_KeyResult, buildReport.summary.result, issues);
-                NewMetaData(k_KeyStartTime, buildReport.summary.buildStartedAt, issues);
-                NewMetaData(k_KeyEndTime, buildReport.summary.buildEndedAt, issues);
+                NewMetaData(k_KeyStartTime, Formatting.FormatDateTime(buildReport.summary.buildStartedAt), issues);
+                NewMetaData(k_KeyEndTime, Formatting.FormatDateTime(buildReport.summary.buildEndedAt), issues);
                 NewMetaData(k_KeyTotalTime, Formatting.FormatBuildTime(buildReport.summary.totalTime), issues);
                 NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize), issues);
 
