@@ -62,6 +62,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditorParams = new ProjectAuditorParams
             {
                 assemblyNames = new[] { AssemblyInfo.DefaultAssemblyName},
+                categories = new[] { category},
                 onIncomingIssues = issues =>
                 {
                     var categoryIssues = issues.Where(issue => issue.category == category);
