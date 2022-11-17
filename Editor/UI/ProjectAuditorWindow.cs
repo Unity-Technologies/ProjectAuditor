@@ -118,7 +118,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (viewDesc.showCritical &&
                 m_ViewStates.onlyCriticalIssues &&
-                !issue.isPerfCriticalContext)
+                !issue.isCritical)
                 return false;
 
             return true;

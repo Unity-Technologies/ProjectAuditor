@@ -1,13 +1,18 @@
 using System;
+using System.Collections;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
+    [Serializable]
     class ProjectIssueTests
     {
         Descriptor s_Descriptor = new Descriptor
@@ -19,6 +24,9 @@ namespace Unity.ProjectAuditor.EditorTests
             "do nothing"
             );
 
+        [SerializeField]
+        ProjectIssue m_Issue;
+
         [Test]
         public void ProjectIssue_NewIssue_IsInitialized()
         {
@@ -28,7 +36,25 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(string.Empty, uninitialised.relativePath);
             Assert.AreEqual(string.Empty, uninitialised.GetContext());
             Assert.AreEqual(description, uninitialised.description);
-            Assert.False(uninitialised.isPerfCriticalContext);
+            Assert.False(uninitialised.isCritical);
+        }
+
+        [UnityTest]
+        public IEnumerator ProjectIssue_Critical_PersistsAfterDomainReload()
+        {
+            var description = "dummy issue";
+            m_Issue = new ProjectIssue(IssueCategory.Code, s_Descriptor, description);
+
+            Assert.IsFalse(m_Issue.isCritical);
+
+            m_Issue.isCritical = true;
+
+            Assert.IsTrue(m_Issue.isCritical);
+
+            EditorUtility.RequestScriptReload();
+            yield return new WaitForDomainReload();
+
+            Assert.IsTrue(m_Issue.isCritical);
         }
 
         [Test]

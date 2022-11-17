@@ -1,9 +1,15 @@
 using System;
+using System.Collections;
 using System.Linq;
 using NUnit.Framework;
+using Unity.ProjectAuditor.Editor;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
+    [Serializable]
     class PerfCriticalContextTests : TestFixtureBase
     {
         TempAsset m_TempAssetIssueInClassInheritedFromMonoBehaviour;
@@ -13,6 +19,9 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAssetIssueInMonoBehaviourOnRenderObject;
         TempAsset m_TempAssetIssueInSimpleClass;
         TempAsset m_TempAssetShaderWarmupIssueIsCritical;
+
+        [SerializeField]
+        ProjectIssue m_Issue;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -116,7 +125,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInSimpleClass);
             var issue = issues.First();
-            Assert.False(issue.isPerfCriticalContext);
+            Assert.False(issue.isCritical);
         }
 
         [Test]
@@ -124,7 +133,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourUpdate);
             var issue = issues.First();
-            Assert.True(issue.isPerfCriticalContext);
+            Assert.True(issue.isCritical);
         }
 
         [Test]
@@ -132,7 +141,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnAnimatorMove);
             var issue = issues.First();
-            Assert.True(issue.isPerfCriticalContext);
+            Assert.True(issue.isCritical);
         }
 
         [Test]
@@ -140,7 +149,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnRenderObject);
             var issue = issues.First();
-            Assert.True(issue.isPerfCriticalContext);
+            Assert.True(issue.isCritical);
         }
 
         [Test]
@@ -150,7 +159,7 @@ class ShaderWarmUpIssueIsCritical
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetIssueInClassMethodCalledFromMonoBehaviourUpdate);
             var issue = issues.First();
-            Assert.True(issue.isPerfCriticalContext);
+            Assert.True(issue.isCritical);
         }
 
         [Test]
@@ -160,7 +169,23 @@ class ShaderWarmUpIssueIsCritical
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetIssueInClassInheritedFromMonoBehaviour);
             var issue = issues.First();
-            Assert.True(issue.isPerfCriticalContext);
+            Assert.True(issue.isCritical);
+        }
+
+        [UnityTest]
+        public IEnumerator CodeAnalysis_Critical_PersistsAfterDomainReload()
+        {
+            var issues =
+                AnalyzeAndFindAssetIssues(
+                    m_TempAssetIssueInClassInheritedFromMonoBehaviour);
+            m_Issue = issues.First();
+
+            Assert.IsTrue(m_Issue.isCritical);
+
+            EditorUtility.RequestScriptReload();
+            yield return new WaitForDomainReload();
+
+            Assert.IsTrue(m_Issue.isCritical);
         }
 
         [Test]
@@ -170,7 +195,7 @@ class ShaderWarmUpIssueIsCritical
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetShaderWarmupIssueIsCritical);
             var issue = issues.First();
-            Assert.True(issue.isPerfCriticalContext);
+            Assert.True(issue.isCritical);
         }
     }
 }

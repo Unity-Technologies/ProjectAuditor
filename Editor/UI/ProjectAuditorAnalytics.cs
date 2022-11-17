@@ -288,7 +288,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 ++stats.numOccurrences;
 
-                if (issue.isPerfCriticalContext)
+                if (issue.isCritical)
                 {
                     ++stats.numHotPathOccurrences;
                 }

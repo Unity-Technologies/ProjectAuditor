@@ -304,7 +304,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     case PropertyType.CriticalContext:
                     {
-                        if (issue.isPerfCriticalContext)
+                        if (issue.isCritical)
                             EditorGUI.LabelField(cellRect, Utility.GetIcon(Utility.IconType.Warning, Tooltip.HotPath), labelStyle);
                     }
                     break;

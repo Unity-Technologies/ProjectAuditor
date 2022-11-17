@@ -51,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor
                         return k_NotAvailable;
                     return PathUtils.GetDirectoryName(issue.location.Path);
                 case PropertyType.CriticalContext:
-                    return issue.isPerfCriticalContext.ToString();
+                    return issue.isCritical.ToString();
                 default:
                     var propertyIndex = propertyType - PropertyType.Num;
                     return issue.GetCustomProperty(propertyIndex);
@@ -140,7 +140,7 @@ namespace Unity.ProjectAuditor.Editor
 
                     return cp;
                 case PropertyType.CriticalContext:
-                    return issueA.isPerfCriticalContext.CompareTo(issueB.isPerfCriticalContext);
+                    return issueA.isCritical.CompareTo(issueB.isCritical);
                 default:
                     var propA = issueA.GetProperty(propertyType);
                     var propB = issueB.GetProperty(propertyType);

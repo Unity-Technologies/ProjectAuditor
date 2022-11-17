@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Fixed Build Report object name
 * Fixed text alignment and wrapping issues
 * Fixed build report steps text wrapping
+* Fixed diagnostics _critical_ property persistence after domain reload  
 * Improved text search to match custom properties
 
 ## [0.8.4-preview] - 2022-09-27

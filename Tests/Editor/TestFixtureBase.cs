@@ -59,7 +59,6 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var foundIssues = new List<ProjectIssue>();
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
-            var modules = projectAuditor.GetModules(category);
             var projectAuditorParams = new ProjectAuditorParams
             {
                 assemblyNames = new[] { AssemblyInfo.DefaultAssemblyName},
@@ -72,10 +71,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 platform = m_Platform
             };
 
-            foreach (var module in modules)
-            {
-                module.Audit(projectAuditorParams);
-            }
+            projectAuditor.Audit(projectAuditorParams);
 
             return foundIssues.ToArray();
         }
