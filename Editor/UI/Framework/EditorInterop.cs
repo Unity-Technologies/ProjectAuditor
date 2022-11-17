@@ -49,8 +49,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static void OpenPackage(Location location)
         {
+#if UNITY_2019_1_OR_NEWER
             var packageName = Path.GetFileName(location.Path);
             UnityEditor.PackageManager.UI.Window.Open(packageName);
+#endif
         }
 
         public static void OpenProjectSettings(Location location)

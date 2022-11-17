@@ -181,11 +181,14 @@ class ShaderWarmUpIssueIsCritical
             m_Issue = issues.First();
 
             Assert.IsTrue(m_Issue.isCritical);
-
+#if UNITY_2019_3_OR_NEWER
             EditorUtility.RequestScriptReload();
             yield return new WaitForDomainReload();
 
             Assert.IsTrue(m_Issue.isCritical);
+#else
+            yield return null;
+#endif
         }
 
         [Test]

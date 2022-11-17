@@ -53,11 +53,13 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        [TestCase("Project Auditor", "com.unity.project-auditor", PackageSource.LocalTarball, new string[] { "com.unity.nuget.mono-cecil" })]
-        [TestCase("Audio", "com.unity.modules.audio", PackageSource.BuiltIn)]
 #if UNITY_2019_1_OR_NEWER
         [TestCase("Test Framework", "com.unity.test-framework", PackageSource.Registry, new[] { "com.unity.ext.nunit", "com.unity.modules.imgui", "com.unity.modules.jsonserialize"})]
+        [TestCase("Project Auditor", "com.unity.project-auditor", PackageSource.LocalTarball, new string[] { "com.unity.nuget.mono-cecil" })]
+#else
+        [TestCase("Project Auditor", "com.unity.project-auditor", PackageSource.Local, new string[] { "com.unity.nuget.mono-cecil" })]
 #endif
+        [TestCase("Audio", "com.unity.modules.audio", PackageSource.BuiltIn)]
         public void Package_Installed_IsReported(string description, string name, PackageSource source, string[] dependencies = null)
         {
             var installedPackages = Analyze(IssueCategory.Package);
