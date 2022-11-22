@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.EditorTests
     [Serializable]
     class ProjectIssueTests
     {
-        Descriptor s_Descriptor = new Descriptor
+        Descriptor m_Descriptor = new Descriptor
             (
             "TD2001",
             "test",
@@ -24,6 +24,18 @@ namespace Unity.ProjectAuditor.EditorTests
             "do nothing"
             );
 
+        Descriptor m_CriticalIssueDescriptor = new Descriptor
+            (
+            "TD2002",
+            "test",
+            Area.CPU,
+            "this is not actually a problem",
+            "do nothing"
+            )
+        {
+            critical = true
+        };
+
         [SerializeField]
         ProjectIssue m_Issue;
 
@@ -31,19 +43,33 @@ namespace Unity.ProjectAuditor.EditorTests
         public void ProjectIssue_NewIssue_IsInitialized()
         {
             var description = "dummy issue";
-            var uninitialised = new ProjectIssue(IssueCategory.Code, s_Descriptor, description);
+            var uninitialised = new ProjectIssue(IssueCategory.Code, m_Descriptor, description);
             Assert.AreEqual(string.Empty, uninitialised.filename);
             Assert.AreEqual(string.Empty, uninitialised.relativePath);
             Assert.AreEqual(string.Empty, uninitialised.GetContext());
             Assert.AreEqual(description, uninitialised.description);
-            Assert.False(uninitialised.isCritical);
+            Assert.IsFalse(uninitialised.isCritical);
+        }
+
+        [Test]
+        public void ProjectIssue_NewIssue_IsCritical()
+        {
+            var description = "dummy issue";
+            var diagnostic = new ProjectIssue(IssueCategory.Code, m_CriticalIssueDescriptor, description);
+            Assert.AreEqual(string.Empty, diagnostic.filename);
+            Assert.AreEqual(string.Empty, diagnostic.relativePath);
+            Assert.AreEqual(string.Empty, diagnostic.GetContext());
+            Assert.AreEqual(description, diagnostic.description);
+
+            // the issue should be critical as per the descriptor
+            Assert.IsTrue(diagnostic.isCritical);
         }
 
         [UnityTest]
         public IEnumerator ProjectIssue_Critical_PersistsAfterDomainReload()
         {
             var description = "dummy issue";
-            m_Issue = new ProjectIssue(IssueCategory.Code, s_Descriptor, description);
+            m_Issue = new ProjectIssue(IssueCategory.Code, m_Descriptor, description);
 
             Assert.IsFalse(m_Issue.isCritical);
 
@@ -68,7 +94,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "property #0",
                 "property #1"
             };
-            ProjectIssue issue = ProjectIssue.Create(IssueCategory.Code, s_Descriptor, "dummy issue")
+            ProjectIssue issue = ProjectIssue.Create(IssueCategory.Code, m_Descriptor, "dummy issue")
                 .WithCustomProperties(properties);
 
             Assert.AreEqual(2, issue.GetNumCustomProperties());
@@ -79,7 +105,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectIssue_CustomProperties_AreNotSet()
         {
-            var issue = new ProjectIssue(IssueCategory.Code, s_Descriptor, "dummy issue");
+            var issue = new ProjectIssue(IssueCategory.Code, m_Descriptor, "dummy issue");
 
             Assert.AreEqual(0, issue.GetNumCustomProperties());
         }
@@ -92,7 +118,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "property #0",
                 "property #1"
             };
-            ProjectIssue issue = ProjectIssue.Create(IssueCategory.Code, s_Descriptor, "dummy issue")
+            ProjectIssue issue = ProjectIssue.Create(IssueCategory.Code, m_Descriptor, "dummy issue")
                 .WithCustomProperties(properties)
                 .WithLocation("Assets/Dummy.cs");
 
@@ -112,7 +138,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectIssue_NoFileProperties_AreSet()
         {
-            var issue = new ProjectIssue(IssueCategory.Code, s_Descriptor, "dummy issue");
+            var issue = new ProjectIssue(IssueCategory.Code, m_Descriptor, "dummy issue");
 
             Assert.AreEqual(ProjectIssueExtensions.k_NotAvailable, issue.GetProperty(PropertyType.Path));
             Assert.AreEqual(ProjectIssueExtensions.k_NotAvailable, issue.GetProperty(PropertyType.Filename));

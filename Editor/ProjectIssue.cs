@@ -50,16 +50,16 @@ namespace Unity.ProjectAuditor.Editor
             m_Descriptor = descriptor;
             m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
             m_Category = category;
-            m_Critical = false;
+            m_Critical = descriptor.critical;
+            m_Severity = descriptor.severity;
         }
 
         internal ProjectIssue(IssueCategory category, string description)
         {
             m_Description = description;
             m_Category = category;
-
-            m_Severity = Severity.Default;
             m_Critical = false;
+            m_Severity = Severity.Default;
         }
 
         public IssueCategory category => m_Category;
@@ -123,7 +123,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public bool isCritical
         {
-            get => m_Critical || descriptor.critical;
+            get => m_Critical;
             set => m_Critical = value;
         }
 
