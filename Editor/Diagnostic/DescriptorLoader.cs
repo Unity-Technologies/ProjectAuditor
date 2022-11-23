@@ -24,7 +24,6 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
                 var desc = new Descriptor(rawDescriptor.id, rawDescriptor.title, rawDescriptor.areas)
                 {
-                    customevaluator = rawDescriptor.customevaluator,
                     type = rawDescriptor.type ?? string.Empty,
                     method = rawDescriptor.method ?? string.Empty,
                     value = rawDescriptor.value,

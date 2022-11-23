@@ -49,6 +49,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static string[] Split(string path);
     }
 
+    public static class PlayerSettingsUtil
+    {
+        public static bool IsStaticBatchingEnabled(UnityEditor.BuildTarget platform);
+    }
+
     public static class ShaderUtilProxy
     {
         public static string[] GetCompilerPlatformNames();

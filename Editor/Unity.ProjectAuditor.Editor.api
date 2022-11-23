@@ -357,7 +357,6 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     {
         public string[] areas;
         public bool critical = false;
-        public string customevaluator;
         public string description;
         public string documentationUrl;
         public System.Action<ProjectIssue> fixer;

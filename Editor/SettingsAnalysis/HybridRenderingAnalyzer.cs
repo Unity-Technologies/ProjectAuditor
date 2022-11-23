@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext context)
         {
-            if (Evaluators.PlayerSettingsIsStaticBatchingEnabled(context.platform))
+            if (PlayerSettingsUtil.IsStaticBatchingEnabled(context.platform))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_Descriptor);
             }

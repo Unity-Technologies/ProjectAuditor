@@ -72,7 +72,6 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public bool critical;
 
         // TODO: remove auditor-specific fields
-        public string customevaluator;
         public string type;
         public string method;
         public string value;

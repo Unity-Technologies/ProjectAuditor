@@ -17,56 +17,45 @@ namespace Unity.ProjectAuditor.EditorTests
     class SettingsAnalysisTests : TestFixtureBase
     {
         [Test]
-        public void SettingsAnalysis_Evaluators_Exist()
-        {
-            var descriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, "ProjectSettings").Where(d => !string.IsNullOrEmpty(d.customevaluator));
-            foreach (var desc in descriptors)
-            {
-                var evalType = typeof(Evaluators);
-                Assert.NotNull(evalType.GetMethod(desc.customevaluator), desc.customevaluator + " not found.");
-            }
-        }
-
-        [Test]
         public void SettingsAnalysis_Default_AccelerometerFrequency()
         {
-            Assert.True(Evaluators.PlayerSettingsAccelerometerFrequency(EditorUserBuildSettings.activeBuildTarget));
+            Assert.True(PlayerSettingsAnalyzer.IsAccelerometerEnabled());
         }
 
         [Test]
         public void SettingsAnalysis_Default_PhysicsLayerCollisionMatrix()
         {
-            Assert.True(Evaluators.PhysicsLayerCollisionMatrix(EditorUserBuildSettings.activeBuildTarget));
+            Assert.True(PhysicsAnalyzer.IsDefaultLayerCollisionMatrix());
         }
 
         [Test]
         public void SettingsAnalysis_Default_Physics2DLayerCollisionMatrix()
         {
-            Assert.True(Evaluators.Physics2DLayerCollisionMatrix(EditorUserBuildSettings.activeBuildTarget));
+            Assert.True(Physics2DAnalyzer.IsDefaultLayerCollisionMatrix());
         }
 
         [Test]
         public void SettingsAnalysis_Default_QualitySettings()
         {
-            Assert.True(Evaluators.QualityUsingDefaultSettings(EditorUserBuildSettings.activeBuildTarget));
+            Assert.True(QualitySettingsAnalyzer.IsUsingDefaultSettings());
         }
 
         [Test]
         public void SettingsAnalysis_Default_QualityAsyncUploadTimeSlice()
         {
-            Assert.True(Evaluators.QualityDefaultAsyncUploadTimeSlice(EditorUserBuildSettings.activeBuildTarget));
+            Assert.True(QualitySettingsAnalyzer.IsDefaultAsyncUploadTimeSlice());
         }
 
         [Test]
         public void SettingsAnalysis_Default_QualityAsyncUploadBufferSize()
         {
-            Assert.True(Evaluators.QualityDefaultAsyncUploadBufferSize(EditorUserBuildSettings.activeBuildTarget));
+            Assert.True(QualitySettingsAnalyzer.IsDefaultAsyncUploadBufferSize());
         }
 
         [Test]
         public void SettingsAnalysis_Default_StaticBatchingEnabled()
         {
-            Assert.True(Evaluators.PlayerSettingsIsStaticBatchingEnabled(EditorUserBuildSettings.activeBuildTarget));
+            Assert.True(PlayerSettingsUtil.IsStaticBatchingEnabled(EditorUserBuildSettings.activeBuildTarget));
         }
 
         [Test]
@@ -120,7 +109,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var prevSplashScreenEnabled = PlayerSettings.SplashScreen.show;
             PlayerSettings.SplashScreen.show = splashScreenEnabled;
 
-            Assert.AreEqual(splashScreenEnabled, Evaluators.PlayerSettingsSplashScreenIsEnabledAndCanBeDisabled(EditorUserBuildSettings.activeBuildTarget));
+            Assert.AreEqual(splashScreenEnabled, PlayerSettingsAnalyzer.IsSplashScreenEnabledAndCanBeDisabled());
 
             PlayerSettings.SplashScreen.show = prevSplashScreenEnabled;
         }
@@ -151,7 +140,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #if UNITY_2019_3_OR_NEWER
             GraphicsSettings.defaultRenderPipeline = null;
 #endif
-            Assert.AreEqual(isMixed, Evaluators.GraphicsMixedStandardShaderQuality_WithBuiltinRenderPipeline(buildTarget));
+            Assert.AreEqual(isMixed, BuiltinRenderPipelineAnalyzer.IsMixedStandardShaderQuality(buildTarget));
 
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, savedTier1settings);
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, savedTier2settings);
@@ -189,13 +178,13 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
             if (renderingPath == RenderingPath.Forward)
             {
-                Assert.AreEqual(true, Evaluators.GraphicsUsingForwardRendering_WithBuiltinRenderPipeline(buildTarget));
-                Assert.AreEqual(false, Evaluators.GraphicsUsingDeferredRendering_WithBuiltinRenderPipeline(buildTarget));
+                Assert.AreEqual(true, BuiltinRenderPipelineAnalyzer.IsUsingForwardRendering(buildTarget));
+                Assert.AreEqual(false, BuiltinRenderPipelineAnalyzer.IsUsingDeferredRendering(buildTarget));
             }
             else
             {
-                Assert.AreEqual(false, Evaluators.GraphicsUsingForwardRendering_WithBuiltinRenderPipeline(buildTarget));
-                Assert.AreEqual(true, Evaluators.GraphicsUsingDeferredRendering_WithBuiltinRenderPipeline(buildTarget));
+                Assert.AreEqual(false, BuiltinRenderPipelineAnalyzer.IsUsingForwardRendering(buildTarget));
+                Assert.AreEqual(true, BuiltinRenderPipelineAnalyzer.IsUsingDeferredRendering(buildTarget));
             }
 
             EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, savedTier1settings);

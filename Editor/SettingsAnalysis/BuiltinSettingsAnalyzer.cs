@@ -55,41 +55,31 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
             foreach (var descriptor in m_Descriptors.Where(d => d.IsPlatformCompatible(settingsAnalyzer.platform)))
             {
-                var issue = Evaluate(descriptor, settingsAnalyzer.platform);
+                var issue = Evaluate(descriptor);
                 if (issue != null)
                     yield return issue;
             }
         }
 
-        ProjectIssue Evaluate(Descriptor descriptor, BuildTarget platform)
+        ProjectIssue Evaluate(Descriptor descriptor)
         {
-            if (string.IsNullOrEmpty(descriptor.customevaluator))
-            {
-                // evaluate a Unity API static method or property
-                var assembly = m_Assemblies.First(a => a.GetType(descriptor.type) != null);
-                var type = assembly.GetType(descriptor.type);
+            // evaluate a Unity API static method or property
+            var assembly = m_Assemblies.First(a => a.GetType(descriptor.type) != null);
+            var type = assembly.GetType(descriptor.type);
 
-                var methodName = descriptor.method;
-                var property = type.GetProperty(descriptor.method);
-                if (property != null)
-                    methodName = "get_" + descriptor.method;
+            var methodName = descriptor.method;
+            var property = type.GetProperty(descriptor.method);
+            if (property != null)
+                methodName = "get_" + descriptor.method;
 
-                var paramTypes = new Type[] {};
-                var args = new object[] {};
+            var paramTypes = new Type[] {};
+            var args = new object[] {};
 
-                var value = MethodEvaluator.Eval(assembly.Location,
-                    descriptor.type, methodName, paramTypes, args);
+            var value = MethodEvaluator.Eval(assembly.Location,
+                descriptor.type, methodName, paramTypes, args);
 
-                if (value.ToString() == descriptor.value)
-                    return NewIssue(descriptor, descriptor.title);
-            }
-            else
-            {
-                var evalType = typeof(Evaluators);
-                var method = evalType.GetMethod(descriptor.customevaluator);
-                if ((bool)method.Invoke(null, new object[] {platform}))
-                    return NewIssue(descriptor, descriptor.title);
-            }
+            if (value.ToString() == descriptor.value)
+                return NewIssue(descriptor, descriptor.title);
 
             return null;
         }
