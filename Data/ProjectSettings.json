@@ -14,13 +14,13 @@
         },
         {
             "id": "PAS0001",
-            "title": "Player: Graphics Jobs (Experimental)",
+            "title": "Player: Graphics Jobs",
             "type": "UnityEditor.PlayerSettings",
             "method": "graphicsJobs",
             "value": "False",
             "areas": ["CPU"],
-            "description": "The <b>Graphics Jobs (Experimental)</b> option in Player Settings is disabled.",
-            "solution": "Try enabling it and testing your application. This option spreads the task of building the render command buffer every frame across as many CPU cores as possible, rather than performing all the work in the render thread which is often a bottleneck. Note: This feature is experimental. It may not deliver a performance improvement for your project, and may introduce new crashes. Test accordingly."
+            "description": "The <b>Graphics Jobs</b> option in Player Settings is disabled.",
+            "solution": "Try enabling it and testing your application. This option spreads the task of building the render command buffer every frame across as many CPU cores as possible, rather than performing all the work in the render thread which is often a bottleneck. Performance will vary depending on the project.\n\nNote: This feature is experimental on specific Unity versions and may introduce new crashes. It is recommended to test accordingly."
         },
         {
             "id": "PAS0002",
