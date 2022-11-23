@@ -270,6 +270,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (EditorGUI.EndChangeCheck())
                 MarkDirty();
 
+            GUILayout.FlexibleSpace();
+
             EditorGUILayout.EndHorizontal();
         }
 

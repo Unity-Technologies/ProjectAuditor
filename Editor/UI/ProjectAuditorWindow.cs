@@ -949,6 +949,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                         analytic, payload);
                                 }
                             }
+                            GUILayout.FlexibleSpace();
                         }
                         if (EditorGUI.EndChangeCheck())
                             m_ShouldRefresh = true;
@@ -1013,6 +1014,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     ProjectAuditorAnalytics.UIButton.Unmute, analytic, selectedIssues);
                             }
                         }
+                        GUILayout.FlexibleSpace();
                     }
 
                     EditorGUI.indentLevel--;
