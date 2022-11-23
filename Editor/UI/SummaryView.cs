@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             using (new EditorGUILayout.HorizontalScope())
             {
-                EditorGUILayout.Space(30);
+                EditorGUILayout.Space();
 
                 EditorGUILayout.BeginVertical(GUILayout.Width(300));
                 EditorGUILayout.LabelField("Diagnostics", EditorStyles.boldLabel);
@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUI.indentLevel--;
                 EditorGUILayout.EndVertical();
 
-                EditorGUILayout.Space(30);
+                EditorGUILayout.Space();
 
                 EditorGUILayout.BeginVertical(GUILayout.Width(300));
                 EditorGUILayout.LabelField("Statistics", EditorStyles.boldLabel);
@@ -104,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUI.indentLevel--;
                 EditorGUILayout.EndVertical();
 
-                EditorGUILayout.Space(30);
+                EditorGUILayout.Space();
             }
 
             EditorGUILayout.Space();
