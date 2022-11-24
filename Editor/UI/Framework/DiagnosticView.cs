@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
 
-            EditorGUILayout.LabelField(Contents.Details, EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(Contents.Details, SharedStyles.BoldLabel);
             {
                 if (selectedDescriptors.Length == 0)
                     GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     GUILayout.TextArea(selectedDescriptors[0].description, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
 
-            EditorGUILayout.LabelField(Contents.Recommendation, EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(Contents.Recommendation, SharedStyles.BoldLabel);
             {
                 if (selectedDescriptors.Length == 0)
                     GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));

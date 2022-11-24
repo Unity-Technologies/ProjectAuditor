@@ -64,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.Space();
 
                 EditorGUILayout.BeginVertical(GUILayout.Width(300));
-                EditorGUILayout.LabelField("Diagnostics", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("Diagnostics", SharedStyles.BoldLabel);
 
                 EditorGUI.indentLevel++;
 
@@ -84,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.Space();
 
                 EditorGUILayout.BeginVertical(GUILayout.Width(300));
-                EditorGUILayout.LabelField("Statistics", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("Statistics", SharedStyles.BoldLabel);
 
                 EditorGUI.indentLevel++;
                 if (m_Stats.numCompilerErrors > 0)
@@ -117,7 +117,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Space();
             EditorGUILayout.BeginVertical();
 
-            EditorGUILayout.LabelField("Session Information", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Session Information", SharedStyles.BoldLabel);
             EditorGUI.indentLevel++;
 
             // note that m_Issues might change during background analysis.

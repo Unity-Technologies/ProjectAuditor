@@ -6,7 +6,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     public static class SharedStyles
     {
         static GUIStyle s_Foldout;
-        static GUIStyle s_LabelFixedSize;
+        static GUIStyle s_BoldLabel;
+        static GUIStyle s_Label;
         static GUIStyle s_LinkLabel;
         static GUIStyle s_TextArea;
 
@@ -26,16 +27,30 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        public static GUIStyle BoldLabel
+        {
+            get
+            {
+                if (s_BoldLabel == null)
+                    s_BoldLabel = new GUIStyle(EditorStyles.label)
+                    {
+                        fontStyle = FontStyle.Bold,
+                        wordWrap = false
+                    };
+                return s_BoldLabel;
+            }
+        }
+
         public static GUIStyle Label
         {
             get
             {
-                if (s_LabelFixedSize == null)
-                    s_LabelFixedSize = new GUIStyle(EditorStyles.label)
+                if (s_Label == null)
+                    s_Label = new GUIStyle(EditorStyles.label)
                     {
                         wordWrap = false
                     };
-                return s_LabelFixedSize;
+                return s_Label;
             }
         }
 

@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField("Size of Data (Uncompressed)", SharedStyles.Label, GUILayout.Width(width));
                 EditorGUILayout.LabelField(Formatting.FormatSize((ulong)dataSize), SharedStyles.Label);
                 EditorGUILayout.EndHorizontal();
-                EditorGUILayout.LabelField($"Size By Runtime Type (Top {k_MaxGroupCount})", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField($"Size By Runtime Type (Top {k_MaxGroupCount})", SharedStyles.BoldLabel);
                 EditorGUI.indentLevel++;
 
                 EditorGUILayout.BeginVertical();

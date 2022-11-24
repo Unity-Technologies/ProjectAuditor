@@ -167,6 +167,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
     public static class SharedStyles
     {
+        public static UnityEngine.GUIStyle BoldLabel { get; }
         public static UnityEngine.GUIStyle Foldout { get; }
         public static UnityEngine.GUIStyle Label { get; }
         public static UnityEngine.GUIStyle LabelWithDynamicSizeWithDynamicSize { get; }
