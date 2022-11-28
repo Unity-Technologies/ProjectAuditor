@@ -12,6 +12,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class GraphicsApiAnalyzer : ISettingsModuleAnalyzer
     {
+        const string documentationUrl = "https://docs.unity3d.com/Manual/GraphicsAPIs.html";
+
         static readonly Descriptor k_OpenGLESAndMetalDescriptor = new Descriptor(
             "PAS0005",
             "Player (iOS): Metal & OpenGLES APIs",
@@ -19,6 +21,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "In the iOS Player Settings, both Metal and OpenGLES graphics APIs are enabled.",
             "To reduce build size, remove OpenGLES graphics API if the minimum spec target device supports Metal.")
         {
+            documentationUrl = documentationUrl,
             platforms = new[] { BuildTarget.iOS.ToString() }
         };
 
@@ -29,6 +32,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "In the iOS Player Settings, Metal is not enabled.",
             "Enable Metal graphics API for better CPU Performance.")
         {
+            documentationUrl = documentationUrl,
             platforms = new[] { BuildTarget.iOS.ToString() }
         };
 
@@ -39,6 +43,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "In the Android Player Settings, Vulkan graphics API is not enabled.",
             "Enable Vulkan graphics API for better CPU Performance.")
         {
+            documentationUrl = documentationUrl,
             platforms = new[] { BuildTarget.Android.ToString() }
         };
 
