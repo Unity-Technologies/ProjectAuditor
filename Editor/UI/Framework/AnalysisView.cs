@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get { return m_Desc; }
         }
 
-        protected int numIssues
+        public int numIssues
         {
             get
             {
@@ -48,9 +48,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal IssueTable table
+        public int numFilteredIssues
         {
-            get { return m_Table; }
+            get
+            {
+                return m_Table.GetNumMatchingIssues();
+            }
         }
 
         internal ViewManager viewManager
@@ -354,7 +357,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             Export(Match);
                             return;
                         case ExportMode.Selected:
-                            var selectedItems = table.GetSelectedItems();
+                            var selectedItems = m_Table.GetSelectedItems();
                             Export(issue =>
                             {
                                 return selectedItems.Any(item => item.Find(issue));
@@ -410,6 +413,25 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void SetSearch(string filter)
         {
             m_TextFilter.searchString = filter;
+        }
+
+        public ProjectIssue[] GetSelection()
+        {
+            var selectedItems = m_Table.GetSelectedItems();
+            return selectedItems.Where(item => item.parent != null).Select(i => i.ProjectIssue).ToArray();
+        }
+
+        public void SetSelection(Func<ProjectIssue, bool> predicate)
+        {
+            var rows = m_Table.GetRows();
+            var selectedIDs = rows.Select(item => item as IssueTableItem).Where(i => i != null && i.ProjectIssue != null && predicate(i.ProjectIssue)).Select(i => i.id).ToList();
+
+            m_Table.SetSelection(selectedIDs, TreeViewSelectionOptions.None);
+        }
+
+        public void ClearSelection()
+        {
+            m_Table.SetSelection(new List<int>());
         }
 
         void SetRowsExpanded(bool expanded)

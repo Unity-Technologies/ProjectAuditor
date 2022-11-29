@@ -968,8 +968,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!activeView.desc.showActions)
                 return;
 
-            var table = activeView.table;
-
             using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
             {
                 m_ViewStates.actions = Utility.BoldFoldout(m_ViewStates.actions, Contents.ActionsFoldout);
@@ -983,20 +981,16 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                         using (new EditorGUI.DisabledScope(!activeView.desc.showMuteOptions))
                         {
-                            var selectedItems = table.GetSelectedItems();
-                            var selectedIssues = selectedItems.Where(item => item.parent != null).Select(i => i.ProjectIssue).ToArray();
+                            var selectedIssues = activeView.GetSelection();
                             if (GUILayout.Button(Contents.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                             {
                                 var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                                foreach (var item in selectedItems)
+                                foreach (var issue in selectedIssues)
                                 {
-                                    SetRuleForItem(item, Severity.None);
+                                    SetRuleForItem(issue, Severity.None);
                                 }
 
-                                if (!m_ViewStates.mutedIssues)
-                                {
-                                    table.SetSelection(new List<int>());
-                                }
+                                activeView.ClearSelection();
 
                                 ProjectAuditorAnalytics.SendEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
                                     analytic, selectedIssues);
@@ -1005,9 +999,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                             if (GUILayout.Button(Contents.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                             {
                                 var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                                foreach (var item in selectedItems)
+                                foreach (var issue in selectedIssues)
                                 {
-                                    ClearRulesForItem(item);
+                                    ClearRulesForItem(issue);
                                 }
 
                                 ProjectAuditorAnalytics.SendEventWithSelectionSummary(
@@ -1071,10 +1065,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             using (new EditorGUILayout.HorizontalScope(GUILayout.Height(20)))
             {
-                var selectedItems = activeView.table.GetSelectedItems();
-                var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
-
-                var info = selectedIssues.Length + " / " + activeView.table.GetNumMatchingIssues() + " Items selected";
+                var selectedIssues = activeView.GetSelection();
+                var info = selectedIssues.Length + " / " + activeView.numFilteredIssues + " Items selected";
                 EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
 
                 GUILayout.FlexibleSpace();
@@ -1205,13 +1197,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_AssemblySelectionSummary = GetSelectedAssembliesSummary();
         }
 
-        void SetRuleForItem(IssueTableItem item, Severity ruleSeverity)
+        void SetRuleForItem(ProjectIssue issue, Severity ruleSeverity)
         {
-            if (item.ProjectIssue == null)
-                return;
-
-            var descriptor = item.ProjectIssue.descriptor;
-            var context = item.ProjectIssue.GetContext();
+            var descriptor = issue.descriptor;
+            var context = issue.GetContext();
             var rule = m_ProjectAuditor.config.GetRule(descriptor, context);
 
             if (rule == null)
@@ -1225,11 +1214,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 rule.severity = ruleSeverity;
         }
 
-        void ClearRulesForItem(IssueTableItem item)
+        void ClearRulesForItem(ProjectIssue issue)
         {
-            var descriptor = item.ProjectIssue.descriptor;
-            m_ProjectAuditor.config.ClearRules(descriptor,
-                item.hasChildren ? string.Empty : item.ProjectIssue.GetContext());
+            var descriptor = issue.descriptor;
+            m_ProjectAuditor.config.ClearRules(descriptor, issue.GetContext());
         }
 
         void DrawToolbar()
