@@ -114,13 +114,14 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             return obj.GetType() == GetType() && Equals((Descriptor)obj);
         }
 
-        public void Fix(ProjectIssue issue = null)
+        public void Fix(ProjectIssue issue)
         {
-            if (fixer != null)
-            {
-                fixer(issue);
-                issue.wasFixed = true;
-            }
+            // Temp workaround for lost 'fixer' after domain reload
+            if (fixer == null)
+                return;
+
+            fixer(issue);
+            issue.wasFixed = true;
         }
 
         public override int GetHashCode()

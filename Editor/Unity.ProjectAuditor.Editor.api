@@ -375,7 +375,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public Descriptor(string id, string title, Area[] areas, string description = default(string), string solution = default(string)) {}
         public override bool Equals(object obj);
         public bool Equals(Descriptor other);
-        public void Fix(ProjectIssue issue = default(ProjectIssue));
+        public void Fix(ProjectIssue issue);
         public override int GetHashCode();
         public bool IsValid();
     }
