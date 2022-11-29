@@ -423,10 +423,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void SetSelection(Func<ProjectIssue, bool> predicate)
         {
+            RefreshIfDirty();
+
             var rows = m_Table.GetRows();
             var selectedIDs = rows.Select(item => item as IssueTableItem).Where(i => i != null && i.ProjectIssue != null && predicate(i.ProjectIssue)).Select(i => i.id).ToList();
 
-            m_Table.SetSelection(selectedIDs, TreeViewSelectionOptions.None);
+            m_Table.SetSelection(selectedIDs);
         }
 
         public void ClearSelection()
