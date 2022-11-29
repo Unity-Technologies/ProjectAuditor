@@ -694,7 +694,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 existingReport = m_ProjectReport
             };
 
-            var platform = m_ProjectReport.GetIssues(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));
+            var platform = m_ProjectReport.FindByCategory(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));
             if (platform != null)
                 projectAuditorParams.platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), platform.GetCustomProperty(MetaDataProperty.Value));
             m_ProjectAuditor.Audit(projectAuditorParams, new ProgressBar());
@@ -1145,7 +1145,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         void UpdateAssemblyNames()
         {
             // update list of assembly names
-            var assemblyNames = m_ProjectReport.GetIssues(IssueCategory.Assembly).Select(i => i.description).ToArray();
+            var assemblyNames = m_ProjectReport.FindByCategory(IssueCategory.Assembly).Select(i => i.description).ToArray();
             m_AssemblyNames = assemblyNames.Distinct().OrderBy(str => str).ToArray();
         }
 

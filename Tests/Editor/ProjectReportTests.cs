@@ -41,6 +41,8 @@ class MyClass : MonoBehaviour
             Assert.Zero(projectReport.NumTotalIssues);
             Assert.Zero(projectReport.GetNumIssues(IssueCategory.Code));
             Assert.Zero(projectReport.GetNumIssues(IssueCategory.ProjectSetting));
+            Assert.IsEmpty(projectReport.FindByCategory(IssueCategory.Code));
+            Assert.IsEmpty(projectReport.FindByCategory(IssueCategory.ProjectSetting));
         }
 
         [Test]
@@ -92,7 +94,7 @@ class MyClass : MonoBehaviour
 
             Assert.True(File.Exists(path));
 
-            return projectReport.GetIssues(category);
+            return projectReport.FindByCategory(category);
         }
 
         [Test]

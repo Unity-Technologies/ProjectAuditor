@@ -145,8 +145,9 @@ namespace Unity.ProjectAuditor.Editor
         public int NumTotalIssues { get; }
         public void ExportToCSV(string path, Core.IssueLayout layout, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
         public void ExportToHTML(string path, Core.IssueLayout layout, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
+        public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> FindByCategory(IssueCategory category);
+        public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> FindByDescriptor(Diagnostic.Descriptor descriptor);
         public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> GetAllIssues();
-        public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> GetIssues(IssueCategory category);
         public int GetNumIssues(IssueCategory category);
         public bool HasCategory(IssueCategory category);
         public static ProjectReport Load(string path);

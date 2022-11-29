@@ -120,12 +120,12 @@ namespace Unity.ProjectAuditor.EditorTests
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));
-            Assert.Positive(report.GetIssues(IssueCategory.ProjectSetting).Count);
+            Assert.Positive(report.FindByCategory(IssueCategory.ProjectSetting).Count);
 
             report.ClearIssues(IssueCategory.ProjectSetting);
 
             Assert.False(report.HasCategory(IssueCategory.ProjectSetting));
-            Assert.Zero(report.GetIssues(IssueCategory.ProjectSetting).Count);
+            Assert.Zero(report.FindByCategory(IssueCategory.ProjectSetting).Count);
 
             projectAuditor.Audit(new ProjectAuditorParams
             {
@@ -134,7 +134,7 @@ namespace Unity.ProjectAuditor.EditorTests
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));
-            Assert.Positive(report.GetIssues(IssueCategory.ProjectSetting).Count);
+            Assert.Positive(report.FindByCategory(IssueCategory.ProjectSetting).Count);
 
             PlayerSettings.bakeCollisionMeshes = savedSetting;
         }

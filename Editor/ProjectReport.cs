@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
@@ -86,14 +87,27 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Get all issues for a specific IssueCategory
+        /// find all issues for a specific IssueCategory
         /// </summary>
         /// <param name="category"> Desired IssueCategory</param>
         /// <returns> Array of project issues</returns>
-        public IReadOnlyCollection<ProjectIssue> GetIssues(IssueCategory category)
+        public IReadOnlyCollection<ProjectIssue> FindByCategory(IssueCategory category)
         {
             s_Mutex.WaitOne();
             var result = m_Issues.Where(i => i.category == category).ToArray();
+            s_Mutex.ReleaseMutex();
+            return result;
+        }
+
+        /// <summary>
+        /// find all diagnostics of a specific descriptor
+        /// </summary>
+        /// <param name="descriptor"> Desired Descriptor</param>
+        /// <returns> Array of project issues</returns>
+        public IReadOnlyCollection<ProjectIssue> FindByDescriptor(Descriptor descriptor)
+        {
+            s_Mutex.WaitOne();
+            var result = m_Issues.Where(i => i.descriptor != null && i.descriptor.Equals(descriptor)).ToArray();
             s_Mutex.ReleaseMutex();
             return result;
         }
