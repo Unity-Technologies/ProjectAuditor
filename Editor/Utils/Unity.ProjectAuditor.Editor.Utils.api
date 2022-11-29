@@ -51,7 +51,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
     public static class PlayerSettingsUtil
     {
+        public static int GetVertexChannelCompressionMask();
         public static bool IsStaticBatchingEnabled(UnityEditor.BuildTarget platform);
+        public static void SetVertexChannelCompressionMask(int newValue);
     }
 
     public static class ShaderUtilProxy
