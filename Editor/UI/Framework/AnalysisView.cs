@@ -425,6 +425,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             RefreshIfDirty();
 
+            // Expand all rows. This is a workaround for the fact that we can't select rows that are not visible.
+            SetRowsExpanded(true);
+
             var rows = m_Table.GetRows();
             var selectedIDs = rows.Select(item => item as IssueTableItem).Where(i => i != null && i.ProjectIssue != null && predicate(i.ProjectIssue)).Select(i => i.id).ToList();
 
