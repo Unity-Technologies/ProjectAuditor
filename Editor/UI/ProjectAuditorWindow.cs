@@ -40,6 +40,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             Everything = ~0
         }
 
+        const string k_ProjectAuditorName = "Project Auditor";
+
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow m_Instance;
 
@@ -188,7 +190,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ProjectAuditorAnalytics.SendEvent(
                     (ProjectAuditorAnalytics.UIButton)viewDesc.analyticsEvent,
                     ProjectAuditorAnalytics.BeginAnalytic());
-                if (!m_ProjectReport.HasCategory(activeView.desc.category) && EditorUtility.DisplayDialog("Project Auditor", $"Would you like to analyze {ProjectAuditor.GetCategoryName(viewDesc.category)} now?", "Ok", "No"))
+                if (!m_ProjectReport.HasCategory(activeView.desc.category) && EditorUtility.DisplayDialog(k_ProjectAuditorName, $"Would you like to analyze {ProjectAuditor.GetCategoryName(viewDesc.category)} now?", "Ok", "No"))
                 {
                     AuditCategories(new[] {viewDesc.category});
                 }
@@ -1316,11 +1318,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             var preferencesWindow = SettingsService.OpenUserPreferences(UserPreferences.Path);
             if (preferencesWindow == null)
             {
-                Debug.LogError("Could not find Preferences for 'Analysis/Project Auditor'");
+                Debug.LogError($"Could not find Preferences for 'Analysis/{k_ProjectAuditorName}'");
             }
         }
 
-        [MenuItem("Window/Analysis/Project Auditor")]
+        [MenuItem("Window/Analysis/" + k_ProjectAuditorName)]
         public static ProjectAuditorWindow ShowWindow()
         {
             var wnd = GetWindow(typeof(ProjectAuditorWindow)) as ProjectAuditorWindow;
@@ -1350,12 +1352,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static class Contents
         {
-            public static readonly GUIContent WindowTitle = new GUIContent("Project Auditor");
+            public static readonly GUIContent WindowTitle = new GUIContent(k_ProjectAuditorName);
 
             public static readonly GUIContent AnalyzeButton =
                 new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ModulesSelection =
-                new GUIContent("Modules", "Select Project Auditor modules.");
+                new GUIContent("Modules", $"Select {k_ProjectAuditorName} modules.");
             public static readonly GUIContent PlatformSelection =
                 new GUIContent("Platform", "Select the target platform.");
 
@@ -1370,7 +1372,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 #endif
 
             public static readonly GUIContent HelpButton = Utility.GetIcon(Utility.IconType.Help, "Open Manual (in a web browser)");
-            public static readonly GUIContent PreferencesMenuItem = EditorGUIUtility.TrTextContent("Preferences", "Open User Preferences for Project Auditor");
+            public static readonly GUIContent PreferencesMenuItem = EditorGUIUtility.TrTextContent("Preferences", $"Open User Preferences for {k_ProjectAuditorName}");
 
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");
