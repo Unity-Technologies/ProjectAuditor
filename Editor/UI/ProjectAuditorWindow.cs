@@ -43,15 +43,15 @@ namespace Unity.ProjectAuditor.Editor.UI
         const string k_ProjectAuditorName = "Project Auditor";
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
-        static ProjectAuditorWindow m_Instance;
+        static ProjectAuditorWindow s_Instance;
 
         public static ProjectAuditorWindow Instance
         {
             get
             {
-                if (m_Instance == null)
-                    m_Instance = ShowWindow();
-                return m_Instance;
+                if (s_Instance == null)
+                    s_Instance = ShowWindow();
+                return s_Instance;
             }
         }
 
