@@ -17,6 +17,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             return Formatting.CombineStrings(descriptor.areas);
         }
 
+        public static string GetPlatformsSummary(this Descriptor descriptor)
+        {
+            return (descriptor.platforms == null || descriptor.platforms.Length == 0) ? "Any" : Formatting.CombineStrings(descriptor.platforms);
+        }
+
         public static string GetFullTypeName(this Descriptor descriptor)
         {
             return descriptor.type + "." + descriptor.method;
@@ -24,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
         public static bool IsPlatformCompatible(this Descriptor descriptor, BuildTarget buildTarget)
         {
-            if (descriptor.platforms == null)
+            if (descriptor.platforms == null || descriptor.platforms.Length == 0)
                 return true;
             return descriptor.platforms.Contains(buildTarget.ToString());
         }

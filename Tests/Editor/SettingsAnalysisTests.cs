@@ -70,9 +70,11 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(playerSettingIssue);
             Assert.AreEqual("Player: Prebake Collision Meshes", playerSettingIssue.description);
             Assert.AreEqual("Project/Player", playerSettingIssue.location.Path);
+            Assert.AreEqual("Player", playerSettingIssue.location.Filename);
             Assert.AreEqual(2, playerSettingIssue.descriptor.GetAreas().Length);
             Assert.Contains(Area.BuildSize, playerSettingIssue.descriptor.GetAreas());
             Assert.Contains(Area.LoadTime, playerSettingIssue.descriptor.GetAreas());
+            Assert.AreEqual("Any", playerSettingIssue.descriptor.GetPlatformsSummary());
 
             // restore bakeCollisionMeshes
             PlayerSettings.bakeCollisionMeshes = savedSetting;

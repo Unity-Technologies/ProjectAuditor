@@ -326,8 +326,9 @@ namespace Unity.ProjectAuditor.Editor.Core
         Directory = 5,
         Filename = 6,
         FileType = 7,
-        Num = 9,
+        Num = 10,
         Path = 4,
+        Platform = 9,
         Severity = 2,
     }
 
@@ -386,6 +387,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public static Area[] GetAreas(this Descriptor descriptor);
         public static string GetAreasSummary(this Descriptor descriptor);
         public static string GetFullTypeName(this Descriptor descriptor);
+        public static string GetPlatformsSummary(this Descriptor descriptor);
         public static bool IsPlatformCompatible(this Descriptor descriptor, UnityEditor.BuildTarget buildTarget);
     }
 

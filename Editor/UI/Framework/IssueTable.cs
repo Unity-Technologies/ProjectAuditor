@@ -322,7 +322,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         var areaNames = issue.descriptor.GetAreasSummary();
                         EditorGUI.LabelField(cellRect, new GUIContent(areaNames, Tooltip.Area), labelStyle);
                         break;
-
                     case PropertyType.Description:
                         GUIContent guiContent = null;
                         if (issue.location != null && m_Desc.descriptionWithIcon)

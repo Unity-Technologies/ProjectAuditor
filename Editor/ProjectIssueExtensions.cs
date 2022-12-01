@@ -52,6 +52,8 @@ namespace Unity.ProjectAuditor.Editor
                     return PathUtils.GetDirectoryName(issue.location.Path);
                 case PropertyType.CriticalContext:
                     return issue.isCritical.ToString();
+                case PropertyType.Platform:
+                    return issue.descriptor.GetPlatformsSummary();
                 default:
                     var propertyIndex = propertyType - PropertyType.Num;
                     return issue.GetCustomProperty(propertyIndex);
