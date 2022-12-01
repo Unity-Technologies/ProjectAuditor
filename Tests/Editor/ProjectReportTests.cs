@@ -348,7 +348,7 @@ class MyClass : MonoBehaviour
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
             var issues = AnalyzeAndExport(category,  path, "csv");
             var issue = issues.FirstOrDefault(i => i.descriptor.method.Equals("bakeCollisionMeshes"));
-            var expectedIssueLine = $"\"{issue.description}\",\"False\",\"{issue.descriptor.GetAreasSummary()}\",\"{issue.relativePath}\"";
+            var expectedIssueLine = $"\"{issue.description}\",\"False\",\"{issue.descriptor.GetAreasSummary()}\",\"{issue.filename}\",\"{issue.descriptor.GetPlatformsSummary()}\"";
 
             var issueFound = false;
             using (var file = new StreamReader(path))
@@ -400,6 +400,8 @@ class MyClass : MonoBehaviour
                 line = file.ReadLine();
                 Assert.AreEqual("<th>System</th>", line);
                 line = file.ReadLine();
+                Assert.AreEqual("<th>Platform</th>", line);
+                line = file.ReadLine();
                 Assert.AreEqual("</tr>", line);
 
                 while (file.Peek() > -1)
@@ -428,7 +430,12 @@ class MyClass : MonoBehaviour
                             index++;
                         }
                         line = file.ReadLine();
-                        if (line.Equals($"<td>{issue.relativePath}</td>"))
+                        if (line.Equals($"<td>{issue.filename}</td>"))
+                        {
+                            index++;
+                        }
+                        line = file.ReadLine();
+                        if (line.Equals($"<td>{issue.descriptor.GetPlatformsSummary()}</td>"))
                         {
                             index++;
                         }
