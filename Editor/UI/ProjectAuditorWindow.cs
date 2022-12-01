@@ -381,7 +381,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.Package,
                 name = "Installed Packages",
-                menuLabel = "Experimental/Packages/Installed",
+                menuLabel = "Project/Packages/Installed",
                 menuOrder = 105,
                 onDrawToolbar = (viewManager) =>
                 {
@@ -397,7 +397,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.PackageDiagnostic,
                 name = "Package Diagnostics",
-                menuLabel = "Experimental/Packages/Diagnostics",
+                menuLabel = "Project/Packages/Diagnostics",
                 menuOrder = 106,
                 onDrawToolbar = (viewManager) =>
                 {
@@ -542,7 +542,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.ProjectSetting,
                 name = "Settings",
-                menuLabel = "Settings/Diagnostics",
+                menuLabel = "Project/Settings/Diagnostics",
                 menuOrder = 1,
                 showActions = true,
                 showAreaSelection = true,
