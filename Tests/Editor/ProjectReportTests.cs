@@ -354,7 +354,7 @@ class MyClass : MonoBehaviour
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.AreEqual("Issue,Critical,Area,Settings", line, "Header was: " + line);
+                Assert.AreEqual("Issue,Critical,Area,System,Platform", line, "Header was: " + line);
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();
@@ -398,7 +398,7 @@ class MyClass : MonoBehaviour
                 line = file.ReadLine();
                 Assert.AreEqual("<th>Area</th>", line);
                 line = file.ReadLine();
-                Assert.AreEqual("<th>Settings</th>", line);
+                Assert.AreEqual("<th>System</th>", line);
                 line = file.ReadLine();
                 Assert.AreEqual("</tr>", line);
 
