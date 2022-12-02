@@ -346,7 +346,7 @@ class MyClass : MonoBehaviour
 
             var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
-            var issues = AnalyzeAndExport(category,  path, "csv", issue => issue.descriptor.id.Equals("PAS0007"));
+            var issues = AnalyzeAndExport(category,  path, "csv", i => i.descriptor.id.Equals("PAS0007"));
 
             Assert.AreEqual(1, issues.Count);
 
@@ -379,7 +379,7 @@ class MyClass : MonoBehaviour
 
             var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.html", category.ToString().ToLower());
-            var issues = AnalyzeAndExport(category,  path, "html", issue => issue.descriptor.id.Equals("PAS0007"));
+            var issues = AnalyzeAndExport(category,  path, "html", i => i.descriptor.id.Equals("PAS0007"));
 
             Assert.AreEqual(1, issues.Count);
 
