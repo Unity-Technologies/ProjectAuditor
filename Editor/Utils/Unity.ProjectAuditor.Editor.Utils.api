@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
     public static class PathUtils
     {
         public const char Separator = /;
-        public static string Combine(string[] parts);
+        public static string Combine(params string[] parts);
         public static string Combine(string path1, string path2);
         public static bool Exists(string path);
         public static string GetDirectoryName(string path);

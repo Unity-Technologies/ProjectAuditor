@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         static readonly char k_AltDirectorySeparatorChar = SystemPath.AltDirectorySeparatorChar;
         static readonly char k_VolumeSeparatorChar = SystemPath.VolumeSeparatorChar;
 
-        public static string Combine(string[] parts)
+        public static string Combine(params string[] parts)
         {
             return string.Join(Char.ToString(Separator), parts);
         }
