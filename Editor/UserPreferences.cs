@@ -17,11 +17,11 @@ namespace Unity.ProjectAuditor.Editor
         static readonly string k_DeveloperModeLabel = "Enable Developer Mode";
 
         static string k_BuildReportAutoSaveKey = k_EditorPrefsPrefix + ".buildReportAutoSave";
-        static string k_BuildReportAutoSaveLabel = "Build Report Auto Save";
+        static string k_BuildReportAutoSaveLabel = "Auto Save Last Report";
         static bool k_BuildReportAutoSaveDefault = false;
 
         static string k_BuildReportPathKey = k_EditorPrefsPrefix + ".buildReportPath";
-        static string k_BuildReportPathLabel = "Build Report Path";
+        static string k_BuildReportPathLabel = "Library Path";
         static string k_BuildReportPathDefault = "Assets/BuildReports";
 
         internal static string loadSavePath = string.Empty;
@@ -71,7 +71,12 @@ namespace Unity.ProjectAuditor.Editor
 
         static void PreferencesGUI(string searchContext)
         {
+            const float labelWidth = 300f;
+
+            EditorGUIUtility.labelWidth = labelWidth;
+
             EditorGUI.indentLevel++;
+
             var value = EditorGUILayout.Toggle(k_DeveloperModeLabel, developerMode);
             if (value != developerMode)
             {
@@ -82,15 +87,20 @@ namespace Unity.ProjectAuditor.Editor
             }
             logTimingsInfo = EditorGUILayout.Toggle(k_LogTimingsInfoLabel, logTimingsInfo);
 
+            GUILayout.Space(10f);
+
+            EditorGUILayout.LabelField("Build Report", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+
             buildReportAutoSave = EditorGUILayout.Toggle(k_BuildReportAutoSaveLabel, buildReportAutoSave);
 
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(k_BuildReportPathLabel);
+            GUI.enabled = buildReportAutoSave;
 
-            var newPath = EditorGUILayout.DelayedTextField(buildReportPath);
+            EditorGUILayout.BeginHorizontal();
+            var newPath = EditorGUILayout.DelayedTextField(k_BuildReportPathLabel, buildReportPath);
             if (!string.IsNullOrEmpty(newPath))
                 buildReportPath = newPath;
-            if (GUILayout.Button("Browse..."))
+            if (GUILayout.Button("Browse...", GUILayout.Width(80)))
             {
                 newPath = EditorUtility.OpenFolderPanel("Select Build Report destination", buildReportPath, "");
                 if (!string.IsNullOrEmpty(newPath))
@@ -101,6 +111,9 @@ namespace Unity.ProjectAuditor.Editor
             }
             EditorGUILayout.EndHorizontal();
 
+            GUI.enabled = true;
+
+            EditorGUI.indentLevel--;
             EditorGUI.indentLevel--;
         }
     }
