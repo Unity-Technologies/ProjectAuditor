@@ -14,8 +14,8 @@ namespace Unity.ProjectAuditor.EditorTests
         {
 #if UNITY_2019_1_OR_NEWER
             AddPackage("com.unity.2d.pixel-perfect@3.0.2");
-#endif
             AddPackage("com.unity.services.vivox@15.1.180001-pre.5");
+#endif
         }
 
         [OneTimeTearDown]
@@ -23,8 +23,8 @@ namespace Unity.ProjectAuditor.EditorTests
         {
 #if UNITY_2019_1_OR_NEWER
             RemovePackage("com.unity.2d.pixel-perfect");
-#endif
             RemovePackage("com.unity.services.vivox");
+#endif
         }
 
         void AddPackage(string packageIdOrName)
@@ -101,6 +101,9 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+#if !UNITY_2019_1_OR_NEWER
+        [Ignore("Package dependency com.unity.services.core does not compile in 2018.4")]
+#endif
         public void Package_Preview_IsReported()
         {
             var packageDiagnostics = Analyze(IssueCategory.PackageDiagnostic);
