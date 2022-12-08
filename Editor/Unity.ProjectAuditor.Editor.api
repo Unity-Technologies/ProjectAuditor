@@ -79,7 +79,6 @@ namespace Unity.ProjectAuditor.Editor
         public bool AnalyzeOnBuild;
         public AssemblyUtils.CompilationMode CompilationMode;
         public bool FailBuildOnIssues;
-        public bool SaveBuildReports;
         public bool UseRoslynAnalyzers;
         public int NumRules { get; }
         public ProjectAuditorConfig() {}
@@ -156,6 +155,8 @@ namespace Unity.ProjectAuditor.Editor
 
     public class UserPreferences
     {
+        public static bool buildReportAutoSave { get; set; }
+        public static string buildReportPath { get; set; }
         public static bool developerMode { get; set; }
         public static bool logTimingsInfo { get; set; }
         public static string Path { get; }

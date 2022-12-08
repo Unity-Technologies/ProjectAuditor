@@ -9,10 +9,8 @@ using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
-using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.Profiling;
-using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
@@ -75,7 +73,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] string m_AssemblySelectionSummary;
         [SerializeField] ProjectReport m_ProjectReport;
         [SerializeField] AnalysisState m_AnalysisState = AnalysisState.Initializing;
-        [SerializeField] bool m_NewBuildAvailable = false;
         [SerializeField] ViewStates m_ViewStates = new ViewStates();
         [SerializeField] ViewManager m_ViewManager;
 
@@ -647,15 +644,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 Repaint();
             if (m_AnalysisState == AnalysisState.InProgress)
                 Repaint();
-            if (m_NewBuildAvailable && LastBuildReportProvider.GetLastBuildReportAsset() != null)
-                m_NewBuildAvailable = false;
-        }
-
-        void OnPostprocessBuild(BuildTarget target)
-        {
-            // Note that we can't run BuildReportModule in OnPostprocessBuild because the Library/LastBuild.buildreport file is only created AFTER OnPostprocessBuild
-            if (m_ProjectAuditor != null && m_ProjectAuditor.config.SaveBuildReports)
-                m_NewBuildAvailable = true;
         }
 
         void AuditSingleModule<T>() where T : ProjectAuditorModule
@@ -1428,22 +1416,6 @@ A view allows the user to browse through the listed items and filter by string o
 
             public static readonly GUIContent Packages = new GUIContent("Packages", "Installed Packages");
             public static readonly GUIContent PackageDiagnostics = new GUIContent("Diagnostics", "Package Diagnostics");
-        }
-
-        [PostProcessBuild(1)]
-        public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
-        {
-            if (Application.isBatchMode)
-                return;
-
-#if UNITY_2019_3_OR_NEWER
-            // do nothing if ProjectAuditorWindow is not already opened
-            if (!HasOpenInstances<ProjectAuditorWindow>())
-                return;
-#endif
-
-            if (Instance != null)
-                Instance.OnPostprocessBuild(target);
         }
     }
 }

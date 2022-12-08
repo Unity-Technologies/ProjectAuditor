@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditorInternal;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -14,9 +16,35 @@ namespace Unity.ProjectAuditor.Editor
         static readonly string k_DeveloperModeKey = k_EditorPrefsPrefix + ".developerMode";
         static readonly string k_DeveloperModeLabel = "Enable Developer Mode";
 
+        static string k_BuildReportAutoSaveKey = k_EditorPrefsPrefix + ".buildReportAutoSave";
+        static string k_BuildReportAutoSaveLabel = "Build Report Auto Save";
+        static bool k_BuildReportAutoSaveDefault = false;
+
+        static string k_BuildReportPathKey = k_EditorPrefsPrefix + ".buildReportPath";
+        static string k_BuildReportPathLabel = "Build Report Path";
+        static string k_BuildReportPathDefault = "Assets/BuildReports";
+
         internal static string loadSavePath = string.Empty;
 
         public static string Path => k_PreferencesKey;
+
+        /// <summary>
+        /// If enabled, the BuildReport is automatically saved as asset after each build
+        /// </summary>
+        public static bool buildReportAutoSave
+        {
+            get => EditorPrefs.GetBool(k_BuildReportAutoSaveKey, k_BuildReportAutoSaveDefault);
+            set => EditorPrefs.SetBool(k_BuildReportAutoSaveKey, value);
+        }
+
+        /// <summary>
+        /// Customizable path to save the BuildReport
+        /// </summary>
+        public static string buildReportPath
+        {
+            get => EditorPrefs.GetString(k_BuildReportPathKey, k_BuildReportPathDefault);
+            set => EditorPrefs.SetString(k_BuildReportPathKey, value);
+        }
 
         public static bool developerMode
         {
@@ -53,6 +81,26 @@ namespace Unity.ProjectAuditor.Editor
                 AssetDatabase.ImportAsset(ProjectAuditor.PackagePath + "/Editor/UserPreferences.cs");
             }
             logTimingsInfo = EditorGUILayout.Toggle(k_LogTimingsInfoLabel, logTimingsInfo);
+
+            buildReportAutoSave = EditorGUILayout.Toggle(k_BuildReportAutoSaveLabel, buildReportAutoSave);
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(k_BuildReportPathLabel);
+
+            var newPath = EditorGUILayout.DelayedTextField(buildReportPath);
+            if (!string.IsNullOrEmpty(newPath))
+                buildReportPath = newPath;
+            if (GUILayout.Button("Browse..."))
+            {
+                newPath = EditorUtility.OpenFolderPanel("Select Build Report destination", buildReportPath, "");
+                if (!string.IsNullOrEmpty(newPath))
+                {
+                    buildReportPath = FileUtil.GetProjectRelativePath(newPath);
+                    InternalEditorUtility.RepaintAllViews();
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+
             EditorGUI.indentLevel--;
         }
     }

@@ -112,13 +112,18 @@ namespace Unity.ProjectAuditor.EditorTests
 
             m_BuildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(m_BuildPath);
+
+            var options = isDevelopment ? BuildOptions.Development : BuildOptions.None;
+#if UNITY_2021_2_OR_NEWER
+            options |= BuildOptions.CleanBuildCache;
+#endif
             var buildPlayerOptions = new BuildPlayerOptions
             {
                 scenes = new string[] {},
                 locationPathName = Path.Combine(m_BuildPath, buildFileName),
                 target = m_Platform,
                 targetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform),
-                options = isDevelopment ? BuildOptions.Development : BuildOptions.None
+                options = options
             };
 
             preBuildAction?.Invoke();
