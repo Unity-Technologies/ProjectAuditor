@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
 using UnityEngine;
 
@@ -42,23 +41,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_Mesh23BitIndexFormatUsedDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(BuildTarget platform, ModelImporter modelImporter)
+        public IEnumerable<ProjectIssue> Analyze(BuildTarget platform, AssetImporter assetImporter)
         {
-            var assetPath = modelImporter.assetPath;
+            var assetPath = assetImporter.assetPath;
             var meshName = Path.GetFileNameWithoutExtension(assetPath);
 
-            var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(modelImporter.assetPath);
+            var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(assetPath);
 
             if (mesh.isReadable)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor, meshName)
-                    .WithLocation(modelImporter.assetPath);
+                    .WithLocation(assetPath);
             }
 
-            if (modelImporter.indexFormat == ModelImporterIndexFormat.UInt32 && mesh.vertexCount <= 65535)
+            var modelImporter = assetImporter as ModelImporter;
+            if (modelImporter != null && modelImporter.indexFormat == ModelImporterIndexFormat.UInt32 && mesh.vertexCount <= 65535)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_Mesh23BitIndexFormatUsedDescriptor, meshName)
-                    .WithLocation(modelImporter.assetPath);
+                    .WithLocation(assetPath);
             }
         }
     }

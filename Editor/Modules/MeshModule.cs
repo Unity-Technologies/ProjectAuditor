@@ -71,11 +71,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             foreach (var guid in allMeshes)
             {
                 var pathToMesh = AssetDatabase.GUIDToAssetPath(guid);
-                var modelImporter = AssetImporter.GetAtPath(pathToMesh) as ModelImporter;
-                if (modelImporter == null)
-                {
-                    continue;
-                }
+
+                var importer = AssetImporter.GetAtPath(pathToMesh);
+                var modelImporter = importer as ModelImporter;
 
                 var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(pathToMesh);
                 var size = Profiler.GetRuntimeMemorySizeLong(mesh);
@@ -86,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         {
                             mesh.vertexCount,
                             mesh.triangles.Length / 3,
-                            modelImporter.meshCompression,
+                            modelImporter != null ? modelImporter.meshCompression : ModelImporterMeshCompression.Off,
                             size,
                             currentPlatform
                         })
@@ -96,7 +94,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in m_Analyzers)
                 {
-                    var platformDiagnostics = analyzer.Analyze(currentPlatform, modelImporter).ToArray();
+                    var platformDiagnostics = analyzer.Analyze(currentPlatform, importer).ToArray();
 
                     issues.AddRange(platformDiagnostics);
                 }
