@@ -12,27 +12,35 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            var addRequest = Client.Add("com.unity.2d.pixel-perfect@3.0.2");
-            while (!addRequest.IsCompleted)
-                System.Threading.Thread.Sleep(10);
-            Assert.True(addRequest.Status == StatusCode.Success, "Could not install the required package (com.unity.services.vivox). Make sure the package is able to be installed, and try again.");
-            addRequest = Client.Add("com.unity.services.vivox@15.1.180001-pre.5");
-            while (!addRequest.IsCompleted)
-                System.Threading.Thread.Sleep(10);
-            Assert.True(addRequest.Status == StatusCode.Success, "Could not install the required package (com.unity.services.vivox). Make sure the package is able to be installed, and try again.");
+#if UNITY_2019_1_OR_NEWER
+            AddPackage("com.unity.2d.pixel-perfect@3.0.2");
+#endif
+            AddPackage("com.unity.services.vivox@15.1.180001-pre.5");
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            var removeRequest = Client.Remove("com.unity.2d.pixel-perfect");
+#if UNITY_2019_1_OR_NEWER
+            RemovePackage("com.unity.2d.pixel-perfect");
+#endif
+            RemovePackage("com.unity.services.vivox");
+        }
+
+        void AddPackage(string packageIdOrName)
+        {
+            var addRequest = Client.Add(packageIdOrName);
+            while (!addRequest.IsCompleted)
+                System.Threading.Thread.Sleep(10);
+            Assert.True(addRequest.Status == StatusCode.Success, $"Could not install the required package ({packageIdOrName}). Make sure the package is able to be installed, and try again.");
+        }
+
+        void RemovePackage(string packageName)
+        {
+            var removeRequest = Client.Remove(packageName);
             while (!removeRequest.IsCompleted)
                 System.Threading.Thread.Sleep(10);
-            Assert.True(removeRequest.Status == StatusCode.Success, "Could not uninstall the required package (com.unity.2d.pixel-perfect). Make sure the package is able to be uninstall, and try again.");
-            removeRequest = Client.Remove("com.unity.services.vivox");
-            while (!removeRequest.IsCompleted)
-                System.Threading.Thread.Sleep(10);
-            Assert.True(removeRequest.Status == StatusCode.Success, "Could not uninstall the required package (com.unity.2d.pixel-perfect). Make sure the package is able to be uninstall, and try again.");
+            Assert.True(removeRequest.Status == StatusCode.Success, $"Could not uninstall the required package ({packageName}). Make sure the package is able to be uninstall, and try again.");
         }
 
         [Test]
@@ -80,6 +88,9 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+#if !UNITY_2019_1_OR_NEWER
+        [Ignore("Package version is not available in 2018.4")]
+#endif
         public void Package_Upgrade_IsRecommended()
         {
             var packageDiagnostics = Analyze(IssueCategory.PackageDiagnostic);

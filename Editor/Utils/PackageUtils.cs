@@ -8,13 +8,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
     {
         const string k_UnknownVersion = "Unknown";
 
-        public static string GetPackageVersion(string packageId)
+        public static string GetPackageVersion(string packageName)
         {
             var request = Client.List();
             while (!request.IsCompleted)
                 System.Threading.Thread.Sleep(10);
 
-            var packageInfo = request.Result.FirstOrDefault(p => p.name == packageId);
+            var packageInfo = request.Result.FirstOrDefault(p => p.name == packageName);
             if (request.Status != StatusCode.Success || packageInfo == null)
                 return k_UnknownVersion;
 
