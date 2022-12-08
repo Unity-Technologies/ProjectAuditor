@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Linq;
 using NUnit.Framework;
+using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;

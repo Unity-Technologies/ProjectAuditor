@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(description, diagnostic.description);
 
             // the issue should be critical as per the descriptor
-            Assert.IsTrue(diagnostic.isCritical);
+            Assert.AreEqual(Priority.Critical, diagnostic.priority);
         }
 
         [UnityTest]
@@ -71,7 +71,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var description = "dummy issue";
             m_Issue = new ProjectIssue(IssueCategory.Code, m_Descriptor, description);
 
-            Assert.IsTrue(m_Issue.priority == Priority.Normal);
+            Assert.AreEqual(Priority.High, m_Issue.priority);
 
             m_Issue.priority = Priority.High;
 
@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.EditorTests
             EditorUtility.RequestScriptReload();
             yield return new WaitForDomainReload();
 
-            Assert.IsTrue(m_Issue.priority == Priority.High);
+            Assert.AreEqual(Priority.High, m_Issue.priority);
 #else
             yield return null;
 #endif

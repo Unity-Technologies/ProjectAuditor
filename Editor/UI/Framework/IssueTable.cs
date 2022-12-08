@@ -305,7 +305,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     case PropertyType.Priority:
                     {
                         var color = Color.white;
-                        if (issue.priority)
+                        switch (issue.priority)
                         {
                             case Priority.Critical:
                                 color = Color.red;

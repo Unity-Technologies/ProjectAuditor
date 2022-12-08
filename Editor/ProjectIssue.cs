@@ -120,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Diagnostics-specific priority
         /// </summary>
-		public Priority priority
+        public Priority priority
         {
             get => m_Priority;
             set => m_Priority = value;
