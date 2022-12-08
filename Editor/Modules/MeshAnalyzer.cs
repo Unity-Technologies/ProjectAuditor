@@ -44,21 +44,28 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public IEnumerable<ProjectIssue> Analyze(BuildTarget platform, AssetImporter assetImporter)
         {
             var assetPath = assetImporter.assetPath;
-            var meshName = Path.GetFileNameWithoutExtension(assetPath);
+            var subAssets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
 
-            var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(assetPath);
-
-            if (mesh.isReadable)
+            foreach (var subAsset in subAssets)
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor, meshName)
-                    .WithLocation(assetPath);
-            }
+                var mesh = subAsset as Mesh;
+                if (mesh == null)
+                    continue;
 
-            var modelImporter = assetImporter as ModelImporter;
-            if (modelImporter != null && modelImporter.indexFormat == ModelImporterIndexFormat.UInt32 && mesh.vertexCount <= 65535)
-            {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_Mesh23BitIndexFormatUsedDescriptor, meshName)
-                    .WithLocation(assetPath);
+                if (mesh.isReadable)
+                {
+                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor, mesh.name)
+                        .WithLocation(assetPath);
+                }
+
+                var modelImporter = assetImporter as ModelImporter;
+                if (modelImporter != null && modelImporter.indexFormat == ModelImporterIndexFormat.UInt32 &&
+                    mesh.vertexCount <= 65535)
+                {
+                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
+                        k_Mesh23BitIndexFormatUsedDescriptor, mesh.name)
+                        .WithLocation(assetPath);
+                }
             }
         }
     }

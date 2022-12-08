@@ -75,22 +75,32 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var importer = AssetImporter.GetAtPath(pathToMesh);
                 var modelImporter = importer as ModelImporter;
 
-                var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(pathToMesh);
-                var size = Profiler.GetRuntimeMemorySizeLong(mesh);
+                var subAssets = AssetDatabase.LoadAllAssetsAtPath(pathToMesh);
 
-                var issue = ProjectIssue.Create(k_MeshIssueLayout.category, mesh.name)
-                    .WithCustomProperties(
-                        new object[((int)MeshProperty.Num)]
-                        {
-                            mesh.vertexCount,
-                            mesh.triangles.Length / 3,
-                            modelImporter != null ? modelImporter.meshCompression : ModelImporterMeshCompression.Off,
-                            size,
-                            currentPlatform
-                        })
-                    .WithLocation(new Location(pathToMesh));
+                foreach (var subAsset in subAssets)
+                {
+                    var mesh = subAsset as Mesh;
+                    if (mesh == null)
+                        continue;
 
-                issues.Add(issue);
+                    var size = Profiler.GetRuntimeMemorySizeLong(mesh);
+
+                    var issue = ProjectIssue.Create(k_MeshIssueLayout.category, mesh.name)
+                        .WithCustomProperties(
+                            new object[((int)MeshProperty.Num)]
+                            {
+                                mesh.vertexCount,
+                                mesh.triangles.Length / 3,
+                                modelImporter != null
+                                ? modelImporter.meshCompression
+                                : ModelImporterMeshCompression.Off,
+                                size,
+                                currentPlatform
+                            })
+                        .WithLocation(new Location(pathToMesh));
+
+                    issues.Add(issue);
+                }
 
                 foreach (var analyzer in m_Analyzers)
                 {
