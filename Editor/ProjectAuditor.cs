@@ -25,15 +25,15 @@ namespace Unity.ProjectAuditor.Editor
         internal const string DataPath = PackagePath + "/Data";
         internal const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
 
-        public const string PackageId = "com.unity.project-auditor";
-        public const string PackagePath = "Packages/" + PackageId;
+        public const string PackageName = "com.unity.project-auditor";
+        public const string PackagePath = "Packages/" + PackageName;
 
         internal static string PackageVersion
         {
             get
             {
                 if (string.IsNullOrEmpty(m_PackageVersion))
-                    m_PackageVersion = PackageUtils.GetPackageVersion(PackageId);
+                    m_PackageVersion = PackageUtils.GetPackageVersion(PackageName);
                 return m_PackageVersion;
             }
         }
