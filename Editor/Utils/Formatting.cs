@@ -5,6 +5,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
 {
     public static class Formatting
     {
+        public static string FormatDateTime(DateTime dateTime)
+        {
+            return dateTime.ToString("yyyy/MM/dd HH:mm");
+        }
+
         public static string FormatBuildTime(TimeSpan t)
         {
             return t.Hours + ":" + t.Minutes.ToString("D2") + ":" + t.Seconds.ToString("D2");

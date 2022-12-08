@@ -1,10 +1,14 @@
 using System;
+using System.Collections;
 using System.Linq;
 using NUnit.Framework;
-using Unity.ProjectAuditor.Editor.Diagnostic;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
+    [Serializable]
     class PerfCriticalContextTests : TestFixtureBase
     {
         TempAsset m_TempAssetIssueInClassInheritedFromMonoBehaviour;
@@ -14,6 +18,9 @@ namespace Unity.ProjectAuditor.EditorTests
         TempAsset m_TempAssetIssueInMonoBehaviourOnRenderObject;
         TempAsset m_TempAssetIssueInSimpleClass;
         TempAsset m_TempAssetShaderWarmupIssueIsCritical;
+
+        [SerializeField]
+        ProjectIssue m_Issue;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -162,6 +169,25 @@ class ShaderWarmUpIssueIsCritical
                     m_TempAssetIssueInClassInheritedFromMonoBehaviour);
             var issue = issues.First();
             Assert.AreEqual(Priority.High, issue.priority);
+        }
+
+        [UnityTest]
+        public IEnumerator CodeAnalysis_Critical_PersistsAfterDomainReload()
+        {
+            var issues =
+                AnalyzeAndFindAssetIssues(
+                    m_TempAssetIssueInClassInheritedFromMonoBehaviour);
+            m_Issue = issues.First();
+
+            Assert.IsTrue(m_Issue.priority == Priority.High);
+#if UNITY_2019_3_OR_NEWER
+            EditorUtility.RequestScriptReload();
+            yield return new WaitForDomainReload();
+
+            Assert.IsTrue(m_Issue.priority == Priority.High);
+#else
+            yield return null;
+#endif
         }
 
         [Test]

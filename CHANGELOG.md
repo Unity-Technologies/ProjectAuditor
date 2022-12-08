@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.9.0-preview] - 2022-12-01
 * Added diagnostic area _Quality_, _Support_ and _Requirement_
 * Added _documentation_ support to descriptor
 * Added issue _fixer_ support to descriptor
@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Fixed Build Report object name
 * Fixed text alignment and wrapping issues
 * Fixed build report steps text wrapping
+* Fixed diagnostics _critical_ property persistence after domain reload  
 * Improved text search to match custom properties
 
 ## [0.8.4-preview] - 2022-09-27

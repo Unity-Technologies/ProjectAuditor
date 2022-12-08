@@ -25,15 +25,15 @@ namespace Unity.ProjectAuditor.Editor
         internal const string DataPath = PackagePath + "/Data";
         internal const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
 
-        public const string PackageId = "com.unity.project-auditor";
-        public const string PackagePath = "Packages/" + PackageId;
+        public const string PackageName = "com.unity.project-auditor";
+        public const string PackagePath = "Packages/" + PackageName;
 
         internal static string PackageVersion
         {
             get
             {
                 if (string.IsNullOrEmpty(m_PackageVersion))
-                    m_PackageVersion = PackageUtils.GetPackageVersion(PackageId);
+                    m_PackageVersion = PackageUtils.GetPackageVersion(PackageName);
                 return m_PackageVersion;
             }
         }
@@ -162,6 +162,12 @@ namespace Unity.ProjectAuditor.Editor
                 {
                     onIncomingIssues = issues =>
                     {
+                        // update diagnostic priorities based on dependencies
+                        foreach (var issue in issues.Where(i => i.descriptor != null && !i.isCritical && i.dependencies != null && i.dependencies.IsPerfCritical()))
+                        {
+                            issue.isCritical = true;
+                        }
+
                         report.AddIssues(issues);
                         projectAuditorParams.onIncomingIssues?.Invoke(issues);
                     },

@@ -41,6 +41,8 @@ class MyClass : MonoBehaviour
             Assert.Zero(projectReport.NumTotalIssues);
             Assert.Zero(projectReport.GetNumIssues(IssueCategory.Code));
             Assert.Zero(projectReport.GetNumIssues(IssueCategory.ProjectSetting));
+            Assert.IsEmpty(projectReport.FindByCategory(IssueCategory.Code));
+            Assert.IsEmpty(projectReport.FindByCategory(IssueCategory.ProjectSetting));
         }
 
         [Test]
@@ -92,7 +94,7 @@ class MyClass : MonoBehaviour
 
             Assert.True(File.Exists(path));
 
-            return projectReport.GetIssues(category);
+            return projectReport.FindByCategory(category).Where(i => (predicate != null) ? predicate(i) : true).ToArray();
         }
 
         [Test]
@@ -101,7 +103,7 @@ class MyClass : MonoBehaviour
             var category = IssueCategory.Code;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
             AnalyzeAndExport(category, path, "csv");
-            var issueFound = false;
+            var issueExported = false;
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
@@ -112,11 +114,11 @@ class MyClass : MonoBehaviour
                 {
                     line = file.ReadLine();
                     if (line.Equals(expectedIssueLine))
-                        issueFound = true;
+                        issueExported = true;
                 }
             }
 
-            Assert.True(issueFound);
+            Assert.True(issueExported);
         }
 
         [Test]
@@ -126,7 +128,7 @@ class MyClass : MonoBehaviour
             var path = string.Format("project-auditor-report-{0}.html", category.ToString()).ToLower();
             AnalyzeAndExport(category, path, "html");
 
-            var issueFound = false;
+            var issueExported = false;
             var formatCorrect = false;
             using (var file = new StreamReader(path))
             {
@@ -200,7 +202,7 @@ class MyClass : MonoBehaviour
                         }
                         if (index == 8)
                         {
-                            issueFound = true;
+                            issueExported = true;
                         }
                     }
                     else
@@ -213,7 +215,7 @@ class MyClass : MonoBehaviour
                     }
                 }
             }
-            Assert.True(issueFound);
+            Assert.True(issueExported);
             Assert.True(formatCorrect);
         }
 
@@ -226,7 +228,7 @@ class MyClass : MonoBehaviour
             {
                 return issue.description.StartsWith("Conversion");
             });
-            var issueFound = false;
+            var issueExported = false;
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
@@ -237,11 +239,11 @@ class MyClass : MonoBehaviour
                 {
                     line = file.ReadLine();
                     if (line.Equals(expectedIssueLine))
-                        issueFound = true;
+                        issueExported = true;
                 }
             }
 
-            Assert.True(issueFound);
+            Assert.True(issueExported);
         }
 
         [Test]
@@ -253,7 +255,7 @@ class MyClass : MonoBehaviour
             {
                 return issue.description.StartsWith("Conversion");
             });
-            var issueFound = false;
+            var issueExported = false;
             var filterCorrect = true;
             using (var file = new StreamReader(path))
             {
@@ -323,7 +325,7 @@ class MyClass : MonoBehaviour
                         }
                         if (index == 8)
                         {
-                            issueFound = true;
+                            issueExported = true;
                         }
                     }
                     else
@@ -331,7 +333,7 @@ class MyClass : MonoBehaviour
                         line = file.ReadLine();
                     }
                 }
-                Assert.True(issueFound);
+                Assert.True(issueExported);
                 Assert.True(filterCorrect);
             }
         }
@@ -344,24 +346,27 @@ class MyClass : MonoBehaviour
 
             var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
-            var issues = AnalyzeAndExport(category,  path, "csv");
-            var issue = issues.FirstOrDefault(i => i.descriptor.method.Equals("bakeCollisionMeshes"));
-            var expectedIssueLine = $"\"{issue.description}\",\"False\",\"{issue.descriptor.GetAreasSummary()}\",\"{issue.relativePath}\"";
+            var issues = AnalyzeAndExport(category,  path, "csv", i => i.descriptor.id.Equals("PAS0007"));
 
-            var issueFound = false;
+            Assert.AreEqual(1, issues.Count);
+
+            var issue = issues.First();
+            var expectedIssueLine = $"\"{issue.description}\",\"False\",\"{issue.descriptor.GetAreasSummary()}\",\"{issue.filename}\",\"{issue.descriptor.GetPlatformsSummary()}\"";
+
+            var issueExported = false;
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.AreEqual("Issue,Critical,Area,Settings", line, "Header was: " + line);
+                Assert.AreEqual("Issue,Critical,Area,System,Platform", line, "Header was: " + line);
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();
                     if (line.Equals(expectedIssueLine))
-                        issueFound = true;
+                        issueExported = true;
                 }
             }
 
-            Assert.True(issueFound);
+            Assert.True(issueExported);
 
             PlayerSettings.bakeCollisionMeshes = bakeCollisionMeshes;
         }
@@ -374,10 +379,12 @@ class MyClass : MonoBehaviour
 
             var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.html", category.ToString().ToLower());
-            var issues = AnalyzeAndExport(category, path, "html");
-            var issue =  issues.FirstOrDefault(i => i.descriptor.method.Equals("bakeCollisionMeshes"));
+            var issues = AnalyzeAndExport(category,  path, "html", i => i.descriptor.id.Equals("PAS0007"));
 
-            var issueFound = false;
+            Assert.AreEqual(1, issues.Count);
+
+            var issue = issues.First();
+            var issueExported = false;
             var formatCorrect = false;
             using (var file = new StreamReader(path))
             {
@@ -396,7 +403,9 @@ class MyClass : MonoBehaviour
                 line = file.ReadLine();
                 Assert.AreEqual("<th>Area</th>", line);
                 line = file.ReadLine();
-                Assert.AreEqual("<th>Settings</th>", line);
+                Assert.AreEqual("<th>System</th>", line);
+                line = file.ReadLine();
+                Assert.AreEqual("<th>Platform</th>", line);
                 line = file.ReadLine();
                 Assert.AreEqual("</tr>", line);
 
@@ -426,7 +435,12 @@ class MyClass : MonoBehaviour
                             index++;
                         }
                         line = file.ReadLine();
-                        if (line.Equals($"<td>{issue.relativePath}</td>"))
+                        if (line.Equals($"<td>{issue.filename}</td>"))
+                        {
+                            index++;
+                        }
+                        line = file.ReadLine();
+                        if (line.Equals($"<td>{issue.descriptor.GetPlatformsSummary()}</td>"))
                         {
                             index++;
                         }
@@ -435,9 +449,9 @@ class MyClass : MonoBehaviour
                         {
                             index++;
                         }
-                        if (index == 6)
+                        if (index == 7)
                         {
-                            issueFound = true;
+                            issueExported = true;
                         }
                     }
                     else
@@ -450,7 +464,7 @@ class MyClass : MonoBehaviour
                     }
                 }
             }
-            Assert.True(issueFound);
+            Assert.True(issueExported);
             Assert.True(formatCorrect);
 
             PlayerSettings.bakeCollisionMeshes = bakeCollisionMeshes;

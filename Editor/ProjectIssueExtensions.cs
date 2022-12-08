@@ -50,7 +50,9 @@ namespace Unity.ProjectAuditor.Editor
                     if (string.IsNullOrEmpty(issue.relativePath))
                         return k_NotAvailable;
                     return PathUtils.GetDirectoryName(issue.location.Path);
-                case PropertyType.Priority:
+                case PropertyType.Platform:
+                    return issue.descriptor.GetPlatformsSummary();
+				case PropertyType.Priority:
                     return issue.priority.ToString();
                 default:
                     var propertyIndex = propertyType - PropertyType.Num;

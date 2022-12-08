@@ -21,8 +21,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "PAC0192",
             "Debug.Log / Debug.LogFormat",
             Area.CPU,
-            "Debug.Log methods cause slowdowns, especially if used frequently.",
-            "Instead of removing code an option is to strip this code on release builds by using scripting symbols for conditional compilation (#if ... #endif) or the ConditionalAttribute on a method where you call this. When logging is still used in your code a small optimization can be to leave out the callstack, if not required, by setting 'Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)' via code."
+            "<b>Debug.Log</b> methods cause slowdowns, especially if used frequently.",
+            "Instead of removing code an option is to strip this code on release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a method where you call this. When logging is still used in your code a small optimization can be to leave out the callstack, if not required, by setting <b>Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)</b> via code."
             )
         {
             messageFormat = "Use of Debug.{0} in '{1}'"
@@ -33,8 +33,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "PAC0193",
             "Debug.LogWarning / Debug.LogWarningFormat",
             Area.CPU,
-            "Debug.LogWarning methods cause slowdowns, especially if used frequently.",
-            "Instead of removing code an option is to strip this code on release builds by using scripting symbols for conditional compilation (#if ... #endif) or the ConditionalAttribute on a method where you call this. When logging is still used in your code a small optimization can be to leave out the callstack, if not required, by setting 'Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None)' via code."
+            "<b>Debug.LogWarning</b> methods cause slowdowns, especially if used frequently.",
+            "Instead of removing code an option is to strip this code on release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a method where you call this. When logging is still used in your code a small optimization can be to leave out the callstack, if not required, by setting <b>Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None)</b> via code."
             )
         {
             messageFormat = "Use of Debug.{0} in '{1}'"

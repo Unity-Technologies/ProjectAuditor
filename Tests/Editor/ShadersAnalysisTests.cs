@@ -366,7 +366,7 @@ Shader ""Custom/MyEditorShader""
 
             var testShader = shaders.FirstOrDefault(s => s.description.Equals(k_ShaderName));
             Assert.NotNull(testShader);
-            Assert.True(testShader.GetCustomPropertyAsLong(ShaderProperty.Size) > 0);
+            Assert.True(testShader.GetCustomPropertyInt64(ShaderProperty.Size) > 0);
         }
 
         [Test]
@@ -506,7 +506,7 @@ Shader ""Custom/MyEditorShader""
             if (!shaderCompilerPlatforms.Contains("OpenGLCore"))
                 Assert.AreEqual(10 * numShaderCompilerPlatforms, variants.Length, "Compiler Platforms: " + string.Join(", ", shaderCompilerPlatforms));
 
-            var unusedVariants = variants.Where(i => !i.GetCustomPropertyAsBool(ShaderVariantProperty.Compiled)).ToArray();
+            var unusedVariants = variants.Where(i => !i.GetCustomPropertyBool(ShaderVariantProperty.Compiled)).ToArray();
             foreach (var plat in shaderCompilerPlatforms)
             {
                 if (plat.Equals("OpenGLCore"))
@@ -555,11 +555,11 @@ Shader ""Custom/MyEditorShader""
             var expectedNumKeywords = 0;
 #endif
 
-            Assert.AreEqual(expectedNumPasses, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
-            Assert.AreEqual(expectedNumKeywords, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
+            Assert.AreEqual(expectedNumPasses, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
+            Assert.AreEqual(expectedNumKeywords, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
 
-            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty(ShaderProperty.RenderQueue));
-            Assert.False(shaderIssue.GetCustomPropertyAsBool(ShaderProperty.Instancing), "Instancing is supported but it should not be.");
+            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyInt32(ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty(ShaderProperty.RenderQueue));
+            Assert.False(shaderIssue.GetCustomPropertyBool(ShaderProperty.Instancing), "Instancing is supported but it should not be.");
 
             // assume SrpBatcher is supported when not using Built-in Render Pipeline
 //            var isSrpBatcherSupported = RenderPipelineManager.currentPipeline != null;
@@ -607,17 +607,17 @@ Shader ""Custom/MyEditorShader""
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
 #if UNITY_2021_1_OR_NEWER
-            Assert.AreEqual(1, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
-            Assert.AreEqual(10, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
+            Assert.AreEqual(1, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
+            Assert.AreEqual(10, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
 #elif UNITY_2019_1_OR_NEWER
-            Assert.AreEqual(1, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
-            Assert.AreEqual(1, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
+            Assert.AreEqual(1, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
+            Assert.AreEqual(1, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
 #else
-            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
-            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
 #endif
-            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty(ShaderProperty.RenderQueue));
-            Assert.True(shaderIssue.GetCustomPropertyAsBool(ShaderProperty.Instancing));
+            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyInt32(ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty(ShaderProperty.RenderQueue));
+            Assert.True(shaderIssue.GetCustomPropertyBool(ShaderProperty.Instancing));
         }
 
         [Test]
@@ -630,17 +630,17 @@ Shader ""Custom/MyEditorShader""
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
 #if UNITY_2021_1_OR_NEWER
-            Assert.AreEqual(4, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
-            Assert.AreEqual(52, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
+            Assert.AreEqual(4, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
+            Assert.AreEqual(52, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
 #elif UNITY_2019_1_OR_NEWER
-            Assert.AreEqual(4, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
-            Assert.AreEqual(22, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
+            Assert.AreEqual(4, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
+            Assert.AreEqual(22, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
 #else
-            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
-            Assert.AreEqual(0, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
+            Assert.AreEqual(0, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
 #endif
-            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyAsInt(ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty(ShaderProperty.RenderQueue));
-            Assert.True(shaderIssue.GetCustomPropertyAsBool(ShaderProperty.Instancing));
+            Assert.AreEqual(2000, shaderIssue.GetCustomPropertyInt32(ShaderProperty.RenderQueue), "RenderQueue was : " + shaderIssue.GetCustomProperty(ShaderProperty.RenderQueue));
+            Assert.True(shaderIssue.GetCustomPropertyBool(ShaderProperty.Instancing));
         }
 
         [Test]

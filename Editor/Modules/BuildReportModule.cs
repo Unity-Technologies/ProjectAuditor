@@ -7,6 +7,7 @@ using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
+using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -41,8 +42,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class LastBuildReportProvider : IBuildReportProvider
     {
-        const string k_BuildReportDir = "Assets/BuildReports";
-        const string k_LastBuildReportPath = "Library/LastBuild.buildreport";
+        internal const string k_LastBuildReportPath = "Library/LastBuild.buildreport";
 
         public BuildReport GetBuildReport()
         {
@@ -51,25 +51,42 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public static BuildReport GetLastBuildReportAsset()
         {
-            if (!Directory.Exists(k_BuildReportDir))
-                Directory.CreateDirectory(k_BuildReportDir);
+            if (!File.Exists(k_LastBuildReportPath))
+                return null; // a build report was not found in the Library folder
+
+            var buildReportPath = UserPreferences.buildReportPath;
+            if (!Directory.Exists(buildReportPath))
+                Directory.CreateDirectory(buildReportPath);
 
             var date = File.GetLastWriteTime(k_LastBuildReportPath);
             var targetAssetName = "Build_" + date.ToString("yyyy-MM-dd-HH-mm-ss");
-            var assetPath = $"{k_BuildReportDir}/{targetAssetName}.buildreport";
+            var assetPath = $"{buildReportPath}/{targetAssetName}.buildreport";
 
             if (!File.Exists(assetPath))
             {
-                if (!File.Exists(k_LastBuildReportPath))
-                    return null; // the project was never built
-
-                var tempAssetPath = k_BuildReportDir + "/New Report.buildreport";
+                var tempAssetPath = buildReportPath + "/New Report.buildreport";
                 File.Copy(k_LastBuildReportPath, tempAssetPath, true);
                 AssetDatabase.ImportAsset(tempAssetPath);
                 AssetDatabase.RenameAsset(tempAssetPath, targetAssetName);
             }
 
             return AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
+        }
+
+        [PostProcessBuild(1)]
+        public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
+        {
+            if (UserPreferences.buildReportAutoSave)
+            {
+                // Library/LastBuild.buildreport is only created AFTER OnPostprocessBuild so we need to defer the copy of the file
+                EditorApplication.update += CheckLastBuildReport;
+            }
+        }
+
+        static void CheckLastBuildReport()
+        {
+            if (GetLastBuildReportAsset() != null)
+                EditorApplication.update -= CheckLastBuildReport;
         }
     }
 
@@ -86,6 +103,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
         const string k_KeyTotalSize = "Total Size";
         const string k_Unknown = "Unknown";
 #endif
+
+        static readonly IssueLayout k_MetaDataLayout = new IssueLayout
+        {
+            category = IssueCategory.BuildSummary,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Key" }
+            }
+        };
 
         static readonly IssueLayout k_FileLayout = new IssueLayout
         {
@@ -133,6 +159,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
+            k_MetaDataLayout,
             k_FileLayout,
             k_StepLayout
         };
@@ -147,8 +174,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath, issues);
                 NewMetaData(k_KeyPlatform, buildReport.summary.platform, issues);
                 NewMetaData(k_KeyResult, buildReport.summary.result, issues);
-                NewMetaData(k_KeyStartTime, buildReport.summary.buildStartedAt, issues);
-                NewMetaData(k_KeyEndTime, buildReport.summary.buildEndedAt, issues);
+                NewMetaData(k_KeyStartTime, Formatting.FormatDateTime(buildReport.summary.buildStartedAt), issues);
+                NewMetaData(k_KeyEndTime, Formatting.FormatDateTime(buildReport.summary.buildEndedAt), issues);
                 NewMetaData(k_KeyTotalTime, Formatting.FormatBuildTime(buildReport.summary.totalTime), issues);
                 NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize), issues);
 
@@ -188,7 +215,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             logMessage
                         })
                         .WithDepth(depth + 1)
-                        .WithSeverity(LogTypeToSeverity(message.type));
+                        .WithSeverity(Diagnostic.Utils.LogTypeToSeverity(message.type));
                     issues.Add(issue);
                 }
             }
@@ -229,21 +256,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var issue = ProjectIssue.Create(IssueCategory.BuildSummary, key)
                 .WithCustomProperties(new object[(int)BuildReportMetaData.Num] { value });
             issues.Add(issue);
-        }
-
-        Severity LogTypeToSeverity(LogType logType)
-        {
-            switch (logType)
-            {
-                case LogType.Assert:
-                case LogType.Error:
-                case LogType.Exception:
-                    return Severity.Error;
-                case LogType.Warning:
-                    return Severity.Warning;
-                default:
-                    return Severity.Info;
-            }
         }
 
 #endif

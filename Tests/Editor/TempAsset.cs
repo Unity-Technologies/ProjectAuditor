@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using NUnit.Framework;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 
 namespace Unity.ProjectAuditor.EditorTests
@@ -18,7 +19,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
         private TempAsset(string fileName)
         {
-            relativePath = Path.Combine("Assets", Path.Combine(k_TempFolder, fileName)).Replace("\\", "/");
+            relativePath = PathUtils.Combine("Assets", k_TempFolder, fileName);
 
             if (!File.Exists(relativePath))
                 Directory.CreateDirectory(Path.GetDirectoryName(relativePath));

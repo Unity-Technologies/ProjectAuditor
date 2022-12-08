@@ -12,7 +12,8 @@ namespace Unity.ProjectAuditor.Editor.Core
         Directory,
         Filename,
         FileType,
-        Priority,
+        Platform,
+		Priority,
         Num
     }
 

@@ -217,14 +217,14 @@ namespace Unity.ProjectAuditor.EditorTests
 
                 var type = types.FirstOrDefault(t => t.FullName.Equals(desc.type));
 
-                Assert.True(!string.IsNullOrEmpty(desc.customevaluator) || (desc.method.Equals("*") || type != null), "Invalid Type : " + desc.type);
+                Assert.True((desc.method.Equals("*") || type != null), "Invalid Type : " + desc.type);
 
                 if (skippableMethodNames.Contains(desc.method))
                     continue;
 
                 try
                 {
-                    Assert.True(!string.IsNullOrEmpty(desc.customevaluator) || type.GetMethod(desc.method) != null || type.GetProperty(desc.method) != null, "{0} does not belong to {1}", desc.method, desc.type);
+                    Assert.True(type.GetMethod(desc.method) != null || type.GetProperty(desc.method) != null, "{0} does not belong to {1}", desc.method, desc.type);
                 }
                 catch (AmbiguousMatchException)
                 {
@@ -256,10 +256,10 @@ namespace Unity.ProjectAuditor.EditorTests
         public void ProblemDescriptor_Platform_IsCorrect()
         {
             var descriptors = Json.FromFile<Descriptor>(PathUtils.Combine(Editor.ProjectAuditor.DataPath, "ProjectSettings") + ".json");
-            var platDescriptor = descriptors.FirstOrDefault(d => d.id.Equals("PAS0004"));
+            var platDescriptor = descriptors.FirstOrDefault(d => d.id.Equals("PAS0000"));
             Assert.NotNull(platDescriptor);
             Assert.NotNull(platDescriptor.platforms);
-            Assert.Contains("Android", platDescriptor.platforms);
+            Assert.Contains("iOS", platDescriptor.platforms);
         }
     }
 }

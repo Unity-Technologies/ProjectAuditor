@@ -10,9 +10,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     public class DiagnosticView : AnalysisView
     {
-        const int k_ActionButtonHeight = 30;
-        const int k_ActionButtonWidth = 200;
-
         public DiagnosticView(ViewManager viewManager) : base(viewManager)
         {
         }
@@ -23,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
 
-            EditorGUILayout.LabelField(Contents.Details, EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(Contents.Details, SharedStyles.BoldLabel);
             {
                 if (selectedDescriptors.Length == 0)
                     GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
@@ -33,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     GUILayout.TextArea(selectedDescriptors[0].description, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
 
-            EditorGUILayout.LabelField(Contents.Recommendation, EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(Contents.Recommendation, SharedStyles.BoldLabel);
             {
                 if (selectedDescriptors.Length == 0)
                     GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
@@ -45,24 +42,25 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             if (selectedDescriptors.Length == 1)
             {
-                if (!string.IsNullOrEmpty(selectedDescriptors[0].documentationUrl) && GUILayout.Button(
-                    Contents.Documentation, GUILayout.MaxWidth(k_ActionButtonWidth), GUILayout.Height(k_ActionButtonHeight)))
+                if (!string.IsNullOrEmpty(selectedDescriptors[0].documentationUrl))
                 {
-                    Application.OpenURL(selectedDescriptors[0].documentationUrl);
+                    DrawActionButton(Contents.Documentation, () =>
+                    {
+                        Application.OpenURL(selectedDescriptors[0].documentationUrl);
+                    });
                 }
 
                 if (selectedDescriptors[0].fixer != null)
                 {
                     GUI.enabled = selectedIssues.Any(i => !i.wasFixed);
 
-                    if (GUILayout.Button(
-                        Contents.QuickFix, GUILayout.MaxWidth(k_ActionButtonWidth), GUILayout.Height(k_ActionButtonHeight)))
+                    DrawActionButton(Contents.QuickFix, () =>
                     {
                         foreach (var issue in selectedIssues)
                         {
                             selectedDescriptors[0].Fix(issue);
                         }
-                    }
+                    });
 
                     GUI.enabled = true;
                 }

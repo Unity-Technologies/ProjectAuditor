@@ -19,15 +19,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    public enum PackageDiagnosticProperty
-    {
-        Name = 0,
-        CurrentVersion,
-        RecommendedVersion,
-        Experimental,
-        Num
-    }
-
     class PackagesModule : ProjectAuditorModule
     {
         static readonly IssueLayout k_PackageLayout = new IssueLayout
@@ -49,13 +40,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Package Issue"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageDiagnosticProperty.CurrentVersion), format = PropertyFormat.String, name = "Current Version" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageDiagnosticProperty.RecommendedVersion), format = PropertyFormat.String, name = "Recommended Version"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageDiagnosticProperty.Experimental), format = PropertyFormat.Bool, name = "Experimental/Preview" },
                 new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
             }
         };
-
 
         static readonly Descriptor k_RecommendPackageUpgrade  = new Descriptor(
             "PAP0001",
@@ -65,9 +52,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Upgrade the package via Package Manager."
         )
         {
-            messageFormat = "'{0}' is not up to date",
+            messageFormat = "'{0}' could be updated from version '{1}' to '{2}'",
         };
-
 
         static readonly Descriptor k_RecommendPackagePreView = new Descriptor(
             "PAP0002",
@@ -77,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "We recommend using these only for testing purposes and to give us direct feedback"
         )
         {
-            messageFormat = "'{0}' is in preview/experimental mode"
+            messageFormat = "'{0}' version '{1}' is a preview/experimental version"
         };
 
         public override string name => "Packages";
@@ -131,26 +117,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 if (!recommendedVersionString.Equals(package.version))
                 {
-                    yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade, package.name)
-                        .WithCustomProperties(new object[(int)PackageDiagnosticProperty.Num]
-                        {
-                            package.name,
-                            package.version,
-                            recommendedVersionString,
-                            false
-                        });
+                    yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade, package.name, package.version, recommendedVersionString)
+                        .WithLocation(package.assetPath);
                 }
             }
             else if (package.version.Contains("pre") || package.version.Contains("exp"))
             {
-                yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView, package.name)
-                    .WithCustomProperties(new object[(int)PackageDiagnosticProperty.Num]
-                    {
-                        package.name,
-                        package.version,
-                        recommendedVersionString,
-                        true
-                    });
+                yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView, package.name, package.version)
+                    .WithLocation(package.assetPath);
             }
         }
     }

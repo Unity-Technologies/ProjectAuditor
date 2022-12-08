@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -7,7 +8,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public static class EditorUtil
+    public static class EditorInterop
     {
         public static void OpenCodeDescriptor(Descriptor descriptor)
         {
@@ -44,6 +45,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 // open text file in the text editor
                 AssetDatabase.OpenAsset(obj, location.Line);
             }
+        }
+
+        public static void OpenPackage(Location location)
+        {
+#if UNITY_2019_1_OR_NEWER
+            var packageName = Path.GetFileName(location.Path);
+            UnityEditor.PackageManager.UI.Window.Open(packageName);
+#endif
         }
 
         public static void OpenProjectSettings(Location location)

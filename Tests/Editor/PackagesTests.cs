@@ -12,27 +12,35 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            var addRequest = Client.Add("com.unity.2d.pixel-perfect@3.0.2");
-            while (!addRequest.IsCompleted)
-                System.Threading.Thread.Sleep(10);
-            Assert.True(addRequest.Status == StatusCode.Success, "Could not install the required package (com.unity.services.vivox). Make sure the package is able to be installed, and try again.");
-            addRequest = Client.Add("com.unity.services.vivox@15.1.180001-pre.5");
-            while (!addRequest.IsCompleted)
-                System.Threading.Thread.Sleep(10);
-            Assert.True(addRequest.Status == StatusCode.Success, "Could not install the required package (com.unity.services.vivox). Make sure the package is able to be installed, and try again.");
+#if UNITY_2019_1_OR_NEWER
+            AddPackage("com.unity.2d.pixel-perfect@3.0.2");
+            AddPackage("com.unity.services.vivox@15.1.180001-pre.5");
+#endif
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            var removeRequest = Client.Remove("com.unity.2d.pixel-perfect");
+#if UNITY_2019_1_OR_NEWER
+            RemovePackage("com.unity.2d.pixel-perfect");
+            RemovePackage("com.unity.services.vivox");
+#endif
+        }
+
+        void AddPackage(string packageIdOrName)
+        {
+            var addRequest = Client.Add(packageIdOrName);
+            while (!addRequest.IsCompleted)
+                System.Threading.Thread.Sleep(10);
+            Assert.True(addRequest.Status == StatusCode.Success, $"Could not install the required package ({packageIdOrName}). Make sure the package is able to be installed, and try again.");
+        }
+
+        void RemovePackage(string packageName)
+        {
+            var removeRequest = Client.Remove(packageName);
             while (!removeRequest.IsCompleted)
                 System.Threading.Thread.Sleep(10);
-            Assert.True(removeRequest.Status == StatusCode.Success, "Could not uninstall the required package (com.unity.2d.pixel-perfect). Make sure the package is able to be uninstall, and try again.");
-            removeRequest = Client.Remove("com.unity.services.vivox");
-            while (!removeRequest.IsCompleted)
-                System.Threading.Thread.Sleep(10);
-            Assert.True(removeRequest.Status == StatusCode.Success, "Could not uninstall the required package (com.unity.2d.pixel-perfect). Make sure the package is able to be uninstall, and try again.");
+            Assert.True(removeRequest.Status == StatusCode.Success, $"Could not uninstall the required package ({packageName}). Make sure the package is able to be uninstall, and try again.");
         }
 
         [Test]
@@ -53,57 +61,56 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        [TestCase("Project Auditor", "com.unity.project-auditor", "Local", new string[] { "com.unity.nuget.mono-cecil" })]
-        [TestCase("Audio", "com.unity.modules.audio", "BuiltIn")]
 #if UNITY_2019_1_OR_NEWER
-        [TestCase("Test Framework", "com.unity.test-framework", "Registry", new[] { "com.unity.ext.nunit", "com.unity.modules.imgui", "com.unity.modules.jsonserialize"})]
+        [TestCase("Test Framework", "com.unity.test-framework", PackageSource.Registry, new[] { "com.unity.ext.nunit", "com.unity.modules.imgui", "com.unity.modules.jsonserialize"})]
+        [TestCase("Project Auditor", "com.unity.project-auditor", PackageSource.LocalTarball, new string[] { "com.unity.nuget.mono-cecil" })]
+#else
+        [TestCase("Project Auditor", "com.unity.project-auditor", PackageSource.Local, new string[] { "com.unity.nuget.mono-cecil" })]
 #endif
-        public void Package_Installed_IsReported(string description, string name, string source, string[] dependencies = null)
+        [TestCase("Audio", "com.unity.modules.audio", PackageSource.BuiltIn)]
+        public void Package_Installed_IsReported(string description, string name, PackageSource source, string[] dependencies = null)
         {
             var installedPackages = Analyze(IssueCategory.Package);
-            var matchIssue = installedPackages.FirstOrDefault(issue => issue.description == description);
+            var package = installedPackages.FirstOrDefault(issue => issue.description == description);
 
-            Assert.IsNotNull(matchIssue, "Package {0} not found. Packages: {1}", description, string.Join(", ", installedPackages.Select(p => p.description).ToArray()));
-            Assert.AreEqual(name, matchIssue.GetCustomProperty(PackageProperty.Name));
-            Assert.AreEqual("Packages/" + name, matchIssue.location.Path);
-            Assert.IsTrue(matchIssue.GetCustomProperty(PackageDiagnosticProperty.RecommendedVersion).StartsWith(source), "Package: " + description);
+            Assert.IsNotNull(package, "Package {0} not found. Packages: {1}", description, string.Join(", ", installedPackages.Select(p => p.description).ToArray()));
+            Assert.AreEqual(name, package.GetCustomProperty(PackageProperty.Name));
+            Assert.AreEqual(source.ToString(), package.GetCustomProperty(PackageProperty.Source));
+            Assert.AreEqual("Packages/" + name, package.location.Path);
 
             if (dependencies != null)
             {
                 for (var i = 0; i < dependencies.Length; i++)
                 {
-                    Assert.IsTrue(matchIssue.dependencies.GetChild(i).GetName().Contains(dependencies[i]), "Package: " + description);
+                    Assert.IsTrue(package.dependencies.GetChild(i).GetName().Contains(dependencies[i]), "Package: " + description);
                 }
             }
         }
 
         [Test]
+#if !UNITY_2019_1_OR_NEWER
+        [Ignore("Package version is not available in 2018.4")]
+#endif
         public void Package_Upgrade_IsRecommended()
         {
             var packageDiagnostics = Analyze(IssueCategory.PackageDiagnostic);
-            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.GetCustomProperty(PackageDiagnosticProperty.Name) == "com.unity.2d.pixel-perfect");
+            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.description.Contains("com.unity.2d.pixel-perfect"));
 
             Assert.IsNotNull(diagnostic, "Cannot find the upgrade package: com.unity.2d.pixel-perfect");
-            Assert.AreEqual("com.unity.2d.pixel-perfect", diagnostic.GetCustomProperty(PackageDiagnosticProperty.Name));
-            Assert.AreEqual("3.0.2", diagnostic.GetCustomProperty(PackageDiagnosticProperty.CurrentVersion));
-
-            var currentVersion = diagnostic.GetCustomProperty(PackageDiagnosticProperty.CurrentVersion);
-            var recommendedVersion = diagnostic.GetCustomProperty(PackageDiagnosticProperty.RecommendedVersion);
-
-            Assert.AreNotEqual(currentVersion, recommendedVersion, "The current and recommended versions should be different");
+            Assert.IsTrue(diagnostic.description.StartsWith("'com.unity.2d.pixel-perfect' could be updated from version '3.0.2' to "), "Description: " + diagnostic.description);
         }
 
         [Test]
+#if !UNITY_2019_1_OR_NEWER
+        [Ignore("Package dependency com.unity.services.core does not compile in 2018.4")]
+#endif
         public void Package_Preview_IsReported()
         {
             var packageDiagnostics = Analyze(IssueCategory.PackageDiagnostic);
-            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.GetCustomProperty(PackageDiagnosticProperty.Name) == "com.unity.services.vivox");
+            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.description.Contains("com.unity.services.vivox"));
 
             Assert.IsNotNull(diagnostic, "Cannot find the upgrade package: com.unity.services.vivox");
-            Assert.AreEqual("com.unity.services.vivox", diagnostic.GetCustomProperty(PackageDiagnosticProperty.Name));
-            Assert.AreEqual("15.1.180001-pre.5", diagnostic.GetCustomProperty(PackageDiagnosticProperty.CurrentVersion));
-            Assert.AreEqual(string.Empty, diagnostic.GetCustomProperty(PackageDiagnosticProperty.RecommendedVersion));
-            Assert.IsTrue(diagnostic.GetCustomPropertyAsBool(PackageDiagnosticProperty.Experimental));
+            Assert.IsTrue(diagnostic.description.StartsWith("'com.unity.services.vivox' version "), "Description: " + diagnostic.description);
         }
     }
 }

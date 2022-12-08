@@ -7,6 +7,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
     {
         public static string CombineStrings(string[] strings, string separator = default(string));
         public static string FormatBuildTime(System.TimeSpan t);
+        public static string FormatDateTime(System.DateTime dateTime);
         public static string FormatSize(System.UInt64 size);
         public static string FormatTime(float timeMs);
         public static string FormatTime(System.TimeSpan timeSpan);
@@ -30,13 +31,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
     public static class PackageUtils
     {
         public static string GetPackageRecommendedVersion(UnityEditor.PackageManager.PackageInfo package);
-        public static string GetPackageVersion(string packageId);
+        public static string GetPackageVersion(string packageName);
     }
 
     public static class PathUtils
     {
         public const char Separator = /;
-        public static string Combine(string[] parts);
+        public static string Combine(params string[] parts);
         public static string Combine(string path1, string path2);
         public static bool Exists(string path);
         public static string GetDirectoryName(string path);
@@ -46,6 +47,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static string ReplaceInvalidChars(string path);
         public static string ReplaceSeparators(string path);
         public static string[] Split(string path);
+    }
+
+    public static class PlayerSettingsUtil
+    {
+        public static int GetVertexChannelCompressionMask();
+        public static bool IsStaticBatchingEnabled(UnityEditor.BuildTarget platform);
+        public static void SetVertexChannelCompressionMask(int newValue);
     }
 
     public static class ShaderUtilProxy

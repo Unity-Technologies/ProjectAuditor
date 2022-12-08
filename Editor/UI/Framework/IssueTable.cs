@@ -87,9 +87,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 itemsList.AddRange(m_TreeViewItemIssues);
             foreach (var issue in issues)
             {
-                var depth = issue.depth;
-                depth++;
-                var item = new IssueTableItem(m_NextId++, depth, issue.description, issue, issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
+                var item = new IssueTableItem(m_NextId++, issue.depth, issue.description, issue, issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
                 itemsList.Add(item);
             }
 
@@ -233,9 +231,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 cellRect.xMin += indent;
                 CenterRectUsingSingleLineHeight(ref cellRect);
             }
-            else if (m_Layout.hierarchy && property.type == PropertyType.Description)
+            else if (property.type == PropertyType.Description)
             {
                 var indent = GetContentIndent(treeViewItem);
+                if (m_Layout.hierarchy)
+                    indent -= foldoutWidth; // foldout is not drawn, so we need to compensate for it
                 cellRect.xMin += indent;
                 CenterRectUsingSingleLineHeight(ref cellRect);
             }
@@ -260,7 +260,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             foreach (var childItem in item.children)
                             {
                                 var issueTableItem = childItem as IssueTableItem;
-                                var value = issueTableItem.ProjectIssue.GetCustomPropertyAsULong(customPropertyIndex);
+                                var value = issueTableItem.ProjectIssue.GetCustomPropertyUInt64(customPropertyIndex);
                                 sum += value;
                             }
 
@@ -272,7 +272,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             foreach (var childItem in item.children)
                             {
                                 var issueTableItem = childItem as IssueTableItem;
-                                var value = issueTableItem.ProjectIssue.GetCustomPropertyAsFloat(customPropertyIndex);
+                                var value = issueTableItem.ProjectIssue.GetCustomPropertyFloat(customPropertyIndex);
                                 sum += value;
                             }
                             label = Formatting.FormatTime(sum);
@@ -305,7 +305,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     case PropertyType.Priority:
                     {
                         var color = Color.white;
-                        switch (issue.priority)
+                        if (issue.priority)
                         {
                             case Priority.Critical:
                                 color = Color.red;
@@ -344,7 +344,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         var areaNames = issue.descriptor.GetAreasSummary();
                         EditorGUI.LabelField(cellRect, new GUIContent(areaNames, Tooltip.Area), labelStyle);
                         break;
-
                     case PropertyType.Description:
                         GUIContent guiContent = null;
                         if (issue.location != null && m_Desc.descriptionWithIcon)
@@ -380,10 +379,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                         EditorGUI.LabelField(cellRect, Utility.GetIcon(Utility.IconType.WhiteCheckMark), labelStyle);
                                     break;
                                 case PropertyFormat.Bytes:
-                                    EditorGUI.LabelField(cellRect, Formatting.FormatSize(issue.GetCustomPropertyAsULong(customPropertyIndex)), labelStyle);
+                                    EditorGUI.LabelField(cellRect, Formatting.FormatSize(issue.GetCustomPropertyUInt64(customPropertyIndex)), labelStyle);
                                     break;
                                 case PropertyFormat.Time:
-                                    EditorGUI.LabelField(cellRect, Formatting.FormatTime(issue.GetCustomPropertyAsFloat(customPropertyIndex)), labelStyle);
+                                    EditorGUI.LabelField(cellRect, Formatting.FormatTime(issue.GetCustomPropertyFloat(customPropertyIndex)), labelStyle);
                                     break;
                                 case PropertyFormat.Integer:
                                     var intAsString = issue.GetCustomProperty(customPropertyIndex);

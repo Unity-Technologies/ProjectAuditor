@@ -37,11 +37,6 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public bool FailBuildOnIssues;
 
-        /// <summary>
-        /// If enabled, a BuildReport asset is created after each build
-        /// </summary>
-        public bool SaveBuildReports;
-
         [SerializeField]
         List<Rule> m_Rules = new List<Rule>();
 

@@ -274,7 +274,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             var statsDict = new Dictionary<string, IssueStats>();
 
-            var scriptIssues = projectReport.GetIssues(IssueCategory.Code);
+            var scriptIssues = projectReport.FindByCategory(IssueCategory.Code);
             var numScriptIssues = scriptIssues.Count;
             foreach (var issue in scriptIssues)
             {

@@ -59,10 +59,10 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var foundIssues = new List<ProjectIssue>();
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
-            var modules = projectAuditor.GetModules(category);
             var projectAuditorParams = new ProjectAuditorParams
             {
                 assemblyNames = new[] { AssemblyInfo.DefaultAssemblyName},
+                categories = new[] { category},
                 onIncomingIssues = issues =>
                 {
                     var categoryIssues = issues.Where(issue => issue.category == category);
@@ -72,10 +72,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 platform = m_Platform
             };
 
-            foreach (var module in modules)
-            {
-                module.Audit(projectAuditorParams);
-            }
+            projectAuditor.Audit(projectAuditorParams);
 
             return foundIssues.ToArray();
         }
@@ -115,13 +112,18 @@ namespace Unity.ProjectAuditor.EditorTests
 
             m_BuildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(m_BuildPath);
+
+            var options = isDevelopment ? BuildOptions.Development : BuildOptions.None;
+#if UNITY_2021_2_OR_NEWER
+            options |= BuildOptions.CleanBuildCache;
+#endif
             var buildPlayerOptions = new BuildPlayerOptions
             {
                 scenes = new string[] {},
                 locationPathName = Path.Combine(m_BuildPath, buildFileName),
                 target = m_Platform,
                 targetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform),
-                options = isDevelopment ? BuildOptions.Development : BuildOptions.None
+                options = options
             };
 
             preBuildAction?.Invoke();

@@ -28,7 +28,7 @@ class MyClass
             var issues = Analyze(IssueCategory.Assembly, issue => issue.description.Equals(AssemblyInfo.DefaultAssemblyName));
 
             Assert.AreEqual(1, issues.Length);
-            Assert.False(issues[0].GetCustomPropertyAsBool(AssemblyProperty.ReadOnly));
+            Assert.False(issues[0].GetCustomPropertyBool(AssemblyProperty.ReadOnly));
         }
 
         [Test]
@@ -40,7 +40,7 @@ class MyClass
             var issues = Analyze(IssueCategory.Assembly, issue => issue.description.Equals("UnityEngine.UI"));
 
             Assert.AreEqual(1, issues.Length);
-            Assert.True(issues[0].GetCustomPropertyAsBool(AssemblyProperty.ReadOnly));
+            Assert.True(issues[0].GetCustomPropertyBool(AssemblyProperty.ReadOnly));
         }
     }
 }

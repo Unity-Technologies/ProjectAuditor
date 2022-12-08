@@ -22,6 +22,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public int numAssetIssues;
             public int numShaders;
             public int numPackages;
+            public int numPackageDiagnostics;
         }
 
         Stats m_Stats;
@@ -40,6 +41,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Stats.numAssetIssues += allIssues.Count(i => i.category == IssueCategory.AssetDiagnostic);
             m_Stats.numShaders += allIssues.Count(i => i.category == IssueCategory.Shader);
             m_Stats.numPackages += allIssues.Count(i => i.category == IssueCategory.Package);
+            m_Stats.numPackageDiagnostics += allIssues.Count(i => i.category == IssueCategory.PackageDiagnostic);
 
             var compilerMessages = allIssues.Where(i => i.category == IssueCategory.CodeCompilerMessage);
             m_Stats.numCompilerErrors += compilerMessages.Count(i => i.severity == Severity.Error);
@@ -57,29 +59,53 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         protected override void DrawInfo()
         {
-            EditorGUILayout.LabelField("Analysis overview", EditorStyles.boldLabel);
-
-            EditorGUI.indentLevel++;
-            if (m_Stats.numCodeIssues > 0)
-                DrawSummaryItem("Code Issues: ", m_Stats.numCodeIssues, IssueCategory.Code);
-            if (m_Stats.numCompiledAssemblies > 0)
-                DrawSummaryItem("Compiled Assemblies: ", string.Format("{0} / {1}", m_Stats.numCompiledAssemblies, m_Stats.numTotalAssemblies), IssueCategory.Assembly);
-            if (m_Stats.numCompilerErrors > 0)
+            using (new EditorGUILayout.HorizontalScope())
             {
-                DrawSummaryItem("Compilation Errors: ", m_Stats.numCompilerErrors, IssueCategory.CodeCompilerMessage, Utility.GetIcon(Utility.IconType.Error));
-            }
-            if (m_Stats.numSettingIssues > 0)
-                DrawSummaryItem("Setting Issues:", m_Stats.numSettingIssues, IssueCategory.ProjectSetting);
-            if (m_Stats.numAssetIssues > 0)
-                DrawSummaryItem("Asset Issues:", m_Stats.numAssetIssues, IssueCategory.AssetDiagnostic);
-            if (m_Stats.numShaders > 0)
-                DrawSummaryItem("Shaders in the project:", m_Stats.numShaders, IssueCategory.Shader);
-            if (m_Stats.numPackages > 0)
-                DrawSummaryItem("Installed Packages:", m_Stats.numPackages, IssueCategory.Package);
+                EditorGUILayout.Space();
 
-            var buildAvailable = m_Stats.numBuildSteps > 0;
-            DrawSummaryItem("Build Report available:", buildAvailable, IssueCategory.BuildStep);
-            EditorGUI.indentLevel--;
+                EditorGUILayout.BeginVertical(GUILayout.Width(300));
+                EditorGUILayout.LabelField("Diagnostics", SharedStyles.BoldLabel);
+
+                EditorGUI.indentLevel++;
+
+                if (m_Stats.numCodeIssues > 0)
+                    DrawSummaryItem("Code: ", m_Stats.numCodeIssues, IssueCategory.Code);
+                if (m_Stats.numSettingIssues > 0)
+                    DrawSummaryItem("Settings:", m_Stats.numSettingIssues, IssueCategory.ProjectSetting);
+                if (m_Stats.numAssetIssues > 0)
+                    DrawSummaryItem("Assets:", m_Stats.numAssetIssues, IssueCategory.AssetDiagnostic);
+                if (m_Stats.numPackages > 0)
+                    DrawSummaryItem("Packages:", m_Stats.numPackageDiagnostics, IssueCategory.PackageDiagnostic);
+
+                DrawLine();
+                EditorGUI.indentLevel--;
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.Space();
+
+                EditorGUILayout.BeginVertical(GUILayout.Width(300));
+                EditorGUILayout.LabelField("Statistics", SharedStyles.BoldLabel);
+
+                EditorGUI.indentLevel++;
+                if (m_Stats.numCompilerErrors > 0)
+                {
+                    DrawSummaryItem("Compilation Errors: ", m_Stats.numCompilerErrors, IssueCategory.CodeCompilerMessage, Utility.GetIcon(Utility.IconType.Error));
+                }
+                var buildAvailable = m_Stats.numBuildSteps > 0;
+                DrawSummaryItem("Build Report:", buildAvailable, IssueCategory.BuildStep);
+                if (m_Stats.numCompiledAssemblies > 0)
+                    DrawSummaryItem("Compiled Assemblies: ", string.Format("{0} / {1}", m_Stats.numCompiledAssemblies, m_Stats.numTotalAssemblies), IssueCategory.Assembly);
+                if (m_Stats.numShaders > 0)
+                    DrawSummaryItem("Shaders:", m_Stats.numShaders, IssueCategory.Shader);
+                if (m_Stats.numPackages > 0)
+                    DrawSummaryItem("Installed Packages:", m_Stats.numPackages, IssueCategory.Package);
+
+                DrawLine();
+                EditorGUI.indentLevel--;
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.Space();
+            }
 
             EditorGUILayout.Space();
 
@@ -91,7 +117,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Space();
             EditorGUILayout.BeginVertical();
 
-            EditorGUILayout.LabelField("Session Information", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Session Information", SharedStyles.BoldLabel);
             EditorGUI.indentLevel++;
 
             // note that m_Issues might change during background analysis.
@@ -121,10 +147,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (typeof(T) == typeof(bool))
             {
                 var valueAsBool = (bool)(object)value;
-                valueAsString = valueAsBool ? "Yes" : "No";
+                valueAsString = valueAsBool ? "Available" : "Not Available";
                 viewLink = valueAsBool;
             }
 
+            DrawLine();
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(title, SharedStyles.Label, GUILayout.ExpandWidth(false));
 
@@ -146,6 +173,18 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (icon != null)
                 EditorGUILayout.LabelField(icon, SharedStyles.Label);
             EditorGUILayout.EndHorizontal();
+        }
+
+        void DrawLine()
+        {
+            var rect = EditorGUILayout.GetControlRect(GUILayout.Height(1));
+            var color = new Color(0.3f, 0.3f, 0.3f);
+
+            if (m_2D.DrawStart(rect))
+            {
+                m_2D.DrawLine(0, 0, rect.width, 0, color);
+                m_2D.DrawEnd();
+            }
         }
     }
 }

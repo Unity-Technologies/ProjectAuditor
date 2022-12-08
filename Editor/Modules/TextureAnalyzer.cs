@@ -32,9 +32,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_TextureMipMapEnabledDescriptor = new Descriptor(
             "PAT0001",
             "Texture: Mip Maps enabled on 2D texture",
-            new[] {Area.Quality},
+            new[] {Area.BuildSize, Area.Quality},
             "Texture's Mip Maps are enabled on textures that may reduce rendering quality for Sprites or GUI. Disabling Mip Maps also reduces your build size.\n\nPlease verify if this is relevant for this texture.",
-            "Select the texture asset and, if applicable, disable texture importer option <b>Advanced / Generate Mip Maps</b>."
+            "Select the texture asset and, if applicable, disable texture importer option <b>Advanced / Generate Mip Maps</b>. This will also reduce your build size."
         )
         {
             messageFormat = "Texture '{0}' mip maps are enabled",

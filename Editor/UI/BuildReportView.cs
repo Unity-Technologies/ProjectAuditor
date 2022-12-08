@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     assetGroup = g.Key,
                     count = g.Count(),
-                    size = g.Sum(s => s.GetCustomPropertyAsLong(BuildReportFileProperty.Size))
+                    size = g.Sum(s => s.GetCustomPropertyInt64(BuildReportFileProperty.Size))
                 }).ToList();
                 list.Sort((a, b) => b.size.CompareTo(a.size));
                 m_GroupStats = list.Take(k_MaxGroupCount).ToArray();
@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField("Size of Data (Uncompressed)", SharedStyles.Label, GUILayout.Width(width));
                 EditorGUILayout.LabelField(Formatting.FormatSize((ulong)dataSize), SharedStyles.Label);
                 EditorGUILayout.EndHorizontal();
-                EditorGUILayout.LabelField($"Size By Runtime Type (Top {k_MaxGroupCount})", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField($"Size By Runtime Type (Top {k_MaxGroupCount})", SharedStyles.BoldLabel);
                 EditorGUI.indentLevel++;
 
                 EditorGUILayout.BeginVertical();

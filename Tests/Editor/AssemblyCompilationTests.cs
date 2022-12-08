@@ -98,7 +98,7 @@ class MyClass
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var projectReport = projectAuditor.Audit();
 
-            var issues = projectReport.GetIssues(IssueCategory.Code);
+            var issues = projectReport.FindByCategory(IssueCategory.Code);
             var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TempAsset.relativePath));
 
             Assert.NotNull(codeIssue);

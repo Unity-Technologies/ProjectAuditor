@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -52,7 +53,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var issues = new List<ProjectIssue>();
-            NewMetaData(k_KeyDateAndTime, DateTime.Now, issues);
+            NewMetaData(k_KeyDateAndTime, Formatting.FormatDateTime(DateTime.Now), issues);
             NewMetaData(k_KeyHostName, SystemInfo.deviceName, issues);
             NewMetaData(k_KeyHostPlatform, SystemInfo.operatingSystem, issues);
             NewMetaData(k_KeyCompanyName, Application.companyName, issues);

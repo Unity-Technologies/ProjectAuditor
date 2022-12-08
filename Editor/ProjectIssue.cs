@@ -44,21 +44,20 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField] string[] m_CustomProperties;
         [SerializeField] Priority m_Priority;
         [SerializeField] Severity m_Severity;
+        [SerializeField] bool m_Critical;
 
         internal ProjectIssue(IssueCategory category, Descriptor descriptor, params object[] args)
         {
             m_Descriptor = descriptor;
             m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
             m_Category = category;
-            m_Priority = Priority.Default;
-            m_Severity = Severity.Default;
         }
 
         internal ProjectIssue(IssueCategory category, string description)
         {
             m_Description = description;
             m_Category = category;
-            m_Priority = Priority.Default;
+
             m_Severity = Severity.Default;
         }
 
@@ -118,14 +117,12 @@ namespace Unity.ProjectAuditor.Editor
             set => m_Severity = value;
         }
 
-        public Priority priority
+        /// <summary>
+        /// Diagnostics-specific priority
+        /// </summary>
+		public Priority priority
         {
-            get
-            {
-                if (m_Priority != Priority.Default)
-                    return m_Priority;
-                return descriptor.priority;
-            }
+            get => m_Priority;
             set => m_Priority = value;
         }
 
@@ -146,10 +143,12 @@ namespace Unity.ProjectAuditor.Editor
 
         internal string GetCustomProperty(int index)
         {
+            if (index >= m_CustomProperties.Length)
+                return string.Empty; // fail gracefully if layout changed
             return m_CustomProperties != null && m_CustomProperties.Length > 0 ? m_CustomProperties[index] : string.Empty;
         }
 
-        internal bool GetCustomPropertyAsBool<T>(T propertyEnum) where T : struct
+        public bool GetCustomPropertyBool<T>(T propertyEnum) where T : struct
         {
             var valueAsString = GetCustomProperty(propertyEnum);
             var value = false;
@@ -158,7 +157,7 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
-        internal int GetCustomPropertyAsInt<T>(T propertyEnum) where T : struct
+        public int GetCustomPropertyInt32<T>(T propertyEnum) where T : struct
         {
             var valueAsString = GetCustomProperty(propertyEnum);
             var value = 0;
@@ -167,7 +166,7 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
-        internal long GetCustomPropertyAsLong<T>(T propertyEnum) where T : struct
+        public long GetCustomPropertyInt64<T>(T propertyEnum) where T : struct
         {
             var valueAsString = GetCustomProperty(propertyEnum);
             var value = (long)0;
@@ -176,7 +175,7 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
-        internal ulong GetCustomPropertyAsULong<T>(T propertyEnum) where T : struct
+        public ulong GetCustomPropertyUInt64<T>(T propertyEnum) where T : struct
         {
             var valueAsString = GetCustomProperty(propertyEnum);
             var value = (ulong)0;
@@ -185,13 +184,13 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
-        public float GetCustomPropertyAsFloat<T>(T propertyEnum) where T : struct
+        public float GetCustomPropertyFloat<T>(T propertyEnum) where T : struct
         {
             float value;
             return float.TryParse(GetCustomProperty(propertyEnum), out value) ? value : 0.0f;
         }
 
-        public double GetCustomPropertyAsDouble<T>(T propertyEnum) where T : struct
+        public double GetCustomPropertyDouble<T>(T propertyEnum) where T : struct
         {
             double value;
             return double.TryParse(GetCustomProperty(propertyEnum), out value) ? value : 0.0;

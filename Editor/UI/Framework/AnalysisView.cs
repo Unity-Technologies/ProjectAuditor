@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get { return m_Desc; }
         }
 
-        protected int numIssues
+        public int numIssues
         {
             get
             {
@@ -48,9 +48,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal IssueTable table
+        public int numFilteredIssues
         {
-            get { return m_Table; }
+            get
+            {
+                return m_Table.GetNumMatchingIssues();
+            }
         }
 
         internal ViewManager viewManager
@@ -270,6 +273,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (EditorGUI.EndChangeCheck())
                 MarkDirty();
 
+            GUILayout.FlexibleSpace();
+
             EditorGUILayout.EndHorizontal();
         }
 
@@ -352,7 +357,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             Export(Match);
                             return;
                         case ExportMode.Selected:
-                            var selectedItems = table.GetSelectedItems();
+                            var selectedItems = m_Table.GetSelectedItems();
                             Export(issue =>
                             {
                                 return selectedItems.Any(item => item.Find(issue));
@@ -408,6 +413,30 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void SetSearch(string filter)
         {
             m_TextFilter.searchString = filter;
+        }
+
+        public ProjectIssue[] GetSelection()
+        {
+            var selectedItems = m_Table.GetSelectedItems();
+            return selectedItems.Where(item => item.parent != null).Select(i => i.ProjectIssue).ToArray();
+        }
+
+        public void SetSelection(Func<ProjectIssue, bool> predicate)
+        {
+            RefreshIfDirty();
+
+            // Expand all rows. This is a workaround for the fact that we can't select rows that are not visible.
+            SetRowsExpanded(true);
+
+            var rows = m_Table.GetRows();
+            var selectedIDs = rows.Select(item => item as IssueTableItem).Where(i => i != null && i.ProjectIssue != null && predicate(i.ProjectIssue)).Select(i => i.id).ToList();
+
+            m_Table.SetSelection(selectedIDs);
+        }
+
+        public void ClearSelection()
+        {
+            m_Table.SetSelection(new List<int>());
         }
 
         void SetRowsExpanded(bool expanded)
@@ -492,6 +521,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return $"{k_PrefKeyPrefix}.{m_Desc.name}.{key}";
         }
 
+        public static void DrawActionButton(GUIContent guiContent, Action onClick)
+        {
+            if (GUILayout.Button(guiContent, GUILayout.MaxWidth(LayoutSize.ActionButtonWidth), GUILayout.Height(LayoutSize.ActionButtonHeight)))
+            {
+                onClick();
+            }
+        }
+
         public static void DrawToolbarButton(GUIContent guiContent, Action onClick)
         {
             if (GUILayout.Button(
@@ -549,6 +586,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int DetailsPanelWidth = 200;
             public static readonly int ToolbarButtonSize = 80;
             public static readonly int ToolbarIconSize = 40;
+            public static readonly int ActionButtonHeight = 30;
+            public static readonly int ActionButtonWidth = 200;
         }
 
         static class Contents

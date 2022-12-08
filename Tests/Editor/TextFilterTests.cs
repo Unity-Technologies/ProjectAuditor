@@ -112,7 +112,7 @@ class InternalClass
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 
             var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Code);
+            var issues = projectReport.FindByCategory(IssueCategory.Code);
             var stringFilter = new TextFilter
             {
                 ignoreCase = true,
@@ -132,7 +132,7 @@ class InternalClass
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 
             var projectReport = projectAuditor.Audit();
-            var issues = projectReport.GetIssues(IssueCategory.Code);
+            var issues = projectReport.FindByCategory(IssueCategory.Code);
             var stringFilter = new TextFilter
             {
                 ignoreCase = false,
