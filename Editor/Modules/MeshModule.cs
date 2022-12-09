@@ -71,32 +71,40 @@ namespace Unity.ProjectAuditor.Editor.Modules
             foreach (var guid in allMeshes)
             {
                 var pathToMesh = AssetDatabase.GUIDToAssetPath(guid);
-                var modelImporter = AssetImporter.GetAtPath(pathToMesh) as ModelImporter;
-                if (modelImporter == null)
+
+                var importer = AssetImporter.GetAtPath(pathToMesh);
+                var modelImporter = importer as ModelImporter;
+
+                var subAssets = AssetDatabase.LoadAllAssetsAtPath(pathToMesh);
+
+                foreach (var subAsset in subAssets)
                 {
-                    continue;
+                    var mesh = subAsset as Mesh;
+                    if (mesh == null)
+                        continue;
+
+                    var size = Profiler.GetRuntimeMemorySizeLong(mesh);
+
+                    var issue = ProjectIssue.Create(k_MeshIssueLayout.category, mesh.name)
+                        .WithCustomProperties(
+                            new object[((int)MeshProperty.Num)]
+                            {
+                                mesh.vertexCount,
+                                mesh.triangles.Length / 3,
+                                modelImporter != null
+                                ? modelImporter.meshCompression
+                                : ModelImporterMeshCompression.Off,
+                                size,
+                                currentPlatform
+                            })
+                        .WithLocation(new Location(pathToMesh));
+
+                    issues.Add(issue);
                 }
-
-                var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(pathToMesh);
-                var size = Profiler.GetRuntimeMemorySizeLong(mesh);
-
-                var issue = ProjectIssue.Create(k_MeshIssueLayout.category, mesh.name)
-                    .WithCustomProperties(
-                        new object[((int)MeshProperty.Num)]
-                        {
-                            mesh.vertexCount,
-                            mesh.triangles.Length / 3,
-                            modelImporter.meshCompression,
-                            size,
-                            currentPlatform
-                        })
-                    .WithLocation(new Location(pathToMesh));
-
-                issues.Add(issue);
 
                 foreach (var analyzer in m_Analyzers)
                 {
-                    var platformDiagnostics = analyzer.Analyze(currentPlatform, modelImporter).ToArray();
+                    var platformDiagnostics = analyzer.Analyze(currentPlatform, importer).ToArray();
 
                     issues.AddRange(platformDiagnostics);
                 }

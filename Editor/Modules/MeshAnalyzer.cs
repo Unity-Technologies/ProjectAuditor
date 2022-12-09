@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             documentationUrl = "https://docs.unity3d.com/ScriptReference/Mesh-isReadable.html"
         };
 
-        internal static readonly Descriptor k_Mesh23BitIndexFormatUsedDescriptor = new Descriptor(
+        internal static readonly Descriptor k_Mesh32BitIndexFormatUsedDescriptor = new Descriptor(
             "PAM0001",
             "Mesh: Index Format is 32 bits",
             Area.Memory,
@@ -39,26 +38,34 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_MeshReadWriteEnabledDescriptor);
-            module.RegisterDescriptor(k_Mesh23BitIndexFormatUsedDescriptor);
+            module.RegisterDescriptor(k_Mesh32BitIndexFormatUsedDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(BuildTarget platform, ModelImporter modelImporter)
+        public IEnumerable<ProjectIssue> Analyze(BuildTarget platform, AssetImporter assetImporter)
         {
-            var assetPath = modelImporter.assetPath;
-            var meshName = Path.GetFileNameWithoutExtension(assetPath);
+            var assetPath = assetImporter.assetPath;
+            var subAssets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
 
-            var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(modelImporter.assetPath);
-
-            if (mesh.isReadable)
+            foreach (var subAsset in subAssets)
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor, meshName)
-                    .WithLocation(modelImporter.assetPath);
-            }
+                var mesh = subAsset as Mesh;
+                if (mesh == null)
+                    continue;
 
-            if (modelImporter.indexFormat == ModelImporterIndexFormat.UInt32 && mesh.vertexCount <= 65535)
-            {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_Mesh23BitIndexFormatUsedDescriptor, meshName)
-                    .WithLocation(modelImporter.assetPath);
+                if (mesh.isReadable)
+                {
+                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor, mesh.name)
+                        .WithLocation(assetPath);
+                }
+
+                var modelImporter = assetImporter as ModelImporter;
+                if (modelImporter != null && modelImporter.indexFormat == ModelImporterIndexFormat.UInt32 &&
+                    mesh.vertexCount <= 65535)
+                {
+                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
+                        k_Mesh32BitIndexFormatUsedDescriptor, mesh.name)
+                        .WithLocation(assetPath);
+                }
             }
         }
     }
