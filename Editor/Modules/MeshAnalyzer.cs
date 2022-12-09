@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             documentationUrl = "https://docs.unity3d.com/ScriptReference/Mesh-isReadable.html"
         };
 
-        internal static readonly Descriptor k_Mesh23BitIndexFormatUsedDescriptor = new Descriptor(
+        internal static readonly Descriptor k_Mesh32BitIndexFormatUsedDescriptor = new Descriptor(
             "PAM0001",
             "Mesh: Index Format is 32 bits",
             Area.Memory,
@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_MeshReadWriteEnabledDescriptor);
-            module.RegisterDescriptor(k_Mesh23BitIndexFormatUsedDescriptor);
+            module.RegisterDescriptor(k_Mesh32BitIndexFormatUsedDescriptor);
         }
 
         public IEnumerable<ProjectIssue> Analyze(BuildTarget platform, AssetImporter assetImporter)
@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     mesh.vertexCount <= 65535)
                 {
                     yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
-                        k_Mesh23BitIndexFormatUsedDescriptor, mesh.name)
+                        k_Mesh32BitIndexFormatUsedDescriptor, mesh.name)
                         .WithLocation(assetPath);
                 }
             }
