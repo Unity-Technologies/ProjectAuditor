@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor
 
     public sealed class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport
     {
-        public const string PackageId = @"com.unity.project-auditor";
+        public const string PackageName = @"com.unity.project-auditor";
         public const string PackagePath = @"Packages/com.unity.project-auditor";
         public int callbackOrder { get; }
         public ProjectAuditorConfig config { get; }
@@ -113,9 +113,9 @@ namespace Unity.ProjectAuditor.Editor
         public string description { get; }
         public Diagnostic.Descriptor descriptor { get; }
         public string filename { get; }
-        public bool isCritical { get; set; }
         public int line { get; }
         public Location location { get; }
+        public Diagnostic.Priority priority { get; set; }
         public string relativePath { get; }
         public Diagnostic.Severity severity { get; set; }
         public static Core.IssueBuilder Create(IssueCategory category, string description);
@@ -321,7 +321,6 @@ namespace Unity.ProjectAuditor.Editor.Core
     public enum PropertyType
     {
         Area = 3,
-        CriticalContext = 8,
         Description = 0,
         Descriptor = 1,
         Directory = 5,
@@ -329,7 +328,8 @@ namespace Unity.ProjectAuditor.Editor.Core
         FileType = 7,
         Num = 10,
         Path = 4,
-        Platform = 9,
+        Platform = 8,
+        Priority = 9,
         Severity = 2,
     }
 
@@ -359,7 +359,6 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     public sealed class Descriptor : System.IEquatable<Descriptor>
     {
         public string[] areas;
-        public bool critical = false;
         public string description;
         public string documentationUrl;
         public System.Action<ProjectIssue> fixer;
@@ -369,6 +368,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public string method;
         public string minimumVersion;
         public string[] platforms;
+        public Priority priority = Priority.Normal;
         public Severity severity;
         public string solution;
         public string title;
@@ -390,6 +390,14 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public static string GetFullTypeName(this Descriptor descriptor);
         public static string GetPlatformsSummary(this Descriptor descriptor);
         public static bool IsPlatformCompatible(this Descriptor descriptor, UnityEditor.BuildTarget buildTarget);
+    }
+
+    public enum Priority
+    {
+        Critical = 2,
+        Default = -1,
+        High = 1,
+        Normal = 0,
     }
 
     public class Rule : System.IEquatable<Rule>
