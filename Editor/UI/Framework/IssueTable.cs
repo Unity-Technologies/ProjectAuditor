@@ -304,28 +304,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     case PropertyType.Priority:
                     {
-                        var color = Color.white;
+                        var style = new GUIStyle(labelStyle);
+
                         switch (issue.priority)
                         {
                             case Priority.Critical:
-                                color = Color.red;
+                                style.normal.textColor *= Color.red;
                                 break;
                             case Priority.High:
-                                color = Color.yellow;
-                                break;
-                            case Priority.Normal:
-                                color = Color.cyan;
+                                style.normal.textColor *= Color.yellow;
                                 break;
                         }
-
-                        color.a = 0.3f;
-                        var style = new GUIStyle(EditorStyles.label)
-                        {
-                            normal =
-                            {
-                                background = SharedStyles.MakeColorTexture(color)
-                            }
-                        };
 
                         EditorGUI.LabelField(cellRect, new GUIContent(issue.priority.ToString()), style);
                     }
