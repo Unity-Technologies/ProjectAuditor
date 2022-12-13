@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added _documentation_ support to descriptor
 * Added issue _fixer_ support to descriptor
 * Added package diagnostics
-* Added on-demand _Texture_ module
-* Added on-demand _AudioClip_ module
+* Added on-demand _Texture_, _AudioClip_, _Mesh_ modules
 * Added Compute Shader Variants support
 * Fixed over-reporting of built shader variants count
 * Fixed export of filtered/selected non-diagnostic issues

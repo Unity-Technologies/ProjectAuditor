@@ -512,7 +512,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public interface IMeshModuleAnalyzer
     {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.ModelImporter modelImporter);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.AssetImporter assetImporter);
         public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
     }
 
@@ -531,7 +531,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     public class MeshAnalyzer : IMeshModuleAnalyzer
     {
         public MeshAnalyzer() {}
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.ModelImporter modelImporter);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.AssetImporter assetImporter);
         public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
     }
 
