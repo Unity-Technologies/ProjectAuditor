@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.AssetDiagnostic,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Asset Name"},
+                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
                 new PropertyDefinition { type = PropertyType.Severity, format = PropertyFormat.String, name = "Severity"},
                 new PropertyDefinition { type = PropertyType.Area, format = PropertyFormat.String, name = "Area", longName = "Impacted Area" },
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"},
