@@ -106,6 +106,26 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
+        /// Log level
+        /// </summary>
+        public LogLevel logLevel
+        {
+            get
+            {
+                switch (severity)
+                {
+                    case Severity.Error:
+                        return LogLevel.Error;
+                    case Severity.Warning:
+                        return LogLevel.Warning;
+                    case Severity.Info:
+                    default:
+                        return LogLevel.Info;
+                }
+            }
+        }
+
+        /// <summary>
         /// Diagnostics-specific severity
         /// </summary>
         public Severity severity

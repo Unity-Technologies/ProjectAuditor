@@ -461,25 +461,25 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         assemblyInfo.name
                     })
                     .WithLocation(relativePath, message.line)
-                    .WithSeverity(CompilerMessageTypeToSeverity(message.type));
+                    .WithLogLevel(CompilerMessageTypeToLogLevel(message.type));
             }
 
             Profiler.EndSample();
         }
 
-        static Severity CompilerMessageTypeToSeverity(CompilerMessageType compilerMessageType)
+        static LogLevel CompilerMessageTypeToLogLevel(CompilerMessageType compilerMessageType)
         {
             switch (compilerMessageType)
             {
                 case CompilerMessageType.Error:
-                    return Severity.Error;
+                    return LogLevel.Error;
                 case CompilerMessageType.Warning:
-                    return Severity.Warning;
+                    return LogLevel.Warning;
                 case CompilerMessageType.Info:
-                    return Severity.Info;
+                    return LogLevel.Info;
             }
 
-            return Severity.Info;
+            return LogLevel.Info;
         }
 
         static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)

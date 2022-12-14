@@ -199,15 +199,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return null;
         }
 
-        public static GUIContent GetLogLevelIcon(Severity severity, string tooltip = null)
+        public static GUIContent GetLogLevelIcon(Core.LogLevel logLevel, string tooltip = null)
         {
-            switch (severity)
+            switch (logLevel)
             {
-                case Severity.Info:
+                case Core.LogLevel.Info:
                     return GetIcon(IconType.Info, tooltip);
-                case Severity.Warning:
+                case Core.LogLevel.Warning:
                     return GetIcon(IconType.Warning, tooltip);
-                case Severity.Error:
+                case Core.LogLevel.Error:
                     return GetIcon(IconType.Error, tooltip);
                 default:
                     return GetIcon(IconType.Help, tooltip);

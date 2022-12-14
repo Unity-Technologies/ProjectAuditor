@@ -304,12 +304,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     case PropertyType.LogLevel:
                     {
-                        var icon = Utility.GetLogLevelIcon(issue.severity);
+                        var icon = Utility.GetLogLevelIcon(issue.logLevel);
                         if (icon != null)
                         {
                             EditorGUI.LabelField(cellRect, icon, labelStyle);
                         }
                     }
+                    break;
+
                     case PropertyType.Severity:
                     {
                         var style = new GUIStyle(labelStyle);

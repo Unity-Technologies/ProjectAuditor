@@ -23,6 +23,8 @@ namespace Unity.ProjectAuditor.Editor
         {
             switch (propertyType)
             {
+                case PropertyType.LogLevel:
+                    return issue.logLevel.ToString();
                 case PropertyType.Severity:
                     return issue.severity.ToString();
                 case PropertyType.Area:

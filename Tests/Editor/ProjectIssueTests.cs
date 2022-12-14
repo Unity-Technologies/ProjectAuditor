@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.EditorTests
     [Serializable]
     class ProjectIssueTests
     {
-        private Descriptor m_Descriptor = new Descriptor
+        Descriptor m_Descriptor = new Descriptor
             (
             "TD2001",
             "test",
@@ -143,6 +143,19 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(ProjectIssueExtensions.k_NotAvailable, issue.GetProperty(PropertyType.Path));
             Assert.AreEqual(ProjectIssueExtensions.k_NotAvailable, issue.GetProperty(PropertyType.Filename));
             Assert.AreEqual(ProjectIssueExtensions.k_NotAvailable, issue.GetProperty(PropertyType.FileType));
+        }
+
+        [Test]
+        [TestCase(LogLevel.Error)]
+        [TestCase(LogLevel.Warning)]
+        [TestCase(LogLevel.Info)]
+        public void ProjectIssue_Issue_IsCreatedWithLogLevel(LogLevel logLevel)
+        {
+            ProjectIssue issue = ProjectIssue.Create(IssueCategory.Code, m_Descriptor, "dummy issue")
+                .WithLogLevel(logLevel);
+
+            Assert.AreEqual(logLevel, issue.logLevel);
+            Assert.AreEqual(logLevel.ToString(), issue.GetProperty(PropertyType.LogLevel));
         }
     }
 }
