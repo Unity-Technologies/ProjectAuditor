@@ -199,7 +199,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return null;
         }
 
-        public static GUIContent GetSeverityIcon(Severity severity, string tooltip = null)
+        public static GUIContent GetLogLevelIcon(Severity severity, string tooltip = null)
         {
             switch (severity)
             {
@@ -210,7 +210,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 case Severity.Error:
                     return GetIcon(IconType.Error, tooltip);
                 default:
-                    return null;
+                    return GetIcon(IconType.Help, tooltip);
             }
         }
 

@@ -302,15 +302,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 switch (propertyType)
                 {
-                    case PropertyType.Severity:
+                    case PropertyType.LogLevel:
                     {
-                        /*
-                        var icon = Utility.GetSeverityIcon(issue.severity);
+                        var icon = Utility.GetLogLevelIcon(issue.severity);
                         if (icon != null)
                         {
                             EditorGUI.LabelField(cellRect, icon, labelStyle);
                         }
-                        */
+                    }
+                    case PropertyType.Severity:
+                    {
                         var style = new GUIStyle(labelStyle);
 
                         switch (issue.severity)

@@ -90,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.CodeCompilerMessage,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Severity, name = "Type"},
+                new PropertyDefinition { type = PropertyType.LogLevel, name = "Log Level"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Code), format = PropertyFormat.String, name = "Code", defaultGroup = true},
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Message", longName = "Compiler Message"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
