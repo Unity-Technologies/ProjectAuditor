@@ -52,8 +52,6 @@ namespace Unity.ProjectAuditor.Editor
                     return PathUtils.GetDirectoryName(issue.location.Path);
                 case PropertyType.Platform:
                     return issue.descriptor.GetPlatformsSummary();
-                case PropertyType.Priority:
-                    return issue.priority.ToString();
                 default:
                     var propertyIndex = propertyType - PropertyType.Num;
                     return issue.GetCustomProperty(propertyIndex);
@@ -141,8 +139,6 @@ namespace Unity.ProjectAuditor.Editor
                         return issueA.line.CompareTo(issueB.line);
 
                     return cp;
-                case PropertyType.Priority:
-                    return issueA.priority.CompareTo(issueB.priority);
                 default:
                     var propA = issueA.GetProperty(propertyType);
                     var propB = issueB.GetProperty(propertyType);

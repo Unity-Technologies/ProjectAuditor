@@ -275,7 +275,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             var statsDict = new Dictionary<string, IssueStats>();
 
             var scriptIssues = projectReport.FindByCategory(IssueCategory.Code);
-            var numScriptIssues = scriptIssues.Count;
             foreach (var issue in scriptIssues)
             {
                 var descriptor = issue.descriptor;
@@ -289,7 +288,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 ++stats.numOccurrences;
 
-                if (issue.priority != Priority.Normal)
+                if (issue.severity == Severity.Major)
                 {
                     ++stats.numHotPathOccurrences;
                 }

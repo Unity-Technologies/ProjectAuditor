@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
-                new PropertyDefinition { type = PropertyType.Priority, format = PropertyFormat.String, name = "Priority"},
+                new PropertyDefinition { type = PropertyType.Severity, format = PropertyFormat.String, name = "Severity"},
                 new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" },
@@ -239,9 +239,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var d in diagnostics)
                 {
-                    // assume high-priority issue if found in a hot-path
-                    if (d.dependencies != null && d.dependencies.perfCriticalContext)
-                        d.priority = Priority.High;
+                    // upgrade to major severity if issue is found in a hot-path
+                    if (!d.IsMajorOrCritical() && d.dependencies != null && d.dependencies.perfCriticalContext)
+                        d.severity = Severity.Major;
                 }
 
                 // workaround for empty 'relativePath' strings which are not all available when 'onIssueFoundInternal' is called

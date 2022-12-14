@@ -425,7 +425,7 @@ class MyClass : MonoBehaviour
                             index++;
                         }
                         line = file.ReadLine();
-                        if (line.Equals($"<td>{issue.GetProperty(PropertyType.Priority)}</td>"))
+                        if (line.Equals($"<td>{issue.GetProperty(PropertyType.Severity)}</td>"))
                         {
                             index++;
                         }

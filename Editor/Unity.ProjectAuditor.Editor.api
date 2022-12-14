@@ -115,7 +115,6 @@ namespace Unity.ProjectAuditor.Editor
         public string filename { get; }
         public int line { get; }
         public Location location { get; }
-        public Diagnostic.Priority priority { get; set; }
         public string relativePath { get; }
         public Diagnostic.Severity severity { get; set; }
         public static Core.IssueBuilder Create(IssueCategory category, string description);
@@ -128,6 +127,7 @@ namespace Unity.ProjectAuditor.Editor
         public long GetCustomPropertyInt64<T>(T propertyEnum) where T : struct, new();
         public System.UInt64 GetCustomPropertyUInt64<T>(T propertyEnum) where T : struct, new();
         public int GetNumCustomProperties();
+        public bool IsMajorOrCritical();
         public bool IsValid();
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct, new();
     }
@@ -326,10 +326,9 @@ namespace Unity.ProjectAuditor.Editor.Core
         Directory = 5,
         Filename = 6,
         FileType = 7,
-        Num = 10,
+        Num = 9,
         Path = 4,
         Platform = 8,
-        Priority = 9,
         Severity = 2,
     }
 
@@ -368,8 +367,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public string method;
         public string minimumVersion;
         public string[] platforms;
-        public Priority priority = Priority.Normal;
-        public Severity severity;
+        public Severity severity = Severity.Moderate|Severity.Warning;
         public string solution;
         public string title;
         public string type;
@@ -392,14 +390,6 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public static bool IsPlatformCompatible(this Descriptor descriptor, UnityEditor.BuildTarget buildTarget);
     }
 
-    public enum Priority
-    {
-        Critical = 2,
-        Default = -1,
-        High = 1,
-        Normal = 0,
-    }
-
     public class Rule : System.IEquatable<Rule>
     {
         public string filter;
@@ -415,12 +405,15 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
     public enum Severity
     {
+        Critical = 2,
         Default = 0,
         Error = 1,
-        Hidden = 5,
-        Info = 3,
-        None = 4,
-        Warning = 2,
+        Hidden = 7,
+        Info = 5,
+        Major = 3,
+        Moderate = 4,
+        None = 6,
+        Warning = 4,
     }
 }
 

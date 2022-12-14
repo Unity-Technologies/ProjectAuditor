@@ -122,55 +122,55 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void CodeAnalysis_IssueInSimpleClass_IsNormalPriority()
+        public void CodeAnalysis_IssueInSimpleClass_IsNormalSeverity()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInSimpleClass);
             var issue = issues.First();
-            Assert.AreEqual(Priority.Normal, issue.priority);
+            Assert.AreEqual(Severity.Moderate, issue.severity);
         }
 
         [Test]
-        public void CodeAnalysis_IssueInMonoBehaviourUpdate_IsHighPriority()
+        public void CodeAnalysis_IssueInMonoBehaviourUpdate_IsHighSeverity()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourUpdate);
             var issue = issues.First();
-            Assert.AreEqual(Priority.High, issue.priority);
+            Assert.AreEqual(Severity.Major, issue.severity);
         }
 
         [Test]
-        public void CodeAnalysis_IssueInMonoBehaviourOnAnimatorMove_IsHighPriority()
+        public void CodeAnalysis_IssueInMonoBehaviourOnAnimatorMove_IsHighSeverity()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnAnimatorMove);
             var issue = issues.First();
-            Assert.AreEqual(Priority.High, issue.priority);
+            Assert.AreEqual(Severity.Major, issue.severity);
         }
 
         [Test]
-        public void CodeAnalysis_MonoBehaviourOnRenderObject_IsHighPriority()
+        public void CodeAnalysis_MonoBehaviourOnRenderObject_IsHighSeverity()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnRenderObject);
             var issue = issues.First();
-            Assert.AreEqual(Priority.High, issue.priority);
+            Assert.AreEqual(Severity.Major, issue.severity);
         }
 
         [Test]
-        public void CodeAnalysis_IssueInClassMethodCalledFromMonoBehaviourUpdate_IsHighPriority()
+        public void CodeAnalysis_IssueInClassMethodCalledFromMonoBehaviourUpdate_IsHighSeverity()
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetIssueInClassMethodCalledFromMonoBehaviourUpdate);
             var issue = issues.First();
-            Assert.AreEqual(Priority.High, issue.priority);
+            Assert.AreEqual(Severity.Major, issue.severity);
         }
 
         [Test]
-        public void CodeAnalysis_IssueInClassInheritedFromMonoBehaviour_IsHighPriority()
+        public void CodeAnalysis_IssueInClassInheritedFromMonoBehaviour_IsHighSeverity()
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetIssueInClassInheritedFromMonoBehaviour);
             var issue = issues.First();
-            Assert.AreEqual(Priority.High, issue.priority);
+            Assert.AreEqual(Severity.Major, issue.severity);
         }
 
         [UnityTest]
@@ -181,25 +181,25 @@ class ShaderWarmUpIssueIsCritical
                     m_TempAssetIssueInClassInheritedFromMonoBehaviour);
             m_Issue = issues.First();
 
-            Assert.IsTrue(m_Issue.priority == Priority.High);
+            Assert.AreEqual(Severity.Major, m_Issue.severity);
 #if UNITY_2019_3_OR_NEWER
             EditorUtility.RequestScriptReload();
             yield return new WaitForDomainReload();
 
-            Assert.IsTrue(m_Issue.priority == Priority.High);
+            Assert.AreEqual(Severity.Major, m_Issue.severity);
 #else
             yield return null;
 #endif
         }
 
         [Test]
-        public void CodeAnalysis_ShaderWarmupIssue_IsHighPriority()
+        public void CodeAnalysis_ShaderWarmupIssue_IsHighSeverity()
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetShaderWarmupIssueIsCritical);
             var issue = issues.First();
-            Assert.AreEqual(Priority.High, issue.priority);
+            Assert.AreEqual(Severity.Major, issue.severity);
         }
     }
 }

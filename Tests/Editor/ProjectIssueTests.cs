@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.EditorTests
             "do nothing"
             )
         {
-            priority = Priority.High
+            severity = Severity.Critical
         };
 
         [SerializeField]
@@ -43,12 +43,14 @@ namespace Unity.ProjectAuditor.EditorTests
         public void ProjectIssue_NewIssue_IsInitialized()
         {
             var description = "dummy issue";
-            var uninitialised = new ProjectIssue(IssueCategory.Code, m_Descriptor, description);
-            Assert.AreEqual(string.Empty, uninitialised.filename);
-            Assert.AreEqual(string.Empty, uninitialised.relativePath);
-            Assert.AreEqual(string.Empty, uninitialised.GetContext());
-            Assert.AreEqual(description, uninitialised.description);
-            Assert.AreNotEqual(Priority.Critical, uninitialised.priority);
+            var diagnostic = new ProjectIssue(IssueCategory.Code, m_Descriptor, description);
+            Assert.AreEqual(string.Empty, diagnostic.filename);
+            Assert.AreEqual(string.Empty, diagnostic.relativePath);
+            Assert.AreEqual(string.Empty, diagnostic.GetContext());
+            Assert.AreEqual(description, diagnostic.description);
+            Assert.AreNotEqual(Severity.Critical, diagnostic.severity);
+
+            Assert.IsFalse(diagnostic.IsMajorOrCritical());
         }
 
         [Test]
@@ -62,7 +64,9 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(description, diagnostic.description);
 
             // the issue should be critical as per the descriptor
-            Assert.AreEqual(Priority.Critical, diagnostic.priority);
+            Assert.AreEqual(Severity.Critical, diagnostic.severity);
+
+            Assert.IsTrue(diagnostic.IsMajorOrCritical());
         }
 
         [UnityTest]
@@ -71,15 +75,15 @@ namespace Unity.ProjectAuditor.EditorTests
             var description = "dummy issue";
             m_Issue = new ProjectIssue(IssueCategory.Code, m_Descriptor, description);
 
-            Assert.AreEqual(Priority.High, m_Issue.priority);
+            Assert.AreEqual(Severity.Major, m_Issue.severity);
 
-            m_Issue.priority = Priority.High;
+            m_Issue.severity = Severity.Major;
 
 #if UNITY_2019_3_OR_NEWER
             EditorUtility.RequestScriptReload();
             yield return new WaitForDomainReload();
 
-            Assert.AreEqual(Priority.High, m_Issue.priority);
+            Assert.AreEqual(Severity.Major, m_Issue.severity);
 #else
             yield return null;
 #endif
@@ -129,7 +133,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual("Assets/Dummy.cs:0", issue.GetProperty(PropertyType.Path));
             Assert.AreEqual("Dummy.cs:0", issue.GetProperty(PropertyType.Filename));
             Assert.AreEqual("cs", issue.GetProperty(PropertyType.FileType));
-            Assert.AreEqual(Priority.Normal.ToString(), issue.GetProperty(PropertyType.Priority));
+            Assert.AreEqual(Severity.Moderate.ToString(), issue.GetProperty(PropertyType.Severity));
             Assert.AreEqual(properties[0], issue.GetProperty(PropertyType.Num));
             Assert.AreEqual(properties[1], issue.GetProperty(PropertyType.Num + 1));
         }
