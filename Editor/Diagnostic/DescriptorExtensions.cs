@@ -33,5 +33,12 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                 return true;
             return descriptor.platforms.Contains(buildTarget.ToString());
         }
+
+        public static bool IsPlatformSpecific(this Descriptor descriptor, BuildTarget buildTarget)
+        {
+            if (descriptor.platforms == null || descriptor.platforms.Length == 0)
+                return false;
+            return descriptor.platforms[0].Equals(buildTarget.ToString());
+        }
     }
 }

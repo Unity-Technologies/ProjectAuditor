@@ -388,6 +388,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public static string GetFullTypeName(this Descriptor descriptor);
         public static string GetPlatformsSummary(this Descriptor descriptor);
         public static bool IsPlatformCompatible(this Descriptor descriptor, UnityEditor.BuildTarget buildTarget);
+        public static bool IsPlatformSpecific(this Descriptor descriptor, UnityEditor.BuildTarget buildTarget);
     }
 
     public class Rule : System.IEquatable<Rule>
