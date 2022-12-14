@@ -6,17 +6,17 @@ namespace Unity.ProjectAuditor.Editor.Core
     public enum LogLevel
     {
         /// <summary>
-        /// Error.
+        /// Reports an error
         /// </summary>
         Error,
 
         /// <summary>
-        /// Reporting an warning.
+        /// Reports a potential issue
         /// </summary>
         Warning,
 
         /// <summary>
-        /// Reporting general information.
+        /// Reports general information
         /// </summary>
         Info
     }
