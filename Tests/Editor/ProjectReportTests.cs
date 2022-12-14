@@ -109,7 +109,7 @@ class MyClass : MonoBehaviour
                 var line = file.ReadLine();
                 Assert.AreEqual("Issue,Severity,Area,Filename,Assembly,Descriptor", line);
 
-                var expectedIssueLine = "\"'UnityEngine.Camera.allCameras' usage\",\"True\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\",\"UnityEngine.Camera.allCameras\"";
+                var expectedIssueLine = $"\"'UnityEngine.Camera.allCameras' usage\",\"{Severity.Major}\",\"{Area.Memory}\",\"MyClass.cs:7\",\"Assembly-CSharp\",\"UnityEngine.Camera.allCameras\"";
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();
@@ -143,7 +143,7 @@ class MyClass : MonoBehaviour
                 line = file.ReadLine();
                 Assert.AreEqual("<th>Issue</th>", line);
                 line = file.ReadLine();
-                Assert.AreEqual("<th>Critical</th>", line);
+                Assert.AreEqual($"<th>Severity</th>", line);
                 line = file.ReadLine();
                 Assert.AreEqual("<th>Area</th>", line);
                 line = file.ReadLine();
@@ -171,12 +171,12 @@ class MyClass : MonoBehaviour
                             index++;
                         }
                         line = file.ReadLine();
-                        if (line.Equals($"<td>True</td>"))
+                        if (line.Equals($"<td>{Severity.Major}</td>"))
                         {
                             index++;
                         }
                         line = file.ReadLine();
-                        if (line.Equals($"<td>Memory</td>"))
+                        if (line.Equals($"<td>{Area.Memory}</td>"))
                         {
                             index++;
                         }
@@ -232,9 +232,9 @@ class MyClass : MonoBehaviour
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.AreEqual("Issue,Critical,Area,Filename,Assembly,Descriptor", line);
+                Assert.AreEqual("Issue,Severity,Area,Filename,Assembly,Descriptor", line);
 
-                var expectedIssueLine = "\"Conversion from value type 'Int32' to ref type\",\"True\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\",\"Boxing Allocation\"";
+                var expectedIssueLine = $"\"Conversion from value type 'Int32' to ref type\",\"{Severity.Major}\",\"{Area.Memory}\",\"MyClass.cs:7\",\"Assembly-CSharp\",\"Boxing Allocation\"";
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();
@@ -264,7 +264,7 @@ class MyClass : MonoBehaviour
                 line = file.ReadLine();     //should be "<<table width='50%' cellpadding='10' style='margin-top:10px' cellspacing='3' border='1' rules='all'>"
                 line = file.ReadLine();     //should be "<tr>"
                 line = file.ReadLine();     //should be "<th>Issue</th>"
-                line = file.ReadLine();     //should be "<th>Critical</th>"
+                line = file.ReadLine();     //should be "<th>Severity</th>"
                 line = file.ReadLine();     //should be "<th>Area</th>"
                 line = file.ReadLine();     //should be "<th>Filename</th>"
                 line = file.ReadLine();     //should be "<th>Assembly</th>"
@@ -294,12 +294,12 @@ class MyClass : MonoBehaviour
                             filterCorrect = false;
                         }
                         line = file.ReadLine();
-                        if (line.Equals($"<td>True</td>"))
+                        if (line.Equals($"<td>{Severity.Major}</td>"))
                         {
                             index++;
                         }
                         line = file.ReadLine();
-                        if (line.Equals($"<td>Memory</td>"))
+                        if (line.Equals($"<td>{Area.Memory}</td>"))
                         {
                             index++;
                         }
@@ -357,7 +357,7 @@ class MyClass : MonoBehaviour
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.AreEqual("Issue,Critical,Area,System,Platform", line, "Header was: " + line);
+                Assert.AreEqual("Issue,Severity,Area,System,Platform", line, "Header was: " + line);
                 while (file.Peek() >= 0)
                 {
                     line = file.ReadLine();
@@ -399,7 +399,7 @@ class MyClass : MonoBehaviour
                 line = file.ReadLine();
                 Assert.AreEqual("<th>Issue</th>", line);
                 line = file.ReadLine();
-                Assert.AreEqual("<th>Critical</th>", line);
+                Assert.AreEqual("<th>Severity</th>", line);
                 line = file.ReadLine();
                 Assert.AreEqual("<th>Area</th>", line);
                 line = file.ReadLine();

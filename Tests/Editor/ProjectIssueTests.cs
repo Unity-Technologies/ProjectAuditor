@@ -22,10 +22,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Area.CPU,
             "this is not actually a problem",
             "do nothing"
-            )
-        {
-            severity = Severity.Major
-        };
+            );
 
         Descriptor m_CriticalIssueDescriptor = new Descriptor
             (
@@ -77,9 +74,6 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var description = "dummy issue";
             m_Issue = new ProjectIssue(IssueCategory.Code, m_Descriptor, description);
-
-            Assert.AreEqual(Severity.Major, m_Issue.severity);
-
             m_Issue.severity = Severity.Major;
 
 #if UNITY_2019_3_OR_NEWER
