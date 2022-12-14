@@ -351,7 +351,7 @@ class MyClass : MonoBehaviour
             Assert.AreEqual(1, issues.Count);
 
             var issue = issues.First();
-            var expectedIssueLine = $"\"{issue.description}\",\"False\",\"{issue.descriptor.GetAreasSummary()}\",\"{issue.filename}\",\"{issue.descriptor.GetPlatformsSummary()}\"";
+            var expectedIssueLine = $"\"{issue.description}\",\"{Severity.Moderate}\",\"{issue.descriptor.GetAreasSummary()}\",\"{issue.filename}\",\"{issue.descriptor.GetPlatformsSummary()}\"";
 
             var issueExported = false;
             using (var file = new StreamReader(path))
