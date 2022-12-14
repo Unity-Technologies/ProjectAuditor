@@ -15,14 +15,17 @@ namespace Unity.ProjectAuditor.EditorTests
     [Serializable]
     class ProjectIssueTests
     {
-        Descriptor m_Descriptor = new Descriptor
+        private Descriptor m_Descriptor = new Descriptor
             (
             "TD2001",
             "test",
             Area.CPU,
             "this is not actually a problem",
             "do nothing"
-            );
+            )
+        {
+            severity = Severity.Major
+        };
 
         Descriptor m_CriticalIssueDescriptor = new Descriptor
             (
@@ -128,7 +131,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(2, issue.GetNumCustomProperties());
             Assert.AreEqual("dummy issue", issue.GetProperty(PropertyType.Description));
 
-            Assert.AreEqual(Severity.Default.ToString(), issue.GetProperty(PropertyType.Severity));
+            Assert.AreEqual(Severity.Moderate.ToString(), issue.GetProperty(PropertyType.Severity));
             Assert.AreEqual(Area.CPU.ToString(), issue.GetProperty(PropertyType.Area));
             Assert.AreEqual("Assets/Dummy.cs:0", issue.GetProperty(PropertyType.Path));
             Assert.AreEqual("Dummy.cs:0", issue.GetProperty(PropertyType.Filename));

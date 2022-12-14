@@ -117,7 +117,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (viewDesc.showCritical &&
                 m_ViewStates.onlyCriticalIssues &&
-                issue.severity != Severity.Major)
+                !issue.IsMajorOrCritical())
                 return false;
 
             return true;

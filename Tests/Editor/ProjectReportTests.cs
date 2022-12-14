@@ -107,7 +107,7 @@ class MyClass : MonoBehaviour
             using (var file = new StreamReader(path))
             {
                 var line = file.ReadLine();
-                Assert.AreEqual("Issue,Critical,Area,Filename,Assembly,Descriptor", line);
+                Assert.AreEqual("Issue,Severity,Area,Filename,Assembly,Descriptor", line);
 
                 var expectedIssueLine = "\"'UnityEngine.Camera.allCameras' usage\",\"True\",\"Memory\",\"MyClass.cs:7\",\"Assembly-CSharp\",\"UnityEngine.Camera.allCameras\"";
                 while (file.Peek() >= 0)

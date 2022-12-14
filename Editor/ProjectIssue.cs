@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
@@ -49,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor
             m_Descriptor = descriptor;
             m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
             m_Category = category;
-            m_Severity = Severity.Default;
+            m_Severity = descriptor.severity;
         }
 
         internal ProjectIssue(IssueCategory category, string description)

@@ -288,7 +288,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 ++stats.numOccurrences;
 
-                if (issue.severity == Severity.Major)
+                if (issue.IsMajorOrCritical())
                 {
                     ++stats.numHotPathOccurrences;
                 }
