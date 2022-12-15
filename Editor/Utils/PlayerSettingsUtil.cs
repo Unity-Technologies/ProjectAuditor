@@ -64,5 +64,24 @@ namespace Unity.ProjectAuditor.Editor.Utils
             method.Invoke(null, args);
             return (int)args[1] > 0;
         }
+
+#if UNITY_2021_2_OR_NEWER
+        public static void GetDefaultTextureCompressionFormat(BuildTargetGroup buildTargetGroup, out int formatEnumIndex, out Array formatEnumValues)
+        {
+            formatEnumValues = default;
+            formatEnumIndex = -1;
+
+            var method = typeof(PlayerSettings).GetMethod("GetDefaultTextureCompressionFormat",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            if (method == null)
+                throw new NotSupportedException("PlayerSettings.GetDefaultTextureCompressionFormat method is not supported");
+
+            var format = method.Invoke(null, new object[] { buildTargetGroup });
+
+            var enumType = format.GetType();
+            formatEnumValues = Enum.GetValues(enumType);
+            formatEnumIndex = (int)format;
+        }
+#endif
     }
 }
