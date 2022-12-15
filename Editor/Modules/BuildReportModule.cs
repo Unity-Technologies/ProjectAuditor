@@ -9,7 +9,6 @@ using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.Callbacks;
 using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
