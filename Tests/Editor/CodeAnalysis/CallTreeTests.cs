@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.AssemblyUtils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -75,7 +76,7 @@ class HierarchyTest
 
             Assert.NotNull(root);
             Assert.AreEqual("System.Object RootTest::CallerMethod()", root.m_Name);
-            Assert.AreEqual("Assembly-CSharp.dll", root.assemblyName);
+            Assert.AreEqual(AssemblyInfo.DefaultAssemblyFileName, root.assemblyName);
             Assert.AreEqual("CallerMethod", root.methodName);
             Assert.AreEqual("RootTest", root.typeName);
             Assert.AreEqual(0, root.GetNumChildren());

@@ -135,7 +135,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
-            Assert.AreEqual("Library/ScriptAssemblies/Assembly-CSharp.dll", assemblyInfo.path);
+            Assert.AreEqual($"Library/ScriptAssemblies/{AssemblyInfo.DefaultAssemblyFileName}", assemblyInfo.path);
             Assert.IsNull(assemblyInfo.asmDefPath);
             Assert.IsFalse(assemblyInfo.packageReadOnly);
         }
