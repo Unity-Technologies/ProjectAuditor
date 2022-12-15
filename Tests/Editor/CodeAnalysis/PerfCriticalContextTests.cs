@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -121,55 +122,55 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void CodeAnalysis_IssueInSimpleClass_IsNotCritical()
+        public void CodeAnalysis_IssueInSimpleClass_IsNormalSeverity()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInSimpleClass);
             var issue = issues.First();
-            Assert.False(issue.isCritical);
+            Assert.AreEqual(Severity.Moderate, issue.severity);
         }
 
         [Test]
-        public void CodeAnalysis_IssueInMonoBehaviourUpdate_IsCritical()
+        public void CodeAnalysis_IssueInMonoBehaviourUpdate_IsHighSeverity()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourUpdate);
             var issue = issues.First();
-            Assert.True(issue.isCritical);
+            Assert.AreEqual(Severity.Major, issue.severity);
         }
 
         [Test]
-        public void CodeAnalysis_IssueInMonoBehaviourOnAnimatorMove_IsCritical()
+        public void CodeAnalysis_IssueInMonoBehaviourOnAnimatorMove_IsHighSeverity()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnAnimatorMove);
             var issue = issues.First();
-            Assert.True(issue.isCritical);
+            Assert.AreEqual(Severity.Major, issue.severity);
         }
 
         [Test]
-        public void CodeAnalysis_MonoBehaviourOnRenderObject_IsCriticalContext()
+        public void CodeAnalysis_MonoBehaviourOnRenderObject_IsHighSeverity()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnRenderObject);
             var issue = issues.First();
-            Assert.True(issue.isCritical);
+            Assert.AreEqual(Severity.Major, issue.severity);
         }
 
         [Test]
-        public void CodeAnalysis_IssueInClassMethodCalledFromMonoBehaviourUpdate_IsCritical()
+        public void CodeAnalysis_IssueInClassMethodCalledFromMonoBehaviourUpdate_IsHighSeverity()
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetIssueInClassMethodCalledFromMonoBehaviourUpdate);
             var issue = issues.First();
-            Assert.True(issue.isCritical);
+            Assert.AreEqual(Severity.Major, issue.severity);
         }
 
         [Test]
-        public void CodeAnalysis_IssueInClassInheritedFromMonoBehaviour_IsCritical()
+        public void CodeAnalysis_IssueInClassInheritedFromMonoBehaviour_IsHighSeverity()
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetIssueInClassInheritedFromMonoBehaviour);
             var issue = issues.First();
-            Assert.True(issue.isCritical);
+            Assert.AreEqual(Severity.Major, issue.severity);
         }
 
         [UnityTest]
@@ -180,25 +181,25 @@ class ShaderWarmUpIssueIsCritical
                     m_TempAssetIssueInClassInheritedFromMonoBehaviour);
             m_Issue = issues.First();
 
-            Assert.IsTrue(m_Issue.isCritical);
+            Assert.AreEqual(Severity.Major, m_Issue.severity);
 #if UNITY_2019_3_OR_NEWER
             EditorUtility.RequestScriptReload();
             yield return new WaitForDomainReload();
 
-            Assert.IsTrue(m_Issue.isCritical);
+            Assert.AreEqual(Severity.Major, m_Issue.severity);
 #else
             yield return null;
 #endif
         }
 
         [Test]
-        public void CodeAnalysis_ShaderWarmupIssue_IsCritical()
+        public void CodeAnalysis_ShaderWarmupIssue_IsHighSeverity()
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
                     m_TempAssetShaderWarmupIssueIsCritical);
             var issue = issues.First();
-            Assert.True(issue.isCritical);
+            Assert.AreEqual(Severity.Major, issue.severity);
         }
     }
 }

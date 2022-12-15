@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -162,12 +163,6 @@ namespace Unity.ProjectAuditor.Editor
                 {
                     onIncomingIssues = issues =>
                     {
-                        // update diagnostic priorities based on dependencies
-                        foreach (var issue in issues.Where(i => i.descriptor != null && !i.isCritical && i.dependencies != null && i.dependencies.IsPerfCritical()))
-                        {
-                            issue.isCritical = true;
-                        }
-
                         report.AddIssues(issues);
                         projectAuditorParams.onIncomingIssues?.Invoke(issues);
                     },

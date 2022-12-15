@@ -27,11 +27,24 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             return descriptor.type + "." + descriptor.method;
         }
 
+        /// <summary>
+        /// Check if the descriptor applies to the given platform
+        /// </summary>
         public static bool IsPlatformCompatible(this Descriptor descriptor, BuildTarget buildTarget)
         {
             if (descriptor.platforms == null || descriptor.platforms.Length == 0)
                 return true;
             return descriptor.platforms.Contains(buildTarget.ToString());
+        }
+
+        /// <summary>
+        /// Check if the descriptor applies only to the given platform
+        /// </summary>
+        public static bool IsPlatformSpecific(this Descriptor descriptor, BuildTarget buildTarget)
+        {
+            if (descriptor.platforms == null || descriptor.platforms.Length != 1)
+                return false;
+            return descriptor.platforms[0].Equals(buildTarget.ToString());
         }
     }
 }

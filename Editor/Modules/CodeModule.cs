@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
-                new PropertyDefinition { type = PropertyType.CriticalContext, format = PropertyFormat.Bool, name = "Critical", longName = "Critical code path"},
+                new PropertyDefinition { type = PropertyType.Severity, format = PropertyFormat.String, name = "Severity"},
                 new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" },
@@ -90,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.CodeCompilerMessage,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Severity, name = "Type"},
+                new PropertyDefinition { type = PropertyType.LogLevel, name = "Log Level"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Code), format = PropertyFormat.String, name = "Code", defaultGroup = true},
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Message", longName = "Compiler Message"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
@@ -227,15 +227,22 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var onIssueFoundInternal = new Action<ProjectIssue>(foundIssues.Add);
             var onCompleteInternal = new Action<IProgress>(bar =>
             {
+                // remove issues if platform does not match
+                var platformString = projectAuditorParams.platform.ToString();
+                foundIssues.RemoveAll(i => i.descriptor != null && i.descriptor.platforms != null && i.descriptor.platforms.Length > 0 && !i.descriptor.platforms.Contains(platformString));
+
                 var diagnostics = foundIssues.Where(i => i.category != IssueCategory.GenericInstance).ToList();
                 Profiler.BeginSample("CodeModule.Audit.BuildCallHierarchies");
                 compilationPipeline.Dispose();
                 callCrawler.BuildCallHierarchies(diagnostics, bar);
                 Profiler.EndSample();
 
-                // remove issues if platform does not match
-                var platformString = projectAuditorParams.platform.ToString();
-                foundIssues.RemoveAll(i => i.descriptor != null && i.descriptor.platforms != null && i.descriptor.platforms.Length > 0 && !i.descriptor.platforms.Contains(platformString));
+                foreach (var d in diagnostics)
+                {
+                    // upgrade to major severity if issue is found in a hot-path
+                    if (!d.IsMajorOrCritical() && d.dependencies != null && d.dependencies.perfCriticalContext)
+                        d.severity = Severity.Major;
+                }
 
                 // workaround for empty 'relativePath' strings which are not all available when 'onIssueFoundInternal' is called
                 if (foundIssues.Any())
@@ -454,25 +461,25 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         assemblyInfo.name
                     })
                     .WithLocation(relativePath, message.line)
-                    .WithSeverity(CompilerMessageTypeToSeverity(message.type));
+                    .WithLogLevel(CompilerMessageTypeToLogLevel(message.type));
             }
 
             Profiler.EndSample();
         }
 
-        static Severity CompilerMessageTypeToSeverity(CompilerMessageType compilerMessageType)
+        static LogLevel CompilerMessageTypeToLogLevel(CompilerMessageType compilerMessageType)
         {
             switch (compilerMessageType)
             {
                 case CompilerMessageType.Error:
-                    return Severity.Error;
+                    return LogLevel.Error;
                 case CompilerMessageType.Warning:
-                    return Severity.Warning;
+                    return LogLevel.Warning;
                 case CompilerMessageType.Info:
-                    return Severity.Info;
+                    return LogLevel.Info;
             }
 
-            return Severity.Info;
+            return LogLevel.Info;
         }
 
         static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)

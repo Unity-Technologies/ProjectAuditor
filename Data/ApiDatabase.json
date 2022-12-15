@@ -1404,7 +1404,7 @@
           "type": "UnityEngine.Shader",
           "method": "WarmupAllShaders",
           "areas": ["CPU"],
-          "critical": "true",
+          "severity": 3,
           "description": "<b>WarmupAllShaders</b> does not work properly on Metal and Vulkan. This might result in unexpected CPU spikes due to shader compilation.",
           "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader used at runtime."
         },
@@ -1413,7 +1413,7 @@
           "type": "UnityEngine.ShaderVariantCollection",
           "method": "WarmUp",
           "areas": ["CPU"],
-          "critical": "true",
+          "severity": 3,
           "description": "<b>WarmUp</b> does not work properly on Metal and Vulkan. This might result in unexpected CPU spikes due to shader compilation.",
           "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader variant used at runtime."
         },

@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.EditorTests
             "do nothing"
             )
         {
-            critical = true
+            severity = Severity.Critical
         };
 
         [SerializeField]
@@ -43,12 +43,14 @@ namespace Unity.ProjectAuditor.EditorTests
         public void ProjectIssue_NewIssue_IsInitialized()
         {
             var description = "dummy issue";
-            var uninitialised = new ProjectIssue(IssueCategory.Code, m_Descriptor, description);
-            Assert.AreEqual(string.Empty, uninitialised.filename);
-            Assert.AreEqual(string.Empty, uninitialised.relativePath);
-            Assert.AreEqual(string.Empty, uninitialised.GetContext());
-            Assert.AreEqual(description, uninitialised.description);
-            Assert.IsFalse(uninitialised.isCritical);
+            var diagnostic = new ProjectIssue(IssueCategory.Code, m_Descriptor, description);
+            Assert.AreEqual(string.Empty, diagnostic.filename);
+            Assert.AreEqual(string.Empty, diagnostic.relativePath);
+            Assert.AreEqual(string.Empty, diagnostic.GetContext());
+            Assert.AreEqual(description, diagnostic.description);
+            Assert.AreNotEqual(Severity.Critical, diagnostic.severity);
+
+            Assert.IsFalse(diagnostic.IsMajorOrCritical());
         }
 
         [Test]
@@ -62,25 +64,23 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(description, diagnostic.description);
 
             // the issue should be critical as per the descriptor
-            Assert.IsTrue(diagnostic.isCritical);
+            Assert.AreEqual(Severity.Critical, diagnostic.severity);
+
+            Assert.IsTrue(diagnostic.IsMajorOrCritical());
         }
 
         [UnityTest]
-        public IEnumerator ProjectIssue_Critical_PersistsAfterDomainReload()
+        public IEnumerator ProjectIssue_Priority_PersistsAfterDomainReload()
         {
             var description = "dummy issue";
             m_Issue = new ProjectIssue(IssueCategory.Code, m_Descriptor, description);
+            m_Issue.severity = Severity.Major;
 
-            Assert.IsFalse(m_Issue.isCritical);
-
-            m_Issue.isCritical = true;
-
-            Assert.IsTrue(m_Issue.isCritical);
 #if UNITY_2019_3_OR_NEWER
             EditorUtility.RequestScriptReload();
             yield return new WaitForDomainReload();
 
-            Assert.IsTrue(m_Issue.isCritical);
+            Assert.AreEqual(Severity.Major, m_Issue.severity);
 #else
             yield return null;
 #endif
@@ -125,12 +125,12 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(2, issue.GetNumCustomProperties());
             Assert.AreEqual("dummy issue", issue.GetProperty(PropertyType.Description));
 
-            Assert.AreEqual(Severity.Default.ToString(), issue.GetProperty(PropertyType.Severity));
+            Assert.AreEqual(Severity.Moderate.ToString(), issue.GetProperty(PropertyType.Severity));
             Assert.AreEqual(Area.CPU.ToString(), issue.GetProperty(PropertyType.Area));
             Assert.AreEqual("Assets/Dummy.cs:0", issue.GetProperty(PropertyType.Path));
             Assert.AreEqual("Dummy.cs:0", issue.GetProperty(PropertyType.Filename));
             Assert.AreEqual("cs", issue.GetProperty(PropertyType.FileType));
-            Assert.AreEqual(false.ToString(), issue.GetProperty(PropertyType.CriticalContext));
+            Assert.AreEqual(Severity.Moderate.ToString(), issue.GetProperty(PropertyType.Severity));
             Assert.AreEqual(properties[0], issue.GetProperty(PropertyType.Num));
             Assert.AreEqual(properties[1], issue.GetProperty(PropertyType.Num + 1));
         }
@@ -143,6 +143,19 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(ProjectIssueExtensions.k_NotAvailable, issue.GetProperty(PropertyType.Path));
             Assert.AreEqual(ProjectIssueExtensions.k_NotAvailable, issue.GetProperty(PropertyType.Filename));
             Assert.AreEqual(ProjectIssueExtensions.k_NotAvailable, issue.GetProperty(PropertyType.FileType));
+        }
+
+        [Test]
+        [TestCase(LogLevel.Error)]
+        [TestCase(LogLevel.Warning)]
+        [TestCase(LogLevel.Info)]
+        public void ProjectIssue_Issue_IsCreatedWithLogLevel(LogLevel logLevel)
+        {
+            ProjectIssue issue = ProjectIssue.Create(IssueCategory.Code, m_Descriptor, "dummy issue")
+                .WithLogLevel(logLevel);
+
+            Assert.AreEqual(logLevel, issue.logLevel);
+            Assert.AreEqual(logLevel.ToString(), issue.GetProperty(PropertyType.LogLevel));
         }
     }
 }

@@ -7,12 +7,12 @@ namespace Unity.ProjectAuditor.Editor.Core
         Description = 0,
         Descriptor,
         Severity,
+        LogLevel,
         Area,
         Path,
         Directory,
         Filename,
         FileType,
-        CriticalContext,
         Platform,
         Num
     }
