@@ -4,6 +4,7 @@ using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -58,8 +59,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         .WithLocation(assetPath);
                 }
 
-                var modelImporter = assetImporter as ModelImporter;
-                if (modelImporter != null && modelImporter.indexFormat == ModelImporterIndexFormat.UInt32 &&
+                if (mesh.indexFormat == IndexFormat.UInt32 &&
                     mesh.vertexCount <= 65535)
                 {
                     yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
