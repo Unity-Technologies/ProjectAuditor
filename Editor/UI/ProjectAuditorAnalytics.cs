@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Analytics;
@@ -274,7 +275,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             var statsDict = new Dictionary<string, IssueStats>();
 
             var scriptIssues = projectReport.FindByCategory(IssueCategory.Code);
-            var numScriptIssues = scriptIssues.Count;
             foreach (var issue in scriptIssues)
             {
                 var descriptor = issue.descriptor;
@@ -288,7 +288,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 ++stats.numOccurrences;
 
-                if (issue.isCritical)
+                if (issue.IsMajorOrCritical())
                 {
                     ++stats.numHotPathOccurrences;
                 }

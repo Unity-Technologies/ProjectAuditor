@@ -302,19 +302,31 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 switch (propertyType)
                 {
-                    case PropertyType.CriticalContext:
+                    case PropertyType.LogLevel:
                     {
-                        if (issue.isCritical)
-                            EditorGUI.LabelField(cellRect, Utility.GetIcon(Utility.IconType.Warning, Tooltip.HotPath), labelStyle);
-                    }
-                    break;
-                    case PropertyType.Severity:
-                    {
-                        var icon = Utility.GetSeverityIcon(issue.severity);
+                        var icon = Utility.GetLogLevelIcon(issue.logLevel);
                         if (icon != null)
                         {
                             EditorGUI.LabelField(cellRect, icon, labelStyle);
                         }
+                    }
+                    break;
+
+                    case PropertyType.Severity:
+                    {
+                        var style = new GUIStyle(labelStyle);
+
+                        switch (issue.severity)
+                        {
+                            case Severity.Critical:
+                                style.normal.textColor *= Color.red;
+                                break;
+                            case Severity.Major:
+                                style.normal.textColor *= Color.yellow;
+                                break;
+                        }
+
+                        EditorGUI.LabelField(cellRect, new GUIContent(issue.severity.ToString()), style);
                     }
                     break;
 

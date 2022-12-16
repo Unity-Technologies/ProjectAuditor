@@ -174,6 +174,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Dirty = false;
         }
 
+        public bool IsDiagnostic()
+        {
+            return m_Layout.properties.Any(p => p.type == PropertyType.Severity);
+        }
+
         public bool IsValid()
         {
             return m_Table != null;

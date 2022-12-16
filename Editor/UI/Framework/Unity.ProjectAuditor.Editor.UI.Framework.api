@@ -51,6 +51,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void DrawViewOptions();
         protected virtual void Export(System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
         public ProjectIssue[] GetSelection();
+        public bool IsDiagnostic();
         public bool IsValid();
         public virtual void LoadSettings();
         public void MarkDirty();
@@ -222,7 +223,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static void DrawHelpButton(UnityEngine.GUIContent content, string page);
         public static void DrawSelectedText(string text);
         public static UnityEngine.GUIContent GetIcon(Utility.IconType iconType, string tooltip = default(string));
-        public static UnityEngine.GUIContent GetSeverityIcon(Unity.ProjectAuditor.Editor.Diagnostic.Severity severity, string tooltip = default(string));
+        public static UnityEngine.GUIContent GetLogLevelIcon(Unity.ProjectAuditor.Editor.Core.LogLevel logLevel, string tooltip = default(string));
         public static UnityEngine.GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath);
         public static UnityEngine.GUIContent GetTextWithSeverityIcon(string text, string tooltip, Unity.ProjectAuditor.Editor.Diagnostic.Severity severity);
         public static string GetTreeViewSelectedSummary(TreeViewSelection selection, string[] names);
@@ -238,22 +239,25 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
         public enum IconType
         {
-            Download = 9,
+            Critical = 3,
+            Download = 12,
             Error = 2,
-            Fix = 8,
-            GreenCheckMark = 15,
-            Help = 3,
-            Hierarchy = 6,
+            Fix = 11,
+            GreenCheckMark = 18,
+            Help = 6,
+            Hierarchy = 9,
             Info = 0,
-            Load = 10,
-            Refresh = 4,
-            Save = 11,
-            StatusWheel = 5,
-            Trash = 12,
-            View = 13,
+            Load = 13,
+            Major = 4,
+            Moderate = 5,
+            Refresh = 7,
+            Save = 14,
+            StatusWheel = 8,
+            Trash = 15,
+            View = 16,
             Warning = 1,
-            WhiteCheckMark = 14,
-            ZoomTool = 7,
+            WhiteCheckMark = 17,
+            ZoomTool = 10,
         }
     }
 
@@ -271,14 +275,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public System.Action<ViewManager> onDrawToolbar;
         public System.Action<Location> onOpenIssue;
         public System.Action<Unity.ProjectAuditor.Editor.Diagnostic.Descriptor> onOpenManual;
-        public bool showActions;
-        public bool showAreaSelection;
         public bool showAssemblySelection;
-        public bool showCritical;
         public bool showDependencyView;
         public bool showFilters;
         public bool showInfoPanel;
-        public bool showMuteOptions;
         public System.Type type;
         public ViewDescriptor() {}
         public static ViewDescriptor[] GetAll();

@@ -23,6 +23,8 @@ namespace Unity.ProjectAuditor.Editor
         {
             switch (propertyType)
             {
+                case PropertyType.LogLevel:
+                    return issue.logLevel.ToString();
                 case PropertyType.Severity:
                     return issue.severity.ToString();
                 case PropertyType.Area:
@@ -50,8 +52,6 @@ namespace Unity.ProjectAuditor.Editor
                     if (string.IsNullOrEmpty(issue.relativePath))
                         return k_NotAvailable;
                     return PathUtils.GetDirectoryName(issue.location.Path);
-                case PropertyType.CriticalContext:
-                    return issue.isCritical.ToString();
                 case PropertyType.Platform:
                     return issue.descriptor.GetPlatformsSummary();
                 default:
@@ -141,8 +141,6 @@ namespace Unity.ProjectAuditor.Editor
                         return issueA.line.CompareTo(issueB.line);
 
                     return cp;
-                case PropertyType.CriticalContext:
-                    return issueA.isCritical.CompareTo(issueB.isCritical);
                 default:
                     var propA = issueA.GetProperty(propertyType);
                     var propB = issueB.GetProperty(propertyType);

@@ -97,15 +97,20 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!matchAssembly)
                 return false;
 
+            var isDiagnosticView = activeView.IsDiagnostic();
+            if (!isDiagnosticView)
+                return true;
+
+            // TODO: the rest of this logic is common to all diagnostic views. It should be moved to the AnalysisView
+
             Profiler.BeginSample("MatchArea");
-            var matchArea = !viewDesc.showAreaSelection ||
-                m_AreaSelection.ContainsAny(issue.descriptor.areas) ||
+            var matchArea = m_AreaSelection.ContainsAny(issue.descriptor.areas) ||
                 m_AreaSelection.ContainsGroup("All");
             Profiler.EndSample();
             if (!matchArea)
                 return false;
 
-            if (!m_ViewStates.mutedIssues && viewDesc.showMuteOptions)
+            if (!m_ViewStates.mutedIssues)
             {
                 Profiler.BeginSample("IsMuted");
                 var muted = m_ProjectAuditor.config.GetAction(issue.descriptor, issue.GetContext()) ==
@@ -115,9 +120,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return false;
             }
 
-            if (viewDesc.showCritical &&
-                m_ViewStates.onlyCriticalIssues &&
-                !issue.isCritical)
+            if (m_ViewStates.onlyCriticalIssues &&
+                !issue.IsMajorOrCritical())
                 return false;
 
             return true;
@@ -187,6 +191,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ProjectAuditorAnalytics.SendEvent(
                     (ProjectAuditorAnalytics.UIButton)viewDesc.analyticsEvent,
                     ProjectAuditorAnalytics.BeginAnalytic());
+                if (m_ProjectReport == null)
+                    return; // this happens from the summary view while the report is being generated
                 if (!m_ProjectReport.HasCategory(activeView.desc.category) && EditorUtility.DisplayDialog(k_ProjectAuditorName, $"Would you like to analyze {ProjectAuditor.GetCategoryName(viewDesc.category)} now?", "Ok", "No"))
                 {
                     AuditCategories(new[] {viewDesc.category});
@@ -228,12 +234,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnGUI()
         {
-            if (m_AnalysisState == AnalysisState.Completed)
-            {
-                // switch to summary view after analysis
-                m_ViewManager.ChangeView(IssueCategory.MetaData);
-            }
-
             using (new EditorGUILayout.VerticalScope())
             {
                 if (m_AnalysisState != AnalysisState.Initializing && m_AnalysisState != AnalysisState.Initialized)
@@ -418,7 +418,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
                 onDrawToolbar = (viewManager) =>
                 {
-                    AnalysisView.DrawToolbarButton(Contents.TextureDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
+                    AnalysisView.DrawToolbarButton(Contents.AssetDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
             });
@@ -475,7 +475,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
                     onDrawToolbar = (viewManager) =>
                     {
-                        AnalysisView.DrawToolbarButton(Contents.MeshDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
+                        AnalysisView.DrawToolbarButton(Contents.AssetDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
                     },
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Meshes
                 });
@@ -499,14 +499,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Code",
                 menuLabel = "Code/Diagnostics",
                 menuOrder = 0,
-                showActions = true,
-                showAreaSelection = true,
                 showAssemblySelection = true,
-                showCritical = true,
                 showDependencyView = true,
                 showFilters = true,
                 showInfoPanel = true,
-                showMuteOptions = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
                 onDrawToolbar = (viewManager) =>
@@ -543,11 +539,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Settings",
                 menuLabel = "Project/Settings/Diagnostics",
                 menuOrder = 1,
-                showActions = true,
-                showAreaSelection = true,
                 showFilters = true,
                 showInfoPanel = true,
-                showMuteOptions = true,
                 onOpenIssue = (location) =>
                 {
                     var guid = AssetDatabase.AssetPathToGUID(location.Path);
@@ -824,7 +817,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         // and the type of window we want.
         void DrawAreaFilter()
         {
-            if (!activeView.desc.showAreaSelection)
+            if (!activeView.IsDiagnostic())
                 return;
 
             using (new EditorGUILayout.HorizontalScope())
@@ -895,7 +888,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     activeView.DrawSearch();
 
                     // this is specific to diagnostics
-                    if (activeView.desc.showCritical || activeView.desc.showMuteOptions)
+                    var isDiagnosticView = activeView.IsDiagnostic();
+                    if (isDiagnosticView)
                     {
                         EditorGUI.BeginChangeCheck();
 
@@ -903,41 +897,35 @@ namespace Unity.ProjectAuditor.Editor.UI
                         {
                             EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
 
-                            if (activeView.desc.showCritical)
-                            {
-                                var wasShowingCritical = m_ViewStates.onlyCriticalIssues;
-                                m_ViewStates.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
-                                    m_ViewStates.onlyCriticalIssues, GUILayout.Width(170));
+                            var wasShowingCritical = m_ViewStates.onlyCriticalIssues;
+                            m_ViewStates.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Major/Critical",
+                                m_ViewStates.onlyCriticalIssues, GUILayout.Width(170));
 
-                                if (wasShowingCritical != m_ViewStates.onlyCriticalIssues)
+                            if (wasShowingCritical != m_ViewStates.onlyCriticalIssues)
+                            {
+                                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                                var payload = new Dictionary<string, string>
                                 {
-                                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                                    var payload = new Dictionary<string, string>
-                                    {
-                                        ["selected"] = m_ViewStates.onlyCriticalIssues ? "true" : "false"
-                                    };
-                                    ProjectAuditorAnalytics.SendEventWithKeyValues(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues,
-                                        analytic, payload);
-                                }
+                                    ["selected"] = m_ViewStates.onlyCriticalIssues ? "true" : "false"
+                                };
+                                ProjectAuditorAnalytics.SendEventWithKeyValues(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues,
+                                    analytic, payload);
                             }
 
-                            if (activeView.desc.showMuteOptions)
-                            {
-                                var wasDisplayingMuted = m_ViewStates.mutedIssues;
-                                m_ViewStates.mutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
-                                    m_ViewStates.mutedIssues, GUILayout.Width(120));
+                            var wasDisplayingMuted = m_ViewStates.mutedIssues;
+                            m_ViewStates.mutedIssues = EditorGUILayout.ToggleLeft("Muted",
+                                m_ViewStates.mutedIssues, GUILayout.Width(120));
 
-                                if (wasDisplayingMuted != m_ViewStates.mutedIssues)
+                            if (wasDisplayingMuted != m_ViewStates.mutedIssues)
+                            {
+                                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                                var payload = new Dictionary<string, string>
                                 {
-                                    var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                                    var payload = new Dictionary<string, string>
-                                    {
-                                        ["selected"] = m_ViewStates.mutedIssues ? "true" : "false"
-                                    };
-                                    ProjectAuditorAnalytics.SendEventWithKeyValues(
-                                        ProjectAuditorAnalytics.UIButton.ShowMuted,
-                                        analytic, payload);
-                                }
+                                    ["selected"] = m_ViewStates.mutedIssues ? "true" : "false"
+                                };
+                                ProjectAuditorAnalytics.SendEventWithKeyValues(
+                                    ProjectAuditorAnalytics.UIButton.ShowMuted,
+                                    analytic, payload);
                             }
                             GUILayout.FlexibleSpace();
                         }
@@ -955,7 +943,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawActions()
         {
-            if (!activeView.desc.showActions)
+            if (!activeView.IsDiagnostic())
                 return;
 
             using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
@@ -969,34 +957,31 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
 
-                        using (new EditorGUI.DisabledScope(!activeView.desc.showMuteOptions))
+                        var selectedIssues = activeView.GetSelection();
+                        if (GUILayout.Button(Contents.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
                         {
-                            var selectedIssues = activeView.GetSelection();
-                            if (GUILayout.Button(Contents.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                            foreach (var issue in selectedIssues)
                             {
-                                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                                foreach (var issue in selectedIssues)
-                                {
-                                    SetRuleForItem(issue, Severity.None);
-                                }
-
-                                activeView.ClearSelection();
-
-                                ProjectAuditorAnalytics.SendEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
-                                    analytic, selectedIssues);
+                                SetRuleForItem(issue, Severity.None);
                             }
 
-                            if (GUILayout.Button(Contents.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                            {
-                                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                                foreach (var issue in selectedIssues)
-                                {
-                                    ClearRulesForItem(issue);
-                                }
+                            activeView.ClearSelection();
 
-                                ProjectAuditorAnalytics.SendEventWithSelectionSummary(
-                                    ProjectAuditorAnalytics.UIButton.Unmute, analytic, selectedIssues);
+                            ProjectAuditorAnalytics.SendEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
+                                analytic, selectedIssues);
+                        }
+
+                        if (GUILayout.Button(Contents.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
+                        {
+                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                            foreach (var issue in selectedIssues)
+                            {
+                                ClearRulesForItem(issue);
                             }
+
+                            ProjectAuditorAnalytics.SendEventWithSelectionSummary(
+                                ProjectAuditorAnalytics.UIButton.Unmute, analytic, selectedIssues);
                         }
                         GUILayout.FlexibleSpace();
                     }
@@ -1405,11 +1390,7 @@ A view allows the user to browse through the listed items and filter by string o
             public static readonly GUIContent ShaderCompilerMessages = new GUIContent("Messages", "Show Shader Compiler Messages");
             public static readonly GUIContent ShaderVariants = new GUIContent("Variants", "Inspect Shader Variants");
 
-            public static readonly GUIContent Textures = new GUIContent("Textures");
-            public static readonly GUIContent TextureDiagnostics = new GUIContent("Diagnostics", "Texture Diagnostics");
-
-            public static readonly GUIContent Meshes = new GUIContent("Meshes");
-            public static readonly GUIContent MeshDiagnostics = new GUIContent("Diagnostics", "Mesh Diagnostics");
+            public static readonly GUIContent AssetDiagnostics = new GUIContent("Diagnostics", "Asset Diagnostics");
 
             public static readonly GUIContent BuildFiles = new GUIContent("Build Size");
             public static readonly GUIContent BuildSteps = new GUIContent("Build Steps");

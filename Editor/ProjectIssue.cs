@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
@@ -43,14 +42,12 @@ namespace Unity.ProjectAuditor.Editor
 
         [SerializeField] string[] m_CustomProperties;
         [SerializeField] Severity m_Severity;
-        [SerializeField] bool m_Critical;
 
         internal ProjectIssue(IssueCategory category, Descriptor descriptor, params object[] args)
         {
             m_Descriptor = descriptor;
             m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
             m_Category = category;
-            m_Critical = descriptor.critical;
             m_Severity = descriptor.severity;
         }
 
@@ -58,7 +55,6 @@ namespace Unity.ProjectAuditor.Editor
         {
             m_Description = description;
             m_Category = category;
-            m_Critical = false;
             m_Severity = Severity.Default;
         }
 
@@ -110,6 +106,26 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
+        /// Log level
+        /// </summary>
+        public LogLevel logLevel
+        {
+            get
+            {
+                switch (severity)
+                {
+                    case Severity.Error:
+                        return LogLevel.Error;
+                    case Severity.Warning:
+                        return LogLevel.Warning;
+                    case Severity.Info:
+                    default:
+                        return LogLevel.Info;
+                }
+            }
+        }
+
+        /// <summary>
         /// Diagnostics-specific severity
         /// </summary>
         public Severity severity
@@ -118,13 +134,9 @@ namespace Unity.ProjectAuditor.Editor
             set => m_Severity = value;
         }
 
-        /// <summary>
-        /// Diagnostics-specific priority
-        /// </summary>
-        public bool isCritical
+        public bool IsMajorOrCritical()
         {
-            get => m_Critical;
-            set => m_Critical = value;
+            return severity == Severity.Critical || severity == Severity.Major;
         }
 
         public bool IsValid()

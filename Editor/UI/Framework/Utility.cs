@@ -13,6 +13,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Info,
             Warning,
             Error,
+
+            Critical,
+            Major,
+            Moderate,
+
             Help,
             Refresh,
             StatusWheel,
@@ -31,6 +36,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_InfoIconName = "console.infoicon";
         static readonly string k_WarningIconName = "console.warnicon";
         static readonly string k_ErrorIconName = "console.erroricon";
+
+        static readonly string k_CriticalIconName = "node6";
+        static readonly string k_MajorIconName = "node5";
+        static readonly string k_ModerateIconName = "node4";
+
         static readonly string k_HelpIconName = "_Help";
         static readonly string k_RefreshIconName = "Refresh";
         static readonly string k_WhiteCheckMarkIconName = "FilterSelectedOnly";
@@ -156,6 +166,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             switch (iconType)
             {
+                // log level icons
                 case IconType.Info:
                     if (string.IsNullOrEmpty(tooltip))
                         tooltip = "Info";
@@ -168,6 +179,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     if (string.IsNullOrEmpty(tooltip))
                         tooltip = "Error";
                     return EditorGUIUtility.TrIconContent(k_ErrorIconName, tooltip);
+
+                // severity icons
+                case IconType.Critical:
+                    if (string.IsNullOrEmpty(tooltip))
+                        tooltip = "Critical Severity";
+                    return EditorGUIUtility.TrIconContent(k_CriticalIconName, tooltip);
+                case IconType.Major:
+                    if (string.IsNullOrEmpty(tooltip))
+                        tooltip = "Major Severity";
+                    return EditorGUIUtility.TrIconContent(k_MajorIconName, tooltip);
+                case IconType.Moderate:
+                    if (string.IsNullOrEmpty(tooltip))
+                        tooltip = "Moderate Severity";
+                    return EditorGUIUtility.TrIconContent(k_ModerateIconName, tooltip);
+
                 case IconType.Hierarchy:
                     return EditorGUIUtility.TrIconContent(k_HierarchyIconName, tooltip);
                 case IconType.ZoomTool:
@@ -199,18 +225,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return null;
         }
 
-        public static GUIContent GetSeverityIcon(Severity severity, string tooltip = null)
+        public static GUIContent GetLogLevelIcon(Core.LogLevel logLevel, string tooltip = null)
         {
-            switch (severity)
+            switch (logLevel)
             {
-                case Severity.Info:
+                case Core.LogLevel.Info:
                     return GetIcon(IconType.Info, tooltip);
-                case Severity.Warning:
+                case Core.LogLevel.Warning:
                     return GetIcon(IconType.Warning, tooltip);
-                case Severity.Error:
+                case Core.LogLevel.Error:
                     return GetIcon(IconType.Error, tooltip);
                 default:
-                    return null;
+                    return GetIcon(IconType.Help, tooltip);
             }
         }
 

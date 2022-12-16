@@ -77,6 +77,23 @@ namespace Unity.ProjectAuditor.Editor.Core
             return this;
         }
 
+        public IssueBuilder WithLogLevel(LogLevel logLevel)
+        {
+            switch (logLevel)
+            {
+                case LogLevel.Error:
+                    m_Issue.severity = Severity.Error;
+                    break;
+                case LogLevel.Warning:
+                    m_Issue.severity = Severity.Warning;
+                    break;
+                case LogLevel.Info:
+                    m_Issue.severity = Severity.Info;
+                    break;
+            }
+            return this;
+        }
+
         public IssueBuilder WithSeverity(Severity severity)
         {
             m_Issue.severity = severity;

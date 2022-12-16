@@ -113,9 +113,9 @@ namespace Unity.ProjectAuditor.Editor
         public string description { get; }
         public Diagnostic.Descriptor descriptor { get; }
         public string filename { get; }
-        public bool isCritical { get; set; }
         public int line { get; }
         public Location location { get; }
+        public Core.LogLevel logLevel { get; }
         public string relativePath { get; }
         public Diagnostic.Severity severity { get; set; }
         public static Core.IssueBuilder Create(IssueCategory category, string description);
@@ -128,6 +128,7 @@ namespace Unity.ProjectAuditor.Editor
         public long GetCustomPropertyInt64<T>(T propertyEnum) where T : struct, new();
         public System.UInt64 GetCustomPropertyUInt64<T>(T propertyEnum) where T : struct, new();
         public int GetNumCustomProperties();
+        public bool IsMajorOrCritical();
         public bool IsValid();
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct, new();
     }
@@ -265,6 +266,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         public IssueBuilder WithDescription(string description);
         public IssueBuilder WithLocation(Location location);
         public IssueBuilder WithLocation(string path, int line = 0);
+        public IssueBuilder WithLogLevel(LogLevel logLevel);
         public IssueBuilder WithSeverity(Unity.ProjectAuditor.Editor.Diagnostic.Severity severity);
     }
 
@@ -275,6 +277,13 @@ namespace Unity.ProjectAuditor.Editor.Core
         public PropertyDefinition[] properties;
         public int defaultGroupPropertyIndex { get; }
         public IssueLayout() {}
+    }
+
+    public enum LogLevel
+    {
+        Error = 0,
+        Info = 2,
+        Warning = 1,
     }
 
     public class PackageDependencyNode : DependencyNode
@@ -320,15 +329,15 @@ namespace Unity.ProjectAuditor.Editor.Core
 
     public enum PropertyType
     {
-        Area = 3,
-        CriticalContext = 8,
+        Area = 4,
         Description = 0,
         Descriptor = 1,
-        Directory = 5,
-        Filename = 6,
-        FileType = 7,
+        Directory = 6,
+        Filename = 7,
+        FileType = 8,
+        LogLevel = 3,
         Num = 10,
-        Path = 4,
+        Path = 5,
         Platform = 9,
         Severity = 2,
     }
@@ -359,7 +368,6 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     public sealed class Descriptor : System.IEquatable<Descriptor>
     {
         public string[] areas;
-        public bool critical = false;
         public string description;
         public string documentationUrl;
         public System.Action<ProjectIssue> fixer;
@@ -369,7 +377,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public string method;
         public string minimumVersion;
         public string[] platforms;
-        public Severity severity;
+        public Severity severity = Severity.Moderate|Severity.Warning;
         public string solution;
         public string title;
         public string type;
@@ -390,6 +398,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public static string GetFullTypeName(this Descriptor descriptor);
         public static string GetPlatformsSummary(this Descriptor descriptor);
         public static bool IsPlatformCompatible(this Descriptor descriptor, UnityEditor.BuildTarget buildTarget);
+        public static bool IsPlatformSpecific(this Descriptor descriptor, UnityEditor.BuildTarget buildTarget);
     }
 
     public class Rule : System.IEquatable<Rule>
@@ -407,12 +416,15 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
     public enum Severity
     {
+        Critical = 2,
         Default = 0,
         Error = 1,
-        Hidden = 5,
-        Info = 3,
-        None = 4,
-        Warning = 2,
+        Hidden = 7,
+        Info = 5,
+        Major = 3,
+        Moderate = 4,
+        None = 6,
+        Warning = 4,
     }
 }
 
