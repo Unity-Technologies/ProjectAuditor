@@ -901,7 +901,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
 
                             var wasShowingCritical = m_ViewStates.onlyCriticalIssues;
-                            m_ViewStates.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Critical Issues",
+                            m_ViewStates.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Major/Critical Issues",
                                 m_ViewStates.onlyCriticalIssues, GUILayout.Width(170));
 
                             if (wasShowingCritical != m_ViewStates.onlyCriticalIssues)
