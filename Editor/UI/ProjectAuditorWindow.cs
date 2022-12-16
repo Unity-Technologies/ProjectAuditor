@@ -545,6 +545,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 1,
                 showActions = true,
                 showAreaSelection = true,
+                showCritical = true,
                 showFilters = true,
                 showInfoPanel = true,
                 showMuteOptions = true,
