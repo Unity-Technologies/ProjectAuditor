@@ -17,14 +17,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public string menuLabel;
         public int menuOrder;
         public bool descriptionWithIcon;
-        public bool showActions;
         public bool showAreaSelection;
         public bool showAssemblySelection;
-        public bool showCritical;
         public bool showDependencyView;
         public bool showFilters;
         public bool showInfoPanel;
-        public bool showMuteOptions;
         public GUIContent dependencyViewGuiContent;
         public Func<ProjectIssue, string> getAssemblyName;
         public Action<GenericMenu, ViewManager, ProjectIssue> onContextMenu;

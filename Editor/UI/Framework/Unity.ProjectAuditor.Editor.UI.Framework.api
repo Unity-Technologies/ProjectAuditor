@@ -51,6 +51,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void DrawViewOptions();
         protected virtual void Export(System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
         public ProjectIssue[] GetSelection();
+        public bool IsDiagnostic();
         public bool IsValid();
         public virtual void LoadSettings();
         public void MarkDirty();
@@ -274,14 +275,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public System.Action<ViewManager> onDrawToolbar;
         public System.Action<Location> onOpenIssue;
         public System.Action<Unity.ProjectAuditor.Editor.Diagnostic.Descriptor> onOpenManual;
-        public bool showActions;
         public bool showAreaSelection;
         public bool showAssemblySelection;
-        public bool showCritical;
         public bool showDependencyView;
         public bool showFilters;
         public bool showInfoPanel;
-        public bool showMuteOptions;
         public System.Type type;
         public ViewDescriptor() {}
         public static ViewDescriptor[] GetAll();
