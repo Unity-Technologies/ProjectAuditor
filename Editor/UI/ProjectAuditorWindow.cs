@@ -192,6 +192,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ProjectAuditorAnalytics.SendEvent(
                     (ProjectAuditorAnalytics.UIButton)viewDesc.analyticsEvent,
                     ProjectAuditorAnalytics.BeginAnalytic());
+                if (m_ProjectReport == null)
+                    return; // this happens from the summary view while the report is being generated
                 if (!m_ProjectReport.HasCategory(activeView.desc.category) && EditorUtility.DisplayDialog(k_ProjectAuditorName, $"Would you like to analyze {ProjectAuditor.GetCategoryName(viewDesc.category)} now?", "Ok", "No"))
                 {
                     AuditCategories(new[] {viewDesc.category});
