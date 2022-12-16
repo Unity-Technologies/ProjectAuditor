@@ -235,12 +235,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnGUI()
         {
-            if (m_AnalysisState == AnalysisState.Completed)
-            {
-                // switch to summary view after analysis
-                m_ViewManager.ChangeView(IssueCategory.MetaData);
-            }
-
             using (new EditorGUILayout.VerticalScope())
             {
                 if (m_AnalysisState != AnalysisState.Initializing && m_AnalysisState != AnalysisState.Initialized)
