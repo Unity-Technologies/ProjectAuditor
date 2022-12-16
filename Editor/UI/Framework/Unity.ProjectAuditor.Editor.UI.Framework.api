@@ -275,7 +275,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public System.Action<ViewManager> onDrawToolbar;
         public System.Action<Location> onOpenIssue;
         public System.Action<Unity.ProjectAuditor.Editor.Diagnostic.Descriptor> onOpenManual;
-        public bool showAreaSelection;
         public bool showAssemblySelection;
         public bool showDependencyView;
         public bool showFilters;

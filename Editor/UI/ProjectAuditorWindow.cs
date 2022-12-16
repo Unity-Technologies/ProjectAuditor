@@ -104,8 +104,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             // TODO: the rest of this logic is common to all diagnostic views. It should be moved to the AnalysisView
 
             Profiler.BeginSample("MatchArea");
-            var matchArea = !viewDesc.showAreaSelection ||
-                m_AreaSelection.ContainsAny(issue.descriptor.areas) ||
+            var matchArea = m_AreaSelection.ContainsAny(issue.descriptor.areas) ||
                 m_AreaSelection.ContainsGroup("All");
             Profiler.EndSample();
             if (!matchArea)
@@ -500,7 +499,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Code",
                 menuLabel = "Code/Diagnostics",
                 menuOrder = 0,
-                showAreaSelection = true,
                 showAssemblySelection = true,
                 showDependencyView = true,
                 showFilters = true,
@@ -541,7 +539,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 name = "Settings",
                 menuLabel = "Project/Settings/Diagnostics",
                 menuOrder = 1,
-                showAreaSelection = true,
                 showFilters = true,
                 showInfoPanel = true,
                 onOpenIssue = (location) =>
@@ -820,7 +817,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         // and the type of window we want.
         void DrawAreaFilter()
         {
-            if (!activeView.desc.showAreaSelection)
+            if (!activeView.IsDiagnostic())
                 return;
 
             using (new EditorGUILayout.HorizontalScope())
@@ -901,7 +898,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
 
                             var wasShowingCritical = m_ViewStates.onlyCriticalIssues;
-                            m_ViewStates.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Major/Critical Issues",
+                            m_ViewStates.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Major/Critical",
                                 m_ViewStates.onlyCriticalIssues, GUILayout.Width(170));
 
                             if (wasShowingCritical != m_ViewStates.onlyCriticalIssues)
@@ -916,7 +913,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             }
 
                             var wasDisplayingMuted = m_ViewStates.mutedIssues;
-                            m_ViewStates.mutedIssues = EditorGUILayout.ToggleLeft("Muted Issues",
+                            m_ViewStates.mutedIssues = EditorGUILayout.ToggleLeft("Muted",
                                 m_ViewStates.mutedIssues, GUILayout.Width(120));
 
                             if (wasDisplayingMuted != m_ViewStates.mutedIssues)

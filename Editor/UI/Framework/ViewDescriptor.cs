@@ -17,7 +17,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public string menuLabel;
         public int menuOrder;
         public bool descriptionWithIcon;
-        public bool showAreaSelection;
         public bool showAssemblySelection;
         public bool showDependencyView;
         public bool showFilters;
