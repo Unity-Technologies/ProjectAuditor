@@ -32,7 +32,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Area.BuildSize,
             "The Resources folder is a common source of many problems in Unity projects. Improper use of the Resources folder can bloat the size of a project’s build, lead to uncontrollable excessive memory utilization, and significantly increase application startup times.",
             "Use AssetBundles when possible"
-            );
+            )
+        {
+            messageFormat = "'{0}' is in the Resources folder and will be included in the build."
+        };
 
         static readonly Descriptor k_StreamingAssetsFolderDescriptor = new Descriptor(
             "PAA0001",
@@ -158,7 +161,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             issues.Add(ProjectIssue.Create
                 (
                     IssueCategory.AssetDiagnostic,
-                    k_ResourcesFolderDescriptor
+                    k_ResourcesFolderDescriptor,
+                    Path.GetFileName(assetPath)
                 )
                 .WithDependencies(dependencyNode)
                 .WithLocation(location));
