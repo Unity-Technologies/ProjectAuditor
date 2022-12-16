@@ -418,7 +418,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
                 onDrawToolbar = (viewManager) =>
                 {
-                    AnalysisView.DrawToolbarButton(Contents.TextureDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
+                    AnalysisView.DrawToolbarButton(Contents.AssetDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
             });
@@ -475,7 +475,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
                     onDrawToolbar = (viewManager) =>
                     {
-                        AnalysisView.DrawToolbarButton(Contents.MeshDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
+                        AnalysisView.DrawToolbarButton(Contents.AssetDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
                     },
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Meshes
                 });
@@ -1406,11 +1406,7 @@ A view allows the user to browse through the listed items and filter by string o
             public static readonly GUIContent ShaderCompilerMessages = new GUIContent("Messages", "Show Shader Compiler Messages");
             public static readonly GUIContent ShaderVariants = new GUIContent("Variants", "Inspect Shader Variants");
 
-            public static readonly GUIContent Textures = new GUIContent("Textures");
-            public static readonly GUIContent TextureDiagnostics = new GUIContent("Diagnostics", "Texture Diagnostics");
-
-            public static readonly GUIContent Meshes = new GUIContent("Meshes");
-            public static readonly GUIContent MeshDiagnostics = new GUIContent("Diagnostics", "Mesh Diagnostics");
+            public static readonly GUIContent AssetDiagnostics = new GUIContent("Diagnostics", "Asset Diagnostics");
 
             public static readonly GUIContent BuildFiles = new GUIContent("Build Size");
             public static readonly GUIContent BuildSteps = new GUIContent("Build Steps");
