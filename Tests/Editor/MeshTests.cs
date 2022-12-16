@@ -31,25 +31,26 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Mesh_Using32bitIndexFormat_IsReported()
         {
             var foundIssues = AnalyzeAndFindAssetIssues(m_TempSmallMeshAsset, IssueCategory.AssetDiagnostic);
-            Assert.IsNotEmpty(foundIssues);
 
-            Assert.True(foundIssues.Any(issue => issue.descriptor.id == "PAM0001"), "Small mesh should be reported");
+            Assert.IsNotEmpty(foundIssues);
+            Assert.IsTrue(foundIssues.Any(issue => issue.descriptor.id == "PAM0001"), "Small mesh should be reported");
         }
 
         [Test]
         public void Mesh_ReadWrite_IsReported()
         {
             var foundIssues = AnalyzeAndFindAssetIssues(m_TempSmallMeshAsset, IssueCategory.AssetDiagnostic);
-            Assert.IsNotEmpty(foundIssues);
 
-            Assert.True(foundIssues.Any(issue => issue.descriptor.id == "PAM0000"), "Read/Write mesh should be reported");
+            Assert.IsNotEmpty(foundIssues);
+            Assert.IsTrue(foundIssues.Any(issue => issue.descriptor.id == "PAM0000"), "Read/Write mesh should be reported");
         }
 
         [Test]
         public void Mesh_ReadWrite_IsNotReported()
         {
             var foundIssues = AnalyzeAndFindAssetIssues(m_TempLargeMeshAsset, IssueCategory.AssetDiagnostic);
-            Assert.IsEmpty(foundIssues);
+
+            Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == "PAM0000"), "Read/Write mesh should no be reported");
         }
     }
 }
