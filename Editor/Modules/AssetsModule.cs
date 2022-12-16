@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Use AssetBundles when possible"
             )
         {
-            messageFormat = "'{0}' is in the Resources folder and will be included in the build."
+            messageFormat = "'{0}' {1}"
         };
 
         static readonly Descriptor k_StreamingAssetsFolderDescriptor = new Descriptor(
@@ -158,11 +158,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (parent != null)
                 dependencyNode.AddChild(parent);
 
+            var isInResources = assetPath.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) >= 0;
+
             issues.Add(ProjectIssue.Create
                 (
                     IssueCategory.AssetDiagnostic,
                     k_ResourcesFolderDescriptor,
-                    Path.GetFileName(assetPath)
+                    Path.GetFileName(assetPath), isInResources ? "is in a Resources folder" : "is a dependency of a Resources folder asset"
                 )
                 .WithDependencies(dependencyNode)
                 .WithLocation(location));
