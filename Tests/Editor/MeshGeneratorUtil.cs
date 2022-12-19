@@ -15,8 +15,14 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var mesh = new Mesh();
             mesh.name = name;
+
+#if UNITY_2019_3_OR_NEWER
             mesh.SetVertices(vertices);
             mesh.SetIndexBufferParams(triangles.Length, IndexFormat.UInt32);
+#else
+            mesh.vertices = vertices;
+            mesh.triangles = triangles;
+#endif
             mesh.SetTriangles(triangles, 0);
             mesh.UploadMeshData(markNoLongerReadable);
 
