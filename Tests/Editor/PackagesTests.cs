@@ -119,5 +119,13 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             Assert.IsTrue(PackageUtils.IsPackageInstalled(Editor.ProjectAuditor.PackageName));
         }
+
+        [Test]
+        public void PackageUtils_PackageVersions_AreCompared()
+        {
+            Assert.AreEqual(-1, PackageUtils.CompareVersions("1.0.1", "1.0.2"));
+            Assert.AreEqual(0, PackageUtils.CompareVersions("1.0.3-pre", "1.0.3"));
+            Assert.AreEqual(1, PackageUtils.CompareVersions("1.0.2", "1.0.1"));
+        }
     }
 }

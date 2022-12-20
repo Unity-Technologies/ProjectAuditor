@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor.PackageManager;
 using Unity.ProjectAuditor.Editor;
 
@@ -7,6 +9,16 @@ namespace Unity.ProjectAuditor.Editor.Utils
     public static class PackageUtils
     {
         const string k_UnknownVersion = "Unknown";
+
+        public static int CompareVersions(string lhs, string rhs)
+        {
+            var REGEX = "[^0-9.]";
+            var leftStr = Regex.Replace(lhs, REGEX, "", RegexOptions.IgnoreCase);
+            var rightStr = Regex.Replace(rhs, REGEX, "", RegexOptions.IgnoreCase);
+            var leftVersion = new Version(leftStr);
+            var rightVersion = new Version(rightStr);
+            return leftVersion.CompareTo(rightVersion);
+        }
 
         public static string GetPackageVersion(string packageName)
         {
