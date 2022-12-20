@@ -128,6 +128,7 @@ namespace Unity.ProjectAuditor.Editor
         public long GetCustomPropertyInt64<T>(T propertyEnum) where T : struct, new();
         public System.UInt64 GetCustomPropertyUInt64<T>(T propertyEnum) where T : struct, new();
         public int GetNumCustomProperties();
+        public bool IsDiagnostic();
         public bool IsMajorOrCritical();
         public bool IsValid();
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct, new();

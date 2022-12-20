@@ -134,6 +134,11 @@ namespace Unity.ProjectAuditor.Editor
             set => m_Severity = value;
         }
 
+        public bool IsDiagnostic()
+        {
+            return descriptor != null && descriptor.IsValid();
+        }
+
         public bool IsMajorOrCritical()
         {
             return severity == Severity.Critical || severity == Severity.Major;

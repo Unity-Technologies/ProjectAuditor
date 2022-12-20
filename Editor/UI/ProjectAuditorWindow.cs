@@ -97,8 +97,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!matchAssembly)
                 return false;
 
-            var isDiagnosticView = activeView.IsDiagnostic();
-            if (!isDiagnosticView)
+            var isDiagnostic = issue.IsDiagnostic();
+            if (!isDiagnostic)
                 return true;
 
             // TODO: the rest of this logic is common to all diagnostic views. It should be moved to the AnalysisView

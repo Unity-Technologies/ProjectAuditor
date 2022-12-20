@@ -132,7 +132,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.BuildStep,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Severity},
+                new PropertyDefinition { type = PropertyType.LogLevel},
                 new PropertyDefinition { type = PropertyType.Description, name = "Build Step"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportStepProperty.Duration), format = PropertyFormat.String, name = "Duration"}
             },
