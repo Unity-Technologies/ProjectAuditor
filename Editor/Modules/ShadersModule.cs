@@ -199,7 +199,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.ShaderCompilerMessage,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Severity},
+                new PropertyDefinition { type = PropertyType.LogLevel},
                 new PropertyDefinition { type = PropertyType.Description, name = "Message"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.ShaderName), format = PropertyFormat.String, name = "Shader Name", defaultGroup = true},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.Platform), format = PropertyFormat.String, name = "Platform"},

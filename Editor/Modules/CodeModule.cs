@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.Assembly,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Severity},
+                new PropertyDefinition { type = PropertyType.LogLevel},
                 new PropertyDefinition { type = PropertyType.Description, name = "Assembly Name"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.CompileTime), format = PropertyFormat.Time, name = "Compile Time (seconds)"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.ReadOnly), format = PropertyFormat.Bool, name = "Read Only", defaultGroup = true},
