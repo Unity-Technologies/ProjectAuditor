@@ -2,6 +2,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Modules;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 
@@ -111,6 +112,12 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.IsNotNull(diagnostic, "Cannot find the upgrade package: com.unity.services.vivox");
             Assert.IsTrue(diagnostic.description.StartsWith("'com.unity.services.vivox' version "), "Description: " + diagnostic.description);
+        }
+
+        [Test]
+        public void PackageUtils_InstalledPackage_IsReported()
+        {
+            Assert.IsTrue(PackageUtils.IsPackageInstalled("com.unity.project-auditor"));
         }
     }
 }

@@ -31,5 +31,18 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return package.versions.recommended;
 #endif
         }
+
+        public static bool IsPackageInstalled(string packageName)
+        {
+            var request = Client.List();
+            while (!request.IsCompleted)
+                System.Threading.Thread.Sleep(10);
+            if (request.Status == StatusCode.Failure)
+            {
+                return false;
+            }
+
+            return request.Result.Any(p => p.name == packageName);
+        }
     }
 }
