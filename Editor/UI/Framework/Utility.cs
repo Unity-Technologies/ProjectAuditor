@@ -193,25 +193,25 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         tooltip = "Critical";
                     if (s_CriticalIcon == null)
                         s_CriticalIcon = LoadIcon(k_CriticalIconName);
-                    return EditorGUIUtility.TrTextContentWithIcon("Critical", tooltip, s_CriticalIcon);
+                    return EditorGUIUtility.TrIconContent(s_CriticalIcon, tooltip);
                 case IconType.Major:
                     if (string.IsNullOrEmpty(tooltip))
                         tooltip = "Major";
                     if (s_MajorIcon == null)
                         s_MajorIcon = LoadIcon(k_MajorIconName);
-                    return EditorGUIUtility.TrTextContentWithIcon("Major", tooltip, s_MajorIcon);
+                    return EditorGUIUtility.TrIconContent(s_MajorIcon, tooltip);
                 case IconType.Moderate:
                     if (string.IsNullOrEmpty(tooltip))
                         tooltip = "Moderate";
                     if (s_ModerateIcon == null)
                         s_ModerateIcon = LoadIcon(k_ModerateIconName);
-                    return EditorGUIUtility.TrTextContentWithIcon("Moderate", tooltip, s_ModerateIcon);
+                    return EditorGUIUtility.TrIconContent(s_ModerateIcon, tooltip);
                 case IconType.Minor:
                     if (string.IsNullOrEmpty(tooltip))
                         tooltip = "Minor";
                     if (s_MinorIcon == null)
                         s_MinorIcon = LoadIcon(k_MinorIconName);
-                    return EditorGUIUtility.TrTextContentWithIcon("Minor", tooltip, s_MinorIcon);
+                    return EditorGUIUtility.TrIconContent(s_MinorIcon, tooltip);
 
                 case IconType.Hierarchy:
                     return EditorGUIUtility.TrIconContent(k_HierarchyIconName, tooltip);
@@ -288,6 +288,31 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     return GetIcon(IconType.Critical, tooltip);
                 default:
                     return GetIcon(IconType.Help, tooltip);
+            }
+        }
+
+        public static GUIContent GetSeverityIconWithText(Severity severity)
+        {
+            switch (severity)
+            {
+                case Severity.Minor:
+                    if (s_MinorIcon == null)
+                        s_MinorIcon = LoadIcon(k_MinorIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon("Minor", s_MinorIcon);
+                case Severity.Moderate:
+                    if (s_ModerateIcon == null)
+                        s_ModerateIcon = LoadIcon(k_ModerateIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon("Moderate", s_ModerateIcon);
+                case Severity.Major:
+                    if (s_MajorIcon == null)
+                        s_MajorIcon = LoadIcon(k_MajorIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon("Major", s_MajorIcon);
+                case Severity.Critical:
+                    if (s_CriticalIcon == null)
+                        s_CriticalIcon = LoadIcon(k_CriticalIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon("Critical", s_CriticalIcon);
+                default:
+                    return EditorGUIUtility.TrTextContentWithIcon("Unknown", MessageType.None);
             }
         }
 

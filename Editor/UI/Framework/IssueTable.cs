@@ -314,7 +314,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                     case PropertyType.Severity:
                     {
-                        EditorGUI.LabelField(cellRect, Utility.GetSeverityIcon(issue.severity), labelStyle);
+                        EditorGUI.LabelField(cellRect, Utility.GetSeverityIconWithText(issue.severity), labelStyle);
                     }
                     break;
 

@@ -225,6 +225,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static UnityEngine.GUIContent GetIcon(Utility.IconType iconType, string tooltip = default(string));
         public static UnityEngine.GUIContent GetLogLevelIcon(Unity.ProjectAuditor.Editor.Core.LogLevel logLevel, string tooltip = default(string));
         public static UnityEngine.GUIContent GetSeverityIcon(Unity.ProjectAuditor.Editor.Diagnostic.Severity severity, string tooltip = default(string));
+        public static UnityEngine.GUIContent GetSeverityIconWithText(Unity.ProjectAuditor.Editor.Diagnostic.Severity severity);
         public static UnityEngine.GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath);
         public static UnityEngine.GUIContent GetTextWithLogLevelIcon(string text, string tooltip, Unity.ProjectAuditor.Editor.Diagnostic.Severity severity);
         public static string GetTreeViewSelectedSummary(TreeViewSelection selection, string[] names);
