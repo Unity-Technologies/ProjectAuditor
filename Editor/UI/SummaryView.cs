@@ -169,6 +169,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             else
             {
                 EditorGUILayout.LabelField(valueAsString, GUILayout.MaxWidth(90), GUILayout.ExpandWidth(false));
+                GUILayout.FlexibleSpace();
             }
             if (icon != null)
                 EditorGUILayout.LabelField(icon, SharedStyles.Label);
