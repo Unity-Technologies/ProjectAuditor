@@ -113,13 +113,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
         ProjectAuditorConfig m_Config;
         List<ICodeModuleInstructionAnalyzer> m_Analyzers;
         List<OpCode> m_OpCodes;
-        HashSet<Descriptor> m_Descriptors;
 
         Thread m_AssemblyAnalysisThread;
 
         public override string name => "Code";
-
-        public override IReadOnlyCollection<Descriptor> supportedDescriptors => m_Descriptors;
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {

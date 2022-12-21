@@ -48,7 +48,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override bool isEnabledByDefault => false;
 
         List<ITextureModuleAnalyzer> m_Analyzers;
-        HashSet<Descriptor> m_DiagnosticDescriptors;
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
@@ -56,12 +55,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetsModule.k_IssueLayout
         };
 
-        public override IReadOnlyCollection<Descriptor> supportedDescriptors => m_DiagnosticDescriptors;
-
         public override void Initialize(ProjectAuditorConfig config)
         {
             m_Analyzers = new List<ITextureModuleAnalyzer>();
-            m_DiagnosticDescriptors = new HashSet<Descriptor>();
+            m_Descriptors = new HashSet<Descriptor>();
 
             foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ITextureModuleAnalyzer)))
                 AddAnalyzer(Activator.CreateInstance(type) as ITextureModuleAnalyzer);

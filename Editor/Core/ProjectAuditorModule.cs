@@ -10,6 +10,8 @@ namespace Unity.ProjectAuditor.Editor.Core
     /// </summary>
     public abstract class ProjectAuditorModule
     {
+        protected HashSet<Descriptor> m_Descriptors;
+
         public abstract string name
         {
             get;
@@ -24,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public virtual bool isSupported => true;
 
-        public virtual IReadOnlyCollection<Descriptor> supportedDescriptors => Array.Empty<Descriptor>();
+        public IReadOnlyCollection<Descriptor> supportedDescriptors => m_Descriptors != null ? m_Descriptors.ToArray() : Array.Empty<Descriptor>();
 
         public abstract IReadOnlyCollection<IssueLayout> supportedLayouts
         {
