@@ -17,6 +17,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Critical,
             Major,
             Moderate,
+            Minor,
 
             Help,
             Refresh,
@@ -37,9 +38,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_WarningIconName = "console.warnicon";
         static readonly string k_ErrorIconName = "console.erroricon";
 
-        static readonly string k_CriticalIconName = "node6";
-        static readonly string k_MajorIconName = "node5";
-        static readonly string k_ModerateIconName = "node4";
+        static readonly string k_CriticalIconName = "Critical";
+        static readonly string k_MajorIconName = "Major";
+        static readonly string k_ModerateIconName = "Moderate";
+        static readonly string k_MinorIconName = "Minor";
 
         static readonly string k_HelpIconName = "_Help";
         static readonly string k_RefreshIconName = "Refresh";
@@ -53,6 +55,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_SaveIconName = "SaveAs";
         static readonly string k_TrashIconName = "TreeEditor.Trash";
         static readonly string k_ViewIconName = "ViewToolOrbit";
+
+        static Texture2D s_CriticalIcon;
+        static Texture2D s_MajorIcon;
+        static Texture2D s_ModerateIcon;
+        static Texture2D s_MinorIcon;
 
         static GUIContent[] s_StatusWheel;
 
@@ -183,16 +190,28 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 // severity icons
                 case IconType.Critical:
                     if (string.IsNullOrEmpty(tooltip))
-                        tooltip = "Critical Severity";
-                    return EditorGUIUtility.TrIconContent(k_CriticalIconName, tooltip);
+                        tooltip = "Critical";
+                    if (s_CriticalIcon == null)
+                        s_CriticalIcon = LoadIcon(k_CriticalIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon("Critical", tooltip, s_CriticalIcon);
                 case IconType.Major:
                     if (string.IsNullOrEmpty(tooltip))
-                        tooltip = "Major Severity";
-                    return EditorGUIUtility.TrIconContent(k_MajorIconName, tooltip);
+                        tooltip = "Major";
+                    if (s_MajorIcon == null)
+                        s_MajorIcon = LoadIcon(k_MajorIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon("Major", tooltip, s_MajorIcon);
                 case IconType.Moderate:
                     if (string.IsNullOrEmpty(tooltip))
-                        tooltip = "Moderate Severity";
-                    return EditorGUIUtility.TrIconContent(k_ModerateIconName, tooltip);
+                        tooltip = "Moderate";
+                    if (s_ModerateIcon == null)
+                        s_ModerateIcon = LoadIcon(k_ModerateIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon("Moderate", tooltip, s_ModerateIcon);
+                case IconType.Minor:
+                    if (string.IsNullOrEmpty(tooltip))
+                        tooltip = "Minor";
+                    if (s_MinorIcon == null)
+                        s_MinorIcon = LoadIcon(k_MinorIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon("Minor", tooltip, s_MinorIcon);
 
                 case IconType.Hierarchy:
                     return EditorGUIUtility.TrIconContent(k_HierarchyIconName, tooltip);
@@ -240,7 +259,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public static GUIContent GetTextWithSeverityIcon(string text, string tooltip, Severity severity)
+        public static GUIContent GetTextWithLogLevelIcon(string text, string tooltip, Severity severity)
         {
             switch (severity)
             {
@@ -252,6 +271,23 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, MessageType.Error);
                 default:
                     return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, MessageType.None);
+            }
+        }
+
+        public static GUIContent GetSeverityIcon(Severity severity, string tooltip = null)
+        {
+            switch (severity)
+            {
+                case Severity.Minor:
+                    return GetIcon(IconType.Minor, tooltip);
+                case Severity.Moderate:
+                    return GetIcon(IconType.Moderate, tooltip);
+                case Severity.Major:
+                    return GetIcon(IconType.Major, tooltip);
+                case Severity.Critical:
+                    return GetIcon(IconType.Critical, tooltip);
+                default:
+                    return GetIcon(IconType.Help, tooltip);
             }
         }
 
@@ -272,6 +308,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             var icon = AssetDatabase.GetCachedIcon(assetPath);
             return EditorGUIUtility.TrTextContentWithIcon(displayName, assetPath, icon);
+        }
+
+        static Texture2D LoadIcon(string iconName)
+        {
+            return AssetDatabase.LoadAssetAtPath<Texture2D>($"{ProjectAuditor.PackagePath}/Editor/Icons/{iconName}.png");
         }
 
         public static Texture2D MakeColorTexture(Color col)

@@ -423,6 +423,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         Hidden = 7,
         Info = 5,
         Major = 3,
+        Minor = 5,
         Moderate = 4,
         None = 6,
         Warning = 4,

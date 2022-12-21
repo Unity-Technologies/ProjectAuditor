@@ -8,11 +8,12 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
         Critical,   // Critical impact on performance, quality or functionality
         Major,      // Significant impact
-        Moderate,
+        Moderate,   // Moderate impact
+        Minor,      // Minor impact
 
         Warning = Moderate,
+        Info = Minor,
 
-        Info,       // Informative or low impact
         None,       // suppressed, ignored by UI and build
         Hidden,     // not visible to user
     }

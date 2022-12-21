@@ -224,8 +224,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static void DrawSelectedText(string text);
         public static UnityEngine.GUIContent GetIcon(Utility.IconType iconType, string tooltip = default(string));
         public static UnityEngine.GUIContent GetLogLevelIcon(Unity.ProjectAuditor.Editor.Core.LogLevel logLevel, string tooltip = default(string));
+        public static UnityEngine.GUIContent GetSeverityIcon(Unity.ProjectAuditor.Editor.Diagnostic.Severity severity, string tooltip = default(string));
         public static UnityEngine.GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath);
-        public static UnityEngine.GUIContent GetTextWithSeverityIcon(string text, string tooltip, Unity.ProjectAuditor.Editor.Diagnostic.Severity severity);
+        public static UnityEngine.GUIContent GetTextWithLogLevelIcon(string text, string tooltip, Unity.ProjectAuditor.Editor.Diagnostic.Severity severity);
         public static string GetTreeViewSelectedSummary(TreeViewSelection selection, string[] names);
         public static UnityEngine.Texture2D MakeColorTexture(UnityEngine.Color col);
         public static void ToolbarDropdownList(Utility.DropdownItem[] items, int selectionIndex, UnityEditor.GenericMenu.MenuFunction2 callback, params UnityEngine.GUILayoutOption[] options);
@@ -240,24 +241,25 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public enum IconType
         {
             Critical = 3,
-            Download = 12,
+            Download = 13,
             Error = 2,
-            Fix = 11,
-            GreenCheckMark = 18,
-            Help = 6,
-            Hierarchy = 9,
+            Fix = 12,
+            GreenCheckMark = 19,
+            Help = 7,
+            Hierarchy = 10,
             Info = 0,
-            Load = 13,
+            Load = 14,
             Major = 4,
+            Minor = 6,
             Moderate = 5,
-            Refresh = 7,
-            Save = 14,
-            StatusWheel = 8,
-            Trash = 15,
-            View = 16,
+            Refresh = 8,
+            Save = 15,
+            StatusWheel = 9,
+            Trash = 16,
+            View = 17,
             Warning = 1,
-            WhiteCheckMark = 17,
-            ZoomTool = 10,
+            WhiteCheckMark = 18,
+            ZoomTool = 11,
         }
     }
 

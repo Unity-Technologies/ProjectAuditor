@@ -314,19 +314,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                     case PropertyType.Severity:
                     {
-                        var style = new GUIStyle(labelStyle);
-
-                        switch (issue.severity)
-                        {
-                            case Severity.Critical:
-                                style.normal.textColor *= Color.red;
-                                break;
-                            case Severity.Major:
-                                style.normal.textColor *= Color.yellow;
-                                break;
-                        }
-
-                        EditorGUI.LabelField(cellRect, new GUIContent(issue.severity.ToString()), style);
+                        EditorGUI.LabelField(cellRect, Utility.GetSeverityIcon(issue.severity), labelStyle);
                     }
                     break;
 
