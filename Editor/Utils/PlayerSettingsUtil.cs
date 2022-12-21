@@ -82,6 +82,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             formatEnumValues = Enum.GetValues(enumType);
             formatEnumIndex = (int)format;
         }
+
 #endif
     }
 }
