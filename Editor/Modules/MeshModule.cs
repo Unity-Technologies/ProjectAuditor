@@ -83,6 +83,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (mesh == null)
                         continue;
 
+                    // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
                     var size = Profiler.GetRuntimeMemorySizeLong(mesh);
 
                     var issue = ProjectIssue.Create(k_MeshIssueLayout.category, mesh.name)

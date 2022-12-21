@@ -87,6 +87,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 
                 var texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath);
+
+                // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(texture);
                 var platformSettings = textureImporter.GetPlatformTextureSettings(currentPlatformString);
 
@@ -112,7 +114,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 progress?.Advance();
             }
-
 
             if (issues.Count > 0)
                 projectAuditorParams.onIncomingIssues(issues);
