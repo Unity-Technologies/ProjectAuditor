@@ -169,6 +169,32 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return Formatting.CombineStrings(selectedStrings);
         }
 
+        static string GetPlatformIconName(BuildTargetGroup buildTargetGroup)
+        {
+            string platformName;
+            if (buildTargetGroup == BuildTargetGroup.Unknown)
+                return "BuildSettings.Broadcom";
+
+            switch (buildTargetGroup)
+            {
+                case BuildTargetGroup.WSA:
+                    platformName = "Metro";
+                    break;
+                default:
+                    platformName = buildTargetGroup.ToString();
+                    break;
+            }
+
+            return $"BuildSettings.{platformName}.Small";
+        }
+
+        public static GUIContent GetPlatformIcon(BuildTargetGroup buildTargetGroup)
+        {
+            var iconName = GetPlatformIconName(buildTargetGroup);
+
+            return EditorGUIUtility.IconContent(iconName);
+        }
+
         public static GUIContent GetIcon(IconType iconType, string tooltip = null)
         {
             switch (iconType)

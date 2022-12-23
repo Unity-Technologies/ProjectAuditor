@@ -1201,13 +1201,15 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 const int largeButtonWidth = 200;
 
+                GUILayout.Label(Utility.GetPlatformIcon(BuildPipeline.GetBuildTargetGroup(m_Platform)), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.toolbarIconSize));
+
                 Utility.ToolbarDropdownList(m_ViewDropdownItems,
                     m_ViewManager.activeViewIndex,
                     (category) => {m_ViewManager.ChangeView((IssueCategory)category);}, GUILayout.Width(largeButtonWidth));
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
-                    GUILayout.Label(Utility.GetIcon(Utility.IconType.StatusWheel));
+                    GUILayout.Label(Utility.GetIcon(Utility.IconType.StatusWheel), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.toolbarIconSize));
                 }
 
                 EditorGUILayout.Space();

@@ -7,6 +7,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     {
         static GUIStyle s_Foldout;
         static GUIStyle s_BoldLabel;
+        static GUIStyle s_IconLabel;
         static GUIStyle s_Label;
         static GUIStyle s_LinkLabel;
         static GUIStyle s_TextArea;
@@ -38,6 +39,20 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         wordWrap = false
                     };
                 return s_BoldLabel;
+            }
+        }
+
+        public static GUIStyle IconLabel
+        {
+            get
+            {
+                if (s_IconLabel == null)
+                    s_IconLabel = new GUIStyle(EditorStyles.label)
+                    {
+                        alignment = TextAnchor.MiddleCenter,
+                        wordWrap = false
+                    };
+                return s_IconLabel;
             }
         }
 

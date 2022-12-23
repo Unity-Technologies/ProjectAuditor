@@ -568,13 +568,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         protected const string k_MultipleSelectionText = "<Multiple selection>";
 
-        public static int toolbarButtonSize
-        {
-            get
-            {
-                return LayoutSize.ToolbarButtonSize;
-            }
-        }
+        public static int toolbarButtonSize => LayoutSize.ToolbarButtonSize;
+        public static int toolbarIconSize => LayoutSize.ToolbarIconSize;
 
         static readonly string[] k_ExportModeStrings =
         {
@@ -590,7 +585,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int DependencyViewHeight = 200;
             public static readonly int DetailsPanelWidth = 200;
             public static readonly int ToolbarButtonSize = 80;
-            public static readonly int ToolbarIconSize = 40;
+            public static readonly int ToolbarIconSize = 32;
             public static readonly int ActionButtonHeight = 30;
             public static readonly int ActionButtonWidth = 200;
         }

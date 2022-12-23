@@ -34,6 +34,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public int numFilteredIssues { get; }
         public int numIssues { get; }
         public static int toolbarButtonSize { get; }
+        public static int toolbarIconSize { get; }
         public AnalysisView(ViewManager viewManager) {}
         public virtual void AddIssues(System.Collections.Generic.IEnumerable<ProjectIssue> allIssues);
         public virtual void Clear();
@@ -68,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int FoldoutMaxHeight = 220;
             public static readonly int FoldoutWidth = 260;
             public static readonly int ToolbarButtonSize = 80;
-            public static readonly int ToolbarIconSize = 40;
+            public static readonly int ToolbarIconSize = 32;
         }
     }
 
@@ -174,6 +175,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     {
         public static UnityEngine.GUIStyle BoldLabel { get; }
         public static UnityEngine.GUIStyle Foldout { get; }
+        public static UnityEngine.GUIStyle IconLabel { get; }
         public static UnityEngine.GUIStyle Label { get; }
         public static UnityEngine.GUIStyle LabelWithDynamicSizeWithDynamicSize { get; }
         public static UnityEngine.GUIStyle LinkLabel { get; }
@@ -224,6 +226,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static void DrawSelectedText(string text);
         public static UnityEngine.GUIContent GetIcon(Utility.IconType iconType, string tooltip = default(string));
         public static UnityEngine.GUIContent GetLogLevelIcon(Unity.ProjectAuditor.Editor.Core.LogLevel logLevel, string tooltip = default(string));
+        public static UnityEngine.GUIContent GetPlatformIcon(UnityEditor.BuildTargetGroup buildTargetGroup);
         public static UnityEngine.GUIContent GetSeverityIcon(Unity.ProjectAuditor.Editor.Diagnostic.Severity severity, string tooltip = default(string));
         public static UnityEngine.GUIContent GetSeverityIconWithText(Unity.ProjectAuditor.Editor.Diagnostic.Severity severity);
         public static UnityEngine.GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath);
