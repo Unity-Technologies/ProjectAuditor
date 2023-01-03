@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
         public void BuildReport_IsNotAvailable()
         {
-            var buildReport = BuildReportModule.BuildReportProvider.GetBuildReport();
+            var buildReport = LastBuildReportProvider.GetLastBuildReportAsset();
             Assert.IsNull(buildReport);
         }
 
