@@ -777,8 +777,8 @@
             "id": "PAC0129",
             "type": "UnityEngine.Object",
             "method": "FindObjectsOfType",
-            "areas": ["Memory"],
-            "description": "<b>Object.FindObjectsOfType()</b> allocates managed memory.",
+            "areas": ["CPU", "Memory"],
+            "description": "<b>Object.FindObjectsOfType()</b> allocates managed memory and can be slow.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1489,6 +1489,14 @@
           "platforms": ["WebGL"],
           "description": "The <b>UnityEngine.Microphone</b> API is not supported on this platform. Using Microphone might lead to build/runtime errors.",
           "solution": "Do not use the Microphone API on this platform."
+        },
+        {
+          "id": "PAC0234",
+          "type": "UnityEngine.Object",
+          "method": "FindObjectOfType",
+          "areas": ["CPU", "Memory"],
+          "description": "<b>Object.FindObjectOfType()</b> allocates managed memory and can be slow.",
+          "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         }
     ]
 }
