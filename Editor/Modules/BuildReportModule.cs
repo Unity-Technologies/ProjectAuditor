@@ -167,7 +167,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
 #if BUILD_REPORT_API_SUPPORT
             var buildReport = BuildReportProvider.GetBuildReport();
-            if (buildReport != null)
+            if (buildReport != null && projectAuditorParams.platform == buildReport.summary.platform)
             {
                 var issues = new List<ProjectIssue>();
                 NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath, issues);
