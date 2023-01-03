@@ -169,45 +169,43 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var buildReport = BuildReportProvider.GetBuildReport();
             if (buildReport != null && projectAuditorParams.platform == buildReport.summary.platform)
             {
-                var issues = new List<ProjectIssue>();
-                NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath, issues);
-                NewMetaData(k_KeyPlatform, buildReport.summary.platform, issues);
-                NewMetaData(k_KeyResult, buildReport.summary.result, issues);
-                NewMetaData(k_KeyStartTime, Formatting.FormatDateTime(buildReport.summary.buildStartedAt), issues);
-                NewMetaData(k_KeyEndTime, Formatting.FormatDateTime(buildReport.summary.buildEndedAt), issues);
-                NewMetaData(k_KeyTotalTime, Formatting.FormatBuildTime(buildReport.summary.totalTime), issues);
-                NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize), issues);
-
-                AnalyzeBuildSteps(buildReport, issues);
-                AnalyzePackedAssets(buildReport, issues);
-
-                if (issues.Any())
-                    projectAuditorParams.onIncomingIssues(issues);
+                projectAuditorParams.onIncomingIssues(new[]
+                {
+                    NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath),
+                    NewMetaData(k_KeyPlatform, buildReport.summary.platform),
+                    NewMetaData(k_KeyResult, buildReport.summary.result),
+                    NewMetaData(k_KeyStartTime, Formatting.FormatDateTime(buildReport.summary.buildStartedAt)),
+                    NewMetaData(k_KeyEndTime, Formatting.FormatDateTime(buildReport.summary.buildEndedAt)),
+                    NewMetaData(k_KeyTotalTime, Formatting.FormatBuildTime(buildReport.summary.totalTime)),
+                    NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize)),
+                });
+                projectAuditorParams.onIncomingIssues(AnalyzeBuildSteps(buildReport));
+                projectAuditorParams.onIncomingIssues(AnalyzePackedAssets(buildReport));
             }
 #endif
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
 #if BUILD_REPORT_API_SUPPORT
-        void AnalyzeBuildSteps(BuildReport buildReport, IList<ProjectIssue> issues)
+        IEnumerable<ProjectIssue> AnalyzeBuildSteps(BuildReport buildReport)
         {
             foreach (var step in buildReport.steps)
             {
                 var depth = step.depth;
-                issues.Add(ProjectIssue.Create(IssueCategory.BuildStep, step.name)
+                yield return ProjectIssue.Create(IssueCategory.BuildStep, step.name)
                     .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                     {
                         Formatting.FormatBuildTime(step.duration),
                         step.name
                     })
                     .WithDepth(depth)
-                    .WithSeverity(Severity.Info));
+                    .WithSeverity(Severity.Info);
 
                 foreach (var message in step.messages)
                 {
                     var logMessage = message.content;
                     var description = new StringReader(logMessage).ReadLine(); // only take first line
-                    var issue = ProjectIssue.Create(IssueCategory.BuildStep, description)
+                    yield return ProjectIssue.Create(IssueCategory.BuildStep, description)
                         .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                         {
                             0,
@@ -215,12 +213,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         })
                         .WithDepth(depth + 1)
                         .WithSeverity(Diagnostic.Utils.LogTypeToSeverity(message.type));
-                    issues.Add(issue);
                 }
             }
         }
 
-        void AnalyzePackedAssets(BuildReport buildReport, IList<ProjectIssue> issues)
+        IEnumerable<ProjectIssue> AnalyzePackedAssets(BuildReport buildReport)
         {
             foreach (var packedAsset in buildReport.packedAssets)
             {
@@ -236,7 +233,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                     var description = string.IsNullOrEmpty(assetPath) ? k_Unknown : Path.GetFileNameWithoutExtension(assetPath);
                     var assetImporter = AssetImporter.GetAtPath(assetPath);
-                    var issue = ProjectIssue.Create(IssueCategory.BuildFile, description)
+                    yield return ProjectIssue.Create(IssueCategory.BuildFile, description)
                         .WithLocation(assetPath)
                         .WithCustomProperties(new object[(int)BuildReportFileProperty.Num]
                         {
@@ -245,16 +242,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             content.packedSize,
                             packedAsset.shortPath
                         });
-                    issues.Add(issue);
                 }
             }
         }
 
-        void NewMetaData(string key, object value, IList<ProjectIssue> issues)
+        ProjectIssue NewMetaData(string key, object value)
         {
-            var issue = ProjectIssue.Create(IssueCategory.BuildSummary, key)
+            return ProjectIssue.Create(IssueCategory.BuildSummary, key)
                 .WithCustomProperties(new object[(int)BuildReportMetaData.Num] { value });
-            issues.Add(issue);
         }
 
 #endif
