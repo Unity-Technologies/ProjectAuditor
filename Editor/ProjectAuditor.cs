@@ -87,6 +87,8 @@ namespace Unity.ProjectAuditor.Editor
         {
             foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ProjectAuditorModule)))
             {
+                if (type.IsAbstract)
+                    continue;
                 var instance = Activator.CreateInstance(type) as ProjectAuditorModule;
                 try
                 {

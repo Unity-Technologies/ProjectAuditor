@@ -4,6 +4,7 @@ using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.Modules
@@ -45,6 +46,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public IEnumerable<ProjectIssue> Analyze(BuildTarget platform, AssetImporter assetImporter)
         {
             var assetPath = assetImporter.assetPath;
+            var modelImporter = assetImporter as ModelImporter;
             var subAssets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
 
             foreach (var subAsset in subAssets)
@@ -52,6 +54,22 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var mesh = subAsset as Mesh;
                 if (mesh == null)
                     continue;
+
+                // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
+                var size = Profiler.GetRuntimeMemorySizeLong(mesh);
+
+                yield return ProjectIssue.Create(IssueCategory.Mesh, mesh.name)
+                    .WithCustomProperties(
+                        new object[((int)MeshProperty.Num)]
+                        {
+                            mesh.vertexCount,
+                            mesh.triangles.Length / 3,
+                            modelImporter != null
+                            ? modelImporter.meshCompression
+                            : ModelImporterMeshCompression.Off,
+                            size
+                        })
+                    .WithLocation(new Location(assetPath));
 
                 if (mesh.isReadable)
                 {

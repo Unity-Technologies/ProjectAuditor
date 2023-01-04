@@ -4,10 +4,8 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public interface IMeshModuleAnalyzer
+    public interface IMeshModuleAnalyzer : IModuleAnalyzer
     {
-        void Initialize(ProjectAuditorModule module);
-
         IEnumerable<ProjectIssue> Analyze(BuildTarget platform, AssetImporter assetImporter);
     }
 }

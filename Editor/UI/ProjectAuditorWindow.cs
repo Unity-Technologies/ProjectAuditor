@@ -409,6 +409,22 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             ViewDescriptor.Register(new ViewDescriptor
             {
+                category = IssueCategory.Mesh,
+                name = "Meshes",
+                menuLabel = "Assets/Meshes/Meshes",
+                menuOrder = 7,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                onDrawToolbar = (viewManager) =>
+                {
+                    AnalysisView.DrawToolbarButton(Contents.AssetDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
+                },
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Meshes
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
                 category = IssueCategory.Texture,
                 name = "Textures",
                 menuLabel = "Assets/Textures/Textures",
@@ -462,22 +478,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     getAssemblyName = issue => issue.description,
                     onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PrecompiledAssemblies
-                });
-
-                ViewDescriptor.Register(new ViewDescriptor
-                {
-                    category = IssueCategory.Mesh,
-                    name = "Meshes",
-                    menuLabel = "Assets/Meshes/Meshes",
-                    menuOrder = 7,
-                    descriptionWithIcon = true,
-                    showFilters = true,
-                    onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                    onDrawToolbar = (viewManager) =>
-                    {
-                        AnalysisView.DrawToolbarButton(Contents.AssetDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
-                    },
-                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Meshes
                 });
             }
             ViewDescriptor.Register(new ViewDescriptor

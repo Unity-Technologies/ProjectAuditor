@@ -4,6 +4,8 @@ using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -79,19 +81,41 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_TextureReadWriteEnabledDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(BuildTarget platform, TextureImporter textureImporter, TextureImporterPlatformSettings textureImporterPlatformSettings)
+        public IEnumerable<ProjectIssue> Analyze(BuildTarget platform, TextureImporter textureImporter, TextureImporterPlatformSettings platformSettings)
         {
             var assetPath = textureImporter.assetPath;
+
+            // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
+            var texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath);
+            var size = Profiler.GetRuntimeMemorySizeLong(texture);
+            var resolution = texture.width + "x" + texture.height;
+
+            yield return ProjectIssue.Create(IssueCategory.Texture, texture.name)
+                .WithCustomProperties(
+                    new object[(int)TextureProperty.Num]
+                    {
+                        textureImporter.textureShape,
+                        textureImporter.textureType,
+                        platformSettings.format,
+                        platformSettings.textureCompression,
+                        textureImporter.mipmapEnabled,
+                        textureImporter.isReadable,
+                        resolution,
+                        size
+                    })
+                .WithLocation(new Location(assetPath));
+
+            // diagnostics
             var textureName = Path.GetFileNameWithoutExtension(assetPath);
 
-            if (textureImporter.mipmapEnabled == false && textureImporter.textureType == TextureImporterType.Default)
+            if (!textureImporter.mipmapEnabled && textureImporter.textureType == TextureImporterType.Default)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
                     k_TextureMipMapNotEnabledDescriptor, textureName)
                     .WithLocation(assetPath);
             }
 
-            if (textureImporter.mipmapEnabled == true &&
+            if (textureImporter.mipmapEnabled &&
                 (textureImporter.textureType == TextureImporterType.Sprite || textureImporter.textureType == TextureImporterType.GUI)
             )
             {

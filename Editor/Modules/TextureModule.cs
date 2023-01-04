@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Utils;
-using UnityEngine.Profiling;
 using UnityEditor;
-using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -23,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class TextureModule : ProjectAuditorModule
+    class TextureModule : ProjectAuditorModuleWithAnalyzers<ITextureModuleAnalyzer>
     {
         static readonly IssueLayout k_TextureLayout = new IssueLayout
         {
@@ -47,29 +44,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override bool isEnabledByDefault => false;
 
-        List<ITextureModuleAnalyzer> m_Analyzers;
-
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_TextureLayout,
             AssetsModule.k_IssueLayout
         };
 
-        public override void Initialize(ProjectAuditorConfig config)
-        {
-            m_Analyzers = new List<ITextureModuleAnalyzer>();
-            m_Descriptors = new HashSet<Descriptor>();
-
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ITextureModuleAnalyzer)))
-                AddAnalyzer(Activator.CreateInstance(type) as ITextureModuleAnalyzer);
-        }
-
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var analyzers = m_Analyzers.Where(a => CoreUtils.SupportsPlatform(a.GetType(), projectAuditorParams.platform)).ToArray();
+            var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
             var allTextures = AssetDatabase.FindAssets("t:texture, a:assets");
-            var issues = new List<ProjectIssue>();
-            var currentPlatform = projectAuditorParams.platform;
             var currentPlatformString = projectAuditorParams.platform.ToString();
 
             progress?.Start("Finding Textures", "Search in Progress...", allTextures.Length);
@@ -83,47 +67,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     continue; // skip render textures
                 }
 
-                var texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath);
-
-                // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
-                var size = Profiler.GetRuntimeMemorySizeLong(texture);
                 var platformSettings = textureImporter.GetPlatformTextureSettings(currentPlatformString);
-
-                var resolution = texture.width + "x" + texture.height;
-
-                var issue = ProjectIssue.Create(k_TextureLayout.category, texture.name)
-                    .WithCustomProperties(
-                        new object[(int)TextureProperty.Num]
-                        {
-                            textureImporter.textureShape,
-                            textureImporter.textureType,
-                            platformSettings.format,
-                            platformSettings.textureCompression,
-                            textureImporter.mipmapEnabled,
-                            textureImporter.isReadable,
-                            resolution,
-                            size
-                        })
-                    .WithLocation(new Location(assetPath));
-
-                issues.Add(issue);
-                issues.AddRange(analyzers.SelectMany(a => a.Analyze(currentPlatform, textureImporter, platformSettings)));
+                foreach (var analyzer in analyzers)
+                {
+                    projectAuditorParams.onIncomingIssues(analyzer.Analyze(projectAuditorParams.platform, textureImporter, platformSettings));
+                }
 
                 progress?.Advance();
             }
 
-            if (issues.Count > 0)
-                projectAuditorParams.onIncomingIssues(issues);
-
             progress?.Clear();
 
             projectAuditorParams.onModuleCompleted?.Invoke();
-        }
-
-        void AddAnalyzer(ITextureModuleAnalyzer moduleAnalyzer)
-        {
-            moduleAnalyzer.Initialize(this);
-            m_Analyzers.Add(moduleAnalyzer);
         }
     }
 }

@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Utils;
-using UnityEngine.Profiling;
 using UnityEditor;
-using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -16,13 +13,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         TriangleCount,
         MeshCompression,
         SizeOnDisk,
-        Platform,
         Num
     }
 
-    class MeshModule : ProjectAuditorModule
+    class MeshModule : ProjectAuditorModuleWithAnalyzers<IMeshModuleAnalyzer>
     {
-        static readonly IssueLayout k_MeshIssueLayout = new IssueLayout
+        static readonly IssueLayout k_MeshLayout = new IssueLayout
         {
             category = IssueCategory.Mesh,
             properties = new[]
@@ -40,87 +36,36 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override bool isEnabledByDefault => false;
 
-        List<IMeshModuleAnalyzer> m_Analyzers;
-
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
-            k_MeshIssueLayout,
+            k_MeshLayout,
             AssetsModule.k_IssueLayout
         };
 
-        public override void Initialize(ProjectAuditorConfig config)
-        {
-            m_Analyzers = new List<IMeshModuleAnalyzer>();
-            m_Descriptors = new HashSet<Descriptor>();
-
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IMeshModuleAnalyzer)))
-                AddAnalyzer(Activator.CreateInstance(type) as IMeshModuleAnalyzer);
-        }
-
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
+            var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
             var allMeshes = AssetDatabase.FindAssets("t:mesh, a:assets");
-            var issues = new List<ProjectIssue>();
             var currentPlatform = projectAuditorParams.platform;
 
             progress?.Start("Finding Meshes", "Search in Progress...", allMeshes.Length);
 
             foreach (var guid in allMeshes)
             {
-                var pathToMesh = AssetDatabase.GUIDToAssetPath(guid);
+                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                var importer = AssetImporter.GetAtPath(assetPath);
 
-                var importer = AssetImporter.GetAtPath(pathToMesh);
-                var modelImporter = importer as ModelImporter;
-
-                var subAssets = AssetDatabase.LoadAllAssetsAtPath(pathToMesh);
-
-                foreach (var subAsset in subAssets)
+                foreach (var analyzer in analyzers)
                 {
-                    var mesh = subAsset as Mesh;
-                    if (mesh == null)
-                        continue;
-
-                    // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
-                    var size = Profiler.GetRuntimeMemorySizeLong(mesh);
-
-                    var issue = ProjectIssue.Create(k_MeshIssueLayout.category, mesh.name)
-                        .WithCustomProperties(
-                            new object[((int)MeshProperty.Num)]
-                            {
-                                mesh.vertexCount,
-                                mesh.triangles.Length / 3,
-                                modelImporter != null
-                                ? modelImporter.meshCompression
-                                : ModelImporterMeshCompression.Off,
-                                size,
-                                currentPlatform
-                            })
-                        .WithLocation(new Location(pathToMesh));
-
-                    issues.Add(issue);
-                }
-
-                foreach (var analyzer in m_Analyzers)
-                {
-                    var platformDiagnostics = analyzer.Analyze(currentPlatform, importer).ToArray();
-
-                    issues.AddRange(platformDiagnostics);
+                    projectAuditorParams.onIncomingIssues(analyzer.Analyze(currentPlatform, importer));
                 }
 
                 progress?.Advance();
             }
 
-            if (issues.Count > 0)
-                projectAuditorParams.onIncomingIssues(issues);
             progress?.Clear();
 
             projectAuditorParams.onModuleCompleted?.Invoke();
-        }
-
-        void AddAnalyzer(IMeshModuleAnalyzer moduleAnalyzer)
-        {
-            moduleAnalyzer.Initialize(this);
-            m_Analyzers.Add(moduleAnalyzer);
         }
     }
 }

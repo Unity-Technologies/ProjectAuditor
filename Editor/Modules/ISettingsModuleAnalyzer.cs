@@ -10,10 +10,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public BuildTarget platform;
     }
 
-    public interface ISettingsModuleAnalyzer
+    public interface ISettingsModuleAnalyzer : IModuleAnalyzer
     {
-        void Initialize(ProjectAuditorModule module);
-
         IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext context);
     }
 }

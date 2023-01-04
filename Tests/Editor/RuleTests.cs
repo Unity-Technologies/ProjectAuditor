@@ -125,6 +125,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             var firstDescriptor = descriptors.FirstOrDefault();
 
+            Assert.IsNotNull(firstDescriptor);
+
             // make sure there are no rules
             var rule = config.GetRule(firstDescriptor);
             Assert.IsNull(rule);

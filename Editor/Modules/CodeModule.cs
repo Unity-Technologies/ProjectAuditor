@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class CodeModule : ProjectAuditorModule
+    class CodeModule : ProjectAuditorModuleWithAnalyzers<ICodeModuleInstructionAnalyzer>
     {
         static readonly IssueLayout k_AssemblyLayout = new IssueLayout
         {
@@ -111,7 +111,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         ProjectAuditorConfig m_Config;
-        List<ICodeModuleInstructionAnalyzer> m_Analyzers;
         List<OpCode> m_OpCodes;
 
         Thread m_AssemblyAnalysisThread;
@@ -129,16 +128,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Initialize(ProjectAuditorConfig config)
         {
+            base.Initialize(config);
+
             if (m_Config != null)
                 throw new Exception("Module is already initialized.");
 
             m_Config = config;
-            m_Analyzers = new List<ICodeModuleInstructionAnalyzer>();
-            m_OpCodes = new List<OpCode>();
-            m_Descriptors = new HashSet<Descriptor>();
-
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ICodeModuleInstructionAnalyzer)))
-                AddAnalyzer(Activator.CreateInstance(type) as ICodeModuleInstructionAnalyzer);
+            m_OpCodes = m_Analyzers.Select(a => a.opCodes).SelectMany(c => c).Distinct().ToList();
         }
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
@@ -411,13 +407,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 Profiler.EndSample();
             }
             Profiler.EndSample();
-        }
-
-        void AddAnalyzer(ICodeModuleInstructionAnalyzer analyzer)
-        {
-            analyzer.Initialize(this);
-            m_Analyzers.Add(analyzer);
-            m_OpCodes.AddRange(analyzer.opCodes);
         }
 
         IEnumerable<ProjectIssue> ProcessCompilerMessages(AssemblyCompilationTask compilationTask, CompilerMessage[] compilerMessages)

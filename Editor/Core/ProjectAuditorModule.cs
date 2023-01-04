@@ -35,6 +35,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public virtual void Initialize(ProjectAuditorConfig config)
         {
+            m_Descriptors = new HashSet<Descriptor>();
         }
 
         public virtual void RegisterDescriptor(Descriptor descriptor)

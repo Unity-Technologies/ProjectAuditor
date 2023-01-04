@@ -6,10 +6,8 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public interface ITextureModuleAnalyzer
+    public interface ITextureModuleAnalyzer : IModuleAnalyzer
     {
-        void Initialize(ProjectAuditorModule module);
-
         IEnumerable<ProjectIssue> Analyze(BuildTarget platform, TextureImporter textureImporter, TextureImporterPlatformSettings textureImporterPlatformSettings);
     }
 }
