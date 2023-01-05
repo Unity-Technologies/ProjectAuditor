@@ -121,8 +121,8 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectAuditorSettings : UnityEngine.ScriptableObject
     {
-        public int MaxMeshTriangles = 5000;
-        public int MaxMeshVertices = 5000;
+        public int MeshTriangleCountThreshold = 5000;
+        public int MeshVerticeCountThreshold = 5000;
         public int TextureSizeThreshold = 2048;
         public ProjectAuditorSettings() {}
     }
