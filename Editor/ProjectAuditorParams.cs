@@ -44,6 +44,8 @@ namespace Unity.ProjectAuditor.Editor
 
         public ProjectReport existingReport;
 
+        public IProjectAuditorSettingsProvider settingsProvider;
+
         public ProjectAuditorParams()
         {
             platform = EditorUserBuildSettings.activeBuildTarget;
@@ -62,6 +64,8 @@ namespace Unity.ProjectAuditor.Editor
             onModuleCompleted = original.onModuleCompleted;
 
             existingReport = original.existingReport;
+
+            settingsProvider = original.settingsProvider;
         }
     }
 }

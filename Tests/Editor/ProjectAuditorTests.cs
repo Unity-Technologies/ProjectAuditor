@@ -63,12 +63,15 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectAuditor_Params_AreCopied()
         {
+            var settingsProvider = new ProjectAuditorPlatformSettingsProvider();
+
             var originalParams = new ProjectAuditorParams
             {
                 categories = new[] { IssueCategory.Code },
                 assemblyNames = new[] { "Test" },
                 platform = BuildTarget.Android,
-                codeOptimization = CodeOptimization.Debug
+                codeOptimization = CodeOptimization.Debug,
+                settingsProvider = settingsProvider
             };
 
             var projectAuditorParams = new ProjectAuditorParams(originalParams);
@@ -77,6 +80,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsNotNull(projectAuditorParams.assemblyNames);
             Assert.AreEqual(BuildTarget.Android, projectAuditorParams.platform);
             Assert.AreEqual(CodeOptimization.Debug, projectAuditorParams.codeOptimization);
+            Assert.AreEqual(settingsProvider, projectAuditorParams.settingsProvider);
         }
 
         [Test]
@@ -100,7 +104,8 @@ namespace Unity.ProjectAuditor.EditorTests
                     Assert.NotNull(report);
 
                     projectReport = report;
-                }
+                },
+                settingsProvider = projectAuditor.GetSettingsProvider()
             });
 
             Assert.AreEqual(1, numModules);
@@ -116,7 +121,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
             var report = projectAuditor.Audit(new ProjectAuditorParams
             {
-                categories = new[] { IssueCategory.ProjectSetting}
+                categories = new[] { IssueCategory.ProjectSetting},
+                settingsProvider = projectAuditor.GetSettingsProvider()
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));
@@ -130,7 +136,8 @@ namespace Unity.ProjectAuditor.EditorTests
             projectAuditor.Audit(new ProjectAuditorParams
             {
                 categories = new[] { IssueCategory.ProjectSetting},
-                existingReport = report
+                existingReport = report,
+                settingsProvider = projectAuditor.GetSettingsProvider()
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));

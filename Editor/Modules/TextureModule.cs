@@ -107,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(new Location(assetPath));
 
                 issues.Add(issue);
-                issues.AddRange(analyzers.SelectMany(a => a.Analyze(currentPlatform, textureImporter, platformSettings)));
+                issues.AddRange(analyzers.SelectMany(a => a.Analyze(projectAuditorParams.settingsProvider, currentPlatform, textureImporter, platformSettings)));
 
                 progress?.Advance();
             }

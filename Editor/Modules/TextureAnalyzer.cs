@@ -79,7 +79,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_TextureReadWriteEnabledDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(BuildTarget platform, TextureImporter textureImporter, TextureImporterPlatformSettings textureImporterPlatformSettings)
+        public IEnumerable<ProjectIssue> Analyze(IProjectAuditorSettingsProvider projectAuditorSettingsProvider,
+            BuildTarget platform, TextureImporter textureImporter,
+            TextureImporterPlatformSettings textureImporterPlatformSettings)
         {
             var assetPath = textureImporter.assetPath;
             var textureName = Path.GetFileNameWithoutExtension(assetPath);

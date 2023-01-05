@@ -102,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in m_Analyzers)
                 {
-                    var platformDiagnostics = analyzer.Analyze(currentPlatform, importer).ToArray();
+                    var platformDiagnostics = analyzer.Analyze(projectAuditorParams.settingsProvider, currentPlatform, importer).ToArray();
 
                     issues.AddRange(platformDiagnostics);
                 }

@@ -10,6 +10,12 @@ namespace Unity.ProjectAuditor.Editor
         public void Start(string title, string description, int total);
     }
 
+    public interface IProjectAuditorSettingsProvider
+    {
+        public ProjectAuditorSettings GetOrCreateSettings(UnityEditor.BuildTarget platform);
+        public void Initialize();
+    }
+
     public interface IProjectIssueFilter
     {
         public bool Match(ProjectIssue issue);
@@ -69,6 +75,7 @@ namespace Unity.ProjectAuditor.Editor
         public static string GetCategoryName(IssueCategory category);
         public Core.IssueLayout GetLayout(IssueCategory category);
         public static IssueCategory GetOrRegisterCategory(string name);
+        public IProjectAuditorSettingsProvider GetSettingsProvider();
         public static int NumCategories();
         public void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
     }
@@ -99,8 +106,25 @@ namespace Unity.ProjectAuditor.Editor
         public System.Action<System.Collections.Generic.IEnumerable<ProjectIssue>> onIncomingIssues;
         public System.Action onModuleCompleted;
         public UnityEditor.BuildTarget platform;
+        public IProjectAuditorSettingsProvider settingsProvider;
         public ProjectAuditorParams() {}
         public ProjectAuditorParams(ProjectAuditorParams original) {}
+    }
+
+    public class ProjectAuditorPlatformSettingsProvider : IProjectAuditorSettingsProvider
+    {
+        public ProjectAuditorPlatformSettingsProvider() {}
+        public ProjectAuditorSettings AddPlatformSettings(UnityEditor.BuildTarget platform);
+        public ProjectAuditorSettings GetOrCreateSettings(UnityEditor.BuildTarget platform);
+        public void Initialize();
+    }
+
+    public class ProjectAuditorSettings : UnityEngine.ScriptableObject
+    {
+        public int MaxMeshTriangles = 5000;
+        public int MaxMeshVertices = 5000;
+        public int TextureSizeThreshold = 2048;
+        public ProjectAuditorSettings() {}
     }
 
     public class ProjectIssue
@@ -519,7 +543,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public interface IMeshModuleAnalyzer
     {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.AssetImporter assetImporter);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(IProjectAuditorSettingsProvider projectAuditorSettingsProvider, UnityEditor.BuildTarget platform, UnityEditor.AssetImporter assetImporter);
         public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
     }
 
@@ -531,14 +555,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public interface ITextureModuleAnalyzer
     {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.TextureImporter textureImporter, UnityEditor.TextureImporterPlatformSettings textureImporterPlatformSettings);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(IProjectAuditorSettingsProvider projectAuditorSettingsProvider, UnityEditor.BuildTarget platform, UnityEditor.TextureImporter textureImporter, UnityEditor.TextureImporterPlatformSettings textureImporterPlatformSettings);
         public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
     }
 
     public class MeshAnalyzer : IMeshModuleAnalyzer
     {
         public MeshAnalyzer() {}
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.AssetImporter assetImporter);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(IProjectAuditorSettingsProvider projectAuditorSettingsProvider, UnityEditor.BuildTarget platform, UnityEditor.AssetImporter assetImporter);
         public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
     }
 
@@ -616,7 +640,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     public class TextureAnalyzer : ITextureModuleAnalyzer
     {
         public TextureAnalyzer() {}
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.TextureImporter textureImporter, UnityEditor.TextureImporterPlatformSettings textureImporterPlatformSettings);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(IProjectAuditorSettingsProvider projectAuditorSettingsProvider, UnityEditor.BuildTarget platform, UnityEditor.TextureImporter textureImporter, UnityEditor.TextureImporterPlatformSettings textureImporterPlatformSettings);
         public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
     }
 

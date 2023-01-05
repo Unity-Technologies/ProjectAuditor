@@ -22,12 +22,15 @@ namespace Unity.ProjectAuditor.EditorTests
         protected BuildTarget m_Platform = EditorUserBuildSettings.activeBuildTarget;
         protected ProjectAuditorConfig m_Config;
         protected string m_BuildPath;
+        protected Editor.ProjectAuditor m_ProjectAuditor;
 
         [OneTimeSetUp]
         public void FixtureSetUp()
         {
             m_Config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             m_Config.AnalyzeInBackground = false;
+
+            m_ProjectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
         }
 
         [OneTimeTearDown]
@@ -40,7 +43,6 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var foundIssues = new List<ProjectIssue>();
 
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
             var projectAuditorParams = new ProjectAuditorParams
             {
                 codeOptimization = m_CodeOptimization,
@@ -50,7 +52,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 },
                 platform = m_Platform
             };
-            projectAuditor.Audit(projectAuditorParams);
+            m_ProjectAuditor.Audit(projectAuditorParams);
 
             return foundIssues.ToArray();
         }
@@ -69,7 +71,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
                     foundIssues.AddRange(predicate == null ? categoryIssues : categoryIssues.Where(predicate));
                 },
-                platform = m_Platform
+                platform = m_Platform,
+                settingsProvider = projectAuditor.GetSettingsProvider()
             };
 
             projectAuditor.Audit(projectAuditorParams);

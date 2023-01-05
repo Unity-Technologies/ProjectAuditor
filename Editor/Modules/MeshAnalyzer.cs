@@ -42,7 +42,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_Mesh32BitIndexFormatUsedDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(BuildTarget platform, AssetImporter assetImporter)
+        public IEnumerable<ProjectIssue> Analyze(IProjectAuditorSettingsProvider projectAuditorSettingsProvider,
+            BuildTarget platform, AssetImporter assetImporter)
         {
             var assetPath = assetImporter.assetPath;
             var subAssets = AssetDatabase.LoadAllAssetsAtPath(assetPath);

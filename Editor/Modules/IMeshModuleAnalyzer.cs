@@ -8,6 +8,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         void Initialize(ProjectAuditorModule module);
 
-        IEnumerable<ProjectIssue> Analyze(BuildTarget platform, AssetImporter assetImporter);
+        IEnumerable<ProjectIssue> Analyze(IProjectAuditorSettingsProvider projectAuditorSettingsProvider,
+            BuildTarget platform, AssetImporter assetImporter);
     }
 }
