@@ -128,7 +128,7 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Project Auditor couldn't create default settings provider: " + e.Message);
+                    Debug.LogError($"Project Auditor couldn't initialize settings provider of type '{type.ToString()}': " + e.Message);
                     continue;
                 }
                 m_CustomSettingsProviders.Add(instance);
@@ -138,7 +138,15 @@ namespace Unity.ProjectAuditor.Editor
         void InitBuiltinSettingsProvider()
         {
             m_BuiltinSettingsProvider = new ProjectAuditorPlatformSettingsProvider();
-            m_BuiltinSettingsProvider.Initialize();
+
+            try
+            {
+                m_BuiltinSettingsProvider.Initialize();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Project Auditor couldn't initialize built-in settings provider of type 'ProjectAuditorPlatformSettingsProvider': " + e.Message);
+            }
         }
 
         /// <summary>
