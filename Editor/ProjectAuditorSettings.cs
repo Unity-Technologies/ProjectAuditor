@@ -21,5 +21,10 @@ namespace Unity.ProjectAuditor.Editor
         /// Maximum texture size. If we find textures at this size we warn the user. If they exceed the size we report a critical issue.
         /// </summary>
         public int TextureSizeThreshold = 2048;
+
+        /// <summary>
+        /// Maximum size of all files in the StreamingAssets folder. Beyond that size we report an issue.
+        /// </summary>
+        public int StreamingAssetsFolderSizeLimitMb = 2048;
     }
 }
