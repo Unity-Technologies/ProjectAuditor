@@ -123,6 +123,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         public int MeshTriangleCountThreshold = 5000;
         public int MeshVerticeCountThreshold = 5000;
+        public int StreamingAssetsFolderSizeLimitMb = 50;
         public int TextureSizeThreshold = 2048;
         public ProjectAuditorSettings() {}
     }

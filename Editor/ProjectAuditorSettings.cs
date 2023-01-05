@@ -25,6 +25,6 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Maximum size of all files in the StreamingAssets folder. Beyond that size we report an issue.
         /// </summary>
-        public int StreamingAssetsFolderSizeLimitMb = 2048;
+        public int StreamingAssetsFolderSizeLimitMb = 50;
     }
 }
