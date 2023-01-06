@@ -13,7 +13,6 @@ namespace Unity.ProjectAuditor.Editor
     public interface IProjectAuditorSettingsProvider
     {
         public ProjectAuditorSettings GetOrCreateSettings(UnityEditor.BuildTarget platform);
-        public void Initialize();
     }
 
     public interface IProjectIssueFilter
@@ -116,7 +115,6 @@ namespace Unity.ProjectAuditor.Editor
         public ProjectAuditorPlatformSettingsProvider() {}
         public ProjectAuditorSettings AddPlatformSettings(UnityEditor.BuildTarget platform);
         public ProjectAuditorSettings GetOrCreateSettings(UnityEditor.BuildTarget platform);
-        public void Initialize();
     }
 
     public class ProjectAuditorSettings : UnityEngine.ScriptableObject
@@ -600,6 +598,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     public class SettingsAnalyzerContext
     {
         public UnityEditor.BuildTarget platform;
+        public IProjectAuditorSettingsProvider settingsProvider;
         public SettingsAnalyzerContext() {}
     }
 

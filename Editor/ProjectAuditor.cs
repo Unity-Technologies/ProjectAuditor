@@ -46,7 +46,6 @@ namespace Unity.ProjectAuditor.Editor
 
         public ProjectAuditorConfig config => m_Config;
 
-        readonly List<IProjectAuditorSettingsProvider> m_CustomSettingsProviders = new List<IProjectAuditorSettingsProvider>();
         internal ProjectAuditorPlatformSettingsProvider m_BuiltinSettingsProvider;
 
         // TODO: Once we register other providers, we could chose them instead of the built-in provider
@@ -54,14 +53,14 @@ namespace Unity.ProjectAuditor.Editor
 
         public ProjectAuditor()
         {
-            InitSettingsProviders();
+            InitSettingsProvider();
             InitAsset(DefaultAssetPath);
             InitModules();
         }
 
         public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
         {
-            InitSettingsProviders();
+            InitSettingsProvider();
             m_Config = projectAuditorConfig;
             InitModules();
         }
@@ -72,7 +71,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="assetPath"> Path to the ProjectAuditorConfig asset</param>
         public ProjectAuditor(string assetPath)
         {
-            InitSettingsProviders();
+            InitSettingsProvider();
             InitAsset(assetPath);
             InitModules();
         }
@@ -110,43 +109,9 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        void InitSettingsProviders()
-        {
-            InitBuiltinSettingsProvider();
-
-            // TODO: Once we register other providers, we could chose them instead of the built-in provider
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IProjectAuditorSettingsProvider)))
-            {
-                // special type that is our default provider, a fallback to cover all platforms
-                if (type == typeof(ProjectAuditorPlatformSettingsProvider))
-                    continue;
-
-                var instance = Activator.CreateInstance(type) as IProjectAuditorSettingsProvider;
-                try
-                {
-                    instance.Initialize();
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"Project Auditor couldn't initialize settings provider of type '{type.ToString()}': " + e.Message);
-                    continue;
-                }
-                m_CustomSettingsProviders.Add(instance);
-            }
-        }
-
-        void InitBuiltinSettingsProvider()
+        void InitSettingsProvider()
         {
             m_BuiltinSettingsProvider = new ProjectAuditorPlatformSettingsProvider();
-
-            try
-            {
-                m_BuiltinSettingsProvider.Initialize();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Project Auditor couldn't initialize built-in settings provider of type 'ProjectAuditorPlatformSettingsProvider': " + e.Message);
-            }
         }
 
         /// <summary>
