@@ -122,7 +122,7 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void CodeAnalysis_IssueInSimpleClass_IsNormalSeverity()
+        public void CodeAnalysis_IssueInSimpleClass_IsSeverityCorrect()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInSimpleClass);
             var issue = issues.First();
@@ -130,7 +130,7 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void CodeAnalysis_IssueInMonoBehaviourUpdate_IsHighSeverity()
+        public void CodeAnalysis_IssueInMonoBehaviourUpdate_IsSeverityCorrect()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourUpdate);
             var issue = issues.First();
@@ -138,7 +138,7 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void CodeAnalysis_IssueInMonoBehaviourOnAnimatorMove_IsHighSeverity()
+        public void CodeAnalysis_IssueInMonoBehaviourOnAnimatorMove_IsSeverityCorrect()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnAnimatorMove);
             var issue = issues.First();
@@ -146,7 +146,7 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void CodeAnalysis_MonoBehaviourOnRenderObject_IsHighSeverity()
+        public void CodeAnalysis_MonoBehaviourOnRenderObject_IsSeverityCorrect()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnRenderObject);
             var issue = issues.First();
@@ -154,7 +154,7 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void CodeAnalysis_IssueInClassMethodCalledFromMonoBehaviourUpdate_IsHighSeverity()
+        public void CodeAnalysis_IssueInClassMethodCalledFromMonoBehaviourUpdate_IsSeverityCorrect()
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
@@ -164,7 +164,7 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void CodeAnalysis_IssueInClassInheritedFromMonoBehaviour_IsHighSeverity()
+        public void CodeAnalysis_IssueInClassInheritedFromMonoBehaviour_IsSeverityCorrect()
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
@@ -193,7 +193,7 @@ class ShaderWarmUpIssueIsCritical
         }
 
         [Test]
-        public void CodeAnalysis_ShaderWarmupIssue_IsHighSeverity()
+        public void CodeAnalysis_ShaderWarmupIssue_IsSeverityCorrect()
         {
             var issues =
                 AnalyzeAndFindAssetIssues(

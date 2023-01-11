@@ -1454,6 +1454,7 @@
           "type": "System.String",
           "method": "Concat",
           "areas": ["Memory"],
+          "severity": 5,
           "description": "String concatenation operations allocates managed memory",
           "solution": "Try to avoid concatenating strings in frequently-updated code. Prefer using a StringBuilder instead, as this minimizes managed allocations."
         },

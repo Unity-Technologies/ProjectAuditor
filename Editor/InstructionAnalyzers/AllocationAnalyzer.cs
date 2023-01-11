@@ -21,7 +21,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Try to avoid allocating objects in frequently-updated code."
             )
         {
-            messageFormat = "'{0}' allocation"
+            messageFormat = "'{0}' allocation",
+            severity = Severity.Minor
         };
 
         static readonly Descriptor k_ClosureAllocationDescriptor = new Descriptor
@@ -33,7 +34,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Try to avoid allocating objects in frequently-updated code."
             )
         {
-            messageFormat = "Closure allocation in '{0}.{1}'"
+            messageFormat = "Closure allocation in '{0}.{1}'",
+            severity = Severity.Minor
         };
 
         static readonly Descriptor k_ArrayAllocationDescriptor = new Descriptor
@@ -45,7 +47,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Try to avoid allocating arrays in frequently-updated code."
             )
         {
-            messageFormat = "'{0}' array allocation"
+            messageFormat = "'{0}' array allocation",
+            severity = Severity.Minor
         };
 
         static readonly Descriptor k_ParamArrayAllocationDescriptor = new Descriptor

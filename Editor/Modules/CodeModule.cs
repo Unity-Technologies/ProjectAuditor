@@ -232,9 +232,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var d in diagnostics)
                 {
-                    // upgrade to major severity if issue is found in a hot-path
+                    // bump severity if issue is found in a hot-path
                     if (!d.IsMajorOrCritical() && d.dependencies != null && d.dependencies.perfCriticalContext)
-                        d.severity = Severity.Major;
+                    {
+                        switch (d.severity)
+                        {
+                            case Severity.Minor:
+                                d.severity = Severity.Moderate;
+                                break;
+                            case Severity.Moderate:
+                                d.severity = Severity.Major;
+                                break;
+                        }
+                    }
                 }
 
                 // workaround for empty 'relativePath' strings which are not all available when 'onIssueFoundInternal' is called
