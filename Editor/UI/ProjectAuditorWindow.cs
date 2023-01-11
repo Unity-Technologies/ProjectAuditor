@@ -39,7 +39,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         const string k_ProjectAuditorName = "Project Auditor";
-        const string k_EditorPrefsSettingsKey = "ProjectAuditor.Settings";
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow s_Instance;
@@ -78,6 +77,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] ViewManager m_ViewManager;
 
         AnalysisView activeView => m_ViewManager.GetActiveView();
+
+        IProjectAuditorSettingsProvider m_SettingsProvider;
 
         public bool Match(ProjectIssue issue)
         {
@@ -150,6 +151,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             UpdateAreaSelection();
             UpdateAssemblySelection();
             Profiler.EndSample();
+
+            m_SettingsProvider = new ProjectAuditorSettingsProvider();
+            m_SettingsProvider.Initialize();
 
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid &&
@@ -628,7 +632,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     m_ShouldRefresh = true;
                 },
-                settingsProvider = m_ProjectAuditor.GetSettingsProvider()
+                settingsProvider = m_SettingsProvider
             };
             m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar());
         }
@@ -677,7 +681,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                 },
                 existingReport = m_ProjectReport,
-                settingsProvider = m_ProjectAuditor.GetSettingsProvider()
+                settingsProvider = m_SettingsProvider
             };
 
             var platform = m_ProjectReport.FindByCategory(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));
@@ -1013,7 +1017,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.LabelField(new GUIContent(Contents.SettingsTitle));
 
-            DrawSettingsDropdown(true);
+            DrawSettingsDropdown();
 
             EditorGUILayout.EndHorizontal();
 
@@ -1044,21 +1048,20 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndVertical();
         }
 
-        private static void DrawSettingsDropdown(bool expandWidth = false)
+        void DrawSettingsDropdown()
         {
-            var settingsProvider = ProjectAuditorSettingsProvider.Instance;
-            var currentSettings = settingsProvider.GetCurrentSettings();
+            var currentSettings = m_SettingsProvider.GetCurrentSettings();
 
             if (EditorGUILayout.DropdownButton(new GUIContent(currentSettings.name), FocusType.Keyboard,
-                GUILayout.ExpandWidth(expandWidth)))
+                GUILayout.ExpandWidth(false)))
             {
                 GenericMenu menu = new GenericMenu();
 
-                var allSettings = settingsProvider.GetSettings();
+                var allSettings = m_SettingsProvider.GetSettings();
                 foreach (var settings in allSettings)
                 {
                     menu.AddItem(new GUIContent(settings.name), false,
-                        () => { settingsProvider.SelectCurrentSettings(settings); });
+                        () => { m_SettingsProvider.SelectCurrentSettings(settings); });
                 }
 
                 menu.AddSeparator("");
@@ -1256,8 +1259,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 // right-end buttons
                 using (new EditorGUI.DisabledScope(m_AnalysisState != AnalysisState.Valid))
                 {
-                    DrawSettingsDropdown();
-
                     const int loadSaveButtonWidth = 60;
                     if (GUILayout.Button(Contents.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
                     {

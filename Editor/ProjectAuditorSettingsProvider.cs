@@ -9,22 +9,6 @@ namespace Unity.ProjectAuditor.Editor
     /// </summary>
     public class ProjectAuditorSettingsProvider : IProjectAuditorSettingsProvider
     {
-        private static ProjectAuditorSettingsProvider m_Instance;
-
-        public static ProjectAuditorSettingsProvider Instance
-        {
-            get
-            {
-                if (m_Instance == null)
-                {
-                    m_Instance = new ProjectAuditorSettingsProvider();
-                    m_Instance.Initialize();
-                }
-
-                return m_Instance;
-            }
-        }
-
         private HashSet<ProjectAuditorSettings> m_SettingsAssets = new HashSet<ProjectAuditorSettings>();
         private ProjectAuditorSettings m_CurrentSettings;
         private ProjectAuditorSettings m_DefaultSettings;

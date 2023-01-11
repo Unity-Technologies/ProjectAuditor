@@ -94,6 +94,9 @@ namespace Unity.ProjectAuditor.EditorTests
             int numModules = 0;
             ProjectReport projectReport = null;
 
+            var settingsProvider = new ProjectAuditorSettingsProvider();
+            settingsProvider.Initialize();
+
             projectAuditor.Audit(new ProjectAuditorParams
             {
                 categories = new[] { IssueCategory.ProjectSetting },
@@ -105,7 +108,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
                     projectReport = report;
                 },
-                settingsProvider = projectAuditor.GetSettingsProvider()
+                settingsProvider = settingsProvider
             });
 
             Assert.AreEqual(1, numModules);
@@ -118,11 +121,14 @@ namespace Unity.ProjectAuditor.EditorTests
             var savedSetting = PlayerSettings.bakeCollisionMeshes;
             PlayerSettings.bakeCollisionMeshes = false;
 
+            var settingsProvider = new ProjectAuditorSettingsProvider();
+            settingsProvider.Initialize();
+
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
             var report = projectAuditor.Audit(new ProjectAuditorParams
             {
                 categories = new[] { IssueCategory.ProjectSetting},
-                settingsProvider = projectAuditor.GetSettingsProvider()
+                settingsProvider = settingsProvider
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));
@@ -137,7 +143,7 @@ namespace Unity.ProjectAuditor.EditorTests
             {
                 categories = new[] { IssueCategory.ProjectSetting},
                 existingReport = report,
-                settingsProvider = projectAuditor.GetSettingsProvider()
+                settingsProvider = settingsProvider
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));

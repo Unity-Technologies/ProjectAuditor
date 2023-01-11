@@ -45,10 +45,7 @@ namespace Unity.ProjectAuditor.Editor
         ProjectAuditorConfig m_Config;
 
         public ProjectAuditorConfig config => m_Config;
-
-        // TODO: Once we register other providers, we could chose them instead of the built-in provider
-        public IProjectAuditorSettingsProvider GetSettingsProvider() => ProjectAuditorSettingsProvider.Instance;
-
+        
         public ProjectAuditor()
         {
             InitAsset(DefaultAssetPath);
@@ -147,6 +144,13 @@ namespace Unity.ProjectAuditor.Editor
                 {
                     report.ClearIssues(category);
                 }
+            }
+
+            if (projectAuditorParams.settingsProvider == null)
+            {
+                var provider = new ProjectAuditorSettingsProvider();
+                provider.Initialize();
+                projectAuditorParams.settingsProvider = provider;
             }
 
             var numModules = supportedModules.Length;

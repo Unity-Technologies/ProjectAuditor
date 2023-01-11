@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -71,8 +72,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
                     foundIssues.AddRange(predicate == null ? categoryIssues : categoryIssues.Where(predicate));
                 },
-                platform = m_Platform,
-                settingsProvider = projectAuditor.GetSettingsProvider()
+                platform = m_Platform
             };
 
             projectAuditor.Audit(projectAuditorParams);
