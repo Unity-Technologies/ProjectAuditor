@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get { return m_Desc; }
         }
 
-        public string documentationUrl => new string(m_Desc.name.Where(char.IsLetterOrDigit).ToArray());
+        public string documentationUrl => Documentation.GetPageUrl(new string(m_Desc.name.Where(char.IsLetterOrDigit).ToArray()));
 
         public int numIssues
         {

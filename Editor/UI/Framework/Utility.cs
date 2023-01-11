@@ -123,11 +123,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return GUI.Button(rect, content, EditorStyles.toolbarDropDown);
         }
 
-        public static void DrawHelpButton(GUIContent content, string page)
+        public static void DrawHelpButton(GUIContent content, string pageName)
         {
             if (GUILayout.Button(content, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
             {
-                Application.OpenURL(Documentation.baseURL + ProjectAuditor.PackageVersion + Documentation.subURL + page + Documentation.endURL);
+                Application.OpenURL(Documentation.GetPageUrl(pageName));
             }
         }
 

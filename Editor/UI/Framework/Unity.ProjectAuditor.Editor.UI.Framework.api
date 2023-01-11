@@ -223,7 +223,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static readonly UnityEngine.GUIContent OpenIssue;
         public static readonly UnityEngine.GUIContent OpenScriptReference;
         public static bool BoldFoldout(bool toggle, UnityEngine.GUIContent content);
-        public static void DrawHelpButton(UnityEngine.GUIContent content, string page);
+        public static void DrawHelpButton(UnityEngine.GUIContent content, string pageName);
         public static void DrawSelectedText(string text);
         public static UnityEngine.GUIContent GetIcon(Utility.IconType iconType, string tooltip = default(string));
         public static UnityEngine.GUIContent GetLogLevelIcon(Unity.ProjectAuditor.Editor.Core.LogLevel logLevel, string tooltip = default(string));
