@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor
         ProjectAuditorConfig m_Config;
 
         public ProjectAuditorConfig config => m_Config;
-        
+
         public ProjectAuditor()
         {
             InitAsset(DefaultAssetPath);

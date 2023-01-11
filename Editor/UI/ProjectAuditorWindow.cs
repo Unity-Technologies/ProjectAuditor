@@ -1013,13 +1013,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.Space();
 
-            EditorGUILayout.BeginHorizontal();
-
-            EditorGUILayout.LabelField(new GUIContent(Contents.SettingsTitle));
-
             DrawSettingsDropdown();
-
-            EditorGUILayout.EndHorizontal();
 
             GUILayout.FlexibleSpace();
 
@@ -1050,10 +1044,17 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawSettingsDropdown()
         {
+            EditorGUILayout.BeginHorizontal();
+
+            EditorGUILayout.LabelField(new GUIContent(Contents.SettingsTitle), GUILayout.Width(EditorGUIUtility.labelWidth - 1));
+
+            var dropdownRect = GUILayoutUtility.GetLastRect();
+            dropdownRect.x += EditorGUIUtility.labelWidth + 2;
+
             var currentSettings = m_SettingsProvider.GetCurrentSettings();
 
             if (EditorGUILayout.DropdownButton(new GUIContent(currentSettings.name), FocusType.Keyboard,
-                GUILayout.ExpandWidth(false)))
+                GUILayout.ExpandWidth(true)))
             {
                 GenericMenu menu = new GenericMenu();
 
@@ -1064,15 +1065,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                         () => { m_SettingsProvider.SelectCurrentSettings(settings); });
                 }
 
-                menu.AddSeparator("");
-
-                menu.AddItem(new GUIContent(Contents.CreateSettingsAssetOption), false, null);
-
-                var rect = GUILayoutUtility.GetLastRect();
-                rect.x = Event.current.mousePosition.x;
-                rect.y = Event.current.mousePosition.y;
-                menu.DropDown(rect);
+                menu.DropDown(dropdownRect);
             }
+
+            EditorGUILayout.EndHorizontal();
         }
 
         void DrawPanels()
@@ -1379,8 +1375,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new GUIContent("Platform", "Select the target platform.");
 
             public static readonly GUIContent SettingsTitle = new GUIContent("Settings");
-            public static readonly GUIContent CreateSettingsAssetOption =
-                new GUIContent("Create Settings Asset...", "Create a new settings asset to store your custom settings.");
 
 #if UNITY_2019_1_OR_NEWER
             public static readonly GUIContent SaveButton = Utility.GetIcon(Utility.IconType.Save, "Save current report to json file");
