@@ -40,6 +40,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get { return m_Desc; }
         }
 
+        public string documentationUrl => new string(m_Desc.name.Where(char.IsLetterOrDigit).ToArray());
+
         public int numIssues
         {
             get
@@ -293,7 +295,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             DrawDataOptions();
 
-            Utility.DrawHelpButton(m_HelpButtonContent, new string(m_Desc.name.Where(char.IsLetterOrDigit).ToArray()));
+            Utility.DrawHelpButton(m_HelpButtonContent, documentationUrl);
 
             EditorGUILayout.EndHorizontal();
         }

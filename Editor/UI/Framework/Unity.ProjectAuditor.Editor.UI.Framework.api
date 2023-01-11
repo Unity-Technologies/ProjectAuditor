@@ -31,6 +31,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected ViewManager m_ViewManager;
         protected ViewStates m_ViewStates;
         public ViewDescriptor desc { get; }
+        public string documentationUrl { get; }
         public int numFilteredIssues { get; }
         public int numIssues { get; }
         public static int toolbarButtonSize { get; }
@@ -297,6 +298,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public System.Action<int> onViewChanged;
         public System.Action onViewExported;
         public int activeViewIndex { get; }
+        public int numViews { get; }
         public ViewManager(IssueCategory[] categories) {}
         public void AddIssues(System.Collections.Generic.IReadOnlyCollection<ProjectIssue> issues);
         public void ChangeView(IssueCategory category);
