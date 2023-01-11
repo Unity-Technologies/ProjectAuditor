@@ -409,6 +409,18 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             ViewDescriptor.Register(new ViewDescriptor
             {
+                category = IssueCategory.AudioClip,
+                name = "AudioClip",
+                menuLabel = "Assets/Meshes//Audio Clips",
+                menuOrder = 107,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AudioClip
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
                 category = IssueCategory.Mesh,
                 name = "Meshes",
                 menuLabel = "Assets/Meshes/Meshes",
@@ -454,18 +466,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
                     onOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Generics
-                });
-
-                ViewDescriptor.Register(new ViewDescriptor
-                {
-                    category = IssueCategory.AudioClip,
-                    name = "AudioClip",
-                    menuLabel = "Experimental/Audio Clips",
-                    menuOrder = 107,
-                    descriptionWithIcon = true,
-                    showFilters = true,
-                    onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AudioClip
                 });
 
                 ViewDescriptor.Register(new ViewDescriptor
