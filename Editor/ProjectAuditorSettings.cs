@@ -3,8 +3,9 @@ using UnityEngine;
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
-    /// Project and platform-specific user settings to adjust values/limits analyzers test against
+    /// Project-specific user settings to adjust values/limits analyzers test against
     /// </summary>
+    [CreateAssetMenu(menuName = "Project Auditor/Project Auditor Settings")]
     public class ProjectAuditorSettings : ScriptableObject
     {
         /// <summary>

@@ -46,21 +46,17 @@ namespace Unity.ProjectAuditor.Editor
 
         public ProjectAuditorConfig config => m_Config;
 
-        internal ProjectAuditorPlatformSettingsProvider m_BuiltinSettingsProvider;
-
         // TODO: Once we register other providers, we could chose them instead of the built-in provider
-        public IProjectAuditorSettingsProvider GetSettingsProvider() => m_BuiltinSettingsProvider;
+        public IProjectAuditorSettingsProvider GetSettingsProvider() => ProjectAuditorSettingsProvider.Instance;
 
         public ProjectAuditor()
         {
-            InitSettingsProvider();
             InitAsset(DefaultAssetPath);
             InitModules();
         }
 
         public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
         {
-            InitSettingsProvider();
             m_Config = projectAuditorConfig;
             InitModules();
         }
@@ -71,7 +67,6 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="assetPath"> Path to the ProjectAuditorConfig asset</param>
         public ProjectAuditor(string assetPath)
         {
-            InitSettingsProvider();
             InitAsset(assetPath);
             InitModules();
         }
@@ -107,11 +102,6 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 m_Modules.Add(instance);
             }
-        }
-
-        void InitSettingsProvider()
-        {
-            m_BuiltinSettingsProvider = new ProjectAuditorPlatformSettingsProvider();
         }
 
         /// <summary>

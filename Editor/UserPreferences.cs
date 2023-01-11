@@ -24,6 +24,8 @@ namespace Unity.ProjectAuditor.Editor
         static string k_BuildReportPathLabel = "Library Path";
         static string k_BuildReportPathDefault = "Assets/BuildReports";
 
+        static readonly string k_EditorPrefsSettingsKey = k_EditorPrefsPrefix + ".settingsAsset";
+
         internal static string loadSavePath = string.Empty;
 
         public static string Path => k_PreferencesKey;
@@ -56,6 +58,12 @@ namespace Unity.ProjectAuditor.Editor
         {
             get => EditorPrefs.GetBool(k_LogTimingsInfoKey, false);
             set => EditorPrefs.SetBool(k_LogTimingsInfoKey, value);
+        }
+
+        public static string settingsAsset
+        {
+            get => EditorPrefs.GetString(k_EditorPrefsSettingsKey, "");
+            set => EditorPrefs.SetString(k_EditorPrefsSettingsKey, value);
         }
 
         [SettingsProvider]

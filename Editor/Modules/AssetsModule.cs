@@ -69,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var settings = projectAuditorParams.settingsProvider.GetOrCreateSettings(projectAuditorParams.platform);
+            var settings = projectAuditorParams.settingsProvider.GetCurrentSettings();
 
             var issues = new List<ProjectIssue>();
             AnalyzeResources(issues);

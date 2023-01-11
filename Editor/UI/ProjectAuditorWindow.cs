@@ -39,6 +39,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         const string k_ProjectAuditorName = "Project Auditor";
+        const string k_EditorPrefsSettingsKey = "ProjectAuditor.Settings";
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow s_Instance;
@@ -626,7 +627,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ProjectReport = projectReport;
 
                     m_ShouldRefresh = true;
-                }
+                },
+                settingsProvider = m_ProjectAuditor.GetSettingsProvider()
             };
             m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar());
         }
@@ -674,7 +676,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                         view.AddIssues(issues);
                     }
                 },
-                existingReport = m_ProjectReport
+                existingReport = m_ProjectReport,
+                settingsProvider = m_ProjectAuditor.GetSettingsProvider()
             };
 
             var platform = m_ProjectReport.FindByCategory(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));
@@ -1004,6 +1007,16 @@ namespace Unity.ProjectAuditor.Editor.UI
             selectedTarget = EditorGUILayout.Popup(Contents.PlatformSelection, selectedTarget, m_PlatformContents);
             m_Platform = m_SupportedBuildTargets[selectedTarget];
 
+            EditorGUILayout.Space();
+
+            EditorGUILayout.BeginHorizontal();
+
+            EditorGUILayout.LabelField(new GUIContent(Contents.SettingsTitle));
+
+            DrawSettingsDropdown(true);
+
+            EditorGUILayout.EndHorizontal();
+
             GUILayout.FlexibleSpace();
 
             using (new EditorGUILayout.HorizontalScope())
@@ -1029,6 +1042,34 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Space();
 
             EditorGUILayout.EndVertical();
+        }
+
+        private static void DrawSettingsDropdown(bool expandWidth = false)
+        {
+            var settingsProvider = ProjectAuditorSettingsProvider.Instance;
+            var currentSettings = settingsProvider.GetCurrentSettings();
+
+            if (EditorGUILayout.DropdownButton(new GUIContent(currentSettings.name), FocusType.Keyboard,
+                GUILayout.ExpandWidth(expandWidth)))
+            {
+                GenericMenu menu = new GenericMenu();
+
+                var allSettings = settingsProvider.GetSettings();
+                foreach (var settings in allSettings)
+                {
+                    menu.AddItem(new GUIContent(settings.name), false,
+                        () => { settingsProvider.SelectCurrentSettings(settings); });
+                }
+
+                menu.AddSeparator("");
+
+                menu.AddItem(new GUIContent(Contents.CreateSettingsAssetOption), false, null);
+
+                var rect = GUILayoutUtility.GetLastRect();
+                rect.x = Event.current.mousePosition.x;
+                rect.y = Event.current.mousePosition.y;
+                menu.DropDown(rect);
+            }
         }
 
         void DrawPanels()
@@ -1215,6 +1256,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 // right-end buttons
                 using (new EditorGUI.DisabledScope(m_AnalysisState != AnalysisState.Valid))
                 {
+                    DrawSettingsDropdown();
+
                     const int loadSaveButtonWidth = 60;
                     if (GUILayout.Button(Contents.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
                     {
@@ -1333,6 +1376,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new GUIContent("Modules", $"Select {k_ProjectAuditorName} modules.");
             public static readonly GUIContent PlatformSelection =
                 new GUIContent("Platform", "Select the target platform.");
+
+            public static readonly GUIContent SettingsTitle = new GUIContent("Settings");
+            public static readonly GUIContent CreateSettingsAssetOption =
+                new GUIContent("Create Settings Asset...", "Create a new settings asset to store your custom settings.");
 
 #if UNITY_2019_1_OR_NEWER
             public static readonly GUIContent SaveButton = Utility.GetIcon(Utility.IconType.Save, "Save current report to json file");

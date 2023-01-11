@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectAuditor_Params_AreCopied()
         {
-            var settingsProvider = new ProjectAuditorPlatformSettingsProvider();
+            var settingsProvider = new ProjectAuditorSettingsProvider();
 
             var originalParams = new ProjectAuditorParams
             {
