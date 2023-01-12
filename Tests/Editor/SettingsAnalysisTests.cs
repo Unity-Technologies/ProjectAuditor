@@ -118,6 +118,33 @@ namespace Unity.ProjectAuditor.EditorTests
 
         [TestCase(false)]
         [TestCase(true)]
+        public void SettingsAnalysis_AudioMode_IsSpeakerModeMono(bool isSpeakerMonoMode)
+        {
+            var audioSpeaker = AudioSettings.GetConfiguration();
+            AudioSettings.speakerMode =
+                isSpeakerMonoMode ? AudioSpeakerMode.Mono : AudioSpeakerMode.Stereo;
+
+            Assert.AreEqual(isSpeakerMonoMode, PlayerSettingsAnalyzer.IsSpeakerModeMono());
+
+            AudioSettings.Reset(audioSpeaker);
+        }
+
+        [TestCase(AudioSpeakerMode.Mono)]
+        [TestCase(AudioSpeakerMode.Stereo)]
+        public void SettingsAnalysis_AudioMode_SwitchSpeakerMode(AudioSpeakerMode speakerMode)
+        {
+            var audioSpeaker = AudioSettings.GetConfiguration();
+            AudioSettings.speakerMode = speakerMode;
+
+            PlayerSettingsAnalyzer.FixSpeakerMode();
+
+            Assert.AreEqual(AudioSpeakerMode.Mono, AudioSettings.speakerMode);
+
+            AudioSettings.Reset(audioSpeaker);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
         public void SettingsAnalysis_GraphicsMixedStandardShaderQuality_WithBuiltinRenderPipeline_IsReported(bool isMixed)
         {
             var buildTarget = EditorUserBuildSettings.activeBuildTarget;

@@ -36,8 +36,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Audio: Speaker Mode",
             new[] { Area.BuildSize },
             "<b>UnityEngine.AudioSettings.speakerMode</b> is not set to <b>UnityEngine.AudioSpeakerMode.Mono</b>. The generated build will be larger than necessary.",
-            "Change <b>Project Settings ➔ Audio ➔ Default Speaker Mode</b> to <b>Mono</b> to reduce the size of the build on disk.");
-
+            "Change <b>Project Settings ➔ Audio ➔ Default Speaker Mode</b> to <b>Mono</b> to reduce the size of the build on disk.")
+        {
+            platforms = new[] { "Android", "iOS"},
+            fixer = (issue => {
+                Debug.Log("my first issue");
+                FixSpeakerMode();
+            })
+        };
 
         public void Initialize(ProjectAuditorModule module)
         {
@@ -58,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SplashScreenDescriptor)
                     .WithLocation("Project/Player");
             }
-            if (IsNotSpeakerModeMono())
+            if (IsSpeakerModeMono())
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SpeakerModeDescriptor)
                     .WithLocation("Project/Player");
@@ -84,9 +90,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             return (bool)licenseAllowsDisablingProperty.GetValue(null, null);
         }
 
-        internal static bool IsNotSpeakerModeMono()
+        internal static bool IsSpeakerModeMono()
         {
-            return AudioSettings.speakerMode != AudioSpeakerMode.Mono;
+            return AudioSettings.GetConfiguration().speakerMode == AudioSpeakerMode.Mono;
+        }
+
+        internal static void FixSpeakerMode()
+        {
+            AudioSettings.speakerMode = AudioSpeakerMode.Mono;
         }
     }
 }
