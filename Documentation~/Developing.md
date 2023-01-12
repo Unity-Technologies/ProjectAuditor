@@ -3,7 +3,7 @@ Here are the steps required to setup a Unity project for Project Auditor develop
 
 ## Package
 The simplest way to install Project Auditor for Development purposes is to _clone_ the repository to the `Packages` folder of your project.
-Alternatively, it is possible to clone the repository to a different folder. However, note that in this case you will have to add `com.unity.project-auditor` to your `Packages.manifest.json`.
+Alternatively, it is possible to clone the repository to a different folder. However, note that in this case you will have to add `com.unity.project-auditor` to your `Packages/manifest.json`.
 
 ## Tests
 In order to be able to run (existing or new) tests in VS/Rider or within Unity using TestRunner, it is necessary to: 
