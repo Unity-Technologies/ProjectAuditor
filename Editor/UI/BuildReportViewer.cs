@@ -1,4 +1,4 @@
-#if !BUILD_REPORT_INSPECTOR_INSTALLED
+#if !PACKAGE_BUILD_REPORT_INSPECTOR
 
 using System;
 using Unity.ProjectAuditor.Editor.UI.Framework;
@@ -11,7 +11,7 @@ using UnityEngine.Serialization;
 namespace Unity.ProjectAuditor.Editor.UI
 {
     [CustomEditor(typeof(BuildReport))]
-    class BuildReportViewer : UnityEditor.Editor, IBuildReportProvider
+    class BuildReportViewer : UnityEditor.Editor, BuildReportModule.IBuildReportProvider
     {
         static int s_ActiveViewIndex;
         static ViewStates s_ViewStates;

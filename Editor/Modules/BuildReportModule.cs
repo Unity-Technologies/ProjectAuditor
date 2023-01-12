@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.Editor.Build;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.Callbacks;
@@ -34,67 +35,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    public interface IBuildReportProvider
-    {
-        BuildReport GetBuildReport(BuildTarget platform);
-    }
-
-    class LastBuildReportProvider : IBuildReportProvider
-    {
-        internal const string k_LastBuildReportPath = "Library/LastBuild.buildreport";
-
-        public BuildReport GetBuildReport(BuildTarget platform)
-        {
-            var buildReport = GetLastBuildReportAsset();
-            if (buildReport != null && buildReport.summary.platform == platform)
-                return buildReport;
-
-            return null;
-        }
-
-        public static BuildReport GetLastBuildReportAsset()
-        {
-            if (!File.Exists(k_LastBuildReportPath))
-                return null; // a build report was not found in the Library folder
-
-            var buildReportPath = UserPreferences.buildReportPath;
-            if (!Directory.Exists(buildReportPath))
-                Directory.CreateDirectory(buildReportPath);
-
-            var date = File.GetLastWriteTime(k_LastBuildReportPath);
-            var targetAssetName = "Build_" + date.ToString("yyyy-MM-dd-HH-mm-ss");
-            var assetPath = $"{buildReportPath}/{targetAssetName}.buildreport";
-
-            if (!File.Exists(assetPath))
-            {
-                var tempAssetPath = buildReportPath + "/New Report.buildreport";
-                File.Copy(k_LastBuildReportPath, tempAssetPath, true);
-                AssetDatabase.ImportAsset(tempAssetPath);
-                AssetDatabase.RenameAsset(tempAssetPath, targetAssetName);
-            }
-
-            return AssetDatabase.LoadAssetAtPath<BuildReport>(assetPath);
-        }
-
-        [PostProcessBuild(1)]
-        public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
-        {
-            if (UserPreferences.buildReportAutoSave)
-            {
-                // Library/LastBuild.buildreport is only created AFTER OnPostprocessBuild so we need to defer the copy of the file
-                EditorApplication.update += CheckLastBuildReport;
-            }
-        }
-
-        static void CheckLastBuildReport()
-        {
-            if (GetLastBuildReportAsset() != null)
-                EditorApplication.update -= CheckLastBuildReport;
-        }
-    }
-
     public class BuildReportModule : ProjectAuditorModule
     {
+        internal interface IBuildReportProvider
+        {
+            BuildReport GetBuildReport(BuildTarget platform);
+        }
+
 #if BUILD_REPORT_API_SUPPORT
         const string k_KeyBuildPath = "Path";
         const string k_KeyPlatform = "Platform";
@@ -146,13 +93,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
         static IBuildReportProvider s_BuildReportProvider;
         static IBuildReportProvider s_DefaultBuildReportProvider = new LastBuildReportProvider();
 
-        public static IBuildReportProvider BuildReportProvider
+        internal static IBuildReportProvider BuildReportProvider
         {
             get => s_BuildReportProvider != null ? s_BuildReportProvider : s_DefaultBuildReportProvider;
             set => s_BuildReportProvider = value;
         }
 
-        public static IBuildReportProvider DefaultBuildReportProvider => s_BuildReportProvider;
+        internal static IBuildReportProvider DefaultBuildReportProvider => s_BuildReportProvider;
 
         public override string name => "Build Report";
 

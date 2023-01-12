@@ -183,6 +183,15 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
     }
 }
 
+namespace Unity.ProjectAuditor.Editor.Build
+{
+    public static class BuildReportHelper
+    {
+        public static UnityEditor.Build.Reporting.BuildReport GetLast();
+        [UnityEditor.Callbacks.PostProcessBuild(1)] public static void OnPostprocessBuild(UnityEditor.BuildTarget target, string pathToBuiltProject);
+    }
+}
+
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     public class CallTreeNode : Unity.ProjectAuditor.Editor.Core.DependencyNode
@@ -480,8 +489,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public class BuildReportModule : Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule
     {
-        public static IBuildReportProvider BuildReportProvider { get; set; }
-        public static IBuildReportProvider DefaultBuildReportProvider { get; }
         public override string name { get; }
         public override System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.Core.IssueLayout> supportedLayouts { get; }
         public BuildReportModule() {}
@@ -516,11 +523,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Platform = 0,
         PlatformKeywords = 4,
         Tier = 1,
-    }
-
-    public interface IBuildReportProvider
-    {
-        public UnityEditor.Build.Reporting.BuildReport GetBuildReport(UnityEditor.BuildTarget platform);
     }
 
     public interface ICodeModuleInstructionAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
