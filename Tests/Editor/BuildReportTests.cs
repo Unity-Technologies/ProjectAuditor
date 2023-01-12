@@ -95,7 +95,9 @@ namespace Unity.ProjectAuditor.EditorTests
         public void BuildReport_ObjectName_IsCorrect()
         {
             Build();
-            var buildReport = BuildReportModule.BuildReportProvider.GetBuildReport();
+
+            // don't use provider to get build report since we might have a different build report selected in the Editor
+            var buildReport = LastBuildReportProvider.GetLastBuildReportAsset();
             var assetPath = AssetDatabase.GetAssetPath(buildReport);
             var assetName = Path.GetFileNameWithoutExtension(assetPath);
             Assert.AreEqual(assetName, buildReport.name);
@@ -112,7 +114,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(matchingIssue);
 
             var buildFile = matchingIssue.GetCustomProperty(BuildReportFileProperty.BuildFile);
-            var buildReport = BuildReportModule.BuildReportProvider.GetBuildReport();
+            var buildReport = LastBuildReportProvider.GetLastBuildReportAsset();
 
             Assert.NotNull(buildReport);
 

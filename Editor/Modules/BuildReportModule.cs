@@ -36,16 +36,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public interface IBuildReportProvider
     {
-        BuildReport GetBuildReport();
+        BuildReport GetBuildReport(BuildTarget platform);
     }
 
     class LastBuildReportProvider : IBuildReportProvider
     {
         internal const string k_LastBuildReportPath = "Library/LastBuild.buildreport";
 
-        public BuildReport GetBuildReport()
+        public BuildReport GetBuildReport(BuildTarget platform)
         {
-            return GetLastBuildReportAsset();
+            var buildReport = GetLastBuildReportAsset();
+            if (buildReport != null && buildReport.summary.platform == platform)
+                return buildReport;
+
+            return null;
         }
 
         public static BuildReport GetLastBuildReportAsset()
@@ -166,8 +170,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
 #if BUILD_REPORT_API_SUPPORT
-            var buildReport = BuildReportProvider.GetBuildReport();
-            if (buildReport != null && projectAuditorParams.platform == buildReport.summary.platform)
+            var buildReport = BuildReportProvider.GetBuildReport(projectAuditorParams.platform);
+            if (buildReport != null)
             {
                 projectAuditorParams.onIncomingIssues(new[]
                 {
@@ -226,13 +230,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     // sourceAssetPath might contain '|' which is invalid. This is due to compressed texture format names in the asset name such as DXT1|BC1
                     var assetPath = PathUtils.ReplaceInvalidChars(content.sourceAssetPath);
-
-                    // handle special case of Built-in assets
-                    if (assetPath.StartsWith("Built-in") && assetPath.Contains(":"))
-                        assetPath = assetPath.Substring(0, assetPath.IndexOf(':'));
-
-                    var description = string.IsNullOrEmpty(assetPath) ? k_Unknown : Path.GetFileNameWithoutExtension(assetPath);
                     var assetImporter = AssetImporter.GetAtPath(assetPath);
+                    var description = string.IsNullOrEmpty(assetPath) ? k_Unknown : Path.GetFileNameWithoutExtension(assetPath);
+
                     yield return ProjectIssue.Create(IssueCategory.BuildFile, description)
                         .WithLocation(assetPath)
                         .WithCustomProperties(new object[(int)BuildReportFileProperty.Num]

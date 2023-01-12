@@ -100,7 +100,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static string ReplaceInvalidChars(string path)
         {
-            return path.Replace('|', '_');
+            return path.Replace('|', '_').Replace(":", string.Empty);
         }
 
         public static string[] Split(string path)

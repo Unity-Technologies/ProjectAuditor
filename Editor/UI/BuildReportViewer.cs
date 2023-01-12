@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ActiveViewIndex = s_ActiveViewIndex;
             }
 
-            var buildReport = GetBuildReport();
+            var buildReport = GetBuildReport(BuildTarget.NoTarget);
             if (s_BuildReport != buildReport)
             {
                 s_BuildReport = buildReport;
@@ -100,7 +100,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.EndVertical();
         }
 
-        public BuildReport GetBuildReport()
+        public BuildReport GetBuildReport(BuildTarget platform)
         {
             return target as BuildReport;
         }
