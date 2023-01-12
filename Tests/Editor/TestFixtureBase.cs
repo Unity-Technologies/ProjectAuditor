@@ -24,6 +24,7 @@ namespace Unity.ProjectAuditor.EditorTests
         protected ProjectAuditorConfig m_Config;
         protected string m_BuildPath;
         protected Editor.ProjectAuditor m_ProjectAuditor;
+        protected ProjectAuditorSettingsProvider m_SettingsProvider;
 
         [OneTimeSetUp]
         public void FixtureSetUp()
@@ -32,6 +33,9 @@ namespace Unity.ProjectAuditor.EditorTests
             m_Config.AnalyzeInBackground = false;
 
             m_ProjectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
+
+            m_SettingsProvider = new ProjectAuditorSettingsProvider();
+            m_SettingsProvider.Initialize();
         }
 
         [OneTimeTearDown]
@@ -51,7 +55,8 @@ namespace Unity.ProjectAuditor.EditorTests
                 {
                     foundIssues.AddRange(predicate == null ? issues : issues.Where(predicate));
                 },
-                platform = m_Platform
+                platform = m_Platform,
+                settingsProvider = m_SettingsProvider
             };
             m_ProjectAuditor.Audit(projectAuditorParams);
 
@@ -72,7 +77,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
                     foundIssues.AddRange(predicate == null ? categoryIssues : categoryIssues.Where(predicate));
                 },
-                platform = m_Platform
+                platform = m_Platform,
+                settingsProvider = m_SettingsProvider
             };
 
             projectAuditor.Audit(projectAuditorParams);
