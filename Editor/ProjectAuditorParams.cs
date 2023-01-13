@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public ProjectReport existingReport;
 
-        public IProjectAuditorSettingsProvider settingsProvider;
+        public ProjectAuditorSettings settings;
 
         public ProjectAuditorParams()
         {
@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor
 
             existingReport = original.existingReport;
 
-            settingsProvider = original.settingsProvider;
+            settings = original.settings;
         }
     }
 }

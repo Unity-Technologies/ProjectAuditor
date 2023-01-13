@@ -157,8 +157,8 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
-            if (projectAuditorParams.settingsProvider == null)
-                projectAuditorParams.settingsProvider = m_DefaultSettingsProvider;
+            if (projectAuditorParams.settings == null)
+                projectAuditorParams.settings = m_DefaultSettingsProvider.GetCurrentSettings();
 
             var numModules = supportedModules.Length;
             if (numModules == 0)

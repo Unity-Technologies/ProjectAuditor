@@ -64,6 +64,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void ProjectAuditor_Params_AreCopied()
         {
             var settingsProvider = new ProjectAuditorSettingsProvider();
+            var settings = settingsProvider.GetCurrentSettings();
 
             var originalParams = new ProjectAuditorParams
             {
@@ -71,7 +72,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 assemblyNames = new[] { "Test" },
                 platform = BuildTarget.Android,
                 codeOptimization = CodeOptimization.Debug,
-                settingsProvider = settingsProvider
+                settings = settings
             };
 
             var projectAuditorParams = new ProjectAuditorParams(originalParams);
@@ -80,7 +81,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsNotNull(projectAuditorParams.assemblyNames);
             Assert.AreEqual(BuildTarget.Android, projectAuditorParams.platform);
             Assert.AreEqual(CodeOptimization.Debug, projectAuditorParams.codeOptimization);
-            Assert.AreEqual(settingsProvider, projectAuditorParams.settingsProvider);
+            Assert.AreEqual(settings, projectAuditorParams.settings);
         }
 
         [Test]
@@ -108,7 +109,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
                     projectReport = report;
                 },
-                settingsProvider = settingsProvider
+                settings = settingsProvider.GetCurrentSettings()
             });
 
             Assert.AreEqual(1, numModules);
@@ -128,7 +129,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var report = projectAuditor.Audit(new ProjectAuditorParams
             {
                 categories = new[] { IssueCategory.ProjectSetting},
-                settingsProvider = settingsProvider
+                settings = settingsProvider.GetCurrentSettings()
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));
@@ -143,7 +144,7 @@ namespace Unity.ProjectAuditor.EditorTests
             {
                 categories = new[] { IssueCategory.ProjectSetting},
                 existingReport = report,
-                settingsProvider = settingsProvider
+                settings = settingsProvider.GetCurrentSettings()
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));

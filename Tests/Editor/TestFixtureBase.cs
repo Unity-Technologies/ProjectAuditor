@@ -56,7 +56,7 @@ namespace Unity.ProjectAuditor.EditorTests
                     foundIssues.AddRange(predicate == null ? issues : issues.Where(predicate));
                 },
                 platform = m_Platform,
-                settingsProvider = m_SettingsProvider
+                settings = m_SettingsProvider.GetCurrentSettings()
             };
             m_ProjectAuditor.Audit(projectAuditorParams);
 
@@ -78,7 +78,7 @@ namespace Unity.ProjectAuditor.EditorTests
                     foundIssues.AddRange(predicate == null ? categoryIssues : categoryIssues.Where(predicate));
                 },
                 platform = m_Platform,
-                settingsProvider = m_SettingsProvider
+                settings = m_SettingsProvider.GetCurrentSettings()
             };
 
             projectAuditor.Audit(projectAuditorParams);

@@ -632,7 +632,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     m_ShouldRefresh = true;
                 },
-                settingsProvider = m_SettingsProvider
+                settings = m_SettingsProvider.GetCurrentSettings()
             };
             m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar());
         }
@@ -681,7 +681,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                 },
                 existingReport = m_ProjectReport,
-                settingsProvider = m_SettingsProvider
+                settings = m_SettingsProvider.GetCurrentSettings()
             };
 
             var platform = m_ProjectReport.FindByCategory(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));

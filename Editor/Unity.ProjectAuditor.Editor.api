@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor
         public System.Action<System.Collections.Generic.IEnumerable<ProjectIssue>> onIncomingIssues;
         public System.Action onModuleCompleted;
         public UnityEditor.BuildTarget platform;
-        public IProjectAuditorSettingsProvider settingsProvider;
+        public ProjectAuditorSettings settings;
         public ProjectAuditorParams() {}
         public ProjectAuditorParams(ProjectAuditorParams original) {}
     }
