@@ -10,8 +10,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         void Initialize(ProjectAuditorModule module);
 
-        IEnumerable<ProjectIssue> Analyze(IProjectAuditorSettingsProvider projectAuditorSettingsProvider,
-            BuildTarget platform, TextureImporter textureImporter,
+        IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams,
+            TextureImporter textureImporter,
             TextureImporterPlatformSettings textureImporterPlatformSettings);
     }
 }

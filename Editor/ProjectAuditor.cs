@@ -46,16 +46,20 @@ namespace Unity.ProjectAuditor.Editor
 
         public ProjectAuditorConfig config => m_Config;
 
+        IProjectAuditorSettingsProvider m_DefaultSettingsProvider;
+
         public ProjectAuditor()
         {
             InitAsset(DefaultAssetPath);
             InitModules();
+            InitDefaultSettingsProvider();
         }
 
         public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
         {
             m_Config = projectAuditorConfig;
             InitModules();
+            InitDefaultSettingsProvider();
         }
 
         /// <summary>
@@ -66,6 +70,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             InitAsset(assetPath);
             InitModules();
+            InitDefaultSettingsProvider();
         }
 
         void InitAsset(string assetPath)
@@ -99,6 +104,12 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 m_Modules.Add(instance);
             }
+        }
+
+        void InitDefaultSettingsProvider()
+        {
+            m_DefaultSettingsProvider = new ProjectAuditorSettingsProvider();
+            m_DefaultSettingsProvider.Initialize();
         }
 
         /// <summary>
@@ -147,11 +158,7 @@ namespace Unity.ProjectAuditor.Editor
             }
 
             if (projectAuditorParams.settingsProvider == null)
-            {
-                var provider = new ProjectAuditorSettingsProvider();
-                provider.Initialize();
-                projectAuditorParams.settingsProvider = provider;
-            }
+                projectAuditorParams.settingsProvider = m_DefaultSettingsProvider;
 
             var numModules = supportedModules.Length;
             if (numModules == 0)

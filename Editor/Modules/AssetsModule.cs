@@ -121,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     totalBytes += fileInfo.Length;
                 }
 
-                if (totalBytes > settings.StreamingAssetsFolderSizeLimitMb * 1024 * 1024)
+                if (totalBytes > settings.StreamingAssetsFolderSizeLimit * 1024 * 1024)
                 {
                     issues.Add(
                         ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor,
