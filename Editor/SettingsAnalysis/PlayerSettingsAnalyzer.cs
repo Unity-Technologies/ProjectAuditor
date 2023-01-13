@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Audio: Speaker Mode",
             new[] { Area.BuildSize },
             "<b>UnityEngine.AudioSettings.speakerMode</b> is not set to <b>UnityEngine.AudioSpeakerMode.Mono</b>. The generated build will be larger than necessary.",
-            "Change <b>Project Settings ➔ Audio ➔ Default Speaker Mode</b> to <b>Mono</b> to reduce the size of the build on disk.")
+            "To reduce runtime memory consumption of AudioClips change <b>Project Settings ➔ Audio ➔ Default Speaker Mode</b> to <b>Mono</b>. This will reduce half memory usage of stereo AudioClips. It is also recommended considering enabling the <b>Force To Mono</b> AudioClip import setting to reduce import times and build size.")
         {
             platforms = new[] { "Android", "iOS"},
             fixer = (issue => {
@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SplashScreenDescriptor)
                     .WithLocation("Project/Player");
             }
-            if (IsSpeakerModeMono())
+            if (!IsSpeakerModeMono())
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SpeakerModeDescriptor)
                     .WithLocation("Project/Player");
