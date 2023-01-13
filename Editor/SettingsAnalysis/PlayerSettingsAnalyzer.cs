@@ -40,7 +40,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             platforms = new[] { "Android", "iOS"},
             fixer = (issue => {
-                Debug.Log("my first issue");
                 FixSpeakerMode();
             })
         };
