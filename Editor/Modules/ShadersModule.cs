@@ -725,8 +725,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var passMatch = cv.pass.Equals(passName);
             if (!passMatch)
             {
-                var isUnnamed = k_NoPassNames.Contains(cv.pass);
-#if UNITY_2019_1_OR_NEWER
+                var isUnnamed = k_NoPassNames.Contains(cv.pass) || cv.pass.StartsWith("<Unnamed Pass ");
+#if UNITY_2021_3_OR_NEWER || UNITY_2021_2_14 || UNITY_2021_2_15 || UNITY_2021_2_16 || UNITY_2021_2_17 || UNITY_2021_2_18 || UNITY_2021_2_19
+                passMatch = isUnnamed && string.IsNullOrEmpty(passName);
+#elif UNITY_2019_1_OR_NEWER
                 var pass = 0;
                 passMatch = isUnnamed && passName.StartsWith(k_UnnamedPassPrefix) && int.TryParse(passName.Substring(k_UnnamedPassPrefix.Length), out pass);
 #else
