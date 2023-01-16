@@ -100,7 +100,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Selects settings as the current settings. This may be the default settings or an asset with settings.
         /// </summary>
-        /// <param name="settingsAsset">A ScriptableObject asset of type <see cref="ProjectAuditorSettings"/> to be used as the settings to tweak analyzer values/limits.</param>
+        /// <param name="settings">A ScriptableObject asset of type <see cref="ProjectAuditorSettings"/> to be used as the settings to tweak analyzer values/limits.</param>
         public void SelectCurrentSettings(ProjectAuditorSettings settings)
         {
             m_CurrentSettings = settings;
