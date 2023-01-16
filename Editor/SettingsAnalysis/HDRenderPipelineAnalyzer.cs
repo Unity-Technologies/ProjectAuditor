@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_CameraLitShaderModeBothOrMixed);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext context)
+        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
             if (IsLitShaderModeBothOrMixed())
             {

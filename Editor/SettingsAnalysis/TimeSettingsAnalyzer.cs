@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_MaximumAllowedTimestepDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext context)
+        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
             if (UnityEngine.Time.fixedDeltaTime - 0.02f < Mathf.Epsilon)
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FixedTimestepDescriptor)

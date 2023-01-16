@@ -46,9 +46,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_SpeakerModeDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext context)
+        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
-            if (k_AccelerometerDescriptor.platforms.Contains(context.platform.ToString()) && IsAccelerometerEnabled())
+            if (k_AccelerometerDescriptor.platforms.Contains(projectAuditorParams.platform.ToString()) && IsAccelerometerEnabled())
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_AccelerometerDescriptor)
                     .WithLocation("Project/Player");
