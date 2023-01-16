@@ -414,6 +414,34 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             ViewDescriptor.Register(new ViewDescriptor
             {
+                category = IssueCategory.AudioClip,
+                name = "AudioClip",
+                menuLabel = "Assets/Meshes//Audio Clips",
+                menuOrder = 107,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AudioClip
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.Mesh,
+                name = "Meshes",
+                menuLabel = "Assets/Meshes/Meshes",
+                menuOrder = 7,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                onDrawToolbar = (viewManager) =>
+                {
+                    AnalysisView.DrawToolbarButton(Contents.AssetDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
+                },
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Meshes
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
                 category = IssueCategory.Texture,
                 name = "Textures",
                 menuLabel = "Assets/Textures/Textures",
@@ -447,18 +475,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 ViewDescriptor.Register(new ViewDescriptor
                 {
-                    category = IssueCategory.AudioClip,
-                    name = "AudioClip",
-                    menuLabel = "Experimental/Audio Clips",
-                    menuOrder = 107,
-                    descriptionWithIcon = true,
-                    showFilters = true,
-                    onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AudioClip
-                });
-
-                ViewDescriptor.Register(new ViewDescriptor
-                {
                     category = IssueCategory.PrecompiledAssembly,
                     name = "Precompiled Assemblies",
                     menuLabel = "Experimental/Precompiled Assemblies",
@@ -467,22 +483,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     getAssemblyName = issue => issue.description,
                     onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PrecompiledAssemblies
-                });
-
-                ViewDescriptor.Register(new ViewDescriptor
-                {
-                    category = IssueCategory.Mesh,
-                    name = "Meshes",
-                    menuLabel = "Assets/Meshes/Meshes",
-                    menuOrder = 7,
-                    descriptionWithIcon = true,
-                    showFilters = true,
-                    onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                    onDrawToolbar = (viewManager) =>
-                    {
-                        AnalysisView.DrawToolbarButton(Contents.AssetDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
-                    },
-                    analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Meshes
                 });
             }
             ViewDescriptor.Register(new ViewDescriptor
@@ -1240,14 +1240,16 @@ namespace Unity.ProjectAuditor.Editor.UI
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
                 const int largeButtonWidth = 200;
-
+#if UNITY_2019_1_OR_NEWER
+                GUILayout.Label(Utility.GetPlatformIcon(BuildPipeline.GetBuildTargetGroup(m_Platform)), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.toolbarIconSize));
+#endif
                 Utility.ToolbarDropdownList(m_ViewDropdownItems,
                     m_ViewManager.activeViewIndex,
                     (category) => {m_ViewManager.ChangeView((IssueCategory)category);}, GUILayout.Width(largeButtonWidth));
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
-                    GUILayout.Label(Utility.GetIcon(Utility.IconType.StatusWheel));
+                    GUILayout.Label(Utility.GetIcon(Utility.IconType.StatusWheel), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.toolbarIconSize));
                 }
 
                 EditorGUILayout.Space();
@@ -1275,7 +1277,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                 }
 
-                Utility.DrawHelpButton(Contents.HelpButton, "index");
+                Utility.DrawHelpButton(Contents.HelpButton, Documentation.GetPageUrl("index"));
             }
         }
 

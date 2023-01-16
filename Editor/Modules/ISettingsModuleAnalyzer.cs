@@ -5,10 +5,8 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public interface ISettingsModuleAnalyzer
+    public interface ISettingsModuleAnalyzer : IModuleAnalyzer
     {
-        void Initialize(ProjectAuditorModule module);
-
         IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams);
     }
 }

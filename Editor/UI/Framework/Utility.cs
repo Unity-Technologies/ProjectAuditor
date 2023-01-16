@@ -123,11 +123,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return GUI.Button(rect, content, EditorStyles.toolbarDropDown);
         }
 
-        public static void DrawHelpButton(GUIContent content, string page)
+        public static void DrawHelpButton(GUIContent content, string url)
         {
             if (GUILayout.Button(content, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
             {
-                Application.OpenURL(Documentation.baseURL + ProjectAuditor.PackageVersion + Documentation.subURL + page + Documentation.endURL);
+                Application.OpenURL(url);
             }
         }
 
@@ -167,6 +167,32 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return selectedStrings[0];
 
             return Formatting.CombineStrings(selectedStrings);
+        }
+
+        static string GetPlatformIconName(BuildTargetGroup buildTargetGroup)
+        {
+            string platformName;
+            if (buildTargetGroup == BuildTargetGroup.Unknown)
+                return "BuildSettings.Broadcom";
+
+            switch (buildTargetGroup)
+            {
+                case BuildTargetGroup.WSA:
+                    platformName = "Metro";
+                    break;
+                default:
+                    platformName = buildTargetGroup.ToString();
+                    break;
+            }
+
+            return $"BuildSettings.{platformName}.Small";
+        }
+
+        public static GUIContent GetPlatformIcon(BuildTargetGroup buildTargetGroup)
+        {
+            var iconName = GetPlatformIconName(buildTargetGroup);
+
+            return EditorGUIUtility.IconContent(iconName);
         }
 
         public static GUIContent GetIcon(IconType iconType, string tooltip = null)

@@ -92,6 +92,8 @@ namespace Unity.ProjectAuditor.Editor
         {
             foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ProjectAuditorModule)))
             {
+                if (type.IsAbstract)
+                    continue;
                 var instance = Activator.CreateInstance(type) as ProjectAuditorModule;
                 try
                 {
@@ -175,10 +177,11 @@ namespace Unity.ProjectAuditor.Editor
                 var moduleStartTime = DateTime.Now;
                 module.Audit(new ProjectAuditorParams(projectAuditorParams)
                 {
-                    onIncomingIssues = issues =>
+                    onIncomingIssues = results =>
                     {
-                        report.AddIssues(issues);
-                        projectAuditorParams.onIncomingIssues?.Invoke(issues);
+                        var resultsList = results.ToList();
+                        report.AddIssues(resultsList);
+                        projectAuditorParams.onIncomingIssues?.Invoke(resultsList);
                     },
                     onModuleCompleted = () =>
                     {

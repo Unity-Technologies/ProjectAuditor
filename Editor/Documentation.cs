@@ -5,5 +5,10 @@ namespace Unity.ProjectAuditor.Editor
         internal const string baseURL = "https://github.com/Unity-Technologies/ProjectAuditor/blob/";
         internal const string subURL = "/Documentation~/";
         internal const string endURL = ".md";
+
+        internal static string GetPageUrl(string pageName)
+        {
+            return baseURL + ProjectAuditor.PackageVersion + subURL + pageName + endURL;
+        }
     }
 }

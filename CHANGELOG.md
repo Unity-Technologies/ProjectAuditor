@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+[Unreleased]
+* Added _UnityEngine.Object.FindObjectOfType_ usage detection
+* Fixed names of build-generated assets in Build Report 
+
 ## [0.9.0-preview] - 2022-12-01
 * Added diagnostic area _Quality_, _Support_ and _Requirement_
 * Added _documentation_ support to descriptor

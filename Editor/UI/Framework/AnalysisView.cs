@@ -40,6 +40,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get { return m_Desc; }
         }
 
+        public string documentationUrl => Documentation.GetPageUrl(new string(m_Desc.name.Where(char.IsLetterOrDigit).ToArray()));
+
         public int numIssues
         {
             get
@@ -293,7 +295,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             DrawDataOptions();
 
-            Utility.DrawHelpButton(m_HelpButtonContent, new string(m_Desc.name.Where(char.IsLetterOrDigit).ToArray()));
+            Utility.DrawHelpButton(m_HelpButtonContent, documentationUrl);
 
             EditorGUILayout.EndHorizontal();
         }
@@ -568,13 +570,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         protected const string k_MultipleSelectionText = "<Multiple selection>";
 
-        public static int toolbarButtonSize
-        {
-            get
-            {
-                return LayoutSize.ToolbarButtonSize;
-            }
-        }
+        public static int toolbarButtonSize => LayoutSize.ToolbarButtonSize;
+        public static int toolbarIconSize => LayoutSize.ToolbarIconSize;
 
         static readonly string[] k_ExportModeStrings =
         {
@@ -590,7 +587,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int DependencyViewHeight = 200;
             public static readonly int DetailsPanelWidth = 200;
             public static readonly int ToolbarButtonSize = 80;
-            public static readonly int ToolbarIconSize = 40;
+            public static readonly int ToolbarIconSize = 32;
             public static readonly int ActionButtonHeight = 30;
             public static readonly int ActionButtonWidth = 200;
         }

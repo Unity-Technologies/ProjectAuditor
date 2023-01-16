@@ -31,9 +31,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get { return m_ActiveViewIndex; }
         }
 
+        public int numViews => m_Views != null ? m_Views.Length : 0;
+
         public Action<IssueCategory> onAnalyze;
         public Action onViewExported;
         public Action<int> onViewChanged;
+
+        internal ViewManager()
+            : this(ViewDescriptor.GetAll().Select(d => d.category).ToArray())
+        {
+        }
 
         public ViewManager(IssueCategory[] categories)
         {

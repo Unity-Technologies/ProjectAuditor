@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class SettingsModule : ProjectAuditorModule
+    class SettingsModule : ProjectAuditorModuleWithAnalyzers<ISettingsModuleAnalyzer>
     {
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
@@ -25,20 +25,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        List<ISettingsModuleAnalyzer> m_Analyzers;
-
         public override string name => "Settings";
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
-
-        public override void Initialize(ProjectAuditorConfig config)
-        {
-            m_Analyzers = new List<ISettingsModuleAnalyzer>();
-            m_Descriptors = new HashSet<Descriptor>();
-
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ISettingsModuleAnalyzer)))
-                AddAnalyzer(Activator.CreateInstance(type) as ISettingsModuleAnalyzer);
-        }
 
         public override void RegisterDescriptor(Descriptor descriptor)
         {
@@ -48,10 +37,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
+            var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
             if (progress != null)
-                progress.Start("Analyzing Settings", "Analyzing project settings", m_Analyzers.Count);
+                progress.Start("Analyzing Settings", "Analyzing project settings", analyzers.Length);
 
-            var analyzers = m_Analyzers.Where(a => CoreUtils.SupportsPlatform(a.GetType(), projectAuditorParams.platform)).ToArray();
 
             foreach (var analyzer in analyzers)
             {
@@ -65,12 +54,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
             projectAuditorParams.onModuleCompleted?.Invoke();
-        }
-
-        void AddAnalyzer(ISettingsModuleAnalyzer analyzer)
-        {
-            analyzer.Initialize(this);
-            m_Analyzers.Add(analyzer);
         }
     }
 }

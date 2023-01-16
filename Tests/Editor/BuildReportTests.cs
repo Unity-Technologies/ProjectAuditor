@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Build;
 using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
 using UnityEngine;
@@ -29,7 +30,7 @@ namespace Unity.ProjectAuditor.EditorTests
             m_OriginalBuildReportPath = UserPreferences.buildReportPath;
             UserPreferences.buildReportPath = Path.Combine("Assets", Path.GetFileName(FileUtil.GetUniqueTempPathInProject()));
 
-            File.Delete(LastBuildReportProvider.k_LastBuildReportPath);
+            File.Delete(BuildReportHelper.k_LastBuildReportPath);
         }
 
         [TearDown]
@@ -59,7 +60,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
         public void BuildReport_IsNotAvailable()
         {
-            var buildReport = BuildReportModule.BuildReportProvider.GetBuildReport();
+            var buildReport = BuildReportHelper.GetLast();
             Assert.IsNull(buildReport);
         }
 
@@ -95,7 +96,9 @@ namespace Unity.ProjectAuditor.EditorTests
         public void BuildReport_ObjectName_IsCorrect()
         {
             Build();
-            var buildReport = BuildReportModule.BuildReportProvider.GetBuildReport();
+
+            // don't use provider to get build report since we might have a different build report selected in the Editor
+            var buildReport = BuildReportHelper.GetLast();
             var assetPath = AssetDatabase.GetAssetPath(buildReport);
             var assetName = Path.GetFileNameWithoutExtension(assetPath);
             Assert.AreEqual(assetName, buildReport.name);
@@ -112,7 +115,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(matchingIssue);
 
             var buildFile = matchingIssue.GetCustomProperty(BuildReportFileProperty.BuildFile);
-            var buildReport = BuildReportModule.BuildReportProvider.GetBuildReport();
+            var buildReport = BuildReportHelper.GetLast();
 
             Assert.NotNull(buildReport);
 

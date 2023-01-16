@@ -18,7 +18,7 @@
         {
             "name": "com.unity.build-report-inspector",
             "expression": "",
-            "define": "BUILD_REPORT_INSPECTOR_INSTALLED"
+            "define": "PACKAGE_BUILD_REPORT_INSPECTOR"
         }
     ],
     "noEngineReferences": false

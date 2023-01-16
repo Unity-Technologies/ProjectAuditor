@@ -25,7 +25,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Instead of removing code an option is to strip this code on release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a method where you call this. When logging is still used in your code a small optimization can be to leave out the callstack, if not required, by setting <b>Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)</b> via code."
             )
         {
-            messageFormat = "Use of Debug.{0} in '{1}'"
+            messageFormat = "Use of Debug.{0} in '{1}'",
+            severity = Severity.Minor
         };
 
         static readonly Descriptor k_DebugLogWarningIssueDescriptor = new Descriptor
@@ -37,7 +38,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Instead of removing code an option is to strip this code on release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a method where you call this. When logging is still used in your code a small optimization can be to leave out the callstack, if not required, by setting <b>Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None)</b> via code."
             )
         {
-            messageFormat = "Use of Debug.{0} in '{1}'"
+            messageFormat = "Use of Debug.{0} in '{1}'",
+            severity = Severity.Minor
         };
 
         readonly OpCode[] m_OpCodes =

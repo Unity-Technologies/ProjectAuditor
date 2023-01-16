@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Initialize(ProjectAuditorConfig config)
         {
-            m_Descriptors = new HashSet<Descriptor>();
+            base.Initialize(config);
 
             RegisterDescriptor(k_ResourcesFolderDescriptor);
             RegisterDescriptor(k_StreamingAssetsFolderDescriptor);
