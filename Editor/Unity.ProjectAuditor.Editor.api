@@ -10,6 +10,14 @@ namespace Unity.ProjectAuditor.Editor
         public void Start(string title, string description, int total);
     }
 
+    public interface IProjectAuditorSettingsProvider
+    {
+        public ProjectAuditorSettings GetCurrentSettings();
+        public System.Collections.Generic.IEnumerable<ProjectAuditorSettings> GetSettings();
+        public void Initialize();
+        public void SelectCurrentSettings(ProjectAuditorSettings settings);
+    }
+
     public interface IProjectIssueFilter
     {
         public bool Match(ProjectIssue issue);
@@ -79,6 +87,7 @@ namespace Unity.ProjectAuditor.Editor
         public bool AnalyzeOnBuild;
         public AssemblyUtils.CompilationMode CompilationMode;
         public bool FailBuildOnIssues;
+        public ProjectAuditorSettings[] Settings;
         public bool UseRoslynAnalyzers;
         public int NumRules { get; }
         public ProjectAuditorConfig() {}
@@ -99,14 +108,35 @@ namespace Unity.ProjectAuditor.Editor
         public System.Action<System.Collections.Generic.IEnumerable<ProjectIssue>> onIncomingIssues;
         public System.Action onModuleCompleted;
         public UnityEditor.BuildTarget platform;
+        public ProjectAuditorSettings settings;
         public ProjectAuditorParams() {}
         public ProjectAuditorParams(ProjectAuditorParams original) {}
     }
 
+    [UnityEngine.CreateAssetMenu(menuName = @"Project Auditor/Project Auditor Settings")] public class ProjectAuditorSettings : UnityEngine.ScriptableObject
+    {
+        public int MeshTriangleCountLimit = 5000;
+        public int MeshVerticeCountLimit = 5000;
+        public int StreamingAssetsFolderSizeLimit = 50;
+        public int TextureSizeLimit = 2048;
+        public ProjectAuditorSettings() {}
+    }
+
+    public class ProjectAuditorSettingsProvider : IProjectAuditorSettingsProvider
+    {
+        public ProjectAuditorSettingsProvider() {}
+        public void AddSettingsFromAsset(ProjectAuditorSettings settingsAsset);
+        public ProjectAuditorSettings GetCurrentSettings();
+        public System.Collections.Generic.IEnumerable<ProjectAuditorSettings> GetSettings();
+        public void Initialize();
+        public void RefreshAssets();
+        public void SelectCurrentSettings(ProjectAuditorSettings settings);
+    }
+
     public class ProjectIssue
     {
-        public int depth = 0;
-        public bool wasFixed = false;
+        public int depth;
+        public bool wasFixed;
         public IssueCategory category { get; }
         public string[] customProperties { get; }
         public Core.DependencyNode dependencies { get; }
@@ -162,6 +192,7 @@ namespace Unity.ProjectAuditor.Editor
         public static bool developerMode { get; set; }
         public static bool logTimingsInfo { get; set; }
         public static string Path { get; }
+        public static string settingsAsset { get; set; }
         public UserPreferences() {}
     }
 }
@@ -288,7 +319,7 @@ namespace Unity.ProjectAuditor.Editor.Core
     public class IssueLayout
     {
         public IssueCategory category;
-        public bool hierarchy = false;
+        public bool hierarchy;
         public PropertyDefinition[] properties;
         public int defaultGroupPropertyIndex { get; }
         public IssueLayout() {}
@@ -533,23 +564,23 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public interface IMeshModuleAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
     {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.AssetImporter assetImporter);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, UnityEditor.AssetImporter assetImporter);
     }
 
     public interface ISettingsModuleAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
     {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext context);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams);
     }
 
     public interface ITextureModuleAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
     {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.TextureImporter textureImporter, UnityEditor.TextureImporterPlatformSettings textureImporterPlatformSettings);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, UnityEditor.TextureImporter textureImporter, UnityEditor.TextureImporterPlatformSettings textureImporterPlatformSettings);
     }
 
     public class MeshAnalyzer : IMeshModuleAnalyzer, Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
     {
         public MeshAnalyzer() {}
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.AssetImporter assetImporter);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, UnityEditor.AssetImporter assetImporter);
         public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
     }
 
@@ -580,12 +611,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         Num = 1,
         RoslynAnalyzer = 0,
-    }
-
-    public class SettingsAnalyzerContext
-    {
-        public UnityEditor.BuildTarget platform;
-        public SettingsAnalyzerContext() {}
     }
 
     public enum ShaderMessageProperty
@@ -626,7 +651,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     public class TextureAnalyzer : ITextureModuleAnalyzer, Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
     {
         public TextureAnalyzer() {}
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(UnityEditor.BuildTarget platform, UnityEditor.TextureImporter textureImporter, UnityEditor.TextureImporterPlatformSettings platformSettings);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, UnityEditor.TextureImporter textureImporter, UnityEditor.TextureImporterPlatformSettings platformSettings);
         public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
     }
 
@@ -649,7 +674,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
     public class TimeSettingsAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer, Unity.ProjectAuditor.Editor.Modules.ISettingsModuleAnalyzer
     {
         public TimeSettingsAnalyzer() {}
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(Unity.ProjectAuditor.Editor.Modules.SettingsAnalyzerContext context);
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams);
         public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
     }
 }

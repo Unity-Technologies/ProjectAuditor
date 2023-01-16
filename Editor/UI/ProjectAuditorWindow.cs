@@ -78,6 +78,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         AnalysisView activeView => m_ViewManager.GetActiveView();
 
+        IProjectAuditorSettingsProvider m_SettingsProvider;
+
         public bool Match(ProjectIssue issue)
         {
             // return false if the issue does not match one of these criteria:
@@ -149,6 +151,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             UpdateAreaSelection();
             UpdateAssemblySelection();
             Profiler.EndSample();
+
+            m_SettingsProvider = new ProjectAuditorSettingsProvider();
+            m_SettingsProvider.Initialize();
 
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid &&
@@ -626,7 +631,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ProjectReport = projectReport;
 
                     m_ShouldRefresh = true;
-                }
+                },
+                settings = m_SettingsProvider.GetCurrentSettings()
             };
             m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar());
         }
@@ -674,7 +680,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                         view.AddIssues(issues);
                     }
                 },
-                existingReport = m_ProjectReport
+                existingReport = m_ProjectReport,
+                settings = m_SettingsProvider.GetCurrentSettings()
             };
 
             var platform = m_ProjectReport.FindByCategory(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));
@@ -1004,6 +1011,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             selectedTarget = EditorGUILayout.Popup(Contents.PlatformSelection, selectedTarget, m_PlatformContents);
             m_Platform = m_SupportedBuildTargets[selectedTarget];
 
+            EditorGUILayout.Space();
+
+            DrawSettingsDropdown();
+
             GUILayout.FlexibleSpace();
 
             using (new EditorGUILayout.HorizontalScope())
@@ -1029,6 +1040,35 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Space();
 
             EditorGUILayout.EndVertical();
+        }
+
+        void DrawSettingsDropdown()
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            EditorGUILayout.LabelField(new GUIContent(Contents.SettingsTitle), GUILayout.Width(EditorGUIUtility.labelWidth - 1));
+
+            var dropdownRect = GUILayoutUtility.GetLastRect();
+            dropdownRect.x += EditorGUIUtility.labelWidth + 2;
+
+            var currentSettings = m_SettingsProvider.GetCurrentSettings();
+
+            if (EditorGUILayout.DropdownButton(new GUIContent(currentSettings.name), FocusType.Keyboard,
+                GUILayout.ExpandWidth(true)))
+            {
+                GenericMenu menu = new GenericMenu();
+
+                var allSettings = m_SettingsProvider.GetSettings();
+                foreach (var settings in allSettings)
+                {
+                    menu.AddItem(new GUIContent(settings.name), false,
+                        () => { m_SettingsProvider.SelectCurrentSettings(settings); });
+                }
+
+                menu.DropDown(dropdownRect);
+            }
+
+            EditorGUILayout.EndHorizontal();
         }
 
         void DrawPanels()
@@ -1335,6 +1375,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new GUIContent("Modules", $"Select {k_ProjectAuditorName} modules.");
             public static readonly GUIContent PlatformSelection =
                 new GUIContent("Platform", "Select the target platform.");
+
+            public static readonly GUIContent SettingsTitle = new GUIContent("Settings");
 
 #if UNITY_2019_1_OR_NEWER
             public static readonly GUIContent SaveButton = Utility.GetIcon(Utility.IconType.Save, "Save current report to json file");

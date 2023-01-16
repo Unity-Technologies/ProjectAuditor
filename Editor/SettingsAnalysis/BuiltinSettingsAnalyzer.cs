@@ -48,12 +48,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext settingsAnalyzer)
+        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
             if (m_Descriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
 
-            foreach (var descriptor in m_Descriptors.Where(d => d.IsPlatformCompatible(settingsAnalyzer.platform)))
+            foreach (var descriptor in m_Descriptors.Where(d => d.IsPlatformCompatible(projectAuditorParams.platform)))
             {
                 var issue = Evaluate(descriptor);
                 if (issue != null)

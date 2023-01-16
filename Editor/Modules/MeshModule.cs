@@ -57,7 +57,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.onIncomingIssues(analyzer.Analyze(currentPlatform, importer));
+                    var platformDiagnostics = analyzer.Analyze(projectAuditorParams, importer).ToArray();
                 }
 
                 progress?.Advance();
