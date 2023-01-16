@@ -116,6 +116,20 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettings.SplashScreen.show = prevSplashScreenEnabled;
         }
 
+        [Test]
+        public void SettingsAnalysis_AudioMode_SpeakerModeStereo_IsReported()
+        {
+            var audioConfiguration = AudioSettings.GetConfiguration();
+            AudioSettings.speakerMode = AudioSpeakerMode.Stereo;
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals("PAS0033"));
+            var playerSettingIssue = issues.FirstOrDefault();
+
+            Assert.NotNull(playerSettingIssue);
+            
+            AudioSettings.Reset(audioConfiguration);
+        }
+
         [TestCase(false)]
         [TestCase(true)]
         public void SettingsAnalysis_AudioMode_IsSpeakerModeMono(bool isSpeakerMonoMode)
