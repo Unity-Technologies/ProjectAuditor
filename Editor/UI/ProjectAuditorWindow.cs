@@ -1237,7 +1237,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                 }
 
-                Utility.DrawHelpButton(Contents.HelpButton, "index");
+                Utility.DrawHelpButton(Contents.HelpButton, Documentation.GetPageUrl("index"));
             }
         }
 
