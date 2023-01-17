@@ -116,6 +116,47 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettings.SplashScreen.show = prevSplashScreenEnabled;
         }
 
+        [Test]
+        public void SettingsAnalysis_AudioMode_SpeakerModeStereo_IsReported()
+        {
+            var audioConfiguration = AudioSettings.GetConfiguration();
+            AudioSettings.speakerMode = AudioSpeakerMode.Stereo;
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals("PAS0033"));
+            var playerSettingIssue = issues.FirstOrDefault();
+
+            Assert.NotNull(playerSettingIssue);
+            
+            AudioSettings.Reset(audioConfiguration);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void SettingsAnalysis_AudioMode_IsSpeakerModeMono(bool isSpeakerMonoMode)
+        {
+            var audioSpeaker = AudioSettings.GetConfiguration();
+            AudioSettings.speakerMode =
+                isSpeakerMonoMode ? AudioSpeakerMode.Mono : AudioSpeakerMode.Stereo;
+
+            Assert.AreEqual(isSpeakerMonoMode, PlayerSettingsAnalyzer.IsSpeakerModeMono());
+
+            AudioSettings.Reset(audioSpeaker);
+        }
+
+        [TestCase(AudioSpeakerMode.Mono)]
+        [TestCase(AudioSpeakerMode.Stereo)]
+        public void SettingsAnalysis_AudioMode_SwitchSpeakerMode(AudioSpeakerMode speakerMode)
+        {
+            var audioSpeaker = AudioSettings.GetConfiguration();
+            AudioSettings.speakerMode = speakerMode;
+
+            PlayerSettingsAnalyzer.FixSpeakerMode();
+
+            Assert.AreEqual(AudioSpeakerMode.Mono, AudioSettings.speakerMode);
+
+            AudioSettings.Reset(audioSpeaker);
+        }
+
         [TestCase(false)]
         [TestCase(true)]
         public void SettingsAnalysis_GraphicsMixedStandardShaderQuality_WithBuiltinRenderPipeline_IsReported(bool isMixed)
