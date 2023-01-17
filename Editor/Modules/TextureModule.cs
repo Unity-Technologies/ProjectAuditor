@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var platformSettings = textureImporter.GetPlatformTextureSettings(currentPlatformString);
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.onIncomingIssues(analyzer.Analyze(projectAuditorParams.platform, textureImporter, platformSettings));
+                    projectAuditorParams.onIncomingIssues(analyzer.Analyze(projectAuditorParams, textureImporter, platformSettings));
                 }
 
                 progress?.Advance();

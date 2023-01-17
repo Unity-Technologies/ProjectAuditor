@@ -8,6 +8,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     public interface ITextureModuleAnalyzer : IModuleAnalyzer
     {
-        IEnumerable<ProjectIssue> Analyze(BuildTarget platform, TextureImporter textureImporter, TextureImporterPlatformSettings textureImporterPlatformSettings);
+        IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams,
+            TextureImporter textureImporter,
+            TextureImporterPlatformSettings textureImporterPlatformSettings);
     }
 }

@@ -34,14 +34,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_DescriptorAndroid);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext context)
+        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
             // PlayerSettings.GetArchitecture returns an integer value associated with the architecture of a BuildTargetPlatformGroup. 0 - None, 1 - ARM64, 2 - Universal.
-            if (context.platform == BuildTarget.iOS && PlayerSettings.GetArchitecture(BuildTargetGroup.iOS) == 2)
+            if (projectAuditorParams.platform == BuildTarget.iOS && PlayerSettings.GetArchitecture(BuildTargetGroup.iOS) == 2)
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DescriptorIOS)
                     .WithLocation("Project/Player");
 
-            if (context.platform == BuildTarget.Android && (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARMv7) != 0 &&
+            if (projectAuditorParams.platform == BuildTarget.Android && (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARMv7) != 0 &&
                 (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) != 0)
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DescriptorAndroid)
                     .WithLocation("Project/Player");

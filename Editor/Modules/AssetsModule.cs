@@ -49,8 +49,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "StreamingAssets folder contains {0} of data",
         };
 
-        static readonly long k_StreamingAssetsFolderSizeLimitMb = 50;
-
         public override string name => "Assets";
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
@@ -71,11 +69,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
+            var settings = projectAuditorParams.settings;
+
             var issues = new List<ProjectIssue>();
             AnalyzeResources(issues);
 
             if (k_StreamingAssetsFolderDescriptor.platforms.Contains(projectAuditorParams.platform.ToString()))
-                AnalyzeStreamingAssets(issues);
+                AnalyzeStreamingAssets(settings, issues);
 
             if (issues.Any())
                 projectAuditorParams.onIncomingIssues(issues);
@@ -109,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        static void AnalyzeStreamingAssets(IList<ProjectIssue> issues)
+        static void AnalyzeStreamingAssets(ProjectAuditorSettings settings, IList<ProjectIssue> issues)
         {
             if (Directory.Exists("Assets/StreamingAssets"))
             {
@@ -121,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     totalBytes += fileInfo.Length;
                 }
 
-                if (totalBytes > k_StreamingAssetsFolderSizeLimitMb * 1024 * 1024)
+                if (totalBytes > settings.StreamingAssetsFolderSizeLimit * 1024 * 1024)
                 {
                     issues.Add(
                         ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor,

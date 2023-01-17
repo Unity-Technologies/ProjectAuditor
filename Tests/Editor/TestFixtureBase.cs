@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -22,12 +23,19 @@ namespace Unity.ProjectAuditor.EditorTests
         protected BuildTarget m_Platform = EditorUserBuildSettings.activeBuildTarget;
         protected ProjectAuditorConfig m_Config;
         protected string m_BuildPath;
+        protected Editor.ProjectAuditor m_ProjectAuditor;
+        protected ProjectAuditorSettingsProvider m_SettingsProvider;
 
         [OneTimeSetUp]
         public void FixtureSetUp()
         {
             m_Config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             m_Config.AnalyzeInBackground = false;
+
+            m_ProjectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
+
+            m_SettingsProvider = new ProjectAuditorSettingsProvider();
+            m_SettingsProvider.Initialize();
         }
 
         [OneTimeTearDown]
@@ -40,7 +48,6 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var foundIssues = new List<ProjectIssue>();
 
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
             var projectAuditorParams = new ProjectAuditorParams
             {
                 codeOptimization = m_CodeOptimization,
@@ -48,9 +55,10 @@ namespace Unity.ProjectAuditor.EditorTests
                 {
                     foundIssues.AddRange(predicate == null ? issues : issues.Where(predicate));
                 },
-                platform = m_Platform
+                platform = m_Platform,
+                settings = m_SettingsProvider.GetCurrentSettings()
             };
-            projectAuditor.Audit(projectAuditorParams);
+            m_ProjectAuditor.Audit(projectAuditorParams);
 
             return foundIssues.ToArray();
         }
@@ -69,7 +77,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
                     foundIssues.AddRange(predicate == null ? categoryIssues : categoryIssues.Where(predicate));
                 },
-                platform = m_Platform
+                platform = m_Platform,
+                settings = m_SettingsProvider.GetCurrentSettings()
             };
 
             projectAuditor.Audit(projectAuditorParams);

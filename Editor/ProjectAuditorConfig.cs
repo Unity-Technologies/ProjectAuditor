@@ -42,6 +42,8 @@ namespace Unity.ProjectAuditor.Editor
 
         public int NumRules => m_Rules.Count;
 
+        public ProjectAuditorSettings[] Settings;
+
         public void AddRule(Rule ruleToAdd)
         {
             if (string.IsNullOrEmpty(ruleToAdd.filter))
