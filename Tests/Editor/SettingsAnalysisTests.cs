@@ -196,5 +196,45 @@ namespace Unity.ProjectAuditor.EditorTests
             GraphicsSettings.defaultRenderPipeline = defaultRenderPipeline;
 #endif
         }
+
+        [Test]
+        public void SettingsAnalysis_FogEnable_IsReported()
+        {
+            var fog = RenderSettings.fog;
+            RenderSettings.fog = true;
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals("PAS1003"));
+            var playerSettingIssue = issues.FirstOrDefault();
+
+            Assert.NotNull(playerSettingIssue);
+
+            RenderSettings.fog =fog;
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SettingsAnalysis_Fog_IsEnabled(bool fogEnable)
+        {
+            var fog = RenderSettings.fog;
+            RenderSettings.fog = fogEnable;
+
+            Assert.AreEqual(fogEnable, FogModeAnalyzer.IsFogEnable());
+
+            RenderSettings.fog = fog;
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void DisableFog(bool fogEnable)
+        {
+            var fog = RenderSettings.fog;
+            RenderSettings.fog = fogEnable;
+
+            FogModeAnalyzer.DisableFog();
+            Assert.AreEqual(false, RenderSettings.fog);
+
+            RenderSettings.fog = fog;
+        }
     }
 }
