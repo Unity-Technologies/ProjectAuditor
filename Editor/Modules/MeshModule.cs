@@ -46,7 +46,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
             var allMeshes = AssetDatabase.FindAssets("t:mesh, a:assets");
-            var currentPlatform = projectAuditorParams.platform;
 
             progress?.Start("Finding Meshes", "Search in Progress...", allMeshes.Length);
 
@@ -57,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in analyzers)
                 {
-                    var platformDiagnostics = analyzer.Analyze(projectAuditorParams, importer).ToArray();
+                    projectAuditorParams.onIncomingIssues(analyzer.Analyze(projectAuditorParams, importer));
                 }
 
                 progress?.Advance();
