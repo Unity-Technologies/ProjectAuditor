@@ -27,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_fogModeDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalyzerContext context)
+        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
             if (IsFogEnable())
             {
