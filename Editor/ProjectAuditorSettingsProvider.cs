@@ -108,8 +108,6 @@ namespace Unity.ProjectAuditor.Editor
             var path = AssetDatabase.GetAssetPath(settings);
             var guidAsString = AssetDatabase.AssetPathToGUID(path);
 
-            if (!string.IsNullOrEmpty(guidAsString))
-                UserPreferences.settingsAsset = guidAsString;
             UserPreferences.settingsAsset = guidAsString;
         }
     }
