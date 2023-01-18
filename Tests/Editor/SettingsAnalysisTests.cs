@@ -126,7 +126,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var playerSettingIssue = issues.FirstOrDefault();
 
             Assert.NotNull(playerSettingIssue);
-            
+
             AudioSettings.Reset(audioConfiguration);
         }
 
@@ -239,43 +239,64 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void SettingsAnalysis_FogEnable_IsReported()
+        public void SettingsAnalysis_FogStripping_IsReported()
         {
-            var fog = RenderSettings.fog;
-            RenderSettings.fog = true;
+            var serializedObject = new SerializedObject(GraphicsSettings.GetGraphicsSettings());
+            var property = serializedObject.FindProperty("m_FogStripping");
+            var mode = property.enumValueIndex;
+
+            property.enumValueIndex = 1;
+            serializedObject.ApplyModifiedProperties();
 
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals("PAS1003"));
             var playerSettingIssue = issues.FirstOrDefault();
 
             Assert.NotNull(playerSettingIssue);
 
-            RenderSettings.fog =fog;
-        }
-
-        [Test]
-        [TestCase(true)]
-        [TestCase(false)]
-        public void SettingsAnalysis_Fog_IsEnabled(bool fogEnable)
-        {
-            var fog = RenderSettings.fog;
-            RenderSettings.fog = fogEnable;
-
-            Assert.AreEqual(fogEnable, FogModeAnalyzer.IsFogEnable());
-
-            RenderSettings.fog = fog;
+            property.enumValueIndex = mode;
+            serializedObject.ApplyModifiedProperties();
         }
 
         [TestCase(true)]
         [TestCase(false)]
-        public void DisableFog(bool fogEnable)
+        public void SettingsAnalysis_FogMode_IsCustom(bool isFogModeCustom)
         {
-            var fog = RenderSettings.fog;
-            RenderSettings.fog = fogEnable;
+            int enumMode = isFogModeCustom ? 1 : 0;
 
-            FogModeAnalyzer.DisableFog();
-            Assert.AreEqual(false, RenderSettings.fog);
+            var serializedObject = new SerializedObject(GraphicsSettings.GetGraphicsSettings());
+            var property = serializedObject.FindProperty("m_FogStripping");
+            var mode = property.enumValueIndex;
 
-            RenderSettings.fog = fog;
+            property.enumValueIndex = enumMode;
+            serializedObject.ApplyModifiedProperties();
+
+            Assert.AreEqual(isFogModeCustom, FogModeAnalyzer.IsFogStrippingCustom());
+
+            property.enumValueIndex = mode;
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        [TestCase(0)]
+        [TestCase(1)]
+        public void SetFogModeToAutomatic(int fogMode)
+        {
+            var serializedObject = new SerializedObject(GraphicsSettings.GetGraphicsSettings());
+            var property = serializedObject.FindProperty("m_FogStripping");
+            var mode = property.enumValueIndex;
+
+            property.enumValueIndex = fogMode;
+            serializedObject.ApplyModifiedProperties();
+
+            FogModeAnalyzer.RemoveFogStripping();
+
+            //Get the updated Graphics Settings, not the copy of the previous one
+            var updatedSerializedObject = new SerializedObject(GraphicsSettings.GetGraphicsSettings());
+            var updatedMode = updatedSerializedObject.FindProperty("m_FogStripping").enumValueIndex;
+
+            Assert.AreEqual(0, updatedMode);
+
+            property.enumValueIndex = mode;
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }
