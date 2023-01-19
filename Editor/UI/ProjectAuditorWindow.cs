@@ -1071,7 +1071,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (GUILayout.Button(Contents.NewSettingsButton, GUILayout.Width(180), GUILayout.Height(18)))
             {
                 var path = EditorUtility.SaveFilePanel(
-                    "New Setting...",
+                    "Create New Settings...",
                     Path.Combine(Application.dataPath, "Editor"),
                     "ProjectAuditorSettings-" + m_Platform,
                     "asset");
