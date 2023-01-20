@@ -21,6 +21,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             Help,
             Refresh,
+            Settings,
+
             StatusWheel,
             Hierarchy,
             ZoomTool,
@@ -45,6 +47,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         static readonly string k_HelpIconName = "_Help";
         static readonly string k_RefreshIconName = "Refresh";
+        static readonly string k_SettingsIconName = "Settings";
+
         static readonly string k_WhiteCheckMarkIconName = "FilterSelectedOnly";
         static readonly string k_GreenCheckMarkIconName = "TestPassed";
         static readonly string k_HierarchyIconName = "UnityEditor.SceneHierarchyWindow";
@@ -253,6 +257,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     return EditorGUIUtility.TrIconContent(k_HelpIconName, tooltip);
                 case IconType.Refresh:
                     return EditorGUIUtility.TrIconContent(k_RefreshIconName, tooltip);
+                case IconType.Settings:
+                    return EditorGUIUtility.TrIconContent(k_SettingsIconName, tooltip);
                 case IconType.Load:
                     return EditorGUIUtility.TrIconContent(k_LoadIconName, tooltip);
                 case IconType.Save:
