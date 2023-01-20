@@ -36,10 +36,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             GreenCheckMark,
         }
 
+        // Log level
         static readonly string k_InfoIconName = "console.infoicon";
         static readonly string k_WarningIconName = "console.warnicon";
         static readonly string k_ErrorIconName = "console.erroricon";
 
+        // Severity
         static readonly string k_CriticalIconName = "Critical";
         static readonly string k_MajorIconName = "Major";
         static readonly string k_ModerateIconName = "Moderate";
