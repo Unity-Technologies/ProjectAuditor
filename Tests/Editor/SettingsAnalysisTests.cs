@@ -126,7 +126,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var playerSettingIssue = issues.FirstOrDefault();
 
             Assert.NotNull(playerSettingIssue);
-            
+
             AudioSettings.Reset(audioConfiguration);
         }
 
