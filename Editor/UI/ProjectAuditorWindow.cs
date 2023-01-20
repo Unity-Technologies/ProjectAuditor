@@ -64,6 +64,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         // UI
         TreeViewSelection m_AreaSelection;
         TreeViewSelection m_AssemblySelection;
+        Draw2D m_SeparatorLine;
 
         // Serialized fields
         [SerializeField] BuildTarget m_Platform;
@@ -173,6 +174,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 m_AnalysisState = AnalysisState.Initialized;
             }
+
+            m_SeparatorLine = new Draw2D("Unlit/ProjectAuditor");
 
             Profiler.BeginSample("Refresh");
             RefreshWindow();
@@ -1002,7 +1005,22 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
 
+            EditorGUILayout.Space();
+
+            EditorGUILayout.LabelField(Contents.WelcomeTextTitle, SharedStyles.WelcomeLabel);
+
+            EditorGUILayout.Space(10);
+
             EditorGUILayout.LabelField(Contents.WelcomeText, SharedStyles.TextAreaWithDynamicSize);
+
+            EditorGUILayout.Space(12);
+
+            DrawHorizontalLine();
+
+            EditorGUILayout.Space(16);
+
+            EditorGUILayout.LabelField(Contents.ConfigurationsTitle, SharedStyles.LargeLabel);
+
             EditorGUILayout.Space();
 
             m_SelectedModules = (BuiltInModules)EditorGUILayout.EnumFlagsField(Contents.ModulesSelection, m_SelectedModules, GUILayout.ExpandWidth(true));
@@ -1040,6 +1058,17 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Space();
 
             EditorGUILayout.EndVertical();
+        }
+
+        void DrawHorizontalLine()
+        {
+            var rect = EditorGUILayout.GetControlRect(GUILayout.Height(1));
+
+            if (m_SeparatorLine.DrawStart(rect))
+            {
+                m_SeparatorLine.DrawLine(0, 0, rect.width, 0, Color.black);
+                m_SeparatorLine.DrawEnd();
+            }
         }
 
         void DrawSettingsDropdown()
@@ -1409,20 +1438,25 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filtering Criteria");
             public static readonly GUIContent ActionsFoldout = new GUIContent("Actions", "Actions on selected issues");
 
+            public static readonly GUIContent WelcomeTextTitle = new GUIContent("Welcome to Project Auditor");
+
             public static readonly GUIContent WelcomeText = new GUIContent(
 @"
 Project Auditor is an experimental static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report that contains the following:
 
-* Code and Settings Diagnostics: a list of possible problems that might affect performance, memory and other areas.
-* BuildReport: timing and size information of the last build.
-* Assets information
+ •  <b>Code and Settings Diagnostics</b>: a list of possible problems that might affect performance, memory and other areas.
+ •  <b>BuildReport</b>: timing and size information of the last build.
+ •  <b>Assets information</b>
 
-To Analyze the project, click on Analyze.
+To Analyze the project, click on <b>Analyze</b>.
 
 Once the project is analyzed, Project Auditor displays a summary with high-level information. Then, it is possible to dive into a specific section of the report from the View menu.
+
 A view allows the user to browse through the listed items and filter by string or other search criteria.
 "
             );
+
+            public static readonly GUIContent ConfigurationsTitle = new GUIContent("Configurations");
 
             public static readonly GUIContent Clear = new GUIContent("Clear");
             public static readonly GUIContent Refresh = new GUIContent("Refresh");

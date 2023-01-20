@@ -15,6 +15,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static GUIStyle s_LabelWithDynamicSize;
         static GUIStyle s_TextAreaWithDynamicSize;
 
+        static GUIStyle s_WelcomeLabel;
+        static GUIStyle s_LargeLabel;
+
         public static GUIStyle Foldout
         {
             get
@@ -125,6 +128,35 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
 
                 return s_TextAreaWithDynamicSize;
+            }
+        }
+
+        public static GUIStyle WelcomeLabel
+        {
+            get
+            {
+                if (s_WelcomeLabel == null)
+                {
+                    s_WelcomeLabel = new GUIStyle(EditorStyles.label);
+                    s_WelcomeLabel.fontSize += 14;
+                    s_WelcomeLabel.fontStyle = FontStyle.Bold;
+                    s_WelcomeLabel.fixedHeight = 34;
+                }
+                return s_WelcomeLabel;
+            }
+        }
+
+        public static GUIStyle LargeLabel
+        {
+            get
+            {
+                if (s_LargeLabel == null)
+                {
+                    s_LargeLabel = new GUIStyle(EditorStyles.label);
+                    s_LargeLabel.fontSize += 2;
+                    s_LargeLabel.fontStyle = FontStyle.Bold;
+                }
+                return s_LargeLabel;
             }
         }
 
