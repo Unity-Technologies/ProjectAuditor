@@ -1070,21 +1070,16 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (GUILayout.Button(Contents.NewSettingsButton, GUILayout.Width(180), GUILayout.Height(18)))
             {
-                var path = EditorUtility.SaveFilePanel(
-                    "Create New Settings...",
-                    Path.Combine(Application.dataPath, "Editor"),
+                var relativePath = EditorUtility.SaveFilePanelInProject("Create New Settings...",
                     "ProjectAuditorSettings-" + m_Platform,
-                    "asset");
+                    "asset",
+                    "Please select the new settings file location",
+                    Path.Combine(Application.dataPath, "Editor"));
 
-                if (path != string.Empty)
+                if (relativePath != string.Empty)
                 {
-                    if (path.StartsWith(Application.dataPath))
-                    {
-                        path = "Assets" + path.Substring(Application.dataPath.Length);
-                    }
-
                     var newSettings = CreateInstance<ProjectAuditorSettings>();
-                    AssetDatabase.CreateAsset(newSettings, path);
+                    AssetDatabase.CreateAsset(newSettings, relativePath);
                     m_SettingsProvider.SelectCurrentSettings(newSettings);
 
                     Selection.activeObject = newSettings;
