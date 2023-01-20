@@ -67,22 +67,14 @@ namespace Unity.ProjectAuditor.Editor
 
         public IEnumerable<ProjectAuditorSettings> GetSettings()
         {
+            RefreshAssets();
+
             yield return m_DefaultSettings;
 
-            bool hasMissingAsset = false;
             foreach (var settingsAsset in m_SettingsAssets)
             {
-                if (settingsAsset == null)
-                {
-                    hasMissingAsset = true;
-                    continue;
-                }
-
                 yield return settingsAsset;
             }
-
-            if (hasMissingAsset)
-                RefreshAssets();
         }
 
         /// <summary>
