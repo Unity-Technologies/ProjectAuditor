@@ -1046,7 +1046,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             EditorGUILayout.BeginHorizontal();
 
-            EditorGUILayout.LabelField(new GUIContent(Contents.SettingsTitle), GUILayout.Width(EditorGUIUtility.labelWidth - 1));
+            EditorGUILayout.LabelField(Contents.SettingsTitle, GUILayout.Width(EditorGUIUtility.labelWidth - 1));
 
             var dropdownRect = GUILayoutUtility.GetLastRect();
             dropdownRect.x += EditorGUIUtility.labelWidth + 2;
@@ -1066,6 +1066,24 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
 
                 menu.DropDown(dropdownRect);
+            }
+
+            if (GUILayout.Button(Contents.NewSettingsButton, GUILayout.Width(180), GUILayout.Height(18)))
+            {
+                var relativePath = EditorUtility.SaveFilePanelInProject("Create New Settings...",
+                    "ProjectAuditorSettings-" + m_Platform,
+                    "asset",
+                    "Please select the new settings file location",
+                    Path.Combine(Application.dataPath, "Editor"));
+
+                if (relativePath != string.Empty)
+                {
+                    var newSettings = CreateInstance<ProjectAuditorSettings>();
+                    AssetDatabase.CreateAsset(newSettings, relativePath);
+                    m_SettingsProvider.SelectCurrentSettings(newSettings);
+
+                    Selection.activeObject = newSettings;
+                }
             }
 
             EditorGUILayout.EndHorizontal();
@@ -1377,6 +1395,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new GUIContent("Platform", "Select the target platform.");
 
             public static readonly GUIContent SettingsTitle = new GUIContent("Settings");
+            public static readonly GUIContent NewSettingsButton = new GUIContent("Create New Settings");
 
 #if UNITY_2019_1_OR_NEWER
             public static readonly GUIContent SaveButton = Utility.GetIcon(Utility.IconType.Save, "Save current report to json file");
