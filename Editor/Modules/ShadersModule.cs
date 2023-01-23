@@ -80,6 +80,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public string[] platformKeywords;
         public ShaderRequirements[] requirements;
         public GraphicsTier graphicsTier;
+        public BuildTarget buildTarget;
         public ShaderCompilerPlatform compilerPlatform;
     }
 
@@ -89,6 +90,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public string[] keywords;
         public string[] platformKeywords;
         public GraphicsTier graphicsTier;
+        public BuildTarget buildTarget;
         public ShaderCompilerPlatform compilerPlatform;
     }
 
@@ -248,7 +250,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var shaderPathMap = CollectShaders();
             ProcessShaders(projectAuditorParams.platform, shaderPathMap, projectAuditorParams.onIncomingIssues);
 
-            ProcessComputeShaders(projectAuditorParams.onIncomingIssues);
+            ProcessComputeShaders(projectAuditorParams.platform, projectAuditorParams.onIncomingIssues);
 
             // clear collected variants before next build
             ClearBuildData();
@@ -368,11 +370,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 #endif
                 onIncomingIssues(ProcessShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader)));
-                onIncomingIssues(ProcessVariants(shader, assetPath));
+                onIncomingIssues(ProcessVariants(platform, shader, assetPath));
             }
         }
 
-        void ProcessComputeShaders(Action<IEnumerable<ProjectIssue>> onIncomingIssues)
+        void ProcessComputeShaders(BuildTarget platform, Action<IEnumerable<ProjectIssue>> onIncomingIssues)
         {
 #if COMPUTE_SHADER_ANALYSIS
             var issues = new List<ProjectIssue>();
@@ -382,6 +384,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var computeShaderName = shaderCompilerData.Key.name;
                 foreach (var shaderVariantData in shaderCompilerData.Value)
                 {
+                    if (shaderVariantData.buildTarget != platform)
+                        continue;
+
                     issues.Add(ProjectIssue.Create(k_ComputeShaderVariantLayout.category, computeShaderName)
                         .WithCustomProperties(new object[(int)ComputeShaderVariantProperty.Num]
                         {
@@ -486,7 +491,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        IEnumerable<ProjectIssue> ProcessVariants(Shader shader, string assetPath)
+        IEnumerable<ProjectIssue> ProcessVariants(BuildTarget platform, Shader shader, string assetPath)
         {
             if (s_ShaderVariantData.ContainsKey(shader))
             {
@@ -494,6 +499,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var shaderVariantData in shaderVariants)
                 {
+                    if (shaderVariantData.buildTarget != platform)
+                        continue;
+
                     yield return ProjectIssue.Create(IssueCategory.ShaderVariant, shader.name)
                         .WithLocation(assetPath)
                         .WithCustomProperties(new object[(int)ShaderVariantProperty.Num]
@@ -551,6 +559,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
                     platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
                     graphicsTier = shaderCompilerData.graphicsTier,
+                    buildTarget = shaderCompilerData.buildTarget,
                     compilerPlatform = shaderCompilerData.shaderCompilerPlatform
                 });
             }
@@ -588,6 +597,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
                     requirements = shaderRequirementsList.ToArray(),
                     graphicsTier = shaderCompilerData.graphicsTier,
+                    buildTarget = shaderCompilerData.buildTarget,
                     compilerPlatform = shaderCompilerData.shaderCompilerPlatform
                 });
             }
