@@ -6,10 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 [Unreleased]
 * Added _UnityEngine.Object.FindObjectOfType_ usage detection
-* Fixed names of build-generated assets in Build Report 
-* Added Audio Speaker Mode diagnostic fixer
-* Improved Audio Speaker Mode diagnostic recommendations
-* Added AudioSettings speaker mode descriptor and fix to switch it to Mono
+* Fixed names of build-generated assets in Build Report
+* Fixed parsing of unnamed shader passes in Unity 2021.2.14+
+* Fixed AudioSettings speaker mode diagnostic
 
 ## [0.9.0-preview] - 2022-12-01
 * Added diagnostic area _Quality_, _Support_ and _Requirement_
