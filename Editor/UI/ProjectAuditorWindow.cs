@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         TreeViewSelection m_AssemblySelection;
 
         // Serialized fields
-        [SerializeField] BuildTarget m_Platform;
+        [SerializeField] BuildTarget m_Platform = BuildTarget.NoTarget;
         [SerializeField] BuiltInModules m_SelectedModules = BuiltInModules.Everything;
         [SerializeField] string m_AreaSelectionSummary;
         [SerializeField] string[] m_AssemblyNames;
@@ -142,7 +142,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_PlatformContents = m_SupportedBuildTargets
                 .Select(t => new GUIContent(t.ToString())).ToArray();
 
-            if (!BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(m_Platform), m_Platform))
+            // if platform is not selected or supported, fallback to active build target
+            if (m_Platform == BuildTarget.NoTarget || !BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(m_Platform), m_Platform))
                 m_Platform = EditorUserBuildSettings.activeBuildTarget;
 
             ProjectAuditorAnalytics.EnableAnalytics();
