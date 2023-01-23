@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Fixed names of build-generated assets in Build Report
 * Fixed parsing of unnamed shader passes in Unity 2021.2.14+
 * Fixed AudioSettings speaker mode diagnostic
+* Fixed reporting of variants if not compiled for analysis platform
 
 ## [0.9.0-preview] - 2022-12-01
 * Added diagnostic area _Quality_, _Support_ and _Requirement_
