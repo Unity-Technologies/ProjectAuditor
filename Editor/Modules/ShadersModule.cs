@@ -384,8 +384,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var computeShaderName = shaderCompilerData.Key.name;
                 foreach (var shaderVariantData in shaderCompilerData.Value)
                 {
+#if UNITY_2020_3_OR_NEWER
                     if (shaderVariantData.buildTarget != platform)
                         continue;
+#endif
 
                     issues.Add(ProjectIssue.Create(k_ComputeShaderVariantLayout.category, computeShaderName)
                         .WithCustomProperties(new object[(int)ComputeShaderVariantProperty.Num]
@@ -499,8 +501,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var shaderVariantData in shaderVariants)
                 {
+#if UNITY_2020_3_OR_NEWER
                     if (shaderVariantData.buildTarget != platform)
                         continue;
+#endif
 
                     yield return ProjectIssue.Create(IssueCategory.ShaderVariant, shader.name)
                         .WithLocation(assetPath)
@@ -559,7 +563,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
                     platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
                     graphicsTier = shaderCompilerData.graphicsTier,
+#if UNITY_2020_3_OR_NEWER
                     buildTarget = shaderCompilerData.buildTarget,
+#endif
                     compilerPlatform = shaderCompilerData.shaderCompilerPlatform
                 });
             }
@@ -597,7 +603,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
                     requirements = shaderRequirementsList.ToArray(),
                     graphicsTier = shaderCompilerData.graphicsTier,
+#if UNITY_2020_3_OR_NEWER
                     buildTarget = shaderCompilerData.buildTarget,
+#endif
                     compilerPlatform = shaderCompilerData.shaderCompilerPlatform
                 });
             }
