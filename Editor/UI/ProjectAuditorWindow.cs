@@ -1007,7 +1007,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField(Contents.WelcomeTextTitle, SharedStyles.WelcomeLabel);
+            EditorGUILayout.LabelField(Contents.WelcomeTextTitle, SharedStyles.TitleLabel);
 
             EditorGUILayout.Space(10);
 
