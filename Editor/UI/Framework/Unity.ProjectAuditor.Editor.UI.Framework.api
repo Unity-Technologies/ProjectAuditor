@@ -6,7 +6,7 @@ namespace Unity.ProjectAuditor.Editor
     public class TextFilter : IProjectIssueFilter
     {
         public bool ignoreCase = true;
-        public bool searchDependencies = false;
+        public bool searchDependencies;
         public string searchString;
         public TextFilter(Core.PropertyDefinition[] propertyDefinitions = default(Core.PropertyDefinition[])) {}
         public bool Match(ProjectIssue issue);
@@ -179,9 +179,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static UnityEngine.GUIStyle IconLabel { get; }
         public static UnityEngine.GUIStyle Label { get; }
         public static UnityEngine.GUIStyle LabelWithDynamicSizeWithDynamicSize { get; }
+        public static UnityEngine.GUIStyle LargeLabel { get; }
         public static UnityEngine.GUIStyle LinkLabel { get; }
         public static UnityEngine.GUIStyle TextArea { get; }
         public static UnityEngine.GUIStyle TextAreaWithDynamicSize { get; }
+        public static UnityEngine.GUIStyle TitleLabel { get; }
         public static void SetFontDynamicSize(int fontSize);
     }
 
