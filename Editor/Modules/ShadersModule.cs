@@ -385,10 +385,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var computeShaderName = shaderCompilerData.Key.name;
                 foreach (var shaderVariantData in shaderCompilerData.Value)
                 {
-#if UNITY_2020_3_OR_NEWER
-                    if (shaderVariantData.buildTarget != platform)
+                    if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != platform)
                         continue;
-#endif
 
                     issues.Add(ProjectIssue.Create(k_ComputeShaderVariantLayout.category, computeShaderName)
                         .WithCustomProperties(new object[(int)ComputeShaderVariantProperty.Num]
@@ -502,10 +500,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var shaderVariantData in shaderVariants)
                 {
-#if UNITY_2020_3_OR_NEWER
-                    if (shaderVariantData.buildTarget != platform)
+                    if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != platform)
                         continue;
-#endif
 
                     yield return ProjectIssue.Create(IssueCategory.ShaderVariant, shader.name)
                         .WithLocation(assetPath)
