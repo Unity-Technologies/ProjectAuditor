@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Unreleased]
 * Added _UnityEngine.Object.FindObjectOfType_ usage detection
 * Fixed names of build-generated assets in Build Report 
-* Added FogModeAnalyzer
+* Added Fog shader variant stripping analyzer
 * Added Audio Speaker Mode diagnostic fixer
 * Improved Audio Speaker Mode diagnostic recommendations
 * Added AudioSettings speaker mode descriptor and fix to switch it to Mono
