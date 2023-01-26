@@ -4,11 +4,12 @@ namespace Unity.ProjectAuditor.Editor
 {
     public interface IProjectAuditorSettingsProvider
     {
-        public void Initialize();
+        void Initialize();
 
-        public IEnumerable<ProjectAuditorSettings> GetSettings();
+        IEnumerable<ProjectAuditorSettings> GetSettings();
 
-        public ProjectAuditorSettings GetCurrentSettings();
-        public void SelectCurrentSettings(ProjectAuditorSettings settings);
+        ProjectAuditorSettings GetCurrentSettings();
+
+        void SelectCurrentSettings(ProjectAuditorSettings settings);
     }
 }

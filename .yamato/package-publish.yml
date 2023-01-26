@@ -1,15 +1,4 @@
-test_editors:
-  - version: 2019.4
-  - version: trunk
-test_platforms:
-  - name: win
-    type: Unity::VM
-    image: package-ci/win10:stable
-    flavor: b1.large
-  - name: mac
-    type: Unity::VM::osx
-    image: package-ci/mac:stable
-    flavor: m1.mac
+{% metadata_file .yamato/config.metadata %}
 ---
 
 publish:
@@ -20,8 +9,7 @@ publish:
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-# Please remove the dry-run option once your CI pipeline is in place ant that you're ready to publish for real
-    - upm-ci package publish --dry-run
+    - upm-ci package publish
   triggers:
     tags:
       only:

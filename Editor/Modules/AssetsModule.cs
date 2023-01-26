@@ -49,6 +49,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "StreamingAssets folder contains {0} of data",
         };
 
+        public override bool isEnabledByDefault => false;
+
         public override string name => "Assets";
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};

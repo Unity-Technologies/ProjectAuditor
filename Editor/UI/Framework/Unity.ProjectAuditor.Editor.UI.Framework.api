@@ -6,7 +6,7 @@ namespace Unity.ProjectAuditor.Editor
     public class TextFilter : IProjectIssueFilter
     {
         public bool ignoreCase = true;
-        public bool searchDependencies = false;
+        public bool searchDependencies;
         public string searchString;
         public TextFilter(Core.PropertyDefinition[] propertyDefinitions = default(Core.PropertyDefinition[])) {}
         public bool Match(ProjectIssue issue);
@@ -179,9 +179,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static UnityEngine.GUIStyle IconLabel { get; }
         public static UnityEngine.GUIStyle Label { get; }
         public static UnityEngine.GUIStyle LabelWithDynamicSizeWithDynamicSize { get; }
+        public static UnityEngine.GUIStyle LargeLabel { get; }
         public static UnityEngine.GUIStyle LinkLabel { get; }
         public static UnityEngine.GUIStyle TextArea { get; }
         public static UnityEngine.GUIStyle TextAreaWithDynamicSize { get; }
+        public static UnityEngine.GUIStyle TitleLabel { get; }
         public static void SetFontDynamicSize(int fontSize);
     }
 
@@ -246,25 +248,26 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public enum IconType
         {
             Critical = 3,
-            Download = 13,
+            Download = 14,
             Error = 2,
-            Fix = 12,
-            GreenCheckMark = 19,
+            Fix = 13,
+            GreenCheckMark = 20,
             Help = 7,
-            Hierarchy = 10,
+            Hierarchy = 11,
             Info = 0,
-            Load = 14,
+            Load = 15,
             Major = 4,
             Minor = 6,
             Moderate = 5,
             Refresh = 8,
-            Save = 15,
-            StatusWheel = 9,
-            Trash = 16,
-            View = 17,
+            Save = 16,
+            Settings = 9,
+            StatusWheel = 10,
+            Trash = 17,
+            View = 18,
             Warning = 1,
-            WhiteCheckMark = 18,
-            ZoomTool = 11,
+            WhiteCheckMark = 19,
+            ZoomTool = 12,
         }
     }
 

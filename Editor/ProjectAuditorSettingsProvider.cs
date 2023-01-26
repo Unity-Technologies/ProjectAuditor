@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor
 
             if (guidAsString.Length > 0 && !guid.Empty())
             {
-                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var path = AssetDatabase.GUIDToAssetPath(guidAsString);
                 var settings = AssetDatabase.LoadAssetAtPath<ProjectAuditorSettings>(path);
 
                 if (settings != null)
@@ -67,22 +67,14 @@ namespace Unity.ProjectAuditor.Editor
 
         public IEnumerable<ProjectAuditorSettings> GetSettings()
         {
+            RefreshAssets();
+
             yield return m_DefaultSettings;
 
-            bool hasMissingAsset = false;
             foreach (var settingsAsset in m_SettingsAssets)
             {
-                if (settingsAsset == null)
-                {
-                    hasMissingAsset = true;
-                    continue;
-                }
-
                 yield return settingsAsset;
             }
-
-            if (hasMissingAsset)
-                RefreshAssets();
         }
 
         /// <summary>
@@ -106,9 +98,8 @@ namespace Unity.ProjectAuditor.Editor
             m_CurrentSettings = settings;
 
             var path = AssetDatabase.GetAssetPath(settings);
-            var guid = AssetDatabase.GUIDFromAssetPath(path);
+            var guidAsString = AssetDatabase.AssetPathToGUID(path);
 
-            var guidAsString = path == "" || guid.Empty() ? "" : guid.ToString();
             UserPreferences.settingsAsset = guidAsString;
         }
     }
