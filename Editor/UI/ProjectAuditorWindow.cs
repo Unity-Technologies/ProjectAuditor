@@ -1010,15 +1010,18 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.LabelField(Contents.WelcomeTextTitle, SharedStyles.TitleLabel);
 
-            EditorGUILayout.Space(10);
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
 
             EditorGUILayout.LabelField(Contents.WelcomeText, SharedStyles.TextAreaWithDynamicSize);
 
-            EditorGUILayout.Space(12);
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
 
             DrawHorizontalLine();
 
-            EditorGUILayout.Space(16);
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
 
             EditorGUILayout.LabelField(Contents.ConfigurationsTitle, SharedStyles.LargeLabel);
 
