@@ -1467,7 +1467,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 @"
 Project Auditor is an experimental static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report that contains the following:
 
- •  <b>Code and Settings Diagnostics</b>: a list of possible problems that might affect performance, memory and other areas.
+ •  <b>Diagnostics</b>: a list of possible problems that might affect performance, memory and other areas.
  •  <b>BuildReport</b>: timing and size information of the last build.
  •  <b>Assets information</b>
 
