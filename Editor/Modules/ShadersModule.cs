@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -384,10 +385,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var computeShaderName = shaderCompilerData.Key.name;
                 foreach (var shaderVariantData in shaderCompilerData.Value)
                 {
-#if UNITY_2020_3_OR_NEWER
-                    if (shaderVariantData.buildTarget != platform)
+                    if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != platform)
                         continue;
-#endif
 
                     issues.Add(ProjectIssue.Create(k_ComputeShaderVariantLayout.category, computeShaderName)
                         .WithCustomProperties(new object[(int)ComputeShaderVariantProperty.Num]
@@ -501,10 +500,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var shaderVariantData in shaderVariants)
                 {
-#if UNITY_2020_3_OR_NEWER
-                    if (shaderVariantData.buildTarget != platform)
+                    if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != platform)
                         continue;
-#endif
 
                     yield return ProjectIssue.Create(IssueCategory.ShaderVariant, shader.name)
                         .WithLocation(assetPath)
@@ -555,6 +552,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 s_ComputeShaderVariantData.Add(shader, new List<ComputeShaderVariantData>());
             }
 
+            var buildTargetPropertyInfo = typeof(ShaderCompilerData).GetRuntimeProperty("buildTarget");
             foreach (var shaderCompilerData in data)
             {
                 s_ComputeShaderVariantData[shader].Add(new ComputeShaderVariantData
@@ -563,9 +561,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
                     platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
                     graphicsTier = shaderCompilerData.graphicsTier,
-#if UNITY_2020_3_OR_NEWER
-                    buildTarget = shaderCompilerData.buildTarget,
-#endif
+                    buildTarget = (buildTargetPropertyInfo != null) ? (BuildTarget)buildTargetPropertyInfo.GetValue(shaderCompilerData) : BuildTarget.NoTarget,
                     compilerPlatform = shaderCompilerData.shaderCompilerPlatform
                 });
             }
@@ -583,6 +579,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 s_ShaderVariantData.Add(shader, new List<ShaderVariantData>());
             }
 
+            // the buildTarget property is only available as of 2020_3_35 so we need to use reflection to get the value
+            var buildTargetPropertyInfo = typeof(ShaderCompilerData).GetRuntimeProperty("buildTarget");
             foreach (var shaderCompilerData in data)
             {
                 var shaderRequirements = shaderCompilerData.shaderRequirements;
@@ -603,9 +601,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
                     requirements = shaderRequirementsList.ToArray(),
                     graphicsTier = shaderCompilerData.graphicsTier,
-#if UNITY_2020_3_OR_NEWER
-                    buildTarget = shaderCompilerData.buildTarget,
-#endif
+                    buildTarget = (buildTargetPropertyInfo != null) ? (BuildTarget)buildTargetPropertyInfo.GetValue(shaderCompilerData) : BuildTarget.NoTarget,
                     compilerPlatform = shaderCompilerData.shaderCompilerPlatform
                 });
             }
