@@ -7,16 +7,26 @@ using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
+    enum FogModeStripping
+    {
+        Automatic,
+        Custom
+    }
+
     public enum FogMode
     {
+        None,
         Linear,
         Exponential,
-        ExponentialSquarred,
-        Automatic
+        ExponentialSquarred
     }
 
     class FogModeAnalyzer : ISettingsModuleAnalyzer
     {
+        private static readonly string k_linearMode = "Linear";
+        private static readonly string k_exponentialMode = "Exponential";
+        private static readonly string k_exponentialSquarredMode = "Exponential Squarred";
+
         private static readonly Descriptor k_FogModeDescriptor = new Descriptor(
             "PAS1003",
             "Graphics: Fog Shader Variant Stripping",
@@ -29,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 RemoveFogStripping();
             }),
 
-            messageFormat = "Graphics: FogMode {0} shader variants are always included in the build."
+            messageFormat = "Graphics: FogMode {0} shader variants is always included in the build."
         };
 
         public void Initialize(ProjectAuditorModule module)
@@ -39,61 +49,56 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
-            if (!IsFogStrippingEnabled(FogMode.Automatic))
+            if (IsFogStrippingEnabled(FogMode.Linear))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, GetFogModesEnabledString())
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, k_linearMode)
+                    .WithLocation("Project/Graphics");
+            }
+
+            if (IsFogStrippingEnabled(FogMode.Exponential))
+            {
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, k_exponentialMode)
+                    .WithLocation("Project/Graphics");
+            }
+
+            if (IsFogStrippingEnabled(FogMode.ExponentialSquarred))
+            {
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, k_exponentialSquarredMode)
                     .WithLocation("Project/Graphics");
             }
         }
 
-        static string GetFogModesEnabledString()
+        internal static bool IsFogStrippingEnabled(FogMode fogMode = FogMode.None)
         {
             var serializedObject = new SerializedObject(GraphicsSettings.GetGraphicsSettings());
-            string message = "";
 
-            var linearFog = serializedObject.FindProperty("m_FogKeepLinear").boolValue;
-            var expFog = serializedObject.FindProperty("m_FogKeepExp").boolValue;
-            var exp2Fog = serializedObject.FindProperty("m_FogKeepExp2").boolValue;
+            FogModeStripping mode = (FogModeStripping)serializedObject.FindProperty("m_FogStripping").enumValueIndex;
 
-            if (linearFog) message += "- Linear ";
-            if (expFog) message += "- Exponential ";
-            if (exp2Fog) message += "- Exponential Squarred ";
-
-            return message;
-        }
-
-        internal static bool IsFogStrippingEnabled(FogMode fogMode)
-        {
-            var serializedObject = new SerializedObject(GraphicsSettings.GetGraphicsSettings());
-            bool isEnabled = false;
+            if (mode == FogModeStripping.Automatic) return false;
 
             switch (fogMode)
             {
-                case FogMode.Automatic:
-                    isEnabled = serializedObject.FindProperty("m_FogStripping").enumValueIndex == 0; //Automatic mode
-                    break;
+                case FogMode.None:
+                    return false;
 
                 case FogMode.Exponential:
-                    isEnabled = serializedObject.FindProperty("m_FogKeepExp").boolValue;
-                    break;
+                    return serializedObject.FindProperty("m_FogKeepExp").boolValue;
 
                 case FogMode.ExponentialSquarred:
-                    isEnabled = serializedObject.FindProperty("m_FogKeepExp2").boolValue;
-                    break;
+                    return serializedObject.FindProperty("m_FogKeepExp2").boolValue;
 
                 case FogMode.Linear:
-                    isEnabled = serializedObject.FindProperty("m_FogKeepLinear").boolValue;
-                    break;
+                    return serializedObject.FindProperty("m_FogKeepLinear").boolValue;
             }
 
-            return isEnabled;
+            return false;
         }
 
 
         internal static void RemoveFogStripping()
         {
             var serializedObject = new SerializedObject(GraphicsSettings.GetGraphicsSettings());
-            serializedObject.FindProperty("m_FogStripping").enumValueIndex = 0;
+            serializedObject.FindProperty("m_FogStripping").enumValueIndex = (int)FogModeStripping.Automatic;
             serializedObject.ApplyModifiedProperties();
         }
     }

@@ -243,54 +243,109 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(FogMode.Exponential)]
         [TestCase(FogMode.ExponentialSquarred)]
         [TestCase(FogMode.Linear)]
+        [TestCase(FogMode.None)]
         public void SettingsAnalysis_FogStripping_IsEnabled(FogMode fogMode)
         {
             var serializedObject = new SerializedObject(GraphicsSettings.GetGraphicsSettings());
             SerializedProperty fogTypeProperty = null;
+            var fogModeProperty = serializedObject.FindProperty("m_FogStripping");
+            var fogModeValue = fogModeProperty.enumValueIndex;
+
+            var linearFogModeProperty = serializedObject.FindProperty("m_FogKeepLinear");
+            var expFogModeProperty = serializedObject.FindProperty("m_FogKeepExp");
+            var exp2FogModeProperty = serializedObject.FindProperty("m_FogKeepExp2");
+
+            bool isEnabled = false;
 
             switch (fogMode)
             {
                 case FogMode.Exponential :
-                    fogTypeProperty = serializedObject.FindProperty("m_FogKeepExp");
+                    fogTypeProperty = expFogModeProperty;
+                    isEnabled = fogTypeProperty.boolValue;
                     fogTypeProperty.boolValue = true;
                     break;
+
                 case FogMode.ExponentialSquarred :
-                    fogTypeProperty = serializedObject.FindProperty("m_FogKeepExp2");
+                    fogTypeProperty = exp2FogModeProperty;
+                    isEnabled = fogTypeProperty.boolValue;
                     fogTypeProperty.boolValue = true;
                     break;
+
                 case FogMode.Linear :
-                    fogTypeProperty = serializedObject.FindProperty("m_FogKeepLinear");
+                    fogTypeProperty = linearFogModeProperty;
+                    isEnabled = fogTypeProperty.boolValue;
                     fogTypeProperty.boolValue = true;
                     break;
+
+                case FogMode.None :
+                    fogModeProperty.enumValueIndex = (int)FogModeStripping.Custom;
+
+                    var linearEnabled = linearFogModeProperty.boolValue;
+                    linearFogModeProperty.boolValue = false;
+
+                    var expEnabled = expFogModeProperty.boolValue;
+                    expFogModeProperty.boolValue = false;
+
+                    var exp2Enabled = exp2FogModeProperty.boolValue;
+                    exp2FogModeProperty.boolValue = false;
+
+                    serializedObject.ApplyModifiedProperties();
+                    var issuesCustomOnly = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals("PAS1003"));
+                    var playerSettingIssueCustomOnly = issuesCustomOnly.FirstOrDefault();
+
+                    Assert.AreEqual(null, playerSettingIssueCustomOnly);
+
+
+                    linearFogModeProperty.boolValue = linearEnabled;
+                    expFogModeProperty.boolValue = expEnabled;
+                    exp2FogModeProperty.boolValue = exp2Enabled;
+
+                    //Reset and exit test
+                    fogModeProperty.enumValueIndex = fogModeValue;
+
+                    serializedObject.ApplyModifiedProperties();
+                    return;
             }
 
             serializedObject.ApplyModifiedProperties();
             Assert.AreEqual(true, FogModeAnalyzer.IsFogStrippingEnabled(fogMode));
 
+
             if (fogTypeProperty != null)
             {
-                fogTypeProperty.boolValue = false;
+                fogTypeProperty.boolValue = isEnabled;
             }
+
+            fogModeProperty.enumValueIndex = fogModeValue;
 
             serializedObject.ApplyModifiedProperties();
         }
 
         [Test]
-        [TestCase(true)]
-        [TestCase(false)]
-        public void SettingsAnalysis_FogStripping_IsReported(bool isAutomaticMode)
+        [TestCase(FogModeStripping.Automatic)]
+        [TestCase(FogModeStripping.Custom)]
+        public void SettingsAnalysis_FogStripping_IsReported(FogModeStripping fogModeStripping)
         {
             var serializedObject = new SerializedObject(GraphicsSettings.GetGraphicsSettings());
             var property = serializedObject.FindProperty("m_FogStripping");
             var mode = property.enumValueIndex;
 
-            property.enumValueIndex = isAutomaticMode ? 0 : 1;
+            property.enumValueIndex = (int)fogModeStripping;
             serializedObject.ApplyModifiedProperties();
 
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals("PAS1003"));
             var playerSettingIssue = issues.FirstOrDefault();
 
-            Assert.AreEqual(isAutomaticMode, playerSettingIssue == null);
+            switch (fogModeStripping)
+            {
+                case FogModeStripping.Automatic:
+                    Assert.AreEqual(null, playerSettingIssue);
+                    break;
+
+                case FogModeStripping.Custom:
+                    Assert.AreNotEqual(null, playerSettingIssue);
+                    break;
+            }
 
             property.enumValueIndex = mode;
             serializedObject.ApplyModifiedProperties();
