@@ -52,6 +52,7 @@ This is a full list of all builtin settings diagnostics:
 | PAS1000 | Hybrid Rendering Static batching            | Player    | Any                      |
 | PAS1001 | Lit Shader Mode Forward and Deferred        | HDRP      | Any                      |
 | PAS1002 | Camera Lit Shader Mode Forward and Deferred | HDRP      | Any                      |
+| PAS1003 | Fog Mode Stripping						    | Graphics  | Any                      |
 
 
 # Asset Diagnostics
