@@ -15,18 +15,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public enum FogMode
     {
-        None,
         Linear,
         Exponential,
-        ExponentialSquarred
+        ExponentialSquared
     }
 
     class FogModeAnalyzer : ISettingsModuleAnalyzer
     {
-        private static readonly string k_linearMode = "Linear";
-        private static readonly string k_exponentialMode = "Exponential";
-        private static readonly string k_exponentialSquarredMode = "Exponential Squarred";
-
         private static readonly Descriptor k_FogModeDescriptor = new Descriptor(
             "PAS1003",
             "Graphics: Fog Shader Variant Stripping",
@@ -51,40 +46,37 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             if (IsFogStrippingEnabled(FogMode.Linear))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, k_linearMode)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, FogMode.Linear)
                     .WithLocation("Project/Graphics");
             }
 
             if (IsFogStrippingEnabled(FogMode.Exponential))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, k_exponentialMode)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, FogMode.Exponential)
                     .WithLocation("Project/Graphics");
             }
 
-            if (IsFogStrippingEnabled(FogMode.ExponentialSquarred))
+            if (IsFogStrippingEnabled(FogMode.ExponentialSquared))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, k_exponentialSquarredMode)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, FogMode.ExponentialSquared)
                     .WithLocation("Project/Graphics");
             }
         }
 
-        internal static bool IsFogStrippingEnabled(FogMode fogMode = FogMode.None)
+        internal static bool IsFogStrippingEnabled(FogMode fogMode)
         {
             var serializedObject = new SerializedObject(GraphicsSettings.GetGraphicsSettings());
 
-            FogModeStripping mode = (FogModeStripping)serializedObject.FindProperty("m_FogStripping").enumValueIndex;
+            var mode = (FogModeStripping)serializedObject.FindProperty("m_FogStripping").enumValueIndex;
 
             if (mode == FogModeStripping.Automatic) return false;
 
             switch (fogMode)
             {
-                case FogMode.None:
-                    return false;
-
                 case FogMode.Exponential:
                     return serializedObject.FindProperty("m_FogKeepExp").boolValue;
 
-                case FogMode.ExponentialSquarred:
+                case FogMode.ExponentialSquared:
                     return serializedObject.FindProperty("m_FogKeepExp2").boolValue;
 
                 case FogMode.Linear:
