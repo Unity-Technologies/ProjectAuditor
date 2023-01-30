@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEditor;
@@ -89,7 +90,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static void RemoveFogStripping()
         {
-            var serializedObject = new SerializedObject(GraphicsSettings.GetGraphicsSettings());
+            var getGraphicsSettings = typeof(GraphicsSettings).GetMethod("GetGraphicsSettings", BindingFlags.Static | BindingFlags.NonPublic);
+            var graphicsSettings = getGraphicsSettings.Invoke(null, null) as UnityEngine.Object;
+            var serializedObject = new SerializedObject(graphicsSettings);
+
             serializedObject.FindProperty("m_FogStripping").enumValueIndex = (int)FogModeStripping.Automatic;
             serializedObject.ApplyModifiedProperties();
         }
