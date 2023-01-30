@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+[Unreleased]
+* Fixed backwards compatibility
+* Fixed reporting of shader variants if not compiled for analysis platform
+
 ## [0.9.1-preview] - 2023-01-24
 * Added _UnityEngine.Object.FindObjectOfType_ usage detection
 * Added _Settings_ asset for configuring analyzers
@@ -11,7 +15,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Fixed names of build-generated assets in Build Report
 * Fixed parsing of unnamed shader passes in Unity 2021.2.14+
 * Fixed _UnityEngine.AudioSettings_ speaker mode diagnostic
-* Fixed reporting of variants if not compiled for analysis platform
 
 ## [0.9.0-preview] - 2022-12-01
 * Added diagnostic area _Quality_, _Support_ and _Requirement_
