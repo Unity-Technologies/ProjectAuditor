@@ -1,5 +1,3 @@
-#if PACKAGE_HYBRID_RENDERER
-
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -27,11 +25,15 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
-            if (PlayerSettingsUtil.IsStaticBatchingEnabled(context.platform))
+#if PACKAGE_HYBRID_RENDERER
+
+            if (PlayerSettingsUtil.IsStaticBatchingEnabled(projectAuditorParams.platform))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_Descriptor);
             }
+#else
+            yield break;
+#endif
         }
     }
 }
-#endif

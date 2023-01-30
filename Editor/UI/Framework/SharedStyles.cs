@@ -137,9 +137,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 if (s_TitleLabel == null)
                 {
-                    s_TitleLabel = new GUIStyle(EditorStyles.label);
-                    s_TitleLabel.fontSize += 14;
-                    s_TitleLabel.fontStyle = FontStyle.Bold;
+                    s_TitleLabel = new GUIStyle(EditorStyles.boldLabel);
+                    s_TitleLabel.fontSize = 26;
                     s_TitleLabel.fixedHeight = 34;
                 }
                 return s_TitleLabel;
@@ -152,9 +151,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 if (s_LargeLabel == null)
                 {
-                    s_LargeLabel = new GUIStyle(EditorStyles.label);
-                    s_LargeLabel.fontSize += 2;
-                    s_LargeLabel.fontStyle = FontStyle.Bold;
+                    s_LargeLabel = new GUIStyle(EditorStyles.boldLabel);
+                    s_LargeLabel.fontSize = 14;
+                    s_LargeLabel.fixedHeight = 22;
                 }
                 return s_LargeLabel;
             }

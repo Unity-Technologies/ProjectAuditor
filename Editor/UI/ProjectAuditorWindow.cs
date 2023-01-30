@@ -1010,15 +1010,18 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.LabelField(Contents.WelcomeTextTitle, SharedStyles.TitleLabel);
 
-            EditorGUILayout.Space(10);
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
 
             EditorGUILayout.LabelField(Contents.WelcomeText, SharedStyles.TextAreaWithDynamicSize);
 
-            EditorGUILayout.Space(12);
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
 
             DrawHorizontalLine();
 
-            EditorGUILayout.Space(16);
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
 
             EditorGUILayout.LabelField(Contents.ConfigurationsTitle, SharedStyles.LargeLabel);
 
@@ -1464,7 +1467,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 @"
 Project Auditor is an experimental static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report that contains the following:
 
- •  <b>Code and Settings Diagnostics</b>: a list of possible problems that might affect performance, memory and other areas.
+ •  <b>Diagnostics</b>: a list of possible problems that might affect performance, memory and other areas.
  •  <b>BuildReport</b>: timing and size information of the last build.
  •  <b>Assets information</b>
 
