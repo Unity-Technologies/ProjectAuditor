@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Core;
@@ -245,7 +246,10 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(FogMode.Linear)]
         public void SettingsAnalysis_FogStripping_IsEnabled(FogMode fogMode)
         {
-            var serializedObject = new SerializedObject(GraphicsSettings.GetGraphicsSettings());
+            var getGraphicsSettings = typeof(GraphicsSettings).GetMethod("GetGraphicsSettings", BindingFlags.Static | BindingFlags.NonPublic);
+            var graphicsSettings = getGraphicsSettings.Invoke(null, null) as UnityEngine.Object;
+            var serializedObject = new SerializedObject(graphicsSettings);
+
             SerializedProperty fogTypeProperty = null;
             var fogModeProperty = serializedObject.FindProperty("m_FogStripping");
             var fogModeValue = fogModeProperty.enumValueIndex;
@@ -296,7 +300,10 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(FogModeStripping.Custom)]
         public void SettingsAnalysis_FogStripping_IsNotReported(FogModeStripping fogModeStripping)
         {
-            var serializedObject = new SerializedObject(GraphicsSettings.GetGraphicsSettings());
+            var getGraphicsSettings = typeof(GraphicsSettings).GetMethod("GetGraphicsSettings", BindingFlags.Static | BindingFlags.NonPublic);
+            var graphicsSettings = getGraphicsSettings.Invoke(null, null) as UnityEngine.Object;
+            var serializedObject = new SerializedObject(graphicsSettings);
+
             var property = serializedObject.FindProperty("m_FogStripping");
             var mode = property.enumValueIndex;
 

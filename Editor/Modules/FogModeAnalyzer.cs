@@ -66,7 +66,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static bool IsFogStrippingEnabled(FogMode fogMode)
         {
-            var serializedObject = new SerializedObject(GraphicsSettings.GetGraphicsSettings());
+            var getGraphicsSettings = typeof(GraphicsSettings).GetMethod("GetGraphicsSettings", BindingFlags.Static | BindingFlags.NonPublic);
+            var graphicsSettings = getGraphicsSettings.Invoke(null, null) as UnityEngine.Object;
+            var serializedObject = new SerializedObject(graphicsSettings);
 
             var mode = (FogModeStripping)serializedObject.FindProperty("m_FogStripping").enumValueIndex;
 
