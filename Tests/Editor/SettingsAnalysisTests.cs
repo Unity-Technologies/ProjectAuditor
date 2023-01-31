@@ -249,11 +249,10 @@ namespace Unity.ProjectAuditor.EditorTests
             var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
             var serializedObject = new SerializedObject(graphicsSettings);
 
-            SerializedProperty fogTypeProperty = null;
-            var fogModeProperty = serializedObject.FindProperty("m_FogStripping");
-            var fogModeValue = fogModeProperty.enumValueIndex;
+            var fogStrippingProperty = serializedObject.FindProperty("m_FogStripping");
+            var fogStripping = fogStrippingProperty.enumValueIndex;
 
-            fogModeProperty.enumValueIndex = (int) FogModeStripping.Custom;
+            fogStrippingProperty.enumValueIndex = (int)FogStripping.Custom;
 
             var linearFogModeProperty = serializedObject.FindProperty("m_FogKeepLinear");
             var expFogModeProperty = serializedObject.FindProperty("m_FogKeepExp");
@@ -269,21 +268,21 @@ namespace Unity.ProjectAuditor.EditorTests
 
             switch (fogMode)
             {
-                case FogMode.Exponential :
+                case FogMode.Exponential:
                     expFogModeProperty.boolValue = true;
                     break;
 
-                case FogMode.ExponentialSquared :
+                case FogMode.ExponentialSquared:
                     exp2FogModeProperty.boolValue = true;
                     break;
 
-                case FogMode.Linear :
+                case FogMode.Linear:
                     linearFogModeProperty.boolValue = true;
                     break;
             }
 
             serializedObject.ApplyModifiedProperties();
-            Assert.IsTrue(FogModeAnalyzer.IsFogStrippingEnabled(fogMode));
+            Assert.IsTrue(FogStrippingAnalyzer.IsFogModeEnabled(fogMode));
 
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals("PAS1003"));
 
@@ -295,21 +294,21 @@ namespace Unity.ProjectAuditor.EditorTests
             expFogModeProperty.boolValue = expEnabled;
             exp2FogModeProperty.boolValue = exp2Enabled;
 
-            fogModeProperty.enumValueIndex = fogModeValue;
+            fogStrippingProperty.enumValueIndex = fogStripping;
 
             serializedObject.ApplyModifiedProperties();
         }
 
         [Test]
-        [TestCase(FogModeStripping.Automatic)]
-        [TestCase(FogModeStripping.Custom)]
-        public void SettingsAnalysis_FogStripping_IsNotReported(FogModeStripping fogModeStripping)
+        [TestCase(FogStripping.Automatic)]
+        [TestCase(FogStripping.Custom)]
+        public void SettingsAnalysis_FogStripping_IsNotReported(FogStripping fogModeStripping)
         {
             var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
             var serializedObject = new SerializedObject(graphicsSettings);
 
-            var property = serializedObject.FindProperty("m_FogStripping");
-            var mode = property.enumValueIndex;
+            var fogStrippingProperty = serializedObject.FindProperty("m_FogStripping");
+            var fogStripping = fogStrippingProperty.enumValueIndex;
 
             var linearFogModeProperty = serializedObject.FindProperty("m_FogKeepLinear");
             var expFogModeProperty = serializedObject.FindProperty("m_FogKeepExp");
@@ -319,9 +318,9 @@ namespace Unity.ProjectAuditor.EditorTests
             var expEnabled = expFogModeProperty.boolValue;
             var exp2Enabled = exp2FogModeProperty.boolValue;
 
-            property.enumValueIndex = (int)fogModeStripping;
+            fogStrippingProperty.enumValueIndex = (int)fogModeStripping;
 
-            if (fogModeStripping == FogModeStripping.Custom)
+            if (fogModeStripping == FogStripping.Custom)
             {
                 linearFogModeProperty.boolValue = false;
                 expFogModeProperty.boolValue = false;
@@ -335,8 +334,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.IsNull(playerSettingIssue);
 
-
-            property.enumValueIndex = mode;
+            fogStrippingProperty.enumValueIndex = fogStripping;
 
             linearFogModeProperty.boolValue = linearEnabled;
             expFogModeProperty.boolValue = expEnabled;

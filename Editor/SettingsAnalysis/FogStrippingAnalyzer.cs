@@ -1,15 +1,12 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
-using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    enum FogModeStripping
+    enum FogStripping
     {
         Automatic,
         Custom
@@ -22,9 +19,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
         ExponentialSquared
     }
 
-    class FogModeAnalyzer : ISettingsModuleAnalyzer
+    class FogStrippingAnalyzer : ISettingsModuleAnalyzer
     {
-        private static readonly Descriptor k_FogModeDescriptor = new Descriptor(
+        static readonly Descriptor k_FogModeDescriptor = new Descriptor(
             "PAS1003",
             "Graphics: Fog Shader Variant Stripping",
             new[] {Area.BuildSize},
@@ -46,33 +43,32 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
-            if (IsFogStrippingEnabled(FogMode.Linear))
+            if (IsFogModeEnabled(FogMode.Linear))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, FogMode.Linear)
                     .WithLocation("Project/Graphics");
             }
 
-            if (IsFogStrippingEnabled(FogMode.Exponential))
+            if (IsFogModeEnabled(FogMode.Exponential))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, FogMode.Exponential)
                     .WithLocation("Project/Graphics");
             }
 
-            if (IsFogStrippingEnabled(FogMode.ExponentialSquared))
+            if (IsFogModeEnabled(FogMode.ExponentialSquared))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, FogMode.ExponentialSquared)
                     .WithLocation("Project/Graphics");
             }
         }
 
-        internal static bool IsFogStrippingEnabled(FogMode fogMode)
+        internal static bool IsFogModeEnabled(FogMode fogMode)
         {
             var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
             var serializedObject = new SerializedObject(graphicsSettings);
 
-            var mode = (FogModeStripping)serializedObject.FindProperty("m_FogStripping").enumValueIndex;
-
-            if (mode == FogModeStripping.Automatic) return false;
+            if (FogStripping.Automatic == (FogStripping)serializedObject.FindProperty("m_FogStripping").enumValueIndex)
+                return false;
 
             switch (fogMode)
             {
@@ -89,13 +85,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return false;
         }
 
-
         internal static void RemoveFogStripping()
         {
             var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
             var serializedObject = new SerializedObject(graphicsSettings);
 
-            serializedObject.FindProperty("m_FogStripping").enumValueIndex = (int)FogModeStripping.Automatic;
+            serializedObject.FindProperty("m_FogStripping").enumValueIndex = (int)FogStripping.Automatic;
             serializedObject.ApplyModifiedProperties();
         }
     }

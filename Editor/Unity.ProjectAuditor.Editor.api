@@ -556,6 +556,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Tier = 1,
     }
 
+    public enum FogMode
+    {
+        Exponential = 1,
+        ExponentialSquared = 2,
+        Linear = 0,
+    }
+
     public interface ICodeModuleInstructionAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
     {
         public System.Collections.Generic.IReadOnlyCollection<Mono.Cecil.Cil.OpCode> opCodes { get; }
