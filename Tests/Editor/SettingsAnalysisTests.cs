@@ -253,6 +253,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var fogModeProperty = serializedObject.FindProperty("m_FogStripping");
             var fogModeValue = fogModeProperty.enumValueIndex;
 
+            fogModeProperty.enumValueIndex = (int) FogModeStripping.Custom;
+
             var linearFogModeProperty = serializedObject.FindProperty("m_FogKeepLinear");
             var expFogModeProperty = serializedObject.FindProperty("m_FogKeepExp");
             var exp2FogModeProperty = serializedObject.FindProperty("m_FogKeepExp2");
