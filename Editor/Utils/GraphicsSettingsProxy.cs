@@ -34,6 +34,16 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
         }
 
+        public static UnityEngine.Object GetGraphicsSettings()
+        {
+#if UNITY_2020_2_OR_NEWER
+            return GraphicsSettings.GetGraphicsSettings();
+#else
+            var getGraphicsSettings = typeof(GraphicsSettings).GetMethod("GetGraphicsSettings", BindingFlags.Static | BindingFlags.NonPublic);
+            return getGraphicsSettings.Invoke(null, null) as UnityEngine.Object;
+#endif
+        }
+
         [InitializeOnLoadMethod]
         static void Initialize()
         {

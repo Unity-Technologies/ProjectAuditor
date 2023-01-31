@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 [Unreleased]
+* Added Fog shader variant stripping analyzer
 * Fixed backwards compatibility
 * Fixed reporting of shader variants if not compiled for analysis platform
 

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Core;
@@ -11,6 +12,7 @@ using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
+using FogMode = Unity.ProjectAuditor.Editor.Modules.FogMode;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -236,6 +238,109 @@ namespace Unity.ProjectAuditor.EditorTests
 #if UNITY_2019_3_OR_NEWER
             GraphicsSettings.defaultRenderPipeline = defaultRenderPipeline;
 #endif
+        }
+
+        [Test]
+        [TestCase(FogMode.Exponential)]
+        [TestCase(FogMode.ExponentialSquared)]
+        [TestCase(FogMode.Linear)]
+        public void SettingsAnalysis_FogStripping_IsReported(FogMode fogMode)
+        {
+            var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
+            var serializedObject = new SerializedObject(graphicsSettings);
+
+            var fogStrippingProperty = serializedObject.FindProperty("m_FogStripping");
+            var fogStripping = fogStrippingProperty.enumValueIndex;
+
+            fogStrippingProperty.enumValueIndex = (int)FogStripping.Custom;
+
+            var linearFogModeProperty = serializedObject.FindProperty("m_FogKeepLinear");
+            var expFogModeProperty = serializedObject.FindProperty("m_FogKeepExp");
+            var exp2FogModeProperty = serializedObject.FindProperty("m_FogKeepExp2");
+
+            var linearEnabled = linearFogModeProperty.boolValue;
+            var expEnabled = expFogModeProperty.boolValue;
+            var exp2Enabled = exp2FogModeProperty.boolValue;
+
+            expFogModeProperty.boolValue = false;
+            linearFogModeProperty.boolValue = false;
+            exp2FogModeProperty.boolValue = false;
+
+            switch (fogMode)
+            {
+                case FogMode.Exponential:
+                    expFogModeProperty.boolValue = true;
+                    break;
+
+                case FogMode.ExponentialSquared:
+                    exp2FogModeProperty.boolValue = true;
+                    break;
+
+                case FogMode.Linear:
+                    linearFogModeProperty.boolValue = true;
+                    break;
+            }
+
+            serializedObject.ApplyModifiedProperties();
+            Assert.IsTrue(FogStrippingAnalyzer.IsFogModeEnabled(fogMode));
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals("PAS1003"));
+
+            Assert.AreEqual(1, issues.Length);
+            string description = $"Graphics: FogMode '{fogMode}' shader variants is always included in the build.";
+            Assert.AreEqual(description, issues[0].description);
+
+            linearFogModeProperty.boolValue = linearEnabled;
+            expFogModeProperty.boolValue = expEnabled;
+            exp2FogModeProperty.boolValue = exp2Enabled;
+
+            fogStrippingProperty.enumValueIndex = fogStripping;
+
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        [Test]
+        [TestCase(FogStripping.Automatic)]
+        [TestCase(FogStripping.Custom)]
+        public void SettingsAnalysis_FogStripping_IsNotReported(FogStripping fogModeStripping)
+        {
+            var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
+            var serializedObject = new SerializedObject(graphicsSettings);
+
+            var fogStrippingProperty = serializedObject.FindProperty("m_FogStripping");
+            var fogStripping = fogStrippingProperty.enumValueIndex;
+
+            var linearFogModeProperty = serializedObject.FindProperty("m_FogKeepLinear");
+            var expFogModeProperty = serializedObject.FindProperty("m_FogKeepExp");
+            var exp2FogModeProperty = serializedObject.FindProperty("m_FogKeepExp2");
+
+            var linearEnabled = linearFogModeProperty.boolValue;
+            var expEnabled = expFogModeProperty.boolValue;
+            var exp2Enabled = exp2FogModeProperty.boolValue;
+
+            fogStrippingProperty.enumValueIndex = (int)fogModeStripping;
+
+            if (fogModeStripping == FogStripping.Custom)
+            {
+                linearFogModeProperty.boolValue = false;
+                expFogModeProperty.boolValue = false;
+                exp2FogModeProperty.boolValue = false;
+            }
+
+            serializedObject.ApplyModifiedProperties();
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals("PAS1003"));
+            var playerSettingIssue = issues.FirstOrDefault();
+
+            Assert.IsNull(playerSettingIssue);
+
+            fogStrippingProperty.enumValueIndex = fogStripping;
+
+            linearFogModeProperty.boolValue = linearEnabled;
+            expFogModeProperty.boolValue = expEnabled;
+            exp2FogModeProperty.boolValue = exp2Enabled;
+
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }
