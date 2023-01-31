@@ -244,10 +244,9 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(FogMode.Exponential)]
         [TestCase(FogMode.ExponentialSquared)]
         [TestCase(FogMode.Linear)]
-        public void SettingsAnalysis_FogStripping_IsEnabled(FogMode fogMode)
+        public void SettingsAnalysis_FogStripping_IsReported(FogMode fogMode)
         {
-            var getGraphicsSettings = typeof(GraphicsSettings).GetMethod("GetGraphicsSettings", BindingFlags.Static | BindingFlags.NonPublic);
-            var graphicsSettings = getGraphicsSettings.Invoke(null, null) as UnityEngine.Object;
+            var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
             var serializedObject = new SerializedObject(graphicsSettings);
 
             SerializedProperty fogTypeProperty = null;
@@ -258,37 +257,41 @@ namespace Unity.ProjectAuditor.EditorTests
             var expFogModeProperty = serializedObject.FindProperty("m_FogKeepExp");
             var exp2FogModeProperty = serializedObject.FindProperty("m_FogKeepExp2");
 
-            bool isEnabled = false;
+            var linearEnabled = linearFogModeProperty.boolValue;
+            var expEnabled = expFogModeProperty.boolValue;
+            var exp2Enabled = exp2FogModeProperty.boolValue;
+
+            expFogModeProperty.boolValue = false;
+            linearFogModeProperty.boolValue = false;
+            exp2FogModeProperty.boolValue = false;
 
             switch (fogMode)
             {
                 case FogMode.Exponential :
-                    fogTypeProperty = expFogModeProperty;
-                    isEnabled = fogTypeProperty.boolValue;
-                    fogTypeProperty.boolValue = true;
+                    expFogModeProperty.boolValue = true;
                     break;
 
                 case FogMode.ExponentialSquared :
-                    fogTypeProperty = exp2FogModeProperty;
-                    isEnabled = fogTypeProperty.boolValue;
-                    fogTypeProperty.boolValue = true;
+                    exp2FogModeProperty.boolValue = true;
                     break;
 
                 case FogMode.Linear :
-                    fogTypeProperty = linearFogModeProperty;
-                    isEnabled = fogTypeProperty.boolValue;
-                    fogTypeProperty.boolValue = true;
+                    linearFogModeProperty.boolValue = true;
                     break;
             }
 
             serializedObject.ApplyModifiedProperties();
-            Assert.AreEqual(true, FogModeAnalyzer.IsFogStrippingEnabled(fogMode));
+            Assert.IsTrue(FogModeAnalyzer.IsFogStrippingEnabled(fogMode));
 
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals("PAS1003"));
 
-            if (fogTypeProperty != null)
-            {
-                fogTypeProperty.boolValue = isEnabled;
-            }
+            Assert.AreEqual(1, issues.Length);
+            string description = $"Graphics: FogMode '{fogMode}' shader variants is always included in the build.";
+            Assert.AreEqual(description, issues[0].description);
+
+            linearFogModeProperty.boolValue = linearEnabled;
+            expFogModeProperty.boolValue = expEnabled;
+            exp2FogModeProperty.boolValue = exp2Enabled;
 
             fogModeProperty.enumValueIndex = fogModeValue;
 
@@ -300,8 +303,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(FogModeStripping.Custom)]
         public void SettingsAnalysis_FogStripping_IsNotReported(FogModeStripping fogModeStripping)
         {
-            var getGraphicsSettings = typeof(GraphicsSettings).GetMethod("GetGraphicsSettings", BindingFlags.Static | BindingFlags.NonPublic);
-            var graphicsSettings = getGraphicsSettings.Invoke(null, null) as UnityEngine.Object;
+            var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
             var serializedObject = new SerializedObject(graphicsSettings);
 
             var property = serializedObject.FindProperty("m_FogStripping");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine.Rendering;
 
@@ -35,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 RemoveFogStripping();
             }),
 
-            messageFormat = "Graphics: FogMode {0} shader variants is always included in the build."
+            messageFormat = "Graphics: FogMode '{0}' shader variants is always included in the build."
         };
 
         public void Initialize(ProjectAuditorModule module)
@@ -66,8 +67,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static bool IsFogStrippingEnabled(FogMode fogMode)
         {
-            var getGraphicsSettings = typeof(GraphicsSettings).GetMethod("GetGraphicsSettings", BindingFlags.Static | BindingFlags.NonPublic);
-            var graphicsSettings = getGraphicsSettings.Invoke(null, null) as UnityEngine.Object;
+            var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
             var serializedObject = new SerializedObject(graphicsSettings);
 
             var mode = (FogModeStripping)serializedObject.FindProperty("m_FogStripping").enumValueIndex;
@@ -92,8 +92,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static void RemoveFogStripping()
         {
-            var getGraphicsSettings = typeof(GraphicsSettings).GetMethod("GetGraphicsSettings", BindingFlags.Static | BindingFlags.NonPublic);
-            var graphicsSettings = getGraphicsSettings.Invoke(null, null) as UnityEngine.Object;
+            var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
             var serializedObject = new SerializedObject(graphicsSettings);
 
             serializedObject.FindProperty("m_FogStripping").enumValueIndex = (int)FogModeStripping.Automatic;
