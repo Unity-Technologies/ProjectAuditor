@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 [Unreleased]
+* Added Fog shader variant stripping analyzer
 * Fixed backwards compatibility
 * Fixed reporting of shader variants if not compiled for analysis platform
 
@@ -15,8 +16,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Fixed names of build-generated assets in Build Report
 * Fixed parsing of unnamed shader passes in Unity 2021.2.14+
 * Fixed _UnityEngine.AudioSettings_ speaker mode diagnostic
-* Fixed reporting of variants if not compiled for analysis platform
-* Added Fog shader variant stripping analyzer
 
 ## [0.9.0-preview] - 2022-12-01
 * Added diagnostic area _Quality_, _Support_ and _Requirement_
