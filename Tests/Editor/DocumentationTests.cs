@@ -11,7 +11,6 @@ namespace Unity.ProjectAuditor.EditorTests
     public class DocumentationTests
     {
         [UnityTest]
-        [Ignore("TODO: enable when '0.9.1-preview' tag is created")]
         public IEnumerator Documentation_Pages_Exist()
         {
             var viewManager = new ViewManager((IssueCategory[])Enum.GetValues(typeof(IssueCategory)));

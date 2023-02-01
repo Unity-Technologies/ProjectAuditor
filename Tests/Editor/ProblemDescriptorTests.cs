@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -11,6 +12,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
@@ -251,6 +253,31 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
 #endif
+
+        // TODO: we should validate all descriptor Urls
+        [UnityTest]
+        [TestCase("ApiDatabase", ExpectedResult = null)]
+        [TestCase("ProjectSettings", ExpectedResult = null)]
+        public IEnumerator ProblemDescriptor_DocumentationUrl_Exist(string jsonFilename)
+        {
+            var descriptors = Json.FromFile<Descriptor>(PathUtils.Combine(Editor.ProjectAuditor.DataPath, jsonFilename) + ".json");
+            foreach (var desc in descriptors)
+            {
+                if (string.IsNullOrEmpty(desc.documentationUrl))
+                    continue;
+
+                var documentationUrl = desc.documentationUrl;
+                var request = UnityWebRequest.Get(documentationUrl);
+                yield return request.SendWebRequest();
+
+                Assert.True(request.isDone);
+#if UNITY_2020_1_OR_NEWER
+                Assert.AreEqual(UnityWebRequest.Result.Success, request.result, $"Page {documentationUrl} not found.");
+#else
+                Assert.IsFalse(request.isNetworkError || request.isHttpError, $"Page {documentationUrl} not found.");
+#endif
+            }
+        }
 
         [Test]
         public void ProblemDescriptor_Platform_IsCorrect()
