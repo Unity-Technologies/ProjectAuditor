@@ -15,9 +15,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Area.BuildSize,
             "Engine code stripping is disabled. The generated build will be larger than necessary.",
             "Enable <b>stripEngineCode</b> in <b>Project Settings ➔ Player ➔ Other Settings</b>")
-        {
-            platforms = new string[] { BuildTarget.Android.ToString(), BuildTarget.iOS.ToString(), BuildTarget.WebGL.ToString() }
-        };
+                .WithPlatforms(new[] { BuildTarget.Android, BuildTarget.iOS, BuildTarget.WebGL });
 
         static readonly Descriptor k_AndroidManagedStrippingDescriptor = new Descriptor(
             "PAS0025",
@@ -25,9 +23,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Area.BuildSize,
             "Managed code stripping on Android is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",
             "Set managed stripping level to Medium or High.")
-        {
-            platforms = new string[] { BuildTarget.Android.ToString() }
-        };
+                .WithPlatforms(new[] { BuildTarget.Android });
 
         static readonly Descriptor k_iOSManagedStrippingDescriptor = new Descriptor(
             "PAS0026",
@@ -35,9 +31,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Area.BuildSize,
             "Managed code stripping on iOS is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",
             "Set managed stripping level to Medium or High.")
-        {
-            platforms = new string[] { BuildTarget.iOS.ToString() }
-        };
+                .WithPlatforms(new[] { BuildTarget.iOS });
 
         public void Initialize(ProjectAuditorModule module)
         {

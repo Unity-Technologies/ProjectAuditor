@@ -45,16 +45,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        static readonly Descriptor k_RecommendPackageUpgrade  = new Descriptor(
+        static readonly Descriptor k_RecommendPackageUpgrade = new Descriptor(
             "PAP0001",
             "Upgradable packages",
             new[] { Area.Quality },
             "A newer recommended version of this package is available.",
             "Upgrade the package via Package Manager."
         )
-        {
-            messageFormat = "'{0}' could be updated from version '{1}' to '{2}'",
-        };
+                .WithMessageFormat("'{0}' could be updated from version '{1}' to '{2}'");
 
         static readonly Descriptor k_RecommendPackagePreView = new Descriptor(
             "PAP0002",
@@ -63,9 +61,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Experimental or Preview packages are in the early stages of development and not yet ready for production.",
             "We recommend using these only for testing purposes and to give us direct feedback"
         )
-        {
-            messageFormat = "'{0}' version '{1}' is a preview/experimental version"
-        };
+                .WithMessageFormat("'{0}' version '{1}' is a preview/experimental version");
 
         public override string name => "Packages";
 

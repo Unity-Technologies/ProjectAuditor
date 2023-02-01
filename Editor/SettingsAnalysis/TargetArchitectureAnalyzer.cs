@@ -14,9 +14,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Area.BuildSize,
             "In the iOS Player Settings, <b>Architecture</b> is set to Universal. This means that the application will be compiled for both 32-bit ARMv7 iOS devices (i.e. up to the iPhone 5 or 5c) and 64-bit ARM64 devices (iPhone 5s onwards), resulting in increased build times and binary size.",
             "If your application isn't intended to support 32-bit iOS devices, change <b>Architecture</b> to ARM64.")
-        {
-            platforms = new string[] { BuildTarget.iOS.ToString() }
-        };
+                .WithPlatforms(new[] { BuildTarget.iOS });
 
         static readonly Descriptor k_DescriptorAndroid = new Descriptor(
             "PAS0004",
@@ -24,9 +22,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Area.BuildSize,
             "In the Android Player Settings, in the <b>Target Architecture</b> section, both the <b>ARMv7</b> and <b>ARM64</b> options are selected. This means that the application will be compiled for both 32-bit ARMv7 Android devices and 64-bit ARM64 devices, resulting in increased build times and binary size.",
             "If your application isn't intended to support 32-bit Android devices, disable the <b>ARMv7</b> option.")
-        {
-            platforms = new string[] { BuildTarget.Android.ToString() }
-        };
+                .WithPlatforms(new[] { BuildTarget.Android });
 
         public void Initialize(ProjectAuditorModule module)
         {

@@ -14,42 +14,38 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
             "PAT0000",
             "Texture: Mipmaps not enabled",
-            new[] {Area.GPU, Area.Quality},
+            new[] { Area.GPU, Area.Quality },
             "Texture mipmaps generation is not enabled. Generally enabling mipmaps improves rendering quality (avoids aliasing effects) and improves performance.",
             "Consider enabling mipmaps using the <b>Advanced ➔ Generate Mip Maps</b> option in the texture inspector."
         )
-        {
-            messageFormat = "Texture '{0}' mipmaps generation is not enabled",
-            fixer = (issue) =>
-            {
-                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
-                if (textureImporter != null)
+                .WithMessageFormat("Texture '{0}' mipmaps generation is not enabled")
+                .WithFixer((issue) =>
                 {
-                    textureImporter.mipmapEnabled = true;
-                    textureImporter.SaveAndReimport();
-                }
-            }
-        };
+                    var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                    if (textureImporter != null)
+                    {
+                        textureImporter.mipmapEnabled = true;
+                        textureImporter.SaveAndReimport();
+                    }
+                });
 
         internal static readonly Descriptor k_TextureMipMapEnabledDescriptor = new Descriptor(
             "PAT0001",
             "Texture: Mipmaps enabled on Sprite/UI texture",
-            new[] {Area.BuildSize, Area.Quality},
+            new[] { Area.BuildSize, Area.Quality },
             "Texture mipmaps generation is enabled. This might reduce rendering quality of sprites and UI.",
             "Consider disabling mipmaps using the <b>Advanced ➔ Generate Mip Maps</b> option in the texture inspector. This will also reduce your build size."
         )
-        {
-            messageFormat = "Texture '{0}' mipmaps generation is enabled",
-            fixer = (issue) =>
-            {
-                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
-                if (textureImporter != null)
+                .WithMessageFormat("Texture '{0}' mipmaps generation is enabled")
+                .WithFixer((issue) =>
                 {
-                    textureImporter.mipmapEnabled = false;
-                    textureImporter.SaveAndReimport();
-                }
-            }
-        };
+                    var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                    if (textureImporter != null)
+                    {
+                        textureImporter.mipmapEnabled = false;
+                        textureImporter.SaveAndReimport();
+                    }
+                });
 
         internal static readonly Descriptor k_TextureReadWriteEnabledDescriptor = new Descriptor(
             "PAT0002",
@@ -59,19 +55,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Thus, this option should only be used if the texture is read or written to at run-time." +
             "Consider disabling Read/Write using the <b>Read/Write Enabled</b> option in the texture inspector."
         )
-        {
-            messageFormat = "Texture '{0}' Read/Write is enabled",
-            documentationUrl = "https://docs.unity3d.com/ScriptReference/Texture-isReadable.html",
-            fixer = (issue) =>
-            {
-                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
-                if (textureImporter != null)
+                .WithDocumentationUrl("https://docs.unity3d.com/ScriptReference/Texture-isReadable.html")
+                .WithMessageFormat("Texture '{0}' Read/Write is enabled")
+                .WithFixer((issue) =>
                 {
-                    textureImporter.isReadable = false;
-                    textureImporter.SaveAndReimport();
-                }
-            }
-        };
+                    var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                    if (textureImporter != null)
+                    {
+                        textureImporter.isReadable = false;
+                        textureImporter.SaveAndReimport();
+                    }
+                });
 
         public void Initialize(ProjectAuditorModule module)
         {

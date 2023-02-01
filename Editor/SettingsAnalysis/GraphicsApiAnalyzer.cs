@@ -20,10 +20,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             new[] { Area.BuildSize },
             "In the iOS Player Settings, both Metal and OpenGLES graphics APIs are enabled.",
             "To reduce build size, remove OpenGLES graphics API if the minimum spec target device supports Metal.")
-        {
-            documentationUrl = documentationUrl,
-            platforms = new[] { BuildTarget.iOS.ToString() }
-        };
+                .WithDocumentationUrl(documentationUrl)
+                .WithPlatforms(new[] { BuildTarget.iOS });
 
         static readonly Descriptor k_MetalDescriptor = new Descriptor(
             "PAS0006",
@@ -31,10 +29,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             new[] { Area.CPU },
             "In the iOS Player Settings, Metal is not enabled.",
             "Enable Metal graphics API for better CPU Performance.")
-        {
-            documentationUrl = documentationUrl,
-            platforms = new[] { BuildTarget.iOS.ToString() }
-        };
+                .WithDocumentationUrl(documentationUrl)
+                .WithPlatforms(new[] { BuildTarget.iOS });
 
         static readonly Descriptor k_VulkanDescriptor = new Descriptor(
             "PAS0031",
@@ -42,10 +38,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             new[] { Area.CPU, Area.GPU },
             "In the Android Player Settings, Vulkan graphics API is not enabled.",
             "Enable Vulkan graphics API for better CPU Performance.")
-        {
-            documentationUrl = documentationUrl,
-            platforms = new[] { BuildTarget.Android.ToString() }
-        };
+                .WithDocumentationUrl(documentationUrl)
+                .WithPlatforms(new[] { BuildTarget.Android });
 
         public void Initialize(ProjectAuditorModule module)
         {

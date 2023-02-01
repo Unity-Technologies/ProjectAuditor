@@ -19,9 +19,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Any empty MonoBehaviour magic method will be included in the build and executed anyway.",
             "Remove any empty MonoBehaviour methods."
             )
-        {
-            messageFormat = "MonoBehaviour method '{0}' is empty"
-        };
+                .WithMessageFormat("MonoBehaviour method '{0}' is empty");
 
         readonly OpCode[] m_OpCodes =
         {

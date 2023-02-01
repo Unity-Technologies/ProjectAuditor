@@ -19,10 +19,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Thus, this option should only be used if the mesh is read or written to at run-time, e.g. if used as a MeshCollider or a BlendShape. Note that Polybrush meshes may set this by default, so again save to disable if not modified at run-time." +
             "Consider disabling Read/Write using the <b>Read/Write Enabled</b> option in the mesh inspector."
         )
-        {
-            messageFormat = "Mesh '{0}' Read/Write is enabled",
-            documentationUrl = "https://docs.unity3d.com/ScriptReference/Mesh-isReadable.html"
-        };
+                .WithDocumentationUrl("https://docs.unity3d.com/ScriptReference/Mesh-isReadable.html")
+                .WithMessageFormat("Mesh '{0}' Read/Write is enabled");
 
         internal static readonly Descriptor k_Mesh32BitIndexFormatUsedDescriptor = new Descriptor(
             "PAM0001",
@@ -31,10 +29,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Mesh index buffer is using 32 bits format. This increases the mesh size and may not work on certain mobile devices.",
             "Consider using changing the <b>Index Format</b> option in the model inspector. This should be set to either <b>16 bits</b> or <b>Auto</b>."
         )
-        {
-            messageFormat = "Mesh '{0}' Index Format is 32 bits",
-            documentationUrl = "https://docs.unity3d.com/ScriptReference/Mesh-indexFormat.html"
-        };
+                .WithDocumentationUrl("https://docs.unity3d.com/ScriptReference/Mesh-indexFormat.html")
+                .WithMessageFormat("Mesh '{0}' Index Format is 32 bits");
 
         public void Initialize(ProjectAuditorModule module)
         {

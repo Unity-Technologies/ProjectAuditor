@@ -20,9 +20,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             new[] { Area.CPU },
             "The Accelerometer is enabled in iOS Player Settings.",
             "Consider setting <b>Accelerometer Frequency</b> to Disabled if your application doesn't make use of the device's accelerometer. Disabling this option will save a tiny amount of CPU processing time.")
-        {
-            platforms = new[] { BuildTarget.iOS.ToString() }
-        };
+                .WithPlatforms(new[] { BuildTarget.iOS });
 
         static readonly Descriptor k_SplashScreenDescriptor = new Descriptor(
             "PAS0029",
@@ -37,12 +35,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             new[] { Area.BuildSize },
             "<b>UnityEngine.AudioSettings.speakerMode</b> is not set to <b>UnityEngine.AudioSpeakerMode.Mono</b>. The generated build will be larger than necessary.",
             "To reduce runtime memory consumption of AudioClips change <b>Project Settings ➔ Audio ➔ Default Speaker Mode</b> to <b>Mono</b>. This will half memory usage of stereo AudioClips. It is also recommended considering enabling the <b>Force To Mono</b> AudioClip import setting to reduce import times and build size.")
-        {
-            platforms = new[] { "Android", "iOS"},
-            fixer = (issue => {
-                FixSpeakerMode();
-            })
-        };
+                .WithPlatforms(new[] { BuildTarget.Android, BuildTarget.iOS })
+                .WithFixer((issue => {
+                    FixSpeakerMode();
+                }));
 
         public void Initialize(ProjectAuditorModule module)
         {

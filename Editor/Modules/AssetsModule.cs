@@ -33,9 +33,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "The Resources folder is a common source of many problems in Unity projects. Improper use of the Resources folder can bloat the size of a project’s build, lead to uncontrollable excessive memory utilization, and significantly increase application startup times.",
             "Use AssetBundles when possible"
             )
-        {
-            messageFormat = "'{0}' {1}"
-        };
+                .WithMessageFormat("'{0}' {1}");
 
         static readonly Descriptor k_StreamingAssetsFolderDescriptor = new Descriptor(
             "PAA0001",
@@ -44,10 +42,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             $"There are many files in the 'Assets/StreamingAssets' folder. Keeping them in the StreamingAssets folder will increase the build size.",
             $"Try to move files outside this folder and use Asset Bundles or Addressables when possible."
         )
-        {
-            platforms = new[] {"Android", "iOS"},
-            messageFormat = "StreamingAssets folder contains {0} of data",
-        };
+            .WithMessageFormat("StreamingAssets folder contains {0} of data")
+            .WithPlatforms(new[] {BuildTarget.Android, BuildTarget.iOS});
 
         public override bool isEnabledByDefault => false;
 

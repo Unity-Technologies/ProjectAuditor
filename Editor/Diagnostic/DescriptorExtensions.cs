@@ -46,5 +46,35 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                 return false;
             return descriptor.platforms[0].Equals(buildTarget.ToString());
         }
+
+        public static Descriptor WithDocumentationUrl(this Descriptor descriptor, string documentationUrl)
+        {
+            descriptor.documentationUrl = documentationUrl;
+            return descriptor;
+        }
+
+        public static Descriptor WithFixer(this Descriptor descriptor, Action<ProjectIssue> fixer)
+        {
+            descriptor.fixer = fixer;
+            return descriptor;
+        }
+
+        public static Descriptor WithMessageFormat(this Descriptor descriptor, string messageFormat)
+        {
+            descriptor.messageFormat = messageFormat;
+            return descriptor;
+        }
+
+        public static Descriptor WithPlatforms(this Descriptor descriptor, BuildTarget[] platforms)
+        {
+            descriptor.platforms = platforms.Select(p => p.ToString()).ToArray();
+            return descriptor;
+        }
+
+        public static Descriptor WithSeverity(this Descriptor descriptor, Severity severity)
+        {
+            descriptor.severity = severity;
+            return descriptor;
+        }
     }
 }

@@ -20,10 +20,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "An object is allocated in managed memory",
             "Try to avoid allocating objects in frequently-updated code."
             )
-        {
-            messageFormat = "'{0}' allocation",
-            severity = Severity.Minor
-        };
+                .WithMessageFormat("'{0}' allocation")
+                .WithSeverity(Severity.Minor);
 
         static readonly Descriptor k_ClosureAllocationDescriptor = new Descriptor
             (
@@ -33,10 +31,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "An object is allocated in managed memory",
             "Try to avoid allocating objects in frequently-updated code."
             )
-        {
-            messageFormat = "Closure allocation in '{0}.{1}'",
-            severity = Severity.Minor
-        };
+                .WithMessageFormat("Closure allocation in '{0}.{1}'")
+                .WithSeverity(Severity.Minor);
 
         static readonly Descriptor k_ArrayAllocationDescriptor = new Descriptor
             (
@@ -46,10 +42,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "An array is allocated in managed memory",
             "Try to avoid allocating arrays in frequently-updated code."
             )
-        {
-            messageFormat = "'{0}' array allocation",
-            severity = Severity.Minor
-        };
+                .WithMessageFormat("'{0}' array allocation")
+                .WithSeverity(Severity.Minor);
 
         static readonly Descriptor k_ParamArrayAllocationDescriptor = new Descriptor
             (
@@ -59,9 +53,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "A parameters array is allocated.",
             "Try to avoid calling this method in frequently-updated code."
             )
-        {
-            messageFormat = "Parameters array '{0} {1}' allocation"
-        };
+                .WithMessageFormat("Parameters array '{0} {1}' allocation");
 
         static readonly int k_ParamArrayAtributeHashCode = "System.ParamArrayAttribute".GetHashCode();
 
