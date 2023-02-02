@@ -12,9 +12,14 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     class AllocationAnalyzer : ICodeModuleInstructionAnalyzer
     {
+        internal const string PAC2002 = nameof(PAC2002);
+        internal const string PAC2003 = nameof(PAC2003);
+        internal const string PAC2004 = nameof(PAC2004);
+        internal const string PAC2005 = nameof(PAC2005);
+
         static readonly Descriptor k_ObjectAllocationDescriptor = new Descriptor
             (
-            "PAC2002",
+            PAC2002,
             "Object Allocation",
             Area.Memory,
             "An object is allocated in managed memory",
@@ -27,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         static readonly Descriptor k_ClosureAllocationDescriptor = new Descriptor
             (
-            "PAC2003",
+            PAC2003,
             "Closure Allocation",
             Area.Memory,
             "An object is allocated in managed memory",
@@ -40,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         static readonly Descriptor k_ArrayAllocationDescriptor = new Descriptor
             (
-            "PAC2004",
+            PAC2004,
             "Array Allocation",
             Area.Memory,
             "An array is allocated in managed memory",
@@ -53,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         static readonly Descriptor k_ParamArrayAllocationDescriptor = new Descriptor
             (
-            "PAC2005",
+            PAC2005,
             "Param Object Allocation",
             Area.Memory,
             "A parameters array is allocated.",

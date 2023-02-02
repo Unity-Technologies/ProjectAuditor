@@ -11,8 +11,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     public class TextureAnalyzer : ITextureModuleAnalyzer
     {
+        internal const string PAT0000 = nameof(PAT0000);
+        internal const string PAT0001 = nameof(PAT0001);
+        internal const string PAT0002 = nameof(PAT0002);
+
         internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
-            "PAT0000",
+            PAT0000,
             "Texture: Mipmaps not enabled",
             new[] {Area.GPU, Area.Quality},
             "Texture mipmaps generation is not enabled. Generally enabling mipmaps improves rendering quality (avoids aliasing effects) and improves performance.",
@@ -32,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         internal static readonly Descriptor k_TextureMipMapEnabledDescriptor = new Descriptor(
-            "PAT0001",
+            PAT0001,
             "Texture: Mipmaps enabled on Sprite/UI texture",
             new[] {Area.BuildSize, Area.Quality},
             "Texture mipmaps generation is enabled. This might reduce rendering quality of sprites and UI.",
@@ -52,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         internal static readonly Descriptor k_TextureReadWriteEnabledDescriptor = new Descriptor(
-            "PAT0002",
+            PAT0002,
             "Texture: Read/Write enabled",
             Area.Memory,
             "Mesh Read/Write flag is enabled. This causes the texture data to be duplicated in memory." +

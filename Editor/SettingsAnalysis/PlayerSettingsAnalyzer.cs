@@ -14,8 +14,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class PlayerSettingsAnalyzer : ISettingsModuleAnalyzer
     {
+        internal const string PAS0002 = nameof(PAS0002);
+        internal const string PAS0029 = nameof(PAS0029);
+        internal const string PAS0033 = nameof(PAS0033);
+
         static readonly Descriptor k_AccelerometerDescriptor = new Descriptor(
-            "PAS0002",
+            PAS0002,
             "Player (iOS): Accelerometer",
             new[] { Area.CPU },
             "The Accelerometer is enabled in iOS Player Settings.",
@@ -25,14 +29,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         };
 
         static readonly Descriptor k_SplashScreenDescriptor = new Descriptor(
-            "PAS0029",
+            PAS0029,
             "Player: Splash Screen",
             new[] { Area.LoadTime },
             "<b>Splash Screen</b> is enabled and will increase the time it takes to load into the first scene.",
             "Disable the Splash Screen option in <b>Project Settings ➔ Player ➔ Splash Image ➔ Show Splash Screen</b>.");
 
         static readonly Descriptor k_SpeakerModeDescriptor = new Descriptor(
-            "PAS0033",
+            PAS0033,
             "Audio: Speaker Mode",
             new[] { Area.BuildSize },
             "<b>UnityEngine.AudioSettings.speakerMode</b> is not set to <b>UnityEngine.AudioSpeakerMode.Mono</b>. The generated build will be larger than necessary.",

@@ -584,13 +584,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, UnityEditor.TextureImporter textureImporter, UnityEditor.TextureImporterPlatformSettings textureImporterPlatformSettings);
     }
 
-    public class MeshAnalyzer : IMeshModuleAnalyzer, Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
-    {
-        public MeshAnalyzer() {}
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, UnityEditor.AssetImporter assetImporter);
-        public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
-    }
-
     public enum MeshProperty
     {
         MeshCompression = 2,

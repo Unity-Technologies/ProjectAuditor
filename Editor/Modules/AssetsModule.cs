@@ -25,9 +25,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
+        internal const string PAA0000 = nameof(PAA0000);
+        internal const string PAA0001 = nameof(PAA0001);
+
         static readonly Descriptor k_ResourcesFolderDescriptor = new Descriptor
             (
-            "PAA0000",
+            PAA0000,
             "Resources folder asset & dependencies",
             Area.BuildSize,
             "The Resources folder is a common source of many problems in Unity projects. Improper use of the Resources folder can bloat the size of a project’s build, lead to uncontrollable excessive memory utilization, and significantly increase application startup times.",
@@ -38,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         static readonly Descriptor k_StreamingAssetsFolderDescriptor = new Descriptor(
-            "PAA0001",
+            PAA0001,
             "StreamingAssets folder size",
             Area.BuildSize,
             $"There are many files in the 'Assets/StreamingAssets' folder. Keeping them in the StreamingAssets folder will increase the build size.",

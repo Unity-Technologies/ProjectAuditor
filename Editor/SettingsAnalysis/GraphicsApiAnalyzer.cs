@@ -14,8 +14,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
     {
         const string documentationUrl = "https://docs.unity3d.com/Manual/GraphicsAPIs.html";
 
+        internal const string PAS0005 = nameof(PAS0005);
+        internal const string PAS0006 = nameof(PAS0006);
+        internal const string PAS0031 = nameof(PAS0031);
+
         static readonly Descriptor k_OpenGLESAndMetalDescriptor = new Descriptor(
-            "PAS0005",
+            PAS0005,
             "Player (iOS): Metal & OpenGLES APIs",
             new[] { Area.BuildSize },
             "In the iOS Player Settings, both Metal and OpenGLES graphics APIs are enabled.",
@@ -26,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         };
 
         static readonly Descriptor k_MetalDescriptor = new Descriptor(
-            "PAS0006",
+            PAS0006,
             "Player (iOS): Metal API",
             new[] { Area.CPU },
             "In the iOS Player Settings, Metal is not enabled.",
@@ -37,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         };
 
         static readonly Descriptor k_VulkanDescriptor = new Descriptor(
-            "PAS0031",
+            PAS0031,
             "Player (Android): Vulkan API",
             new[] { Area.CPU, Area.GPU },
             "In the Android Player Settings, Vulkan graphics API is not enabled.",

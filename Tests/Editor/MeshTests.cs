@@ -1,6 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Modules;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -36,7 +37,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var foundIssues = AnalyzeAndFindAssetIssues(m_TempSmallMeshAsset, IssueCategory.AssetDiagnostic);
 
             Assert.IsNotEmpty(foundIssues);
-            Assert.IsTrue(foundIssues.Any(issue => issue.descriptor.id == "PAM0001"), "Small mesh should be reported");
+            Assert.IsTrue(foundIssues.Any(issue => issue.descriptor.id == MeshAnalyzer.PAM0001), "Small mesh should be reported");
         }
 
         [Test]
@@ -45,7 +46,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var foundIssues = AnalyzeAndFindAssetIssues(m_TempSmallMeshAsset, IssueCategory.AssetDiagnostic);
 
             Assert.IsNotEmpty(foundIssues);
-            Assert.IsTrue(foundIssues.Any(issue => issue.descriptor.id == "PAM0000"), "Read/Write mesh should be reported");
+            Assert.IsTrue(foundIssues.Any(issue => issue.descriptor.id == MeshAnalyzer.PAM0000), "Read/Write mesh should be reported");
         }
 
         [Test]
@@ -53,7 +54,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var foundIssues = AnalyzeAndFindAssetIssues(m_TempLargeMeshAsset, IssueCategory.AssetDiagnostic);
 
-            Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == "PAM0000"), "Read/Write mesh should no be reported");
+            Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == MeshAnalyzer.PAM0000), "Read/Write mesh should no be reported");
         }
     }
 }

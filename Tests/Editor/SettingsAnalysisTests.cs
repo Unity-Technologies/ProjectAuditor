@@ -284,7 +284,7 @@ namespace Unity.ProjectAuditor.EditorTests
             serializedObject.ApplyModifiedProperties();
             Assert.IsTrue(FogStrippingAnalyzer.IsFogModeEnabled(fogMode));
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals("PAS1003"));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(FogStrippingAnalyzer.PAS1003));
 
             Assert.AreEqual(1, issues.Length);
             string description = $"Graphics: FogMode '{fogMode}' shader variants is always included in the build.";
@@ -329,7 +329,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             serializedObject.ApplyModifiedProperties();
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals("PAS1003"));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(FogStrippingAnalyzer.PAS1003));
             var playerSettingIssue = issues.FirstOrDefault();
 
             Assert.IsNull(playerSettingIssue);

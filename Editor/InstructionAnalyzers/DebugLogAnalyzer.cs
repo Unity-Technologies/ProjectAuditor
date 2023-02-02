@@ -16,9 +16,12 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         static readonly int k_TypeHashCode = "UnityEngine.Debug".GetHashCode();
         static readonly int k_ConditionalAttributeHashCode = "System.Diagnostics.ConditionalAttribute".GetHashCode();
 
+        internal const string PAC0192 = nameof(PAC0192);
+        internal const string PAC0193 = nameof(PAC0193);
+
         static readonly Descriptor k_DebugLogIssueDescriptor = new Descriptor
             (
-            "PAC0192",
+            PAC0192,
             "Debug.Log / Debug.LogFormat",
             Area.CPU,
             "<b>Debug.Log</b> methods cause slowdowns, especially if used frequently.",
@@ -31,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         static readonly Descriptor k_DebugLogWarningIssueDescriptor = new Descriptor
             (
-            "PAC0193",
+            PAC0193,
             "Debug.LogWarning / Debug.LogWarningFormat",
             Area.CPU,
             "<b>Debug.LogWarning</b> methods cause slowdowns, especially if used frequently.",

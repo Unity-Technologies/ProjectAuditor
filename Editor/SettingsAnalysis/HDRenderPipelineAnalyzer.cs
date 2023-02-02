@@ -13,8 +13,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class HDRenderPipelineAnalyzer : ISettingsModuleAnalyzer
     {
+        internal const string PAS1001 = nameof(PAS1001);
+        internal const string PAS1002 = nameof(PAS1002);
+
         static readonly Descriptor k_AssetLitShaderModeBothOrMixed = new Descriptor(
-            "PAS1001",
+            PAS1001,
             "HDRP: Render Pipeline Assets use both 'Lit Shader Mode' Forward and Deferred",
             new[] { Area.BuildSize, Area.BuildTime },
             "If HDRP 'Lit Shader Mode' is set to Both (or a mix of Forward and Deferred), shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
@@ -22,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         );
 
         static readonly Descriptor k_CameraLitShaderModeBothOrMixed = new Descriptor(
-            "PAS1002",
+            PAS1002,
             "HDRP: Cameras mix usage of 'Lit Shader Mode' Forward and Deferred",
             new[] { Area.BuildSize, Area.BuildTime },
             "If Cameras use both 'Lit Shader Mode' Forward and Deferred, shaders will be built for both Forward and Deferred rendering. This increases build time and size.",

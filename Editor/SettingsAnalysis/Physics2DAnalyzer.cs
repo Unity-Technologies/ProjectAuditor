@@ -12,15 +12,18 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class Physics2DAnalyzer : ISettingsModuleAnalyzer
     {
+        internal const string PAS0015 = nameof(PAS0015);
+        internal const string PAS0032 = nameof(PAS0032);
+
         static readonly Descriptor k_DefaultLayerCollisionMatrixDescriptor = new Descriptor(
-            "PAS0015",
+            PAS0015,
             "Physics2D: Layer Collision Matrix",
             new[] { Area.CPU },
             "In Physics 2D Settings, all of the boxes in the <b>Layer Collision Matrix</b> are ticked. This increases the CPU work that Unity must do when calculating collision detections.",
             "Un-tick all of the boxes except the ones that represent collisions that should be considered by the 2D physics system.");
 
         static readonly Descriptor k_SimulationModeDescriptor = new Descriptor(
-            "PAS0032",
+            PAS0032,
             "Physics2D: Simulation Mode",
             new[] { Area.CPU },
             "<b>UnityEngine.Physics2D.simulationMode</b> is set to either <b>FixedUpdate</b> or <b>Update</b>. By using this mode, 2D physics simulation is executed on every update which might be expensive for some projects.",

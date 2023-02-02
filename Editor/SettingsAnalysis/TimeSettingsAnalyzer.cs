@@ -8,8 +8,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     public class TimeSettingsAnalyzer : ISettingsModuleAnalyzer
     {
+        internal const string PAS0016 = nameof(PAS0016);
+        internal const string PAS0017 = nameof(PAS0017);
+
         static readonly Descriptor k_FixedTimestepDescriptor = new Descriptor(
-            "PAS0016",
+            PAS0016,
             "Time: Fixed Timestep",
             Area.CPU,
             "In the Time Settings, <b>Fixed Timestep</b> is set to the default value of 0.02. This means that Unity will try to ensure that the FixedUpdate() methods of MonoBehaviours, and physics updates will be called 50 times per second. This is appropriate for games running at 60 FPS, but at 30 FPS this would mean that the FixedUpdate step will be called twice during most frames.",
@@ -17,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         );
 
         static readonly Descriptor k_MaximumAllowedTimestepDescriptor = new Descriptor(
-            "PAS0017",
+            PAS0017,
             "Time: Maximum Allowed Timestep",
             Area.CPU,
             "In the Time Settings, <b>Maximum Allowed Timestep</b> is set to the default value of 0.1. This means that if the Time Manager is trying to \"catch\" up with previous frames that took longer than <b>Fixed Timestep</b> to process, the project's FixedUpdate() methods could end up being called repeatedly, up to a maximum of 0.1 seconds (100 milliseconds). Spending so long in FixedUpdate() would likely mean that FixedUpdate() must also be called multiple times in the subsequent frames, contributing to the \"spiral of death\".",
