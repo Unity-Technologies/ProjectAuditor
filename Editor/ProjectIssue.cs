@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor
             m_Descriptor = descriptor;
             m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
             m_Category = category;
-            m_Severity = descriptor.severity;
+            m_Severity = descriptor.defaultSeverity;
         }
 
         internal ProjectIssue(IssueCategory category, string description)
@@ -130,7 +130,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public Severity severity
         {
-            get => m_Severity == Severity.Default && descriptor != null ? descriptor.severity : m_Severity;
+            get => m_Severity == Severity.Default && descriptor != null ? descriptor.defaultSeverity : m_Severity;
             set => m_Severity = value;
         }
 

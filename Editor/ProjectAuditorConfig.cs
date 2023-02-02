@@ -95,7 +95,7 @@ namespace Unity.ProjectAuditor.Editor
                 return projectRule.severity;
 
             // return the default descriptor action
-            return descriptor.severity;
+            return descriptor.defaultSeverity;
         }
     }
 }

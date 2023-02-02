@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             )
         {
             messageFormat = "'{0}' allocation",
-            severity = Severity.Minor
+            defaultSeverity = Severity.Minor
         };
 
         static readonly Descriptor k_ClosureAllocationDescriptor = new Descriptor
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             )
         {
             messageFormat = "Closure allocation in '{0}.{1}'",
-            severity = Severity.Minor
+            defaultSeverity = Severity.Minor
         };
 
         static readonly Descriptor k_ArrayAllocationDescriptor = new Descriptor
@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             )
         {
             messageFormat = "'{0}' array allocation",
-            severity = Severity.Minor
+            defaultSeverity = Severity.Minor
         };
 
         static readonly Descriptor k_ParamArrayAllocationDescriptor = new Descriptor

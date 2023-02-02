@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.EditorTests
             "do nothing"
             )
         {
-            severity = Severity.Critical
+            defaultSeverity = Severity.Critical
         };
 
         [SerializeField]

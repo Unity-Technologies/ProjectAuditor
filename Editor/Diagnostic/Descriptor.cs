@@ -27,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// Default severity of the diagnostic
         /// </summary>
-        public Severity severity;
+        public Severity defaultSeverity;
 
         /// <summary>
         /// Affected areas
@@ -85,7 +85,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
             type = string.Empty;
             method = string.Empty;
-            severity = Severity.Moderate;
+            defaultSeverity = Severity.Moderate;
         }
 
         public Descriptor(string id, string title, Area area, string description = null, string solution = null)

@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             )
         {
             messageFormat = "Use of Debug.{0} in '{1}'",
-            severity = Severity.Minor
+            defaultSeverity = Severity.Minor
         };
 
         static readonly Descriptor k_DebugLogWarningIssueDescriptor = new Descriptor
@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             )
         {
             messageFormat = "Use of Debug.{0} in '{1}'",
-            severity = Severity.Minor
+            defaultSeverity = Severity.Minor
         };
 
         readonly OpCode[] m_OpCodes =
