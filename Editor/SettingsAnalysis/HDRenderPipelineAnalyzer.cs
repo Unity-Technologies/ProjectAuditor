@@ -1,10 +1,7 @@
-#if PACKAGE_HDRP
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -38,13 +35,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_CameraLitShaderModeBothOrMixed);
         }
 
+#if PACKAGE_HDRP
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
             if (IsLitShaderModeBothOrMixed())
             {
                 var deferredCamera = false;
                 var forwardCamera = false;
-                var allCameraData = new List<HDAdditionalCameraData>();
+                var allCameraData = new List<UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData>();
                 for (int n = 0; n < SceneManager.sceneCount; ++n)
                 {
                     var scene = SceneManager.GetSceneAt(n);
@@ -56,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 }
                 foreach (var cameraData in allCameraData)
                 {
-                    if (cameraData.renderingPathCustomFrameSettings.litShaderMode == LitShaderMode.Deferred)
+                    if (cameraData.renderingPathCustomFrameSettings.litShaderMode == UnityEngine.Rendering.HighDefinition.LitShaderMode.Deferred)
                         deferredCamera = true;
                     else
                         forwardCamera = true;
@@ -71,15 +69,15 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         bool IsLitShaderModeBothOrMixed()
         {
             // first gather all hdrp assets
-            var hdrpAssets = new HashSet<HDRenderPipelineAsset>();
-            if (GraphicsSettings.defaultRenderPipeline is HDRenderPipelineAsset defaultRenderPipeline)
+            var hdrpAssets = new HashSet<UnityEngine.Rendering.HighDefinition.HDRenderPipelineAsset>();
+            if (GraphicsSettings.defaultRenderPipeline is UnityEngine.Rendering.HighDefinition.HDRenderPipelineAsset defaultRenderPipeline)
             {
                 hdrpAssets.Add(defaultRenderPipeline);
             }
 
             for (int i = 0, c = QualitySettings.names.Length; i < c; ++i)
             {
-                if (QualitySettings.GetRenderPipelineAssetAt(i) is HDRenderPipelineAsset hdrpAsset)
+                if (QualitySettings.GetRenderPipelineAssetAt(i) is UnityEngine.Rendering.HighDefinition.HDRenderPipelineAsset hdrpAsset)
                 {
                     hdrpAssets.Add(hdrpAsset);
                 }
@@ -87,23 +85,30 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
             // then check if any uses SupportedLitShaderMode.Both or a mix of Forward and Deferred
             return hdrpAssets.Any(asset => asset.currentPlatformRenderPipelineSettings.supportedLitShaderMode ==
-                RenderPipelineSettings.SupportedLitShaderMode.Both) ||
+                UnityEngine.Rendering.HighDefinition.RenderPipelineSettings.SupportedLitShaderMode.Both) ||
                 hdrpAssets.Where(asset => asset.currentPlatformRenderPipelineSettings.supportedLitShaderMode !=
-                RenderPipelineSettings.SupportedLitShaderMode.Both).Select(asset =>
+                UnityEngine.Rendering.HighDefinition.RenderPipelineSettings.SupportedLitShaderMode.Both).Select(asset =>
                         asset.currentPlatformRenderPipelineSettings.supportedLitShaderMode)
                     .Distinct().Count() > 1;
         }
 
-        void GetCameraComponents(GameObject go, ref List<HDAdditionalCameraData> components)
+        void GetCameraComponents(GameObject go, ref List<UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData> components)
         {
-            var comp = go.GetComponent(typeof(HDAdditionalCameraData));
+            var comp = go.GetComponent(typeof(UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData));
             if (comp != null)
-                components.Add((HDAdditionalCameraData)comp);
+                components.Add((UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData)comp);
             for (int i = 0; i < go.transform.childCount; i++)
             {
                 GetCameraComponents(go.transform.GetChild(i).gameObject, ref components);
             }
         }
+
+#else
+        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        {
+            yield break;
+        }
+
+#endif
     }
 }
-#endif
