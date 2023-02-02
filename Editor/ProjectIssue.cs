@@ -17,10 +17,10 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="category"> Issue category </param>
         /// <param name="descriptor"> Diagnostic descriptor </param>
-        /// <param name="args"> Arguments to be used in the message formatting</param>
-        public static IssueBuilder Create(IssueCategory category, Descriptor descriptor, params object[] args)
+        /// <param name="messageArgs"> Arguments to be used in the message formatting</param>
+        public static IssueBuilder Create(IssueCategory category, Descriptor descriptor, params object[] messageArgs)
         {
-            return new IssueBuilder(category, descriptor, args);
+            return new IssueBuilder(category, descriptor, messageArgs);
         }
 
         /// <summary>

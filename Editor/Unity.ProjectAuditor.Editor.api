@@ -149,7 +149,7 @@ namespace Unity.ProjectAuditor.Editor
         public string relativePath { get; }
         public Diagnostic.Severity severity { get; set; }
         public static Core.IssueBuilder Create(IssueCategory category, string description);
-        public static Core.IssueBuilder Create(IssueCategory category, Diagnostic.Descriptor descriptor, params object[] args);
+        public static Core.IssueBuilder Create(IssueCategory category, Diagnostic.Descriptor descriptor, params object[] messageArgs);
         public string GetCustomProperty<T>(T propertyEnum) where T : struct, new();
         public bool GetCustomPropertyBool<T>(T propertyEnum) where T : struct, new();
         public double GetCustomPropertyDouble<T>(T propertyEnum) where T : struct, new();
