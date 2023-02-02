@@ -44,11 +44,42 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             })
         };
 
+        static readonly Descriptor k_IL2CPPCompilerConfigurationMasterDescriptor = new Descriptor(
+            "PAS1004",
+            "Player: IL2CPP Compiler Configuration",
+            new[] { Area.BuildTime },
+            "<b>C++ Compiler Configuration</b> is set to <b>Master</b>. The build time will be longer. Keep this mode only for shipping builds.",
+            "To have optimal build time, change <b>Project Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
+        {
+            fixer = (issue => {
+                SetIL2CPPConfigurationToRelease();
+            }),
+
+            messageFormat = "Player : C++ Compiler Configuration is set to 'Master'. The build time will be longer."
+        };
+
+        private static readonly Descriptor k_IL2CPPCompilerConfigurationDebugDescriptor = new Descriptor(
+            "PAS1005",
+            "Player: IL2CPP Compiler Configuration",
+            new[] { Area.CPU },
+            "<b>C++ Compiler Configuration</b> is set to <b>Debug</b>. The performances will be suboptimal. Keep this mode only for debugging only.",
+            "To have optimal build time, change <b>Project Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
+        {
+            fixer = (issue =>
+            {
+                SetIL2CPPConfigurationToRelease();
+            }),
+
+            messageFormat = "Player : C++ Compiler Configuration is set to 'Debug'. The performances will be suboptimal."
+        };
+
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_AccelerometerDescriptor);
             module.RegisterDescriptor(k_SplashScreenDescriptor);
             module.RegisterDescriptor(k_SpeakerModeDescriptor);
+            module.RegisterDescriptor(k_IL2CPPCompilerConfigurationMasterDescriptor);
+            module.RegisterDescriptor(k_IL2CPPCompilerConfigurationDebugDescriptor);
         }
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
@@ -66,6 +97,16 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (!IsSpeakerModeMono())
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SpeakerModeDescriptor)
+                    .WithLocation("Project/Player");
+            }
+            if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Master))
+            {
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationMasterDescriptor)
+                    .WithLocation("Project/Player");
+            }
+            if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Debug))
+            {
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationDebugDescriptor)
                     .WithLocation("Project/Player");
             }
         }
@@ -102,6 +143,17 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             };
 
             AudioSettings.Reset(audioConfiguration);
+        }
+
+        internal static bool CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration compilerConfiguration)
+        {
+            return PlayerSettings.GetIl2CppCompilerConfiguration(EditorUserBuildSettings.selectedBuildTargetGroup) ==
+                   compilerConfiguration;
+        }
+
+        internal static void SetIL2CPPConfigurationToRelease()
+        {
+            PlayerSettings.SetIl2CppCompilerConfiguration(EditorUserBuildSettings.selectedBuildTargetGroup, Il2CppCompilerConfiguration.Release);
         }
     }
 }

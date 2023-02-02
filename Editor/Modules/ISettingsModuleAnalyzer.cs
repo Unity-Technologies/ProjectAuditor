@@ -8,5 +8,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
     public interface ISettingsModuleAnalyzer : IModuleAnalyzer
     {
         IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams);
+
     }
 }

@@ -342,5 +342,46 @@ namespace Unity.ProjectAuditor.EditorTests
 
             serializedObject.ApplyModifiedProperties();
         }
+
+        [Test]
+        [TestCase(Il2CppCompilerConfiguration.Debug)]
+        [TestCase(Il2CppCompilerConfiguration.Master)]
+        public void SettingsAnalysis_IL2CPP_Compiler_Configuration_IsReported(
+            Il2CppCompilerConfiguration il2CppCompilerConfiguration)
+        {
+            var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(EditorUserBuildSettings.selectedBuildTargetGroup);
+            PlayerSettings.SetIl2CppCompilerConfiguration(EditorUserBuildSettings.selectedBuildTargetGroup, il2CppCompilerConfiguration);
+
+            ProjectIssue[] issues = null;
+
+            switch (il2CppCompilerConfiguration)
+            {
+                case Il2CppCompilerConfiguration.Master:
+                    issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals("PAS1004"));
+                    break;
+                case  Il2CppCompilerConfiguration.Debug:
+                    issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals("PAS1005"));
+                    break;
+            }
+
+            var playerSettingIssue = issues.FirstOrDefault();
+
+            Assert.NotNull(playerSettingIssue);
+
+            PlayerSettings.SetIl2CppCompilerConfiguration(EditorUserBuildSettings.selectedBuildTargetGroup, compilerConfiguration);
+        }
+
+        [Test]
+        public void SettingsAnalysis_SwitchIL2CPP_Compiler_Configuration_To_Release()
+        {
+            var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(EditorUserBuildSettings.selectedBuildTargetGroup);
+
+            PlayerSettings.SetIl2CppCompilerConfiguration(EditorUserBuildSettings.selectedBuildTargetGroup, Il2CppCompilerConfiguration.Debug);
+
+            PlayerSettingsAnalyzer.SetIL2CPPConfigurationToRelease();
+            Assert.AreEqual(Il2CppCompilerConfiguration.Release, PlayerSettings.GetIl2CppCompilerConfiguration(EditorUserBuildSettings.selectedBuildTargetGroup));
+
+            PlayerSettings.SetIl2CppCompilerConfiguration(EditorUserBuildSettings.selectedBuildTargetGroup, compilerConfiguration);
+        }
     }
 }
