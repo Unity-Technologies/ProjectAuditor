@@ -118,6 +118,7 @@
             "description": "<b>Optimized Frame Pacing</b> is <b>disabled</b>, which can lead to suboptimal performance. Android Frame Pacing syncs your rendering loop to the underlying display hardware, reducing stuttering and latency so that gameplay looks and feels smooth.",
             "solution": "To enable this feature, choose <b>Project Settings ➔ Player ➔ Settings for Android ➔ Resolution and Presentation</b>, and select the <b>Optimized Frame Pacing</b> checkbox.",
             "documentationUrl" : "https://docs.unity3d.com/ScriptReference/PlayerSettings.Android-optimizedFramePacing.html",
+            "platformDocumentationUrl" : "https://developer.android.com/games/sdk/frame-pacing",
             "minimumVersion": "2019.2"
         },
         {

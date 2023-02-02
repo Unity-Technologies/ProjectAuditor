@@ -431,6 +431,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public string messageFormat = @"{0}";
         public string method;
         public string minimumVersion;
+        public string platformDocumentationUrl;
         public string[] platforms;
         public Severity severity = Severity.Moderate|Severity.Warning;
         public string solution;

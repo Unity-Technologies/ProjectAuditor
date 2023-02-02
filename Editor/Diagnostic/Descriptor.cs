@@ -50,9 +50,14 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public string solution;
 
         /// <summary>
-        /// Url to documentation
+        /// Url to Unity documentation
         /// </summary>
         public string documentationUrl;
+
+        /// <summary>
+        /// Platform-specific Url to documentation
+        /// </summary>
+        public string platformDocumentationUrl;
 
         /// <summary>
         /// Minimum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions

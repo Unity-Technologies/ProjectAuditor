@@ -263,19 +263,33 @@ namespace Unity.ProjectAuditor.EditorTests
             var descriptors = Json.FromFile<Descriptor>(PathUtils.Combine(Editor.ProjectAuditor.DataPath, jsonFilename) + ".json");
             foreach (var desc in descriptors)
             {
-                if (string.IsNullOrEmpty(desc.documentationUrl))
-                    continue;
+                if (!string.IsNullOrEmpty(desc.documentationUrl))
+                {
+                    var url = desc.documentationUrl;
+                    var request = UnityWebRequest.Get(url);
+                    yield return request.SendWebRequest();
 
-                var documentationUrl = desc.documentationUrl;
-                var request = UnityWebRequest.Get(documentationUrl);
-                yield return request.SendWebRequest();
-
-                Assert.True(request.isDone);
+                    Assert.True(request.isDone);
 #if UNITY_2020_1_OR_NEWER
-                Assert.AreEqual(UnityWebRequest.Result.Success, request.result, $"Page {documentationUrl} not found.");
+                    Assert.AreEqual(UnityWebRequest.Result.Success, request.result, $"Page {url} not found.");
 #else
-                Assert.IsFalse(request.isNetworkError || request.isHttpError, $"Page {documentationUrl} not found.");
+                    Assert.IsFalse(request.isNetworkError || request.isHttpError, $"Page {url} not found.");
 #endif
+                }
+
+                if (!string.IsNullOrEmpty(desc.platformDocumentationUrl))
+                {
+                    var url = desc.platformDocumentationUrl;
+                    var request = UnityWebRequest.Get(url);
+                    yield return request.SendWebRequest();
+
+                    Assert.True(request.isDone);
+#if UNITY_2020_1_OR_NEWER
+                    Assert.AreEqual(UnityWebRequest.Result.Success, request.result, $"Page {url} not found.");
+#else
+                    Assert.IsFalse(request.isNetworkError || request.isHttpError, $"Page {url} not found.");
+#endif
+                }
             }
         }
 
