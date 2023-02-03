@@ -127,7 +127,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     NewMetaData(k_KeyResult, buildReport.summary.result),
                     NewMetaData(k_KeyStartTime, Formatting.FormatDateTime(buildReport.summary.buildStartedAt)),
                     NewMetaData(k_KeyEndTime, Formatting.FormatDateTime(buildReport.summary.buildEndedAt)),
-                    NewMetaData(k_KeyTotalTime, Formatting.FormatBuildTime(buildReport.summary.totalTime)),
+                    NewMetaData(k_KeyTotalTime, Formatting.FormatDuration(buildReport.summary.totalTime)),
                     NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize)),
                 });
                 projectAuditorParams.onIncomingIssues(AnalyzeBuildSteps(buildReport));
@@ -146,7 +146,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 yield return ProjectIssue.Create(IssueCategory.BuildStep, step.name)
                     .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                     {
-                        Formatting.FormatBuildTime(step.duration),
+                        Formatting.FormatDuration(step.duration),
                         step.name
                     })
                     .WithDepth(depth)
