@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 [Unreleased]
 * Added Fog shader variant stripping analyzer
+* Add IL2CPP Compiler Configuration analyzer
 * Fixed backwards compatibility
 * Fixed reporting of shader variants if not compiled for analysis platform
 * Fixed displaying of large values of total shader variants

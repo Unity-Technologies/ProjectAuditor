@@ -342,5 +342,97 @@ namespace Unity.ProjectAuditor.EditorTests
 
             serializedObject.ApplyModifiedProperties();
         }
+
+        [Test]
+        [TestCase(Il2CppCompilerConfiguration.Debug)]
+        [TestCase(Il2CppCompilerConfiguration.Master)]
+        public void SettingsAnalysis_IL2CPP_Compiler_Configuration_IsReported(
+            Il2CppCompilerConfiguration il2CppCompilerConfiguration)
+        {
+            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var settings = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+
+            PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
+
+            var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
+            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, il2CppCompilerConfiguration);
+
+            ProjectIssue[] issues = null;
+
+            var id = il2CppCompilerConfiguration == Il2CppCompilerConfiguration.Master
+                ? PlayerSettingsAnalyzer.PAS1004
+                : PlayerSettingsAnalyzer.PAS1005;
+
+            issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
+
+            var playerSettingIssue = issues.Length;
+
+            Assert.AreEqual(1, playerSettingIssue);
+
+            PlayerSettings.SetScriptingBackend(buildTargetGroup, settings);
+            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
+        }
+
+        [Test]
+        [TestCase(PlayerSettingsAnalyzer.PAS1004)]
+        [TestCase(PlayerSettingsAnalyzer.PAS1005)]
+        public void SettingsAnalysis_Il2CppCompilerConfigurationRelease_IsNotReported(string id)
+        {
+            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var settings = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+
+            PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
+
+            var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
+            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Release);
+
+            ProjectIssue[] issues = null;
+
+            issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
+            var playerSettingIssue = issues.FirstOrDefault();
+
+            Assert.IsNull(playerSettingIssue);
+
+            PlayerSettings.SetScriptingBackend(buildTargetGroup, settings);
+            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
+        }
+
+        [Test]
+        [TestCase(PlayerSettingsAnalyzer.PAS1004)]
+        [TestCase(PlayerSettingsAnalyzer.PAS1005)]
+        public void SettingsAnalysis_Il2CppCompilerConfigurationMaster_ScriptingBackendMono_IsNotReported(string id)
+        {
+            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var settings = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+
+            PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.Mono2x);
+
+            ProjectIssue[] issues = null;
+
+            issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
+            var playerSettingIssue = issues.FirstOrDefault();
+
+            Assert.IsNull(playerSettingIssue);
+
+            PlayerSettings.SetScriptingBackend(buildTargetGroup, settings);
+        }
+
+        [Test]
+        public void SettingsAnalysis_SwitchIL2CPP_Compiler_Configuration_To_Release()
+        {
+            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var settings = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+
+            PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
+            var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
+
+            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Debug);
+
+            PlayerSettingsAnalyzer.SetIL2CPPConfigurationToRelease();
+            Assert.AreEqual(Il2CppCompilerConfiguration.Release, PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup));
+
+            PlayerSettings.SetScriptingBackend(buildTargetGroup, settings);
+            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
+        }
     }
 }

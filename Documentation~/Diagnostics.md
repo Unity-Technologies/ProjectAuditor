@@ -53,6 +53,8 @@ This is a full list of all builtin settings diagnostics:
 | PAS1001 | Lit Shader Mode Forward and Deferred        | HDRP      | Any                      |
 | PAS1002 | Camera Lit Shader Mode Forward and Deferred | HDRP      | Any                      |
 | PAS1003 | Fog Mode Stripping						    | Graphics  | Any                      |
+| PAS1004 | IL2CPP Compiler Master						| Player    | Any                      |
+| PAS1005 | IL2CPP Compiler Debug						| Player    | Any                      |
 
 
 # Asset Diagnostics
