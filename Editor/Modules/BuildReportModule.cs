@@ -24,6 +24,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         ImporterType = 0,
         RuntimeType,
         Size,
+        SizePercent,
         BuildFile,
         Num
     }
@@ -73,6 +74,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.ImporterType), format = PropertyFormat.String, name = "Importer Type"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.RuntimeType), format = PropertyFormat.String, name = "Runtime Type", defaultGroup = true},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size in the Build"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.SizePercent), format = PropertyFormat.Percentage, name = "Size % (of Data)", longName = "Percentage of the total data size"},
                 new PropertyDefinition { type = PropertyType.Path, name = "Path", hidden = true},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.BuildFile), format = PropertyFormat.String, name = "Build File"}
             }
@@ -170,6 +172,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         IEnumerable<ProjectIssue> AnalyzePackedAssets(BuildReport buildReport)
         {
+            var dataSize = buildReport.packedAssets.SelectMany(p => p.contents).Sum(c => (long)c.packedSize);
+
             foreach (var packedAsset in buildReport.packedAssets)
             {
                 // note that there can be several entries for each source asset (for example, a prefab can reference a Texture, a Material and a shader)
@@ -187,6 +191,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             assetImporter != null ? assetImporter.GetType().FullName : k_Unknown,
                             content.type,
                             content.packedSize,
+                            Math.Round(content.packedSize / (double)dataSize, 2),
                             packedAsset.shortPath
                         });
                 }

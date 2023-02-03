@@ -42,7 +42,8 @@ namespace Unity.ProjectAuditor.Editor.Core
         Integer,
         ULong,
         Bytes,
-        Time
+        Time,
+        Percentage
     }
 
     public struct PropertyDefinition

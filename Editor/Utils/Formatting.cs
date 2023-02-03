@@ -32,6 +32,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return FormatTime(TimeSpan.FromMilliseconds(timeMs));
         }
 
+        public static string FormatPercentage(float number)
+        {
+            return $"{number:P1}";
+        }
+
         public static string FormatSize(ulong size)
         {
             return EditorUtility.FormatBytes((long)size);
