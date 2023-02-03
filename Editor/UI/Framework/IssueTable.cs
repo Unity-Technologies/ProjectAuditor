@@ -397,7 +397,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     GUI.enabled = true;
             }
 
-            ShowContextMenu(cellRect, item);
+            ShowContextMenu(cellRect, item, propertyType);
         }
 
         new void CenterRectUsingSingleLineHeight(ref Rect rect)
@@ -468,7 +468,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             SortIfNeeded(GetRows());
         }
 
-        void ShowContextMenu(Rect cellRect, IssueTableItem item)
+        void ShowContextMenu(Rect cellRect, IssueTableItem item, PropertyType propertyType)
         {
             var current = Event.current;
             if (cellRect.Contains(current.mousePosition) && current.type == EventType.ContextClick)
@@ -516,7 +516,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
 
                 menu.AddSeparator("");
-                menu.AddItem(Utility.CopyToClipboard, false, () => CopyToClipboard(item.GetDisplayName()));
+                menu.AddItem(Utility.CopyToClipboard, false, () =>
+                {
+                    CopyToClipboard(
+                        item.IsGroup() ? item.GetDisplayName() : item.ProjectIssue.GetProperty(propertyType));
+                });
 
                 menu.ShowAsContext();
 
