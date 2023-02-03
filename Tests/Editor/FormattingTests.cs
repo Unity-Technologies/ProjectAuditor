@@ -18,12 +18,12 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void Formatting_Time_IsFormatted()
+        public void Formatting_Duration_IsFormatted()
         {
             var time = new TimeSpan(10, 24, 30);
             const string formatted = "10:24:30";
 
-            Assert.AreEqual(formatted, Formatting.FormatBuildTime(time));
+            Assert.AreEqual(formatted, Formatting.FormatDuration(time));
         }
 
         [Test]

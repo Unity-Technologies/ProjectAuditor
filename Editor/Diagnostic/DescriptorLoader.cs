@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                     method = rawDescriptor.method ?? string.Empty,
                     value = rawDescriptor.value,
                     platforms = rawDescriptor.platforms,
-                    severity = rawDescriptor.severity == Severity.Default ? Severity.Moderate : rawDescriptor.severity,
+                    defaultSeverity = rawDescriptor.defaultSeverity == Severity.Default ? Severity.Moderate : rawDescriptor.defaultSeverity,
                     description = rawDescriptor.description,
                     solution = rawDescriptor.solution
                 };

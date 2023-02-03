@@ -45,8 +45,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        static readonly Descriptor k_RecommendPackageUpgrade  = new Descriptor(
-            "PAP0001",
+        internal const string PAP0001 = nameof(PAP0001);
+        internal const string PAP0002 = nameof(PAP0002);
+
+        static readonly Descriptor k_RecommendPackageUpgrade = new Descriptor(
+            PAP0001,
             "Upgradable packages",
             new[] { Area.Quality },
             "A newer recommended version of this package is available.",
@@ -57,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         static readonly Descriptor k_RecommendPackagePreView = new Descriptor(
-            "PAP0002",
+            PAP0002,
             "Experimental/Preview packages",
             new[] { Area.Quality },
             "Experimental or Preview packages are in the early stages of development and not yet ready for production.",

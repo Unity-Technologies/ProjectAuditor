@@ -8,8 +8,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class TargetArchitectureAnalyzer : ISettingsModuleAnalyzer
     {
+        internal const string PAS0003 = nameof(PAS0003);
+        internal const string PAS0004 = nameof(PAS0004);
+
         static readonly Descriptor k_DescriptorIOS = new Descriptor(
-            "PAS0003",
+            PAS0003,
             "Player (iOS): Building multiple architectures",
             Area.BuildSize,
             "In the iOS Player Settings, <b>Architecture</b> is set to Universal. This means that the application will be compiled for both 32-bit ARMv7 iOS devices (i.e. up to the iPhone 5 or 5c) and 64-bit ARM64 devices (iPhone 5s onwards), resulting in increased build times and binary size.",
@@ -19,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         };
 
         static readonly Descriptor k_DescriptorAndroid = new Descriptor(
-            "PAS0004",
+            PAS0004,
             "Player (Android): Building multiple architectures",
             Area.BuildSize,
             "In the Android Player Settings, in the <b>Target Architecture</b> section, both the <b>ARMv7</b> and <b>ARM64</b> options are selected. This means that the application will be compiled for both 32-bit ARMv7 Android devices and 64-bit ARM64 devices, resulting in increased build times and binary size.",

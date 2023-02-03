@@ -40,6 +40,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         String = 0,
         Bool,
         Integer,
+        ULong,
         Bytes,
         Time
     }

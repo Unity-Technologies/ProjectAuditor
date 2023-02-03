@@ -10,9 +10,11 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     class BoxingAnalyzer : ICodeModuleInstructionAnalyzer
     {
+        internal const string PAC2000 = nameof(PAC2000);
+
         static readonly Descriptor k_Descriptor = new Descriptor
             (
-            "PAC2000",
+            PAC2000,
             "Boxing Allocation",
             Area.Memory,
             "Boxing happens where a value type, such as an integer, is converted into an object of reference type. This causes an allocation on the heap, which might increase the size of the managed heap and the frequency of Garbage Collection.",

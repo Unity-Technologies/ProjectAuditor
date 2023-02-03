@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -140,11 +141,11 @@ class ParamsArrayAllocation
             Assert.AreEqual(2, issues.Count());
 
             Assert.AreEqual(IssueCategory.Code, issues[0].category);
-            Assert.AreEqual("PAC2004", issues[0].descriptor.id);
+            Assert.AreEqual(AllocationAnalyzer.PAC2004, issues[0].descriptor.id);
             Assert.AreEqual("'Object' array allocation", issues[0].description);
 
             Assert.AreEqual(IssueCategory.Code, issues[1].category);
-            Assert.AreEqual("PAC2005", issues[1].descriptor.id);
+            Assert.AreEqual(AllocationAnalyzer.PAC2005, issues[1].descriptor.id);
             Assert.AreEqual("Parameters array 'Object[] args' allocation", issues[1].description);
         }
     }

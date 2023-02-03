@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var action = m_Config.GetAction(issue.descriptor, callingMethod);
 
             // expect default action specified in descriptor
-            Assert.AreEqual(issue.descriptor.severity, action);
+            Assert.AreEqual(issue.descriptor.defaultSeverity, action);
 
             // add rule with a filter.
             m_Config.AddRule(new Rule

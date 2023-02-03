@@ -11,9 +11,11 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
     class EmptyMethodAnalyzer : ICodeModuleInstructionAnalyzer
     {
+        internal const string PAC2001 = nameof(PAC2001);
+
         static readonly Descriptor k_Descriptor = new Descriptor
             (
-            "PAC2001",
+            PAC2001,
             "Empty MonoBehaviour Method",
             Area.CPU,
             "Any empty MonoBehaviour magic method will be included in the build and executed anyway.",

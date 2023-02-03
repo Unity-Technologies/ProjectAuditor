@@ -14,22 +14,26 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
     {
         static readonly GraphicsTier[] k_GraphicsTiers = { GraphicsTier.Tier1, GraphicsTier.Tier2, GraphicsTier.Tier3};
 
+        internal const string PAS0022 = nameof(PAS0022);
+        internal const string PAS0023 = nameof(PAS0023);
+        internal const string PAS0024 = nameof(PAS0024);
+
         static readonly Descriptor k_ShaderQualityDescriptor = new Descriptor(
-            "PAS0022",
+            PAS0022,
             "Graphics: Shader Quality",
             new[] { Area.BuildSize },
             "The current build target Graphics Tier Settings use a mixture of different values (Low/Medium/High) for the <b>Standard Shader Quality</b> setting. This will result in a larger number of shader variants being compiled, which will increase build times and your application's download/install size.",
             "Unless you support devices with a very wide range of capabilities for a particular platform, consider editing the platform in Graphics Settings to use the same shader quality setting across all Graphics Tiers.");
 
         static readonly Descriptor k_ForwardRenderingDescriptor = new Descriptor(
-            "PAS0023",
+            PAS0023,
             "Graphics: Forward Rendering",
             new[] { Area.GPU },
             "The current build target uses forward rendering, as set in the <b>Rendering Path</b> settings in <b>Project Settings ➔ Graphics ➔ Tier Settings</b>.",
             "This rendering path is suitable for games with simple rendering and lighting requirements - for instance, 2D games, or games which mainly use baked lighting. If the project makes use of a more than a few dynamic lights, consider experimenting with changing <b>Rendering Path</b> to Deferred to see whether doing so improves GPU rendering times.");
 
         static readonly Descriptor k_DeferredRenderingDescriptor = new Descriptor(
-            "PAS0024",
+            PAS0024,
             "Graphics: Deferred Rendering",
             new[] { Area.GPU },
             "The current build target uses deferred rendering, as set in the <b>Rendering Path</b> settings in <b>Project Settings ➔ Graphics ➔ Tier Settings</b>.",

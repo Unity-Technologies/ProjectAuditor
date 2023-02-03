@@ -1,5 +1,6 @@
 using System.Linq;
 using NUnit.Framework;
+using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -60,11 +61,8 @@ class ClassLoggingWithoutConditionalAttribute
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetClassWithConditionalAttribute);
 
-            var hasLoggingIssues = issues.Any(i => i.descriptor.id == "PAC0192");
-            var hasWarningIssues = issues.Any(i => i.descriptor.id == "PAC0193");
-
-            Assert.IsFalse(hasLoggingIssues);
-            Assert.IsFalse(hasWarningIssues);
+            Assert.IsFalse(issues.Any(i => i.descriptor.id == DebugLogAnalyzer.PAC0192));
+            Assert.IsFalse(issues.Any(i => i.descriptor.id == DebugLogAnalyzer.PAC0193));
         }
 
         [Test]
@@ -72,11 +70,8 @@ class ClassLoggingWithoutConditionalAttribute
         {
             var issues = AnalyzeAndFindAssetIssues(m_TempAssetClassWithOutConditionalAttribute);
 
-            var hasLoggingIssues = issues.Any(i => i.descriptor.id == "PAC0192");
-            var hasWarningIssues = issues.Any(i => i.descriptor.id == "PAC0193");
-
-            Assert.IsTrue(hasLoggingIssues);
-            Assert.IsTrue(hasWarningIssues);
+            Assert.IsTrue(issues.Any(i => i.descriptor.id == DebugLogAnalyzer.PAC0192));
+            Assert.IsTrue(issues.Any(i => i.descriptor.id == DebugLogAnalyzer.PAC0193));
         }
     }
 }

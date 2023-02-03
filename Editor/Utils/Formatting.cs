@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return dateTime.ToString("yyyy/MM/dd HH:mm");
         }
 
-        public static string FormatBuildTime(TimeSpan t)
+        public static string FormatDuration(TimeSpan t)
         {
             return t.Hours + ":" + t.Minutes.ToString("D2") + ":" + t.Seconds.ToString("D2");
         }

@@ -12,8 +12,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class PhysicsAnalyzer : ISettingsModuleAnalyzer
     {
+        internal const string PAS0013 = nameof(PAS0013);
+
         static readonly Descriptor k_DefaultLayerCollisionMatrixDescriptor = new Descriptor(
-            "PAS0013",
+            PAS0013,
             "Physics: Layer Collision Matrix",
             new[] { Area.CPU },
             "In Physics Settings, all of the boxes in the <b>Layer Collision Matrix</b> are ticked. This increases the CPU work that Unity must do when calculating collision detections.",

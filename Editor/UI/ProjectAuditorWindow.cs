@@ -283,7 +283,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.AssetDiagnostic,
-                name = "Assets Diagnostics",
+                name = "Asset Diagnostics",
                 menuLabel = "Assets/Diagnostics",
                 menuOrder = 1,
                 descriptionWithIcon = true,

@@ -1404,7 +1404,7 @@
           "type": "UnityEngine.Shader",
           "method": "WarmupAllShaders",
           "areas": ["CPU"],
-          "severity": 3,
+          "defaultSeverity": 3,
           "description": "<b>WarmupAllShaders</b> does not work properly on Metal and Vulkan. This might result in unexpected CPU spikes due to shader compilation.",
           "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader used at runtime."
         },
@@ -1413,7 +1413,7 @@
           "type": "UnityEngine.ShaderVariantCollection",
           "method": "WarmUp",
           "areas": ["CPU"],
-          "severity": 3,
+          "defaultSeverity": 3,
           "description": "<b>WarmUp</b> does not work properly on Metal and Vulkan. This might result in unexpected CPU spikes due to shader compilation.",
           "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader variant used at runtime."
         },
@@ -1454,7 +1454,7 @@
           "type": "System.String",
           "method": "Concat",
           "areas": ["Memory"],
-          "severity": 5,
+          "defaultSeverity": 5,
           "description": "String concatenation operations allocates managed memory",
           "solution": "Try to avoid concatenating strings in frequently-updated code. Prefer using a StringBuilder instead, as this minimizes managed allocations."
         },

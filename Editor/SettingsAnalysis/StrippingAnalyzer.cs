@@ -9,8 +9,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class StrippingAnalyzer : ISettingsModuleAnalyzer
     {
+        internal const string PAS0009 = nameof(PAS0009);
+        internal const string PAS0025 = nameof(PAS0025);
+        internal const string PAS0026 = nameof(PAS0026);
+
         static readonly Descriptor k_EngineCodeStrippingDescriptor = new Descriptor(
-            "PAS0009",
+            PAS0009,
             "Player: Engine Code Stripping",
             Area.BuildSize,
             "Engine code stripping is disabled. The generated build will be larger than necessary.",
@@ -20,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         };
 
         static readonly Descriptor k_AndroidManagedStrippingDescriptor = new Descriptor(
-            "PAS0025",
+            PAS0025,
             "Player (Android): Managed Code Stripping",
             Area.BuildSize,
             "Managed code stripping on Android is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",
@@ -30,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         };
 
         static readonly Descriptor k_iOSManagedStrippingDescriptor = new Descriptor(
-            "PAS0026",
+            PAS0026,
             "Player (iOS): Managed Code Stripping",
             Area.BuildSize,
             "Managed code stripping on iOS is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",

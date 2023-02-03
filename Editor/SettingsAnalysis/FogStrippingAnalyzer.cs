@@ -21,8 +21,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class FogStrippingAnalyzer : ISettingsModuleAnalyzer
     {
+        internal const string PAS1003 = nameof(PAS1003);
+
         static readonly Descriptor k_FogModeDescriptor = new Descriptor(
-            "PAS1003",
+            PAS1003,
             "Graphics: Fog Shader Variant Stripping",
             new[] {Area.BuildSize},
             "FogMode shader variants are always built. Forcing Fog shader variants to be built can increase the build size.",
