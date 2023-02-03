@@ -54,29 +54,29 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS1004,
             "Player: IL2CPP Compiler Configuration",
             new[] { Area.BuildTime },
-            "<b>C++ Compiler Configuration</b> is set to <b>Master</b>. Keep this mode only for shipping builds.",
-            "To have optimal build time, change <b>Project Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
+            "<b>C++ Compiler Configuration</b> is set to <b>Master</b>. This mode is intended for shipping builds and will significantly increase build times.",
+            "To reduce build times, change <b>Project Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
         {
             fixer = (issue => {
                 SetIL2CPPConfigurationToRelease();
             }),
 
-            messageFormat = "Player : C++ Compiler Configuration is set to 'Master'. The build time will be longer."
+            messageFormat = "Player: C++ Compiler Configuration is set to 'Master'"
         };
 
-        private static readonly Descriptor k_IL2CPPCompilerConfigurationDebugDescriptor = new Descriptor(
+        static readonly Descriptor k_IL2CPPCompilerConfigurationDebugDescriptor = new Descriptor(
             PAS1005,
             "Player: IL2CPP Compiler Configuration",
             new[] { Area.CPU },
-            "<b>C++ Compiler Configuration</b> is set to <b>Debug</b>. The performances will be suboptimal. Keep this mode only for debugging only.",
-            "Change <b>Project Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
+            "<b>C++ Compiler Configuration</b> is set to <b>Debug</b>. This mode is intended for debugging and might have an impact on runtime performance.",
+            "To improve runtime performance, change <b>Project Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
         {
             fixer = (issue =>
             {
                 SetIL2CPPConfigurationToRelease();
             }),
 
-            messageFormat = "Player : C++ Compiler Configuration is set to 'Debug'. The performances will be suboptimal."
+            messageFormat = "Player: C++ Compiler Configuration is set to 'Debug'"
         };
 
         public void Initialize(ProjectAuditorModule module)
