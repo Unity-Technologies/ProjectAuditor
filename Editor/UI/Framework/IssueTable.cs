@@ -362,6 +362,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                 case PropertyFormat.Time:
                                     EditorGUI.LabelField(cellRect, Formatting.FormatTime(issue.GetCustomPropertyFloat(customPropertyIndex)), labelStyle);
                                     break;
+                                case PropertyFormat.ULong:
+                                    var ulongAsString = issue.GetCustomProperty(customPropertyIndex);
+                                    var ulongValue = (ulong)0;
+                                    if (!ulong.TryParse(ulongAsString, out ulongValue))
+                                        EditorGUI.LabelField(cellRect, Utility.GetIcon(Utility.IconType.Info, ulongAsString), labelStyle);
+                                    else
+                                        EditorGUI.LabelField(cellRect, new GUIContent(ulongAsString, ulongAsString), labelStyle);
+                                    break;
                                 case PropertyFormat.Integer:
                                     var intAsString = issue.GetCustomProperty(customPropertyIndex);
                                     var intValue = 0;

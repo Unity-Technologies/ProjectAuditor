@@ -116,7 +116,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyType.LogLevel},
                 new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size of the variants in the build" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumVariants), format = PropertyFormat.Integer, name = "Num Variants", longName = "Number of potential shader variants for a single stage (e.g. fragment), per shader platform (e.g. GLES30)" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumVariants), format = PropertyFormat.ULong, name = "Num Variants", longName = "Number of potential shader variants for a single stage (e.g. fragment), per shader platform (e.g. GLES30)" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumBuiltVariants), format = PropertyFormat.Integer, name = "Built Fragment Variants", longName = "Number of fragment shader variants in the build for a single stage (e.g. fragment), per shader platform (e.g. GLES30)" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumPasses), format = PropertyFormat.Integer, name = "Num Passes", longName = "Number of Passes" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumKeywords), format = PropertyFormat.Integer, name = "Num Keywords", longName = "Number of Keywords" },

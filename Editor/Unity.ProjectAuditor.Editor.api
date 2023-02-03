@@ -376,10 +376,11 @@ namespace Unity.ProjectAuditor.Editor.Core
     public enum PropertyFormat
     {
         Bool = 1,
-        Bytes = 3,
+        Bytes = 4,
         Integer = 2,
         String = 0,
-        Time = 4,
+        Time = 5,
+        ULong = 3,
     }
 
     public enum PropertyType

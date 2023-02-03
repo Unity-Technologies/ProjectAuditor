@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added Fog shader variant stripping analyzer
 * Fixed backwards compatibility
 * Fixed reporting of shader variants if not compiled for analysis platform
+* Fixed displaying of large values of total shader variants
 
 ## [0.9.1-preview] - 2023-01-24
 * Added _UnityEngine.Object.FindObjectOfType_ usage detection
