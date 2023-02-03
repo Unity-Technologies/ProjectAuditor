@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Player: IL2CPP Compiler Configuration",
             new[] { Area.CPU },
             "<b>C++ Compiler Configuration</b> is set to <b>Debug</b>. The performances will be suboptimal. Keep this mode only for debugging only.",
-            "To have optimal build time, change <b>Project Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
+            "To have optimal performances, change <b>Project Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
         {
             fixer = (issue =>
             {
