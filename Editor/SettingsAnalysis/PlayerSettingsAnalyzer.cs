@@ -69,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Player: IL2CPP Compiler Configuration",
             new[] { Area.CPU },
             "<b>C++ Compiler Configuration</b> is set to <b>Debug</b>. The performances will be suboptimal. Keep this mode only for debugging only.",
-            "To have optimal performances, change <b>Project Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
+            "Change <b>Project Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
         {
             fixer = (issue =>
             {
@@ -105,12 +105,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SpeakerModeDescriptor)
                     .WithLocation("Project/Player");
             }
-            if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Master))
+            if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Master, projectAuditorParams))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationMasterDescriptor)
                     .WithLocation("Project/Player");
             }
-            if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Debug))
+            if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Debug, projectAuditorParams))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationDebugDescriptor)
                     .WithLocation("Project/Player");
@@ -151,9 +151,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             AudioSettings.Reset(audioConfiguration);
         }
 
-        internal static bool CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration compilerConfiguration)
+        internal static bool CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration compilerConfiguration, ProjectAuditorParams projectAuditorParams)
         {
-            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.platform);
             if (PlayerSettings.GetScriptingBackend(buildTargetGroup) !=
                 ScriptingImplementation.IL2CPP)
             {
