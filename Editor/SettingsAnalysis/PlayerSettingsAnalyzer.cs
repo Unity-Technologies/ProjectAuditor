@@ -161,7 +161,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
 
             return PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup) ==
-                   compilerConfiguration;
+                compilerConfiguration;
         }
 
         internal static void SetIL2CPPConfigurationToRelease()
