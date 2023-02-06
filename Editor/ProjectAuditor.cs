@@ -21,8 +21,6 @@ namespace Unity.ProjectAuditor.Editor
     public sealed class ProjectAuditor
         : IPreprocessBuildWithReport
     {
-        static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
-
         internal const string DataPath = PackagePath + "/Data";
         internal const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
 
@@ -33,13 +31,14 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                if (string.IsNullOrEmpty(m_PackageVersion))
-                    m_PackageVersion = PackageUtils.GetPackageVersion(PackageName);
-                return m_PackageVersion;
+                if (string.IsNullOrEmpty(s_PackageVersion))
+                    s_PackageVersion = PackageUtils.GetPackageVersion(PackageName);
+                return s_PackageVersion;
             }
         }
 
-        static string m_PackageVersion;
+        static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
+        static string s_PackageVersion;
 
         readonly List<ProjectAuditorModule> m_Modules = new List<ProjectAuditorModule>();
         ProjectAuditorConfig m_Config;
