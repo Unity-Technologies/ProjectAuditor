@@ -191,7 +191,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             assetImporter != null ? assetImporter.GetType().FullName : k_Unknown,
                             content.type,
                             content.packedSize,
-                            Math.Round(content.packedSize / (double)dataSize, 2),
+                            Math.Round((double)content.packedSize / dataSize, 4),
                             packedAsset.shortPath
                         });
                 }
