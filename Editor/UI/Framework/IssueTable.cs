@@ -87,8 +87,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 itemsList.AddRange(m_TreeViewItemIssues);
             foreach (var issue in issues)
             {
-                var depth = issue.depth;
-                depth++;
+                var depth = m_Layout.hierarchy ? issue.depth : 1;
                 var item = new IssueTableItem(m_NextId++, depth, issue.description, issue, issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
                 itemsList.Add(item);
             }
