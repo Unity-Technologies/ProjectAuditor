@@ -670,6 +670,93 @@ namespace Unity.ProjectAuditor.Editor.Modules
     }
 }
 
+namespace Unity.ProjectAuditor.Editor.Profiling
+{
+    public enum CPUTimeArea
+    {
+        AI = 12,
+        Animation = 6,
+        Audio = 9,
+        Behaviour = 3,
+        Cinemachine = 14,
+        EditorAndProfiler = 2,
+        Events = 10,
+        GC = 15,
+        Input = 11,
+        LoadStream = 13,
+        Physics = 7,
+        Rendering = 5,
+        UI = 8,
+        Uncategorized = 0,
+        VisualScripting = 4,
+        WaitMarkers = 1,
+    }
+
+    public enum CPUTimeSubarea
+    {
+        None = 0,
+        RenderingParticles = 1,
+        RenderingStreaming = 3,
+        RenderingVFX = 2,
+    }
+
+    public struct FrameInfo
+    {
+        public MarkerStats[] MarkerStats;
+    }
+
+    public struct MarkerDefinition
+    {
+        public CPUTimeArea Area;
+        public int Level;
+        public string Name;
+        public bool NameIsSubString;
+        public CPUTimeSubarea SubArea;
+        public MarkerDefinition[] SubMarkers;
+    }
+
+    public struct MarkerStats
+    {
+        public MarkerDefinition Definition;
+        public float FrameTimeMs;
+        public float FrameTimePercentage;
+        public float SubMarkersPercent;
+        public float SubMarkersTimeMs;
+    }
+
+    public class ProfileAnalyzer
+    {
+        public ProfileAnalyzer() {}
+        public static ProfileAnalyzer.ProfileReport CreateReport(TargetFramerate targetFramerate);
+        public static void LoadProfile(string profilePath);
+        public struct ProfileReport
+        {
+            public float FastFrameTime;
+            public FrameInfo[] FrameInfo;
+            public float HighFPS;
+            public int HighFrameIdx;
+            public float HighFrameMs;
+            public float LowFPS;
+            public int LowFrameIdx;
+            public float LowFrameMs;
+            public float MaxFrameTime90Percentile;
+            public int Num90thPercentileFrames;
+            public int NumFastFrameTimeFrames;
+            public int NumFrames;
+            public int NumSlowFrameTimeFrames;
+            public float SlowFrameTime;
+            public void Init();
+        }
+    }
+
+    public enum TargetFramerate
+    {
+        [UnityEngine.InspectorName(@"120")] FPS120 = 2,
+        [UnityEngine.InspectorName(@"30")] FPS30 = 0,
+        [UnityEngine.InspectorName(@"60")] FPS60 = 1,
+    }
+}
+
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     public class TimeSettingsAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer, Unity.ProjectAuditor.Editor.Modules.ISettingsModuleAnalyzer
