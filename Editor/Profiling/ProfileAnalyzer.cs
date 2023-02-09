@@ -142,7 +142,9 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             new MarkerDefinition(1, "PreLateUpdate.DirectorUpdateAnimationBegin", CPUTimeArea.Animation),
             new MarkerDefinition(1, "PreLateUpdate.DirectorUpdateAnimationEnd", CPUTimeArea.Animation),
             new MarkerDefinition(1, "PreLateUpdate.ConstraintManagerUpdate", CPUTimeArea.Animation),
+            new MarkerDefinition(1, "PreLateUpdate.LegacyAnimationUpdate", CPUTimeArea.Animation),
             new MarkerDefinition(1, "FixedUpdate.LegacyFixedAnimationUpdate", CPUTimeArea.Animation),
+            new MarkerDefinition(1, "PostLateUpdate.DirectorLateUpdate", CPUTimeArea.Animation),
 
             // Physics
             new MarkerDefinition(1, "EarlyUpdate.PhysicsResetInterpolatedTransformPosition", CPUTimeArea.Physics),
@@ -216,6 +218,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             new MarkerDefinition(1, "PostLateUpdate.FinishFrameRendering", CPUTimeArea.Rendering),
             new MarkerDefinition(1, "PostLateUpdate.UpdateAllRenderers", CPUTimeArea.Rendering),
             new MarkerDefinition(1, "PostLateUpdate.UpdateAllSkinnedMeshes", CPUTimeArea.Rendering),
+            new MarkerDefinition(1, "PostLateUpdate.ParticleSystemEndUpdateAll", CPUTimeArea.Rendering),
             new MarkerDefinition(1, "ScriptableRuntimeReflectionSystemWrapper.Internal_ScriptableRuntimeReflectionSystemWrapper_TickRealtimeProbes()", CPUTimeArea.Rendering, CPUTimeSubarea.None, true),
             new MarkerDefinition(1, "RenderPipelineManager.DoRenderLoop_Internal", CPUTimeArea.Rendering, CPUTimeSubarea.None, true), // TODO: Can be on level 2
             new MarkerDefinition(1, "DestroyCullResults", CPUTimeArea.Rendering),
@@ -235,6 +238,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             new MarkerDefinition(1, "PostLateUpdate.PlayerEmitCanvasGeometry", CPUTimeArea.UI),
             new MarkerDefinition(1, "GUI.Repaint", CPUTimeArea.UI),
             new MarkerDefinition(1, "UGUI.Rendering.RenderOverlays", CPUTimeArea.UI),
+            new MarkerDefinition(1, "UGUI.Rendering.EmitWorldScreenspaceCameraGeometry", CPUTimeArea.UI),
 
             // Loading / Streaming
             new MarkerDefinition(1, "EarlyUpdate.UpdatePreloading", CPUTimeArea.LoadStream),
@@ -255,6 +259,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
             // Editor and Profiler markers
             new MarkerDefinition(1, "PostLateUpdate.ProfilerEndFrame", CPUTimeArea.EditorAndProfiler, CPUTimeSubarea.None, false),
+            new MarkerDefinition(1, "PostLateUpdate.ProfilerSynchronizeStats", CPUTimeArea.EditorAndProfiler, CPUTimeSubarea.None, false),
             new MarkerDefinition(1, "PostLateUpdate.UpdateResolution", CPUTimeArea.EditorAndProfiler)  // TODO: Seems to be LogCat related
         };
 
