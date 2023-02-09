@@ -32,6 +32,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return FormatTime(TimeSpan.FromMilliseconds(timeMs));
         }
 
+        /// <summary>
+        /// Formats a decimal number as a percentage with one decimal place.
+        /// </summary>
+        /// <param name="number">The decimal number to format.</param>
+        /// <returns>A string representation of the decimal number as a percentage.</returns>
         public static string FormatPercentage(float number)
         {
             return $"{number:P1}";
