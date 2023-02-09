@@ -25,11 +25,8 @@ namespace Unity.ProjectAuditor.EditorTests
         static readonly string k_ExpectedDescription = "Invalid token '}' in class, struct, or interface member declaration";
 #endif
 
-#if UNITY_EDITOR_WIN
-        static readonly string k_ExpectedMessage = $"Assets\\ProjectAuditor-Temp\\ScriptWithError.cs(6,1): error CS1519: {k_ExpectedDescription}";
-#else
-        static readonly  string k_ExpectedMessage = $"Assets/ProjectAuditor-Temp/ScriptWithError.cs(6,1): error CS1519: {k_ExpectedDescription}";
-#endif
+        static readonly string k_ExpectedMessage = $"{PathUtils.Combine(TempAsset.s_TempAssetsFolder,"ScriptWithError.cs")}(6,1): error CS1519: {k_ExpectedDescription}";
+
         const string k_ExpectedCode = "CS1519";
 
         const string k_TempAssemblyFileName = "Unity.ProjectAuditor.Temp.asmdef";

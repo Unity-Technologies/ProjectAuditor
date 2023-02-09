@@ -87,7 +87,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 itemsList.AddRange(m_TreeViewItemIssues);
             foreach (var issue in issues)
             {
-                var item = new IssueTableItem(m_NextId++, issue.depth, issue.description, issue, issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
+                var depth = m_Layout.hierarchy ? issue.depth : 1;
+                var item = new IssueTableItem(m_NextId++, depth, issue.description, issue, issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
                 itemsList.Add(item);
             }
 
@@ -231,11 +232,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 cellRect.xMin += indent;
                 CenterRectUsingSingleLineHeight(ref cellRect);
             }
-            else if (property.type == PropertyType.Description)
+            else if (m_Layout.hierarchy && property.type == PropertyType.Description)
             {
                 var indent = GetContentIndent(treeViewItem);
-                if (m_Layout.hierarchy)
-                    indent -= foldoutWidth; // foldout is not drawn, so we need to compensate for it
                 cellRect.xMin += indent;
                 CenterRectUsingSingleLineHeight(ref cellRect);
             }

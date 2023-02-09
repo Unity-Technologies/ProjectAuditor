@@ -5,19 +5,18 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class ConfigAssetTests
+    class ConfigAssetTests : TestFixtureBase
     {
         [Test]
         public void ConfigAsset_DefaultAsset_IsCreated()
         {
-            new Unity.ProjectAuditor.Editor.ProjectAuditor();
             Assert.IsTrue(File.Exists(Unity.ProjectAuditor.Editor.ProjectAuditor.DefaultAssetPath));
         }
 
         [Test]
         public void ConfigAsset_CustomAsset_IsCreated()
         {
-            var assetPath = "Assets/Editor/MyConfig.asset";
+            var assetPath = Path.Combine(TempAsset.s_TempAssetsFolder, "MyConfig.asset");
             new Unity.ProjectAuditor.Editor.ProjectAuditor(assetPath);
             Assert.True(File.Exists(assetPath));
 

@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     public abstract class TestFixtureBase
     {
-        protected const string k_TempSceneFilename = "Assets/TestScene.unity";
+        static string s_TempSceneFilename = Path.Combine(TempAsset.s_TempAssetsFolder, "TestScene.unity");
 
         protected CodeOptimization m_CodeOptimization = CodeOptimization.Release;
         protected BuildTarget m_Platform = EditorUserBuildSettings.activeBuildTarget;
@@ -117,7 +117,7 @@ namespace Unity.ProjectAuditor.EditorTests
         protected void Build(bool isDevelopment = true, string buildFileName = "test", Action preBuildAction = null, Action postBuildAction = null)
         {
             // We must save the scene or the build will fail https://unity.slack.com/archives/C3F85MBDL/p1615991512002200
-            EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), k_TempSceneFilename);
+            EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), s_TempSceneFilename);
 
             m_BuildPath = FileUtil.GetUniqueTempPathInProject();
             Directory.CreateDirectory(m_BuildPath);
@@ -148,7 +148,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             Directory.Delete(m_BuildPath, true);
 
-            AssetDatabase.DeleteAsset(k_TempSceneFilename);
+            AssetDatabase.DeleteAsset(s_TempSceneFilename);
         }
     }
 }
