@@ -133,6 +133,12 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             }
         }
 
+        public struct ProfileAnalyzerParams
+        {
+            public TargetFramerate TargetFramerate;
+            public float FastFramePercentile;
+        }
+
         // A nested list of important known Profiler markers
         internal static readonly MarkerDefinition[] MarkerDefinitions =
         {
@@ -153,7 +159,6 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             new MarkerDefinition(1, "FixedUpdate.PhysicsFixedUpdate", CPUTimeArea.Physics),
             new MarkerDefinition(1, "FixedUpdate.Physics2DFixedUpdate", CPUTimeArea.Physics),
             new MarkerDefinition(1, "FixedUpdate.FixedUpdate.ScriptRunDelayedFixedFrameRate", CPUTimeArea.Physics),
-            new MarkerDefinition(1, "FixedUpdate.NewInputFixedUpdate", CPUTimeArea.Input),
             new MarkerDefinition(1, "PostLateUpdate.PhysicsSkinnedClothBeginUpdate", CPUTimeArea.Physics),
 
             // Behaviour
@@ -206,6 +211,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             new MarkerDefinition(1, "PreUpdate.NewInputUpdate", CPUTimeArea.Input),
             new MarkerDefinition(1, "PreUpdate.SendMouseEvents", CPUTimeArea.Input),
             new MarkerDefinition(1, "InputProcess", CPUTimeArea.Input),
+            new MarkerDefinition(1, "FixedUpdate.NewInputFixedUpdate", CPUTimeArea.Input),
 
             // AI (Navigation)
             new MarkerDefinition(1, "PreUpdate.AIUpdate", CPUTimeArea.AI),
@@ -234,7 +240,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             // UI
             new MarkerDefinition(1, "EarlyUpdate.UpdateCanvasRectTransform", CPUTimeArea.UI),
             new MarkerDefinition(1, "PostLateUpdate.PlayerUpdateCanvases", CPUTimeArea.UI),
-            new MarkerDefinition(1, "PostLateUpdate.UpdateRectTransform", CPUTimeArea.UI),  // TODO: UI specific or 2D/Sprite rendering
+            new MarkerDefinition(1, "PostLateUpdate.UpdateRectTransform", CPUTimeArea.UI),  // TODO: UI specific or 2D/Sprite rendering?
             new MarkerDefinition(1, "PostLateUpdate.PlayerEmitCanvasGeometry", CPUTimeArea.UI),
             new MarkerDefinition(1, "GUI.Repaint", CPUTimeArea.UI),
             new MarkerDefinition(1, "UGUI.Rendering.RenderOverlays", CPUTimeArea.UI),
@@ -260,7 +266,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             // Editor and Profiler markers
             new MarkerDefinition(1, "PostLateUpdate.ProfilerEndFrame", CPUTimeArea.EditorAndProfiler, CPUTimeSubarea.None, false),
             new MarkerDefinition(1, "PostLateUpdate.ProfilerSynchronizeStats", CPUTimeArea.EditorAndProfiler, CPUTimeSubarea.None, false),
-            new MarkerDefinition(1, "PostLateUpdate.UpdateResolution", CPUTimeArea.EditorAndProfiler)  // TODO: Seems to be LogCat related
+            new MarkerDefinition(1, "PostLateUpdate.UpdateResolution", CPUTimeArea.EditorAndProfiler)
         };
 
         public static void LoadProfile(string profilePath)
@@ -268,14 +274,14 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             ProfilerDriver.LoadProfile(profilePath, false);
         }
 
-        public static ProfileReport CreateReport(TargetFramerate targetFramerate)
+        public static ProfileReport CreateReport(ProfileAnalyzerParams profileAnalyzerParams)
         {
             var report = new ProfileReport();
             report.Init();
 
             if (ProfilerDriver.firstFrameIndex >= 0)
             {
-                CalculateFrametimeStats(ref report, targetFramerate);
+                CalculateFrametimeStats(ref report, profileAnalyzerParams);
                 CollectMarkers(ref report);
             }
 
@@ -482,13 +488,15 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             }
         }
 
-        static void CalculateFrametimeStats(ref ProfileReport report, TargetFramerate targetFramerate)
+        static void CalculateFrametimeStats(ref ProfileReport report, ProfileAnalyzerParams profileAnalyzerParams)
         {
             // Stats for 90 percent of fastest frames
             float SlowFrameTime = 35.37f;
             float FastFrameTime = 25f;
+            var TargetFrameRate = profileAnalyzerParams.TargetFramerate;
+            var fastestFramePercentile = profileAnalyzerParams.FastFramePercentile > 0f ? profileAnalyzerParams.FastFramePercentile : 0.9f;
 
-            switch (targetFramerate)
+            switch (TargetFrameRate)
             {
                 case TargetFramerate.FPS60:
                     SlowFrameTime = 18.54f;
@@ -515,7 +523,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
             Array.Sort(frameTimesMs);
 
-            int fastest90PercentileFrameCutoff = Math.Max(0, ((int)(report.NumFrames * 0.9f)) - 1);
+            int fastest90PercentileFrameCutoff = Math.Max(0, ((int)(report.NumFrames * fastestFramePercentile)) - 1);
             float percentile90FrameTimeCutoffMs = frameTimesMs[fastest90PercentileFrameCutoff];
 
             // Get frame stats relative to slow/fast frame times
