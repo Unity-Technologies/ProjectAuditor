@@ -5,16 +5,31 @@ namespace Unity.ProjectAuditor.Editor.Utils
 {
     public static class Formatting
     {
+        /// <summary>
+        /// Formats a given DateTime object as a string in the format "yyyy/MM/dd HH:mm".
+        /// </summary>
+        /// <param name="dateTime">The DateTime object to format.</param>
+        /// <returns>A string representation of the input DateTime object in the specified format.</returns>
         public static string FormatDateTime(DateTime dateTime)
         {
             return dateTime.ToString("yyyy/MM/dd HH:mm");
         }
 
-        public static string FormatDuration(TimeSpan t)
+        /// <summary>
+        /// Formats a given TimeSpan object as a string in the format "HH:mm:ss".
+        /// </summary>
+        /// <param name="timeSpan">The TimeSpan object to format.</param>
+        /// <returns>A string representation of the input value.</returns>
+        public static string FormatDuration(TimeSpan timeSpan)
         {
-            return t.Hours + ":" + t.Minutes.ToString("D2") + ":" + t.Seconds.ToString("D2");
+            return timeSpan.Hours + ":" + timeSpan.Minutes.ToString("D2") + ":" + timeSpan.Seconds.ToString("D2");
         }
 
+        /// <summary>
+        /// Formats a given TimeSpan object as a string in the format "X ms", "X s", or "X min", depending on the length of the time span.
+        /// </summary>
+        /// <param name="timeSpan">The TimeSpan object to format.</param>
+        /// <returns>A string representation of the input TimeSpan object.</returns>
         public static string FormatTime(TimeSpan timeSpan)
         {
             var timeMs = timeSpan.TotalMilliseconds;
@@ -25,6 +40,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return timeSpan.TotalMinutes.ToString("F2") + " min";
         }
 
+        /// <summary>
+        /// Formats a given time value as a string in the format "X ms", "X s", or "X min"
+        /// </summary>
+        /// <param name="timeMs">The time value to format, in milliseconds.</param>
+        /// <returns>A string representation of the input float value.</returns>
         public static string FormatTime(float timeMs)
         {
             if (float.IsNaN(timeMs))
@@ -32,6 +52,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return FormatTime(TimeSpan.FromMilliseconds(timeMs));
         }
 
+        /// <summary>
+        /// Formats a given size in bytes as a string in the format "X bytes".
+        /// </summary>
+        /// <param name="size">Size value to format.</param>
+        /// <returns>A string representation of the input value as a size.</returns>
         public static string FormatSize(ulong size)
         {
             return EditorUtility.FormatBytes((long)size);
