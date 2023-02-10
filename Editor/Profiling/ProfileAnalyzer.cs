@@ -181,7 +181,6 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                     new MarkerDefinition(2, "EventMachine.Update()", CPUTimeArea.VisualScripting, CPUTimeSubarea.None, true),
                     new MarkerDefinition(2, "EventMachine`2.Update()", CPUTimeArea.VisualScripting, CPUTimeSubarea.None, true),
                     new MarkerDefinition(2, "DecalProjector.Update()", CPUTimeArea.Rendering),
-                    new MarkerDefinition(2, "DecalProjector.Update()", CPUTimeArea.Rendering),
                     new MarkerDefinition(2, "EventSystem.Update()", CPUTimeArea.UI),
                 }
             ),
@@ -281,7 +280,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
             if (ProfilerDriver.firstFrameIndex >= 0)
             {
-                CalculateFrametimeStats(ref report, profileAnalyzerParams);
+                CalculateFrameTimeStats(ref report, profileAnalyzerParams);
                 CollectMarkers(ref report);
             }
 
@@ -298,11 +297,11 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                 var frameDataHierarchy = ProfilerDriver.GetHierarchyFrameDataView(frameIndex + ProfilerDriver.firstFrameIndex, 0,
                     HierarchyFrameDataView.ViewModes.Default, HierarchyFrameDataView.columnDontSort, false);
 
-                GatherMarkersForFrame(ref report, frameDataHierarchy, frameIndex);
+                CollectMarkersForFrame(ref report, frameDataHierarchy, frameIndex);
             }
         }
 
-        static void GatherMarkersForFrame(ref ProfileReport report,
+        static void CollectMarkersForFrame(ref ProfileReport report,
             HierarchyFrameDataView frameDataHierarchy, int frameId)
         {
             List<int> topLevelItems = new List<int>();
@@ -420,18 +419,18 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             FindHierarchyItemsIdByMarkerString(frameDataHierarchy, frameDataHierarchy.GetRootItemID(),
                 "EditorLoop", false, topLevelItems);
 
-            GatherEditorProfilerMarkers(frameDataHierarchy, topLevelItems, ref allMarkerStats);
+            CollectEditorProfilerMarkers(frameDataHierarchy, topLevelItems, ref allMarkerStats);
 
             topLevelItems.Clear();
             FindHierarchyItemsIdByMarkerString(frameDataHierarchy, frameDataHierarchy.GetRootItemID(),
                 "Profiler.", true, topLevelItems);
 
-            GatherEditorProfilerMarkers(frameDataHierarchy, topLevelItems, ref allMarkerStats);
+            CollectEditorProfilerMarkers(frameDataHierarchy, topLevelItems, ref allMarkerStats);
 
             report.FrameInfo[frameId].MarkerStats = allMarkerStats.ToArray();
         }
 
-        static void GatherEditorProfilerMarkers(HierarchyFrameDataView frameDataHierarchy, List<int> topLevelItems,
+        static void CollectEditorProfilerMarkers(HierarchyFrameDataView frameDataHierarchy, List<int> topLevelItems,
             ref List<MarkerStats> markerStats)
         {
             foreach (var topLevelItem in topLevelItems)
@@ -488,13 +487,14 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             }
         }
 
-        static void CalculateFrametimeStats(ref ProfileReport report, ProfileAnalyzerParams profileAnalyzerParams)
+        static void CalculateFrameTimeStats(ref ProfileReport report, ProfileAnalyzerParams profileAnalyzerParams)
         {
-            // Stats for 90 percent of fastest frames
+            report.NumFrames = ProfilerDriver.lastFrameIndex - ProfilerDriver.firstFrameIndex + 1;
+
+            // Determine slow and fast frame thresholds for a given target framerate
             float SlowFrameTime = 35.37f;
             float FastFrameTime = 25f;
             var TargetFrameRate = profileAnalyzerParams.TargetFramerate;
-            var fastestFramePercentile = profileAnalyzerParams.FastFramePercentile > 0f ? profileAnalyzerParams.FastFramePercentile : 0.9f;
 
             switch (TargetFrameRate)
             {
@@ -511,9 +511,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             report.SlowFrameTime = SlowFrameTime;
             report.FastFrameTime = FastFrameTime;
 
-            report.NumFrames = ProfilerDriver.lastFrameIndex - ProfilerDriver.firstFrameIndex + 1;
-
-            float maxFrameTime90Percentile = 0;
+            // Get all frame timings
             float[] frameTimesMs = new float[report.NumFrames];
             for (int i = 0; i < report.NumFrames; ++i)
             {
@@ -523,11 +521,13 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
             Array.Sort(frameTimesMs);
 
-            int fastest90PercentileFrameCutoff = Math.Max(0, ((int)(report.NumFrames * fastestFramePercentile)) - 1);
-            float percentile90FrameTimeCutoffMs = frameTimesMs[fastest90PercentileFrameCutoff];
+            // Cut off at given percentage of frames to calculate slow/fast frame times only for N-th percentile of fastest frames
+            float percentile = profileAnalyzerParams.FastFramePercentile > 0f ? profileAnalyzerParams.FastFramePercentile : 0.9f;
+            int percentileCutoffIndex = Math.Max(0, ((int)(report.NumFrames * percentile)) - 1);
+            float percentileCutoffMs = frameTimesMs[percentileCutoffIndex];
 
-            // Get frame stats relative to slow/fast frame times
-            int fastest90PercentileFrameCount = 0;
+            float maxPercentileFrameTime = 0;
+            int percentileFrameCount = 0;
             for (int i = ProfilerDriver.firstFrameIndex; i <= ProfilerDriver.lastFrameIndex; ++i)
             {
                 var rawView = ProfilerDriver.GetRawFrameDataView(i, 0);
@@ -535,13 +535,13 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                 var fps = rawView.frameFps;
                 var ms = rawView.frameTimeMs;
 
-                if (ms > percentile90FrameTimeCutoffMs)
+                if (ms > percentileCutoffMs)
                     continue;
                 if (ms <= 0)
                     continue;
 
-                maxFrameTime90Percentile = Math.Max(maxFrameTime90Percentile, ms);
-                fastest90PercentileFrameCount++;
+                maxPercentileFrameTime = Math.Max(maxPercentileFrameTime, ms);
+                percentileFrameCount++;
 
                 if (ms > SlowFrameTime)
                     report.NumSlowFrameTimeFrames++;
@@ -563,8 +563,8 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                 }
             }
 
-            report.MaxFrameTime90Percentile = maxFrameTime90Percentile;
-            report.Num90thPercentileFrames = fastest90PercentileFrameCount;
+            report.MaxFrameTime90Percentile = maxPercentileFrameTime;
+            report.Num90thPercentileFrames = percentileFrameCount;
         }
     }
 }
