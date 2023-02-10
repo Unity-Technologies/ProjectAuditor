@@ -53,6 +53,16 @@ namespace Unity.ProjectAuditor.Editor.Utils
         }
 
         /// <summary>
+        /// Formats a decimal number as a percentage with one decimal place.
+        /// </summary>
+        /// <param name="number">The decimal number to format.</param>
+        /// <returns>A string representation of the decimal number as a percentage.</returns>
+        public static string FormatPercentage(float number)
+        {
+            return $"{number:P1}";
+        }
+
+        /// <summary>
         /// Formats a given size in bytes as a string in the format "X bytes".
         /// </summary>
         /// <param name="size">Size value to format.</param>

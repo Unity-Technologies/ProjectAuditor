@@ -250,7 +250,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 else if (PropertyTypeUtil.IsCustom(property.type))
                 {
                     var customPropertyIndex = PropertyTypeUtil.ToCustomIndex(propertyType);
-                    if (property.format == PropertyFormat.Bytes || property.format == PropertyFormat.Time)
+                    if (property.format == PropertyFormat.Bytes || property.format == PropertyFormat.Time || property.format == PropertyFormat.Percentage)
                     {
                         string label;
                         if (property.format == PropertyFormat.Bytes)
@@ -274,7 +274,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                 var value = issueTableItem.ProjectIssue.GetCustomPropertyFloat(customPropertyIndex);
                                 sum += value;
                             }
-                            label = Formatting.FormatTime(sum);
+                            label = property.format == PropertyFormat.Time ? Formatting.FormatTime(sum) : Formatting.FormatPercentage(sum);
                         }
 
                         GUI.enabled = false;
@@ -376,6 +376,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                         EditorGUI.LabelField(cellRect, Utility.GetIcon(Utility.IconType.Info, intAsString), labelStyle);
                                     else
                                         EditorGUI.LabelField(cellRect, new GUIContent(intAsString, intAsString), labelStyle);
+                                    break;
+                                case PropertyFormat.Percentage:
+                                    EditorGUI.LabelField(cellRect, Formatting.FormatPercentage(issue.GetCustomPropertyFloat(customPropertyIndex)), labelStyle);
                                     break;
                                 default:
                                     var value = issue.GetCustomProperty(customPropertyIndex);
