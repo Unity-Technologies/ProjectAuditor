@@ -1,6 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.PackageManager;
@@ -99,6 +100,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.IsNotNull(diagnostic, "Cannot find the upgrade package: com.unity.2d.pixel-perfect");
             Assert.IsTrue(diagnostic.description.StartsWith("'com.unity.2d.pixel-perfect' could be updated from version '3.0.2' to "), "Description: " + diagnostic.description);
+            Assert.AreEqual(Severity.Minor, diagnostic.severity);
         }
 
         [Test]
@@ -112,6 +114,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.IsNotNull(diagnostic, "Cannot find the upgrade package: com.unity.services.vivox");
             Assert.IsTrue(diagnostic.description.StartsWith("'com.unity.services.vivox' version "), "Description: " + diagnostic.description);
+            Assert.AreEqual(Severity.Moderate, diagnostic.severity);
         }
 
         [Test]

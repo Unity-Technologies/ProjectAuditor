@@ -5,15 +5,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 [Unreleased]
+* Added percentage formatting support
+* Added individual asset size percentage to Build Report
+* Add Texture Streaming analyzer
+* Add Streaming Mipmaps for textures analyzer
+* Add Lightmap Streaming analyzer
+
+## [0.9.2-preview] - 2023-02-07
 * Added Fog shader variant stripping analyzer
 * Add IL2CPP Compiler Configuration analyzer
 * Fixed backwards compatibility
 * Fixed reporting of shader variants if not compiled for analysis platform
 * Fixed displaying of large values of total shader variants
 * Fixed _Copy to Clipboard_ support of issue property
-* Add Texture Streaming analyzer
-* Add Streaming Mipmaps for textures analyzer
-* Add Lightmap Streaming analyzer
+* Fixed table sorting
 
 ## [0.9.1-preview] - 2023-01-24
 * Added _UnityEngine.Object.FindObjectOfType_ usage detection

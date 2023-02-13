@@ -40,5 +40,14 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.AreEqual(formatted, Formatting.FormatTime(time));
         }
+
+        [TestCase(0.12345f, "12.3 %")]
+        [TestCase(0.5f, "50.0 %")]
+        [TestCase(0.0f, "0.0 %")]
+        [TestCase(1.0f, "100.0 %")]
+        public void Formatting_Percentage_IsFormatted(float number, string expectedResult)
+        {
+            Assert.AreEqual(expectedResult, Formatting.FormatPercentage(number));
+        }
     }
 }

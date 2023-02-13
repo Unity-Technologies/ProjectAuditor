@@ -57,6 +57,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             messageFormat = "'{0}' could be updated from version '{1}' to '{2}'",
+            defaultSeverity = Severity.Minor
         };
 
         static readonly Descriptor k_RecommendPackagePreView = new Descriptor(

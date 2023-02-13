@@ -104,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUI.indentLevel--;
                 EditorGUILayout.EndVertical();
 
-                EditorGUILayout.Space();
+                GUILayout.FlexibleSpace();
             }
 
             EditorGUILayout.Space();
