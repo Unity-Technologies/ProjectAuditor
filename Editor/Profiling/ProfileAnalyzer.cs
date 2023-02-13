@@ -81,57 +81,59 @@ namespace Unity.ProjectAuditor.Editor.Profiling
         public MarkerStats[] MarkerStats;
     }
 
+    public struct ProfileReport
+    {
+        public int NumFrames;
+
+        // Frame timing percentage method
+        public int LowFrameIdx;
+        public float LowFPS;
+        public float LowFrameMs;
+
+        public int HighFrameIdx;
+        public float HighFPS;
+        public float HighFrameMs;
+
+        // Percentile method (Google)
+        public float SlowFrameTime;
+        public float FastFrameTime;
+        public int NumSlowFrameTimeFrames;
+        public int NumFastFrameTimeFrames;
+        public int PercentileFrameCount;
+        public float MaxPercentileFrameTime;
+
+        public FrameInfo[] FrameInfo;
+
+        public void Init()
+        {
+            NumFrames = 0;
+
+            LowFrameIdx = -1;
+            LowFPS = float.MaxValue;
+            LowFrameMs = float.MinValue;
+
+            HighFrameIdx = -1;
+            HighFPS = float.MinValue;
+            HighFrameMs = float.MaxValue;
+
+            SlowFrameTime = 0;
+            FastFrameTime = 0;
+
+            NumSlowFrameTimeFrames = 0;
+            NumFastFrameTimeFrames = 0;
+            PercentileFrameCount = 0;
+
+            MaxPercentileFrameTime = 0;
+
+            FrameInfo = new FrameInfo[1];
+        }
+
+        public bool IsValid() => NumFrames > 0;
+    }
+
     public class ProfileAnalyzer
     {
         internal static readonly float k_MinProfilerMarkerPercentage = 0.001f;
-
-        public struct ProfileReport
-        {
-            public int NumFrames;
-
-            // Frame timing percentage method
-            public int LowFrameIdx;
-            public float LowFPS;
-            public float LowFrameMs;
-
-            public int HighFrameIdx;
-            public float HighFPS;
-            public float HighFrameMs;
-
-            // Percentile method (Google)
-            public float SlowFrameTime;
-            public float FastFrameTime;
-            public int NumSlowFrameTimeFrames;
-            public int NumFastFrameTimeFrames;
-            public int Num90thPercentileFrames;
-            public float MaxFrameTime90Percentile;
-
-            public FrameInfo[] FrameInfo;
-
-            public void Init()
-            {
-                NumFrames = 0;
-
-                LowFrameIdx = -1;
-                LowFPS = float.MaxValue;
-                LowFrameMs = float.MinValue;
-
-                HighFrameIdx = -1;
-                HighFPS = float.MinValue;
-                HighFrameMs = float.MaxValue;
-
-                SlowFrameTime = 0;
-                FastFrameTime = 0;
-
-                NumSlowFrameTimeFrames = 0;
-                NumFastFrameTimeFrames = 0;
-                Num90thPercentileFrames = 0;
-
-                MaxFrameTime90Percentile = 0;
-
-                FrameInfo = new FrameInfo[1];
-            }
-        }
 
         public struct ProfileAnalyzerParams
         {
@@ -268,23 +270,26 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             new MarkerDefinition(1, "PostLateUpdate.UpdateResolution", CPUTimeArea.EditorAndProfiler)
         };
 
-        public static void LoadProfile(string profilePath)
+        ProfileReport m_ProfileReport;
+        public ref ProfileReport ProfileReport => ref m_ProfileReport;
+
+        public void LoadProfile(string profilePath)
         {
             ProfilerDriver.LoadProfile(profilePath, false);
         }
 
-        public static ProfileReport CreateReport(ProfileAnalyzerParams profileAnalyzerParams)
+        public ProfileReport CreateReport(ProfileAnalyzerParams profileAnalyzerParams)
         {
-            var report = new ProfileReport();
-            report.Init();
+            m_ProfileReport = new ProfileReport();
+            m_ProfileReport.Init();
 
             if (ProfilerDriver.firstFrameIndex >= 0)
             {
-                CalculateFrameTimeStats(ref report, profileAnalyzerParams);
-                CollectMarkers(ref report);
+                CalculateFrameTimeStats(ref m_ProfileReport, profileAnalyzerParams);
+                CollectMarkers(ref m_ProfileReport);
             }
 
-            return report;
+            return m_ProfileReport;
         }
 
         static void CollectMarkers(ref ProfileReport report)
@@ -351,11 +356,11 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
                         if (hasFoundMarker && foundMarkerDefinition.SubMarkers != null && foundMarkerDefinition.SubMarkers.Length > 0)
                         {
-                            foreach (var subMarkerInfo in foundMarkerDefinition.SubMarkers)
+                            foreach (var subMarkerDef in foundMarkerDefinition.SubMarkers)
                             {
                                 List<int> childItems = new List<int>();
-                                FindHierarchyItemsIdByMarkerString(frameDataHierarchy, childItemId, subMarkerInfo.Name,
-                                    subMarkerInfo.NameIsSubString, childItems);
+                                FindHierarchyItemsIdByMarkerString(frameDataHierarchy, childItemId, subMarkerDef.Name,
+                                    subMarkerDef.NameIsSubString, childItems);
 
                                 if (childItems.Count > 0)
                                 {
@@ -369,9 +374,16 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                                         subMarkerTotalTimeMs += subMarkerFrameMs;
                                         subMarkerTotalPercent += subMarkerFramePercent;
 
+                                        var markerDef = subMarkerDef;
+                                        if (subMarkerDef.NameIsSubString)
+                                        {
+                                            var subMarkerID = frameDataHierarchy.GetItemMarkerID(subItemId);
+                                            markerDef.Name = frameDataHierarchy.GetMarkerName(subMarkerID);
+                                        }
+
                                         var subMarkerStats = new MarkerStats
                                         {
-                                            Definition = subMarkerInfo,
+                                            Definition = markerDef,
                                             FrameTimeMs = subMarkerFrameMs,
                                             FrameTimePercentage = subMarkerFramePercent
                                         };
@@ -563,8 +575,8 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                 }
             }
 
-            report.MaxFrameTime90Percentile = maxPercentileFrameTime;
-            report.Num90thPercentileFrames = percentileFrameCount;
+            report.MaxPercentileFrameTime = maxPercentileFrameTime;
+            report.PercentileFrameCount = percentileFrameCount;
         }
     }
 }
