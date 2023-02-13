@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Fixed reporting of shader variants if not compiled for analysis platform
 * Fixed displaying of large values of total shader variants
 * Fixed _Copy to Clipboard_ support of issue property
+* Add Texture Streaming analyzer
+* Add Streaming Mipmaps for textures analyzer
+* Add Lightmap Streaming analyzer
 
 ## [0.9.1-preview] - 2023-01-24
 * Added _UnityEngine.Object.FindObjectOfType_ usage detection
