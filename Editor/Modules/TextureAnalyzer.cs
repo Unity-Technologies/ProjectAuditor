@@ -16,9 +16,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAT0002 = nameof(PAT0002);
         internal const string PAT0003 = nameof(PAT0003);
 
-        internal const int TEXTURE_WIDTH = 1000;
-        internal const int TEXTURE_HEIGHT = 1000;
-
         internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
             PAT0000,
             "Texture: Mipmaps not enabled",
@@ -85,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             PAT0003,
             "Texture: Mipmaps Streaming not enabled",
             new[] {Area.Memory, Area.Quality},
-            "Texture mipmaps streaming is not enabled. This increases the the amount of mipmap textures that are loaded into memory on the GPU.",
+            "Texture mipmaps streaming is not enabled. This increases the amount of mipmap textures that are loaded into memory on the GPU.",
             "Consider enabled mipmaps streaming using the <b>Streaming Mipmaps</b> option in the texture inspector."
         )
         {
@@ -158,7 +155,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(textureImporter.assetPath);
             }
 
-            if (!textureImporter.streamingMipmaps && texture.width > TEXTURE_WIDTH && texture.height > TEXTURE_HEIGHT)
+            if (!textureImporter.streamingMipmaps && size > projectAuditorParams.settings.TextureStreamingMipmapsMinimumSize)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureStreamingMipMapEnabledDescriptor, textureName)
                     .WithLocation(textureImporter.assetPath);

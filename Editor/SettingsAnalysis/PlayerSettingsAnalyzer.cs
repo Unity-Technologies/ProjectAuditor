@@ -85,7 +85,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS1006,
             "Player: Lightmaps Streaming Disabled",
             new[] { Area.GPU, Area.CPU },
-            "<b>Lightmap Streaming</b> is not enabled. This may lead to a increase of the GPU memory",
+            "<b>Lightmap Streaming</b> is not enabled. This may lead to an increase of GPU memory",
             "To reduce GPU memory, turn on Lightmap Streaming at <b>Player Settings ➔ Other Settings ➔ Lightmap Streaming</b>.")
         {
             fixer = (issue =>
@@ -136,7 +136,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (!IsLightmapStreamingEnabled(projectAuditorParams))
             {
                 var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.platform);
-                
+
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_LightmapStreamingEnabledDescriptor).
                     WithCustomProperties(new object[]{(int)buildTargetGroup})
                     .WithLocation("Project/Player");

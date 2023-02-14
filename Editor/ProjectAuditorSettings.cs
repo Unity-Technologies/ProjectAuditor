@@ -27,5 +27,10 @@ namespace Unity.ProjectAuditor.Editor
         /// Maximum size of all files in the StreamingAssets folder. Beyond that size we report an issue.
         /// </summary>
         public int StreamingAssetsFolderSizeLimit = 50;
+
+        /// <summary>
+        /// Maximum size when it is not necessary to enable Streaming Mipmaps. Beyond that size we report an issue.
+        /// </summary>
+        public int TextureStreamingMipmapsMinimumSize = 1000;
     }
 }
