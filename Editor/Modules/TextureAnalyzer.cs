@@ -126,7 +126,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         textureImporter.mipmapEnabled,
                         textureImporter.isReadable,
                         resolution,
-                        size
+                        size,
+                        textureImporter.streamingMipmaps
                     })
                 .WithLocation(new Location(assetPath));
 

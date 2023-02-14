@@ -202,7 +202,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             return qualityIndexes;
         }
 
-        static void EnableStreamingMipmap(int qualityLevelIndex)
+        internal static void EnableStreamingMipmap(int qualityLevelIndex)
         {
             var initialQualityLevel = QualitySettings.GetQualityLevel();
 
