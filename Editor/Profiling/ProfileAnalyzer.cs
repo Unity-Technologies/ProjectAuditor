@@ -46,7 +46,14 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
     public struct MarkerDefinition
     {
-        public string Name;
+        private string m_Name;
+        public string Name
+        {
+            set { m_Name = value; UpdateHashCode(); }
+            get => m_Name;
+        }
+
+        public int NameHash;
         public int Level;
         public CPUTimeArea Area;
         public CPUTimeSubarea SubArea;
@@ -56,12 +63,18 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
         internal MarkerDefinition(int level, string name, CPUTimeArea area, CPUTimeSubarea subArea = CPUTimeSubarea.None, bool nameIsSubstring = false, MarkerDefinition[] subMarkers = null)
         {
-            Name = name;
+            m_Name = name;
+            NameHash = m_Name.GetHashCode();
             Level = level;
             Area = area;
             SubArea = subArea;
             NameIsSubString = nameIsSubstring;
             SubMarkers = subMarkers;
+        }
+
+        void UpdateHashCode()
+        {
+            NameHash = Name.GetHashCode();
         }
     }
 
@@ -102,7 +115,9 @@ namespace Unity.ProjectAuditor.Editor.Profiling
         public int PercentileFrameCount;
         public float MaxPercentileFrameTime;
 
-        public FrameInfo[] FrameInfo;
+        public FrameInfo[] FrameInfos;
+
+        public delegate bool MarkerStatConditionDelegate(ref MarkerStats stats);
 
         public void Init()
         {
@@ -125,10 +140,56 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
             MaxPercentileFrameTime = 0;
 
-            FrameInfo = new FrameInfo[1];
+            FrameInfos = new FrameInfo[1];
         }
 
         public bool IsValid() => NumFrames > 0;
+
+        public FrameInfo[] GetFramesWithMarkerPredicate(MarkerStatConditionDelegate markerPredicate, int startFrameIndex, int endFrameIndex)
+        {
+            if (startFrameIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException($"Parameter startFrameIndex {startFrameIndex} is out of bounds, lower than first index 0 (zero).");
+            }
+            if (endFrameIndex > NumFrames - 1)
+            {
+                throw new ArgumentOutOfRangeException($"Parameter endFrameIndex {endFrameIndex} is out of bounds, higher than last index {NumFrames - 1}.");
+            }
+            if (startFrameIndex > endFrameIndex)
+            {
+                throw new ArgumentException($"Parameter startFrameIndex {startFrameIndex} is higher than endFrameIndex {endFrameIndex}. It should be equal or lower instead.");
+            }
+
+            var length = endFrameIndex - startFrameIndex + 1;
+            FrameInfo[] outFrameInfos = new FrameInfo[length];
+
+            for (int i = 0; i < length; ++i)
+            {
+                ref readonly FrameInfo inFrameInfo = ref FrameInfos[i + startFrameIndex];
+                ref FrameInfo outFrameInfo = ref outFrameInfos[i];
+                List<MarkerStats> stats = new List<MarkerStats>();
+
+                for (int j = 0; j < inFrameInfo.MarkerStats.Length; ++j)
+                {
+                    ref MarkerStats m = ref inFrameInfo.MarkerStats[j];
+
+                    if (markerPredicate(ref m))
+                    {
+                        stats.Add(m);
+                    }
+                }
+
+                outFrameInfo.MarkerStats = stats.ToArray();
+            }
+
+            return outFrameInfos;
+        }
+
+        public FrameInfo GetFrameWithMarkerPredicate(MarkerStatConditionDelegate markerPredicate, int frameIndex)
+        {
+            var frameArray = GetFramesWithMarkerPredicate(markerPredicate, frameIndex, frameIndex);
+            return frameArray[0];
+        }
     }
 
     public class ProfileAnalyzer
@@ -169,6 +230,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                 {
                     new MarkerDefinition(2, "EventMachine.FixedUpdate()", CPUTimeArea.VisualScripting, CPUTimeSubarea.None, true),
                     new MarkerDefinition(2, "EventMachine`2.FixedUpdate()", CPUTimeArea.VisualScripting, CPUTimeSubarea.None, true),
+                    new MarkerDefinition(2, ".FixedUpdate()", CPUTimeArea.Behaviour, CPUTimeSubarea.None, true),
                 }
             ),
             new MarkerDefinition(1, "FixedUpdate.ScriptRunDelayedFixedFrameRate", CPUTimeArea.Behaviour, CPUTimeSubarea.None, false,
@@ -184,6 +246,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                     new MarkerDefinition(2, "EventMachine`2.Update()", CPUTimeArea.VisualScripting, CPUTimeSubarea.None, true),
                     new MarkerDefinition(2, "DecalProjector.Update()", CPUTimeArea.Rendering),
                     new MarkerDefinition(2, "EventSystem.Update()", CPUTimeArea.UI),
+                    new MarkerDefinition(2, ".Update()", CPUTimeArea.Behaviour, CPUTimeSubarea.None, true),
                 }
             ),
             new MarkerDefinition(1, "PreLateUpdate.ScriptRunBehaviourLateUpdate", CPUTimeArea.Behaviour, CPUTimeSubarea.None, false,
@@ -194,6 +257,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                     new MarkerDefinition(2, "CinemachineBrain.LateUpdate()", CPUTimeArea.Cinemachine, CPUTimeSubarea.None, false),
                     new MarkerDefinition(2, "VolumetricFog.LateUpdate()", CPUTimeArea.Rendering, CPUTimeSubarea.None, false),
                     new MarkerDefinition(2, "DecalProjector.LateUpdate()", CPUTimeArea.Rendering),
+                    new MarkerDefinition(2, ".LateUpdate()", CPUTimeArea.Behaviour, CPUTimeSubarea.None, true),
                 }
             ),
 
@@ -295,7 +359,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
         static void CollectMarkers(ref ProfileReport report)
         {
             report.NumFrames = ProfilerDriver.lastFrameIndex - ProfilerDriver.firstFrameIndex + 1;
-            report.FrameInfo = new FrameInfo[report.NumFrames];
+            report.FrameInfos = new FrameInfo[report.NumFrames];
 
             for (int frameIndex = 0; frameIndex < report.NumFrames; ++frameIndex)
             {
@@ -439,7 +503,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
             CollectEditorProfilerMarkers(frameDataHierarchy, topLevelItems, ref allMarkerStats);
 
-            report.FrameInfo[frameId].MarkerStats = allMarkerStats.ToArray();
+            report.FrameInfos[frameId].MarkerStats = allMarkerStats.ToArray();
         }
 
         static void CollectEditorProfilerMarkers(HierarchyFrameDataView frameDataHierarchy, List<int> topLevelItems,
