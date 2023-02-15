@@ -1,16 +1,17 @@
 using System.Linq;
 using NUnit.Framework;
+using Unity.ProjectAuditor.TestUtils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     class FindObjectsOfTypeTests : TestFixtureBase
     {
-        TempAsset m_TempAsset;
+        TestAsset m_TestAsset;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TempAsset = new TempAsset("FindObjectsOfTypeClass.cs", @"
+            m_TestAsset = new TestAsset("FindObjectsOfTypeClass.cs", @"
 using UnityEngine;
 
 class FindObjectsOfTypeClass
@@ -38,7 +39,7 @@ class FindObjectsOfTypeClass
         [Test]
         public void CodeAnalysis_FindObjectsOfType_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
 
             Assert.AreEqual(4, issues.Count(i => i.descriptor.id == "PAC0129"));
         }
@@ -46,7 +47,7 @@ class FindObjectsOfTypeClass
         [Test]
         public void CodeAnalysis_FindObjectOfType_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
 
             Assert.AreEqual(4, issues.Count(i => i.descriptor.id == "PAC0234"));
         }

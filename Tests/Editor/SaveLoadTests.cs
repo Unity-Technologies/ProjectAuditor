@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.TestUtils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {

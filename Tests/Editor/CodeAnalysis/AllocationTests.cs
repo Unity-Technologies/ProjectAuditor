@@ -4,21 +4,22 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
+using Unity.ProjectAuditor.TestUtils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     class AllocationTests : TestFixtureBase
     {
-        TempAsset m_TempAssetObjectAllocation;
-        TempAsset m_TempAssetClosureAllocation;
-        TempAsset m_TempAssetArrayAllocation;
-        TempAsset m_TempAssetMultidimensionalArrayAllocation;
-        TempAsset m_TempAssetParamsArrayAllocation;
+        TestAsset m_TestAssetObjectAllocation;
+        TestAsset m_TestAssetClosureAllocation;
+        TestAsset m_TestAssetArrayAllocation;
+        TestAsset m_TestAssetMultidimensionalArrayAllocation;
+        TestAsset m_TestAssetParamsArrayAllocation;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TempAssetObjectAllocation = new TempAsset("ObjectAllocation.cs", @"
+            m_TestAssetObjectAllocation = new TestAsset("ObjectAllocation.cs", @"
 class ObjectAllocation
 {
     static ObjectAllocation Dummy()
@@ -29,7 +30,7 @@ class ObjectAllocation
 }
 ");
 
-            m_TempAssetClosureAllocation = new TempAsset("ClosureAllocation.cs", @"
+            m_TestAssetClosureAllocation = new TestAsset("ClosureAllocation.cs", @"
 using UnityEngine;
 using System;
 class ClosureAllocation
@@ -43,7 +44,7 @@ class ClosureAllocation
 ");
 
 
-            m_TempAssetArrayAllocation = new TempAsset("ArrayAllocation.cs", @"
+            m_TestAssetArrayAllocation = new TestAsset("ArrayAllocation.cs", @"
 class ArrayAllocation
 {
     int[] array;
@@ -55,7 +56,7 @@ class ArrayAllocation
 }
 ");
 
-            m_TempAssetMultidimensionalArrayAllocation = new TempAsset("MultidimensionalArrayAllocation.cs", @"
+            m_TestAssetMultidimensionalArrayAllocation = new TestAsset("MultidimensionalArrayAllocation.cs", @"
 class MultidimensionalArrayAllocation
 {
     int[,] array;
@@ -67,7 +68,7 @@ class MultidimensionalArrayAllocation
 }
 ");
 
-            m_TempAssetParamsArrayAllocation = new TempAsset("ParamsArrayAllocation.cs", @"
+            m_TestAssetParamsArrayAllocation = new TestAsset("ParamsArrayAllocation.cs", @"
 class ParamsArrayAllocation
 {
     void MethodWithParams(params object[] args)
@@ -86,7 +87,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_NewObject_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetObjectAllocation);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetObjectAllocation);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -99,7 +100,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_ClosureAllocation_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetClosureAllocation);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetClosureAllocation);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -113,7 +114,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_NewArray_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetArrayAllocation);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.First();
@@ -125,7 +126,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_NewMultidimensionalArray_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetMultidimensionalArrayAllocation);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetMultidimensionalArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.First();
@@ -137,7 +138,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_NewParamsArray_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetParamsArrayAllocation);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetParamsArrayAllocation);
             Assert.AreEqual(2, issues.Count());
 
             Assert.AreEqual(IssueCategory.Code, issues[0].category);

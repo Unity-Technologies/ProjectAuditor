@@ -1,18 +1,19 @@
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
+using Unity.ProjectAuditor.TestUtils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     class DebugLogTests : TestFixtureBase
     {
-        TempAsset m_TempAssetClassWithConditionalAttribute;
-        TempAsset m_TempAssetClassWithOutConditionalAttribute;
+        TestAsset m_TestAssetClassWithConditionalAttribute;
+        TestAsset m_TestAssetClassWithOutConditionalAttribute;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TempAssetClassWithConditionalAttribute = new TempAsset("ClassLoggingWithConditionalAttribute.cs", @"
+            m_TestAssetClassWithConditionalAttribute = new TestAsset("ClassLoggingWithConditionalAttribute.cs", @"
 using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -34,7 +35,7 @@ class ClassLoggingWithConditionalAttribute
 }
 ");
 
-            m_TempAssetClassWithOutConditionalAttribute = new TempAsset("ClassLoggingWithoutConditionalAttribute.cs", @"
+            m_TestAssetClassWithOutConditionalAttribute = new TestAsset("ClassLoggingWithoutConditionalAttribute.cs", @"
 using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -59,7 +60,7 @@ class ClassLoggingWithoutConditionalAttribute
         [Test]
         public void CodeAnalysis_LoggingMethodWithConditionalAttribute_IsNotReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetClassWithConditionalAttribute);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetClassWithConditionalAttribute);
 
             Assert.IsFalse(issues.Any(i => i.descriptor.id == DebugLogAnalyzer.PAC0192));
             Assert.IsFalse(issues.Any(i => i.descriptor.id == DebugLogAnalyzer.PAC0193));
@@ -68,7 +69,7 @@ class ClassLoggingWithoutConditionalAttribute
         [Test]
         public void CodeAnalysis_LoggingMethodWithoutConditionalAttribute_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetClassWithOutConditionalAttribute);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetClassWithOutConditionalAttribute);
 
             Assert.IsTrue(issues.Any(i => i.descriptor.id == DebugLogAnalyzer.PAC0192));
             Assert.IsTrue(issues.Any(i => i.descriptor.id == DebugLogAnalyzer.PAC0193));

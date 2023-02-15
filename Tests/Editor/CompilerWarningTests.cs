@@ -6,6 +6,7 @@ using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.TestUtils;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -14,13 +15,13 @@ namespace Unity.ProjectAuditor.EditorTests
     class CompilerWarningTests : TestFixtureBase
     {
 #pragma warning disable 0414
-        TempAsset m_ScriptWithWarning;
+        TestAsset m_ScriptWithWarning;
 #pragma warning restore 0414
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptWithWarning = new TempAsset("ScriptWithWarning.cs", @"
+            m_ScriptWithWarning = new TestAsset("ScriptWithWarning.cs", @"
 class ScriptWithWarning {
     void SomeMethod()
     {

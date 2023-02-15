@@ -3,19 +3,20 @@ using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.TestUtils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     class AssemblyAnalysisTests : TestFixtureBase
     {
 #pragma warning disable 0414
-        TempAsset m_TempAsset; // this is required to generate Assembly-CSharp.dll
+        TestAsset m_TestAsset; // this is required to generate Assembly-CSharp.dll
 #pragma warning restore 0414
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TempAsset = new TempAsset("MyClass.cs", @"
+            m_TestAsset = new TestAsset("MyClass.cs", @"
 class MyClass
 {
 }

@@ -2,6 +2,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Modules;
+using Unity.ProjectAuditor.TestUtils;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests

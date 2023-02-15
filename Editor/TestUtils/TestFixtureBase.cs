@@ -1,23 +1,21 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
-using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Unity.ProjectAuditor.EditorTests
+namespace Unity.ProjectAuditor.TestUtils
 {
     public abstract class TestFixtureBase
     {
-        static string s_TempSceneFilename = Path.Combine(TempAsset.s_TempAssetsFolder, "TestScene.unity");
+        static readonly string s_TempSceneFilename = Path.Combine(TestAsset.TempAssetsFolder, "TestScene.unity");
 
         protected CodeOptimization m_CodeOptimization = CodeOptimization.Release;
         protected BuildTarget m_Platform = EditorUserBuildSettings.activeBuildTarget;
@@ -41,7 +39,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeTearDown]
         public void FixtureTearDown()
         {
-            TempAsset.Cleanup();
+            TestAsset.Cleanup();
         }
 
         protected ProjectIssue[] Analyze(Func<ProjectIssue, bool> predicate = null)
@@ -69,7 +67,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
             var projectAuditorParams = new ProjectAuditorParams
             {
-                assemblyNames = new[] { AssemblyInfo.DefaultAssemblyName},
+                assemblyNames = new[] { "Assembly-CSharp" },
                 categories = new[] { category},
                 onIncomingIssues = issues =>
                 {
@@ -86,10 +84,10 @@ namespace Unity.ProjectAuditor.EditorTests
             return foundIssues.ToArray();
         }
 
-        protected ProjectIssue[] AnalyzeAndFindAssetIssues(TempAsset tempAsset,
+        protected ProjectIssue[] AnalyzeAndFindAssetIssues(TestAsset testAsset,
             IssueCategory category = IssueCategory.Code)
         {
-            return Analyze(category, i => i.relativePath.Equals(tempAsset.relativePath));
+            return Analyze(category, i => i.relativePath.Equals(testAsset.relativePath));
         }
 
         protected ProjectIssue[] AnalyzeBuild(Func<ProjectIssue, bool> predicate = null, bool isDevelopment = true, string buildFileName = "test", Action preBuildAction = null, Action postBuildAction = null)

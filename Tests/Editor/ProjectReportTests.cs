@@ -8,6 +8,7 @@ using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.TestUtils;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,13 +17,13 @@ namespace Unity.ProjectAuditor.EditorTests
     class ProjectReportTests : TestFixtureBase
     {
 #pragma warning disable 0414
-        TempAsset m_TempAsset;
+        TestAsset m_TestAsset;
 #pragma warning restore 0414
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TempAsset = new TempAsset("MyClass.cs", @"
+            m_TestAsset = new TestAsset("MyClass.cs", @"
 using UnityEngine;
 class MyClass : MonoBehaviour
 {

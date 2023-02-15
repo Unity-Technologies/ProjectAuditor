@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.TestUtils;
 using UnityEditor;
 using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;
@@ -12,7 +13,7 @@ namespace Unity.ProjectAuditor.EditorTests
     class TextFilterTests : TestFixtureBase
     {
 #pragma warning disable 0414
-        TempAsset m_TempAsset;
+        TestAsset m_TestAsset;
 #pragma warning restore 0414
 
         bool m_PrevBakeCollisionMeshes;
@@ -20,7 +21,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TempAsset = new TempAsset("FilterTests.cs", @"
+            m_TestAsset = new TestAsset("FilterTests.cs", @"
 using UnityEngine;
 
 class WrapperClass

@@ -4,11 +4,11 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 
-namespace Unity.ProjectAuditor.EditorTests
+namespace Unity.ProjectAuditor.TestUtils
 {
-    public class TempAsset
+    public class TestAsset
     {
-        internal static string s_TempAssetsFolder = PathUtils.Combine("Assets", "ProjectAuditor-Temp");
+        public static readonly string TempAssetsFolder = PathUtils.Combine("Assets", "ProjectAuditor-Temp");
 
         public readonly string relativePath;
 
@@ -17,15 +17,15 @@ namespace Unity.ProjectAuditor.EditorTests
             get { return Path.GetFileName(relativePath); }
         }
 
-        private TempAsset(string fileName)
+        private TestAsset(string fileName)
         {
-            relativePath = PathUtils.Combine(s_TempAssetsFolder, fileName);
+            relativePath = PathUtils.Combine(TempAssetsFolder, fileName);
 
             if (!File.Exists(relativePath))
                 Directory.CreateDirectory(Path.GetDirectoryName(relativePath));
         }
 
-        public TempAsset(string fileName, string content) :
+        public TestAsset(string fileName, string content) :
             this(fileName)
         {
             File.WriteAllText(relativePath, content);
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.EditorTests
             AssetDatabase.ImportAsset(relativePath, ImportAssetOptions.ForceUpdate);
         }
 
-        public TempAsset(string fileName, byte[] byteContent) :
+        public TestAsset(string fileName, byte[] byteContent) :
             this(fileName)
         {
             File.WriteAllBytes(relativePath, byteContent);
@@ -45,9 +45,9 @@ namespace Unity.ProjectAuditor.EditorTests
             AssetDatabase.ImportAsset(relativePath, ImportAssetOptions.ForceUpdate);
         }
 
-        public static TempAsset Save(UnityEngine.Object asset, string fileName)
+        public static TestAsset Save(UnityEngine.Object asset, string fileName)
         {
-            var tempAsset = new TempAsset(fileName);
+            var tempAsset = new TestAsset(fileName);
             AssetDatabase.CreateAsset(asset, tempAsset.relativePath);
             AssetDatabase.ImportAsset(tempAsset.relativePath, ImportAssetOptions.ForceUpdate);
 
@@ -56,9 +56,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
         public static void Cleanup()
         {
-            if (Directory.Exists(s_TempAssetsFolder))
+            if (Directory.Exists(TempAssetsFolder))
             {
-                AssetDatabase.DeleteAsset(s_TempAssetsFolder);
+                AssetDatabase.DeleteAsset(TempAssetsFolder);
                 AssetDatabase.Refresh();
             }
         }

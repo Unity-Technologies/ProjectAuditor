@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Build;
 using Unity.ProjectAuditor.Editor.Modules;
+using Unity.ProjectAuditor.TestUtils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -13,7 +14,7 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     class BuildReportTests : TestFixtureBase
     {
-        TempAsset m_TempAsset;
+        TestAsset m_TestAsset;
 
         string m_OriginalBuildReportPath;
 
@@ -21,7 +22,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void OneTimeSetUp()
         {
             var material = new Material(Shader.Find("UI/Default"));
-            m_TempAsset = TempAsset.Save(material, "Resources/Shiny.mat");
+            m_TestAsset = TestAsset.Save(material, "Resources/Shiny.mat");
         }
 
         [SetUp]
@@ -109,7 +110,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void BuildReport_Files_AreReported()
         {
-            var issues = AnalyzeBuild(IssueCategory.BuildFile, i => i.relativePath.Equals(m_TempAsset.relativePath));
+            var issues = AnalyzeBuild(IssueCategory.BuildFile, i => i.relativePath.Equals(m_TestAsset.relativePath));
             var matchingIssue = issues.FirstOrDefault();
 
             Assert.NotNull(matchingIssue);
@@ -119,9 +120,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.NotNull(buildReport);
 
-            var reportedCorrectAssetBuildFile = buildReport.packedAssets.Any(p => p.shortPath == buildFile && p.contents.Any(c => c.sourceAssetPath == m_TempAsset.relativePath));
+            var reportedCorrectAssetBuildFile = buildReport.packedAssets.Any(p => p.shortPath == buildFile && p.contents.Any(c => c.sourceAssetPath == m_TestAsset.relativePath));
 
-            Assert.AreEqual(Path.GetFileNameWithoutExtension(m_TempAsset.relativePath), matchingIssue.description);
+            Assert.AreEqual(Path.GetFileNameWithoutExtension(m_TestAsset.relativePath), matchingIssue.description);
             Assert.That(matchingIssue.GetNumCustomProperties(), Is.EqualTo((int)BuildReportFileProperty.Num));
             Assert.True(reportedCorrectAssetBuildFile);
             Assert.AreEqual(typeof(AssetImporter).FullName, matchingIssue.GetCustomProperty(BuildReportFileProperty.ImporterType));

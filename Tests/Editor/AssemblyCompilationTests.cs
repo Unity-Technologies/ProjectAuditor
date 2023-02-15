@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.TestUtils;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,13 +12,13 @@ namespace Unity.ProjectAuditor.EditorTests
     class AssemblyCompilationTests : TestFixtureBase
     {
 #pragma warning disable 0414
-        TempAsset m_TempAsset; // this is required to generate Assembly-CSharp.dll
+        TestAsset m_TestAsset; // this is required to generate Assembly-CSharp.dll
 #pragma warning restore 0414
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TempAsset = new TempAsset("MyClass.cs", @"
+            m_TestAsset = new TestAsset("MyClass.cs", @"
 class MyClass
 {
     object myObj;
@@ -99,7 +100,7 @@ class MyClass
             var projectReport = projectAuditor.Audit();
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
-            var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TempAsset.relativePath));
+            var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TestAsset.relativePath));
 
             Assert.NotNull(codeIssue);
             Assert.AreEqual("MyClass." + methodName, codeIssue.dependencies.prettyName);

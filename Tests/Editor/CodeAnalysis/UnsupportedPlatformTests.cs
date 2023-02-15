@@ -1,6 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.TestUtils;
 using UnityEditor;
 using UnityEditor.TestTools;
 
@@ -8,12 +9,12 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     public class UnsupportedPlatformTests : TestFixtureBase
     {
-        TempAsset m_TempAssetMicrophone;
+        TestAsset m_TestAssetMicrophone;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TempAssetMicrophone = new TempAsset("MicrophoneUsageTest.cs", @"
+            m_TestAssetMicrophone = new TestAsset("MicrophoneUsageTest.cs", @"
 using UnityEngine;
 class MicrophoneUsageTest
 {
@@ -31,7 +32,7 @@ class MicrophoneUsageTest
         {
             m_Platform = BuildTarget.WebGL;
 
-            var diagnostic = AnalyzeAndFindAssetIssues(m_TempAssetMicrophone).FirstOrDefault(i => i.descriptor.id.Equals("PAC0233"));
+            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.descriptor.id.Equals("PAC0233"));
 
             Assert.NotNull(diagnostic);
             Assert.AreEqual("'UnityEngine.Microphone.get_devices' usage", diagnostic.description);
@@ -41,7 +42,7 @@ class MicrophoneUsageTest
         [Test]
         public void CodeAnalysis_PlatformIssue_IsNotReported()
         {
-            var diagnostic = AnalyzeAndFindAssetIssues(m_TempAssetMicrophone).FirstOrDefault(i => i.descriptor.id.Equals("PAC0233"));
+            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.descriptor.id.Equals("PAC0233"));
 
             Assert.Null(diagnostic);
         }

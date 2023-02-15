@@ -6,22 +6,23 @@ using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.TestUtils;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     class PropertyUsageTests : TestFixtureBase
     {
-        TempAsset m_TempAssetObjectName;
-        TempAsset m_TempAssetBaseTypePropertyUsage;
+        TestAsset m_TestAssetObjectName;
+        TestAsset m_TestAssetBaseTypePropertyUsage;
 #if UNITY_2019_1_OR_NEWER
-        TempAsset m_TempAssetUxmlAttributeDescriptionPropertyUsage;
+        TestAsset m_TestAssetUxmlAttributeDescriptionPropertyUsage;
 #endif
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TempAssetObjectName = new TempAsset("ObjectNameTest.cs", @"
+            m_TestAssetObjectName = new TestAsset("ObjectNameTest.cs", @"
 using UnityEngine;
 class ObjectNameTest : MonoBehaviour
 {
@@ -34,7 +35,7 @@ class ObjectNameTest : MonoBehaviour
 }
 ");
 
-            m_TempAssetBaseTypePropertyUsage = new TempAsset("BaseTypePropertyUsage.cs", @"
+            m_TestAssetBaseTypePropertyUsage = new TestAsset("BaseTypePropertyUsage.cs", @"
 using UnityEngine;
 class BaseTypePropertyUsage
 {
@@ -60,7 +61,7 @@ class BaseTypePropertyUsage
 ");
 
 #if UNITY_2019_1_OR_NEWER
-            m_TempAssetUxmlAttributeDescriptionPropertyUsage = new TempAsset("UxmlAttributeDescriptionPropertyUsage.cs", @"
+            m_TestAssetUxmlAttributeDescriptionPropertyUsage = new TestAsset("UxmlAttributeDescriptionPropertyUsage.cs", @"
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -83,7 +84,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_PropertyName_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetObjectName);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetObjectName);
 
             var propertyNameIssues = issues.Where(i => i.descriptor.id == "PAC0231").ToArray();
 
@@ -94,7 +95,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_PropertyOfBaseType_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetBaseTypePropertyUsage);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetBaseTypePropertyUsage);
 
             var propertyOfBaseTypeIssues = issues.Where(
                 i => i.descriptor.id == "PAC0039" || i.descriptor.id == "PAC0084" || i.descriptor.id == "PAC0085")
@@ -107,7 +108,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_PropertyUxmlAttributeDescription_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetUxmlAttributeDescriptionPropertyUsage);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetUxmlAttributeDescriptionPropertyUsage);
 
             var propertyUxmlAttributeIssues = issues.Where(i => i.descriptor.id == "PAC0191").ToArray();
 

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using NUnit.Framework;
+using Unity.ProjectAuditor.TestUtils;
 using UnityEditor;
 
 namespace Unity.ProjectAuditor.EditorTests
@@ -16,7 +17,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ConfigAsset_CustomAsset_IsCreated()
         {
-            var assetPath = Path.Combine(TempAsset.s_TempAssetsFolder, "MyConfig.asset");
+            var assetPath = Path.Combine(TestAsset.TempAssetsFolder, "MyConfig.asset");
             new Unity.ProjectAuditor.Editor.ProjectAuditor(assetPath);
             Assert.True(File.Exists(assetPath));
 

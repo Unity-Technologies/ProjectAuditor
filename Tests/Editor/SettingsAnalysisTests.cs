@@ -8,6 +8,7 @@ using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.SettingsAnalysis;
 using Unity.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.TestUtils;
 using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
