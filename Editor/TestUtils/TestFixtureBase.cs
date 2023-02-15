@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
-using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -11,7 +10,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Unity.ProjectAuditor.TestUtils
+namespace Unity.ProjectAuditor.Editor.TestUtils
 {
     public abstract class TestFixtureBase
     {

@@ -5,7 +5,7 @@ using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
-using Unity.ProjectAuditor.TestUtils;
+using Unity.ProjectAuditor.Editor.TestUtils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {

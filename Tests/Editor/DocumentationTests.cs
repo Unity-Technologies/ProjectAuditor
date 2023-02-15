@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.TestUtils;
 using Unity.ProjectAuditor.Editor.UI.Framework;
-using Unity.ProjectAuditor.TestUtils;
 using UnityEngine.Networking;
 using UnityEngine.TestTools;
 

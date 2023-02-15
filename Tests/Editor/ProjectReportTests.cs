@@ -7,8 +7,8 @@ using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.TestUtils;
 using Unity.ProjectAuditor.Editor.Utils;
-using Unity.ProjectAuditor.TestUtils;
 using UnityEditor;
 using UnityEngine;
 

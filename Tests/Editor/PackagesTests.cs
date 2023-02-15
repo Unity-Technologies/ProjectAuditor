@@ -3,8 +3,8 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
+using Unity.ProjectAuditor.Editor.TestUtils;
 using Unity.ProjectAuditor.Editor.Utils;
-using Unity.ProjectAuditor.TestUtils;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 

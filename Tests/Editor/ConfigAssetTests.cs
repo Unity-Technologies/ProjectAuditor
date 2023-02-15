@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using NUnit.Framework;
-using Unity.ProjectAuditor.TestUtils;
+using Unity.ProjectAuditor.Editor.TestUtils;
 using UnityEditor;
 
 namespace Unity.ProjectAuditor.EditorTests

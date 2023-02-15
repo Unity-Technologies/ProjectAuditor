@@ -4,7 +4,7 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 
-namespace Unity.ProjectAuditor.TestUtils
+namespace Unity.ProjectAuditor.Editor.TestUtils
 {
     public class TestAsset
     {
