@@ -84,14 +84,18 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
         public float FrameTimeMs;
         public float FrameTimePercentage;
+        public float FrameGcMemory;
 
         public float SubMarkersTimeMs;
         public float SubMarkersPercent;
+        public float SubMarkersGcMemory;
     }
 
     public struct FrameInfo
     {
         public float TotalTimeMs;
+        public float TotalGcMemory;
+
         public MarkerStats[] MarkerStats;
     }
 
@@ -99,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
     {
         public int NumFrames;
 
-        // Frame timing percentage method
+        // Lowest/highest frames and frame timing limits
         public int LowFrameIdx;
         public float LowFPS;
         public float LowFrameMs;
@@ -108,9 +112,10 @@ namespace Unity.ProjectAuditor.Editor.Profiling
         public float HighFPS;
         public float HighFrameMs;
 
-        // Percentile method (Google)
         public float SlowFrameTime;
         public float FastFrameTime;
+
+        // Frame timing stats for N-th percentile of fastest frames
         public int NumSlowFrameTimeFrames;
         public int NumFastFrameTimeFrames;
         public int PercentileFrameCount;
@@ -184,12 +189,6 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             }
 
             return outFrameInfos;
-        }
-
-        public FrameInfo GetFrameWithMarkerPredicate(MarkerStatConditionDelegate markerPredicate, int frameIndex)
-        {
-            var frameArray = GetFramesWithMarkerPredicate(markerPredicate, frameIndex, frameIndex);
-            return frameArray[0];
         }
     }
 
@@ -292,7 +291,8 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             new MarkerDefinition(1, "PostLateUpdate.UpdateAllSkinnedMeshes", CPUTimeArea.Rendering),
             new MarkerDefinition(1, "PostLateUpdate.ParticleSystemEndUpdateAll", CPUTimeArea.Rendering),
             new MarkerDefinition(1, "ScriptableRuntimeReflectionSystemWrapper.Internal_ScriptableRuntimeReflectionSystemWrapper_TickRealtimeProbes()", CPUTimeArea.Rendering, CPUTimeSubarea.None, true),
-            new MarkerDefinition(1, "RenderPipelineManager.DoRenderLoop_Internal", CPUTimeArea.Rendering, CPUTimeSubarea.None, true), // TODO: Can be on level 2
+            // TODO: Can be also a child marker
+            new MarkerDefinition(1, "RenderPipelineManager.DoRenderLoop_Internal", CPUTimeArea.Rendering, CPUTimeSubarea.None, true),
             new MarkerDefinition(1, "DestroyCullResults", CPUTimeArea.Rendering),
             new MarkerDefinition(1, "RendererNotifyInvisible", CPUTimeArea.Rendering, CPUTimeSubarea.None, true),
 
@@ -306,7 +306,8 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             // UI
             new MarkerDefinition(1, "EarlyUpdate.UpdateCanvasRectTransform", CPUTimeArea.UI),
             new MarkerDefinition(1, "PostLateUpdate.PlayerUpdateCanvases", CPUTimeArea.UI),
-            new MarkerDefinition(1, "PostLateUpdate.UpdateRectTransform", CPUTimeArea.UI),  // TODO: UI specific or 2D/Sprite rendering?
+            // TODO: UI specific or 2D/Sprite rendering?
+            new MarkerDefinition(1, "PostLateUpdate.UpdateRectTransform", CPUTimeArea.UI),
             new MarkerDefinition(1, "PostLateUpdate.PlayerEmitCanvasGeometry", CPUTimeArea.UI),
             new MarkerDefinition(1, "GUI.Repaint", CPUTimeArea.UI),
             new MarkerDefinition(1, "UGUI.Rendering.RenderOverlays", CPUTimeArea.UI),
@@ -370,6 +371,9 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                 CollectMarkersForFrame(ref report, frameDataHierarchy, frameIndex);
 
                 report.FrameInfos[frameIndex].TotalTimeMs = frameDataHierarchy.frameTimeMs;
+
+                var rootId = frameDataHierarchy.GetRootItemID();
+                report.FrameInfos[frameIndex].TotalGcMemory = frameDataHierarchy.GetItemColumnDataAsFloat(rootId, HierarchyFrameDataView.columnGcMemory);
             }
         }
 
@@ -395,6 +399,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
                     var frameMs = frameDataHierarchy.GetItemColumnDataAsFloat(childItemId, HierarchyFrameDataView.columnTotalTime);
                     var framePercent = frameDataHierarchy.GetItemColumnDataAsFloat(childItemId, HierarchyFrameDataView.columnTotalPercent);
+                    var frameGcMemory = frameDataHierarchy.GetItemColumnDataAsFloat(childItemId, HierarchyFrameDataView.columnGcMemory);
 
                     if (framePercent > k_MinProfilerMarkerPercentage)
                     {
@@ -420,6 +425,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                         // Recursively traverse child items/markers
                         float subMarkerTotalTimeMs = 0;
                         float subMarkerTotalPercent = 0;
+                        float subMarkerTotalGcMemory = 0;
 
                         if (hasFoundMarker && foundMarkerDefinition.SubMarkers != null && foundMarkerDefinition.SubMarkers.Length > 0)
                         {
@@ -437,9 +443,12 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                                             HierarchyFrameDataView.columnTotalTime);
                                         var subMarkerFramePercent = frameDataHierarchy.GetItemColumnDataAsFloat(subItemId,
                                             HierarchyFrameDataView.columnTotalPercent);
+                                        var subMarkerFrameGcMemory = frameDataHierarchy.GetItemColumnDataAsFloat(subItemId,
+                                            HierarchyFrameDataView.columnGcMemory);
 
                                         subMarkerTotalTimeMs += subMarkerFrameMs;
                                         subMarkerTotalPercent += subMarkerFramePercent;
+                                        subMarkerTotalGcMemory += subMarkerFrameGcMemory;
 
                                         var markerDef = subMarkerDef;
                                         if (subMarkerDef.NameIsSubString)
@@ -452,7 +461,8 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                                         {
                                             Definition = markerDef,
                                             FrameTimeMs = subMarkerFrameMs,
-                                            FrameTimePercentage = subMarkerFramePercent
+                                            FrameTimePercentage = subMarkerFramePercent,
+                                            FrameGcMemory = subMarkerFrameGcMemory
                                         };
                                         allMarkerStats.Add(subMarkerStats);
                                     }
@@ -467,8 +477,10 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                                 Definition = foundMarkerDefinition,
                                 FrameTimeMs = frameMs,
                                 FrameTimePercentage = framePercent,
+                                FrameGcMemory = frameGcMemory,
                                 SubMarkersTimeMs = subMarkerTotalTimeMs,
-                                SubMarkersPercent = subMarkerTotalPercent
+                                SubMarkersPercent = subMarkerTotalPercent,
+                                SubMarkersGcMemory = subMarkerTotalGcMemory
                             };
                             allMarkerStats.Add(markerStats);
                         }
@@ -485,7 +497,8 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                             {
                                 Definition = unidentifiedDef,
                                 FrameTimeMs = frameMs,
-                                FrameTimePercentage = framePercent
+                                FrameTimePercentage = framePercent,
+                                FrameGcMemory = frameGcMemory
                             };
                             allMarkerStats.Add(markerStats);
                         }
@@ -493,7 +506,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                 }
             }
 
-            // EditorLoop / Profiler: Collect markers irrelevant for standalone/release
+            // EditorLoop / Profiler: Collect markers we can ignore for standalone/release
             topLevelItems.Clear();
             FindHierarchyItemsIdByMarkerString(frameDataHierarchy, frameDataHierarchy.GetRootItemID(),
                 "EditorLoop", false, topLevelItems);

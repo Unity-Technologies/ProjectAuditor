@@ -135,8 +135,8 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectIssue
     {
-        public int depth = 0;
-        public bool wasFixed = false;
+        public int depth;
+        public bool wasFixed;
         public IssueCategory category { get; }
         public string[] customProperties { get; }
         public Core.DependencyNode dependencies { get; }
@@ -319,7 +319,7 @@ namespace Unity.ProjectAuditor.Editor.Core
     public class IssueLayout
     {
         public IssueCategory category;
-        public bool hierarchy = false;
+        public bool hierarchy;
         public PropertyDefinition[] properties;
         public int defaultGroupPropertyIndex { get; }
         public IssueLayout() {}
@@ -614,6 +614,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
         RoslynAnalyzer = 0,
     }
 
+    public class ProfilingModule : Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule
+    {
+        public override string name { get; }
+        public static Unity.ProjectAuditor.Editor.Profiling.ProfileAnalyzer ProfileAnalyzer { get; }
+        public override System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.Core.IssueLayout> supportedLayouts { get; }
+        public ProfilingModule() {}
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = default(IProgress));
+    }
+
     public enum ShaderMessageProperty
     {
         Num = 2,
@@ -703,50 +712,65 @@ namespace Unity.ProjectAuditor.Editor.Profiling
     public struct FrameInfo
     {
         public MarkerStats[] MarkerStats;
+        public float TotalGcMemory;
+        public float TotalTimeMs;
     }
 
     public struct MarkerDefinition
     {
         public CPUTimeArea Area;
         public int Level;
-        public string Name;
+        public int NameHash;
         public bool NameIsSubString;
         public CPUTimeSubarea SubArea;
         public MarkerDefinition[] SubMarkers;
+        public string Name { get; set; }
     }
 
     public struct MarkerStats
     {
         public MarkerDefinition Definition;
+        public float FrameGcMemory;
         public float FrameTimeMs;
         public float FrameTimePercentage;
+        public float SubMarkersGcMemory;
         public float SubMarkersPercent;
         public float SubMarkersTimeMs;
     }
 
     public class ProfileAnalyzer
     {
+        public ref ProfileReport ProfileReport { get; }
         public ProfileAnalyzer() {}
-        public static ProfileAnalyzer.ProfileReport CreateReport(TargetFramerate targetFramerate);
-        public static void LoadProfile(string profilePath);
-        public struct ProfileReport
+        public ProfileReport CreateReport(ProfileAnalyzer.ProfileAnalyzerParams profileAnalyzerParams);
+        public void LoadProfile(string profilePath);
+        public struct ProfileAnalyzerParams
         {
-            public float FastFrameTime;
-            public FrameInfo[] FrameInfo;
-            public float HighFPS;
-            public int HighFrameIdx;
-            public float HighFrameMs;
-            public float LowFPS;
-            public int LowFrameIdx;
-            public float LowFrameMs;
-            public float MaxFrameTime90Percentile;
-            public int Num90thPercentileFrames;
-            public int NumFastFrameTimeFrames;
-            public int NumFrames;
-            public int NumSlowFrameTimeFrames;
-            public float SlowFrameTime;
-            public void Init();
+            public float FastFramePercentile;
+            public TargetFramerate TargetFramerate;
         }
+    }
+
+    public struct ProfileReport
+    {
+        public float FastFrameTime;
+        public FrameInfo[] FrameInfos;
+        public float HighFPS;
+        public int HighFrameIdx;
+        public float HighFrameMs;
+        public float LowFPS;
+        public int LowFrameIdx;
+        public float LowFrameMs;
+        public float MaxPercentileFrameTime;
+        public int NumFastFrameTimeFrames;
+        public int NumFrames;
+        public int NumSlowFrameTimeFrames;
+        public int PercentileFrameCount;
+        public float SlowFrameTime;
+        public FrameInfo[] GetFramesWithMarkerPredicate(ProfileReport.MarkerStatConditionDelegate markerPredicate, int startFrameIndex, int endFrameIndex);
+        public void Init();
+        public bool IsValid();
+        public delegate bool MarkerStatConditionDelegate(ref MarkerStats stats);
     }
 
     public enum TargetFramerate
