@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.TestUtils;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Compilation;
@@ -14,14 +15,14 @@ namespace Unity.ProjectAuditor.EditorTests
     class AssemblyInfoTests : TestFixtureBase
     {
 #pragma warning disable 0414
-        TempAsset m_TempAsset;
+        TestAsset m_TestAsset;
 #pragma warning restore 0414
 
         [OneTimeSetUp]
         public void SetUp()
         {
             // this is required so the default assembly is generated when testing on an empty project (i.e: on Yamato)
-            m_TempAsset = new TempAsset("MyClass.cs", "class MyClass { void MyMethod() { UnityEngine.Debug.Log(666); } }");
+            m_TestAsset = new TestAsset("MyClass.cs", "class MyClass { void MyMethod() { UnityEngine.Debug.Log(666); } }");
         }
 
         [Test]

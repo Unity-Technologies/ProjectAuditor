@@ -378,6 +378,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         Bool = 1,
         Bytes = 4,
         Integer = 2,
+        Percentage = 6,
         String = 0,
         Time = 5,
         ULong = 3,
@@ -506,11 +507,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     public enum BuildReportFileProperty
     {
-        BuildFile = 3,
+        BuildFile = 4,
         ImporterType = 0,
-        Num = 4,
+        Num = 5,
         RuntimeType = 1,
         Size = 2,
+        SizePercent = 3,
     }
 
     public enum BuildReportMetaData

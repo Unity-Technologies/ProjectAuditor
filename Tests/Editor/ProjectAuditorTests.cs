@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.TestUtils;
 using UnityEditor;
 using UnityEngine;
 

@@ -277,10 +277,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public IssueCategory category;
         public UnityEngine.GUIContent dependencyViewGuiContent;
         public bool descriptionWithIcon;
+        public string displayName;
         public System.Func<ProjectIssue, string> getAssemblyName;
         public string menuLabel;
         public int menuOrder;
-        public string name;
         public System.Action<UnityEditor.GenericMenu, ViewManager, ProjectIssue> onContextMenu;
         public System.Action<ViewManager> onDrawToolbar;
         public System.Action<Location> onOpenIssue;

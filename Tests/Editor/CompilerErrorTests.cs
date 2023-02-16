@@ -6,6 +6,7 @@ using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
+using Unity.ProjectAuditor.Editor.TestUtils;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -15,8 +16,8 @@ namespace Unity.ProjectAuditor.EditorTests
     class CompilerErrorTests : TestFixtureBase
     {
 #pragma warning disable 0414
-        TempAsset m_ScriptWithError;
-        TempAsset m_TempAsmdef;
+        TestAsset m_ScriptWithError;
+        TestAsset m_TestAsmdef;
 #pragma warning restore 0414
 
 #if UNITY_2020_1_OR_NEWER
@@ -25,7 +26,7 @@ namespace Unity.ProjectAuditor.EditorTests
         static readonly string k_ExpectedDescription = "Invalid token '}' in class, struct, or interface member declaration";
 #endif
 
-        static readonly string k_ExpectedMessage = $"{PathUtils.Combine(TempAsset.s_TempAssetsFolder,"ScriptWithError.cs")}(6,1): error CS1519: {k_ExpectedDescription}";
+        static readonly string k_ExpectedMessage = $"{PathUtils.Combine(TestAsset.TempAssetsFolder,"ScriptWithError.cs")}(6,1): error CS1519: {k_ExpectedDescription}";
 
         const string k_ExpectedCode = "CS1519";
 
@@ -38,7 +39,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_ScriptWithError = new TempAsset("ScriptWithError.cs", @"
+            m_ScriptWithError = new TestAsset("ScriptWithError.cs", @"
 class ScriptWithError {
 #if !UNITY_EDITOR
     asd
@@ -47,7 +48,7 @@ class ScriptWithError {
 ");
 
             // this is required to that we have an assembly which fails to compile. By doing so the default assembly won't be compiled as it's missing a dependency
-            m_TempAsmdef = new TempAsset(k_TempAssemblyFileName, @"
+            m_TestAsmdef = new TestAsset(k_TempAssemblyFileName, @"
 {
     ""name"": ""Unity.ProjectAuditor.Temp"",
     ""rootNamespace"": """",
@@ -132,7 +133,7 @@ class ScriptWithError {
         {
             LogAssert.ignoreFailingMessages = true;
 
-            var issues = Analyze(IssueCategory.Assembly, i => i.severity == Severity.Error && i.relativePath.Equals(m_TempAsmdef.relativePath));
+            var issues = Analyze(IssueCategory.Assembly, i => i.severity == Severity.Error && i.relativePath.Equals(m_TestAsmdef.relativePath));
 
             LogAssert.ignoreFailingMessages = false;
 
@@ -146,7 +147,7 @@ class ScriptWithError {
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.Assembly));
             Assert.That(issue.severity, Is.EqualTo(Severity.Error));
-            Assert.That(issue.filename, Is.EqualTo(m_TempAsmdef.fileName));
+            Assert.That(issue.filename, Is.EqualTo(m_TestAsmdef.fileName));
         }
 
         [Test]
