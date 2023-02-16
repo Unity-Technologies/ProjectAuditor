@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get { return m_Desc; }
         }
 
-        public string documentationUrl => Documentation.GetPageUrl(new string(m_Desc.name.Where(char.IsLetterOrDigit).ToArray()));
+        public string documentationUrl => Documentation.GetPageUrl(new string(m_Desc.displayName.Where(char.IsLetterOrDigit).ToArray()));
 
         public int numIssues
         {
@@ -135,7 +135,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (m_TextFilter == null)
                 m_TextFilter = new TextFilter(layout.properties);
 
-            var helpButtonTooltip = string.Format("Open Reference for {0}", m_Desc.name);
+            var helpButtonTooltip = string.Format("Open Reference for {0}", m_Desc.displayName);
             m_HelpButtonContent = Utility.GetIcon(Utility.IconType.Help, helpButtonTooltip);
         }
 
@@ -526,7 +526,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         string GetPrefKey(string key)
         {
-            return $"{k_PrefKeyPrefix}.{m_Desc.name}.{key}";
+            return $"{k_PrefKeyPrefix}.{m_Desc.displayName}.{key}";
         }
 
         public static void DrawActionButton(GUIContent guiContent, Action onClick)
