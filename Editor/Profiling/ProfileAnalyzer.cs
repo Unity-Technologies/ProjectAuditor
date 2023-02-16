@@ -228,7 +228,6 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             new MarkerDefinition(1, "FixedUpdate.ScriptRunBehaviourFixedUpdate", CPUTimeArea.Behaviour, CPUTimeSubarea.None, false,
                 new MarkerDefinition[]
                 {
-                    new MarkerDefinition(2, "EventMachine.FixedUpdate()", CPUTimeArea.VisualScripting, CPUTimeSubarea.None, true),
                     new MarkerDefinition(2, "EventMachine`2.FixedUpdate()", CPUTimeArea.VisualScripting, CPUTimeSubarea.None, true),
                     new MarkerDefinition(2, ".FixedUpdate()", CPUTimeArea.Behaviour, CPUTimeSubarea.None, true),
                 }
@@ -242,7 +241,6 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             new MarkerDefinition(1, "Update.ScriptRunBehaviourUpdate", CPUTimeArea.Behaviour, CPUTimeSubarea.None, false,
                 new MarkerDefinition[]
                 {
-                    new MarkerDefinition(2, "EventMachine.Update()", CPUTimeArea.VisualScripting, CPUTimeSubarea.None, true),
                     new MarkerDefinition(2, "EventMachine`2.Update()", CPUTimeArea.VisualScripting, CPUTimeSubarea.None, true),
                     new MarkerDefinition(2, "DecalProjector.Update()", CPUTimeArea.Rendering),
                     new MarkerDefinition(2, "EventSystem.Update()", CPUTimeArea.UI),
@@ -252,7 +250,6 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             new MarkerDefinition(1, "PreLateUpdate.ScriptRunBehaviourLateUpdate", CPUTimeArea.Behaviour, CPUTimeSubarea.None, false,
                 new MarkerDefinition[]
                 {
-                    new MarkerDefinition(2, "EventMachine.LateUpdate()", CPUTimeArea.VisualScripting, CPUTimeSubarea.None, true),
                     new MarkerDefinition(2, "EventMachine`2.LateUpdate()", CPUTimeArea.VisualScripting, CPUTimeSubarea.None, true),
                     new MarkerDefinition(2, "CinemachineBrain.LateUpdate()", CPUTimeArea.Cinemachine, CPUTimeSubarea.None, false),
                     new MarkerDefinition(2, "VolumetricFog.LateUpdate()", CPUTimeArea.Rendering, CPUTimeSubarea.None, false),
