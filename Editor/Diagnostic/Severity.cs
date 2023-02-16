@@ -11,8 +11,8 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         Moderate,   // Moderate impact
         Minor,      // Minor impact
 
-        Warning = Moderate,
-        Info = Minor,
+        Warning,
+        Info,
 
         None,       // suppressed, ignored by UI and build
         Hidden,     // not visible to user

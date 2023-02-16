@@ -425,7 +425,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     public sealed class Descriptor : System.IEquatable<Descriptor>
     {
         public string[] areas;
-        public Severity defaultSeverity = Severity.Moderate|Severity.Warning;
+        public Severity defaultSeverity = Severity.Moderate;
         public string description;
         public string documentationUrl;
         public System.Action<ProjectIssue> fixer;
@@ -476,13 +476,13 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         Critical = 2,
         Default = 0,
         Error = 1,
-        Hidden = 7,
-        Info = 5,
+        Hidden = 9,
+        Info = 7,
         Major = 3,
         Minor = 5,
         Moderate = 4,
-        None = 6,
-        Warning = 4,
+        None = 8,
+        Warning = 6,
     }
 }
 
