@@ -91,6 +91,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
     public struct FrameInfo
     {
+        public float TotalTimeMs;
         public MarkerStats[] MarkerStats;
     }
 
@@ -367,6 +368,8 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                     HierarchyFrameDataView.ViewModes.Default, HierarchyFrameDataView.columnDontSort, false);
 
                 CollectMarkersForFrame(ref report, frameDataHierarchy, frameIndex);
+
+                report.FrameInfos[frameIndex].TotalTimeMs = frameDataHierarchy.frameTimeMs;
             }
         }
 
