@@ -76,7 +76,8 @@ namespace Unity.ProjectAuditor.EditorTests
             textureImporter.isReadable = true;
             textureImporter.SaveAndReimport();
 
-            var largeTexture = new Texture2D(1000, 1000);
+            var largeSize = m_SettingsProvider.GetCurrentSettings().TextureStreamingMipmapsSizeLimit + 50;
+            var largeTexture = new Texture2D(largeSize, largeSize);
             largeTexture.SetPixel(0, 0, Random.ColorHSV());
             largeTexture.name = k_TextureNameStreamingMipmapDisabled;
             largeTexture.Apply();
@@ -84,8 +85,11 @@ namespace Unity.ProjectAuditor.EditorTests
             var encodedLargePNG = largeTexture.EncodeToPNG();
             m_TextureNameStreamingMipmapDisabled = new TempAsset(k_TextureNameStreamingMipmapDisabled + ".png", encodedLargePNG);
 
-            textureImporter = AssetImporter.GetAtPath(m_TempTextureReadWriteEnabled.relativePath) as TextureImporter;
+            textureImporter = AssetImporter.GetAtPath(m_TextureNameStreamingMipmapDisabled.relativePath) as TextureImporter;
             textureImporter.streamingMipmaps = false;
+            //Size should not be compressed for testing purposes.
+            //If compressed, it won't trigger a warning, as size will be below the minimal size
+            textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
             textureImporter.SaveAndReimport();
 
             m_TextureNameStreamingMipmapEnabled = new TempAsset(k_TextureNameStreamingMipmapEnabled + ".png", encodedLargePNG);

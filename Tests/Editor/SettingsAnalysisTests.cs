@@ -478,9 +478,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var currentState = PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup);
 
             PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, isEnabled);
-
-            PlayerSettingsAnalyzer.EnableLightMapStreaming(buildTargetGroup);
-            Assert.IsTrue(PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup));
+            Assert.AreEqual(isEnabled, PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup));
 
             PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, currentState);
         }

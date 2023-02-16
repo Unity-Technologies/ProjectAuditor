@@ -156,7 +156,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(textureImporter.assetPath);
             }
 
-            if (!textureImporter.streamingMipmaps && size > projectAuditorParams.settings.TextureStreamingMipmapsMinimumSize)
+            if (!textureImporter.streamingMipmaps && size > Mathf.Pow(projectAuditorParams.settings.TextureStreamingMipmapsSizeLimit, 2))
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureStreamingMipMapEnabledDescriptor, textureName)
                     .WithLocation(textureImporter.assetPath);

@@ -91,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             fixer = (issue =>
             {
                 var buildGroupTarget = (BuildTargetGroup)issue.GetCustomPropertyInt32(0);
-                EnableLightMapStreaming(buildGroupTarget);
+                PlayerSettingsUtil.SetLightmapStreaming(buildGroupTarget, true);
             }),
         };
 
@@ -133,12 +133,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                     .WithLocation("Project/Player");
             }
 
-            if (!IsLightmapStreamingEnabled(projectAuditorParams))
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.platform);
+            if (!PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup))
             {
-                var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.platform);
-
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_LightmapStreamingEnabledDescriptor).
-                    WithCustomProperties(new object[]{(int)buildTargetGroup})
+                    WithCustomProperties(new object[]{buildTargetGroup})
                     .WithLocation("Project/Player");
             }
         }
@@ -193,17 +192,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         internal static void SetIL2CPPConfigurationToRelease()
         {
             PlayerSettings.SetIl2CppCompilerConfiguration(EditorUserBuildSettings.selectedBuildTargetGroup, Il2CppCompilerConfiguration.Release);
-        }
-
-        internal static bool IsLightmapStreamingEnabled(ProjectAuditorParams projectAuditorParams)
-        {
-            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.platform);
-            return PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup);
-        }
-
-        internal static void EnableLightMapStreaming(BuildTargetGroup buildTargetGroup)
-        {
-            PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, true);
         }
     }
 }
