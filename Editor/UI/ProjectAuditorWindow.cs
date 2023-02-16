@@ -200,12 +200,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ProjectAuditorAnalytics.SendEvent(
                     (ProjectAuditorAnalytics.UIButton)viewDesc.analyticsEvent,
                     ProjectAuditorAnalytics.BeginAnalytic());
-                if (m_ProjectReport == null)
-                    return; // this happens from the summary view while the report is being generated
-                if (!m_ProjectReport.HasCategory(activeView.desc.category) && EditorUtility.DisplayDialog(k_ProjectAuditorName, $"Would you like to analyze {ProjectAuditor.GetCategoryName(viewDesc.category)} now?", "Ok", "No"))
-                {
-                    AuditCategories(new[] {viewDesc.category});
-                }
             };
 
             m_ViewManager.onAnalyze += category =>
@@ -1296,7 +1290,22 @@ namespace Unity.ProjectAuditor.Editor.UI
 #endif
                 Utility.ToolbarDropdownList(m_ViewDropdownItems,
                     m_ViewManager.activeViewIndex,
-                    (category) => {m_ViewManager.ChangeView((IssueCategory)category);}, GUILayout.Width(largeButtonWidth));
+                    (arg) =>
+                    {
+                        var category = (IssueCategory)arg;
+                        if (m_ProjectReport == null)
+                            return; // this happens from the summary view while the report is being generated
+                        if (!m_ProjectReport.HasCategory(category))
+                        {
+                            var displayName = m_ViewManager.GetView(category).desc.displayName;
+                            if (!EditorUtility.DisplayDialog(k_ProjectAuditorName, $"'{displayName}' analysis will now begin", "Ok", "Cancel"))
+                                return; // do not analyze and change view
+
+                            AuditCategories(new[] {category});
+                        }
+
+                        m_ViewManager.ChangeView(category);
+                    }, GUILayout.Width(largeButtonWidth));
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
