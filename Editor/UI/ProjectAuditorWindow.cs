@@ -1298,7 +1298,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         if (!m_ProjectReport.HasCategory(category))
                         {
                             var displayName = m_ViewManager.GetView(category).desc.displayName;
-                            if (!EditorUtility.DisplayDialog(k_ProjectAuditorName, $"'{displayName}' analysis will now begin", "Ok", "Cancel"))
+                            if (!EditorUtility.DisplayDialog(k_ProjectAuditorName, $"'{displayName}' analysis will now begin.", "Ok", "Cancel"))
                                 return; // do not analyze and change view
 
                             AuditCategories(new[] {category});
