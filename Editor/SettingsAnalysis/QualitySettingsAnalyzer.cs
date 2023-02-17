@@ -104,8 +104,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                         WithCustomProperties(new object[]{qualityLevels[i]}).WithLocation("Project/Quality");
                 }
             }
-
-            AnalyzeTexture();
         }
 
         internal static bool IsUsingDefaultSettings()
@@ -210,21 +208,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             QualitySettings.streamingMipmapsActive = true;
 
             QualitySettings.SetQualityLevel(initialQualityLevel);
-        }
-
-        static void AnalyzeTexture()
-        {
-            var GUIDsTextures = AssetDatabase.FindAssets("t:Texture");
-            var length = GUIDsTextures.Length;
-
-            for (int i = 0; i < length; i++)
-            {
-                var path = AssetDatabase.GUIDToAssetPath(GUIDsTextures[i]);
-                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
-
-                ProjectIssue.Create(IssueCategory.Texture, Path.GetFileNameWithoutExtension(path)).WithCustomProperties(new object[]
-                {importer}).WithLocation(path);
-            }
         }
     }
 }
