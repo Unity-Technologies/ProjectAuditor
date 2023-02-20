@@ -22,14 +22,14 @@ namespace Unity.ProjectAuditor.EditorTests
 
         const int k_Resolution = 1;
 
-        TempAsset m_TempTexture;
-        TempAsset m_TempTextureMipMapDefault;
-        TempAsset m_TempTextureNoMipMapDefault;
-        TempAsset m_TempTextureMipMapGUI;
-        TempAsset m_TempTextureMipMapSprite;
-        TempAsset m_TempTextureReadWriteEnabled;
-        TempAsset m_TextureNameStreamingMipmapDisabled;
-        TempAsset m_TextureNameStreamingMipmapEnabled;
+        TestAsset m_TestTexture;
+        TestAsset m_TestTextureMipMapDefault;
+        TestAsset m_TestTextureNoMipMapDefault;
+        TestAsset m_TestTextureMipMapGui;
+        TestAsset m_TestTextureMipMapSprite;
+        TestAsset m_TestTextureReadWriteEnabled;
+        TestAsset m_TextureNameStreamingMipmapDisabled;
+        TestAsset m_TextureNameStreamingMipmapEnabled;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -84,7 +84,7 @@ namespace Unity.ProjectAuditor.EditorTests
             largeTexture.Apply();
 
             var encodedLargePNG = largeTexture.EncodeToPNG();
-            m_TextureNameStreamingMipmapDisabled = new TempAsset(k_TextureNameStreamingMipmapDisabled + ".png", encodedLargePNG);
+            m_TextureNameStreamingMipmapDisabled = new TestAsset(k_TextureNameStreamingMipmapDisabled + ".png", encodedLargePNG);
 
             textureImporter = AssetImporter.GetAtPath(m_TextureNameStreamingMipmapDisabled.relativePath) as TextureImporter;
             textureImporter.streamingMipmaps = false;
@@ -93,7 +93,7 @@ namespace Unity.ProjectAuditor.EditorTests
             textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
             textureImporter.SaveAndReimport();
 
-            m_TextureNameStreamingMipmapEnabled = new TempAsset(k_TextureNameStreamingMipmapEnabled + ".png", encodedLargePNG);
+            m_TextureNameStreamingMipmapEnabled = new TestAsset(k_TextureNameStreamingMipmapEnabled + ".png", encodedLargePNG);
 
             textureImporter = AssetImporter.GetAtPath(m_TextureNameStreamingMipmapEnabled.relativePath) as TextureImporter;
             textureImporter.streamingMipmaps = true;
@@ -125,7 +125,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual((k_Resolution + "x" + k_Resolution), texture.GetCustomProperty(TextureProperty.Resolution));
 
             /*
-            var texture = AssetDatabase.LoadAssetAtPath<Texture>(m_TempTexture.relativePath);
+            var texture = AssetDatabase.LoadAssetAtPath<Texture>(m_TestTexture.relativePath);
             Assert.NotNull(texture);
             Assert.AreEqual(Profiler.GetRuntimeMemorySizeLong(texture).ToString(), reportedTexture.GetCustomProperty(TextureProperty.SizeOnDisk), "Checked Texture Size");
             */
