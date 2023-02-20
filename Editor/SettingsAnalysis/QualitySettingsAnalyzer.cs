@@ -51,15 +51,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Area.Quality,
             "<b>Texture Streaming </b> is disabled. More mipmap textures will be loaded into memory on the GPU.",
             "If your project contains many high resolution textures, enable Texture Streaming in <b>Project Settings ➔ Quality</b> ")
+        {
+            fixer = (issue =>
             {
-                fixer = (issue =>
-                {
-                    EnableStreamingMipmap(issue.GetCustomPropertyInt32(0));
-                }),
+                EnableStreamingMipmap(issue.GetCustomPropertyInt32(0));
+            }),
 
-                messageFormat = "Settings: Texture streaming on Quality Level '{0}' is turned off."
-
-            };
+            messageFormat = "Settings: Texture streaming on Quality Level '{0}' is turned off."
+        };
 
         public void Initialize(ProjectAuditorModule module)
         {
@@ -101,7 +100,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 for (int i = 0; i < qualityLevels.Count; i++)
                 {
                     yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_TextureStreamingDisabledDescriptor, QualitySettings.names[qualityLevels[i]]).
-                        WithCustomProperties(new object[]{qualityLevels[i]}).WithLocation("Project/Quality");
+                        WithCustomProperties(new object[] {qualityLevels[i]}).WithLocation("Project/Quality");
                 }
             }
         }

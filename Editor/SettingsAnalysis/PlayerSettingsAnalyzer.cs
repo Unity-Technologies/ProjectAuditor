@@ -137,7 +137,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (!PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_LightmapStreamingEnabledDescriptor).
-                    WithCustomProperties(new object[]{buildTargetGroup})
+                    WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }
         }

@@ -73,7 +73,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             if (method == null)
                 throw new NotSupportedException("Getting Lightmap Streaming per platform is not supported");
 
-            var returnValue = method.Invoke(null, new object[]{platform});
+            var returnValue = method.Invoke(null, new object[] {platform});
 
             if (returnValue == null)
                 throw new NotSupportedException("Getting Lightmap Streaming per platform is not supported");
@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             if (method == null)
                 throw new NotSupportedException("Setting Lightmap Streaming per platform is not supported");
 
-            method.Invoke(null, new object[]{platform, value});
+            method.Invoke(null, new object[] {platform, value});
         }
 
 #if UNITY_2021_2_OR_NEWER
