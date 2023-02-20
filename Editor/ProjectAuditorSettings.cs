@@ -31,6 +31,6 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Maximum size when it is not necessary to enable Streaming Mipmaps. Beyond that size we report an issue.
         /// </summary>
-        public int TextureStreamingMipmapsSizeLimit = 1000;
+        public int TextureStreamingMipmapsSizeLimit = 4000;
     }
 }

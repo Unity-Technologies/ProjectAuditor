@@ -49,7 +49,6 @@ This is a full list of all builtin settings diagnostics:
 | PAS0027 | Mipmap Stripping                            | Player    | Any                      |
 | PAS0028 | Reuse Collision Callbacks                   | Physics   | Any                      |
 | PAS0029 | Splash Screen                               | Player    | Any                      |
-| PAS0030 | Texture Streaming Enabled                   | Quality   | Any                      |
 | PAS1000 | Hybrid Rendering Static batching            | Player    | Any                      |
 | PAS1001 | Lit Shader Mode Forward and Deferred        | HDRP      | Any                      |
 | PAS1002 | Camera Lit Shader Mode Forward and Deferred | HDRP      | Any                      |
@@ -57,6 +56,7 @@ This is a full list of all builtin settings diagnostics:
 | PAS1004 | IL2CPP Compiler Master						| Player    | Any                      |
 | PAS1005 | IL2CPP Compiler Debug						| Player    | Any                      |
 | PAS1006 | LightMap Streaming						    | Player    | Any                      |
+| PAS1007 | Texture Streaming Enabled                   | Quality   | Any                      |
 
 
 # Asset Diagnostics

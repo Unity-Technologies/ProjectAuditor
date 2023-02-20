@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         internal const string PAS0019 = nameof(PAS0019);
         internal const string PAS0020 = nameof(PAS0020);
         internal const string PAS0021 = nameof(PAS0021);
-        internal const string PAS0030 = nameof(PAS0030);
+        internal const string PAS1007 = nameof(PAS1007);
 
         static readonly Descriptor k_DefaultSettingsDescriptor = new Descriptor(
             PAS0018,
@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "If the project encounters long loading times when loading large amount of texture and/or mesh data, experiment with increasing this value to see if it allows content to be uploaded to the GPU more quickly. This is most likely to help if you are loading large textures. Note that this setting controls a buffer size in megabytes, so exercise caution if memory is limited in your application.");
 
         static readonly Descriptor k_TextureStreamingDisabledDescriptor = new Descriptor(
-            PAS0030,
+            PAS1007,
             "Quality: Texture streaming disabled",
             Area.Quality,
             "<b>Texture Streaming </b> is disabled. More mipmap textures will be loaded into memory on the GPU.",

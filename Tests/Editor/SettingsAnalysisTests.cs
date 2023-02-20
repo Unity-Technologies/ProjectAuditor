@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
@@ -484,66 +485,79 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        [TestCase(0)]
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(3)]
-        [TestCase(4)]
-        [TestCase(5)]
-        public void SettingsAnalysis_MipmapStreaming_Disabled_Reported(int qualityLevel)
+        public void SettingsAnalysis_MipmapStreaming_Disabled_Reported()
         {
             int initialQualityLevel = QualitySettings.GetQualityLevel();
-            QualitySettings.SetQualityLevel(qualityLevel);
-            QualitySettings.streamingMipmapsActive = false;
+            List<bool> qualityLevelsValues = new List<bool>();
 
-            var id = QualitySettingsAnalyzer.PAS0030;
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
-            var qualitySettingIssue = issues.FirstOrDefault();
+            for (var i = 0; i < QualitySettings.names.Length; i++)
+            {
+                QualitySettings.SetQualityLevel(i);
+                qualityLevelsValues.Add(QualitySettings.streamingMipmapsActive);
+                QualitySettings.streamingMipmapsActive = false;
 
-            Assert.NotNull(qualitySettingIssue);
+                var id = QualitySettingsAnalyzer.PAS1007;
+                var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
+                var qualitySettingIssue = issues.FirstOrDefault();
 
+                Assert.NotNull(qualitySettingIssue);
+            }
+
+            ResetQualityLevelsValues(qualityLevelsValues);
             QualitySettings.SetQualityLevel(initialQualityLevel);
         }
 
         [Test]
-        [TestCase(0)]
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(3)]
-        [TestCase(4)]
-        [TestCase(5)]
-        public void SettingsAnalysis_MipmapStreaming_Enabled_Is_Not_Reported(int qualityLevel)
+        public void SettingsAnalysis_MipmapStreaming_Enabled_Is_Not_Reported()
         {
             int initialQualityLevel = QualitySettings.GetQualityLevel();
-            QualitySettings.SetQualityLevel(qualityLevel);
-            QualitySettings.streamingMipmapsActive = true;
+            List<bool> qualityLevelsValues = new List<bool>();
 
-            var id = QualitySettingsAnalyzer.PAS0030;
+            for (var i = 0; i < QualitySettings.names.Length; i++)
+            {
+                QualitySettings.SetQualityLevel(i);
+                qualityLevelsValues.Add(QualitySettings.streamingMipmapsActive);
+
+                QualitySettings.streamingMipmapsActive = true;
+            }
+
+            var id = QualitySettingsAnalyzer.PAS1007;
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
             var qualitySettingIssue = issues.FirstOrDefault();
 
             Assert.IsNull(qualitySettingIssue);
 
+            ResetQualityLevelsValues(qualityLevelsValues);
             QualitySettings.SetQualityLevel(initialQualityLevel);
         }
 
         [Test]
-        [TestCase(0)]
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(3)]
-        [TestCase(4)]
-        [TestCase(5)]
-        public void SettingsAnalysis_Enable_StreamingMipmap(int qualityLevel)
+        public void SettingsAnalysis_Enable_StreamingMipmap()
         {
             int initialQualityLevel = QualitySettings.GetQualityLevel();
-            QualitySettings.SetQualityLevel(qualityLevel);
-            QualitySettings.streamingMipmapsActive = false;
+            List<bool> qualityLevelsValues = new List<bool>();
 
-            QualitySettingsAnalyzer.EnableStreamingMipmap(qualityLevel);
-            Assert.IsTrue(QualitySettings.streamingMipmapsActive);
+            for (var i = 0; i < QualitySettings.names.Length; i++)
+            {
+                QualitySettings.SetQualityLevel(i);
+                qualityLevelsValues.Add(QualitySettings.streamingMipmapsActive);
+                QualitySettings.streamingMipmapsActive = false;
 
+                QualitySettingsAnalyzer.EnableStreamingMipmap(i);
+                Assert.IsTrue(QualitySettings.streamingMipmapsActive);
+            }
+
+            ResetQualityLevelsValues(qualityLevelsValues);
             QualitySettings.SetQualityLevel(initialQualityLevel);
+        }
+
+        void ResetQualityLevelsValues(List<bool> values)
+        {
+            for (var i = 0; i < QualitySettings.names.Length; i++)
+            {
+                QualitySettings.SetQualityLevel(i);
+                QualitySettings.streamingMipmapsActive = values[i];
+            }
         }
     }
 }
