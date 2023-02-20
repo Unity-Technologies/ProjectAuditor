@@ -17,15 +17,19 @@ namespace Unity.ProjectAuditor.EditorTests
         const string k_TextureNameMipMapGUI = k_TextureName + "MipMapGUITest1234";
         const string k_TextureNameMipMapSprite = k_TextureName + "MipMapSpriteTest1234";
         const string k_TextureNameReadWriteEnabled = k_TextureName + "ReadWriteEnabledTest1234";
+        const string k_TextureNameStreamingMipmapDisabled = k_TextureName + "StreamingMipmapTest1234";
+        const string k_TextureNameStreamingMipmapEnabled = k_TextureName + "StreamingMipmapOnTest1234";
 
         const int k_Resolution = 1;
 
-        TestAsset m_TestTexture;
-        TestAsset m_TestTextureMipMapDefault;
-        TestAsset m_TestTextureNoMipMapDefault;
-        TestAsset m_TestTextureMipMapGui;
-        TestAsset m_TestTextureMipMapSprite;
-        TestAsset m_TestTextureReadWriteEnabled;
+        TempAsset m_TempTexture;
+        TempAsset m_TempTextureMipMapDefault;
+        TempAsset m_TempTextureNoMipMapDefault;
+        TempAsset m_TempTextureMipMapGUI;
+        TempAsset m_TempTextureMipMapSprite;
+        TempAsset m_TempTextureReadWriteEnabled;
+        TempAsset m_TextureNameStreamingMipmapDisabled;
+        TempAsset m_TextureNameStreamingMipmapEnabled;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -72,6 +76,28 @@ namespace Unity.ProjectAuditor.EditorTests
             textureImporter = AssetImporter.GetAtPath(m_TestTextureReadWriteEnabled.relativePath) as TextureImporter;
             textureImporter.isReadable = true;
             textureImporter.SaveAndReimport();
+
+            var largeSize = m_SettingsProvider.GetCurrentSettings().TextureStreamingMipmapsSizeLimit + 50;
+            var largeTexture = new Texture2D(largeSize, largeSize);
+            largeTexture.SetPixel(0, 0, Random.ColorHSV());
+            largeTexture.name = k_TextureNameStreamingMipmapDisabled;
+            largeTexture.Apply();
+
+            var encodedLargePNG = largeTexture.EncodeToPNG();
+            m_TextureNameStreamingMipmapDisabled = new TempAsset(k_TextureNameStreamingMipmapDisabled + ".png", encodedLargePNG);
+
+            textureImporter = AssetImporter.GetAtPath(m_TextureNameStreamingMipmapDisabled.relativePath) as TextureImporter;
+            textureImporter.streamingMipmaps = false;
+            //Size should not be compressed for testing purposes.
+            //If compressed, it won't trigger a warning, as size will be below the minimal size
+            textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
+            textureImporter.SaveAndReimport();
+
+            m_TextureNameStreamingMipmapEnabled = new TempAsset(k_TextureNameStreamingMipmapEnabled + ".png", encodedLargePNG);
+
+            textureImporter = AssetImporter.GetAtPath(m_TextureNameStreamingMipmapEnabled.relativePath) as TextureImporter;
+            textureImporter.streamingMipmaps = true;
+            textureImporter.SaveAndReimport();
         }
 
         [Test]
@@ -95,6 +121,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual("AutomaticCompressed", texture.GetCustomProperty(TextureProperty.Format));
             Assert.True(texture.GetCustomPropertyBool(TextureProperty.MipMapEnabled));
             Assert.False(texture.GetCustomPropertyBool(TextureProperty.Readable));
+            Assert.False(texture.GetCustomPropertyBool(TextureProperty.StreamingMipMap));
             Assert.AreEqual((k_Resolution + "x" + k_Resolution), texture.GetCustomProperty(TextureProperty.Resolution));
 
             /*
@@ -172,6 +199,30 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Texture_ReadWriteEnabled_IsNotReported()
         {
             var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TestTextureNoMipMapDefault, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureReadWriteEnabledDescriptor));
+
+            Assert.IsNull(textureDiagnostic);
+        }
+
+        [Test]
+        public void Texture_StreamingMipmapDisabled_IsReported()
+        {
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureNameStreamingMipmapDisabled, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor));
+
+            Assert.NotNull(textureDiagnostic);
+            Assert.NotNull(textureDiagnostic.descriptor);
+            Assert.NotNull(textureDiagnostic.descriptor.fixer);
+
+            textureDiagnostic.descriptor.Fix(textureDiagnostic);
+
+            textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureNameStreamingMipmapDisabled, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor));
+
+            Assert.Null(textureDiagnostic);
+        }
+
+        [Test]
+        public void Texture_StreamingMipmapEnabled_IsNotReported()
+        {
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureNameStreamingMipmapEnabled, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor));
 
             Assert.IsNull(textureDiagnostic);
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
@@ -434,6 +435,130 @@ namespace Unity.ProjectAuditor.EditorTests
 
             PlayerSettings.SetScriptingBackend(buildTargetGroup, settings);
             PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
+        }
+
+        [Test]
+        public void SettingsAnalysis_LightmapStreaming_Disabled_Reported()
+        {
+            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var currentState = PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup);
+
+            PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, false);
+
+            var id = PlayerSettingsAnalyzer.PAS1006;
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
+            var playerSettingIssue = issues.FirstOrDefault();
+
+            Assert.NotNull(playerSettingIssue);
+
+            PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, currentState);
+        }
+
+        [Test]
+        public void SettingsAnalysis_LightmapStreaming_Disabled_Is_Not_Reported()
+        {
+            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var currentState = PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup);
+
+            PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, true);
+
+            var id = PlayerSettingsAnalyzer.PAS1006;
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
+            var playerSettingIssue = issues.FirstOrDefault();
+
+            Assert.IsNull(playerSettingIssue);
+
+            PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, currentState);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SettingsAnalysis_Enable_LightMapStreaming(bool isEnabled)
+        {
+            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var currentState = PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup);
+
+            PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, isEnabled);
+            Assert.AreEqual(isEnabled, PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup));
+
+            PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, currentState);
+        }
+
+        [Test]
+        public void SettingsAnalysis_MipmapStreaming_Disabled_Reported()
+        {
+            int initialQualityLevel = QualitySettings.GetQualityLevel();
+            List<bool> qualityLevelsValues = new List<bool>();
+
+            for (var i = 0; i < QualitySettings.names.Length; i++)
+            {
+                QualitySettings.SetQualityLevel(i);
+                qualityLevelsValues.Add(QualitySettings.streamingMipmapsActive);
+                QualitySettings.streamingMipmapsActive = false;
+
+                var id = QualitySettingsAnalyzer.PAS1007;
+                var issues = Analyze(IssueCategory.ProjectSetting, j => j.descriptor.id.Equals(id));
+                var qualitySettingIssue = issues.FirstOrDefault();
+
+                Assert.NotNull(qualitySettingIssue);
+            }
+
+            ResetQualityLevelsValues(qualityLevelsValues);
+            QualitySettings.SetQualityLevel(initialQualityLevel);
+        }
+
+        [Test]
+        public void SettingsAnalysis_MipmapStreaming_Enabled_Is_Not_Reported()
+        {
+            int initialQualityLevel = QualitySettings.GetQualityLevel();
+            List<bool> qualityLevelsValues = new List<bool>();
+
+            for (var i = 0; i < QualitySettings.names.Length; i++)
+            {
+                QualitySettings.SetQualityLevel(i);
+                qualityLevelsValues.Add(QualitySettings.streamingMipmapsActive);
+
+                QualitySettings.streamingMipmapsActive = true;
+            }
+
+            var id = QualitySettingsAnalyzer.PAS1007;
+            var issues = Analyze(IssueCategory.ProjectSetting, j => j.descriptor.id.Equals(id));
+            var qualitySettingIssue = issues.FirstOrDefault();
+
+            Assert.IsNull(qualitySettingIssue);
+
+            ResetQualityLevelsValues(qualityLevelsValues);
+            QualitySettings.SetQualityLevel(initialQualityLevel);
+        }
+
+        [Test]
+        public void SettingsAnalysis_Enable_StreamingMipmap()
+        {
+            int initialQualityLevel = QualitySettings.GetQualityLevel();
+            List<bool> qualityLevelsValues = new List<bool>();
+
+            for (var i = 0; i < QualitySettings.names.Length; i++)
+            {
+                QualitySettings.SetQualityLevel(i);
+                qualityLevelsValues.Add(QualitySettings.streamingMipmapsActive);
+                QualitySettings.streamingMipmapsActive = false;
+
+                QualitySettingsAnalyzer.EnableStreamingMipmap(i);
+                Assert.IsTrue(QualitySettings.streamingMipmapsActive);
+            }
+
+            ResetQualityLevelsValues(qualityLevelsValues);
+            QualitySettings.SetQualityLevel(initialQualityLevel);
+        }
+
+        void ResetQualityLevelsValues(List<bool> values)
+        {
+            for (var i = 0; i < QualitySettings.names.Length; i++)
+            {
+                QualitySettings.SetQualityLevel(i);
+                QualitySettings.streamingMipmapsActive = values[i];
+            }
         }
     }
 }

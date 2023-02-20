@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using UnityEditor;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
@@ -63,6 +64,31 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             method.Invoke(null, args);
             return (int)args[1] > 0;
+        }
+
+        public static bool IsLightmapStreamingEnabled(BuildTargetGroup platform)
+        {
+            var method = typeof(PlayerSettings).GetMethod("GetLightmapStreamingEnabledForPlatformGroup",
+                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
+            if (method == null)
+                throw new NotSupportedException("Getting Lightmap Streaming per platform is not supported");
+
+            var returnValue = method.Invoke(null, new object[]{platform});
+
+            if (returnValue == null)
+                throw new NotSupportedException("Getting Lightmap Streaming per platform is not supported");
+
+            return (bool)returnValue;
+        }
+
+        public static void SetLightmapStreaming(BuildTargetGroup platform, bool value)
+        {
+            var method = typeof(PlayerSettings).GetMethod("SetLightmapStreamingEnabledForPlatformGroup",
+                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
+            if (method == null)
+                throw new NotSupportedException("Setting Lightmap Streaming per platform is not supported");
+
+            method.Invoke(null, new object[]{platform, value});
         }
 
 #if UNITY_2021_2_OR_NEWER

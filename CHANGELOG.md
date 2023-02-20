@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added percentage formatting support
 * Added individual asset size percentage to Build Report
 * Added test utility classes to package
+* Add Texture Streaming analyzer
+* Add Streaming Mipmaps for textures analyzer
+* Add Lightmap Streaming analyzer
 
 ## [0.9.2-preview] - 2023-02-07
 * Added Fog shader variant stripping analyzer

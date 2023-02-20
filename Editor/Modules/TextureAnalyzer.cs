@@ -14,6 +14,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAT0000 = nameof(PAT0000);
         internal const string PAT0001 = nameof(PAT0001);
         internal const string PAT0002 = nameof(PAT0002);
+        internal const string PAT0003 = nameof(PAT0003);
 
         internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
             PAT0000,
@@ -77,11 +78,32 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
+        internal static readonly Descriptor k_TextureStreamingMipMapEnabledDescriptor = new Descriptor(
+            PAT0003,
+            "Texture: Mipmaps Streaming not enabled",
+            new[] {Area.Memory, Area.Quality},
+            "Texture mipmaps streaming is not enabled. This increases the amount of mipmap textures that are loaded into memory on the GPU.",
+            "Consider enabled mipmaps streaming using the <b>Streaming Mipmaps</b> option in the texture inspector."
+        )
+        {
+            messageFormat = "Texture '{0}' mipmaps streaming is not enabled",
+            fixer = (issue) =>
+            {
+                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                if (textureImporter != null)
+                {
+                    textureImporter.streamingMipmaps = true;
+                    textureImporter.SaveAndReimport();
+                }
+            }
+        };
+
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_TextureMipMapNotEnabledDescriptor);
             module.RegisterDescriptor(k_TextureMipMapEnabledDescriptor);
             module.RegisterDescriptor(k_TextureReadWriteEnabledDescriptor);
+            module.RegisterDescriptor(k_TextureStreamingMipMapEnabledDescriptor);
         }
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, TextureImporter textureImporter, TextureImporterPlatformSettings platformSettings)
@@ -104,7 +126,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         textureImporter.mipmapEnabled,
                         textureImporter.isReadable,
                         resolution,
-                        size
+                        size,
+                        textureImporter.streamingMipmaps
                     })
                 .WithLocation(new Location(assetPath));
 
@@ -130,6 +153,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (textureImporter.isReadable)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureReadWriteEnabledDescriptor, textureName)
+                    .WithLocation(textureImporter.assetPath);
+            }
+
+            if (!textureImporter.streamingMipmaps && size > Mathf.Pow(projectAuditorParams.settings.TextureStreamingMipmapsSizeLimit, 2))
+            {
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureStreamingMipMapEnabledDescriptor, textureName)
                     .WithLocation(textureImporter.assetPath);
             }
         }

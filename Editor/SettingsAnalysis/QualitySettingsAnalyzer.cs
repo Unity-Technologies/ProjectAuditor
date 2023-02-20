@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
@@ -14,6 +15,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         internal const string PAS0019 = nameof(PAS0019);
         internal const string PAS0020 = nameof(PAS0020);
         internal const string PAS0021 = nameof(PAS0021);
+        internal const string PAS1007 = nameof(PAS1007);
 
         static readonly Descriptor k_DefaultSettingsDescriptor = new Descriptor(
             PAS0018,
@@ -42,6 +44,22 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Area.LoadTime,
             "The <b>Async Upload Buffer Size</b> option for one or more quality levels in the project's Quality Settings is set to the default value.",
             "If the project encounters long loading times when loading large amount of texture and/or mesh data, experiment with increasing this value to see if it allows content to be uploaded to the GPU more quickly. This is most likely to help if you are loading large textures. Note that this setting controls a buffer size in megabytes, so exercise caution if memory is limited in your application.");
+
+        static readonly Descriptor k_TextureStreamingDisabledDescriptor = new Descriptor(
+            PAS1007,
+            "Quality: Texture streaming disabled",
+            Area.Quality,
+            "<b>Texture Streaming </b> is disabled. More mipmap textures will be loaded into memory on the GPU.",
+            "If your project contains many high resolution textures, enable Texture Streaming in <b>Project Settings ➔ Quality</b> ")
+            {
+                fixer = (issue =>
+                {
+                    EnableStreamingMipmap(issue.GetCustomPropertyInt32(0));
+                }),
+
+                messageFormat = "Settings: Texture streaming on Quality Level '{0}' is turned off."
+
+            };
 
         public void Initialize(ProjectAuditorModule module)
         {
@@ -75,6 +93,16 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DefaultAsyncUploadBufferSizeSliceDescriptor)
                     .WithLocation("Project/Quality");
+            }
+
+            if (GetTextureStreamingDisabledQualityLevelsIndex().Count != 0)
+            {
+                var qualityLevels = GetTextureStreamingDisabledQualityLevelsIndex();
+                for (int i = 0; i < qualityLevels.Count; i++)
+                {
+                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_TextureStreamingDisabledDescriptor, QualitySettings.names[qualityLevels[i]]).
+                        WithCustomProperties(new object[]{qualityLevels[i]}).WithLocation("Project/Quality");
+                }
             }
         }
 
@@ -151,6 +179,35 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
             QualitySettings.SetQualityLevel(initialQualityLevel);
             return usingDefaultAsyncUploadBufferSize;
+        }
+
+        internal static List<int> GetTextureStreamingDisabledQualityLevelsIndex()
+        {
+            var initialQualityLevel = QualitySettings.GetQualityLevel();
+            var qualityIndexes = new List<int>();
+
+            for (var i = 0; i < QualitySettings.names.Length; i++)
+            {
+                QualitySettings.SetQualityLevel(i);
+
+                if (!QualitySettings.streamingMipmapsActive)
+                {
+                    qualityIndexes.Add(i);
+                }
+            }
+
+            QualitySettings.SetQualityLevel(initialQualityLevel);
+            return qualityIndexes;
+        }
+
+        internal static void EnableStreamingMipmap(int qualityLevelIndex)
+        {
+            var initialQualityLevel = QualitySettings.GetQualityLevel();
+
+            QualitySettings.SetQualityLevel(qualityLevelIndex);
+            QualitySettings.streamingMipmapsActive = true;
+
+            QualitySettings.SetQualityLevel(initialQualityLevel);
         }
     }
 }
