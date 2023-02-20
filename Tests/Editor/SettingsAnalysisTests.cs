@@ -497,7 +497,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 QualitySettings.streamingMipmapsActive = false;
 
                 var id = QualitySettingsAnalyzer.PAS1007;
-                var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
+                var issues = Analyze(IssueCategory.ProjectSetting, j => j.descriptor.id.Equals(id));
                 var qualitySettingIssue = issues.FirstOrDefault();
 
                 Assert.NotNull(qualitySettingIssue);
@@ -522,7 +522,7 @@ namespace Unity.ProjectAuditor.EditorTests
             }
 
             var id = QualitySettingsAnalyzer.PAS1007;
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, j => j.descriptor.id.Equals(id));
             var qualitySettingIssue = issues.FirstOrDefault();
 
             Assert.IsNull(qualitySettingIssue);
