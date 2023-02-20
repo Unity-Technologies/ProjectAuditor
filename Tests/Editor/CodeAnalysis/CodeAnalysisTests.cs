@@ -6,6 +6,7 @@ using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.TestUtils;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 
@@ -13,25 +14,25 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     class CodeAnalysisTests : TestFixtureBase
     {
-        TempAsset m_TempAsset;
-        TempAsset m_TempAssetClassWithConditionalAttribute;
-        TempAsset m_TempAssetDerivedClassMethod;
-        TempAsset m_TempAssetInPlugin;
-        TempAsset m_TempAssetIssueInCoroutine;
-        TempAsset m_TempAssetIssueInDelegate;
-        TempAsset m_TempAssetIssueInProperty;
-        TempAsset m_TempAssetIssueInGenericClass;
-        TempAsset m_TempAssetIssueInMonoBehaviour;
-        TempAsset m_TempAssetIssueInNestedClass;
-        TempAsset m_TempAssetIssueInOverrideMethod;
-        TempAsset m_TempAssetIssueInVirtualMethod;
-        TempAsset m_TempAssetAnyApiInNamespace;
-        TempAsset m_TempAssetGenericInstantiation;
+        TestAsset m_TestAsset;
+        TestAsset m_TestAssetClassWithConditionalAttribute;
+        TestAsset m_TestAssetDerivedClassMethod;
+        TestAsset m_TestAssetInPlugin;
+        TestAsset m_TestAssetIssueInCoroutine;
+        TestAsset m_TestAssetIssueInDelegate;
+        TestAsset m_TestAssetIssueInProperty;
+        TestAsset m_TestAssetIssueInGenericClass;
+        TestAsset m_TestAssetIssueInMonoBehaviour;
+        TestAsset m_TestAssetIssueInNestedClass;
+        TestAsset m_TestAssetIssueInOverrideMethod;
+        TestAsset m_TestAssetIssueInVirtualMethod;
+        TestAsset m_TestAssetAnyApiInNamespace;
+        TestAsset m_TestAssetGenericInstantiation;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TempAsset = new TempAsset("MyClass.cs", @"
+            m_TestAsset = new TestAsset("MyClass.cs", @"
 using UnityEngine;
 class MyClass
 {
@@ -42,7 +43,7 @@ class MyClass
 }
 ");
 
-            m_TempAssetClassWithConditionalAttribute = new TempAsset("ClassWithConditionalAttribute.cs", @"
+            m_TestAssetClassWithConditionalAttribute = new TestAsset("ClassWithConditionalAttribute.cs", @"
 using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -63,7 +64,7 @@ class ClassWithConditionalAttribute
 }
 ");
 
-            m_TempAssetDerivedClassMethod = new TempAsset("DerivedClassMethod.cs", @"
+            m_TestAssetDerivedClassMethod = new TestAsset("DerivedClassMethod.cs", @"
 using UnityEngine;
 class DerivedClassMethod
 {
@@ -74,7 +75,7 @@ class DerivedClassMethod
 }
 ");
 
-            m_TempAssetInPlugin = new TempAsset("Plugins/MyPlugin.cs", @"
+            m_TestAssetInPlugin = new TestAsset("Plugins/MyPlugin.cs", @"
 using UnityEngine;
 class MyPlugin
 {
@@ -85,7 +86,7 @@ class MyPlugin
 }
 ");
 
-            m_TempAssetIssueInNestedClass = new TempAsset("IssueInNestedClass.cs", @"
+            m_TestAssetIssueInNestedClass = new TestAsset("IssueInNestedClass.cs", @"
 using UnityEngine;
 class MyClassWithNested
 {
@@ -99,7 +100,7 @@ class MyClassWithNested
 }
 ");
 
-            m_TempAssetIssueInGenericClass = new TempAsset("IssueInGenericClass.cs", @"
+            m_TestAssetIssueInGenericClass = new TestAsset("IssueInGenericClass.cs", @"
 using UnityEngine;
 class GenericClass<T>
 {
@@ -110,7 +111,7 @@ class GenericClass<T>
 }
 ");
 
-            m_TempAssetIssueInVirtualMethod = new TempAsset("IssueInVirtualMethod.cs", @"
+            m_TestAssetIssueInVirtualMethod = new TestAsset("IssueInVirtualMethod.cs", @"
 using UnityEngine;
 abstract class AbstractClass
 {
@@ -121,7 +122,7 @@ abstract class AbstractClass
 }
 ");
 
-            m_TempAssetIssueInOverrideMethod = new TempAsset("IssueInOverrideMethod.cs", @"
+            m_TestAssetIssueInOverrideMethod = new TestAsset("IssueInOverrideMethod.cs", @"
 using UnityEngine;
 class BaseClass
 {
@@ -138,7 +139,7 @@ class DerivedClass : BaseClass
 }
 ");
 
-            m_TempAssetIssueInMonoBehaviour = new TempAsset("IssueInMonoBehaviour.cs", @"
+            m_TestAssetIssueInMonoBehaviour = new TestAsset("IssueInMonoBehaviour.cs", @"
 using UnityEngine;
 class MyMonoBehaviour : MonoBehaviour
 {
@@ -149,7 +150,7 @@ class MyMonoBehaviour : MonoBehaviour
 }
 ");
 
-            m_TempAssetIssueInCoroutine = new TempAsset("IssueInCoroutine.cs", @"
+            m_TestAssetIssueInCoroutine = new TestAsset("IssueInCoroutine.cs", @"
 using UnityEngine;
 using System.Collections;
 class MyMonoBehaviourWithCoroutine : MonoBehaviour
@@ -166,7 +167,7 @@ class MyMonoBehaviourWithCoroutine : MonoBehaviour
 }
 ");
 
-            m_TempAssetIssueInDelegate = new TempAsset("IssueInDelegate.cs", @"
+            m_TestAssetIssueInDelegate = new TestAsset("IssueInDelegate.cs", @"
 using UnityEngine;
 using System;
 class ClassWithDelegate
@@ -184,7 +185,7 @@ class ClassWithDelegate
 }
 ");
 
-            m_TempAssetIssueInProperty = new TempAsset("IssueInProperty.cs", @"
+            m_TestAssetIssueInProperty = new TestAsset("IssueInProperty.cs", @"
 class IssueInProperty
 {
     object property
@@ -194,7 +195,7 @@ class IssueInProperty
 }
  ");
 
-            m_TempAssetAnyApiInNamespace = new TempAsset("AnyApiInNamespace.cs", @"
+            m_TestAssetAnyApiInNamespace = new TestAsset("AnyApiInNamespace.cs", @"
 using System.Linq;
 using System.Collections.Generic;
 class AnyApiInNamespace
@@ -206,7 +207,7 @@ class AnyApiInNamespace
 }
 ");
 
-            m_TempAssetGenericInstantiation = new TempAsset("GenericInstantiation.cs", @"
+            m_TestAssetGenericInstantiation = new TestAsset("GenericInstantiation.cs", @"
 using System.Collections.Generic;
 class GenericInstantiation
 {
@@ -234,7 +235,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_Issue_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -249,7 +250,7 @@ class GenericInstantiation
             Assert.AreEqual("UnityEngine.Camera", myIssue.descriptor.type);
             Assert.AreEqual("allCameras", myIssue.descriptor.method);
 
-            Assert.AreEqual(m_TempAsset.fileName, myIssue.filename);
+            Assert.AreEqual(m_TestAsset.fileName, myIssue.filename);
             Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.description);
             Assert.AreEqual("System.Void MyClass::Dummy()", myIssue.GetContext());
             Assert.AreEqual(7, myIssue.line);
@@ -263,7 +264,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_ConditionalMethodCallSites_AreRemoved()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetClassWithConditionalAttribute);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetClassWithConditionalAttribute);
             Assert.Positive(issues.Length);
             Assert.NotNull(issues[0]);
             Assert.NotNull(issues[0].dependencies);
@@ -275,7 +276,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_DerivedClassMethodIssue_IsReported()
         {
-            var filteredIssues = AnalyzeAndFindAssetIssues(m_TempAssetDerivedClassMethod);
+            var filteredIssues = AnalyzeAndFindAssetIssues(m_TestAssetDerivedClassMethod);
 
             Assert.AreEqual(1, filteredIssues.Count());
 
@@ -289,7 +290,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInPlugin_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetInPlugin);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetInPlugin);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void MyPlugin::Dummy()", issues[0].GetContext());
@@ -298,7 +299,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInNestedClass_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInNestedClass);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInNestedClass);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void MyClassWithNested/NestedClass::Dummy()", issues[0].GetContext());
@@ -307,7 +308,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInGenericClass_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInGenericClass);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInGenericClass);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void GenericClass`1::Dummy()", issues[0].GetContext());
@@ -316,7 +317,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInVirtualMethod_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInVirtualMethod);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInVirtualMethod);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void AbstractClass::Dummy()", issues[0].GetContext());
@@ -325,7 +326,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInOverrideMethod_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInOverrideMethod);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInOverrideMethod);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void DerivedClass::Dummy()", issues[0].GetContext());
@@ -334,7 +335,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInMonoBehaviour_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviour);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInMonoBehaviour);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void MyMonoBehaviour::Start()", issues[0].GetContext());
@@ -343,7 +344,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInCoroutine_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInCoroutine);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInCoroutine);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Boolean MyMonoBehaviourWithCoroutine/<MyCoroutine>d__1::MoveNext()", issues[0].GetContext());
@@ -352,7 +353,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInDelegate_IsReported()
         {
-            var allScriptIssues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInDelegate);
+            var allScriptIssues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInDelegate);
             var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'UnityEngine.Camera.allCameras' usage"));
             Assert.NotNull(issue);
             Assert.AreEqual("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()", issue.GetContext());
@@ -361,7 +362,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInProperty_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInProperty, IssueCategory.Code);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInProperty, IssueCategory.Code);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("Conversion from value type 'Int32' to ref type", issues[0].description);
@@ -371,7 +372,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInNamespace_IsReported()
         {
-            var allScriptIssues = AnalyzeAndFindAssetIssues(m_TempAssetAnyApiInNamespace);
+            var allScriptIssues = AnalyzeAndFindAssetIssues(m_TestAssetAnyApiInNamespace);
             var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'System.Linq.Enumerable.Sum' usage"));
 
             Assert.NotNull(issue);
@@ -381,7 +382,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_GenericInstantiation_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetGenericInstantiation, IssueCategory.GenericInstance);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetGenericInstantiation, IssueCategory.GenericInstance);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("'System.Collections.Generic.HashSet`1<System.String>' generic instance", issues[0].description);

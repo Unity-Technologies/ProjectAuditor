@@ -2,6 +2,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Modules;
+using Unity.ProjectAuditor.Editor.TestUtils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -10,17 +11,17 @@ namespace Unity.ProjectAuditor.EditorTests
         const string k_SmallMeshName = "SmallTestMesh";
         const string k_LargeMeshName = "LargeTestMesh";
 
-        TempAsset m_TempSmallMeshAsset;
-        TempAsset m_TempLargeMeshAsset;
+        TestAsset m_TestSmallMeshAsset;
+        TestAsset m_TestLargeMeshAsset;
 
         [OneTimeSetUp]
         public void SetUp()
         {
             var smallMesh = MeshGeneratorUtil.CreateTestMesh(k_SmallMeshName, 100);
-            m_TempSmallMeshAsset = TempAsset.Save(smallMesh, k_SmallMeshName + ".mesh");
+            m_TestSmallMeshAsset = TestAsset.Save(smallMesh, k_SmallMeshName + ".mesh");
 
             var largeMesh = MeshGeneratorUtil.CreateTestMesh(k_LargeMeshName, 100000, true);
-            m_TempLargeMeshAsset = TempAsset.Save(largeMesh, k_LargeMeshName + ".mesh");
+            m_TestLargeMeshAsset = TestAsset.Save(largeMesh, k_LargeMeshName + ".mesh");
         }
 
         [OneTimeTearDown]
@@ -34,7 +35,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
         public void Mesh_Using32bitIndexFormat_IsReported()
         {
-            var foundIssues = AnalyzeAndFindAssetIssues(m_TempSmallMeshAsset, IssueCategory.AssetDiagnostic);
+            var foundIssues = AnalyzeAndFindAssetIssues(m_TestSmallMeshAsset, IssueCategory.AssetDiagnostic);
 
             Assert.IsNotEmpty(foundIssues);
             Assert.IsTrue(foundIssues.Any(issue => issue.descriptor.id == MeshAnalyzer.PAM0001), "Small mesh should be reported");
@@ -43,7 +44,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Mesh_ReadWrite_IsReported()
         {
-            var foundIssues = AnalyzeAndFindAssetIssues(m_TempSmallMeshAsset, IssueCategory.AssetDiagnostic);
+            var foundIssues = AnalyzeAndFindAssetIssues(m_TestSmallMeshAsset, IssueCategory.AssetDiagnostic);
 
             Assert.IsNotEmpty(foundIssues);
             Assert.IsTrue(foundIssues.Any(issue => issue.descriptor.id == MeshAnalyzer.PAM0000), "Read/Write mesh should be reported");
@@ -52,7 +53,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Mesh_ReadWrite_IsNotReported()
         {
-            var foundIssues = AnalyzeAndFindAssetIssues(m_TempLargeMeshAsset, IssueCategory.AssetDiagnostic);
+            var foundIssues = AnalyzeAndFindAssetIssues(m_TestLargeMeshAsset, IssueCategory.AssetDiagnostic);
 
             Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == MeshAnalyzer.PAM0000), "Read/Write mesh should no be reported");
         }

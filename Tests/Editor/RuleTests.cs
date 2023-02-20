@@ -6,6 +6,7 @@ using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.TestUtils;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -15,7 +16,7 @@ namespace Unity.ProjectAuditor.EditorTests
     [Serializable]
     class RuleTests : TestFixtureBase
     {
-        TempAsset m_TempAsset;
+        TestAsset m_TestAsset;
 
         [SerializeField]
         ProjectAuditorConfig m_SerializedConfig;
@@ -23,7 +24,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TempAsset = new TempAsset("MyClass.cs",
+            m_TestAsset = new TestAsset("MyClass.cs",
                 "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.allCameras.Length.ToString()); } }");
         }
 
@@ -56,7 +57,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Rule_MutedIssue_IsNotReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
 
             var allCamerasIssues = issues.Where(i => i.descriptor.id == "PAC0066").ToArray();
 
@@ -101,7 +102,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(1, m_SerializedConfig.NumRules);
 
             // retry after domain reload
-            var issues = AnalyzeAndFindAssetIssues(m_TempAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
 
             var allCamerasIssues = issues.Where(i => i.descriptor.id == "PAC0066").ToArray();
 

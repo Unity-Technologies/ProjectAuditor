@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.TestUtils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -13,13 +14,13 @@ namespace Unity.ProjectAuditor.EditorTests
     [Serializable]
     class PerfCriticalContextTests : TestFixtureBase
     {
-        TempAsset m_TempAssetIssueInClassInheritedFromMonoBehaviour;
-        TempAsset m_TempAssetIssueInClassMethodCalledFromMonoBehaviourUpdate;
-        TempAsset m_TempAssetIssueInMonoBehaviourUpdate;
-        TempAsset m_TempAssetIssueInMonoBehaviourOnAnimatorMove;
-        TempAsset m_TempAssetIssueInMonoBehaviourOnRenderObject;
-        TempAsset m_TempAssetIssueInSimpleClass;
-        TempAsset m_TempAssetShaderWarmupIssueIsCritical;
+        TestAsset m_TestAssetIssueInClassInheritedFromMonoBehaviour;
+        TestAsset m_TestAssetIssueInClassMethodCalledFromMonoBehaviourUpdate;
+        TestAsset m_TestAssetIssueInMonoBehaviourUpdate;
+        TestAsset m_TestAssetIssueInMonoBehaviourOnAnimatorMove;
+        TestAsset m_TestAssetIssueInMonoBehaviourOnRenderObject;
+        TestAsset m_TestAssetIssueInSimpleClass;
+        TestAsset m_TestAssetShaderWarmupIssueIsCritical;
 
         [SerializeField]
         ProjectIssue m_Issue;
@@ -27,7 +28,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TempAssetIssueInSimpleClass = new TempAsset("IssueInSimpleClass.cs", @"
+            m_TestAssetIssueInSimpleClass = new TestAsset("IssueInSimpleClass.cs", @"
 using UnityEngine;
 class IssueInSimpleClass
 {
@@ -38,7 +39,7 @@ class IssueInSimpleClass
 }
 ");
 
-            m_TempAssetIssueInMonoBehaviourUpdate = new TempAsset("IssueInMonoBehaviourUpdate.cs", @"
+            m_TestAssetIssueInMonoBehaviourUpdate = new TestAsset("IssueInMonoBehaviourUpdate.cs", @"
 using UnityEngine;
 class IssueInMonoBehaviourUpdate : MonoBehaviour
 {
@@ -49,7 +50,7 @@ class IssueInMonoBehaviourUpdate : MonoBehaviour
 }
 ");
 
-            m_TempAssetIssueInMonoBehaviourOnAnimatorMove = new TempAsset("IssueInMonoBehaviourOnAnimatorMove.cs", @"
+            m_TestAssetIssueInMonoBehaviourOnAnimatorMove = new TestAsset("IssueInMonoBehaviourOnAnimatorMove.cs", @"
 using UnityEngine;
 class IssueInMonoBehaviourOnAnimatorMove : MonoBehaviour
 {
@@ -60,7 +61,7 @@ class IssueInMonoBehaviourOnAnimatorMove : MonoBehaviour
 }
 ");
 
-            m_TempAssetIssueInMonoBehaviourOnRenderObject = new TempAsset("m_TempAssetIssueInMonoBehaviourOnRenderObject.cs", @"
+            m_TestAssetIssueInMonoBehaviourOnRenderObject = new TestAsset("m_TempAssetIssueInMonoBehaviourOnRenderObject.cs", @"
 using UnityEngine;
 class IssueInMonoBehaviourOnObjectRender : MonoBehaviour
 {
@@ -71,7 +72,7 @@ class IssueInMonoBehaviourOnObjectRender : MonoBehaviour
 }
 ");
 
-            m_TempAssetIssueInClassMethodCalledFromMonoBehaviourUpdate = new TempAsset(
+            m_TestAssetIssueInClassMethodCalledFromMonoBehaviourUpdate = new TestAsset(
                 "IssueInClassMethodCalledFromMonoBehaviourUpdate.cs", @"
 using UnityEngine;
 
@@ -93,7 +94,7 @@ class IssueInClassMethodCalledFromMonoBehaviourUpdate : MonoBehaviour
 }
 ");
 
-            m_TempAssetIssueInClassInheritedFromMonoBehaviour = new TempAsset(
+            m_TestAssetIssueInClassInheritedFromMonoBehaviour = new TestAsset(
                 "IssueInClassInheritedFromMonoBehaviour.cs", @"
 using UnityEngine;
 class A : MonoBehaviour
@@ -109,7 +110,7 @@ class B : A
 }
 ");
 
-            m_TempAssetShaderWarmupIssueIsCritical = new TempAsset("ShaderWarmUpIssueIsCritical.cs", @"
+            m_TestAssetShaderWarmupIssueIsCritical = new TestAsset("ShaderWarmUpIssueIsCritical.cs", @"
 using UnityEngine;
 class ShaderWarmUpIssueIsCritical
 {
@@ -124,7 +125,7 @@ class ShaderWarmUpIssueIsCritical
         [Test]
         public void CodeAnalysis_IssueInSimpleClass_IsSeverityCorrect()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInSimpleClass);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInSimpleClass);
             var issue = issues.First();
             Assert.AreEqual(Severity.Moderate, issue.severity);
         }
@@ -132,7 +133,7 @@ class ShaderWarmUpIssueIsCritical
         [Test]
         public void CodeAnalysis_IssueInMonoBehaviourUpdate_IsSeverityCorrect()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourUpdate);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInMonoBehaviourUpdate);
             var issue = issues.First();
             Assert.AreEqual(Severity.Major, issue.severity);
         }
@@ -140,7 +141,7 @@ class ShaderWarmUpIssueIsCritical
         [Test]
         public void CodeAnalysis_IssueInMonoBehaviourOnAnimatorMove_IsSeverityCorrect()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnAnimatorMove);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInMonoBehaviourOnAnimatorMove);
             var issue = issues.First();
             Assert.AreEqual(Severity.Major, issue.severity);
         }
@@ -148,7 +149,7 @@ class ShaderWarmUpIssueIsCritical
         [Test]
         public void CodeAnalysis_MonoBehaviourOnRenderObject_IsSeverityCorrect()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetIssueInMonoBehaviourOnRenderObject);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInMonoBehaviourOnRenderObject);
             var issue = issues.First();
             Assert.AreEqual(Severity.Major, issue.severity);
         }
@@ -158,7 +159,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
-                    m_TempAssetIssueInClassMethodCalledFromMonoBehaviourUpdate);
+                    m_TestAssetIssueInClassMethodCalledFromMonoBehaviourUpdate);
             var issue = issues.First();
             Assert.AreEqual(Severity.Major, issue.severity);
         }
@@ -168,7 +169,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
-                    m_TempAssetIssueInClassInheritedFromMonoBehaviour);
+                    m_TestAssetIssueInClassInheritedFromMonoBehaviour);
             var issue = issues.First();
             Assert.AreEqual(Severity.Major, issue.severity);
         }
@@ -178,7 +179,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
-                    m_TempAssetIssueInClassInheritedFromMonoBehaviour);
+                    m_TestAssetIssueInClassInheritedFromMonoBehaviour);
             m_Issue = issues.First();
 
             Assert.AreEqual(Severity.Major, m_Issue.severity);
@@ -197,7 +198,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues =
                 AnalyzeAndFindAssetIssues(
-                    m_TempAssetShaderWarmupIssueIsCritical);
+                    m_TestAssetShaderWarmupIssueIsCritical);
             var issue = issues.First();
             Assert.AreEqual(Severity.Major, issue.severity);
         }

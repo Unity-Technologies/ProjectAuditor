@@ -1,19 +1,20 @@
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.TestUtils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     class CallTreeTests : TestFixtureBase
     {
-        TempAsset m_TempAsset;
-        TempAsset m_TempAssetHierarchy;
-        TempAsset m_TempAssetRecursive;
+        TestAsset m_TestAsset;
+        TestAsset m_TestAssetHierarchy;
+        TestAsset m_TestAssetRecursive;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TempAsset = new TempAsset("RootTest.cs", @"
+            m_TestAsset = new TestAsset("RootTest.cs", @"
 using System;
 class RootTest
 {
@@ -23,7 +24,7 @@ class RootTest
     }
 }");
 
-            m_TempAssetRecursive = new TempAsset("RecursiveTest.cs", @"
+            m_TestAssetRecursive = new TestAsset("RecursiveTest.cs", @"
 using System;
 class RecursiveTest
 {
@@ -45,7 +46,7 @@ class RecursiveTest
 //
 //  method C calling into B should be the same for both issue X and Y
 
-            m_TempAssetHierarchy = new TempAsset("HierarchyTest.cs", @"
+            m_TestAssetHierarchy = new TestAsset("HierarchyTest.cs", @"
 using System;
 class HierarchyTest
 {
@@ -68,7 +69,7 @@ class HierarchyTest
         [Test]
         public void CallTree_Root_IsValid()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
 
             Assert.AreEqual(1, issues.Length);
 
@@ -85,7 +86,7 @@ class HierarchyTest
         [Test]
         public void CallTree_Hierarchy_IsNotRecursive()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetRecursive);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetRecursive);
 
             var root = issues[0].dependencies as CallTreeNode;
 
@@ -98,7 +99,7 @@ class HierarchyTest
         [Test]
         public void CallTree_SameSubHierarchy_IsUnique()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAssetHierarchy);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAssetHierarchy);
 
             Assert.AreEqual(2, issues.Length);
 

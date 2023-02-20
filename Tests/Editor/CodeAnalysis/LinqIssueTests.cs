@@ -4,18 +4,19 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.TestUtils;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     class LinqIssueTests : TestFixtureBase
     {
-        TempAsset m_TempAsset;
+        TestAsset m_TestAsset;
 
         [SetUp]
         public void SetUp()
         {
-            m_TempAsset = new TempAsset("MyClass.cs", @"
+            m_TestAsset = new TestAsset("MyClass.cs", @"
 using System.Linq;
 using System.Collections.Generic;
 
@@ -32,7 +33,7 @@ class MyClass
         [Test]
         public void CodeAnalysis_LinqIssue_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TempAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -46,7 +47,7 @@ class MyClass
             Assert.AreEqual("System.Linq", myIssue.descriptor.type);
             Assert.AreEqual("*", myIssue.descriptor.method);
 
-            Assert.AreEqual(m_TempAsset.fileName, myIssue.filename);
+            Assert.AreEqual(m_TestAsset.fileName, myIssue.filename);
             Assert.AreEqual("'System.Linq.Enumerable.Count' usage", myIssue.description, "Description: {0}", myIssue.description);
             Assert.AreEqual("System.Int32 MyClass::Dummy(System.Collections.Generic.List`1<System.Int32>)", myIssue.GetContext());
             Assert.AreEqual(9, myIssue.line);

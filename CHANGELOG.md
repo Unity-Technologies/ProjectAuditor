@@ -5,15 +5,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 [Unreleased]
+* Fixed View switching cancellation
+
+## [0.9.3-preview.1] - 2023-02-14
 * Added percentage formatting support
 * Added individual asset size percentage to Build Report
+* Added test utility classes to package
 * Add Texture Streaming analyzer
 * Add Streaming Mipmaps for textures analyzer
 * Add Lightmap Streaming analyzer
 
 ## [0.9.2-preview] - 2023-02-07
 * Added Fog shader variant stripping analyzer
-* Add IL2CPP Compiler Configuration analyzer
+* Added IL2CPP Compiler Configuration analyzer
 * Fixed backwards compatibility
 * Fixed reporting of shader variants if not compiled for analysis platform
 * Fixed displaying of large values of total shader variants

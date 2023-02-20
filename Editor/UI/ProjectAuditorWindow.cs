@@ -200,12 +200,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ProjectAuditorAnalytics.SendEvent(
                     (ProjectAuditorAnalytics.UIButton)viewDesc.analyticsEvent,
                     ProjectAuditorAnalytics.BeginAnalytic());
-                if (m_ProjectReport == null)
-                    return; // this happens from the summary view while the report is being generated
-                if (!m_ProjectReport.HasCategory(activeView.desc.category) && EditorUtility.DisplayDialog(k_ProjectAuditorName, $"Would you like to analyze {ProjectAuditor.GetCategoryName(viewDesc.category)} now?", "Ok", "No"))
-                {
-                    AuditCategories(new[] {viewDesc.category});
-                }
             };
 
             m_ViewManager.onAnalyze += category =>
@@ -225,8 +219,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 dropdownItems.Add(new Utility.DropdownItem
                 {
-                    Content = new GUIContent(string.IsNullOrEmpty(desc.menuLabel) ? desc.name : desc.menuLabel),
-                    SelectionContent = new GUIContent("View: " + desc.name),
+                    Content = new GUIContent(string.IsNullOrEmpty(desc.menuLabel) ? desc.displayName : desc.menuLabel),
+                    SelectionContent = new GUIContent("View: " + desc.displayName),
                     Enabled = isSupported,
                     UserData = desc.category
                 });
@@ -274,7 +268,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.MetaData,
-                name = "Summary",
+                displayName = "Summary",
                 menuOrder = -1,
                 showInfoPanel = true,
                 type = typeof(SummaryView),
@@ -283,7 +277,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.AssetDiagnostic,
-                name = "Asset Diagnostics",
+                displayName = "Asset Diagnostics",
                 menuLabel = "Assets/Diagnostics",
                 menuOrder = 1,
                 descriptionWithIcon = true,
@@ -297,7 +291,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.Shader,
-                name = "Shaders",
+                displayName = "Shaders",
                 menuOrder = 2,
                 menuLabel = "Assets/Shaders/Shaders",
                 descriptionWithIcon = true,
@@ -323,7 +317,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.ShaderCompilerMessage,
-                name = "Shader Messages",
+                displayName = "Shader Messages",
                 menuLabel = "Assets/Shaders/Compiler Messages",
                 menuOrder = 4,
                 descriptionWithIcon = true,
@@ -341,7 +335,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.ShaderVariant,
-                name = "Variants",
+                displayName = "Variants",
                 menuOrder = 3,
                 menuLabel = "Assets/Shaders/Variants",
                 showFilters = true,
@@ -366,7 +360,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.ComputeShaderVariant,
-                name = "Compute Shader Variants",
+                displayName = "Compute Shader Variants",
                 menuOrder = 3,
                 menuLabel = "Assets/Shaders/Compute Variants",
                 showFilters = true,
@@ -388,7 +382,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.Package,
-                name = "Installed Packages",
+                displayName = "Installed Packages",
                 menuLabel = "Project/Packages/Installed",
                 menuOrder = 105,
                 onDrawToolbar = (viewManager) =>
@@ -404,7 +398,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.PackageDiagnostic,
-                name = "Package Diagnostics",
+                displayName = "Package Diagnostics",
                 menuLabel = "Project/Packages/Diagnostics",
                 menuOrder = 106,
                 onDrawToolbar = (viewManager) =>
@@ -419,7 +413,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.AudioClip,
-                name = "AudioClip",
+                displayName = "AudioClip",
                 menuLabel = "Assets/Meshes//Audio Clips",
                 menuOrder = 107,
                 descriptionWithIcon = true,
@@ -431,7 +425,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.Mesh,
-                name = "Meshes",
+                displayName = "Meshes",
                 menuLabel = "Assets/Meshes/Meshes",
                 menuOrder = 7,
                 descriptionWithIcon = true,
@@ -447,7 +441,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.Texture,
-                name = "Textures",
+                displayName = "Textures",
                 menuLabel = "Assets/Textures/Textures",
                 menuOrder = 6,
                 descriptionWithIcon = true,
@@ -465,7 +459,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ViewDescriptor.Register(new ViewDescriptor
                 {
                     category = IssueCategory.GenericInstance,
-                    name = "Generics",
+                    displayName = "Generics",
                     menuLabel = "Experimental/Generic Types Instantiation",
                     menuOrder = 90,
                     showAssemblySelection = true,
@@ -480,7 +474,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ViewDescriptor.Register(new ViewDescriptor
                 {
                     category = IssueCategory.PrecompiledAssembly,
-                    name = "Precompiled Assemblies",
+                    displayName = "Precompiled Assemblies",
                     menuLabel = "Experimental/Precompiled Assemblies",
                     menuOrder = 91,
                     showFilters = true,
@@ -492,7 +486,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.Assembly,
-                name = "Assemblies",
+                displayName = "Assemblies",
                 menuLabel = "Code/Assemblies",
                 menuOrder = 98,
                 showAssemblySelection = true,
@@ -505,7 +499,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.Code,
-                name = "Code",
+                displayName = "Code",
                 menuLabel = "Code/Diagnostics",
                 menuOrder = 0,
                 showAssemblySelection = true,
@@ -526,7 +520,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.CodeCompilerMessage,
-                name = "Compiler Messages",
+                displayName = "Compiler Messages",
                 menuOrder = 98,
                 menuLabel = "Code/C# Compiler Messages",
                 //showAssemblySelection = true,
@@ -545,7 +539,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.ProjectSetting,
-                name = "Settings",
+                displayName = "Settings",
                 menuLabel = "Project/Settings/Diagnostics",
                 menuOrder = 1,
                 showFilters = true,
@@ -571,7 +565,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.BuildStep,
-                name = "Build Steps",
+                displayName = "Build Steps",
                 menuLabel = "Build Report/Steps",
                 menuOrder = 100,
                 showFilters = true,
@@ -586,7 +580,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.BuildFile,
-                name = "Build Size",
+                displayName = "Build Size",
                 menuLabel = "Build Report/Size",
                 menuOrder = 101,
                 descriptionWithIcon = true,
@@ -1296,7 +1290,22 @@ namespace Unity.ProjectAuditor.Editor.UI
 #endif
                 Utility.ToolbarDropdownList(m_ViewDropdownItems,
                     m_ViewManager.activeViewIndex,
-                    (category) => {m_ViewManager.ChangeView((IssueCategory)category);}, GUILayout.Width(largeButtonWidth));
+                    (arg) =>
+                    {
+                        var category = (IssueCategory)arg;
+                        if (m_ProjectReport == null)
+                            return; // this happens from the summary view while the report is being generated
+                        if (!m_ProjectReport.HasCategory(category))
+                        {
+                            var displayName = m_ViewManager.GetView(category).desc.displayName;
+                            if (!EditorUtility.DisplayDialog(k_ProjectAuditorName, $"'{displayName}' analysis will now begin.", "Ok", "Cancel"))
+                                return; // do not analyze and change view
+
+                            AuditCategories(new[] {category});
+                        }
+
+                        m_ViewManager.ChangeView(category);
+                    }, GUILayout.Width(largeButtonWidth));
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {

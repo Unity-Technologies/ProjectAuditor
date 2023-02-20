@@ -5,23 +5,24 @@ using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
+using Unity.ProjectAuditor.Editor.TestUtils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     class MonoBehaviourEmptyMethodTests : TestFixtureBase
     {
-        TempAsset m_MonoBehaviourWithEmptyEventMethod;
-        TempAsset m_MonoBehaviourWithEmptyMethod;
-        TempAsset m_NotMonoBehaviourWithEmptyMethod;
+        TestAsset m_MonoBehaviourWithEmptyEventMethod;
+        TestAsset m_MonoBehaviourWithEmptyMethod;
+        TestAsset m_NotMonoBehaviourWithEmptyMethod;
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_MonoBehaviourWithEmptyEventMethod = new TempAsset("MonoBehaviourWithEmptyEventMethod.cs",
+            m_MonoBehaviourWithEmptyEventMethod = new TestAsset("MonoBehaviourWithEmptyEventMethod.cs",
                 "using UnityEngine; class MyBaseClass : MonoBehaviour { } class MonoBehaviourWithEmptyEventMethod : MyBaseClass { void Update() { ; } }"); // ';' should introduce a noop
-            m_MonoBehaviourWithEmptyMethod = new TempAsset("MonoBehaviourWithEmptyMethod.cs",
+            m_MonoBehaviourWithEmptyMethod = new TestAsset("MonoBehaviourWithEmptyMethod.cs",
                 "using UnityEngine; class MonoBehaviourWithEmptyMethod : MonoBehaviour{ void NotAnEvent() { } }");
-            m_NotMonoBehaviourWithEmptyMethod = new TempAsset("NotMonoBehaviourWithEmptyMethod.cs",
+            m_NotMonoBehaviourWithEmptyMethod = new TestAsset("NotMonoBehaviourWithEmptyMethod.cs",
                 "class NotMonoBehaviourWithEmptyMethod { void Update() { } }");
         }
 

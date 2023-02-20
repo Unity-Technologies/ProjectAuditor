@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     {
         public Type type;
         public IssueCategory category;
-        public string name;
+        public string displayName;
         public string menuLabel;
         public int menuOrder;
         public bool descriptionWithIcon;

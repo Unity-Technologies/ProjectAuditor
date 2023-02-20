@@ -3,7 +3,8 @@
     "references": [
         "Unity.ProjectAuditor.Editor",
         "Unity.ProjectAuditor.Editor.UI.Framework",
-	"Unity.ProjectAuditor.Editor.Utils"
+	    "Unity.ProjectAuditor.Editor.Utils",
+        "Unity.ProjectAuditor.Editor.TestUtils"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
