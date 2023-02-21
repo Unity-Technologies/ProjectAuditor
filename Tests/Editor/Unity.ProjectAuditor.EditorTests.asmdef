@@ -4,7 +4,7 @@
         "Unity.ProjectAuditor.Editor",
         "Unity.ProjectAuditor.Editor.UI.Framework",
 	    "Unity.ProjectAuditor.Editor.Utils",
-        "Unity.ProjectAuditor.Editor.TestUtils"
+        "Unity.ProjectAuditor.Editor.Tests.Common"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
