@@ -289,7 +289,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(FogStrippingAnalyzer.PAS1003));
 
             Assert.AreEqual(1, issues.Length);
-            string description = $"Graphics: FogMode '{fogMode}' shader variants is always included in the build.";
+            string description = $"Graphics: FogMode '{fogMode}' shader variants is always included in the build";
             Assert.AreEqual(description, issues[0].description);
 
             linearFogModeProperty.boolValue = linearEnabled;
