@@ -48,8 +48,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_TextureStreamingDisabledDescriptor = new Descriptor(
             PAS1007,
             "Quality: Texture streaming disabled",
-            Area.Quality,
-            "<b>Texture Streaming </b> is disabled. More mipmap textures will be loaded into memory on the GPU.",
+            Area.Memory,
+            "<b>Texture Streaming</b> is disabled. Texture memory utilization on GPU might be suboptimal.",
             "If your project contains many high resolution textures, enable Texture Streaming in <b>Project Settings ➔ Quality</b> ")
         {
             fixer = (issue =>
@@ -57,7 +57,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 EnableStreamingMipmap(issue.GetCustomPropertyInt32(0));
             }),
 
-            messageFormat = "Settings: Texture streaming on Quality Level '{0}' is turned off."
+            documentationUrl = "https://docs.unity3d.com/Manual/TextureStreaming.html",
+            messageFormat = "Quality: Texture streaming on Quality Level '{0}' is turned off"
         };
 
         public void Initialize(ProjectAuditorModule module)
@@ -66,6 +67,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_UsingLowQualityTexturesDescriptor);
             module.RegisterDescriptor(k_DefaultAsyncUploadTimeSliceDescriptor);
             module.RegisterDescriptor(k_DefaultAsyncUploadBufferSizeSliceDescriptor);
+            module.RegisterDescriptor(k_TextureStreamingDisabledDescriptor);
         }
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)

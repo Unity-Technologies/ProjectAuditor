@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             messageFormat = "Player: C++ Compiler Configuration is set to 'Debug'"
         };
 
-        private static readonly Descriptor k_LightmapStreamingEnabledDescriptor = new Descriptor(
+        static readonly Descriptor k_LightmapStreamingEnabledDescriptor = new Descriptor(
             PAS1006,
             "Player: Lightmaps Streaming Disabled",
             new[] { Area.GPU, Area.CPU },
