@@ -1,0 +1,36 @@
+// This file is generated. Do not modify by hand.
+// XML documentation file not found. To check if public methods have XML comments,
+// make sure the XML doc file is present and located next to the scraped dll
+namespace Unity.ProjectAuditor.Editor.Tests.Common
+{
+    public class TestAsset
+    {
+        public readonly string relativePath;
+        public static readonly string TempAssetsFolder;
+        public string fileName { get; }
+        public TestAsset(string fileName, byte[] byteContent) {}
+        public TestAsset(string fileName, string content) {}
+        public static void Cleanup();
+        public static TestAsset Save(UnityEngine.Object asset, string fileName);
+    }
+
+    public abstract class TestFixtureBase
+    {
+        protected string m_BuildPath;
+        protected Unity.ProjectAuditor.Editor.AssemblyUtils.CodeOptimization m_CodeOptimization = Unity.ProjectAuditor.Editor.AssemblyUtils.CodeOptimization.Release;
+        protected ProjectAuditorConfig m_Config;
+        protected UnityEditor.BuildTarget m_Platform;
+        protected ProjectAuditor m_ProjectAuditor;
+        protected ProjectAuditorSettingsProvider m_SettingsProvider;
+        protected TestFixtureBase() {}
+        protected ProjectIssue[] Analyze(System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
+        protected ProjectIssue[] Analyze(IssueCategory category, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
+        protected ProjectIssue[] AnalyzeAndFindAssetIssues(TestAsset testAsset, IssueCategory category = IssueCategory.Code);
+        protected ProjectIssue[] AnalyzeBuild(System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>), bool isDevelopment = true, string buildFileName = @"test", System.Action preBuildAction = default(System.Action), System.Action postBuildAction = default(System.Action));
+        protected ProjectIssue[] AnalyzeBuild(IssueCategory category, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>), bool isDevelopment = true, string buildFileName = @"test", System.Action preBuildAction = default(System.Action), System.Action postBuildAction = default(System.Action));
+        protected void Build(bool isDevelopment = true, string buildFileName = @"test", System.Action preBuildAction = default(System.Action), System.Action postBuildAction = default(System.Action));
+        protected void CleanupBuild();
+        [NUnit.Framework.OneTimeSetUp] public void FixtureSetUp();
+        [NUnit.Framework.OneTimeTearDown] public void FixtureTearDown();
+    }
+}

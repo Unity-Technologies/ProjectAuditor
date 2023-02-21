@@ -10,7 +10,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Unity.ProjectAuditor.Editor.TestUtils
+namespace Unity.ProjectAuditor.Editor.Tests.Common
 {
     public abstract class TestFixtureBase
     {

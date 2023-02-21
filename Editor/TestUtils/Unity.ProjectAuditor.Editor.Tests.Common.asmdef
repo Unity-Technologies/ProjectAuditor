@@ -1,5 +1,5 @@
 {
-    "name": "Unity.ProjectAuditor.Editor.TestUtils",
+    "name": "Unity.ProjectAuditor.Editor.Tests.Common",
     "references": [
         "Unity.ProjectAuditor.Editor",
         "Unity.ProjectAuditor.Editor.Utils"
