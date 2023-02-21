@@ -9,7 +9,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
     {
         internal static SerializedObject GetPlayerSettingsSerializedObject()
         {
-            var internalGetPlayerSettingsMethod = typeof(PlayerSettings).GetMethod("InternalGetPlayerSettingsObject", BindingFlags.Static | BindingFlags.NonPublic);
+            var internalGetPlayerSettingsMethod = typeof(PlayerSettings).GetMethod("InternalGetPlayerSettingsObject",
+                BindingFlags.Static | BindingFlags.NonPublic);
             if (internalGetPlayerSettingsMethod == null)
                 return null;
 
@@ -91,11 +92,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
             method.Invoke(null, new object[] {platform, value});
         }
 
-#if UNITY_2021_2_OR_NEWER
-        public static void GetDefaultTextureCompressionFormat(BuildTargetGroup buildTargetGroup, out int formatEnumIndex, out Array formatEnumValues)
+        public static void GetDefaultTextureCompressionFormat(BuildTargetGroup buildTargetGroup,
+            out int formatEnumIndex, out Array formatEnumValues)
         {
             formatEnumValues = default;
             formatEnumIndex = -1;
+#if UNITY_2021_2_OR_NEWER
 
             var method = typeof(PlayerSettings).GetMethod("GetDefaultTextureCompressionFormat",
                 BindingFlags.Static | BindingFlags.NonPublic);
@@ -107,8 +109,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             var enumType = format.GetType();
             formatEnumValues = Enum.GetValues(enumType);
             formatEnumIndex = (int)format;
-        }
-
 #endif
+        }
     }
 }
