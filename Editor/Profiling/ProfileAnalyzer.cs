@@ -94,7 +94,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
     public struct FrameInfo
     {
         public float TotalTimeMs;
-        public float TotalGcMemory;
+        public int TotalGcMemory;
 
         public MarkerStats[] MarkerStats;
     }
@@ -244,7 +244,16 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                     new MarkerDefinition(2, "EventMachine`2.Update()", CPUTimeArea.VisualScripting, CPUTimeSubarea.None, true),
                     new MarkerDefinition(2, "DecalProjector.Update()", CPUTimeArea.Rendering),
                     new MarkerDefinition(2, "EventSystem.Update()", CPUTimeArea.UI),
-                    new MarkerDefinition(2, ".Update()", CPUTimeArea.Behaviour, CPUTimeSubarea.None, true),
+
+                    new MarkerDefinition(2, ".Update()", CPUTimeArea.Behaviour, CPUTimeSubarea.None, true,
+                        new MarkerDefinition[]
+                        {
+                            new MarkerDefinition(3, "Physics.RaycastAll", CPUTimeArea.Behaviour),
+                            new MarkerDefinition(3, "Instantiate", CPUTimeArea.Behaviour),
+                            new MarkerDefinition(3, "AddComponent", CPUTimeArea.Behaviour),
+                        }
+                    ),
+                    new MarkerDefinition(2, "GC.Collect", CPUTimeArea.GC),
                 }
             ),
             new MarkerDefinition(1, "PreLateUpdate.ScriptRunBehaviourLateUpdate", CPUTimeArea.Behaviour, CPUTimeSubarea.None, false,
@@ -311,7 +320,12 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             new MarkerDefinition(1, "UGUI.Rendering.EmitWorldScreenspaceCameraGeometry", CPUTimeArea.UI),
 
             // Loading / Streaming
-            new MarkerDefinition(1, "EarlyUpdate.UpdatePreloading", CPUTimeArea.LoadStream),
+            new MarkerDefinition(1, "EarlyUpdate.UpdatePreloading", CPUTimeArea.LoadStream, CPUTimeSubarea.None, false,
+                new MarkerDefinition[]
+                {
+                    new MarkerDefinition(2, "GC.Collect", CPUTimeArea.GC),
+                }
+            ),
             new MarkerDefinition(1, "EarlyUpdate.UpdateStreamingManager", CPUTimeArea.LoadStream),
             new MarkerDefinition(1, "Initialization.AsyncUploadTimeSlicedUpdate", CPUTimeArea.LoadStream),
             new MarkerDefinition(1, "EarlyUpdate.UpdatePreloading", CPUTimeArea.LoadStream),
@@ -370,7 +384,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                 report.FrameInfos[frameIndex].TotalTimeMs = frameDataHierarchy.frameTimeMs;
 
                 var rootId = frameDataHierarchy.GetRootItemID();
-                report.FrameInfos[frameIndex].TotalGcMemory = frameDataHierarchy.GetItemColumnDataAsFloat(rootId, HierarchyFrameDataView.columnGcMemory);
+                report.FrameInfos[frameIndex].TotalGcMemory = (int)frameDataHierarchy.GetItemColumnDataAsFloat(rootId, HierarchyFrameDataView.columnGcMemory);
             }
         }
 
@@ -382,7 +396,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
             // PlayerLoop: Collect child markers of PlayerLoop
             FindHierarchyItemsIdByMarkerString(frameDataHierarchy, frameDataHierarchy.GetRootItemID(),
-                "PlayerLoop", false, topLevelItems);
+                "PlayerLoop", 0, false, topLevelItems);
 
             foreach (var topLevelItem in topLevelItems)
             {
@@ -391,15 +405,16 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
                 foreach (var childItemId in children)
                 {
-                    var id = frameDataHierarchy.GetItemMarkerID(childItemId);
-                    var name = frameDataHierarchy.GetMarkerName(id);
-
-                    var frameMs = frameDataHierarchy.GetItemColumnDataAsFloat(childItemId, HierarchyFrameDataView.columnTotalTime);
                     var framePercent = frameDataHierarchy.GetItemColumnDataAsFloat(childItemId, HierarchyFrameDataView.columnTotalPercent);
-                    var frameGcMemory = frameDataHierarchy.GetItemColumnDataAsFloat(childItemId, HierarchyFrameDataView.columnGcMemory);
 
                     if (framePercent > k_MinProfilerMarkerPercentage)
                     {
+                        var id = frameDataHierarchy.GetItemMarkerID(childItemId);
+                        var name = frameDataHierarchy.GetMarkerName(id);
+                        var frameMs = frameDataHierarchy.GetItemColumnDataAsFloat(childItemId, HierarchyFrameDataView.columnTotalTime);
+                        var frameGcMemory = frameDataHierarchy.GetItemColumnDataAsFloat(childItemId, HierarchyFrameDataView.columnGcMemory);
+                        var nameHash = name.GetHashCode();
+
                         MarkerDefinition foundMarkerDefinition = new MarkerDefinition(-1, "none", CPUTimeArea.Animation);
                         bool hasFoundMarker = false;
                         foreach (var markerDef in MarkerDefinitions)
@@ -411,7 +426,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                                 break;
                             }
 
-                            if (!markerDef.NameIsSubString && markerDef.Name == name)
+                            if (!markerDef.NameIsSubString && nameHash == markerDef.NameHash && markerDef.Name == name)
                             {
                                 hasFoundMarker = true;
                                 foundMarkerDefinition = markerDef;
@@ -426,45 +441,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
                         if (hasFoundMarker && foundMarkerDefinition.SubMarkers != null && foundMarkerDefinition.SubMarkers.Length > 0)
                         {
-                            foreach (var subMarkerDef in foundMarkerDefinition.SubMarkers)
-                            {
-                                List<int> childItems = new List<int>();
-                                FindHierarchyItemsIdByMarkerString(frameDataHierarchy, childItemId, subMarkerDef.Name,
-                                    subMarkerDef.NameIsSubString, childItems);
-
-                                if (childItems.Count > 0)
-                                {
-                                    foreach (var subItemId in childItems)
-                                    {
-                                        var subMarkerFrameMs = frameDataHierarchy.GetItemColumnDataAsFloat(subItemId,
-                                            HierarchyFrameDataView.columnTotalTime);
-                                        var subMarkerFramePercent = frameDataHierarchy.GetItemColumnDataAsFloat(subItemId,
-                                            HierarchyFrameDataView.columnTotalPercent);
-                                        var subMarkerFrameGcMemory = frameDataHierarchy.GetItemColumnDataAsFloat(subItemId,
-                                            HierarchyFrameDataView.columnGcMemory);
-
-                                        subMarkerTotalTimeMs += subMarkerFrameMs;
-                                        subMarkerTotalPercent += subMarkerFramePercent;
-                                        subMarkerTotalGcMemory += subMarkerFrameGcMemory;
-
-                                        var markerDef = subMarkerDef;
-                                        if (subMarkerDef.NameIsSubString)
-                                        {
-                                            var subMarkerID = frameDataHierarchy.GetItemMarkerID(subItemId);
-                                            markerDef.Name = frameDataHierarchy.GetMarkerName(subMarkerID);
-                                        }
-
-                                        var subMarkerStats = new MarkerStats
-                                        {
-                                            Definition = markerDef,
-                                            FrameTimeMs = subMarkerFrameMs,
-                                            FrameTimePercentage = subMarkerFramePercent,
-                                            FrameGcMemory = subMarkerFrameGcMemory
-                                        };
-                                        allMarkerStats.Add(subMarkerStats);
-                                    }
-                                }
-                            }
+                            CollectSubMarkers(frameDataHierarchy, foundMarkerDefinition, childItemId, allMarkerStats, ref subMarkerTotalPercent, ref subMarkerTotalGcMemory, ref subMarkerTotalTimeMs);
                         }
 
                         if (hasFoundMarker)
@@ -506,17 +483,79 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             // EditorLoop / Profiler: Collect markers we can ignore for standalone/release
             topLevelItems.Clear();
             FindHierarchyItemsIdByMarkerString(frameDataHierarchy, frameDataHierarchy.GetRootItemID(),
-                "EditorLoop", false, topLevelItems);
+                "EditorLoop", 0, false, topLevelItems);
 
             CollectEditorProfilerMarkers(frameDataHierarchy, topLevelItems, ref allMarkerStats);
 
             topLevelItems.Clear();
             FindHierarchyItemsIdByMarkerString(frameDataHierarchy, frameDataHierarchy.GetRootItemID(),
-                "Profiler.", true, topLevelItems);
+                "Profiler.", 0, true, topLevelItems);
 
             CollectEditorProfilerMarkers(frameDataHierarchy, topLevelItems, ref allMarkerStats);
 
             report.FrameInfos[frameId].MarkerStats = allMarkerStats.ToArray();
+        }
+
+        private static void CollectSubMarkers(HierarchyFrameDataView frameDataHierarchy,
+            MarkerDefinition parentMarkerDefinition, int childItemId, List<MarkerStats> allMarkerStats,
+            ref float subMarkerTotalPercent, ref float subMarkerTotalGcMemory, ref float subMarkerTotalTimeMs)
+        {
+            foreach (var markerDef in parentMarkerDefinition.SubMarkers)
+            {
+                List<int> childItems = new List<int>();
+                FindHierarchyItemsIdByMarkerString(frameDataHierarchy, childItemId, markerDef.Name, 0,
+                    markerDef.NameIsSubString, childItems);
+
+                if (childItems.Count > 0)
+                {
+                    foreach (var itemID in childItems)
+                    {
+                        var markerFrameMs = frameDataHierarchy.GetItemColumnDataAsFloat(itemID,
+                            HierarchyFrameDataView.columnTotalTime);
+                        var markerFramePercent = frameDataHierarchy.GetItemColumnDataAsFloat(itemID,
+                            HierarchyFrameDataView.columnTotalPercent);
+                        var markerFrameGcMemory = frameDataHierarchy.GetItemColumnDataAsFloat(itemID,
+                            HierarchyFrameDataView.columnGcMemory);
+
+                        var finalMarkerDef = markerDef;
+                        if (markerDef.NameIsSubString)
+                        {
+                            var markerID = frameDataHierarchy.GetItemMarkerID(itemID);
+                            finalMarkerDef.Name = frameDataHierarchy.GetMarkerName(markerID);
+                        }
+
+                        float subMarkerPercent = 0;
+                        float subMarkerGcMemory = 0;
+                        float subMarkerTimeMs = 0;
+
+                        if (markerDef.SubMarkers != null && markerDef.SubMarkers.Length > 0)
+                        {
+                            CollectSubMarkers(frameDataHierarchy, markerDef, itemID, allMarkerStats, ref subMarkerPercent, ref subMarkerGcMemory, ref subMarkerTimeMs);
+
+                            markerFrameMs += subMarkerTimeMs;
+                            markerFramePercent += subMarkerPercent;
+                            markerFrameGcMemory += subMarkerGcMemory;
+                        }
+
+                        subMarkerTotalTimeMs += markerFrameMs;
+                        subMarkerTotalPercent += markerFramePercent;
+                        subMarkerTotalGcMemory += markerFrameGcMemory;
+
+                        var markerStats = new MarkerStats
+                        {
+                            Definition = finalMarkerDef,
+                            FrameTimeMs = markerFrameMs,
+                            FrameTimePercentage = markerFramePercent,
+                            FrameGcMemory = markerFrameGcMemory,
+                            SubMarkersPercent = subMarkerPercent,
+                            SubMarkersTimeMs = subMarkerTimeMs,
+                            SubMarkersGcMemory = subMarkerGcMemory
+                        };
+
+                        allMarkerStats.Add(markerStats);
+                    }
+                }
+            }
         }
 
         static void CollectEditorProfilerMarkers(HierarchyFrameDataView frameDataHierarchy, List<int> topLevelItems,
@@ -550,7 +589,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
         }
 
         static void FindHierarchyItemsIdByMarkerString(HierarchyFrameDataView frameDataHierarchy, int itemId,
-            string markerStringToFind, bool markerStringIsSubString, List<int> foundItems)
+            string markerStringToFind, int markerStringToFindHash, bool markerStringIsSubString, List<int> foundItems)
         {
             var markerId = frameDataHierarchy.GetItemMarkerID(itemId);
             var markerName = frameDataHierarchy.GetMarkerName(markerId);
@@ -561,7 +600,12 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                 return;
             }
 
-            if (markerName == markerStringToFind)
+            if (markerStringToFindHash == 0)
+                markerStringToFindHash = markerStringToFind.GetHashCode();
+
+            var markerNameHash = markerName.GetHashCode();
+
+            if (markerNameHash == markerStringToFindHash && markerName == markerStringToFind)
             {
                 foundItems.Add(itemId);
                 return;
@@ -572,7 +616,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
             foreach (var childItem in children)
             {
-                FindHierarchyItemsIdByMarkerString(frameDataHierarchy, childItem, markerStringToFind, markerStringIsSubString, foundItems);
+                FindHierarchyItemsIdByMarkerString(frameDataHierarchy, childItem, markerStringToFind, markerStringToFindHash, markerStringIsSubString, foundItems);
             }
         }
 
