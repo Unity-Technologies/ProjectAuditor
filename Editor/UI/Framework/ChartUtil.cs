@@ -20,6 +20,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        const int k_NumberLabelWidth = 60;
         const int k_RowSize = 22;
 
         static readonly Draw2D s_2D = new Draw2D("Unlit/ProjectAuditor");
@@ -94,7 +95,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             DrawLine();
 
-            var guiElementSize = 60;
             EditorGUILayout.BeginHorizontal(s_Row, GUILayout.Height(10));
 
             var rect = EditorGUILayout.GetControlRect(GUILayout.Width(10), GUILayout.Height(20));
@@ -107,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.LabelField(text, SharedStyles.BoldLabel);
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField(String.Format(labelFormat, count.ToString(numberFormat)), SharedStyles.BoldLabel, GUILayout.Width(guiElementSize));
+            EditorGUILayout.LabelField(String.Format(labelFormat, count.ToString(numberFormat)), SharedStyles.BoldLabel, GUILayout.Width(k_NumberLabelWidth));
 
             EditorGUILayout.EndHorizontal();
         }
