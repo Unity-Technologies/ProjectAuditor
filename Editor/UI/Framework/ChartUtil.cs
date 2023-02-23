@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
             }
 
-            EditorGUILayout.Space(3);
+            EditorGUILayout.Space();
 
             int firstColumnNum = (inValues.Length + 1) / 2;
             using (new EditorGUILayout.HorizontalScope())
