@@ -114,6 +114,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
         public float SlowFrameTime;
         public float FastFrameTime;
+        public float PercentileCutoffFrameTime;
 
         // Frame timing stats for N-th percentile of fastest frames
         public int NumSlowFrameTimeFrames;
@@ -244,6 +245,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                     new MarkerDefinition(2, "EventMachine`2.Update()", CPUTimeArea.VisualScripting, CPUTimeSubarea.None, true),
                     new MarkerDefinition(2, "DecalProjector.Update()", CPUTimeArea.Rendering),
                     new MarkerDefinition(2, "EventSystem.Update()", CPUTimeArea.UI),
+                    new MarkerDefinition(2, "CinemachineVirtualCameraBase.Update()", CPUTimeArea.Cinemachine),
 
                     new MarkerDefinition(2, ".Update()", CPUTimeArea.Behaviour, CPUTimeSubarea.None, true,
                         new MarkerDefinition[]
@@ -260,8 +262,8 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                 new MarkerDefinition[]
                 {
                     new MarkerDefinition(2, "EventMachine`2.LateUpdate()", CPUTimeArea.VisualScripting, CPUTimeSubarea.None, true),
-                    new MarkerDefinition(2, "CinemachineBrain.LateUpdate()", CPUTimeArea.Cinemachine, CPUTimeSubarea.None, false),
-                    new MarkerDefinition(2, "VolumetricFog.LateUpdate()", CPUTimeArea.Rendering, CPUTimeSubarea.None, false),
+                    new MarkerDefinition(2, "CinemachineBrain.LateUpdate()", CPUTimeArea.Cinemachine),
+                    new MarkerDefinition(2, "VolumetricFog.LateUpdate()", CPUTimeArea.Rendering),
                     new MarkerDefinition(2, "DecalProjector.LateUpdate()", CPUTimeArea.Rendering),
                     new MarkerDefinition(2, ".LateUpdate()", CPUTimeArea.Behaviour, CPUTimeSubarea.None, true),
                 }
@@ -336,14 +338,14 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             // TODO: Needs another pass: some are potential child markers of other markers; markers that run between other CPU main thread markers could be categorized as "Rendering"?
             new MarkerDefinition(1, "WaitForLastPresent", CPUTimeArea.WaitMarkers, CPUTimeSubarea.None, true),
             new MarkerDefinition(1, "WaitForTargetFPS", CPUTimeArea.WaitMarkers, CPUTimeSubarea.None, true),
-            new MarkerDefinition(1, "Gfx.PresentFrame", CPUTimeArea.WaitMarkers, CPUTimeSubarea.None, false),
-            new MarkerDefinition(1, "Gfx.WaitForPresentOnGfxThread", CPUTimeArea.WaitMarkers, CPUTimeSubarea.None, false),
-            new MarkerDefinition(1, "Gfx.WaitForRenderThread", CPUTimeArea.WaitMarkers, CPUTimeSubarea.None, false),
+            new MarkerDefinition(1, "Gfx.PresentFrame", CPUTimeArea.WaitMarkers),
+            new MarkerDefinition(1, "Gfx.WaitForPresentOnGfxThread", CPUTimeArea.WaitMarkers),
+            new MarkerDefinition(1, "Gfx.WaitForRenderThread", CPUTimeArea.WaitMarkers),
             new MarkerDefinition(1, "PostLateUpdate.PresentAfterDraw", CPUTimeArea.WaitMarkers),
 
             // Editor and Profiler markers
-            new MarkerDefinition(1, "PostLateUpdate.ProfilerEndFrame", CPUTimeArea.EditorAndProfiler, CPUTimeSubarea.None, false),
-            new MarkerDefinition(1, "PostLateUpdate.ProfilerSynchronizeStats", CPUTimeArea.EditorAndProfiler, CPUTimeSubarea.None, false),
+            new MarkerDefinition(1, "PostLateUpdate.ProfilerEndFrame", CPUTimeArea.EditorAndProfiler),
+            new MarkerDefinition(1, "PostLateUpdate.ProfilerSynchronizeStats", CPUTimeArea.EditorAndProfiler),
             new MarkerDefinition(1, "PostLateUpdate.UpdateResolution", CPUTimeArea.EditorAndProfiler)
         };
 
@@ -698,6 +700,8 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
             report.MaxPercentileFrameTime = maxPercentileFrameTime;
             report.PercentileFrameCount = percentileFrameCount;
+
+            report.PercentileCutoffFrameTime = percentileCutoffMs;
         }
     }
 }

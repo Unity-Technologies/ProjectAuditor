@@ -714,7 +714,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
     public struct FrameInfo
     {
         public MarkerStats[] MarkerStats;
-        public float TotalGcMemory;
+        public int TotalGcMemory;
         public float TotalTimeMs;
     }
 
@@ -767,6 +767,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
         public int NumFastFrameTimeFrames;
         public int NumFrames;
         public int NumSlowFrameTimeFrames;
+        public float PercentileCutoffFrameTime;
         public int PercentileFrameCount;
         public float SlowFrameTime;
         public FrameInfo[] GetFramesWithMarkerPredicate(ProfileReport.MarkerStatConditionDelegate markerPredicate, int startFrameIndex, int endFrameIndex);
