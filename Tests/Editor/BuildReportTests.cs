@@ -5,7 +5,7 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Build;
 using Unity.ProjectAuditor.Editor.Modules;
-using Unity.ProjectAuditor.Editor.TestUtils;
+using Unity.ProjectAuditor.Editor.Tests.Common;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;

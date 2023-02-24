@@ -55,6 +55,8 @@ This is a full list of all builtin settings diagnostics:
 | PAS1003 | Fog Mode Stripping						    | Graphics  | Any                      |
 | PAS1004 | IL2CPP Compiler Master						| Player    | Any                      |
 | PAS1005 | IL2CPP Compiler Debug						| Player    | Any                      |
+| PAS1006 | LightMap Streaming						    | Player    | Any                      |
+| PAS1007 | Texture Streaming Enabled                   | Quality   | Any                      |
 
 
 # Asset Diagnostics
@@ -65,5 +67,6 @@ Builtin asset-specific diagnostics:
 | PAT0000 | Texture: Mipmaps not enabled                   | Graphics  | Any                      |
 | PAT0001 | Texture: Mipmaps enabled on Sprite/UI texture  | Graphics  | Any                      |
 | PAT0002 | Texture: Read/Write enabled                    | Graphics  | Any                      |
+| PAT0003 | Texture: Streaming Mipmaps not enabled         | Graphics  | Any                      |
 | PAM0000 | Mesh: Read/Write enabled                       | Graphics  | Any                      |
 | PAM0001 | Mesh: Index Format is 32 bits                  | Graphics  | Any                      |

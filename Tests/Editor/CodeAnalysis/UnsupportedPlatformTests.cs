@@ -1,7 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.TestUtils;
+using Unity.ProjectAuditor.Editor.Tests.Common;
 using UnityEditor;
 using UnityEditor.TestTools;
 

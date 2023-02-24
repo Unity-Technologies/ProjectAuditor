@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 RemoveFogStripping();
             }),
 
-            messageFormat = "Graphics: FogMode '{0}' shader variants is always included in the build."
+            messageFormat = "Graphics: FogMode '{0}' shader variants is always included in the build"
         };
 
         public void Initialize(ProjectAuditorModule module)

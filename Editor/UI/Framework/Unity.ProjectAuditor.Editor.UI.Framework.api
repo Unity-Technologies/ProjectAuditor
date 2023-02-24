@@ -74,6 +74,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
     }
 
+    public static class ChartUtil
+    {
+        public static void DrawHorizontalStackedBar(string title, ChartUtil.Element[] inValues, string labelFormat = @"{0}", string numberFormat = @"#");
+        public struct Element
+        {
+            public UnityEngine.Color Color;
+            public string Label;
+            public float Value;
+            public Element(string label, float value, UnityEngine.Color color) {}
+        }
+    }
+
     public class DiagnosticView : AnalysisView
     {
         public DiagnosticView(ViewManager viewManager) {}

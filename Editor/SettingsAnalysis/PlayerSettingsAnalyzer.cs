@@ -5,6 +5,7 @@ using System.Reflection;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -19,6 +20,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         internal const string PAS0033 = nameof(PAS0033);
         internal const string PAS1004 = nameof(PAS1004);
         internal const string PAS1005 = nameof(PAS1005);
+        internal const string PAS1006 = nameof(PAS1006);
 
         static readonly Descriptor k_AccelerometerDescriptor = new Descriptor(
             PAS0002,
@@ -79,6 +81,20 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             messageFormat = "Player: C++ Compiler Configuration is set to 'Debug'"
         };
 
+        static readonly Descriptor k_LightmapStreamingEnabledDescriptor = new Descriptor(
+            PAS1006,
+            "Player: Lightmaps Streaming Disabled",
+            new[] { Area.GPU, Area.CPU },
+            "<b>Lightmap Streaming</b> is not enabled. This may lead to an increase of GPU memory",
+            "To reduce GPU memory, turn on Lightmap Streaming at <b>Player Settings ➔ Other Settings ➔ Lightmap Streaming</b>.")
+        {
+            fixer = (issue =>
+            {
+                var buildGroupTarget = (BuildTargetGroup)issue.GetCustomPropertyInt32(0);
+                PlayerSettingsUtil.SetLightmapStreaming(buildGroupTarget, true);
+            }),
+        };
+
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_AccelerometerDescriptor);
@@ -86,6 +102,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_SpeakerModeDescriptor);
             module.RegisterDescriptor(k_IL2CPPCompilerConfigurationMasterDescriptor);
             module.RegisterDescriptor(k_IL2CPPCompilerConfigurationDebugDescriptor);
+            module.RegisterDescriptor(k_LightmapStreamingEnabledDescriptor);
         }
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
@@ -113,6 +130,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Debug, projectAuditorParams))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationDebugDescriptor)
+                    .WithLocation("Project/Player");
+            }
+
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.platform);
+            if (!PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup))
+            {
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_LightmapStreamingEnabledDescriptor).
+                    WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }
         }

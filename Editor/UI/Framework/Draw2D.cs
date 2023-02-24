@@ -22,21 +22,27 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Draw2D(string shaderName)
         {
             m_ShaderName = shaderName;
-            SetupMaterial();
+            CheckAndSetupMaterial();
         }
 
-        bool SetupMaterial()
+        bool CheckAndSetupMaterial()
         {
-            if (m_Material != null)
-                return true;
-
-            var shader = Shader.Find(m_ShaderName);
-            if (shader == null)
+            if (m_Material == null)
             {
-                Debug.LogError("Project Auditor: Could not find shader " + m_ShaderName);
-                return false;
+                var shader = Shader.Find(m_ShaderName);
+                if (shader == null)
+                {
+                    Debug.LogFormat("Unable to locate shader {0}", m_ShaderName);
+                    return false;
+                }
+
+                m_Material = new Material(shader);
+                if (m_Material == null)
+                {
+                    Debug.LogFormat("Unable to create material for {0}", m_ShaderName);
+                    return false;
+                }
             }
-            m_Material = new Material(shader);
 
             return true;
         }
@@ -61,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_ClipRect = new Vector4(clipRect.x, clipRect.y, clipRect.x + clipRect.width, clipRect.y + clipRect.height);
             m_ClipRectEnabled = true;
 
-            if (!IsMaterialValid())
+            if (CheckAndSetupMaterial())
                 return;
 
             m_Material.SetFloat("_UseClipRect", m_ClipRectEnabled ? 1f : 0f);
@@ -72,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             m_ClipRectEnabled = false;
 
-            if (!IsMaterialValid())
+            if (CheckAndSetupMaterial())
                 return;
 
             m_Material.SetFloat("_UseClipRect", m_ClipRectEnabled ? 1f : 0f);
@@ -89,7 +95,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (Event.current.type != EventType.Repaint)
                 return false;
 
-            if (!IsMaterialValid())
+            if (!CheckAndSetupMaterial())
                 return false;
 
             m_Material.SetPass(0);
