@@ -229,6 +229,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
     public class CallTreeNode : Unity.ProjectAuditor.Editor.Core.DependencyNode
     {
         public readonly string assemblyName;
+        public readonly string declaringType;
         public readonly string methodName = @"(anonymous)";
         public readonly string typeName;
         public override string GetName();

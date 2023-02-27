@@ -13,6 +13,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         public readonly string assemblyName;
         public readonly string methodName;
         public readonly string typeName;
+        public readonly string declaringType;
 
         internal CallTreeNode(MethodReference methodReference, CallTreeNode caller = null)
         {
@@ -55,6 +56,8 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                 typeName = methodReference.DeclaringType.Name;
                 methodName = methodReference.Name;
             }
+
+            declaringType = methodReference.DeclaringType.ToString();
 
             if (caller != null)
                 AddChild(caller);
