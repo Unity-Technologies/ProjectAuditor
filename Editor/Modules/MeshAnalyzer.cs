@@ -18,9 +18,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             PAM0000,
             "Mesh: Read/Write enabled",
             Area.Memory,
-            "Mesh Read/Write flag is enabled. This causes the mesh data to be duplicated in memory." +
-            "Thus, this option should only be used if the mesh is read or written to at run-time, e.g. if used as a MeshCollider or a BlendShape. Note that Polybrush meshes may set this by default, so again save to disable if not modified at run-time." +
-            "Consider disabling Read/Write using the <b>Read/Write Enabled</b> option in the mesh inspector."
+            "Mesh Read/Write flag is enabled. This causes the mesh data to be duplicated in memory.",
+            "If not required, consider disabling the <b>Read/Write Enabled</b> option in the mesh inspector."
         )
         {
             messageFormat = "Mesh '{0}' Read/Write is enabled",

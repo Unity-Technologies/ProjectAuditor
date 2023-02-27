@@ -60,9 +60,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             PAT0002,
             "Texture: Read/Write enabled",
             Area.Memory,
-            "Mesh Read/Write flag is enabled. This causes the texture data to be duplicated in memory." +
-            "Thus, this option should only be used if the texture is read or written to at run-time." +
-            "Consider disabling Read/Write using the <b>Read/Write Enabled</b> option in the texture inspector."
+            "Mesh Read/Write flag is enabled. This causes the texture data to be duplicated in memory.",
+            "If not required, consider disabling the <b>Read/Write Enabled</b> option in the texture inspector."
         )
         {
             messageFormat = "Texture '{0}' Read/Write is enabled",
