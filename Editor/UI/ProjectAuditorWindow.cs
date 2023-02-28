@@ -250,8 +250,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     if (m_ViewManager.GetActiveView().desc.category != IssueCategory.MetaData)
                     {
-                        GUILayout.FlexibleSpace();
-
                         DrawStatusBar();
                     }
                 }

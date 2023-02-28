@@ -195,7 +195,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var selectedItems = m_Table.GetSelectedItems();
             var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
 
-            using (new EditorGUILayout.HorizontalScope(GUI.skin.box, GUILayout.MinHeight(400)))
+            using (new EditorGUILayout.HorizontalScope(GUI.skin.box, GUILayout.ExpandHeight(true)))
             {
                 DrawTable();
 
