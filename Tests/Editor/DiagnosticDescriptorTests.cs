@@ -318,9 +318,9 @@ namespace Unity.ProjectAuditor.EditorTests
         public void DiagnosticDescriptor_UnsupportedPlatform_IsNotLoaded()
         {
             var descriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, "ProjectSettings");
-            var platDescriptor = descriptors.FirstOrDefault(d => d.id.Equals("PAS0000"));
+            var platDescriptor = descriptors.FirstOrDefault(d => d.id.Equals("PAS0010"));
 
-            // PAS0000 should only be available if iOS is supported
+            // PAS0010 should only be available if WebGL is supported
             Assert.IsNull(platDescriptor);
         }
     }
