@@ -66,12 +66,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             RegisterDescriptor(k_StreamingAssetsFolderDescriptor);
         }
 
-        public override void RegisterDescriptor(Descriptor descriptor)
-        {
-            if (!m_Descriptors.Add(descriptor))
-                throw new Exception("Duplicate descriptor with id: " + descriptor.id);
-        }
-
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var settings = projectAuditorParams.settings;

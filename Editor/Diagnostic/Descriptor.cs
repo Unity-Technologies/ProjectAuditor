@@ -74,7 +74,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public string method;
         public string value;
 
-        internal Descriptor(string id, string title, string[] areas, string description = null, string solution = null)
+        internal Descriptor(string id, string title, string[] areas, string description, string solution)
         {
             this.id = id;
             this.title = title;
@@ -88,12 +88,12 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             defaultSeverity = Severity.Moderate;
         }
 
-        public Descriptor(string id, string title, Area area, string description = null, string solution = null)
+        public Descriptor(string id, string title, Area area, string description, string solution)
             : this(id, title, new[] {area.ToString()}, description, solution)
         {
         }
 
-        public Descriptor(string id, string title, Area[] areas, string description = null, string solution = null)
+        public Descriptor(string id, string title, Area[] areas, string description, string solution)
             : this(id, title, areas.Select(a => a.ToString()).ToArray(), description, solution)
         {
         }

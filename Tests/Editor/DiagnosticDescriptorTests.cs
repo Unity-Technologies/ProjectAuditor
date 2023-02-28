@@ -1,14 +1,11 @@
 using System;
 using System.Collections;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -17,10 +14,10 @@ using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class ProblemDescriptorTests
+    class DiagnosticDescriptorTests
     {
         [Test]
-        public void ProblemDescriptor_Comparison_Works()
+        public void DiagnosticDescriptor_Comparison_Works()
         {
             var a = new Descriptor
                 (
@@ -49,7 +46,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptor_Hash_IsId()
+        public void DiagnosticDescriptor_Hash_IsId()
         {
             var p = new Descriptor
                 (
@@ -64,7 +61,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptor_Version_IsCompatible()
+        public void DiagnosticDescriptor_Version_IsCompatible()
         {
             var desc = new Descriptor
                 (
@@ -114,7 +111,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptor_MultipleAreas_AreCorrect()
+        public void DiagnosticDescriptor_MultipleAreas_AreCorrect()
         {
             var desc = new Descriptor
                 (
@@ -130,26 +127,30 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptor_AnyPlatform_IsCompatible()
+        public void DiagnosticDescriptor_AnyPlatform_IsCompatible()
         {
             var desc = new Descriptor
                 (
                 "TD2001",
                 "test",
-                new[] {Area.CPU}
+                new[] {Area.CPU},
+                "this is not actually a problem",
+                "do nothing"
                 );
 
             Assert.True(DescriptorLoader.IsPlatformCompatible(desc));
         }
 
         [Test]
-        public void ProblemDescriptor_Platform_IsCompatible()
+        public void DiagnosticDescriptor_Platform_IsCompatible()
         {
             var desc = new Descriptor
                 (
                 "TD2001",
                 "test",
-                new[] {Area.CPU}
+                new[] {Area.CPU},
+                "this is not actually a problem",
+                "do nothing"
                 )
             {
 #if UNITY_EDITOR_WIN
@@ -165,13 +166,15 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptor_Platform_IsNotCompatible()
+        public void DiagnosticDescriptor_Platform_IsNotCompatible()
         {
             var desc = new Descriptor
                 (
                 "TD2001",
                 "test",
-                new[] {Area.CPU}
+                new[] {Area.CPU},
+                "this is not actually a problem",
+                "do nothing"
                 )
             {
                 platforms = new[] { BuildTarget.Android.ToString() }  // assuming Android is not installed by default
@@ -181,16 +184,40 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        [TestCase("ApiDatabase")]
-        [TestCase("ProjectSettings")]
-        public void ProblemDescriptor_Descriptors_AreCorrect(string jsonFilename)
+        public void DiagnosticDescriptor_Descriptor_IsRegistered()
+        {
+            var desc = new Descriptor
+                (
+                "TD2001",
+                "test",
+                new[] { Area.CPU },
+                "this is not actually a problem",
+                "do nothing"
+                );
+
+            var projectAuditor = new Editor.ProjectAuditor();
+
+            projectAuditor.GetModules(IssueCategory.Code)[0].RegisterDescriptor(desc);
+
+            var descriptors = projectAuditor.GetDescriptors().ToList();
+
+            Assert.Contains(desc, descriptors, "Descriptor {0} is not registered", desc.id);
+        }
+
+        [Test]
+        public void DiagnosticDescriptor_Descriptors_AreValid()
         {
             var regExp = new Regex("^[a-z]{3}[0-9]{4}", RegexOptions.IgnoreCase);
-            var descriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, jsonFilename);
+
+            var projectAuditor = new Editor.ProjectAuditor();
+            var descriptors = projectAuditor.GetDescriptors();
             foreach (var descriptor in descriptors)
             {
-                Assert.NotNull(descriptor.id);
-                Assert.True(regExp.IsMatch(descriptor.id), "Descriptor id format is not valid: " + descriptor.id);
+                Assert.IsFalse(string.IsNullOrEmpty(descriptor.id), "Descriptor has no id (title: {0})", descriptor.title);
+                Assert.IsTrue(regExp.IsMatch(descriptor.id), "Descriptor id format is not valid: " + descriptor.id);
+                Assert.IsFalse(string.IsNullOrEmpty(descriptor.title), "Descriptor {0} has no title", descriptor.id);
+                Assert.IsFalse(string.IsNullOrEmpty(descriptor.description), "Descriptor {0} has no description", descriptor.id);
+                Assert.IsFalse(string.IsNullOrEmpty(descriptor.solution), "Descriptor {0} has no solution", descriptor.id);
                 Assert.NotNull(descriptor.areas);
             }
         }
@@ -198,7 +225,22 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         [TestCase("ApiDatabase")]
         [TestCase("ProjectSettings")]
-        public void ProblemDescriptor_TypeAndMethods_Exist(string jsonFilename)
+        public void DiagnosticDescriptor_Descriptors_AreRegistered(string jsonFilename)
+        {
+            var projectAuditor = new Editor.ProjectAuditor();
+            var descriptors = projectAuditor.GetDescriptors();
+
+            var loadedDescriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, jsonFilename);
+            foreach (var loadedDescriptor in loadedDescriptors)
+            {
+                Assert.Contains(loadedDescriptor, descriptors, "Descriptor {0} is not registered", loadedDescriptor.id);
+            }
+        }
+
+        [Test]
+        [TestCase("ApiDatabase")]
+        [TestCase("ProjectSettings")]
+        public void DiagnosticDescriptor_TypeAndMethods_Exist(string jsonFilename)
         {
             var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes()).ToArray();
             var skippableMethodNames = new[]
@@ -213,10 +255,6 @@ namespace Unity.ProjectAuditor.EditorTests
             var descriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, jsonFilename);
             foreach (var desc in descriptors)
             {
-                Assert.False(string.IsNullOrEmpty(desc.id));
-                Assert.False(string.IsNullOrEmpty(desc.description), desc.id + " has no problem description");
-                Assert.False(string.IsNullOrEmpty(desc.solution), desc.id + " has no solution description");
-
                 var type = types.FirstOrDefault(t => t.FullName.Equals(desc.type));
 
                 Assert.True((desc.method.Equals("*") || type != null), "Invalid Type : " + desc.type);
@@ -237,11 +275,10 @@ namespace Unity.ProjectAuditor.EditorTests
 
 #if UNITY_2019_1_OR_NEWER
         [Test]
-        [TestCase("ApiDatabase")]
-        [TestCase("ProjectSettings")]
-        public void ProblemDescriptor_Areas_Exist(string jsonFilename)
+        public void DiagnosticDescriptor_Areas_Exist()
         {
-            var descriptors = Json.FromFile<Descriptor>(PathUtils.Combine(Editor.ProjectAuditor.DataPath, jsonFilename) + ".json");
+            var projectAuditor = new Editor.ProjectAuditor();
+            var descriptors = projectAuditor.GetDescriptors();
             foreach (var desc in descriptors)
             {
                 for (int i = 0; i < desc.areas.Length; i++)
@@ -254,13 +291,11 @@ namespace Unity.ProjectAuditor.EditorTests
 
 #endif
 
-        // TODO: we should validate all descriptor Urls
         [UnityTest]
-        [TestCase("ApiDatabase", ExpectedResult = null)]
-        [TestCase("ProjectSettings", ExpectedResult = null)]
-        public IEnumerator ProblemDescriptor_DocumentationUrl_Exist(string jsonFilename)
+        public IEnumerator DiagnosticDescriptor_DocumentationUrl_Exist()
         {
-            var descriptors = Json.FromFile<Descriptor>(PathUtils.Combine(Editor.ProjectAuditor.DataPath, jsonFilename) + ".json");
+            var projectAuditor = new Editor.ProjectAuditor();
+            var descriptors = projectAuditor.GetDescriptors();
             foreach (var desc in descriptors)
             {
                 if (string.IsNullOrEmpty(desc.documentationUrl))
@@ -280,13 +315,13 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProblemDescriptor_Platform_IsCorrect()
+        public void DiagnosticDescriptor_UnsupportedPlatform_IsNotLoaded()
         {
-            var descriptors = Json.FromFile<Descriptor>(PathUtils.Combine(Editor.ProjectAuditor.DataPath, "ProjectSettings") + ".json");
+            var descriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, "ProjectSettings");
             var platDescriptor = descriptors.FirstOrDefault(d => d.id.Equals("PAS0000"));
-            Assert.NotNull(platDescriptor);
-            Assert.NotNull(platDescriptor.platforms);
-            Assert.Contains("iOS", platDescriptor.platforms);
+
+            // PAS0000 should only be available if iOS is supported
+            Assert.IsNull(platDescriptor);
         }
     }
 }

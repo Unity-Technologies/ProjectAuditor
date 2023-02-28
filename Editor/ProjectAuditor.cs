@@ -221,6 +221,11 @@ namespace Unity.ProjectAuditor.Editor
             return null;
         }
 
+        internal Descriptor[] GetDescriptors()
+        {
+            return m_Modules.SelectMany(m => m.supportedDescriptors).ToArray();
+        }
+
         internal ProjectAuditorModule[] GetModules(IssueCategory category)
         {
             return m_Modules.Where(a => a.isSupported && a.supportedLayouts.FirstOrDefault(l => l.category == category) != null).ToArray();

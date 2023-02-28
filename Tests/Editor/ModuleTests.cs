@@ -13,7 +13,8 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     class CustomAuditor// : IAuditor
     {
-        readonly Descriptor m_Descriptor = new Descriptor("666", "This is a test descriptor", Area.CPU);
+        private readonly Descriptor m_Descriptor =
+            new Descriptor("666", "This is a test descriptor", Area.CPU, "description", "solution");
 
         readonly IssueLayout m_Layout = new IssueLayout
         {

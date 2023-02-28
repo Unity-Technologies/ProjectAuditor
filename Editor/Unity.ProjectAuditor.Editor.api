@@ -353,7 +353,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         protected ProjectAuditorModule() {}
         public abstract void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = default(IProgress));
         public virtual void Initialize(ProjectAuditorConfig config);
-        public virtual void RegisterDescriptor(Unity.ProjectAuditor.Editor.Diagnostic.Descriptor descriptor);
+        public void RegisterDescriptor(Unity.ProjectAuditor.Editor.Diagnostic.Descriptor descriptor);
     }
 
     public abstract class ProjectAuditorModuleWithAnalyzers<T> : ProjectAuditorModule where T : IModuleAnalyzer
@@ -440,8 +440,8 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public string title;
         public string type;
         public string value;
-        public Descriptor(string id, string title, Area area, string description = default(string), string solution = default(string)) {}
-        public Descriptor(string id, string title, Area[] areas, string description = default(string), string solution = default(string)) {}
+        public Descriptor(string id, string title, Area area, string description, string solution) {}
+        public Descriptor(string id, string title, Area[] areas, string description, string solution) {}
         public override bool Equals(object obj);
         public bool Equals(Descriptor other);
         public void Fix(ProjectIssue issue);

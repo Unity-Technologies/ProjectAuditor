@@ -319,12 +319,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             onComplete?.Invoke(progress);
         }
 
-        public override void RegisterDescriptor(Descriptor descriptor)
-        {
-            if (!m_Descriptors.Add(descriptor))
-                throw new Exception("Duplicate descriptor with id: " + descriptor.id);
-        }
-
         void AnalyzeAssembly(AssemblyInfo assemblyInfo, IAssemblyResolver assemblyResolver, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)
         {
             Profiler.BeginSample("CodeModule.Analyze " + assemblyInfo.name);

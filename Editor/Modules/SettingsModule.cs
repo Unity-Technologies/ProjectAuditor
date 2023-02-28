@@ -29,12 +29,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
 
-        public override void RegisterDescriptor(Descriptor descriptor)
-        {
-            if (!m_Descriptors.Add(descriptor))
-                throw new Exception("Duplicate descriptor with id: " + descriptor.id);
-        }
-
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
