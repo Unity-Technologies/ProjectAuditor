@@ -210,6 +210,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
+        internal const string PAS0000 = nameof(PAS0000);
+
+        internal static readonly Descriptor k_SrpBatcherDescriptor = new(
+            PAS0000,
+            "Shader: Not compatible with SRP batcher",
+            new[] {Area.GPU},
+            "The shader is not compatible with SRP batcher.",
+            "Consider fixing the shader, if the SRP batcher compatibility was not intentionally removed."
+        )
+        {
+            messageFormat = "Shader '{0}' is not compatible with SRP batcher.",
+            documentationUrl = "https://docs.unity3d.com/Manual/SRPBatcher.html"
+        };
+
         // k_NoPassNames and k_NoKeywords must be consistent with values assigned in SubProgram::Compile()
         internal static readonly string[] k_NoPassNames = new[] { "unnamed", "<unnamed>"}; // 2019.x uses: <unnamed>, whilst 2020.x uses unnamed
         internal static readonly Dictionary<string, string> k_StageNameMap = new Dictionary<string, string>()
@@ -470,6 +484,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var hasInstancing = ShaderUtilProxy.HasInstancing(shader);
                 var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(shader);
                 var isSrpBatcherCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(shader, subShaderIndex) == 0;
+
+                if (!isSrpBatcherCompatible && GraphicsSettings.defaultRenderPipeline != null &&
+                    GraphicsSettings.useScriptableRenderPipelineBatching)
+                {
+                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_SrpBatcherDescriptor, shaderName)
+                        .WithLocation(assetPath);
+                }
 
 #if UNITY_2019_1_OR_NEWER
                 passCount = shader.passCount;
