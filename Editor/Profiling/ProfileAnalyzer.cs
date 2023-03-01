@@ -252,7 +252,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                         {
                             new MarkerDefinition(3, "Physics.RaycastAll", CPUTimeArea.Behaviour),
                             new MarkerDefinition(3, "Instantiate", CPUTimeArea.Behaviour),
-                            new MarkerDefinition(3, "AddComponent", CPUTimeArea.Behaviour),
+                            new MarkerDefinition(3, "GameObject.AddComponent", CPUTimeArea.Behaviour),
                         }
                     ),
                     new MarkerDefinition(2, "GC.Collect", CPUTimeArea.GC),
