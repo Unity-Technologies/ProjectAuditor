@@ -102,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public string[] keywords;
     }
 
-    class ShadersModule : ProjectAuditorModule
+    class ShadersModule : ProjectAuditorModuleWithAnalyzers<IShaderModuleAnalyzer>
         , IPreprocessShaders
 #if COMPUTE_SHADER_ANALYSIS
         , IPreprocessComputeShaders
@@ -210,20 +210,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        internal const string PAS0000 = nameof(PAS0000);
-
-        internal static readonly Descriptor k_SrpBatcherDescriptor = new(
-            PAS0000,
-            "Shader: Not compatible with SRP batcher",
-            new[] {Area.GPU},
-            "The shader is not compatible with SRP batcher.",
-            "Consider fixing the shader, if the SRP batcher compatibility was not intentionally removed."
-        )
-        {
-            messageFormat = "Shader '{0}' is not compatible with SRP batcher.",
-            documentationUrl = "https://docs.unity3d.com/Manual/SRPBatcher.html"
-        };
-
         // k_NoPassNames and k_NoKeywords must be consistent with values assigned in SubProgram::Compile()
         internal static readonly string[] k_NoPassNames = new[] { "unnamed", "<unnamed>"}; // 2019.x uses: <unnamed>, whilst 2020.x uses unnamed
         internal static readonly Dictionary<string, string> k_StageNameMap = new Dictionary<string, string>()
@@ -237,19 +223,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string k_NotAvailable = "This feature is requires a build.";
         internal const string k_Unknown = "Unknown";
 
-        static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData =
-            new Dictionary<Shader, List<ShaderVariantData>>();
+        static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData = new();
 #if COMPUTE_SHADER_ANALYSIS
-        static Dictionary<ComputeShader, List<ComputeShaderVariantData>> s_ComputeShaderVariantData =
-            new Dictionary<ComputeShader, List<ComputeShaderVariantData>>();
+        static Dictionary<ComputeShader, List<ComputeShaderVariantData>> s_ComputeShaderVariantData = new();
 #endif
 
         public override string name => "Shaders";
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new[]
         {
             k_ShaderLayout,
             k_ShaderVariantLayout,
+            AssetsModule.k_IssueLayout,
 
 #if COMPUTE_SHADER_ANALYSIS
             k_ComputeShaderVariantLayout,
@@ -365,6 +350,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             buildReportInfoAvailable = packetAssetInfos.Length > 0;
 #endif
             var sortedShaders = shaderPathMap.Keys.ToList().OrderBy(shader => shader.name);
+            var analyzers = GetPlatformAnalyzers(platform);
             foreach (var shader in sortedShaders)
             {
                 var assetPath = shaderPathMap[shader];
@@ -386,6 +372,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #endif
                 onIncomingIssues(ProcessShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader)));
                 onIncomingIssues(ProcessVariants(platform, shader, assetPath));
+
+                foreach (var analyzer in analyzers)
+                {
+                    onIncomingIssues(analyzer.Analyze(shader, assetPath));
+                }
             }
         }
 
@@ -484,13 +475,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var hasInstancing = ShaderUtilProxy.HasInstancing(shader);
                 var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(shader);
                 var isSrpBatcherCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(shader, subShaderIndex) == 0;
-
-                if (!isSrpBatcherCompatible && GraphicsSettings.defaultRenderPipeline != null &&
-                    GraphicsSettings.useScriptableRenderPipelineBatching)
-                {
-                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_SrpBatcherDescriptor, shaderName)
-                        .WithLocation(assetPath);
-                }
 
 #if UNITY_2019_1_OR_NEWER
                 passCount = shader.passCount;

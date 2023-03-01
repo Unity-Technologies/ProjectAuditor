@@ -29,6 +29,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
         TestAsset m_ShaderUsingBuiltInKeywordResource;
         TestAsset m_SurfShaderResource;
+
+        TestAsset m_SrpNonCompatibleShaderResource;
 #pragma warning restore 0414
 
         const string s_KeywordName = "DIRECTIONAL";
@@ -318,6 +320,47 @@ Shader ""Custom/MyEditorShader""
                     ENDCG
                 }
                 FallBack ""Diffuse""
+            }
+");
+
+            m_SrpNonCompatibleShaderResource = new TestAsset("Resources/SRPNonCompatible.shader", @"
+Shader ""Custom/SRPNonCompatible""
+            {
+                Properties
+                {
+                    _Color1 (""Color 1"", Color) = (1,1,1,1)
+                }
+                SubShader
+                {
+                    Tags { ""RenderType"" = ""Opaque"" ""RenderPipeline"" = ""UniversalRenderPipeline"" }
+                    Pass
+                    {
+                        HLSLPROGRAM
+                        #pragma vertex vert
+                        #pragma fragment frag
+
+                        float4 _Color1;
+                        struct Attributes
+                        {
+                            float4 positionOS   : POSITION;
+                        };
+                        struct Varyings
+                        {
+                            float4 positionHCS  : SV_POSITION;
+                        };
+                        Varyings vert(Attributes IN)
+                        {
+                            Varyings OUT;
+                            OUT.positionHCS = IN.positionOS.xxyz;
+                            return OUT;
+                        }
+                        half4 frag() : SV_Target
+                        {
+                            return _Color1;
+                        }
+                        ENDHLSL
+                    }
+                }
             }
 ");
         }
@@ -661,6 +704,18 @@ Shader ""Custom/MyEditorShader""
             var issues = Analyze(IssueCategory.Shader, i => i.relativePath.Contains("Editor Default Resources"));
 
             Assert.Zero(issues.Length);
+        }
+
+        [Test]
+#if !UNITY_2019_3_OR_NEWER
+        [Ignore("This requires the new Shader API")]
+#endif
+        public void ShadersAnalysis_SRPNonCompatibleShader_IsReported()
+        {
+            var issues = AnalyzeAndFindAssetIssues(m_SrpNonCompatibleShaderResource, IssueCategory.AssetDiagnostic);
+
+            Assert.IsNotEmpty(issues);
+            Assert.IsTrue(issues.Any(issue => issue.descriptor.id == ShaderAnalyzer.PAS0000), "The not compatible with SRP batcher shader should be reported.");
         }
     }
 }

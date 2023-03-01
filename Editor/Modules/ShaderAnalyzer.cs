@@ -1,0 +1,45 @@
+using System.Collections.Generic;
+using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Utils;
+using UnityEngine;
+using UnityEngine.Rendering;
+
+namespace Unity.ProjectAuditor.Editor.Modules
+{
+    class ShaderAnalyzer : IShaderModuleAnalyzer
+    {
+
+        internal const string PAS0000 = nameof(PAS0000);
+
+        internal static readonly Descriptor k_SrpBatcherDescriptor = new(
+            PAS0000,
+            "Shader: Not compatible with SRP batcher",
+            new[] {Area.GPU},
+            "The shader is not compatible with SRP batcher.",
+            "Consider fixing the shader, if the SRP batcher compatibility was not intentionally removed."
+        )
+        {
+            messageFormat = "Shader '{0}' is not compatible with SRP batcher.",
+            documentationUrl = "https://docs.unity3d.com/Manual/SRPBatcher.html"
+        };
+
+        public void Initialize(ProjectAuditorModule module)
+        {
+            module.RegisterDescriptor(k_SrpBatcherDescriptor);
+        }
+
+        public IEnumerable<ProjectIssue> Analyze(Shader shader, string assetPath)
+        {
+            var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(shader);
+            var isSrpBatcherCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(shader, subShaderIndex) == 0;
+
+            if (!isSrpBatcherCompatible && GraphicsSettings.defaultRenderPipeline != null &&
+                GraphicsSettings.useScriptableRenderPipelineBatching)
+            {
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_SrpBatcherDescriptor, shader.name)
+                    .WithLocation(assetPath);
+            }
+        }
+    }
+}
