@@ -712,10 +712,15 @@ Shader ""Custom/SRPNonCompatible""
 #endif
         public void ShadersAnalysis_SRPNonCompatibleShader_IsReported()
         {
+            if (!ShaderAnalyzer.IsSrpBatchingEnabled)
+            {
+                return;
+            }
+
             var issues = AnalyzeAndFindAssetIssues(m_SrpNonCompatibleShaderResource, IssueCategory.AssetDiagnostic);
 
             Assert.IsNotEmpty(issues);
-            Assert.IsTrue(issues.Any(issue => issue.descriptor.id == ShaderAnalyzer.PAS0000), "The not compatible with SRP batcher shader should be reported.");
+            Assert.IsTrue(issues.Any(issue => issue.descriptor.id == ShaderAnalyzer.PAS0000), "The not compatible with SRP batching shader should be reported.");
         }
     }
 }
