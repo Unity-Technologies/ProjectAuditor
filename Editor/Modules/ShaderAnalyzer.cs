@@ -29,7 +29,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_SrpBatcherDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(Shader shader, string assetPath)
+        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, Shader shader,
+            string assetPath)
         {
             if (!IsSrpBatchingEnabled)
             {

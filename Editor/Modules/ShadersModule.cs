@@ -248,7 +248,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var shaderPathMap = CollectShaders();
-            ProcessShaders(projectAuditorParams.platform, shaderPathMap, projectAuditorParams.onIncomingIssues);
+            ProcessShaders(projectAuditorParams, shaderPathMap, projectAuditorParams.onIncomingIssues);
 
             ProcessComputeShaders(projectAuditorParams.platform, projectAuditorParams.onIncomingIssues);
 
@@ -333,9 +333,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return alwaysIncludedShaders;
         }
 
-        void ProcessShaders(BuildTarget platform, Dictionary<Shader, string> shaderPathMap,
+        void ProcessShaders(ProjectAuditorParams projectAuditorParams, Dictionary<Shader, string> shaderPathMap,
             Action<IEnumerable<ProjectIssue>> onIncomingIssues)
         {
+            BuildTarget platform = projectAuditorParams.platform;
             var alwaysIncludedShaders = GetAlwaysIncludedShaders();
             var buildReportInfoAvailable = false;
 #if BUILD_REPORT_API_SUPPORT
@@ -375,7 +376,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in analyzers)
                 {
-                    onIncomingIssues(analyzer.Analyze(shader, assetPath));
+                    onIncomingIssues(analyzer.Analyze(projectAuditorParams, shader, assetPath));
                 }
             }
         }

@@ -6,6 +6,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     public interface IShaderModuleAnalyzer : IModuleAnalyzer
     {
-        IEnumerable<ProjectIssue> Analyze(Shader shader, string assetPath);
+        IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, Shader shader, string assetPath);
     }
 }
