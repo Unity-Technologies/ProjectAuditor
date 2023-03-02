@@ -223,14 +223,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string k_NotAvailable = "This feature is requires a build.";
         internal const string k_Unknown = "Unknown";
 
-        static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData = new();
+        static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData =
+            new Dictionary<Shader, List<ShaderVariantData>>();
 #if COMPUTE_SHADER_ANALYSIS
-        static Dictionary<ComputeShader, List<ComputeShaderVariantData>> s_ComputeShaderVariantData = new();
+        static Dictionary<ComputeShader, List<ComputeShaderVariantData>> s_ComputeShaderVariantData =
+            new Dictionary<ComputeShader, List<ComputeShaderVariantData>>();
 #endif
 
         public override string name => "Shaders";
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new[]
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_ShaderLayout,
             k_ShaderVariantLayout,

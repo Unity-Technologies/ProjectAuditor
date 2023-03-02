@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal const string PAS0000 = nameof(PAS0000);
 
-        internal static readonly Descriptor k_SrpBatcherDescriptor = new(
+        internal static readonly Descriptor k_SrpBatcherDescriptor = new Descriptor(
             PAS0000,
             "Shader: Not compatible with SRP batcher",
             Area.GPU,
