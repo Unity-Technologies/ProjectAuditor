@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.9.3-preview.3] - 2023-02-28
 * Fixed lines and bars drawing
 * Fixed missing "Read/Write" diagnostic recommendations
+* Added Shader SRP Batcher analyzer.
 
 ## [0.9.3-preview.2] - 2023-02-21
 * Added Texture mipmaps streaming analyzer
