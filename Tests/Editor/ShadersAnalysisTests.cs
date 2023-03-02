@@ -30,7 +30,8 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_ShaderUsingBuiltInKeywordResource;
         TestAsset m_SurfShaderResource;
 
-        TestAsset m_SrpNonCompatibleShaderResource;
+        TestAsset m_SrpBatchNonCompatibleShaderResource;
+        TestAsset m_SrpBatchCompatibleShaderResource;
 #pragma warning restore 0414
 
         const string s_KeywordName = "DIRECTIONAL";
@@ -323,8 +324,8 @@ Shader ""Custom/MyEditorShader""
             }
 ");
 
-            m_SrpNonCompatibleShaderResource = new TestAsset("Resources/SRPNonCompatible.shader", @"
-Shader ""Custom/SRPNonCompatible""
+            m_SrpBatchNonCompatibleShaderResource = new TestAsset("Resources/SRPBatchNonCompatible.shader", @"
+Shader ""Custom/SRPBatchNonCompatible""
             {
                 Properties
                 {
@@ -338,7 +339,6 @@ Shader ""Custom/SRPNonCompatible""
                         HLSLPROGRAM
                         #pragma vertex vert
                         #pragma fragment frag
-
                         float4 _Color1;
                         struct Attributes
                         {
@@ -363,6 +363,50 @@ Shader ""Custom/SRPNonCompatible""
                 }
             }
 ");
+
+            m_SrpBatchCompatibleShaderResource = new TestAsset("Resources/SRPBatchCompatible.shader", @"
+Shader ""Custom/SRPBatchCompatible""
+            {
+                Properties
+                {
+                    _Color1 (""Color 1"", Color) = (1,1,1,1)
+                }
+                SubShader
+                {
+                    Tags { ""RenderType"" = ""Opaque"" ""RenderPipeline"" = ""UniversalRenderPipeline"" }
+                    Pass
+                    {
+                        HLSLPROGRAM
+                        #pragma vertex vert
+                        #pragma fragment frag
+                        #include ""Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl""
+                        struct Attributes
+                        {
+                            float4 positionOS   : POSITION;
+                        };
+                        struct Varyings
+                        {
+                            float4 positionHCS  : SV_POSITION;
+                        };
+                        CBUFFER_START(UnityPerMaterial)
+                            half4 _Color1;
+                        CBUFFER_END
+                        Varyings vert(Attributes IN)
+                        {
+                            Varyings OUT;
+                            OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
+                            return OUT;
+                        }
+                        half4 frag() : SV_Target
+                        {
+                            return _Color1;
+                        }
+                        ENDHLSL
+                    }
+                }
+            }
+");
+
         }
 
         [Test]
@@ -717,11 +761,28 @@ Shader ""Custom/SRPNonCompatible""
                 return;
             }
 
-            var issues = AnalyzeAndFindAssetIssues(m_SrpNonCompatibleShaderResource, IssueCategory.AssetDiagnostic);
+            var issues = AnalyzeAndFindAssetIssues(m_SrpBatchNonCompatibleShaderResource, IssueCategory.AssetDiagnostic);
 
             Assert.IsNotEmpty(issues);
             Assert.IsTrue(issues.Any(issue => issue.descriptor.id == ShaderAnalyzer.PAS0000),
-                "The not compatible with SRP batching shader should be reported.");
+                "The not compatible with SRP batcher shader should be reported.");
+        }
+
+        [Test]
+#if !UNITY_2019_3_OR_NEWER
+        [Ignore("This requires the new Shader API")]
+#endif
+        public void ShadersAnalysis_SRPCompatibleShader_IsNotReported()
+        {
+            if (!ShaderAnalyzer.IsSrpBatchingEnabled)
+            {
+                return;
+            }
+
+            var issues = AnalyzeAndFindAssetIssues(m_SrpBatchCompatibleShaderResource, IssueCategory.AssetDiagnostic);
+
+            Assert.IsFalse(issues.Any(issue => issue.descriptor.id == ShaderAnalyzer.PAS0000),
+                "The compatible with SRP batcher shader should not be reported.");
         }
     }
 }

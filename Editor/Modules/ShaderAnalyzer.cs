@@ -15,12 +15,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_SrpBatcherDescriptor = new Descriptor(
             PAS0000,
             "Shader: Not compatible with SRP batcher",
-            Area.GPU,
+            Area.CPU,
             "The shader is not compatible with SRP batcher.",
-            "Consider fixing the shader, if the SRP batcher compatibility was not intentionally removed."
+            "Consider adding SRP batcher compatibility to the shader. This will reduce the CPU time Unity requires to prepare and dispatch draw calls for materials that use the same shader variant."
         )
         {
-            messageFormat = "Shader '{0}' is not compatible with SRP batcher.",
+            messageFormat = "Shader '{0}' is not compatible with SRP batcher",
             documentationUrl = "https://docs.unity3d.com/Manual/SRPBatcher.html"
         };
 
