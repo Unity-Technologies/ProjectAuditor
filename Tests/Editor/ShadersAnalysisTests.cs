@@ -31,7 +31,9 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_SurfShaderResource;
 
         TestAsset m_SrpBatchNonCompatibleShaderResource;
+#if UNITY_2019_3_OR_NEWER
         TestAsset m_SrpBatchCompatibleShaderResource;
+#endif
 #pragma warning restore 0414
 
         const string s_KeywordName = "DIRECTIONAL";
@@ -364,6 +366,7 @@ Shader ""Custom/SRPBatchNonCompatible""
             }
 ");
 
+#if UNITY_2019_3_OR_NEWER
             m_SrpBatchCompatibleShaderResource = new TestAsset("Resources/SRPBatchCompatible.shader", @"
 Shader ""Custom/SRPBatchCompatible""
             {
@@ -406,6 +409,7 @@ Shader ""Custom/SRPBatchCompatible""
                 }
             }
 ");
+#endif
 
         }
 
@@ -768,10 +772,8 @@ Shader ""Custom/SRPBatchCompatible""
                 "The not compatible with SRP batcher shader should be reported.");
         }
 
+#if UNITY_2019_3_OR_NEWER
         [Test]
-#if !UNITY_2019_3_OR_NEWER
-        [Ignore("This requires the new Shader API")]
-#endif
         public void ShadersAnalysis_SRPCompatibleShader_IsNotReported()
         {
             if (!ShaderAnalyzer.IsSrpBatchingEnabled)
@@ -785,4 +787,5 @@ Shader ""Custom/SRPBatchCompatible""
                 "The compatible with SRP batcher shader should not be reported.");
         }
     }
+#endif
 }
