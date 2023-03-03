@@ -33,9 +33,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_SurfShaderResource;
 
         TestAsset m_SrpBatchNonCompatibleShaderResource;
-#if UNITY_2019_3_OR_NEWER
         TestAsset m_SrpBatchCompatibleShaderResource;
-#endif
 #pragma warning restore 0414
 
         const string s_KeywordName = "DIRECTIONAL";
@@ -368,50 +366,44 @@ Shader ""Custom/SRPBatchNonCompatible""
             }
 ");
 
-#if UNITY_2019_3_OR_NEWER
-            m_SrpBatchCompatibleShaderResource = new TestAsset("Resources/SRPBatchCompatible.shader", $@"
+            m_SrpBatchCompatibleShaderResource = new TestAsset("Resources/SRPBatchCompatible.shader", @"
 Shader ""Custom/SRPBatchCompatible""
-            {{
+            {
                 Properties
-                {{
+                {
                     _Color1 (""Color 1"", Color) = (1,1,1,1)
-                }}
+                }
                 SubShader
-                {{
-                    Tags {{ ""RenderType"" = ""Opaque"" ""RenderPipeline"" = ""UniversalRenderPipeline"" }}
+                {
+                    Tags { ""RenderType"" = ""Opaque"" ""RenderPipeline"" = ""UniversalRenderPipeline"" }
                     Pass
-                    {{
+                    {
                         HLSLPROGRAM
                         #pragma vertex vert
                         #pragma fragment frag
-                        {k_UrpCodeInclude}
                         struct Attributes
-                        {{
+                        {
                             float4 positionOS   : POSITION;
-                        }};
+                        };
                         struct Varyings
-                        {{
+                        {
                             float4 positionHCS  : SV_POSITION;
-                        }};
-                        CBUFFER_START(UnityPerMaterial)
-                            half4 _Color1;
-                        CBUFFER_END
+                        };
                         Varyings vert(Attributes IN)
-                        {{
+                        {
                             Varyings OUT;
-                            OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
+                            OUT.positionHCS = IN.positionOS.xxyz;
                             return OUT;
-                        }}
+                        }
                         half4 frag() : SV_Target
-                        {{
-                            return _Color1;
-                        }}
+                        {
+                            return half4(1, 1, 1, 1);
+                        }
                         ENDHLSL
-                    }}
-                }}
-            }}
+                    }
+                }
+            }
 ");
-#endif
 
         }
 
@@ -774,8 +766,10 @@ Shader ""Custom/SRPBatchCompatible""
                 "The not compatible with SRP batcher shader should be reported.");
         }
 
-#if UNITY_2019_3_OR_NEWER
         [Test]
+#if !UNITY_2019_3_OR_NEWER
+        [Ignore("This requires the new Shader API")]
+#endif
         public void ShadersAnalysis_SRPCompatibleShader_IsNotReported()
         {
             if (!ShaderAnalyzer.IsSrpBatchingEnabled)
@@ -788,6 +782,5 @@ Shader ""Custom/SRPBatchCompatible""
             Assert.IsFalse(issues.Any(issue => issue.descriptor.id == ShaderAnalyzer.PAS0000),
                 "The compatible with SRP batcher shader should not be reported.");
         }
-#endif
     }
 }
