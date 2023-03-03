@@ -78,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
         }
     }
 
-    public struct MarkerStats
+    public class MarkerStats
     {
         public MarkerDefinition Definition;
 
@@ -89,6 +89,8 @@ namespace Unity.ProjectAuditor.Editor.Profiling
         public float SubMarkersTimeMs;
         public float SubMarkersPercent;
         public float SubMarkersGcMemory;
+
+        public MarkerStats Parent;
     }
 
     public struct FrameInfo
@@ -398,13 +400,15 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
             // PlayerLoop: Collect child markers of PlayerLoop
             FindHierarchyItemsIdByMarkerString(frameDataHierarchy, frameDataHierarchy.GetRootItemID(),
-                "PlayerLoop", 0, false, topLevelItems);
+                "PlayerLoop", 0, false, topLevelItems, 1);
 
             foreach (var topLevelItem in topLevelItems)
             {
                 List<int> children = new List<int>();
                 frameDataHierarchy.GetItemChildren(topLevelItem, children);
 
+                // Iterate over children of PlayerLoop
+                // Note: Those are mostly top-level animation/physics/script updates and various other built-in methods
                 foreach (var childItemId in children)
                 {
                     var framePercent = frameDataHierarchy.GetItemColumnDataAsFloat(childItemId, HierarchyFrameDataView.columnTotalPercent);
@@ -436,27 +440,15 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                             }
                         }
 
-                        // Recursively traverse child items/markers
-                        float subMarkerTotalTimeMs = 0;
-                        float subMarkerTotalPercent = 0;
-                        float subMarkerTotalGcMemory = 0;
-
-                        if (hasFoundMarker && foundMarkerDefinition.SubMarkers != null && foundMarkerDefinition.SubMarkers.Length > 0)
-                        {
-                            CollectSubMarkers(frameDataHierarchy, foundMarkerDefinition, childItemId, allMarkerStats, ref subMarkerTotalPercent, ref subMarkerTotalGcMemory, ref subMarkerTotalTimeMs);
-                        }
-
+                        MarkerStats markerStats = null;
                         if (hasFoundMarker)
                         {
-                            var markerStats = new MarkerStats
+                            markerStats = new MarkerStats
                             {
                                 Definition = foundMarkerDefinition,
                                 FrameTimeMs = frameMs,
                                 FrameTimePercentage = framePercent,
-                                FrameGcMemory = frameGcMemory,
-                                SubMarkersTimeMs = subMarkerTotalTimeMs,
-                                SubMarkersPercent = subMarkerTotalPercent,
-                                SubMarkersGcMemory = subMarkerTotalGcMemory
+                                FrameGcMemory = frameGcMemory
                             };
                             allMarkerStats.Add(markerStats);
                         }
@@ -469,7 +461,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                                 Level = 1
                             };
 
-                            var markerStats = new MarkerStats
+                            markerStats = new MarkerStats
                             {
                                 Definition = unidentifiedDef,
                                 FrameTimeMs = frameMs,
@@ -478,6 +470,25 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                             };
                             allMarkerStats.Add(markerStats);
                         }
+
+                        // Recursively traverse child items/markers
+                        float subMarkerTotalTimeMs = 0;
+                        float subMarkerTotalPercent = 0;
+                        float subMarkerTotalGcMemory = 0;
+
+                        // Found a known marker we want to dig deeper into?
+                        // Note: Child nodes/markers here are mostly built-in and MonoBehaviour updates
+                        if (hasFoundMarker && foundMarkerDefinition.SubMarkers != null && foundMarkerDefinition.SubMarkers.Length > 0)
+                        {
+                            CollectKnownSubMarkers(frameDataHierarchy, foundMarkerDefinition, childItemId, allMarkerStats,
+                                ref subMarkerTotalPercent, ref subMarkerTotalGcMemory, ref subMarkerTotalTimeMs,
+                                markerStats
+                            );
+                        }
+
+                        markerStats.SubMarkersTimeMs = subMarkerTotalTimeMs;
+                        markerStats.SubMarkersPercent = subMarkerTotalPercent;
+                        markerStats.SubMarkersGcMemory = subMarkerTotalGcMemory;
                     }
                 }
             }
@@ -485,46 +496,67 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             // EditorLoop / Profiler: Collect markers we can ignore for standalone/release
             topLevelItems.Clear();
             FindHierarchyItemsIdByMarkerString(frameDataHierarchy, frameDataHierarchy.GetRootItemID(),
-                "EditorLoop", 0, false, topLevelItems);
+                "EditorLoop", 0, false, topLevelItems, 1);
 
             CollectEditorProfilerMarkers(frameDataHierarchy, topLevelItems, ref allMarkerStats);
 
             topLevelItems.Clear();
             FindHierarchyItemsIdByMarkerString(frameDataHierarchy, frameDataHierarchy.GetRootItemID(),
-                "Profiler.", 0, true, topLevelItems);
+                "Profiler.", 0, true, topLevelItems, 1);
 
             CollectEditorProfilerMarkers(frameDataHierarchy, topLevelItems, ref allMarkerStats);
 
             report.FrameInfos[frameId].MarkerStats = allMarkerStats.ToArray();
         }
 
-        private static void CollectSubMarkers(HierarchyFrameDataView frameDataHierarchy,
-            MarkerDefinition parentMarkerDefinition, int childItemId, List<MarkerStats> allMarkerStats,
-            ref float subMarkerTotalPercent, ref float subMarkerTotalGcMemory, ref float subMarkerTotalTimeMs)
+        private static bool CollectKnownSubMarkers(HierarchyFrameDataView frameDataHierarchy,
+            MarkerDefinition parentMarkerDefinition, int itemId, List<MarkerStats> allMarkerStats,
+            ref float subMarkerTotalPercent, ref float subMarkerTotalGcMemory, ref float subMarkerTotalTimeMs,
+            MarkerStats parentStats)
         {
+            bool bFoundAnyChildren = false;
+
+            // TODO: For all marker NOT found, search deeper from each child that was a non-marker
+
+            HashSet<int> handledChildren = new HashSet<int>();
+            List<MarkerDefinition> missingMarkerDefs = new List<MarkerDefinition>();
+
             foreach (var markerDef in parentMarkerDefinition.SubMarkers)
             {
                 List<int> childItems = new List<int>();
-                FindHierarchyItemsIdByMarkerString(frameDataHierarchy, childItemId, markerDef.Name, 0,
-                    markerDef.NameIsSubString, childItems);
+                FindHierarchyItemsIdByMarkerString(frameDataHierarchy, itemId, markerDef.Name, 0,
+                    markerDef.NameIsSubString, childItems, 1);
 
+                // Some children had this marker
                 if (childItems.Count > 0)
                 {
-                    foreach (var itemID in childItems)
+                    foreach (var childItem in childItems)
                     {
-                        var markerFrameMs = frameDataHierarchy.GetItemColumnDataAsFloat(itemID,
+                        handledChildren.Add(childItem);
+
+                        var markerFrameMs = frameDataHierarchy.GetItemColumnDataAsFloat(childItem,
                             HierarchyFrameDataView.columnTotalTime);
-                        var markerFramePercent = frameDataHierarchy.GetItemColumnDataAsFloat(itemID,
+                        var markerFramePercent = frameDataHierarchy.GetItemColumnDataAsFloat(childItem,
                             HierarchyFrameDataView.columnTotalPercent);
-                        var markerFrameGcMemory = frameDataHierarchy.GetItemColumnDataAsFloat(itemID,
+                        var markerFrameGcMemory = frameDataHierarchy.GetItemColumnDataAsFloat(childItem,
                             HierarchyFrameDataView.columnGcMemory);
 
                         var finalMarkerDef = markerDef;
                         if (markerDef.NameIsSubString)
                         {
-                            var markerID = frameDataHierarchy.GetItemMarkerID(itemID);
+                            var markerID = frameDataHierarchy.GetItemMarkerID(childItem);
                             finalMarkerDef.Name = frameDataHierarchy.GetMarkerName(markerID);
                         }
+
+                        var markerStats = new MarkerStats
+                        {
+                            Definition = finalMarkerDef,
+                            FrameTimeMs = markerFrameMs,
+                            FrameTimePercentage = markerFramePercent,
+                            FrameGcMemory = markerFrameGcMemory,
+                            // Link this marker to its parent so we can generate a callstack
+                            Parent = parentStats
+                        };
 
                         float subMarkerPercent = 0;
                         float subMarkerGcMemory = 0;
@@ -532,7 +564,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
                         if (markerDef.SubMarkers != null && markerDef.SubMarkers.Length > 0)
                         {
-                            CollectSubMarkers(frameDataHierarchy, markerDef, itemID, allMarkerStats, ref subMarkerPercent, ref subMarkerGcMemory, ref subMarkerTimeMs);
+                            CollectKnownSubMarkers(frameDataHierarchy, markerDef, childItem, allMarkerStats, ref subMarkerPercent, ref subMarkerGcMemory, ref subMarkerTimeMs, markerStats);
 
                             markerFrameMs += subMarkerTimeMs;
                             markerFramePercent += subMarkerPercent;
@@ -543,21 +575,85 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                         subMarkerTotalPercent += markerFramePercent;
                         subMarkerTotalGcMemory += markerFrameGcMemory;
 
-                        var markerStats = new MarkerStats
-                        {
-                            Definition = finalMarkerDef,
-                            FrameTimeMs = markerFrameMs,
-                            FrameTimePercentage = markerFramePercent,
-                            FrameGcMemory = markerFrameGcMemory,
-                            SubMarkersPercent = subMarkerPercent,
-                            SubMarkersTimeMs = subMarkerTimeMs,
-                            SubMarkersGcMemory = subMarkerGcMemory
-                        };
+                        markerStats.SubMarkersPercent = subMarkerPercent;
+                        markerStats.SubMarkersTimeMs = subMarkerTimeMs;
+                        markerStats.SubMarkersGcMemory = subMarkerGcMemory;
 
+                        // Keep this marker since it is a match of a known marker, a marker we're interested in
+                        allMarkerStats.Add(markerStats);
+
+                        bFoundAnyChildren = true;
+                    }
+                }
+                else
+                {
+                    missingMarkerDefs.Add(markerDef);
+                }
+            }
+
+            foreach (var markerDef in missingMarkerDefs)
+            {
+                List<int> allChildren = new List<int>();
+                frameDataHierarchy.GetItemChildren(itemId, allChildren);
+
+                foreach (var childItem in allChildren)
+                {
+                    if (handledChildren.Contains(childItem))
+                        continue;
+
+                    var markerFrameMs = frameDataHierarchy.GetItemColumnDataAsFloat(childItem,
+                        HierarchyFrameDataView.columnTotalTime);
+                    var markerFramePercent = frameDataHierarchy.GetItemColumnDataAsFloat(childItem,
+                        HierarchyFrameDataView.columnTotalPercent);
+                    var markerFrameGcMemory = frameDataHierarchy.GetItemColumnDataAsFloat(childItem,
+                        HierarchyFrameDataView.columnGcMemory);
+
+                    var markerID = frameDataHierarchy.GetItemMarkerID(childItem);
+                    var name = frameDataHierarchy.GetMarkerName(markerID);
+
+                    var unidentifiedDef = new MarkerDefinition
+                    {
+                        Name = name,
+                        Area = CPUTimeArea.Uncategorized,
+                        Level = 1,
+                        SubMarkers = new MarkerDefinition[] { markerDef }
+                    };
+
+                    var markerStats = new MarkerStats
+                    {
+                        Definition = unidentifiedDef,
+                        FrameTimeMs = markerFrameMs,
+                        FrameTimePercentage = markerFramePercent,
+                        FrameGcMemory = markerFrameGcMemory
+                    };
+
+                    float subMarkerPercent = 0;
+                    float subMarkerGcMemory = 0;
+                    float subMarkerTimeMs = 0;
+
+                    bool bFoundChildren = CollectKnownSubMarkers(frameDataHierarchy, unidentifiedDef, childItem, allMarkerStats, ref subMarkerPercent, ref subMarkerGcMemory, ref subMarkerTimeMs, markerStats);
+                    bFoundAnyChildren |= bFoundChildren;
+
+                    subMarkerTotalTimeMs += markerFrameMs;
+                    subMarkerTotalPercent += markerFramePercent;
+                    subMarkerTotalGcMemory += markerFrameGcMemory;
+
+                    markerStats.SubMarkersPercent = subMarkerPercent;
+                    markerStats.SubMarkersTimeMs = subMarkerTimeMs;
+                    markerStats.SubMarkersGcMemory = subMarkerGcMemory;
+
+                    if (bFoundChildren)
+                    {
+                        // Link this marker to its parent so we can generate a callstack
+                        markerStats.Parent = parentStats;
+
+                        // We keep this marker since it has children that match known markers, markers we're interested in
                         allMarkerStats.Add(markerStats);
                     }
                 }
             }
+
+            return bFoundAnyChildren;
         }
 
         static void CollectEditorProfilerMarkers(HierarchyFrameDataView frameDataHierarchy, List<int> topLevelItems,
@@ -591,7 +687,8 @@ namespace Unity.ProjectAuditor.Editor.Profiling
         }
 
         static void FindHierarchyItemsIdByMarkerString(HierarchyFrameDataView frameDataHierarchy, int itemId,
-            string markerStringToFind, int markerStringToFindHash, bool markerStringIsSubString, List<int> foundItems)
+            string markerStringToFind, int markerStringToFindHash, bool markerStringIsSubString, List<int> foundItems,
+            int recursionLevels)
         {
             var markerId = frameDataHierarchy.GetItemMarkerID(itemId);
             var markerName = frameDataHierarchy.GetMarkerName(markerId);
@@ -613,12 +710,16 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                 return;
             }
 
-            List<int> children = new List<int>();
-            frameDataHierarchy.GetItemChildren(itemId, children);
-
-            foreach (var childItem in children)
+            if (recursionLevels > 0)
             {
-                FindHierarchyItemsIdByMarkerString(frameDataHierarchy, childItem, markerStringToFind, markerStringToFindHash, markerStringIsSubString, foundItems);
+                List<int> children = new List<int>();
+                frameDataHierarchy.GetItemChildren(itemId, children);
+
+                foreach (var childItem in children)
+                {
+                    FindHierarchyItemsIdByMarkerString(frameDataHierarchy, childItem, markerStringToFind,
+                        markerStringToFindHash, markerStringIsSubString, foundItems, recursionLevels - 1);
+                }
             }
         }
 

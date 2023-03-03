@@ -136,8 +136,8 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectIssue
     {
-        public int depth;
-        public bool wasFixed;
+        public int depth = 0;
+        public bool wasFixed = false;
         public IssueCategory category { get; }
         public string[] customProperties { get; }
         public Core.DependencyNode dependencies { get; }
@@ -321,7 +321,7 @@ namespace Unity.ProjectAuditor.Editor.Core
     public class IssueLayout
     {
         public IssueCategory category;
-        public bool hierarchy;
+        public bool hierarchy = false;
         public PropertyDefinition[] properties;
         public int defaultGroupPropertyIndex { get; }
         public IssueLayout() {}
@@ -732,15 +732,17 @@ namespace Unity.ProjectAuditor.Editor.Profiling
         public string Name { get; set; }
     }
 
-    public struct MarkerStats
+    public class MarkerStats
     {
         public MarkerDefinition Definition;
         public float FrameGcMemory;
         public float FrameTimeMs;
         public float FrameTimePercentage;
+        public MarkerStats Parent;
         public float SubMarkersGcMemory;
         public float SubMarkersPercent;
         public float SubMarkersTimeMs;
+        public MarkerStats() {}
     }
 
     public class ProfileAnalyzer
