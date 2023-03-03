@@ -19,6 +19,8 @@ namespace Unity.ProjectAuditor.EditorTests
     class ShadersAnalysisTests : TestFixtureBase
     {
         const string k_ShaderName = "Custom/MyTestShader,1"; // comma in the name for testing purposes
+        const string k_UrpCodeInclude =
+            @"#include ""Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl""";
 
 #pragma warning disable 0414
         TestAsset m_ShaderResource;
@@ -29,6 +31,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
         TestAsset m_ShaderUsingBuiltInKeywordResource;
         TestAsset m_SurfShaderResource;
+
+        TestAsset m_SrpBatchNonCompatibleShaderResource;
+        TestAsset m_SrpBatchCompatibleShaderResource;
 #pragma warning restore 0414
 
         const string s_KeywordName = "DIRECTIONAL";
@@ -320,6 +325,86 @@ Shader ""Custom/MyEditorShader""
                 FallBack ""Diffuse""
             }
 ");
+
+            m_SrpBatchNonCompatibleShaderResource = new TestAsset("Resources/SRPBatchNonCompatible.shader", @"
+Shader ""Custom/SRPBatchNonCompatible""
+            {
+                Properties
+                {
+                    _Color1 (""Color 1"", Color) = (1,1,1,1)
+                }
+                SubShader
+                {
+                    Tags { ""RenderType"" = ""Opaque"" ""RenderPipeline"" = ""UniversalRenderPipeline"" }
+                    Pass
+                    {
+                        HLSLPROGRAM
+                        #pragma vertex vert
+                        #pragma fragment frag
+                        float4 _Color1;
+                        struct Attributes
+                        {
+                            float4 positionOS   : POSITION;
+                        };
+                        struct Varyings
+                        {
+                            float4 positionHCS  : SV_POSITION;
+                        };
+                        Varyings vert(Attributes IN)
+                        {
+                            Varyings OUT;
+                            OUT.positionHCS = IN.positionOS.xxyz;
+                            return OUT;
+                        }
+                        half4 frag() : SV_Target
+                        {
+                            return _Color1;
+                        }
+                        ENDHLSL
+                    }
+                }
+            }
+");
+
+            m_SrpBatchCompatibleShaderResource = new TestAsset("Resources/SRPBatchCompatible.shader", @"
+Shader ""Custom/SRPBatchCompatible""
+            {
+                Properties
+                {
+                    _Color1 (""Color 1"", Color) = (1,1,1,1)
+                }
+                SubShader
+                {
+                    Tags { ""RenderType"" = ""Opaque"" ""RenderPipeline"" = ""UniversalRenderPipeline"" }
+                    Pass
+                    {
+                        HLSLPROGRAM
+                        #pragma vertex vert
+                        #pragma fragment frag
+                        struct Attributes
+                        {
+                            float4 positionOS   : POSITION;
+                        };
+                        struct Varyings
+                        {
+                            float4 positionHCS  : SV_POSITION;
+                        };
+                        Varyings vert(Attributes IN)
+                        {
+                            Varyings OUT;
+                            OUT.positionHCS = IN.positionOS.xxyz;
+                            return OUT;
+                        }
+                        half4 frag() : SV_Target
+                        {
+                            return half4(1, 1, 1, 1);
+                        }
+                        ENDHLSL
+                    }
+                }
+            }
+");
+
         }
 
         [Test]
@@ -661,6 +746,41 @@ Shader ""Custom/MyEditorShader""
             var issues = Analyze(IssueCategory.Shader, i => i.relativePath.Contains("Editor Default Resources"));
 
             Assert.Zero(issues.Length);
+        }
+
+        [Test]
+#if !UNITY_2019_3_OR_NEWER
+        [Ignore("This requires the new Shader API")]
+#endif
+        public void ShadersAnalysis_SRPNonCompatibleShader_IsReported()
+        {
+            if (!ShaderAnalyzer.IsSrpBatchingEnabled)
+            {
+                return;
+            }
+
+            var issues = AnalyzeAndFindAssetIssues(m_SrpBatchNonCompatibleShaderResource, IssueCategory.AssetDiagnostic);
+
+            Assert.IsNotEmpty(issues);
+            Assert.IsTrue(issues.Any(issue => issue.descriptor.id == ShaderAnalyzer.PAS0000),
+                "The not compatible with SRP batcher shader should be reported.");
+        }
+
+        [Test]
+#if !UNITY_2019_3_OR_NEWER
+        [Ignore("This requires the new Shader API")]
+#endif
+        public void ShadersAnalysis_SRPCompatibleShader_IsNotReported()
+        {
+            if (!ShaderAnalyzer.IsSrpBatchingEnabled)
+            {
+                return;
+            }
+
+            var issues = AnalyzeAndFindAssetIssues(m_SrpBatchCompatibleShaderResource, IssueCategory.AssetDiagnostic);
+
+            Assert.IsFalse(issues.Any(issue => issue.descriptor.id == ShaderAnalyzer.PAS0000),
+                "The compatible with SRP batcher shader should not be reported.");
         }
     }
 }

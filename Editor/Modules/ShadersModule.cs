@@ -102,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public string[] keywords;
     }
 
-    class ShadersModule : ProjectAuditorModule
+    class ShadersModule : ProjectAuditorModuleWithAnalyzers<IShaderModuleAnalyzer>
         , IPreprocessShaders
 #if COMPUTE_SHADER_ANALYSIS
         , IPreprocessComputeShaders
@@ -236,6 +236,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             k_ShaderLayout,
             k_ShaderVariantLayout,
+            AssetsModule.k_IssueLayout,
 
 #if COMPUTE_SHADER_ANALYSIS
             k_ComputeShaderVariantLayout,
@@ -249,7 +250,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var shaderPathMap = CollectShaders();
-            ProcessShaders(projectAuditorParams.platform, shaderPathMap, projectAuditorParams.onIncomingIssues);
+            ProcessShaders(projectAuditorParams, shaderPathMap, projectAuditorParams.onIncomingIssues);
 
             ProcessComputeShaders(projectAuditorParams.platform, projectAuditorParams.onIncomingIssues);
 
@@ -334,9 +335,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return alwaysIncludedShaders;
         }
 
-        void ProcessShaders(BuildTarget platform, Dictionary<Shader, string> shaderPathMap,
+        void ProcessShaders(ProjectAuditorParams projectAuditorParams, Dictionary<Shader, string> shaderPathMap,
             Action<IEnumerable<ProjectIssue>> onIncomingIssues)
         {
+            BuildTarget platform = projectAuditorParams.platform;
             var alwaysIncludedShaders = GetAlwaysIncludedShaders();
             var buildReportInfoAvailable = false;
 #if BUILD_REPORT_API_SUPPORT
@@ -351,6 +353,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             buildReportInfoAvailable = packetAssetInfos.Length > 0;
 #endif
             var sortedShaders = shaderPathMap.Keys.ToList().OrderBy(shader => shader.name);
+            var analyzers = GetPlatformAnalyzers(platform);
             foreach (var shader in sortedShaders)
             {
                 var assetPath = shaderPathMap[shader];
@@ -372,6 +375,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #endif
                 onIncomingIssues(ProcessShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader)));
                 onIncomingIssues(ProcessVariants(platform, shader, assetPath));
+
+                foreach (var analyzer in analyzers)
+                {
+                    onIncomingIssues(analyzer.Analyze(projectAuditorParams, shader, assetPath));
+                }
             }
         }
 
