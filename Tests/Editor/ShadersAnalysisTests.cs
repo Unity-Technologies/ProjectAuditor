@@ -786,6 +786,6 @@ Shader ""Custom/SRPBatchCompatible""
             Assert.IsFalse(issues.Any(issue => issue.descriptor.id == ShaderAnalyzer.PAS0000),
                 "The compatible with SRP batcher shader should not be reported.");
         }
-    }
 #endif
+    }
 }
