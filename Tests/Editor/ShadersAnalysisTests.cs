@@ -19,6 +19,8 @@ namespace Unity.ProjectAuditor.EditorTests
     class ShadersAnalysisTests : TestFixtureBase
     {
         const string k_ShaderName = "Custom/MyTestShader,1"; // comma in the name for testing purposes
+        const string k_UrpCodeInclude =
+            @"#include ""Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl""";
 
 #pragma warning disable 0414
         TestAsset m_ShaderResource;
@@ -367,47 +369,47 @@ Shader ""Custom/SRPBatchNonCompatible""
 ");
 
 #if UNITY_2019_3_OR_NEWER
-            m_SrpBatchCompatibleShaderResource = new TestAsset("Resources/SRPBatchCompatible.shader", @"
+            m_SrpBatchCompatibleShaderResource = new TestAsset("Resources/SRPBatchCompatible.shader", $@"
 Shader ""Custom/SRPBatchCompatible""
-            {
+            {{
                 Properties
-                {
+                {{
                     _Color1 (""Color 1"", Color) = (1,1,1,1)
-                }
+                }}
                 SubShader
-                {
-                    Tags { ""RenderType"" = ""Opaque"" ""RenderPipeline"" = ""UniversalRenderPipeline"" }
+                {{
+                    Tags {{ ""RenderType"" = ""Opaque"" ""RenderPipeline"" = ""UniversalRenderPipeline"" }}
                     Pass
-                    {
+                    {{
                         HLSLPROGRAM
                         #pragma vertex vert
                         #pragma fragment frag
-                        #include ""Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl""
+                        {k_UrpCodeInclude}
                         struct Attributes
-                        {
+                        {{
                             float4 positionOS   : POSITION;
-                        };
+                        }};
                         struct Varyings
-                        {
+                        {{
                             float4 positionHCS  : SV_POSITION;
-                        };
+                        }};
                         CBUFFER_START(UnityPerMaterial)
                             half4 _Color1;
                         CBUFFER_END
                         Varyings vert(Attributes IN)
-                        {
+                        {{
                             Varyings OUT;
                             OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
                             return OUT;
-                        }
+                        }}
                         half4 frag() : SV_Target
-                        {
+                        {{
                             return _Color1;
-                        }
+                        }}
                         ENDHLSL
-                    }
-                }
-            }
+                    }}
+                }}
+            }}
 ");
 #endif
 
