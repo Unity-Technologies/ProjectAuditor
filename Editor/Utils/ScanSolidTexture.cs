@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using UnityEditor;
 using UnityEngine;
@@ -42,22 +44,49 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 return false;
 
             // For non-readable textures, make it readable to use some functions (GetPixels())
-            if (!textureImporter.isReadable)
+            if (textureImporter.isReadable)
             {
-                textureImporter.isReadable = true;
-                textureImporter.SaveAndReimport();
-            }
-
-            if (IsSolidColor(texture2D))
-            {
-                if (texture.width != 1 && texture.height != 1)
+                if (IsSolidColor(texture2D))
                 {
-                    isTooBig = true;
+                    if (texture.width != 1 && texture.height != 1)
+                    {
+                        isTooBig = true;
+                    }
                 }
             }
 
-            textureImporter.isReadable = originalValue;
-            textureImporter.SaveAndReimport();
+            else
+            {
+                RenderTexture tmp = RenderTexture.GetTemporary(
+                    texture2D.width,
+                    texture2D.height,
+                    0,
+                    RenderTextureFormat.Default,
+                    RenderTextureReadWrite.sRGB);
+
+
+                // Backup the currently set RenderTexture
+                RenderTexture previous = RenderTexture.active;
+                Graphics.Blit(texture2D, tmp);
+                RenderTexture.active = tmp;
+
+                Texture2D myTexture2D = new Texture2D(texture2D.width, texture2D.height);
+                myTexture2D.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
+                //Graphics.CopyTexture(texture2D, myTexture2D);
+                //var pixel = myTexture2D.GetPixel(4, 0);
+                myTexture2D.Apply();
+
+                if (IsSolidColor(myTexture2D))
+                {
+                    if (texture2D.width != 1 && texture2D.height != 1)
+                    {
+                        isTooBig = true;
+                    }
+                }
+
+                RenderTexture.active = previous;
+                RenderTexture.ReleaseTemporary(tmp);
+            }
 
             return isTooBig;
         }
@@ -75,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 return false;
             }
 
-            var pixels = texture.GetPixels();
+            var pixels = texture.GetPixels32();
 
             // It is unlikely to get a null pixels array, but we should check just in case
             if (pixels == null)
