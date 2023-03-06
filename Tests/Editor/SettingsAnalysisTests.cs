@@ -560,5 +560,31 @@ namespace Unity.ProjectAuditor.EditorTests
                 QualitySettings.streamingMipmapsActive = values[i];
             }
         }
+
+        [Test]
+#if !UNITY_2019_3_OR_NEWER
+        [Ignore("This requires the new Shader API")]
+#endif
+        public void SrpAssetSettingsAnalysis_SrpBatching_IsNotReportedOnceFixed()
+        {
+#if UNITY_2019_3_OR_NEWER
+            if (GraphicsSettings.defaultRenderPipeline == null)
+            {
+                return;
+            }
+
+            SrpAssetSettingsAnalyzer.FixSrpBatcherSetting(GraphicsSettings.defaultRenderPipeline, false);
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.title.Equals("SRP Asset: SRP Batcher"));
+            var srpBatchingIssue = issues.FirstOrDefault();
+            Assert.NotNull(srpBatchingIssue);
+            Assert.IsTrue(srpBatchingIssue.GetCustomPropertyInt32(0) == -1, "Default Render Pipeline should have quality level -1.");
+
+            SrpAssetSettingsAnalyzer.FixSrpBatcherSetting(GraphicsSettings.defaultRenderPipeline);
+
+            issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.title.Equals("SRP Asset: SRP Batcher"));
+            Assert.Null(issues.FirstOrDefault());
+#endif
+        }
     }
 }

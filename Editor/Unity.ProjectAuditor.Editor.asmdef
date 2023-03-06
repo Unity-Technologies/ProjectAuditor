@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "Unity.ProjectAuditor.Editor.Utils",
-        "Unity.RenderPipelines.HighDefinition.Runtime"
+        "Unity.RenderPipelines.HighDefinition.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime"
     ],
     "includePlatforms": [
         "Editor"
@@ -41,6 +42,11 @@
             "name": "com.unity.nuget.mono-cecil",
             "expression": "1.11.4",
             "define": "UNITY_MONO_CECIL_1_11_4_OR_NEWER"
+        },
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "7.0",
+            "define": "PACKAGE_URP"
         }
     ],
     "noEngineReferences": false

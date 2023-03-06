@@ -57,6 +57,7 @@ This is a full list of all builtin settings diagnostics:
 | PAS1005 | IL2CPP Compiler Debug						| Player    | Any                      |
 | PAS1006 | LightMap Streaming						    | Player    | Any                      |
 | PAS1007 | Texture Streaming Enabled                   | Quality   | Any                      |
+| PAS1008 | SRP Batcher Enabled                         | SRP Asset | Any                      |
 
 
 # Asset Diagnostics

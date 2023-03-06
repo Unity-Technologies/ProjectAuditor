@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
@@ -19,8 +17,6 @@ namespace Unity.ProjectAuditor.EditorTests
     class ShadersAnalysisTests : TestFixtureBase
     {
         const string k_ShaderName = "Custom/MyTestShader,1"; // comma in the name for testing purposes
-        const string k_UrpCodeInclude =
-            @"#include ""Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl""";
 
 #pragma warning disable 0414
         TestAsset m_ShaderResource;
