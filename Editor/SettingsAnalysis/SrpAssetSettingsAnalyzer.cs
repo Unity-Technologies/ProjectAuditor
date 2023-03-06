@@ -66,13 +66,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             int qualityLevel = issue.GetCustomPropertyInt32(0);
             if (qualityLevel == -1)
             {
-                FixSrpBatcherSetting(GraphicsSettings.defaultRenderPipeline);
+                SetSrpBatcherSetting(GraphicsSettings.defaultRenderPipeline);
                 return;
             }
 
             var initialQualityLevel = QualitySettings.GetQualityLevel();
             QualitySettings.SetQualityLevel(qualityLevel);
-            FixSrpBatcherSetting(QualitySettings.renderPipeline);
+            SetSrpBatcherSetting(QualitySettings.renderPipeline);
             QualitySettings.SetQualityLevel(initialQualityLevel);
 #endif
         }
@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 .WithLocation(qualityLevel == -1 ? "Project/Graphics" : "Project/Quality");
         }
 
-        internal static void FixSrpBatcherSetting(RenderPipelineAsset renderPipeline, bool value = true)
+        internal static void SetSrpBatcherSetting(RenderPipelineAsset renderPipeline, bool value = true)
         {
             if (renderPipeline == null) return;
 #if PACKAGE_URP

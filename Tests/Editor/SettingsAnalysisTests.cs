@@ -568,23 +568,37 @@ namespace Unity.ProjectAuditor.EditorTests
         public void SrpAssetSettingsAnalysis_SrpBatching_IsNotReportedOnceFixed()
         {
 #if UNITY_2019_3_OR_NEWER
-            if (GraphicsSettings.defaultRenderPipeline == null)
+            SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(GraphicsSettings.defaultRenderPipeline);
+            SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(QualitySettings.renderPipeline);
+
+            if (GraphicsSettings.defaultRenderPipeline != null)
             {
-                return;
+                TestSrpBatchingSetting(GraphicsSettings.defaultRenderPipeline, -1);
             }
 
-            SrpAssetSettingsAnalyzer.FixSrpBatcherSetting(GraphicsSettings.defaultRenderPipeline, false);
-
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.title.Equals("SRP Asset: SRP Batcher"));
-            var srpBatchingIssue = issues.FirstOrDefault();
-            Assert.NotNull(srpBatchingIssue);
-            Assert.IsTrue(srpBatchingIssue.GetCustomPropertyInt32(0) == -1, "Default Render Pipeline should have quality level -1.");
-
-            SrpAssetSettingsAnalyzer.FixSrpBatcherSetting(GraphicsSettings.defaultRenderPipeline);
-
-            issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.title.Equals("SRP Asset: SRP Batcher"));
-            Assert.Null(issues.FirstOrDefault());
+            if (QualitySettings.renderPipeline != null)
+            {
+                TestSrpBatchingSetting(QualitySettings.renderPipeline, QualitySettings.GetQualityLevel());
+            }
 #endif
         }
+
+#if UNITY_2019_3_OR_NEWER
+        private void TestSrpBatchingSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
+        {
+            SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, false);
+            var issues = Analyze(IssueCategory.ProjectSetting,
+                i => i.descriptor.title.Equals("SRP Asset: SRP Batcher"));
+            var srpBatchingIssue = issues.FirstOrDefault();
+            Assert.NotNull(srpBatchingIssue);
+            Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
+                $"Render Pipeline should have quality level {qualityLevel}.");
+
+            SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline);
+            issues = Analyze(IssueCategory.ProjectSetting,
+                i => i.descriptor.title.Equals("SRP Asset: SRP Batcher"));
+            Assert.Null(issues.FirstOrDefault());
+        }
+#endif
     }
 }
