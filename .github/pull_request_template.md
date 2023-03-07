@@ -2,6 +2,10 @@
 
 _Please fill this section with a description what the pull request is trying to address._
 
+### Screenshot
+
+_Include a screenshot of the feature as seen in the UI, remove the section if not applicable._
+
 ### Changes made
 
 _Please write down a short description of what changes were made._
