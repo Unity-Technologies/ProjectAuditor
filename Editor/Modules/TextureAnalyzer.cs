@@ -101,8 +101,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             PAT0004,
             "Texture: Anisotropic level is more than 1",
             new[] {Area.GPU, Area.Quality},
-            "The anisotropic texture level is more than 1. Anisotropic filtering makes Textures look better when viewed at a shallow angle, but it can be slower to process on the GPU.",
-            "Consider setting the anisotropic texture level to 1."
+            "The anisotropic level is more than 1. Anisotropic filtering makes textures look better when viewed at a shallow angle, but it can be slower to process on the GPU.",
+            "Consider setting the anisotropic level to 1."
         )
         {
             messageFormat = "Texture '{0}' has an anisotropic level of more than 1.",
