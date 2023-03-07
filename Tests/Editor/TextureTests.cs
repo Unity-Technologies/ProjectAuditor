@@ -111,6 +111,8 @@ namespace Unity.ProjectAuditor.EditorTests
             m_TestTextureAnisotropicLevelOne = new TestAsset(k_TextureNameAnisotropicLevelOne + ".png", encodedPNG);
             textureImporter = AssetImporter.GetAtPath(m_TestTextureAnisotropicLevelOne.relativePath) as TextureImporter;
             textureImporter.anisoLevel = 1;
+            textureImporter.filterMode = FilterMode.Bilinear;
+            textureImporter.mipmapEnabled = true;
             textureImporter.SaveAndReimport();
         }
 
@@ -263,6 +265,25 @@ namespace Unity.ProjectAuditor.EditorTests
             var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TestTextureAnisotropicLevelOne, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureAnisotropicLevelDescriptor));
 
             Assert.IsNull(textureDiagnostic);
+
+            var textureImporter = AssetImporter.GetAtPath(m_TestTextureAnisotropicLevelOne.relativePath) as TextureImporter;
+            textureImporter.anisoLevel = 2;
+            textureImporter.mipmapEnabled = false;
+            textureImporter.SaveAndReimport();
+
+            textureDiagnostic = AnalyzeAndFindAssetIssues(m_TestTextureAnisotropicLevelOne, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureAnisotropicLevelDescriptor));
+            Assert.IsNull(textureDiagnostic);
+
+            textureImporter.mipmapEnabled = true;
+            textureImporter.filterMode = FilterMode.Point;
+            textureImporter.SaveAndReimport();
+
+            textureDiagnostic = AnalyzeAndFindAssetIssues(m_TestTextureAnisotropicLevelOne, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureAnisotropicLevelDescriptor));
+            Assert.IsNull(textureDiagnostic);
+
+            textureImporter.anisoLevel = 1;
+            textureImporter.filterMode = FilterMode.Bilinear;
+            textureImporter.SaveAndReimport();
         }
 
     }

@@ -182,7 +182,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(textureImporter.assetPath);
             }
 
-            if (textureImporter.anisoLevel > 1)
+            if (textureImporter.mipmapEnabled && textureImporter.filterMode != FilterMode.Point && textureImporter.anisoLevel > 1)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAnisotropicLevelDescriptor, textureName)
                     .WithLocation(textureImporter.assetPath);
