@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "SRP batcher is disabled in Render Pipeline Asset.",
             "Enable SRP batcher in Render Pipeline Asset. This will reduce the CPU time Unity requires to prepare and dispatch draw calls for materials that use the same shader variant.")
         {
-            messageFormat = "SRP batcher is disabled in '{0}' in '{1}'",
+            messageFormat = "SRP batcher is disabled in {0}.asset in {1}",
             fixer = FixSrpBatcherSetting
         };
 
@@ -66,13 +66,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             int qualityLevel = issue.GetCustomPropertyInt32(0);
             if (qualityLevel == -1)
             {
-                SetSrpBatcherSetting(GraphicsSettings.defaultRenderPipeline);
+                SetSrpBatcherSetting(GraphicsSettings.defaultRenderPipeline, true);
                 return;
             }
 
             var initialQualityLevel = QualitySettings.GetQualityLevel();
             QualitySettings.SetQualityLevel(qualityLevel);
-            SetSrpBatcherSetting(QualitySettings.renderPipeline);
+            SetSrpBatcherSetting(QualitySettings.renderPipeline, true);
             QualitySettings.SetQualityLevel(initialQualityLevel);
 #endif
         }
@@ -80,35 +80,44 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 #if UNITY_2019_3_OR_NEWER
         private IEnumerable<ProjectIssue> Analyze(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
-            if (renderPipeline == null) yield break;
-#if PACKAGE_URP
-            if (renderPipeline is UniversalRenderPipelineAsset urpAsset &&
-                !urpAsset.useSRPBatcher)
+            bool? srpBatcherSetting = GetSrpBatcherSetting(renderPipeline);
+            if (srpBatcherSetting != null && !srpBatcherSetting.Value)
             {
-                yield return CreateSrpBatcherIssue(qualityLevel, urpAsset.name);
+                yield return CreateSrpBatcherIssue(qualityLevel, renderPipeline.name);
             }
-#elif PACKAGE_HDRP
-            FieldInfo enableSrpBatcherField = GetSrpBatcherField(renderPipeline, out HDRenderPipelineAsset hdrpAsset);
-            if (enableSrpBatcherField != null && !(bool)enableSrpBatcherField.GetValue(hdrpAsset))
-            {
-
-                yield return CreateSrpBatcherIssue(qualityLevel, hdrpAsset.name);
-            }
-#endif
         }
 
         private static ProjectIssue CreateSrpBatcherIssue(int qualityLevel, string name)
         {
             string assetLocation = qualityLevel == -1
                 ? "Default Rendering Pipeline Asset"
-                : $"Rendering Pipeline Asset in Quality Level: {QualitySettings.names[qualityLevel]}";
+                : $"Rendering Pipeline Asset on Quality Level: '{QualitySettings.names[qualityLevel]}'";
             return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SRPBatcherSettingDescriptor,
                     name, assetLocation)
                 .WithCustomProperties(new object[] { qualityLevel })
                 .WithLocation(qualityLevel == -1 ? "Project/Graphics" : "Project/Quality");
         }
 
-        internal static void SetSrpBatcherSetting(RenderPipelineAsset renderPipeline, bool value = true)
+        internal static bool? GetSrpBatcherSetting(RenderPipelineAsset renderPipeline)
+        {
+            if (renderPipeline == null) return null;
+#if PACKAGE_URP
+            if (renderPipeline is UniversalRenderPipelineAsset urpAsset)
+            {
+                return urpAsset.useSRPBatcher;
+            }
+#elif PACKAGE_HDRP
+            FieldInfo enableSrpBatcherField = GetSrpBatcherField(renderPipeline,
+                out HDRenderPipelineAsset hdrpAsset);
+            if (enableSrpBatcherField != null)
+            {
+                return (bool)enableSrpBatcherField.GetValue(hdrpAsset);
+            }
+#endif
+            return null;
+        }
+
+        internal static void SetSrpBatcherSetting(RenderPipelineAsset renderPipeline, bool value)
         {
             if (renderPipeline == null) return;
 #if PACKAGE_URP
