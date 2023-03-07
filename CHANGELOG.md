@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 * Added SRP Asset Settings analyzer.
 * Added Shader SRP Batcher analyzer.
+* Added anisotropic texture level analyzer.
 
 ## [0.9.3-preview.3] - 2023-02-28
 * Fixed lines and bars drawing
