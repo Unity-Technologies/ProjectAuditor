@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     /// <author>
     /// Unity Labs SuperScience
     /// <author>
-    public static class ScanSolidTexture
+    public static class TextureUtils
     {
         /// <summary>
         /// Check if a texture is a single solid color and its size is over than 1x1
@@ -46,9 +46,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             // For non-readable textures, make it readable to use some functions (GetPixels())
             if (textureImporter.isReadable)
             {
-                if (IsSolidColor(texture2D))
+                if (texture.width != 1 || texture.height != 1)
                 {
-                    if (texture.width != 1 && texture.height != 1)
+                    if (IsSolidColor(texture2D))
                     {
                         isTooBig = true;
                     }
@@ -72,8 +72,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 Texture2D myTexture2D = new Texture2D(texture2D.width, texture2D.height);
                 myTexture2D.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
-                //Graphics.CopyTexture(texture2D, myTexture2D);
-                //var pixel = myTexture2D.GetPixel(4, 0);
                 myTexture2D.Apply();
 
                 if (IsSolidColor(myTexture2D))

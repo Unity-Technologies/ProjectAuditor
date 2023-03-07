@@ -109,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "Texture '{0}' is a solid color and not 1x1 size",
             fixer = (issue) =>
             {
-                ResizeSolideTexture(issue.relativePath);
+                ResizeSolidTexture(issue.relativePath);
             }
         };
 
@@ -177,14 +177,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(textureImporter.assetPath);
             }
 
-            if (ScanSolidTexture.IsTextureSolidColorTooBig(textureImporter, texture))
+            if (TextureUtils.IsTextureSolidColorTooBig(textureImporter, texture))
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureSolidColorDescriptor, textureName)
                     .WithLocation(textureImporter.assetPath);
             }
         }
 
-        internal static void ResizeSolideTexture(string path)
+        internal static void ResizeSolidTexture(string path)
         {
             var textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
             if (textureImporter != null)
