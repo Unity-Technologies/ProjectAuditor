@@ -400,7 +400,6 @@ Shader ""Custom/SRPBatchCompatible""
                 }
             }
 ");
-
         }
 
         [Test]

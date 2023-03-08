@@ -612,6 +612,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have enabled SRP Batcher.");
         }
+
 #endif
     }
 }

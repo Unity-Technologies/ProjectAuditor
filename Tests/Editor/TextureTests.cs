@@ -285,6 +285,5 @@ namespace Unity.ProjectAuditor.EditorTests
             textureImporter.filterMode = FilterMode.Bilinear;
             textureImporter.SaveAndReimport();
         }
-
     }
 }
