@@ -48,6 +48,9 @@ For information on a specific view, check the corresponding page.
 * [Build Steps](BuildSteps.md)
 * [Build Size](BuildSize.md)
 
+## Table of contents
+* [Contents](./TableOfContents.md)
+
 ## Reporting issues
 If you have issues running Project Auditor in your Unity project, please report them on the [GitHub repository](https://github.com/Unity-Technologies/ProjectAuditor/issues).
 
