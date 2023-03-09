@@ -65,6 +65,7 @@ The following table indicates the package directory structure:
 ## Document revision history
 |Date|Reason|
 |---|---|
+|Mar 9, 2023|Added table of contents and updated installation instructions|
 |Mar 11, 2022|Updated links to view-specific pages|
 |Jul 23, 2021|Added view-specific pages|
 |Apr 9, 2021|Updated index page with more detail|
