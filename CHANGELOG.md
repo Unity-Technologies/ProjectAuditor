@@ -279,7 +279,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Overview stats to Build Report Size view
 
 ### Fixed
-* Fixed detection of HDRP mixed LitShaderMode
+* Detection of HDRP mixed LitShaderMode
 
 ## [0.6.1-preview] - 2021-05-11
 
@@ -404,7 +404,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Better names for project settings issues
 
 ### Fixed
-* Fixed issues sorting within a group
+* Issues sorting within a group
 * ExportToCSV improvements
 
 ## [0.2.1-preview] - 2020-05-22
