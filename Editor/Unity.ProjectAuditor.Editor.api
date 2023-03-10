@@ -64,9 +64,9 @@ namespace Unity.ProjectAuditor.Editor
     public sealed class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport
     {
         public const string PackageName = @"com.unity.project-auditor";
-        public const string PackagePath = @"Packages/com.unity.project-auditor";
         public int callbackOrder { get; }
         public ProjectAuditorConfig config { get; }
+        public static string PackagePath { get; }
         public ProjectAuditor() {}
         public ProjectAuditor(string assetPath) {}
         public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig) {}
