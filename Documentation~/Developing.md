@@ -23,3 +23,5 @@ In order to be able to run (existing or new) tests in VS/Rider or within Unity u
 5. Create the pull request.
 6. Once approved, merge to `master` and delete the remote branch.
 > **Note**: Make sure to select `Unity-Technologies/ProjectAuditor` as base repository and `master` as base branch when creating the Pull Request.
+
+The repository owners are committed to maintaining this repository and ensuring that it continues to adhere to Unity Standards for package development. Individual pull requests may take time to be approved if they contain changes that require the package to be re-validated.
