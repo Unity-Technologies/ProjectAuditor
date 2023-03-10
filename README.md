@@ -23,3 +23,6 @@ Project Auditor is licensed under the [Unity Package Distribution License](LICEN
 
 ## Documentation
 For information on how to install and use Project Auditor, please refer to the [documentation](Documentation~/index.md).
+
+## Development
+For information on how to develop Project Auditor to add issue tracking for your project's needs, and for information on how to submit changes to the repository, see the [Developing Project Auditor](Documentation~/Developing.md) page.
