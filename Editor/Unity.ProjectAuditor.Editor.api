@@ -253,13 +253,6 @@ namespace Unity.ProjectAuditor.Editor.Core
         public override bool IsPerfCritical();
     }
 
-    public class CSVExporter : Exporter
-    {
-        public CSVExporter(string path, IssueLayout layout) {}
-        public override void WriteHeader();
-        protected override void WriteIssue(ProjectIssue issue);
-    }
-
     public abstract class DependencyNode
     {
         public Location location;
@@ -289,14 +282,6 @@ namespace Unity.ProjectAuditor.Editor.Core
         public abstract void WriteHeader();
         protected abstract void WriteIssue(ProjectIssue issue);
         public void WriteIssues(ProjectIssue[] issues);
-    }
-
-    public class HTMLExporter : Exporter
-    {
-        public HTMLExporter(string path, IssueLayout layout) {}
-        public override void WriteFooter();
-        public override void WriteHeader();
-        protected override void WriteIssue(ProjectIssue issue);
     }
 
     public interface IModuleAnalyzer
@@ -522,14 +507,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Value = 0,
     }
 
-    public class BuildReportModule : Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule
-    {
-        public override string name { get; }
-        public override System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.Core.IssueLayout> supportedLayouts { get; }
-        public BuildReportModule() {}
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = default(IProgress));
-    }
-
     public enum BuildReportStepProperty
     {
         Duration = 0,
@@ -657,13 +634,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Tier = 2,
     }
 
-    public class TextureAnalyzer : ITextureModuleAnalyzer, Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
-    {
-        public TextureAnalyzer() {}
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, UnityEditor.TextureImporter textureImporter, UnityEditor.TextureImporterPlatformSettings platformSettings);
-        public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
-    }
-
     public enum TextureProperty
     {
         Format = 2,
@@ -676,15 +646,5 @@ namespace Unity.ProjectAuditor.Editor.Modules
         SizeOnDisk = 7,
         StreamingMipMap = 8,
         TextureCompression = 3,
-    }
-}
-
-namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
-{
-    public class TimeSettingsAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer, Unity.ProjectAuditor.Editor.Modules.ISettingsModuleAnalyzer
-    {
-        public TimeSettingsAnalyzer() {}
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams);
-        public void Initialize(Unity.ProjectAuditor.Editor.Core.ProjectAuditorModule module);
     }
 }

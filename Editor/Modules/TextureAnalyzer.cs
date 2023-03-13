@@ -8,7 +8,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public class TextureAnalyzer : ITextureModuleAnalyzer
+    class TextureAnalyzer : ITextureModuleAnalyzer
     {
         internal const string PAT0000 = nameof(PAT0000);
         internal const string PAT0001 = nameof(PAT0001);

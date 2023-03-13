@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    public class HTMLExporter : Exporter
+    class HTMLExporter : Exporter
     {
         public HTMLExporter(string path, IssueLayout layout) : base(path, layout) {}
 

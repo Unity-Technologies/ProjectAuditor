@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    public class TimeSettingsAnalyzer : ISettingsModuleAnalyzer
+    class TimeSettingsAnalyzer : ISettingsModuleAnalyzer
     {
         internal const string PAS0016 = nameof(PAS0016);
         internal const string PAS0017 = nameof(PAS0017);

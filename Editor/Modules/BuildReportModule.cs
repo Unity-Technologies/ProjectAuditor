@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    public class BuildReportModule : ProjectAuditorModule
+    class BuildReportModule : ProjectAuditorModule
     {
         internal interface IBuildReportProvider
         {
