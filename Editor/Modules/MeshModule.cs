@@ -7,7 +7,7 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public enum MeshProperty
+    enum MeshProperty
     {
         VertexCount,
         TriangleCount,

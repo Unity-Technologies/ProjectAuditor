@@ -91,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor
                 developerMode = value;
 
                 // need to trigger domain reload so that Views are re-registered
-                AssetDatabase.ImportAsset(ProjectAuditor.PackagePath + "/Editor/UserPreferences.cs");
+                AssetDatabase.ImportAsset(ProjectAuditor.s_PackagePath + "/Editor/UserPreferences.cs");
             }
             logTimingsInfo = EditorGUILayout.Toggle(k_LogTimingsInfoLabel, logTimingsInfo);
 

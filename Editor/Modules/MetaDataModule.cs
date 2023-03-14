@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public enum MetaDataProperty
+    enum MetaDataProperty
     {
         Value = 0,
         Num
@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             NewMetaData(k_KeyAnalysisTarget, projectAuditorParams.platform, issues);
             NewMetaData(k_KeyCompilationMode, m_Config.CompilationMode, issues);
             NewMetaData(k_KeyRoslynAnalysis, m_Config.UseRoslynAnalyzers, issues);
-            NewMetaData(k_KeyProjectAuditorVersion, ProjectAuditor.PackageVersion, issues);
+            NewMetaData(k_KeyProjectAuditorVersion, ProjectAuditor.s_PackageVersion, issues);
             NewMetaData(k_KeyUnityVersion, Application.unityVersion, issues);
 
             projectAuditorParams.onIncomingIssues(issues);

@@ -230,7 +230,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Editor.ProjectAuditor();
             var descriptors = projectAuditor.GetDescriptors();
 
-            var loadedDescriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, jsonFilename);
+            var loadedDescriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.s_DataPath, jsonFilename);
             foreach (var loadedDescriptor in loadedDescriptors)
             {
                 Assert.Contains(loadedDescriptor, descriptors, "Descriptor {0} is not registered", loadedDescriptor.id);
@@ -252,7 +252,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "OnCollisionStay"
             };
 
-            var descriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, jsonFilename);
+            var descriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.s_DataPath, jsonFilename);
             foreach (var desc in descriptors)
             {
                 var type = types.FirstOrDefault(t => t.FullName.Equals(desc.type));
@@ -317,7 +317,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void DiagnosticDescriptor_UnsupportedPlatform_IsNotLoaded()
         {
-            var descriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.DataPath, "ProjectSettings");
+            var descriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.s_DataPath, "ProjectSettings");
             var platDescriptor = descriptors.FirstOrDefault(d => d.id.Equals("PAS0010"));
 
             // PAS0010 should only be available if WebGL is supported

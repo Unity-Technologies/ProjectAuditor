@@ -19,14 +19,14 @@ using ThreadPriority = System.Threading.ThreadPriority;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public enum AssemblyProperty
+    enum AssemblyProperty
     {
         ReadOnly = 0,
         CompileTime,
         Num
     }
 
-    public enum PrecompiledAssemblyProperty
+    enum PrecompiledAssemblyProperty
     {
         RoslynAnalyzer = 0,
         Num
@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    public enum CompilerMessageProperty
+    enum CompilerMessageProperty
     {
         Code = 0,
         Assembly,

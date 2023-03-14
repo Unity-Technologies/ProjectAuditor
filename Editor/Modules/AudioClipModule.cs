@@ -11,7 +11,7 @@ using Unity.ProjectAuditor.Editor.Core;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public enum AudioClipProperty
+    enum AudioClipProperty
     {
         ForceToMono = 0,
         LoadInBackground,

@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor
 
         internal static string GetPageUrl(string pageName)
         {
-            return baseURL + ProjectAuditor.PackageVersion + subURL + pageName + endURL;
+            return baseURL + ProjectAuditor.s_PackageVersion + subURL + pageName + endURL;
         }
     }
 }
