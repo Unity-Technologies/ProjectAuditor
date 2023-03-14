@@ -101,7 +101,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
         public MarkerStats[] MarkerStats;
     }
 
-    public struct ProfileReport
+    public class ProfileReport
     {
         public int NumFrames;
 
@@ -178,17 +178,21 @@ namespace Unity.ProjectAuditor.Editor.Profiling
                 ref FrameInfo outFrameInfo = ref outFrameInfos[i];
                 List<MarkerStats> stats = new List<MarkerStats>();
 
-                for (int j = 0; j < inFrameInfo.MarkerStats.Length; ++j)
+                // Skip frames that don't have captured markers
+                if (inFrameInfo.MarkerStats != null)
                 {
-                    ref MarkerStats m = ref inFrameInfo.MarkerStats[j];
-
-                    if (markerPredicate(ref m))
+                    for (int j = 0; j < inFrameInfo.MarkerStats.Length; ++j)
                     {
-                        stats.Add(m);
-                    }
-                }
+                        ref MarkerStats m = ref inFrameInfo.MarkerStats[j];
 
-                outFrameInfo.MarkerStats = stats.ToArray();
+                        if (markerPredicate(ref m))
+                        {
+                            stats.Add(m);
+                        }
+                    }
+
+                    outFrameInfo.MarkerStats = stats.ToArray();
+                }
             }
 
             return outFrameInfos;
@@ -359,6 +363,9 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             ProfilerDriver.LoadProfile(profilePath, false);
         }
 
+        /// <summary>
+        /// CreateReport implicitly creates a summary for all frames currently stored in the ProfilerDriver.
+        /// </summary>
         public ProfileReport CreateReport(ProfileAnalyzerParams profileAnalyzerParams)
         {
             m_ProfileReport = new ProfileReport();
@@ -366,11 +373,52 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
             if (ProfilerDriver.firstFrameIndex >= 0)
             {
-                CalculateFrameTimeStats(ref m_ProfileReport, profileAnalyzerParams);
+                m_ProfileReport.NumFrames = ProfilerDriver.lastFrameIndex - ProfilerDriver.firstFrameIndex + 1;
+
                 CollectMarkers(ref m_ProfileReport);
+                CalculateFrameTimeStats(ref m_ProfileReport, profileAnalyzerParams);
             }
 
             return m_ProfileReport;
+        }
+
+        /// <summary>
+        /// InitializeReport sets up an "empty" report to then add analyzed frames as needed.
+        /// This allows to add any frames, e.g. some that only contain some data (frame times) and some
+        /// that got extracted from ProfilerDriver data with marker stats.
+        /// </summary>
+        public ProfileReport InitializeReport(int frameCount)
+        {
+            m_ProfileReport = new ProfileReport();
+            m_ProfileReport.Init();
+
+            m_ProfileReport.FrameInfos = new FrameInfo[frameCount];
+            m_ProfileReport.NumFrames = frameCount;
+
+            return m_ProfileReport;
+        }
+
+        public void CollectMarkersForFrames(int frameInfoStartFrame)
+        {
+            var numFrames = ProfilerDriver.lastFrameIndex - ProfilerDriver.firstFrameIndex + 1;
+
+            for (int frameIndex = 0; frameIndex < numFrames; ++frameIndex)
+            {
+                var frameDataHierarchy = ProfilerDriver.GetHierarchyFrameDataView(frameIndex + ProfilerDriver.firstFrameIndex, 0,
+                    HierarchyFrameDataView.ViewModes.Default, HierarchyFrameDataView.columnDontSort, false);
+
+                CollectMarkersForFrame(ref m_ProfileReport, frameDataHierarchy, frameIndex + frameInfoStartFrame);
+
+                m_ProfileReport.FrameInfos[frameIndex +  frameInfoStartFrame].TotalTimeMs = frameDataHierarchy.frameTimeMs;
+
+                var rootId = frameDataHierarchy.GetRootItemID();
+                m_ProfileReport.FrameInfos[frameIndex + frameInfoStartFrame].TotalGcMemory = (int)frameDataHierarchy.GetItemColumnDataAsFloat(rootId, HierarchyFrameDataView.columnGcMemory);
+            }
+        }
+
+        public void AddFrameCounter(int frameInfoFrameIndex, float timeMs)
+        {
+            m_ProfileReport.FrameInfos[frameInfoFrameIndex].TotalTimeMs = timeMs;
         }
 
         static void CollectMarkers(ref ProfileReport report)
@@ -393,7 +441,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
         }
 
         static void CollectMarkersForFrame(ref ProfileReport report,
-            HierarchyFrameDataView frameDataHierarchy, int frameId)
+            HierarchyFrameDataView frameDataHierarchy, int frameInfosFrameId)
         {
             List<int> topLevelItems = new List<int>();
             List<MarkerStats> allMarkerStats = new List<MarkerStats>();
@@ -506,7 +554,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
             CollectEditorProfilerMarkers(frameDataHierarchy, topLevelItems, ref allMarkerStats);
 
-            report.FrameInfos[frameId].MarkerStats = allMarkerStats.ToArray();
+            report.FrameInfos[frameInfosFrameId].MarkerStats = allMarkerStats.ToArray();
         }
 
         private static bool CollectKnownSubMarkers(HierarchyFrameDataView frameDataHierarchy,
@@ -722,10 +770,8 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             }
         }
 
-        static void CalculateFrameTimeStats(ref ProfileReport report, ProfileAnalyzerParams profileAnalyzerParams)
+        public void CalculateFrameTimeStats(ref ProfileReport report, ProfileAnalyzerParams profileAnalyzerParams)
         {
-            report.NumFrames = ProfilerDriver.lastFrameIndex - ProfilerDriver.firstFrameIndex + 1;
-
             // Determine slow and fast frame thresholds for a given target framerate
             float SlowFrameTime = 35.37f;
             float FastFrameTime = 25f;
@@ -750,8 +796,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
             float[] frameTimesMs = new float[report.NumFrames];
             for (int i = 0; i < report.NumFrames; ++i)
             {
-                var rawView = ProfilerDriver.GetRawFrameDataView(i + ProfilerDriver.firstFrameIndex, 0);
-                frameTimesMs[i] = rawView.frameTimeMs;
+                frameTimesMs[i] = report.FrameInfos[i].TotalTimeMs;
             }
 
             Array.Sort(frameTimesMs);
@@ -763,12 +808,10 @@ namespace Unity.ProjectAuditor.Editor.Profiling
 
             float maxPercentileFrameTime = 0;
             int percentileFrameCount = 0;
-            for (int i = ProfilerDriver.firstFrameIndex; i <= ProfilerDriver.lastFrameIndex; ++i)
+            for (int i = 0; i < report.NumFrames; ++i)
             {
-                var rawView = ProfilerDriver.GetRawFrameDataView(i, 0);
-
-                var fps = rawView.frameFps;
-                var ms = rawView.frameTimeMs;
+                var ms = report.FrameInfos[i].TotalTimeMs;
+                var fps = ms > 0 ? 1000f / ms : 0;
 
                 if (ms > percentileCutoffMs)
                     continue;

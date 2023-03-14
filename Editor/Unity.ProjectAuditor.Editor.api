@@ -749,7 +749,11 @@ namespace Unity.ProjectAuditor.Editor.Profiling
     {
         public ref ProfileReport ProfileReport { get; }
         public ProfileAnalyzer() {}
+        public void AddFrameCounter(int frameInfoFrameIndex, float timeMs);
+        public void CalculateFrameTimeStats(ref ProfileReport report, ProfileAnalyzer.ProfileAnalyzerParams profileAnalyzerParams);
+        public void CollectMarkersForFrames(int frameInfoStartFrame);
         public ProfileReport CreateReport(ProfileAnalyzer.ProfileAnalyzerParams profileAnalyzerParams);
+        public ProfileReport InitializeReport(int frameCount);
         public void LoadProfile(string profilePath);
         public struct ProfileAnalyzerParams
         {
@@ -758,7 +762,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
         }
     }
 
-    public struct ProfileReport
+    public class ProfileReport
     {
         public float FastFrameTime;
         public FrameInfo[] FrameInfos;
@@ -775,6 +779,7 @@ namespace Unity.ProjectAuditor.Editor.Profiling
         public float PercentileCutoffFrameTime;
         public int PercentileFrameCount;
         public float SlowFrameTime;
+        public ProfileReport() {}
         public FrameInfo[] GetFramesWithMarkerPredicate(ProfileReport.MarkerStatConditionDelegate markerPredicate, int startFrameIndex, int endFrameIndex);
         public void Init();
         public bool IsValid();
