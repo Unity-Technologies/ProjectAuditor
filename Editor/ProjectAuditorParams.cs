@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor
             codeOptimization = CodeOptimization.Release;
         }
 
-        public ProjectAuditorParams(ProjectAuditorParams original)
+        internal ProjectAuditorParams(ProjectAuditorParams original)
         {
             categories = original.categories;
             platform = original.platform;

@@ -63,10 +63,8 @@ namespace Unity.ProjectAuditor.Editor
 
     public sealed class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport
     {
-        public const string PackageName = @"com.unity.project-auditor";
         public int callbackOrder { get; }
         public ProjectAuditorConfig config { get; }
-        public static string PackagePath { get; }
         public ProjectAuditor() {}
         public ProjectAuditor(string assetPath) {}
         public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig) {}
@@ -110,7 +108,6 @@ namespace Unity.ProjectAuditor.Editor
         public UnityEditor.BuildTarget platform;
         public ProjectAuditorSettings settings;
         public ProjectAuditorParams() {}
-        public ProjectAuditorParams(ProjectAuditorParams original) {}
     }
 
     [UnityEngine.CreateAssetMenu(menuName = @"Project Auditor/Project Auditor Settings")] public class ProjectAuditorSettings : UnityEngine.ScriptableObject
@@ -474,74 +471,10 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public enum AssemblyProperty
-    {
-        CompileTime = 1,
-        Num = 2,
-        ReadOnly = 0,
-    }
-
-    public enum AudioClipProperty
-    {
-        CompressionFormat = 4,
-        ForceToMono = 0,
-        LoadInBackground = 1,
-        LoadType = 3,
-        Num = 5,
-        PreloadAudioData = 2,
-    }
-
-    public enum BuildReportFileProperty
-    {
-        BuildFile = 4,
-        ImporterType = 0,
-        Num = 5,
-        RuntimeType = 1,
-        Size = 2,
-        SizePercent = 3,
-    }
-
-    public enum BuildReportMetaData
-    {
-        Num = 1,
-        Value = 0,
-    }
-
-    public enum BuildReportStepProperty
-    {
-        Duration = 0,
-        Message = 1,
-        Num = 2,
-    }
-
     public enum CodeProperty
     {
         Assembly = 0,
         Num = 1,
-    }
-
-    public enum CompilerMessageProperty
-    {
-        Assembly = 1,
-        Code = 0,
-        Num = 2,
-    }
-
-    public enum ComputeShaderVariantProperty
-    {
-        Kernel = 2,
-        Keywords = 3,
-        Num = 5,
-        Platform = 0,
-        PlatformKeywords = 4,
-        Tier = 1,
-    }
-
-    public enum FogMode
-    {
-        Exponential = 1,
-        ExponentialSquared = 2,
-        Linear = 0,
     }
 
     public interface ICodeModuleInstructionAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
@@ -568,70 +501,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
     public interface ITextureModuleAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
     {
         public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, UnityEditor.TextureImporter textureImporter, UnityEditor.TextureImporterPlatformSettings textureImporterPlatformSettings);
-    }
-
-    public enum MeshProperty
-    {
-        MeshCompression = 2,
-        Num = 4,
-        SizeOnDisk = 3,
-        TriangleCount = 1,
-        VertexCount = 0,
-    }
-
-    public enum MetaDataProperty
-    {
-        Num = 1,
-        Value = 0,
-    }
-
-    public enum PackageProperty
-    {
-        Name = 0,
-        Num = 3,
-        Source = 2,
-        Version = 1,
-    }
-
-    public enum PrecompiledAssemblyProperty
-    {
-        Num = 1,
-        RoslynAnalyzer = 0,
-    }
-
-    public enum ShaderMessageProperty
-    {
-        Num = 2,
-        Platform = 1,
-        ShaderName = 0,
-    }
-
-    public enum ShaderProperty
-    {
-        AlwaysIncluded = 8,
-        Instancing = 6,
-        Num = 9,
-        NumBuiltVariants = 2,
-        NumKeywords = 4,
-        NumPasses = 3,
-        NumVariants = 1,
-        RenderQueue = 5,
-        Size = 0,
-        SrpBatcher = 7,
-    }
-
-    public enum ShaderVariantProperty
-    {
-        Compiled = 0,
-        Keywords = 6,
-        Num = 9,
-        PassName = 5,
-        PassType = 4,
-        Platform = 1,
-        PlatformKeywords = 7,
-        Requirements = 8,
-        Stage = 3,
-        Tier = 2,
     }
 
     public enum TextureProperty

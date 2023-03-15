@@ -1141,7 +1141,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     SharedStyles.SetFontDynamicSize(m_ViewStates.fontSize);
                 }
 
-                EditorGUILayout.LabelField("Ver. " + ProjectAuditor.PackageVersion, EditorStyles.label, GUILayout.Width(120));
+                EditorGUILayout.LabelField("Ver. " + ProjectAuditor.s_PackageVersion, EditorStyles.label, GUILayout.Width(120));
             }
         }
 

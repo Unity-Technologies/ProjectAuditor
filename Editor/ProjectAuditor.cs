@@ -21,45 +21,44 @@ namespace Unity.ProjectAuditor.Editor
     public sealed class ProjectAuditor
         : IPreprocessBuildWithReport
     {
-        internal static string DataPath => PackagePath + "/Data";
+        internal static string s_DataPath => s_PackagePath + "/Data";
         internal const string k_DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
-        internal const string k_CanonicalPackagePath = "Packages/" + PackageName;
+        internal const string k_CanonicalPackagePath = "Packages/" + k_PackageName;
 
+        internal const string k_PackageName = "com.unity.project-auditor";
 
-        public const string PackageName = "com.unity.project-auditor";
-
-        public static string PackagePath
+        internal static string s_PackagePath
         {
             get
             {
-                if (!string.IsNullOrEmpty(s_PackagePath))
-                    return s_PackagePath;
+                if (!string.IsNullOrEmpty(s_CachedPackagePath))
+                    return s_CachedPackagePath;
 
-                if (PackageUtils.IsPackageInstalled(PackageName))
-                    s_PackagePath = k_CanonicalPackagePath;
+                if (PackageUtils.IsPackageInstalled(k_PackageName))
+                    s_CachedPackagePath = k_CanonicalPackagePath;
                 else
                 {
                     var paths = AssetDatabase.FindAssets("t:asmdef", new string[] { "Packages" }).Select(AssetDatabase.GUIDToAssetPath);
                     var asmDefPath = paths.FirstOrDefault(path => path.EndsWith("Unity.ProjectAuditor.Editor.asmdef"));
-                    s_PackagePath = PathUtils.GetDirectoryName(PathUtils.GetDirectoryName(asmDefPath));
+                    s_CachedPackagePath = PathUtils.GetDirectoryName(PathUtils.GetDirectoryName(asmDefPath));
                 }
-                return s_PackagePath;
+                return s_CachedPackagePath;
             }
         }
 
-        internal static string PackageVersion
+        internal static string s_PackageVersion
         {
             get
             {
-                if (string.IsNullOrEmpty(s_PackageVersion))
-                    s_PackageVersion = PackageUtils.GetPackageVersion(PackageName);
-                return s_PackageVersion;
+                if (string.IsNullOrEmpty(s_CachedPackageVersion))
+                    s_CachedPackageVersion = PackageUtils.GetPackageVersion(k_PackageName);
+                return s_CachedPackageVersion;
             }
         }
 
+        static string s_CachedPackagePath;
+        static string s_CachedPackageVersion;
         static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
-        static string s_PackagePath;
-        static string s_PackageVersion;
 
         readonly List<ProjectAuditorModule> m_Modules = new List<ProjectAuditorModule>();
         ProjectAuditorConfig m_Config;

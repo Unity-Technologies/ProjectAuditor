@@ -20,7 +20,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public enum ShaderProperty
+    enum ShaderProperty
     {
         Size = 0,
         NumVariants,
@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    public enum ShaderVariantProperty
+    enum ShaderVariantProperty
     {
         Compiled = 0,
         Platform,
@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    public enum ComputeShaderVariantProperty
+    enum ComputeShaderVariantProperty
     {
         Platform = 0,
         Tier,
@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    public enum ShaderMessageProperty
+    enum ShaderMessageProperty
     {
         ShaderName = 0,
         Platform,
