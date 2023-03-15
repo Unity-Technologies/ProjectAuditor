@@ -15,6 +15,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAT0002 = nameof(PAT0002);
         internal const string PAT0003 = nameof(PAT0003);
         internal const string PAT0004 = nameof(PAT0004);
+        internal const string PAT0005 = nameof(PAT0005);
 
         internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
             PAT0000,
@@ -114,20 +115,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     textureImporter.anisoLevel = 1;
                     textureImporter.SaveAndReimport();
                 }
-                
+            }
+        };
+
         internal static readonly Descriptor k_TextureSolidColorDescriptor = new Descriptor(
             PAT0005,
             "Texture: Solid color is not 1x1 size",
             new[] {Area.Memory},
             "The texture is a solid color. This increases the amount of memory usage and can be reduced.",
-            "Consider shrinking the texture to 1x1 format."
+            "Consider shrinking the texture to 1x1 size."
         )
         {
             messageFormat = "Texture '{0}' is a solid color and not 1x1 size",
-            fixer = (issue) =>
-            {
-                ResizeSolidTexture(issue.relativePath);
-            }
+            fixer = (issue) => { ResizeSolidTexture(issue.relativePath); }
         };
 
         public void Initialize(ProjectAuditorModule module)
@@ -200,7 +200,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAnisotropicLevelDescriptor, textureName)
                     .WithLocation(textureImporter.assetPath);
             }
-            
+
             if (TextureUtils.IsTextureSolidColorTooBig(textureImporter, texture))
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureSolidColorDescriptor, textureName)
