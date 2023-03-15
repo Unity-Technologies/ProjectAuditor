@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    public class CSVExporter : Exporter
+    class CSVExporter : Exporter
     {
         public CSVExporter(string path, IssueLayout layout) : base(path, layout) {}
 

@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ConfigAsset_DefaultAsset_IsCreated()
         {
-            Assert.IsTrue(File.Exists(Unity.ProjectAuditor.Editor.ProjectAuditor.DefaultAssetPath));
+            Assert.IsTrue(File.Exists(Unity.ProjectAuditor.Editor.ProjectAuditor.k_DefaultAssetPath));
         }
 
         [Test]

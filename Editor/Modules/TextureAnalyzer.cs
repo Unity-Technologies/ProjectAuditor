@@ -2,14 +2,13 @@ using System.Collections.Generic;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public class TextureAnalyzer : ITextureModuleAnalyzer
+    class TextureAnalyzer : ITextureModuleAnalyzer
     {
         internal const string PAT0000 = nameof(PAT0000);
         internal const string PAT0001 = nameof(PAT0001);
@@ -98,8 +97,26 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        internal static readonly Descriptor k_TextureSolidColorDescriptor = new Descriptor(
+        internal static readonly Descriptor k_TextureAnisotropicLevelDescriptor = new Descriptor(
             PAT0004,
+            "Texture: Anisotropic level is higher than 1",
+            new[] {Area.GPU, Area.Quality},
+            "The anisotropic level is higher than 1. Anisotropic filtering makes textures look better when viewed at a shallow angle, but it can be slower to process on the GPU.",
+            "Consider setting the anisotropic level to 1."
+        )
+        {
+            messageFormat = "Texture '{0}' has an anisotropic level higher than 1.",
+            fixer = (issue) =>
+            {
+                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                if (textureImporter != null)
+                {
+                    textureImporter.anisoLevel = 1;
+                    textureImporter.SaveAndReimport();
+                }
+                
+        internal static readonly Descriptor k_TextureSolidColorDescriptor = new Descriptor(
+            PAT0005,
             "Texture: Solid color is not 1x1 size",
             new[] {Area.Memory},
             "The texture is a solid color. This increases the amount of memory usage and can be reduced.",
@@ -119,6 +136,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_TextureMipMapEnabledDescriptor);
             module.RegisterDescriptor(k_TextureReadWriteEnabledDescriptor);
             module.RegisterDescriptor(k_TextureStreamingMipMapEnabledDescriptor);
+            module.RegisterDescriptor(k_TextureAnisotropicLevelDescriptor);
         }
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, TextureImporter textureImporter, TextureImporterPlatformSettings platformSettings)
@@ -177,6 +195,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(textureImporter.assetPath);
             }
 
+            if (textureImporter.mipmapEnabled && textureImporter.filterMode != FilterMode.Point && textureImporter.anisoLevel > 1)
+            {
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAnisotropicLevelDescriptor, textureName)
+                    .WithLocation(textureImporter.assetPath);
+            }
+            
             if (TextureUtils.IsTextureSolidColorTooBig(textureImporter, texture))
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureSolidColorDescriptor, textureName)

@@ -21,11 +21,31 @@ namespace Unity.ProjectAuditor.Editor
     public sealed class ProjectAuditor
         : IPreprocessBuildWithReport
     {
-        internal const string DataPath = PackagePath + "/Data";
-        internal const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
+        internal static string DataPath => PackagePath + "/Data";
+        internal const string k_DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
+        internal const string k_CanonicalPackagePath = "Packages/" + PackageName;
+
 
         public const string PackageName = "com.unity.project-auditor";
-        public const string PackagePath = "Packages/" + PackageName;
+
+        public static string PackagePath
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(s_PackagePath))
+                    return s_PackagePath;
+
+                if (PackageUtils.IsPackageInstalled(PackageName))
+                    s_PackagePath = k_CanonicalPackagePath;
+                else
+                {
+                    var paths = AssetDatabase.FindAssets("t:asmdef", new string[] { "Packages" }).Select(AssetDatabase.GUIDToAssetPath);
+                    var asmDefPath = paths.FirstOrDefault(path => path.EndsWith("Unity.ProjectAuditor.Editor.asmdef"));
+                    s_PackagePath = PathUtils.GetDirectoryName(PathUtils.GetDirectoryName(asmDefPath));
+                }
+                return s_PackagePath;
+            }
+        }
 
         internal static string PackageVersion
         {
@@ -38,6 +58,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
+        static string s_PackagePath;
         static string s_PackageVersion;
 
         readonly List<ProjectAuditorModule> m_Modules = new List<ProjectAuditorModule>();
@@ -49,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public ProjectAuditor()
         {
-            InitAsset(DefaultAssetPath);
+            InitAsset(k_DefaultAssetPath);
             InitModules();
             InitDefaultSettingsProvider();
         }

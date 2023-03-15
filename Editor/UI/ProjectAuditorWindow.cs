@@ -412,7 +412,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.AudioClip,
                 displayName = "AudioClip",
-                menuLabel = "Assets/Meshes//Audio Clips",
+                menuLabel = "Assets/Audio Clips",
                 menuOrder = 107,
                 descriptionWithIcon = true,
                 showFilters = true,
