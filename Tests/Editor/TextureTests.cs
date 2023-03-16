@@ -118,7 +118,7 @@ namespace Unity.ProjectAuditor.EditorTests
             textureImporter.filterMode = FilterMode.Bilinear;
             textureImporter.mipmapEnabled = true;
             textureImporter.SaveAndReimport();
-            
+
             m_TextureNameSolidColor = new TestAsset(k_TextureNameSolidColor + ".png", encodedPNG);
             textureImporter.SaveAndReimport();
 
@@ -301,7 +301,7 @@ namespace Unity.ProjectAuditor.EditorTests
             textureImporter.filterMode = FilterMode.Bilinear;
             textureImporter.SaveAndReimport();
         }
-  
+
         [Test]
         public void Texture_SolidTexture_IsReported()
         {

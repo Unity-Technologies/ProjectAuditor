@@ -25,7 +25,6 @@ namespace Unity.ProjectAuditor.Editor
         AudioClip,
         ComputeShaderVariant,
         Mesh,
-        SpriteAtlas,
 
         FirstCustomCategory
     }
