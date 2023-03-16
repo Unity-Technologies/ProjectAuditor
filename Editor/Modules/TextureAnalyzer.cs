@@ -15,6 +15,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAT0002 = nameof(PAT0002);
         internal const string PAT0003 = nameof(PAT0003);
         internal const string PAT0004 = nameof(PAT0004);
+        internal const string PAT0005 = nameof(PAT0005);
 
         internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
             PAT0000,
@@ -117,6 +118,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
+        internal static readonly Descriptor k_TextureSolidColorDescriptor = new Descriptor(
+            PAT0005,
+            "Texture: Solid color is not 1x1 size",
+            new[] {Area.Memory},
+            "The texture is a solid color. This increases the amount of memory usage and can be reduced.",
+            "Consider shrinking the texture to 1x1 size."
+        )
+        {
+            messageFormat = "Texture '{0}' is a solid color and not 1x1 size",
+            fixer = (issue) => { ResizeSolidTexture(issue.relativePath); }
+        };
+
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_TextureMipMapNotEnabledDescriptor);
@@ -186,6 +199,37 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAnisotropicLevelDescriptor, textureName)
                     .WithLocation(textureImporter.assetPath);
+            }
+
+            if (TextureUtils.IsTextureSolidColorTooBig(textureImporter, texture))
+            {
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureSolidColorDescriptor, textureName)
+                    .WithLocation(textureImporter.assetPath);
+            }
+        }
+
+        internal static void ResizeSolidTexture(string path)
+        {
+            var textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (textureImporter != null)
+            {
+                var originalValue = textureImporter.isReadable;
+                textureImporter.isReadable = true;
+                textureImporter.SaveAndReimport();
+
+                var texture = AssetDatabase.LoadAssetAtPath<Texture>(path) as Texture2D;
+                var color = texture.GetPixel(0, 0);
+                //Create a new texture as we can't resize the current one
+                var newTexture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+                newTexture.SetPixel(0, 0, color);
+                newTexture.Apply();
+
+                byte[] pixels = newTexture.EncodeToPNG();
+                File.WriteAllBytes(path, pixels);
+                AssetDatabase.Refresh();
+
+                textureImporter.isReadable = originalValue;
+                textureImporter.SaveAndReimport();
             }
         }
     }

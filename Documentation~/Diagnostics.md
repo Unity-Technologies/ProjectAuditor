@@ -70,6 +70,7 @@ Builtin asset-specific diagnostics:
 | PAT0002 | Texture: Read/Write enabled                    | Graphics  | Any                      |
 | PAT0003 | Texture: Streaming Mipmaps not enabled         | Graphics  | Any                      |
 | PAT0004 | Texture: Anisotropic level is more than 1      | Graphics  | Any                      |
+| PAT0005 | Texture: Solid color texture bigger than 1x1   | Graphics  | Any                      |
 | PAM0000 | Mesh: Read/Write enabled                       | Graphics  | Any                      |
 | PAM0001 | Mesh: Index Format is 32 bits                  | Graphics  | Any                      |
 | PAS0000 | Shader: Not compatible with SRP batcher        | Graphics  | Any                      |

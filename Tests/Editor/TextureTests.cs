@@ -21,6 +21,8 @@ namespace Unity.ProjectAuditor.EditorTests
         const string k_TextureNameStreamingMipmapEnabled = k_TextureName + "StreamingMipmapOnTest1234";
         const string k_TextureNameAnisotropicLevelBig = k_TextureName + "AnisotropicLevelBigText1234";
         const string k_TextureNameAnisotropicLevelOne = k_TextureName + "AnisotropicLevelOneText1234";
+        const string k_TextureNameSolidColor = k_TextureName + "SolidColor";
+        const string k_TextureNameNotSolidColor = k_TextureName + "NotSolidColor";
 
         const int k_Resolution = 1;
 
@@ -34,6 +36,8 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TextureNameStreamingMipmapEnabled;
         TestAsset m_TestTextureAnisotropicLevelBig;
         TestAsset m_TestTextureAnisotropicLevelOne;
+        TestAsset m_TextureNameSolidColor;
+        TestAsset m_TextureNameNotSolidColor;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -113,6 +117,26 @@ namespace Unity.ProjectAuditor.EditorTests
             textureImporter.anisoLevel = 1;
             textureImporter.filterMode = FilterMode.Bilinear;
             textureImporter.mipmapEnabled = true;
+            textureImporter.SaveAndReimport();
+
+            var solidColorTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            solidColorTexture.SetPixel(0, 0, Color.red);
+            solidColorTexture.SetPixel(1, 0, Color.red);
+            solidColorTexture.SetPixel(0, 1, Color.red);
+            solidColorTexture.SetPixel(1, 1, Color.red);
+
+            var encodedSolidColorPNG = solidColorTexture.EncodeToPNG();
+            m_TextureNameSolidColor = new TestAsset(k_TextureNameSolidColor + ".png", encodedSolidColorPNG);
+            textureImporter = AssetImporter.GetAtPath(m_TextureNameSolidColor.relativePath) as TextureImporter;
+            textureImporter.SaveAndReimport();
+
+            var notSolidColorTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            notSolidColorTexture.SetPixel(0, 0, Color.blue);
+            notSolidColorTexture.SetPixel(1, 0, Color.red);
+
+            var encodedNotSolidColorPNG = notSolidColorTexture.EncodeToPNG();
+            m_TextureNameNotSolidColor = new TestAsset(k_TextureNameNotSolidColor + ".png", encodedNotSolidColorPNG);
+            textureImporter = AssetImporter.GetAtPath(m_TextureNameNotSolidColor.relativePath) as TextureImporter;
             textureImporter.SaveAndReimport();
         }
 
@@ -284,6 +308,22 @@ namespace Unity.ProjectAuditor.EditorTests
             textureImporter.anisoLevel = 1;
             textureImporter.filterMode = FilterMode.Bilinear;
             textureImporter.SaveAndReimport();
+        }
+
+        [Test]
+        public void Texture_SolidTexture_IsReported()
+        {
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureNameSolidColor, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureSolidColorDescriptor));
+
+            Assert.IsNotNull(textureDiagnostic);
+        }
+
+        [Test]
+        public void Texture_Not_SolidTexture_IsNotReported()
+        {
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureNameNotSolidColor, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureSolidColorDescriptor));
+
+            Assert.IsNull(textureDiagnostic);
         }
     }
 }
