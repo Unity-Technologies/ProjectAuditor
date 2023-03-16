@@ -67,6 +67,9 @@ namespace Unity.ProjectAuditor.Editor
 
         IProjectAuditorSettingsProvider m_DefaultSettingsProvider;
 
+        /// <summary>
+        /// ProjectAuditor default constructor
+        /// </summary>
         public ProjectAuditor()
         {
             InitAsset(k_DefaultAssetPath);
@@ -74,6 +77,10 @@ namespace Unity.ProjectAuditor.Editor
             InitDefaultSettingsProvider();
         }
 
+        /// <summary>
+        /// ProjectAuditor constructor
+        /// </summary>
+        /// <param name="projectAuditorConfig"> ProjectAuditor Configuration object</param>
         public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
         {
             m_Config = projectAuditorConfig;
