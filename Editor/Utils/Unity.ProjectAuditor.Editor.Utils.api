@@ -1,22 +1,6 @@
 // This file is generated. Do not modify by hand.
 // XML documentation file not found. To check if public methods have XML comments,
 // make sure the XML doc file is present and located next to the scraped dll
-namespace Unity.ProjectAuditor.Editor.Modules
-{
-    public struct Color32ToInt
-    {
-        public UnityEngine.Color32 Color { get; }
-        public int Int { get; }
-        public static int Convert(UnityEngine.Color32 color);
-        public static UnityEngine.Color32 Convert(int value);
-    }
-
-    public static class TextureUtils
-    {
-        public static bool IsTextureSolidColorTooBig(UnityEditor.TextureImporter textureImporter, UnityEngine.Texture texture);
-    }
-}
-
 namespace Unity.ProjectAuditor.Editor.Utils
 {
     public static class Formatting

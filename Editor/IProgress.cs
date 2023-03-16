@@ -12,8 +12,7 @@ namespace Unity.ProjectAuditor.Editor
 
         /// <summary>
         /// Advances the progress object by one step.
-        /// </summary>
-        /// <param name="description">Updated message</param>
+        /// </summary>`
         void Advance(string description = "");
 
         /// <summary>

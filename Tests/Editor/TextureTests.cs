@@ -118,25 +118,17 @@ namespace Unity.ProjectAuditor.EditorTests
             textureImporter.filterMode = FilterMode.Bilinear;
             textureImporter.mipmapEnabled = true;
             textureImporter.SaveAndReimport();
-
-            var solidColorTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            solidColorTexture.SetPixel(0, 0, Color.red);
-            solidColorTexture.SetPixel(1, 0, Color.red);
-            solidColorTexture.SetPixel(0, 1, Color.red);
-            solidColorTexture.SetPixel(1, 1, Color.red);
-
-            var encodedSolidColorPNG = solidColorTexture.EncodeToPNG();
-            m_TextureNameSolidColor = new TestAsset(k_TextureNameSolidColor + ".png", encodedSolidColorPNG);
-            textureImporter = AssetImporter.GetAtPath(m_TextureNameSolidColor.relativePath) as TextureImporter;
+            
+            m_TextureNameSolidColor = new TestAsset(k_TextureNameSolidColor + ".png", encodedPNG);
             textureImporter.SaveAndReimport();
 
             var notSolidColorTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            notSolidColorTexture.SetPixel(0, 0, Color.blue);
-            notSolidColorTexture.SetPixel(1, 0, Color.red);
+            largeTexture.SetPixel(0, 0, Color.blue);
+            largeTexture.SetPixel(1, 0, Color.red);
 
             var encodedNotSolidColorPNG = notSolidColorTexture.EncodeToPNG();
             m_TextureNameNotSolidColor = new TestAsset(k_TextureNameNotSolidColor + ".png", encodedNotSolidColorPNG);
-            textureImporter = AssetImporter.GetAtPath(m_TextureNameNotSolidColor.relativePath) as TextureImporter;
+            textureImporter = AssetImporter.GetAtPath(m_TextureNameStreamingMipmapEnabled.relativePath) as TextureImporter;
             textureImporter.SaveAndReimport();
         }
 
@@ -309,19 +301,19 @@ namespace Unity.ProjectAuditor.EditorTests
             textureImporter.filterMode = FilterMode.Bilinear;
             textureImporter.SaveAndReimport();
         }
-
+  
         [Test]
         public void Texture_SolidTexture_IsReported()
         {
-            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureNameSolidColor, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureSolidColorDescriptor));
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureNameNotSolidColor, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureSolidColorDescriptor));
 
             Assert.IsNotNull(textureDiagnostic);
         }
 
         [Test]
-        public void Texture_Not_SolidTexture_IsNotReported()
+        public void Texture_SolidTexture_IsNotReported()
         {
-            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureNameNotSolidColor, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureSolidColorDescriptor));
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureNameSolidColor, IssueCategory.AssetDiagnostic).FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureSolidColorDescriptor));
 
             Assert.IsNull(textureDiagnostic);
         }
