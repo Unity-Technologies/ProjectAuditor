@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     /// <summary>
     /// Scans textures ans check if they are single solid color ones.
     /// </summary>
-    public static class TextureUtils
+    internal static class TextureUtils
     {
         /// <summary>
         /// Check if a texture is a single solid color and its size is over than 1x1
