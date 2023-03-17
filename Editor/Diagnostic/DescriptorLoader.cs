@@ -22,15 +22,13 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                 if (!IsVersionCompatible(rawDescriptor))
                     continue;
 
-                var desc = new Descriptor(rawDescriptor.id, rawDescriptor.title, rawDescriptor.areas)
+                var desc = new Descriptor(rawDescriptor.id, rawDescriptor.title, rawDescriptor.areas, rawDescriptor.description, rawDescriptor.solution)
                 {
                     type = rawDescriptor.type ?? string.Empty,
                     method = rawDescriptor.method ?? string.Empty,
                     value = rawDescriptor.value,
                     platforms = rawDescriptor.platforms,
-                    defaultSeverity = rawDescriptor.defaultSeverity == Severity.Default ? Severity.Moderate : rawDescriptor.defaultSeverity,
-                    description = rawDescriptor.description,
-                    solution = rawDescriptor.solution
+                    defaultSeverity = rawDescriptor.defaultSeverity == Severity.Default ? Severity.Moderate : rawDescriptor.defaultSeverity
                 };
                 if (string.IsNullOrEmpty(desc.title))
                 {

@@ -38,8 +38,11 @@ namespace Unity.ProjectAuditor.Editor.Core
             m_Descriptors = new HashSet<Descriptor>();
         }
 
-        public virtual void RegisterDescriptor(Descriptor descriptor)
-        {}
+        public void RegisterDescriptor(Descriptor descriptor)
+        {
+            if (!m_Descriptors.Add(descriptor))
+                throw new Exception("Duplicate descriptor with id: " + descriptor.id);
+        }
 
         /// <summary>
         /// This method audits the Unity project specific IssueCategory issues.

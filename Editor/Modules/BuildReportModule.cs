@@ -13,13 +13,13 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public enum BuildReportMetaData
+    enum BuildReportMetaData
     {
         Value,
         Num
     }
 
-    public enum BuildReportFileProperty
+    enum BuildReportFileProperty
     {
         ImporterType = 0,
         RuntimeType,
@@ -29,14 +29,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    public enum BuildReportStepProperty
+    enum BuildReportStepProperty
     {
         Duration = 0,
         Message,
         Num
     }
 
-    public class BuildReportModule : ProjectAuditorModule
+    class BuildReportModule : ProjectAuditorModule
     {
         internal interface IBuildReportProvider
         {

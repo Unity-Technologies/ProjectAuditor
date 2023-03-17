@@ -9,9 +9,9 @@ namespace Unity.ProjectAuditor.Editor
     /// </summary>
     public class ProjectAuditorSettingsProvider : IProjectAuditorSettingsProvider
     {
-        private HashSet<ProjectAuditorSettings> m_SettingsAssets = new HashSet<ProjectAuditorSettings>();
-        private ProjectAuditorSettings m_CurrentSettings;
-        private ProjectAuditorSettings m_DefaultSettings;
+        HashSet<ProjectAuditorSettings> m_SettingsAssets = new HashSet<ProjectAuditorSettings>();
+        ProjectAuditorSettings m_CurrentSettings;
+        ProjectAuditorSettings m_DefaultSettings;
 
         public void Initialize()
         {

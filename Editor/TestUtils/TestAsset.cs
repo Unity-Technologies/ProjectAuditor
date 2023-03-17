@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             get { return Path.GetFileName(relativePath); }
         }
 
-        private TestAsset(string fileName)
+        TestAsset(string fileName)
         {
             relativePath = PathUtils.Combine(TempAssetsFolder, fileName);
 

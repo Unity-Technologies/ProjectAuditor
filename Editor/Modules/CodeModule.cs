@@ -19,14 +19,14 @@ using ThreadPriority = System.Threading.ThreadPriority;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public enum AssemblyProperty
+    enum AssemblyProperty
     {
         ReadOnly = 0,
         CompileTime,
         Num
     }
 
-    public enum PrecompiledAssemblyProperty
+    enum PrecompiledAssemblyProperty
     {
         RoslynAnalyzer = 0,
         Num
@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    public enum CompilerMessageProperty
+    enum CompilerMessageProperty
     {
         Code = 0,
         Assembly,
@@ -317,12 +317,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
             onComplete?.Invoke(progress);
-        }
-
-        public override void RegisterDescriptor(Descriptor descriptor)
-        {
-            if (!m_Descriptors.Add(descriptor))
-                throw new Exception("Duplicate descriptor with id: " + descriptor.id);
         }
 
         void AnalyzeAssembly(AssemblyInfo assemblyInfo, IAssemblyResolver assemblyResolver, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)

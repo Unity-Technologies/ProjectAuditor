@@ -250,8 +250,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     if (m_ViewManager.GetActiveView().desc.category != IssueCategory.MetaData)
                     {
-                        GUILayout.FlexibleSpace();
-
                         DrawStatusBar();
                     }
                 }
@@ -414,7 +412,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.AudioClip,
                 displayName = "AudioClip",
-                menuLabel = "Assets/Meshes//Audio Clips",
+                menuLabel = "Assets/Audio Clips",
                 menuOrder = 107,
                 descriptionWithIcon = true,
                 showFilters = true,
@@ -1143,7 +1141,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     SharedStyles.SetFontDynamicSize(m_ViewStates.fontSize);
                 }
 
-                EditorGUILayout.LabelField("Ver. " + ProjectAuditor.PackageVersion, EditorStyles.label, GUILayout.Width(120));
+                EditorGUILayout.LabelField("Ver. " + ProjectAuditor.s_PackageVersion, EditorStyles.label, GUILayout.Width(120));
             }
         }
 

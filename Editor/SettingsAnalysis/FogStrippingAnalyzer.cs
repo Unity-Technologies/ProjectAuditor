@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Custom
     }
 
-    public enum FogMode
+    enum FogMode
     {
         Linear,
         Exponential,
