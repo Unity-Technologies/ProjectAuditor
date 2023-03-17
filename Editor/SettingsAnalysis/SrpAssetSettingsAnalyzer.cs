@@ -63,6 +63,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         private static void FixSrpBatcherSetting(ProjectIssue issue)
         {
 #if UNITY_2019_3_OR_NEWER
+            GraphicsSettings.useScriptableRenderPipelineBatching = true;
             int qualityLevel = issue.GetCustomPropertyInt32(0);
             if (qualityLevel == -1)
             {
