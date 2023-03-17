@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         /// </summary>
         /// <param name="texture">The texture to check.</param>
         /// <returns>True if the texture is a single solid color.</returns>
-        internal bool IsSolidColor(Texture2D texture)
+         internal static bool IsSolidColor(Texture2D texture)
         {
             // Skip "degenerate" textures like font atlases
             if (texture.width == 0 || texture.height == 0)
@@ -137,7 +137,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return emptyPercent;
         }
 
-        internal int GetEmptyPixelsPercent(Texture2D texture2D)
+        internal static int GetEmptyPixelsPercent(Texture2D texture2D)
         {
             if (texture2D.width == 0 || texture2D.height == 0)
             {
