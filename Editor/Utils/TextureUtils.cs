@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     /// <summary>
     /// Scans textures ans check if they are single solid color ones.
     /// </summary>
-    public static class TextureUtils
+    internal static class TextureUtils
     {
         /// <summary>
         /// Check if a texture is a single solid color and its size is over than 1x1
@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         /// <param name="textureImporter">The texture importer of the texture.</param>
         /// <param name="texture">The texture to check.</param>
         /// <returns>True if the texture is a single solid color above 1x1.</returns>
-        public static bool IsTextureSolidColorTooBig(TextureImporter textureImporter, Texture texture)
+        internal static bool IsTextureSolidColorTooBig(TextureImporter textureImporter, Texture texture)
         {
             bool isTooBig = false;
 
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         /// </summary>
         /// <param name="texture">The texture to check.</param>
         /// <returns>True if the texture is a single solid color.</returns>
-        static bool IsSolidColor(Texture2D texture)
+        internal bool IsSolidColor(Texture2D texture)
         {
             // Skip "degenerate" textures like font atlases
             if (texture.width == 0 || texture.height == 0)
@@ -113,7 +113,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         /// <param name="spriteAtlas">The Sprite Atlas to check.</param>
         /// <param name="path">The path of the Sprite Atlas.</param>
         /// <returns>The percent of empty space.</returns>
-        public static int HasTooManyEmptySpace(SpriteAtlas spriteAtlas, string path)
+        internal static int GetEmptySpacePerecentage(SpriteAtlas spriteAtlas, string path)
         {
             var method = typeof(SpriteAtlasExtensions).GetMethod("GetPreviewTextures", BindingFlags.Static | BindingFlags.NonPublic);
             object obj = method.Invoke(null, new object[] { spriteAtlas });
@@ -137,7 +137,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return emptyPercent;
         }
 
-        static int GetEmptyPixelsPercent(Texture2D texture2D)
+        internal int GetEmptyPixelsPercent(Texture2D texture2D)
         {
             if (texture2D.width == 0 || texture2D.height == 0)
             {
@@ -175,7 +175,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return ((int)Math.Round(percent * 100));
         }
 
-        static Texture2D CopyTexture(Texture2D texture)
+        internal static Texture2D CopyTexture(Texture2D texture)
         {
             RenderTexture tmp = RenderTexture.GetTemporary(
                 texture.width,
@@ -207,7 +207,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     /// Conversion struct which takes advantage of Color32 struct layout for fast conversion to and from Int32.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
-    public struct Color32ToInt
+    internal struct Color32ToInt
     {
         /// <summary>
         /// Int field which shares an offset with the color field.
@@ -224,12 +224,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         /// <summary>
         /// The int value.
         /// </summary>
-        public int Int => m_Int;
+        internal int Int => m_Int;
 
         /// <summary>
         /// The color value.
         /// </summary>
-        public Color32 Color => m_Color;
+        internal Color32 Color => m_Color;
 
         /// <summary>
         /// Constructor for Color32 to Int32 conversion.
@@ -256,7 +256,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         /// </summary>
         /// <param name="color">The Color32 which will be converted to an int.</param>
         /// <returns>The int value for the given color.</returns>
-        public static int Convert(Color32 color)
+        internal static int Convert(Color32 color)
         {
             var convert = new Color32ToInt(color);
             return convert.m_Int;
@@ -267,7 +267,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         /// </summary>
         /// <param name="value">The int which will be converted to an Color32.</param>
         /// <returns>The Color32 value for the given int.</returns>
-        public static Color32 Convert(int value)
+        internal static Color32 Convert(int value)
         {
             var convert = new Color32ToInt(value);
             return convert.m_Color;
