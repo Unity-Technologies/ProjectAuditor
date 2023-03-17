@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Constructor
         /// </summary>
-        /// /// <param name="path">File path</param>
+        /// <param name="path">File path</param>
         public Location(string path)
         {
             m_Path = path;
