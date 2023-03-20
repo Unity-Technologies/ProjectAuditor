@@ -32,5 +32,10 @@ namespace Unity.ProjectAuditor.Editor
         /// Maximum size when it is not necessary to enable Streaming Mipmaps. Beyond that size we report an issue.
         /// </summary>
         public int TextureStreamingMipmapsSizeLimit = 4000;
+
+        /// <summary>
+        /// Percent of empty space allowed in a Sprite Atlas texture. Beyond that size we report an issue.
+        /// </summary>
+        public int SpriteAtlasEmptySpaceLimit = 50;
     }
 }

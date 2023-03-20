@@ -1,12 +1,14 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using TreeEditor;
 using UnityEditor;
+using UnityEditor.U2D;
 using UnityEngine;
+using UnityEngine.U2D;
 using Debug = UnityEngine.Debug;
+using Unity.ProjectAuditor.Editor;
+using UnityEngine.U2D;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -21,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         /// <param name="textureImporter">The texture importer of the texture.</param>
         /// <param name="texture">The texture to check.</param>
         /// <returns>True if the texture is a single solid color above 1x1.</returns>
-        public static bool IsTextureSolidColorTooBig(TextureImporter textureImporter, Texture texture)
+        internal static bool IsTextureSolidColorTooBig(TextureImporter textureImporter, Texture texture)
         {
             bool isTooBig = false;
 
@@ -49,6 +51,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 isTooBig = IsSolidColor(texture2D);
             }
+
             else
             {
                 Texture2D copyTexture = CopyTexture(texture2D);
@@ -63,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         /// </summary>
         /// <param name="texture">The texture to check.</param>
         /// <returns>True if the texture is a single solid color.</returns>
-        static bool IsSolidColor(Texture2D texture)
+         internal static bool IsSolidColor(Texture2D texture)
         {
             // Skip "degenerate" textures like font atlases
             if (texture.width == 0 || texture.height == 0)
@@ -104,7 +107,91 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return isSolidColor;
         }
 
-        static Texture2D CopyTexture(Texture2D texture)
+        /// <summary>
+        /// Get the percent of empty space not used in a sprite atlas
+        /// </summary>
+        /// <param name="spriteAtlas">The Sprite Atlas to check.</param>
+        /// <returns>The percent of empty space.</returns>
+        internal static int GetEmptySpacePerecentage(SpriteAtlas spriteAtlas)
+        {
+            var method = typeof(SpriteAtlasExtensions).GetMethod("GetPreviewTextures", BindingFlags.Static | BindingFlags.NonPublic);
+            object obj = method.Invoke(null, new object[] { spriteAtlas });
+            Texture2D[] textures = obj as Texture2D[];
+
+            if (textures == null)
+            {
+                Debug.LogError($"Could not load texture from {spriteAtlas.name}");
+                return 0;
+            }
+            //Get the main texture of the Sprite Atlas
+            Texture2D texture = textures[0];
+
+            if (texture == null)
+            {
+                Debug.LogError("Texture of the " + spriteAtlas.name + "Sprite Atlas was not found.");
+                return 0;
+            }
+
+            var emptyPercent = GetEmptyPixelsPercent(texture);
+            return emptyPercent;
+        }
+
+        internal static int GetEmptyPixelsPercent(Texture2D texture2D)
+        {
+            Color32[] pixels;
+
+            if (texture2D.width == 0 || texture2D.height == 0)
+            {
+                return 0;
+            }
+
+            if (texture2D.isReadable)
+            {
+                pixels = texture2D.GetPixels32();
+            }
+
+            else
+            {
+                var copyTexture = CopyTexture(texture2D);
+                if (copyTexture == null)
+                {
+                    Debug.LogWarning($"Could not copy {texture2D}");
+                    return 0;
+                }
+
+                pixels = copyTexture.GetPixels32();
+            }
+
+            // It is unlikely to get a null pixels array, but we should check just in case
+            if (pixels == null)
+            {
+                Debug.LogWarning($"Could not read {texture2D}");
+                return 0;
+            }
+
+            // It is unlikely, but possible that we got this far and there are no pixels.
+            var pixelCount = pixels.Length;
+            if (pixelCount == 0)
+            {
+                Debug.LogWarning($"No pixels in {texture2D}");
+                return 0;
+            }
+
+            int transparencyPixelsCount = 0;
+
+            for (var i = 1; i < pixelCount; i++)
+            {
+                if (pixels[i].a == 0)
+                {
+                    transparencyPixelsCount++;
+                }
+            }
+
+            double percent = (double) transparencyPixelsCount / (double) pixelCount;
+            return ((int)Math.Round(percent * 100));
+        }
+
+        internal static Texture2D CopyTexture(Texture2D texture)
         {
             RenderTexture tmp = RenderTexture.GetTemporary(
                 texture.width,
@@ -136,7 +223,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     /// Conversion struct which takes advantage of Color32 struct layout for fast conversion to and from Int32.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
-    public struct Color32ToInt
+    internal struct Color32ToInt
     {
         /// <summary>
         /// Int field which shares an offset with the color field.
@@ -153,12 +240,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         /// <summary>
         /// The int value.
         /// </summary>
-        public int Int => m_Int;
+        internal int Int => m_Int;
 
         /// <summary>
         /// The color value.
         /// </summary>
-        public Color32 Color => m_Color;
+        internal Color32 Color => m_Color;
 
         /// <summary>
         /// Constructor for Color32 to Int32 conversion.
@@ -185,7 +272,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         /// </summary>
         /// <param name="color">The Color32 which will be converted to an int.</param>
         /// <returns>The int value for the given color.</returns>
-        public static int Convert(Color32 color)
+        internal static int Convert(Color32 color)
         {
             var convert = new Color32ToInt(color);
             return convert.m_Int;
@@ -196,7 +283,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         /// </summary>
         /// <param name="value">The int which will be converted to an Color32.</param>
         /// <returns>The Color32 value for the given int.</returns>
-        public static Color32 Convert(int value)
+        internal static Color32 Convert(int value)
         {
             var convert = new Color32ToInt(value);
             return convert.m_Color;
