@@ -10,7 +10,7 @@ using UnityEngine.U2D;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public class SpriteAnalyzer : ISpriteModuleAnalyzer
+    public class SpriteAnalyzer : ISpriteAtlasModuleAnalyzer
     {
         internal const string PAT0006 = nameof(PAT0006);
 
@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             yield return ProjectIssue.Create(IssueCategory.SpriteAtlas, spriteAtlas.name)
                 .WithLocation(new Location(assetPath));
 
-            var emptyPercent = TextureUtils.GetEmptySpacePerecentage(spriteAtlas, assetPath);
+            var emptyPercent = TextureUtils.GetEmptySpacePerecentage(spriteAtlas);
             if (emptyPercent > projectAuditorParams.settings.SpriteAtlasEmptySpaceLimit)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,

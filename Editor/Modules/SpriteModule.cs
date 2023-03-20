@@ -6,7 +6,7 @@ using UnityEngine.U2D;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class SpriteModule: ProjectAuditorModuleWithAnalyzers<ISpriteModuleAnalyzer>
+    class SpriteModule: ProjectAuditorModuleWithAnalyzers<ISpriteAtlasModuleAnalyzer>
     {
         internal static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
