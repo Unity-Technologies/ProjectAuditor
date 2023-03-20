@@ -106,6 +106,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider setting the anisotropic level to 1."
         )
         {
+            platforms = new[] {"Android", "iOS", "Switch"},
             messageFormat = "Texture '{0}' has an anisotropic level higher than 1.",
             fixer = (issue) =>
             {
