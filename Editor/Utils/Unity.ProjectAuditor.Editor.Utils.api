@@ -10,11 +10,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public static int Convert(UnityEngine.Color32 color);
         public static UnityEngine.Color32 Convert(int value);
     }
-}
 
-public static class TextureUtils
-{
-    public static bool IsTextureSolidColorTooBig(UnityEditor.TextureImporter textureImporter, UnityEngine.Texture texture);
+    public static class TextureUtils
+    {
+        public static bool IsTextureSolidColorTooBig(UnityEditor.TextureImporter textureImporter, UnityEngine.Texture texture);
+    }
 }
 
 namespace Unity.ProjectAuditor.Editor.Utils
