@@ -139,13 +139,30 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static int GetEmptyPixelsPercent(Texture2D texture2D)
         {
+            Color32[] pixels;
+
             if (texture2D.width == 0 || texture2D.height == 0)
             {
                 return 0;
             }
 
-            var pixels = texture2D.GetPixels32();
+            if (texture2D.isReadable)
+            {
+                pixels = texture2D.GetPixels32();
+            }
 
+            else
+            {
+                var copyTexture = CopyTexture(texture2D);
+                if (copyTexture == null)
+                {
+                    Debug.LogWarning($"Could not copy {texture2D}");
+                    return 0;
+                }
+
+                pixels = copyTexture.GetPixels32();
+            }
+            
             // It is unlikely to get a null pixels array, but we should check just in case
             if (pixels == null)
             {
