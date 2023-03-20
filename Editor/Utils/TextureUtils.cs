@@ -111,9 +111,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
         /// Get the percent of empty space not used in a sprite atlas
         /// </summary>
         /// <param name="spriteAtlas">The Sprite Atlas to check.</param>
-        /// <param name="path">The path of the Sprite Atlas.</param>
         /// <returns>The percent of empty space.</returns>
-        internal static int GetEmptySpacePerecentage(SpriteAtlas spriteAtlas, string path)
+        internal static int GetEmptySpacePerecentage(SpriteAtlas spriteAtlas)
         {
             var method = typeof(SpriteAtlasExtensions).GetMethod("GetPreviewTextures", BindingFlags.Static | BindingFlags.NonPublic);
             object obj = method.Invoke(null, new object[] { spriteAtlas });
@@ -121,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (textures == null)
             {
-                Debug.LogError($"Could not load texture at {path}");
+                Debug.LogError($"Could not load texture from {spriteAtlas.name}");
                 return 0;
             }
             //Get the main texture of the Sprite Atlas
@@ -162,7 +161,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 pixels = copyTexture.GetPixels32();
             }
-            
+
             // It is unlikely to get a null pixels array, but we should check just in case
             if (pixels == null)
             {

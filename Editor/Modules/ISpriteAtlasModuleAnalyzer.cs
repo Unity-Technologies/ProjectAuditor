@@ -4,7 +4,7 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public interface ISpriteModuleAnalyzer : IModuleAnalyzer
+    public interface ISpriteAtlasModuleAnalyzer : IModuleAnalyzer
     {
 
         IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams,
