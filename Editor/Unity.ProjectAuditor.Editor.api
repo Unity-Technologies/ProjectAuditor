@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor
         Code = 4,
         CodeCompilerMessage = 5,
         ComputeShaderVariant = 18,
-        FirstCustomCategory = 20,
+        FirstCustomCategory = 21,
         GenericInstance = 6,
         Mesh = 19,
         MetaData = 0,
@@ -45,6 +45,7 @@ namespace Unity.ProjectAuditor.Editor
         Shader = 2,
         ShaderCompilerMessage = 13,
         ShaderVariant = 3,
+        SpriteAtlas = 20,
         Texture = 16,
     }
 
@@ -114,6 +115,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         public int MeshTriangleCountLimit = 5000;
         public int MeshVerticeCountLimit = 5000;
+        public int SpriteAtlasEmptySpaceLimit = 50;
         public int StreamingAssetsFolderSizeLimit = 50;
         public int TextureSizeLimit = 2048;
         public int TextureStreamingMipmapsSizeLimit = 4000;
@@ -133,8 +135,8 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectIssue
     {
-        public int depth = 0;
-        public bool wasFixed = false;
+        public int depth;
+        public bool wasFixed;
         public IssueCategory category { get; }
         public string[] customProperties { get; }
         public Core.DependencyNode dependencies { get; }
@@ -162,13 +164,6 @@ namespace Unity.ProjectAuditor.Editor
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct, new();
     }
 
-    public static class ProjectIssueExtensions
-    {
-        public static string GetContext(this ProjectIssue issue);
-        public static string GetProperty(this ProjectIssue issue, Core.PropertyType propertyType);
-        public static string GetPropertyGroup(this ProjectIssue issue, Core.PropertyDefinition propertyDefinition);
-    }
-
     public sealed class ProjectReport
     {
         public int NumTotalIssues { get; }
@@ -181,17 +176,6 @@ namespace Unity.ProjectAuditor.Editor
         public bool HasCategory(IssueCategory category);
         public static ProjectReport Load(string path);
         public void Save(string path);
-    }
-
-    public class UserPreferences
-    {
-        public static bool buildReportAutoSave { get; set; }
-        public static string buildReportPath { get; set; }
-        public static bool developerMode { get; set; }
-        public static bool logTimingsInfo { get; set; }
-        public static string Path { get; }
-        public static string settingsAsset { get; set; }
-        public UserPreferences() {}
     }
 }
 
@@ -221,33 +205,12 @@ namespace Unity.ProjectAuditor.Editor.Build
     }
 }
 
-namespace Unity.ProjectAuditor.Editor.CodeAnalysis
-{
-    public class CallTreeNode : Unity.ProjectAuditor.Editor.Core.DependencyNode
-    {
-        public readonly string assemblyName;
-        public readonly string methodName = @"(anonymous)";
-        public readonly string typeName;
-        public override string GetName();
-        public override string GetPrettyName();
-        public override bool IsPerfCritical();
-    }
-}
-
 namespace Unity.ProjectAuditor.Editor.Core
 {
     public class AnalysisPlatformAttribute : System.Attribute
     {
         public UnityEditor.BuildTarget platform { get; }
         public AnalysisPlatformAttribute(UnityEditor.BuildTarget platform) {}
-    }
-
-    public class AssetDependencyNode : DependencyNode
-    {
-        public AssetDependencyNode() {}
-        public override string GetName();
-        public override string GetPrettyName();
-        public override bool IsPerfCritical();
     }
 
     public abstract class DependencyNode
@@ -267,18 +230,6 @@ namespace Unity.ProjectAuditor.Editor.Core
         public bool HasValidChildren();
         public abstract bool IsPerfCritical();
         public void SortChildren();
-    }
-
-    public abstract class Exporter : System.IDisposable
-    {
-        protected readonly IssueLayout m_Layout;
-        protected readonly System.IO.StreamWriter m_StreamWriter;
-        protected Exporter(string path, IssueLayout layout) {}
-        public void Dispose();
-        public virtual void WriteFooter();
-        public abstract void WriteHeader();
-        protected abstract void WriteIssue(ProjectIssue issue);
-        public void WriteIssues(ProjectIssue[] issues);
     }
 
     public interface IModuleAnalyzer
@@ -302,7 +253,7 @@ namespace Unity.ProjectAuditor.Editor.Core
     public class IssueLayout
     {
         public IssueCategory category;
-        public bool hierarchy = false;
+        public bool hierarchy;
         public PropertyDefinition[] properties;
         public int defaultGroupPropertyIndex { get; }
         public IssueLayout() {}
@@ -496,6 +447,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
     public interface IShaderModuleAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
     {
         public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, UnityEngine.Shader shader, string assetPath);
+    }
+
+    public interface ISpriteAtlasModuleAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
+    {
+        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, string assetPath);
     }
 
     public interface ITextureModuleAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer

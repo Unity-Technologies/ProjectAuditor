@@ -6,7 +6,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public static class ProjectIssueExtensions
+    internal static class ProjectIssueExtensions
     {
         internal const string k_NotAvailable = "N/A";
 

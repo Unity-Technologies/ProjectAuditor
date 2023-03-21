@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    public abstract class Exporter : IDisposable
+    internal abstract class Exporter : IDisposable
     {
         protected readonly IssueLayout m_Layout;
         protected readonly StreamWriter m_StreamWriter;

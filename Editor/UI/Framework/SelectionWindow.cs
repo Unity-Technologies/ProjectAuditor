@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public abstract class SelectionWindow : EditorWindow
+    internal abstract class SelectionWindow : EditorWindow
     {
         protected MultiSelectionTable m_SelectionTable;
         protected MultiColumnHeaderState m_MultiColumnHeaderState;

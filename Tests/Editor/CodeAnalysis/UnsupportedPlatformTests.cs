@@ -7,7 +7,7 @@ using UnityEditor.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public class UnsupportedPlatformTests : TestFixtureBase
+    internal class UnsupportedPlatformTests : TestFixtureBase
     {
         TestAsset m_TestAssetMicrophone;
 

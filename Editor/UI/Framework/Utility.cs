@@ -74,7 +74,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static readonly GUIContent OpenIssue = new GUIContent("Open Issue");
         public static readonly GUIContent OpenScriptReference = new GUIContent("Open Script Reference");
 
-        public class DropdownItem
+        internal class DropdownItem
         {
             public GUIContent Content;
             public GUIContent SelectionContent;
@@ -87,7 +87,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return EditorGUILayout.Foldout(toggle, content, SharedStyles.Foldout);
         }
 
-        public static void ToolbarDropdownList(DropdownItem[] items, int selectionIndex,
+        internal static void ToolbarDropdownList(DropdownItem[] items, int selectionIndex,
             GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
         {
             var selectionContent = items[selectionIndex].SelectionContent;
@@ -161,7 +161,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public static string GetTreeViewSelectedSummary(TreeViewSelection selection, string[] names)
+        internal static string GetTreeViewSelectedSummary(TreeViewSelection selection, string[] names)
         {
             var selectedStrings = selection.GetSelectedStrings(names, true);
             var numStrings = selectedStrings.Length;

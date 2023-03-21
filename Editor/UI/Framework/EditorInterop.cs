@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public static class EditorInterop
+    internal static class EditorInterop
     {
         public static void OpenCodeDescriptor(Descriptor descriptor)
         {

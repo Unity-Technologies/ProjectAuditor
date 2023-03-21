@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public static class ChartUtil
+    internal static class ChartUtil
     {
         public struct Element
         {

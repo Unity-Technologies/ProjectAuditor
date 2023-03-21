@@ -6,7 +6,7 @@ namespace Unity.ProjectAuditor.Editor
     public class TextFilter : IProjectIssueFilter
     {
         public bool ignoreCase = true;
-        public bool searchDependencies = false;
+        public bool searchDependencies;
         public string searchString;
         public TextFilter(Core.PropertyDefinition[] propertyDefinitions = default(Core.PropertyDefinition[])) {}
         public bool Match(ProjectIssue issue);
@@ -74,26 +74,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
     }
 
-    public static class ChartUtil
-    {
-        public static void DrawHorizontalStackedBar(string title, ChartUtil.Element[] inValues, string labelFormat = @"{0}", string numberFormat = @"#");
-        public struct Element
-        {
-            public UnityEngine.Color Color;
-            public string Label;
-            public float Value;
-            public Element(string label, float value, UnityEngine.Color color) {}
-        }
-    }
-
-    public class DiagnosticView : AnalysisView
-    {
-        public DiagnosticView(ViewManager viewManager) {}
-        public override void DrawDetails(ProjectIssue[] selectedIssues);
-        protected override void DrawInfo();
-        protected override void Export(System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
-    }
-
     public class Draw2D
     {
         public Draw2D(string shaderName) {}
@@ -117,71 +97,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
     }
 
-    public static class EditorInterop
-    {
-        public static void FocusOnAssetInProjectWindow(Location location);
-        public static void OpenCodeDescriptor(Unity.ProjectAuditor.Editor.Diagnostic.Descriptor descriptor);
-        public static void OpenCompilerMessageDescriptor(Unity.ProjectAuditor.Editor.Diagnostic.Descriptor descriptor);
-        public static void OpenPackage(Location location);
-        public static void OpenProjectSettings(Location location);
-        public static void OpenTextFile<T>(Location location) where T : UnityEngine.Object;
-    }
-
-    public class MultiSelectionTable : UnityEditor.IMGUI.Controls.TreeView
-    {
-        public MultiSelectionTable(UnityEditor.IMGUI.Controls.TreeViewState state, UnityEditor.IMGUI.Controls.MultiColumnHeader multicolumnHeader, string[] names, TreeViewSelection selection) {}
-        protected override UnityEditor.IMGUI.Controls.TreeViewItem BuildRoot();
-        protected override System.Collections.Generic.IList<UnityEditor.IMGUI.Controls.TreeViewItem> BuildRows(UnityEditor.IMGUI.Controls.TreeViewItem root);
-        protected override bool CanMultiSelect(UnityEditor.IMGUI.Controls.TreeViewItem item);
-        public void ClearSelection();
-        public static UnityEditor.IMGUI.Controls.MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(MultiSelectionTable.HeaderData[] headerData);
-        protected int GetChildCount(TreeItemIdentifier selectedIdentifier, out int selected);
-        public TreeViewSelection GetTreeViewSelection();
-        protected override void RowGUI(UnityEditor.IMGUI.Controls.TreeView.RowGUIArgs args);
-        public enum Column
-        {
-            GroupName = 2,
-            ItemName = 0,
-            State = 1,
-        }
-        public struct HeaderData
-        {
-            public bool allowToggleVisibility;
-            public bool autoResize;
-            public UnityEngine.GUIContent content;
-            public float minWidth;
-            public float width;
-            public HeaderData(string name, string tooltip = @"", float _width = 50f, float _minWidth = 30f, bool _autoResize = true, bool _allowToggleVisibility = true) {}
-        }
-        public enum SortOption
-        {
-            GroupName = 1,
-            ItemName = 0,
-        }
-    }
-
     public class ProgressBar : IProgress
     {
         public ProgressBar() {}
         public void Advance(string description = @"");
         public void Clear();
         public void Start(string title, string description, int total);
-    }
-
-    public abstract class SelectionWindow : UnityEditor.EditorWindow
-    {
-        protected UnityEditor.IMGUI.Controls.MultiColumnHeaderState m_MultiColumnHeaderState;
-        protected System.Action<TreeViewSelection> m_OnSelection;
-        protected bool m_RequestClose;
-        protected MultiSelectionTable m_SelectionTable;
-        protected UnityEditor.IMGUI.Controls.TreeViewState m_TreeViewState;
-        protected SelectionWindow() {}
-        protected void ApplySelection();
-        public static void CloseAll<T>() where T : SelectionWindow;
-        protected abstract void CreateTable(TreeViewSelection selection, string[] names);
-        public static bool IsOpen<T>() where T : SelectionWindow;
-        public static T Open<T>(string title, float screenX, float screenY, TreeViewSelection selection, string[] names, System.Action<TreeViewSelection> onSelection) where T : SelectionWindow;
-        protected void SetData(TreeViewSelection selection, string[] names, System.Action<TreeViewSelection> onSelection);
     }
 
     public static class SharedStyles
@@ -197,37 +118,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static UnityEngine.GUIStyle TextAreaWithDynamicSize { get; }
         public static UnityEngine.GUIStyle TitleLabel { get; }
         public static void SetFontDynamicSize(int fontSize);
-    }
-
-    public struct TreeItemIdentifier
-    {
-        public static int kAll;
-        public static int kSingle = 0;
-        public int index { get; }
-        public string name { get; }
-        public string nameWithIndex { get; }
-        public TreeItemIdentifier(string _nameWithIndex) {}
-        public TreeItemIdentifier(TreeItemIdentifier treeItemIdentifier) {}
-        public TreeItemIdentifier(string _name, int _index) {}
-        public void SetAll();
-        public void SetIndex(int newIndex);
-        public void SetName(string newName);
-    }
-
-    public class TreeViewSelection
-    {
-        public System.Collections.Generic.List<string> groups;
-        public System.Collections.Generic.List<string> selection;
-        public TreeViewSelection() {}
-        public TreeViewSelection(TreeViewSelection selection) {}
-        public bool Contains(string name);
-        public bool ContainsAny(string[] names);
-        public bool ContainsGroup(string groupName);
-        public string[] GetSelectedStrings(string[] names, bool summarize);
-        public void Set(string name);
-        public void Set(TreeViewSelection selection);
-        public void SetAll(string[] names);
-        public void SetGroup(string groupName);
     }
 
     public static class Utility
@@ -246,17 +136,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public static UnityEngine.GUIContent GetSeverityIconWithText(Unity.ProjectAuditor.Editor.Diagnostic.Severity severity);
         public static UnityEngine.GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath);
         public static UnityEngine.GUIContent GetTextWithLogLevelIcon(string text, string tooltip, Unity.ProjectAuditor.Editor.Diagnostic.Severity severity);
-        public static string GetTreeViewSelectedSummary(TreeViewSelection selection, string[] names);
         public static UnityEngine.Texture2D MakeColorTexture(UnityEngine.Color col);
-        public static void ToolbarDropdownList(Utility.DropdownItem[] items, int selectionIndex, UnityEditor.GenericMenu.MenuFunction2 callback, params UnityEngine.GUILayoutOption[] options);
-        public class DropdownItem
-        {
-            public UnityEngine.GUIContent Content;
-            public bool Enabled;
-            public UnityEngine.GUIContent SelectionContent;
-            public object UserData;
-            public DropdownItem() {}
-        }
         public enum IconType
         {
             Critical = 3,

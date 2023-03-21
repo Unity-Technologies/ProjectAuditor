@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public class TreeViewSelection
+    internal class TreeViewSelection
     {
         public List<string> groups;
         public List<string> selection;

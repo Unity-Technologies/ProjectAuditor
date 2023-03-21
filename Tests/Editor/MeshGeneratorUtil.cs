@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public static class MeshGeneratorUtil
+    internal static class MeshGeneratorUtil
     {
         public static Mesh CreateTestMesh(string name, int triangleCount, bool markNoLongerReadable = false)
         {

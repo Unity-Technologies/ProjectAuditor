@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class UserPreferences
+    internal class UserPreferences
     {
         static readonly string k_PreferencesKey = "Preferences/Analysis/Project Auditor";
 

@@ -8,10 +8,10 @@ using UnityEngine.Assertions;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public class MultiSelectionTable : TreeView
+    internal class MultiSelectionTable : TreeView
     {
         // All columns
-        public enum Column
+        internal enum Column
         {
             ItemName,
             State,
@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         // stephenm TODO - Sorting doesn't work in this window (or in the Thread Selection Window in Profile Analyzer that
         // this is based on). So maybe rip this all out?
-        public enum SortOption
+        internal enum SortOption
         {
             ItemName,
             GroupName
@@ -568,7 +568,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return state;
         }
 
-        public struct HeaderData
+        internal struct HeaderData
         {
             public GUIContent content;
             public float width;

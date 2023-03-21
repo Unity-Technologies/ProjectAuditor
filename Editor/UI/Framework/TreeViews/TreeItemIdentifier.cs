@@ -3,7 +3,7 @@ using UnityEditor.IMGUI.Controls;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public struct TreeItemIdentifier
+    internal struct TreeItemIdentifier
     {
         public string nameWithIndex { get; private set; }
 

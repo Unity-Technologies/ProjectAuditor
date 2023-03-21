@@ -6,7 +6,7 @@ using Unity.ProjectAuditor.Editor.Tests.Common;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class MeshTests : TestFixtureBase
+    internal class MeshTests : TestFixtureBase
     {
         const string k_SmallMeshName = "SmallTestMesh";
         const string k_LargeMeshName = "LargeTestMesh";

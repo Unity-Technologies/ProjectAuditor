@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public class DiagnosticView : AnalysisView
+    internal class DiagnosticView : AnalysisView
     {
         public DiagnosticView(ViewManager viewManager) : base(viewManager)
         {
