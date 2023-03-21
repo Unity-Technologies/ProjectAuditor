@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
-using UnityEditor;
 using UnityEngine.Rendering;
 #if PACKAGE_URP
 using UnityEngine.Rendering.Universal;
@@ -95,6 +94,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 #if UNITY_2019_3_OR_NEWER
         private IEnumerable<ProjectIssue> Analyze(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
+#if PACKAGE_URP
             if (renderPipeline is UniversalRenderPipelineAsset urpAsset)
             {
                 if (urpAsset.supportsHDR)
@@ -109,6 +109,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                         k_MsaaSampleCountSettingDescriptor);
                 }
             }
+#else
+            yield break;
+#endif
         }
 
         internal static void SetHdrSetting(RenderPipelineAsset renderPipeline, bool value)
