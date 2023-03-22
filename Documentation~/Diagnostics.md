@@ -61,6 +61,7 @@ This is a full list of all builtin settings diagnostics:
 | PAS1009 | URP Asset                                   | Graphics, Quality | Android, iOS, Switch     |
 | PAS1010 | URP HDR                                     | Graphics, Quality | Android, iOS, Switch     |
 | PAS1011 | URP MSAA                                    | Graphics, Quality | Android, iOS, Switch     |
+| PAS1012 | URP Stop NaN                                | Graphics          | Android, iOS, Switch     |
 
 
 # Asset Diagnostics
