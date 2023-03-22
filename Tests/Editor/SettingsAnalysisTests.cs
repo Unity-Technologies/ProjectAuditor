@@ -612,7 +612,81 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have enabled SRP Batcher.");
         }
+#endif
 
+                [Test]
+#if !UNITY_2019_3_OR_NEWER
+        [Ignore("This requires the new Shader API")]
+#endif
+        public void UrpAssetSettingsAnalysis_IsNotReportedOnceFixed()
+        {
+#if UNITY_2019_3_OR_NEWER
+            RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
+            RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
+            bool? initialDefaultHdrSetting = UniversalRenderPipelineAnalyzer.GetHdrSetting(defaultRP);
+            int? initialDefaultMsaaSetting = UniversalRenderPipelineAnalyzer.GetMsaaSampleCountSetting(defaultRP);
+            bool? initialQualityHdrSetting = UniversalRenderPipelineAnalyzer.GetHdrSetting(qualityRP);
+            int? initialQualityMsaaSetting = UniversalRenderPipelineAnalyzer.GetMsaaSampleCountSetting(qualityRP);
+
+            if (defaultRP != null)
+            {
+                TestUrpSetting(defaultRP, -1);
+            }
+
+            if (qualityRP != null)
+            {
+                TestUrpSetting(qualityRP, QualitySettings.GetQualityLevel());
+            }
+
+            if (initialDefaultHdrSetting != null)
+            {
+                UniversalRenderPipelineAnalyzer.SetHdrSetting(defaultRP, initialDefaultHdrSetting.Value);
+            }
+            if (initialDefaultMsaaSetting != null)
+            {
+                UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(defaultRP, initialDefaultMsaaSetting.Value);
+            }
+
+            if (initialQualityHdrSetting != null)
+            {
+                UniversalRenderPipelineAnalyzer.SetHdrSetting(qualityRP, initialQualityHdrSetting.Value);
+            }
+            if (initialQualityMsaaSetting != null)
+            {
+                UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(qualityRP, initialQualityMsaaSetting.Value);
+            }
+#endif
+        }
+
+#if UNITY_2019_3_OR_NEWER
+        private void TestUrpSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
+        {
+            const string hdrTitle = "URP: HDR is enabled";
+            UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, true);
+            var issues = Analyze(IssueCategory.ProjectSetting,
+                i => i.descriptor.title.Equals(hdrTitle));
+            Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
+                $"Render Pipeline with quality level {qualityLevel} should have enabled HDR.");
+
+            UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, false);
+            issues = Analyze(IssueCategory.ProjectSetting,
+                i => i.descriptor.title.Equals(hdrTitle));
+            Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
+                $"Render Pipeline with quality level {qualityLevel} should have disabled HDR.");
+
+            const string msaaTitle = "URP: MSAA is set to 4x or 8x";
+            UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 4);
+            issues = Analyze(IssueCategory.ProjectSetting,
+                i => i.descriptor.title.Equals(msaaTitle));
+            Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
+                $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 4x.");
+
+            UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 2);
+            issues = Analyze(IssueCategory.ProjectSetting,
+                i => i.descriptor.title.Equals(msaaTitle));
+            Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
+                $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 2x.");
+        }
 #endif
     }
 }

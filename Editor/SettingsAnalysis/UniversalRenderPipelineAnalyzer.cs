@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
+using UnityEngine;
 using UnityEngine.Rendering;
 #if PACKAGE_URP
 using UnityEngine.Rendering.Universal;
@@ -95,23 +96,34 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         private IEnumerable<ProjectIssue> Analyze(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
 #if PACKAGE_URP
-            if (renderPipeline is UniversalRenderPipelineAsset urpAsset)
+            bool? supportsHDR = GetHdrSetting(renderPipeline);
+            if (supportsHDR != null && supportsHDR.Value)
             {
-                if (urpAsset.supportsHDR)
-                {
-                    yield return SrpAssetSettingsAnalyzer.CreateAssetSettingsIssue(qualityLevel, renderPipeline.name,
-                        k_HdrSettingDescriptor);
-                }
+                yield return SrpAssetSettingsAnalyzer.CreateAssetSettingsIssue(qualityLevel, renderPipeline.name,
+                    k_HdrSettingDescriptor);
+            }
 
-                if (urpAsset.msaaSampleCount >= 4)
-                {
-                    yield return SrpAssetSettingsAnalyzer.CreateAssetSettingsIssue(qualityLevel, renderPipeline.name,
-                        k_MsaaSampleCountSettingDescriptor);
-                }
+            int? msaaSampleCount = GetMsaaSampleCountSetting(renderPipeline);
+            if (msaaSampleCount != null && msaaSampleCount >= 4)
+            {
+                yield return SrpAssetSettingsAnalyzer.CreateAssetSettingsIssue(qualityLevel, renderPipeline.name,
+                    k_MsaaSampleCountSettingDescriptor);
             }
 #else
             yield break;
 #endif
+        }
+
+        internal static bool? GetHdrSetting(RenderPipelineAsset renderPipeline)
+        {
+            if (renderPipeline == null) return null;
+#if PACKAGE_URP
+            if (renderPipeline is UniversalRenderPipelineAsset urpAsset)
+            {
+                return urpAsset.supportsHDR;
+            }
+#endif
+            return null;
         }
 
         internal static void SetHdrSetting(RenderPipelineAsset renderPipeline, bool value)
@@ -123,6 +135,18 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 urpAsset.supportsHDR = value;
             }
 #endif
+        }
+
+        internal static int? GetMsaaSampleCountSetting(RenderPipelineAsset renderPipeline)
+        {
+            if (renderPipeline == null) return null;
+#if PACKAGE_URP
+            if (renderPipeline is UniversalRenderPipelineAsset urpAsset)
+            {
+                return urpAsset.msaaSampleCount;
+            }
+#endif
+            return null;
         }
 
         internal static void SetMsaaSampleCountSetting(RenderPipelineAsset renderPipeline, int value)
