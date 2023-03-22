@@ -570,8 +570,6 @@ namespace Unity.ProjectAuditor.EditorTests
 #if UNITY_2019_3_OR_NEWER
             RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
             RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
-            bool? initialDefaultSetting = SrpAssetSettingsAnalyzer.GetSrpBatcherSetting(defaultRP);
-            bool? initialQualitySetting = SrpAssetSettingsAnalyzer.GetSrpBatcherSetting(qualityRP);
 
             if (defaultRP != null)
             {
@@ -582,22 +580,14 @@ namespace Unity.ProjectAuditor.EditorTests
             {
                 TestSrpBatchingSetting(qualityRP, QualitySettings.GetQualityLevel());
             }
-
-            if (initialDefaultSetting != null)
-            {
-                SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(defaultRP, initialDefaultSetting.Value);
-            }
-
-            if (initialQualitySetting != null)
-            {
-                SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(qualityRP, initialQualitySetting.Value);
-            }
 #endif
         }
 
 #if UNITY_2019_3_OR_NEWER
         private void TestSrpBatchingSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
+            bool? initialSetting = SrpAssetSettingsAnalyzer.GetSrpBatcherSetting(renderPipeline);
+
             SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, false);
             var issues = Analyze(IssueCategory.ProjectSetting,
                 i => i.descriptor.title.Equals("SRP Asset: SRP Batcher"));
@@ -611,10 +601,15 @@ namespace Unity.ProjectAuditor.EditorTests
                 i => i.descriptor.title.Equals("SRP Asset: SRP Batcher"));
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have enabled SRP Batcher.");
+
+            if (initialSetting != null)
+            {
+                SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, initialSetting.Value);
+            }
         }
 #endif
 
-                [Test]
+        [Test]
 #if !UNITY_2019_3_OR_NEWER
         [Ignore("This requires the new Shader API")]
 #endif
@@ -623,44 +618,47 @@ namespace Unity.ProjectAuditor.EditorTests
 #if UNITY_2019_3_OR_NEWER
             RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
             RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
-            bool? initialDefaultHdrSetting = UniversalRenderPipelineAnalyzer.GetHdrSetting(defaultRP);
-            int? initialDefaultMsaaSetting = UniversalRenderPipelineAnalyzer.GetMsaaSampleCountSetting(defaultRP);
-            bool? initialQualityHdrSetting = UniversalRenderPipelineAnalyzer.GetHdrSetting(qualityRP);
-            int? initialQualityMsaaSetting = UniversalRenderPipelineAnalyzer.GetMsaaSampleCountSetting(qualityRP);
+
+            if (defaultRP != null || qualityRP != null)
+            {
+                GraphicsSettings.defaultRenderPipeline = null;
+                QualitySettings.renderPipeline = null;
+
+                const string urpAssetTitle = "URP: URP Asset is not specified";
+                var issues = Analyze(IssueCategory.ProjectSetting,
+                    i => i.descriptor.title.Equals(urpAssetTitle));
+                var urpIssue = issues.FirstOrDefault();
+                Assert.NotNull(urpIssue);
+
+                GraphicsSettings.defaultRenderPipeline = defaultRP;
+                QualitySettings.renderPipeline = qualityRP;
+
+                issues = Analyze(IssueCategory.ProjectSetting,
+                    i => i.descriptor.title.Equals(urpAssetTitle));
+                urpIssue = issues.FirstOrDefault();
+                Assert.Null(urpIssue);
+            }
 
             if (defaultRP != null)
             {
-                TestUrpSetting(defaultRP, -1);
+                TestUrpHdrSetting(defaultRP, -1);
+                TestUrpMsaaSetting(defaultRP, -1);
             }
 
             if (qualityRP != null)
             {
-                TestUrpSetting(qualityRP, QualitySettings.GetQualityLevel());
-            }
-
-            if (initialDefaultHdrSetting != null)
-            {
-                UniversalRenderPipelineAnalyzer.SetHdrSetting(defaultRP, initialDefaultHdrSetting.Value);
-            }
-            if (initialDefaultMsaaSetting != null)
-            {
-                UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(defaultRP, initialDefaultMsaaSetting.Value);
-            }
-
-            if (initialQualityHdrSetting != null)
-            {
-                UniversalRenderPipelineAnalyzer.SetHdrSetting(qualityRP, initialQualityHdrSetting.Value);
-            }
-            if (initialQualityMsaaSetting != null)
-            {
-                UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(qualityRP, initialQualityMsaaSetting.Value);
+                int qualityLevel = QualitySettings.GetQualityLevel();
+                TestUrpHdrSetting(qualityRP, qualityLevel);
+                TestUrpMsaaSetting(qualityRP, qualityLevel);
             }
 #endif
         }
 
 #if UNITY_2019_3_OR_NEWER
-        private void TestUrpSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
+        private void TestUrpHdrSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
+            bool? initialHdrSetting = UniversalRenderPipelineAnalyzer.GetHdrSetting(renderPipeline);
+
             const string hdrTitle = "URP: HDR is enabled";
             UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, true);
             var issues = Analyze(IssueCategory.ProjectSetting,
@@ -674,9 +672,19 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have disabled HDR.");
 
+            if (initialHdrSetting != null)
+            {
+                UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, initialHdrSetting.Value);
+            }
+        }
+
+        private void TestUrpMsaaSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
+        {
+            int? initialMsaaSetting = UniversalRenderPipelineAnalyzer.GetMsaaSampleCountSetting(renderPipeline);
+
             const string msaaTitle = "URP: MSAA is set to 4x or 8x";
             UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 4);
-            issues = Analyze(IssueCategory.ProjectSetting,
+            var issues = Analyze(IssueCategory.ProjectSetting,
                 i => i.descriptor.title.Equals(msaaTitle));
             Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 4x.");
@@ -686,6 +694,11 @@ namespace Unity.ProjectAuditor.EditorTests
                 i => i.descriptor.title.Equals(msaaTitle));
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 2x.");
+
+            if (initialMsaaSetting != null)
+            {
+                UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, initialMsaaSetting.Value);
+            }
         }
 #endif
     }
