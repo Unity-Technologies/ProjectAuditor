@@ -56,6 +56,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
         //SpriteAtlasAsset Save is not compatible with the AssetDatabase save
         //Alternative function to create a TestAsset from a SpriteAtlas
+#if UNITY_2021_1_OR_NEWER
         public static TestAsset SaveSpriteAtlasAsset(SpriteAtlasAsset asset, string fileName)
         {
             var tempAsset = new TestAsset(fileName);
@@ -64,6 +65,8 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             return tempAsset;
         }
+
+#endif
 
         public static void Cleanup()
         {
