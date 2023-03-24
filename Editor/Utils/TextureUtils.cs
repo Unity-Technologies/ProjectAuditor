@@ -7,8 +7,6 @@ using UnityEditor.U2D;
 using UnityEngine;
 using UnityEngine.U2D;
 using Debug = UnityEngine.Debug;
-using Unity.ProjectAuditor.Editor;
-using UnityEngine.U2D;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -51,7 +49,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 isTooBig = IsSolidColor(texture2D);
             }
-
             else
             {
                 Texture2D copyTexture = CopyTexture(texture2D);
@@ -66,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         /// </summary>
         /// <param name="texture">The texture to check.</param>
         /// <returns>True if the texture is a single solid color.</returns>
-         internal static bool IsSolidColor(Texture2D texture)
+        internal static bool IsSolidColor(Texture2D texture)
         {
             // Skip "degenerate" textures like font atlases
             if (texture.width == 0 || texture.height == 0)
@@ -149,7 +146,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 pixels = texture2D.GetPixels32();
             }
-
             else
             {
                 var copyTexture = CopyTexture(texture2D);
@@ -187,7 +183,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
             }
 
-            double percent = (double) transparencyPixelsCount / (double) pixelCount;
+            double percent = (double)transparencyPixelsCount / (double)pixelCount;
             return ((int)Math.Round(percent * 100));
         }
 
