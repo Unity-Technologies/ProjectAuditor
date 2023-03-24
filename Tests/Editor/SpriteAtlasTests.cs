@@ -32,6 +32,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
+#if UNITY_2020_1_OR_NEWER
             //Full Sprite Atlas Generation
             var fullSpriteAtlasAsset = new SpriteAtlasAsset();
             fullSpriteAtlasAsset.name = k_SpriteAtlasNameFull;
@@ -68,8 +69,11 @@ namespace Unity.ProjectAuditor.EditorTests
 
             emptySpriteAtlasAsset.Add(new Object[] {emptySquareSprite, emptySquareSprite});
             m_TestSpriteAtlasEmpty = TestAsset.SaveSpriteAtlasAsset(emptySpriteAtlasAsset, k_SpriteAtlasNameEmpty + ".spriteatlasv2");
+#endif
         }
 
+        //SpriteAtlasAsset does not exist before Unity 2020
+#if UNITY_2020_1_OR_NEWER
         [Test]
         public void SpriteAtlas_Not_Empty_Is_Not_Reported()
         {
@@ -89,6 +93,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.IsNotNull(textureDiagnostic);
         }
+
+#endif
 
         void GenerateTestSpritesForFullSpriteAtlasTest()
         {

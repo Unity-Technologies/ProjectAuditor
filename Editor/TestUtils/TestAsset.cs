@@ -61,13 +61,16 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             var tempAsset = new TestAsset(fileName);
 #if UNITY_2021_1_OR_NEWER
             SpriteAtlasAsset.Save(asset, tempAsset.relativePath);
-#else
+#elif UNITY_2020_1_OR_NEWER
             if (asset == null)
                 throw new ArgumentNullException("Parameter asset is null");
             UnityEditorInternal.InternalEditorUtility.SaveToSerializedFileAndForget(new UnityEngine.Object[1]
             {
                 asset
             }, tempAsset.relativePath, EditorSettings.serializationMode != SerializationMode.ForceBinary);
+#else
+            //SpriteAtlasAsset does not exist in Unity 2019 or before
+            return null;
 
 #endif
             AssetDatabase.ImportAsset(tempAsset.relativePath, ImportAssetOptions.ForceUpdate);
