@@ -54,29 +54,28 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             return tempAsset;
         }
 
+#if UNITY_2020_1_OR_NEWER
         //SpriteAtlasAsset Save is not compatible with the AssetDatabase save
         //Alternative function to create a TestAsset from a SpriteAtlas
         public static TestAsset SaveSpriteAtlasAsset(SpriteAtlasAsset asset, string fileName)
         {
             var tempAsset = new TestAsset(fileName);
-#if UNITY_2021_1_OR_NEWER
+            #if UNITY_2021_1_OR_NEWER
             SpriteAtlasAsset.Save(asset, tempAsset.relativePath);
-#elif UNITY_2020_1_OR_NEWER
+            #else
             if (asset == null)
                 throw new ArgumentNullException("Parameter asset is null");
             UnityEditorInternal.InternalEditorUtility.SaveToSerializedFileAndForget(new UnityEngine.Object[1]
             {
                 asset
             }, tempAsset.relativePath, EditorSettings.serializationMode != SerializationMode.ForceBinary);
-#else
-            //SpriteAtlasAsset does not exist in Unity 2019 or before
-            return null;
-
-#endif
+            #endif
             AssetDatabase.ImportAsset(tempAsset.relativePath, ImportAssetOptions.ForceUpdate);
 
             return tempAsset;
         }
+
+#endif
 
         public static void Cleanup()
         {
