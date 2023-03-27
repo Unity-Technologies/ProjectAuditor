@@ -1,18 +1,14 @@
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using TreeEditor;
 using UnityEditor;
 using UnityEditor.U2D;
 using UnityEngine;
 using UnityEngine.U2D;
 using Debug = UnityEngine.Debug;
 
-namespace Unity.ProjectAuditor.Editor.Modules
+namespace Unity.ProjectAuditor.Editor.Utils
 {
-    /// <summary>
-    /// Scans textures ans check if they are single solid color ones.
-    /// </summary>
     internal static class TextureUtils
     {
         /// <summary>

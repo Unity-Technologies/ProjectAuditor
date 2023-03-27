@@ -1,16 +1,13 @@
-﻿using System.Collections.Generic;
-using System.IO;
+using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
-using UnityEditor.U2D;
-using UnityEngine;
-using UnityEngine.Profiling;
 using UnityEngine.U2D;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public class SpriteAnalyzer : ISpriteAtlasModuleAnalyzer
+    class SpriteAnalyzer : ISpriteAtlasModuleAnalyzer
     {
         internal const string PAT0006 = nameof(PAT0006);
 
@@ -41,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (emptyPercent > projectAuditorParams.settings.SpriteAtlasEmptySpaceLimit)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
-                        k_SpriteAtlasEmptyDescriptor, spriteAtlas.name, emptyPercent)
+                    k_SpriteAtlasEmptyDescriptor, spriteAtlas.name, emptyPercent)
                     .WithLocation(assetPath);
             }
         }
