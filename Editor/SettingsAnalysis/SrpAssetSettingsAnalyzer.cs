@@ -63,6 +63,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         private static void FixSrpBatcherSetting(ProjectIssue issue)
         {
 #if UNITY_2019_3_OR_NEWER
+            GraphicsSettings.useScriptableRenderPipelineBatching = true;
             int qualityLevel = issue.GetCustomPropertyInt32(0);
             if (qualityLevel == -1)
             {
@@ -93,7 +94,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 ? "Default Rendering Pipeline Asset"
                 : $"Rendering Pipeline Asset on Quality Level: '{QualitySettings.names[qualityLevel]}'";
             return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SRPBatcherSettingDescriptor,
-                    name, assetLocation)
+                name, assetLocation)
                 .WithCustomProperties(new object[] { qualityLevel })
                 .WithLocation(qualityLevel == -1 ? "Project/Graphics" : "Project/Quality");
         }
@@ -149,6 +150,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
             return null;
         }
+
 #endif
 #endif
     }
