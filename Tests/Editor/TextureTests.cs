@@ -267,7 +267,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var textureDiagnostic =
                 AnalyzeAndFindAssetIssues(m_TextureNameStreamingMipmapDisabled, IssueCategory.AssetDiagnostic)
                     .FirstOrDefault(i =>
-                        i.descriptor.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor));
+                    i.descriptor.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor));
 
             Assert.NotNull(textureDiagnostic);
             Assert.NotNull(textureDiagnostic.descriptor);
@@ -278,7 +278,7 @@ namespace Unity.ProjectAuditor.EditorTests
             textureDiagnostic =
                 AnalyzeAndFindAssetIssues(m_TextureNameStreamingMipmapDisabled, IssueCategory.AssetDiagnostic)
                     .FirstOrDefault(i =>
-                        i.descriptor.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor));
+                    i.descriptor.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor));
 
             Assert.Null(textureDiagnostic);
         }
@@ -289,7 +289,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var textureDiagnostic =
                 AnalyzeAndFindAssetIssues(m_TextureNameStreamingMipmapEnabled, IssueCategory.AssetDiagnostic)
                     .FirstOrDefault(i =>
-                        i.descriptor.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor));
+                    i.descriptor.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor));
 
             Assert.IsNull(textureDiagnostic);
         }
