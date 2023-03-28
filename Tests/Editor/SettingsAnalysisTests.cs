@@ -15,6 +15,9 @@ using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 using FogMode = Unity.ProjectAuditor.Editor.Modules.FogMode;
+#if PACKAGE_URP
+using UnityEngine.Rendering.Universal;
+#endif
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -610,12 +613,12 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
 
         [Test]
-#if !UNITY_2019_3_OR_NEWER
-        [Ignore("This requires the new Shader API")]
+#if !UNITY_2019_3_OR_NEWER || !PACKAGE_URP
+        [Ignore("This requires the URP package")]
 #endif
-        public void UrpAssetSettingsAnalysis_IsNotReportedOnceFixed()
+        public void UrpAssetIsSpecifiedAnalysis_IsNotReportedOnceFixed()
         {
-#if UNITY_2019_3_OR_NEWER
+#if UNITY_2019_3_OR_NEWER && PACKAGE_URP
             RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
             RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
 
@@ -638,17 +641,79 @@ namespace Unity.ProjectAuditor.EditorTests
                 urpIssue = issues.FirstOrDefault();
                 Assert.Null(urpIssue);
             }
+#endif
+        }
 
+        [Test]
+#if !UNITY_2019_3_OR_NEWER || !PACKAGE_URP || !(UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
+        [Ignore("This requires the URP package and a mobile platform.")]
+#endif
+        public void UrpCameraStopNaNAnalysis_IsNotReportedOnceFixed()
+        {
+#if UNITY_2019_3_OR_NEWER && PACKAGE_URP && (UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
+            var cameraData = RenderPipelineUtils
+                .GetAllComponents<UniversalAdditionalCameraData>().FirstOrDefault();
+            if (cameraData != null)
+            {
+                const string stopNaNTitle = "URP: Stop NaN property is enabled";
+                var initStopNaN = cameraData.stopNaN;
+
+                cameraData.stopNaN = true;
+                var issues = Analyze(IssueCategory.ProjectSetting,
+                    i => i.descriptor.title.Equals(stopNaNTitle));
+                var issuesLength = issues.Length;
+                Assert.IsTrue(issuesLength > 0);
+
+                cameraData.stopNaN = false;
+                issues = Analyze(IssueCategory.ProjectSetting,
+                    i => i.descriptor.title.Equals(stopNaNTitle));
+                var issuesLength2 = issues.Length;
+                Assert.IsTrue(issuesLength - issuesLength2 == 1);
+
+                cameraData.stopNaN = initStopNaN;
+            }
+#endif
+        }
+
+        [Test]
+#if !UNITY_2019_3_OR_NEWER || !PACKAGE_URP || !(UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
+        [Ignore("This requires the URP package and a mobile platform.")]
+#endif
+        public void UrpAssetHdrSettingsAnalysis_IsNotReportedOnceFixed()
+        {
+#if UNITY_2019_3_OR_NEWER && PACKAGE_URP && (UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
+            RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
+            RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
             if (defaultRP != null)
             {
                 TestUrpHdrSetting(defaultRP, -1);
-                TestUrpMsaaSetting(defaultRP, -1);
             }
 
             if (qualityRP != null)
             {
                 int qualityLevel = QualitySettings.GetQualityLevel();
                 TestUrpHdrSetting(qualityRP, qualityLevel);
+            }
+#endif
+        }
+
+        [Test]
+#if !UNITY_2019_3_OR_NEWER || !PACKAGE_URP || !(UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
+        [Ignore("This requires the URP package and a mobile platform.")]
+#endif
+        public void UrpAssetMsaaSettingsAnalysis_IsNotReportedOnceFixed()
+        {
+#if UNITY_2019_3_OR_NEWER && PACKAGE_URP && (UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
+            RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
+            RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
+            if (defaultRP != null)
+            {
+                TestUrpMsaaSetting(defaultRP, -1);
+            }
+
+            if (qualityRP != null)
+            {
+                int qualityLevel = QualitySettings.GetQualityLevel();
                 TestUrpMsaaSetting(qualityRP, qualityLevel);
             }
 #endif

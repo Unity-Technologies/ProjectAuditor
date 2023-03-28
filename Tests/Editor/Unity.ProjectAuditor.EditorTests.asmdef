@@ -3,8 +3,9 @@
     "references": [
         "Unity.ProjectAuditor.Editor",
         "Unity.ProjectAuditor.Editor.UI.Framework",
-	    "Unity.ProjectAuditor.Editor.Utils",
-        "Unity.ProjectAuditor.Editor.Tests.Common"
+        "Unity.ProjectAuditor.Editor.Utils",
+        "Unity.ProjectAuditor.Editor.Tests.Common",
+        "Unity.RenderPipelines.Universal.Runtime"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
@@ -20,9 +21,16 @@
     ],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [ {
-        "name": "Unity",
-        "expression": "2019.4",
-        "define": "BUILD_REPORT_API_SUPPORT"
-    }]
+    "versionDefines": [
+        {
+            "name": "Unity",
+            "expression": "2019.4",
+            "define": "BUILD_REPORT_API_SUPPORT"
+        },
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "7.0",
+            "define": "PACKAGE_URP"
+        }
+    ]
 }
