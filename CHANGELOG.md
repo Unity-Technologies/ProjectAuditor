@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 * CHANGELOG.md format to ensure it adheres to Unity standards
+* Asset diagnostics IDs.
 
 ## [0.9.3-preview.3] - 2023-02-28
 
