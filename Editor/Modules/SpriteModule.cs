@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
 using UnityEditor;
 using UnityEditor.U2D;
@@ -6,7 +6,7 @@ using UnityEngine.U2D;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class SpriteModule: ProjectAuditorModuleWithAnalyzers<ISpriteAtlasModuleAnalyzer>
+    class SpriteModule : ProjectAuditorModuleWithAnalyzers<ISpriteAtlasModuleAnalyzer>
     {
         internal static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
