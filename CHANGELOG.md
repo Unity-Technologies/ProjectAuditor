@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 * Added Solid Color Texture analyzer
+* Added Empty Sprite Atlas analyzer
+* Added Empty Atlas Texture analyzer
 
 ### Added
 * SRP Asset Settings analyzer.

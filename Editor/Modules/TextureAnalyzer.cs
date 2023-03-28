@@ -17,6 +17,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAT0003 = nameof(PAT0003);
         internal const string PAT0004 = nameof(PAT0004);
         internal const string PAT0005 = nameof(PAT0005);
+        internal const string PAT0007 = nameof(PAT0007);
 
         internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
             PAT0000,
@@ -132,6 +133,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             fixer = (issue) => { ResizeSolidTexture(issue.relativePath); }
         };
 
+        internal static readonly Descriptor k_AtlasTextureEmptyDescriptor = new Descriptor(
+            PAT0007,
+            "Atlas Texture : Too much empty space",
+            new[] {Area.Memory},
+            "The Atlas Texture texture has too much empty space. This increases the amount of memory usage and can be reduced.",
+            "Consider reorganizing your Atlas Texture."
+        )
+        {
+            messageFormat = "Atlas Texture '{0}' has too much empty space ({1} %)."
+        };
+
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_TextureMipMapNotEnabledDescriptor);
@@ -139,6 +151,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_TextureReadWriteEnabledDescriptor);
             module.RegisterDescriptor(k_TextureStreamingMipMapEnabledDescriptor);
             module.RegisterDescriptor(k_TextureAnisotropicLevelDescriptor);
+            module.RegisterDescriptor(k_TextureSolidColorDescriptor);
+            module.RegisterDescriptor(k_AtlasTextureEmptyDescriptor);
         }
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, TextureImporter textureImporter, TextureImporterPlatformSettings platformSettings)
@@ -206,6 +220,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (TextureUtils.IsTextureSolidColorTooBig(textureImporter, texture))
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureSolidColorDescriptor, textureName)
+                    .WithLocation(textureImporter.assetPath);
+            }
+
+            var texture2D = texture as Texture2D;
+            if (texture2D == null)
+            {
+                Debug.LogError(texture.name + " is not a Texture2D!");
+            }
+
+            var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
+            if (emptyPercent >
+                projectAuditorParams.settings.SpriteAtlasEmptySpaceLimit)
+            {
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_AtlasTextureEmptyDescriptor, textureName, emptyPercent)
                     .WithLocation(textureImporter.assetPath);
             }
         }
