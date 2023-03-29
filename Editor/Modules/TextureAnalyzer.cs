@@ -11,15 +11,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     class TextureAnalyzer : ITextureModuleAnalyzer
     {
-        internal const string PAT0000 = nameof(PAT0000);
-        internal const string PAT0001 = nameof(PAT0001);
-        internal const string PAT0002 = nameof(PAT0002);
-        internal const string PAT0003 = nameof(PAT0003);
-        internal const string PAT0004 = nameof(PAT0004);
-        internal const string PAT0005 = nameof(PAT0005);
+        internal const string PAA0000 = nameof(PAA0000);
+        internal const string PAA0001 = nameof(PAA0001);
+        internal const string PAA0002 = nameof(PAA0002);
+        internal const string PAA0003 = nameof(PAA0003);
+        internal const string PAA0004 = nameof(PAA0004);
+        internal const string PAA0005 = nameof(PAA0005);
 
         internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
-            PAT0000,
+            PAA0000,
             "Texture: Mipmaps not enabled",
             new[] {Area.GPU, Area.Quality},
             "Texture mipmaps generation is not enabled. Generally enabling mipmaps improves rendering quality (avoids aliasing effects) and improves performance.",
@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         internal static readonly Descriptor k_TextureMipMapEnabledDescriptor = new Descriptor(
-            PAT0001,
+            PAA0001,
             "Texture: Mipmaps enabled on Sprite/UI texture",
             new[] {Area.BuildSize, Area.Quality},
             "Texture mipmaps generation is enabled. This might reduce rendering quality of sprites and UI.",
@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         internal static readonly Descriptor k_TextureReadWriteEnabledDescriptor = new Descriptor(
-            PAT0002,
+            PAA0002,
             "Texture: Read/Write enabled",
             Area.Memory,
             "Mesh Read/Write flag is enabled. This causes the texture data to be duplicated in memory.",
@@ -80,7 +80,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         internal static readonly Descriptor k_TextureStreamingMipMapEnabledDescriptor = new Descriptor(
-            PAT0003,
+            PAA0003,
             "Texture: Mipmaps Streaming not enabled",
             new[] {Area.Memory, Area.Quality},
             "Texture mipmaps streaming is not enabled. This increases the amount of mipmap textures that are loaded into memory on the GPU.",
@@ -100,7 +100,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         internal static readonly Descriptor k_TextureAnisotropicLevelDescriptor = new Descriptor(
-            PAT0004,
+            PAA0004,
             "Texture: Anisotropic level is higher than 1",
             new[] {Area.GPU, Area.Quality},
             "The anisotropic level is higher than 1. Anisotropic filtering makes textures look better when viewed at a shallow angle, but it can be slower to process on the GPU.",
@@ -121,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         internal static readonly Descriptor k_TextureSolidColorDescriptor = new Descriptor(
-            PAT0005,
+            PAA0005,
             "Texture: Solid color is not 1x1 size",
             new[] {Area.Memory},
             "The texture is a solid color. This increases the amount of memory usage and can be reduced.",

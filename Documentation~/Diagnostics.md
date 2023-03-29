@@ -11,8 +11,10 @@ Note that there are different ranges within both Code and Settings diagnostic ID
 - Settings:
   - `PAS0xxx`: Unity settings 
   - `PAS1xxx`: other settings IDs defined in code rather than in the json
-  - `PAT0xxx`: texture related settings
-  - `PAM0xxx`: mesh related settings
+- Assets:
+  - `PAA0xxx`: texture related settings
+  - `PAA1xxx`: mesh related settings
+  - `PAA2xxx`: shader related settings
 
 # Settings Diagnostics
 This is a full list of all builtin settings diagnostics:
@@ -69,12 +71,12 @@ Builtin asset-specific diagnostics:
 
 | ID      | Title                                          | Settings  | Platforms            |
 |---------|------------------------------------------------|-----------|----------------------|
-| PAT0000 | Texture: Mipmaps not enabled                   | Graphics  | Any                  |
-| PAT0001 | Texture: Mipmaps enabled on Sprite/UI texture  | Graphics  | Any                  |
-| PAT0002 | Texture: Read/Write enabled                    | Graphics  | Any                  |
-| PAT0003 | Texture: Streaming Mipmaps not enabled         | Graphics  | Any                  |
-| PAT0004 | Texture: Anisotropic level is more than 1      | Graphics  | Android, iOS, Switch |
-| PAT0005 | Texture: Solid color texture bigger than 1x1   | Graphics  | Any                  |
-| PAM0000 | Mesh: Read/Write enabled                       | Graphics  | Any                  |
-| PAM0001 | Mesh: Index Format is 32 bits                  | Graphics  | Any                  |
-| PAS0000 | Shader: Not compatible with SRP batcher        | Graphics  | Any                  |
+| PAA0000 | Texture: Mipmaps not enabled                   | Graphics  | Any                  |
+| PAA0001 | Texture: Mipmaps enabled on Sprite/UI texture  | Graphics  | Any                  |
+| PAA0002 | Texture: Read/Write enabled                    | Graphics  | Any                  |
+| PAA0003 | Texture: Streaming Mipmaps not enabled         | Graphics  | Any                  |
+| PAA0004 | Texture: Anisotropic level is more than 1      | Graphics  | Android, iOS, Switch |
+| PAA0005 | Texture: Solid color texture bigger than 1x1   | Graphics  | Any                  |
+| PAA1000 | Mesh: Read/Write enabled                       | Graphics  | Any                  |
+| PAA1001 | Mesh: Index Format is 32 bits                  | Graphics  | Any                  |
+| PAA2000 | Shader: Not compatible with SRP batcher        | Graphics  | Any                  |
