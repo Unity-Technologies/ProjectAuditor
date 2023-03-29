@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         const int k_MaxEventsPerHour = 100;
         const int k_MaxEventItems = 1000;
         const int k_MaxIssuesInAnalyzeSummary = 10;
-        private const int k_EventVersion = 2;
+        const int k_EventVersion = 2;
 
         const string k_VendorKey = "unity.projectauditor";
         const string k_EventTopicName = "projectAuditorUsage";
@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             var result = EditorAnalytics.RegisterEventWithLimit(
                 k_EventTopicName, k_MaxEventsPerHour, k_MaxEventItems, k_VendorKey, k_EventVersion);
-            
+
             if (result == AnalyticsResult.Ok)
                 s_EnableAnalytics = true;
         }
