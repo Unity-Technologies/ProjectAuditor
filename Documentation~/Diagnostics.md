@@ -11,6 +11,7 @@ Note that there are different ranges within both Code and Settings diagnostic ID
 - Settings:
   - `PAS0xxx`: Unity settings 
   - `PAS1xxx`: other settings IDs defined in code rather than in the json
+- Assets
   - `PAA0xxx`: texture related settings
   - `PAA1xxx`: mesh related settings
   - `PAA2xxx`: shader related settings
