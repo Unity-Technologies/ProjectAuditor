@@ -719,10 +719,10 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
         }
 
-#if UNITY_2019_3_OR_NEWER
+#if UNITY_2019_3_OR_NEWER && PACKAGE_URP
         private void TestUrpHdrSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
-            bool? initialHdrSetting = UniversalRenderPipelineAnalyzer.GetHdrSetting(renderPipeline);
+            bool initialHdrSetting = UniversalRenderPipelineAnalyzer.GetHdrSetting(renderPipeline);
 
             const string hdrTitle = "URP: HDR is enabled";
             UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, true);
@@ -737,15 +737,12 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have disabled HDR.");
 
-            if (initialHdrSetting != null)
-            {
-                UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, initialHdrSetting.Value);
-            }
+            UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, initialHdrSetting);
         }
 
         private void TestUrpMsaaSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
-            int? initialMsaaSetting = UniversalRenderPipelineAnalyzer.GetMsaaSampleCountSetting(renderPipeline);
+            int initialMsaaSetting = UniversalRenderPipelineAnalyzer.GetMsaaSampleCountSetting(renderPipeline);
 
             const string msaaTitle = "URP: MSAA is set to 4x or 8x";
             UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 4);
@@ -760,10 +757,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 2x.");
 
-            if (initialMsaaSetting != null)
-            {
-                UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, initialMsaaSetting.Value);
-            }
+            UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, initialMsaaSetting);
         }
 #endif
     }

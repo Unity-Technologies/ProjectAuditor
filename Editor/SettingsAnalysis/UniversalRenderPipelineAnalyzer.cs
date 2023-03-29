@@ -97,14 +97,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         private static void FixHdrSetting(ProjectIssue issue)
         {
-#if UNITY_2019_3_OR_NEWER
+#if UNITY_2019_3_OR_NEWER && PACKAGE_URP
             RenderPipelineUtils.FixAssetSetting(issue, p => SetHdrSetting(p, false));
 #endif
         }
 
         private static void FixMsaaSampleCountSetting(ProjectIssue issue)
         {
-#if UNITY_2019_3_OR_NEWER
+#if UNITY_2019_3_OR_NEWER && PACKAGE_URP
             RenderPipelineUtils.FixAssetSetting(issue, p => SetMsaaSampleCountSetting(p, 2));
 #endif
         }
@@ -113,15 +113,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         private IEnumerable<ProjectIssue> Analyze(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
 #if PACKAGE_URP
-            bool? supportsHDR = GetHdrSetting(renderPipeline);
-            if (supportsHDR != null && supportsHDR.Value)
+            if (GetHdrSetting(renderPipeline))
             {
                 yield return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, renderPipeline.name,
                     k_HdrSettingDescriptor);
             }
 
-            int? msaaSampleCount = GetMsaaSampleCountSetting(renderPipeline);
-            if (msaaSampleCount != null && msaaSampleCount >= 4)
+            if (GetMsaaSampleCountSetting(renderPipeline) >= 4)
             {
                 yield return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, renderPipeline.name,
                     k_MsaaSampleCountSettingDescriptor);
@@ -131,52 +129,33 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 #endif
         }
 
-        internal static bool? GetHdrSetting(RenderPipelineAsset renderPipeline)
-        {
-            if (renderPipeline == null) return null;
 #if PACKAGE_URP
-            if (renderPipeline is UniversalRenderPipelineAsset urpAsset)
-            {
-                return urpAsset.supportsHDR;
-            }
-#endif
-            return null;
+        internal static bool GetHdrSetting(RenderPipelineAsset renderPipeline)
+        {
+            return renderPipeline is UniversalRenderPipelineAsset urpAsset && urpAsset.supportsHDR;
         }
 
         internal static void SetHdrSetting(RenderPipelineAsset renderPipeline, bool value)
         {
-            if (renderPipeline == null) return;
-#if PACKAGE_URP
             if (renderPipeline is UniversalRenderPipelineAsset urpAsset)
             {
                 urpAsset.supportsHDR = value;
             }
-#endif
         }
 
-        internal static int? GetMsaaSampleCountSetting(RenderPipelineAsset renderPipeline)
+        internal static int GetMsaaSampleCountSetting(RenderPipelineAsset renderPipeline)
         {
-            if (renderPipeline == null) return null;
-#if PACKAGE_URP
-            if (renderPipeline is UniversalRenderPipelineAsset urpAsset)
-            {
-                return urpAsset.msaaSampleCount;
-            }
-#endif
-            return null;
+            return renderPipeline is UniversalRenderPipelineAsset urpAsset ? urpAsset.msaaSampleCount : -1;
         }
 
         internal static void SetMsaaSampleCountSetting(RenderPipelineAsset renderPipeline, int value)
         {
-            if (renderPipeline == null) return;
-#if PACKAGE_URP
             if (renderPipeline is UniversalRenderPipelineAsset urpAsset)
             {
                 urpAsset.msaaSampleCount = value;
             }
-#endif
         }
 #endif
-
+#endif
     }
 }

@@ -7,9 +7,9 @@ using UnityEngine.SceneManagement;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    public static class RenderPipelineUtils
+    internal static class RenderPipelineUtils
     {
-        public static List<T> GetAllComponents<T>()
+        internal static List<T> GetAllComponents<T>()
         {
             var allComponents = new List<T>();
             for (int n = 0; n < SceneManager.sceneCount; ++n)
@@ -27,9 +27,17 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         private static void GetComponents<T>(GameObject go, ref List<T> components)
         {
+#if UNITY_2019_3_OR_NEWER
+            bool result = go.TryGetComponent(out T comp);
+            if (result)
+#else
             T comp = go.GetComponent<T>();
             if (comp != null)
+#endif
+            {
                 components.Add(comp);
+            }
+
             for (int i = 0; i < go.transform.childCount; i++)
             {
                 GetComponents(go.transform.GetChild(i).gameObject, ref components);
@@ -37,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
 
 #if UNITY_2019_3_OR_NEWER
-        public static IEnumerable<ProjectIssue> AnalyzeAssets(
+        internal static IEnumerable<ProjectIssue> AnalyzeAssets(
             Func<RenderPipelineAsset, int, IEnumerable<ProjectIssue>> analyze)
         {
             IEnumerable<ProjectIssue> issues = analyze(GraphicsSettings.defaultRenderPipeline, -1);
@@ -61,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             QualitySettings.SetQualityLevel(initialQualityLevel);
         }
 
-        public static ProjectIssue CreateAssetSettingIssue(int qualityLevel, string name, Descriptor descriptor)
+        internal static ProjectIssue CreateAssetSettingIssue(int qualityLevel, string name, Descriptor descriptor)
         {
             string assetLocation = qualityLevel == -1
                 ? "Default Rendering Pipeline Asset"
@@ -72,7 +80,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 .WithLocation(qualityLevel == -1 ? "Project/Graphics" : "Project/Quality");
         }
 
-        public static void FixAssetSetting(ProjectIssue issue, Action<RenderPipelineAsset> setter)
+        internal static void FixAssetSetting(ProjectIssue issue, Action<RenderPipelineAsset> setter)
         {
             int qualityLevel = issue.GetCustomPropertyInt32(0);
             if (qualityLevel == -1)
