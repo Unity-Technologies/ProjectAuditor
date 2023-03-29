@@ -610,6 +610,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, initialSetting.Value);
             }
         }
+
 #endif
 
         [Test]
@@ -759,6 +760,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, initialMsaaSetting);
         }
+
 #endif
     }
 }
