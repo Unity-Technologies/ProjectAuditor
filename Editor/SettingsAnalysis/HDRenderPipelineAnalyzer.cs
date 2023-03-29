@@ -45,26 +45,21 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             {
                 var deferredCamera = false;
                 var forwardCamera = false;
-                var allCameraData = new List<UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData>();
-                for (int n = 0; n < SceneManager.sceneCount; ++n)
-                {
-                    var scene = SceneManager.GetSceneAt(n);
-                    var roots = scene.GetRootGameObjects();
-                    foreach (var go in roots)
-                    {
-                        GetCameraComponents(go, ref allCameraData);
-                    }
-                }
+                var allCameraData = RenderPipelineUtils
+                    .GetAllComponents<UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData>();
                 foreach (var cameraData in allCameraData)
                 {
-                    if (cameraData.renderingPathCustomFrameSettings.litShaderMode == UnityEngine.Rendering.HighDefinition.LitShaderMode.Deferred)
+                    if (cameraData.renderingPathCustomFrameSettings.litShaderMode ==
+                        UnityEngine.Rendering.HighDefinition.LitShaderMode.Deferred)
                         deferredCamera = true;
                     else
                         forwardCamera = true;
 
                     if (deferredCamera && forwardCamera)
-                        yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_CameraLitShaderModeBothOrMixed);
+                        yield return ProjectIssue.Create(IssueCategory.ProjectSetting,
+                            k_CameraLitShaderModeBothOrMixed);
                 }
+
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_AssetLitShaderModeBothOrMixed);
             }
         }
@@ -93,17 +88,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 UnityEngine.Rendering.HighDefinition.RenderPipelineSettings.SupportedLitShaderMode.Both).Select(asset =>
                         asset.currentPlatformRenderPipelineSettings.supportedLitShaderMode)
                     .Distinct().Count() > 1;
-        }
-
-        void GetCameraComponents(GameObject go, ref List<UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData> components)
-        {
-            var comp = go.GetComponent(typeof(UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData));
-            if (comp != null)
-                components.Add((UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData)comp);
-            for (int i = 0; i < go.transform.childCount; i++)
-            {
-                GetCameraComponents(go.transform.GetChild(i).gameObject, ref components);
-            }
         }
 
 #else
