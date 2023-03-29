@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
-using UnityEngine;
 using UnityEngine.Rendering;
 #if PACKAGE_URP
 using UnityEngine.Rendering.Universal;
@@ -36,25 +35,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
 #if UNITY_2019_3_OR_NEWER
-            IEnumerable<ProjectIssue> issues = Analyze(GraphicsSettings.defaultRenderPipeline, -1);
-            foreach (ProjectIssue issue in issues)
-            {
-                yield return issue;
-            }
-
-            var initialQualityLevel = QualitySettings.GetQualityLevel();
-            for (var i = 0; i < QualitySettings.names.Length; ++i)
-            {
-                QualitySettings.SetQualityLevel(i);
-
-                issues = Analyze(QualitySettings.renderPipeline, i);
-                foreach (ProjectIssue issue in issues)
-                {
-                    yield return issue;
-                }
-            }
-
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            return RenderPipelineUtils.AnalyzeAssets(Analyze);
 #else
             yield break;
 #endif
@@ -63,18 +44,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         private static void FixSrpBatcherSetting(ProjectIssue issue)
         {
 #if UNITY_2019_3_OR_NEWER
-            GraphicsSettings.useScriptableRenderPipelineBatching = true;
-            int qualityLevel = issue.GetCustomPropertyInt32(0);
-            if (qualityLevel == -1)
-            {
-                SetSrpBatcherSetting(GraphicsSettings.defaultRenderPipeline, true);
-                return;
-            }
-
-            var initialQualityLevel = QualitySettings.GetQualityLevel();
-            QualitySettings.SetQualityLevel(qualityLevel);
-            SetSrpBatcherSetting(QualitySettings.renderPipeline, true);
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            RenderPipelineUtils.FixAssetSetting(issue, p => SetSrpBatcherSetting(p, true));
 #endif
         }
 
@@ -90,13 +60,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         private static ProjectIssue CreateSrpBatcherIssue(int qualityLevel, string name)
         {
-            string assetLocation = qualityLevel == -1
-                ? "Default Rendering Pipeline Asset"
-                : $"Rendering Pipeline Asset on Quality Level: '{QualitySettings.names[qualityLevel]}'";
-            return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SRPBatcherSettingDescriptor,
-                    name, assetLocation)
-                .WithCustomProperties(new object[] { qualityLevel })
-                .WithLocation(qualityLevel == -1 ? "Project/Graphics" : "Project/Quality");
+            return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, name, k_SRPBatcherSettingDescriptor);
         }
 
         internal static bool? GetSrpBatcherSetting(RenderPipelineAsset renderPipeline)
@@ -150,6 +114,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
             return null;
         }
+
 #endif
 #endif
     }

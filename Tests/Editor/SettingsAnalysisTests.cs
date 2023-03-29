@@ -15,6 +15,9 @@ using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 using FogMode = Unity.ProjectAuditor.Editor.Modules.FogMode;
+#if PACKAGE_URP
+using UnityEngine.Rendering.Universal;
+#endif
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -570,8 +573,6 @@ namespace Unity.ProjectAuditor.EditorTests
 #if UNITY_2019_3_OR_NEWER
             RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
             RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
-            bool? initialDefaultSetting = SrpAssetSettingsAnalyzer.GetSrpBatcherSetting(defaultRP);
-            bool? initialQualitySetting = SrpAssetSettingsAnalyzer.GetSrpBatcherSetting(qualityRP);
 
             if (defaultRP != null)
             {
@@ -582,22 +583,14 @@ namespace Unity.ProjectAuditor.EditorTests
             {
                 TestSrpBatchingSetting(qualityRP, QualitySettings.GetQualityLevel());
             }
-
-            if (initialDefaultSetting != null)
-            {
-                SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(defaultRP, initialDefaultSetting.Value);
-            }
-
-            if (initialQualitySetting != null)
-            {
-                SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(qualityRP, initialQualitySetting.Value);
-            }
 #endif
         }
 
 #if UNITY_2019_3_OR_NEWER
         private void TestSrpBatchingSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
+            bool? initialSetting = SrpAssetSettingsAnalyzer.GetSrpBatcherSetting(renderPipeline);
+
             SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, false);
             var issues = Analyze(IssueCategory.ProjectSetting,
                 i => i.descriptor.title.Equals("SRP Asset: SRP Batcher"));
@@ -611,6 +604,161 @@ namespace Unity.ProjectAuditor.EditorTests
                 i => i.descriptor.title.Equals("SRP Asset: SRP Batcher"));
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have enabled SRP Batcher.");
+
+            if (initialSetting != null)
+            {
+                SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, initialSetting.Value);
+            }
+        }
+
+#endif
+
+        [Test]
+#if !UNITY_2019_3_OR_NEWER || !PACKAGE_URP
+        [Ignore("This requires the URP package")]
+#endif
+        public void UrpAssetIsSpecifiedAnalysis_IsNotReportedOnceFixed()
+        {
+#if UNITY_2019_3_OR_NEWER && PACKAGE_URP
+            RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
+            RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
+
+            if (defaultRP != null || qualityRP != null)
+            {
+                GraphicsSettings.defaultRenderPipeline = null;
+                QualitySettings.renderPipeline = null;
+
+                const string urpAssetTitle = "URP: URP Asset is not specified";
+                var issues = Analyze(IssueCategory.ProjectSetting,
+                    i => i.descriptor.title.Equals(urpAssetTitle));
+                var urpIssue = issues.FirstOrDefault();
+                Assert.NotNull(urpIssue);
+
+                GraphicsSettings.defaultRenderPipeline = defaultRP;
+                QualitySettings.renderPipeline = qualityRP;
+
+                issues = Analyze(IssueCategory.ProjectSetting,
+                    i => i.descriptor.title.Equals(urpAssetTitle));
+                urpIssue = issues.FirstOrDefault();
+                Assert.Null(urpIssue);
+            }
+#endif
+        }
+
+        [Test]
+#if !UNITY_2019_3_OR_NEWER || !PACKAGE_URP || !(UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
+        [Ignore("This requires the URP package and a mobile platform.")]
+#endif
+        public void UrpCameraStopNaNAnalysis_IsNotReportedOnceFixed()
+        {
+#if UNITY_2019_3_OR_NEWER && PACKAGE_URP && (UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
+            var cameraData = RenderPipelineUtils
+                .GetAllComponents<UniversalAdditionalCameraData>().FirstOrDefault();
+            if (cameraData != null)
+            {
+                const string stopNaNTitle = "URP: Stop NaN property is enabled";
+                var initStopNaN = cameraData.stopNaN;
+
+                cameraData.stopNaN = true;
+                var issues = Analyze(IssueCategory.ProjectSetting,
+                    i => i.descriptor.title.Equals(stopNaNTitle));
+                var issuesLength = issues.Length;
+                Assert.IsTrue(issuesLength > 0);
+
+                cameraData.stopNaN = false;
+                issues = Analyze(IssueCategory.ProjectSetting,
+                    i => i.descriptor.title.Equals(stopNaNTitle));
+                var issuesLength2 = issues.Length;
+                Assert.IsTrue(issuesLength - issuesLength2 == 1);
+
+                cameraData.stopNaN = initStopNaN;
+            }
+#endif
+        }
+
+        [Test]
+#if !UNITY_2019_3_OR_NEWER || !PACKAGE_URP || !(UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
+        [Ignore("This requires the URP package and a mobile platform.")]
+#endif
+        public void UrpAssetHdrSettingsAnalysis_IsNotReportedOnceFixed()
+        {
+#if UNITY_2019_3_OR_NEWER && PACKAGE_URP && (UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
+            RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
+            RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
+            if (defaultRP != null)
+            {
+                TestUrpHdrSetting(defaultRP, -1);
+            }
+
+            if (qualityRP != null)
+            {
+                int qualityLevel = QualitySettings.GetQualityLevel();
+                TestUrpHdrSetting(qualityRP, qualityLevel);
+            }
+#endif
+        }
+
+        [Test]
+#if !UNITY_2019_3_OR_NEWER || !PACKAGE_URP || !(UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
+        [Ignore("This requires the URP package and a mobile platform.")]
+#endif
+        public void UrpAssetMsaaSettingsAnalysis_IsNotReportedOnceFixed()
+        {
+#if UNITY_2019_3_OR_NEWER && PACKAGE_URP && (UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
+            RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
+            RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
+            if (defaultRP != null)
+            {
+                TestUrpMsaaSetting(defaultRP, -1);
+            }
+
+            if (qualityRP != null)
+            {
+                int qualityLevel = QualitySettings.GetQualityLevel();
+                TestUrpMsaaSetting(qualityRP, qualityLevel);
+            }
+#endif
+        }
+
+#if UNITY_2019_3_OR_NEWER && PACKAGE_URP
+        private void TestUrpHdrSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
+        {
+            bool initialHdrSetting = UniversalRenderPipelineAnalyzer.GetHdrSetting(renderPipeline);
+
+            const string hdrTitle = "URP: HDR is enabled";
+            UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, true);
+            var issues = Analyze(IssueCategory.ProjectSetting,
+                i => i.descriptor.title.Equals(hdrTitle));
+            Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
+                $"Render Pipeline with quality level {qualityLevel} should have enabled HDR.");
+
+            UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, false);
+            issues = Analyze(IssueCategory.ProjectSetting,
+                i => i.descriptor.title.Equals(hdrTitle));
+            Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
+                $"Render Pipeline with quality level {qualityLevel} should have disabled HDR.");
+
+            UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, initialHdrSetting);
+        }
+
+        private void TestUrpMsaaSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
+        {
+            int initialMsaaSetting = UniversalRenderPipelineAnalyzer.GetMsaaSampleCountSetting(renderPipeline);
+
+            const string msaaTitle = "URP: MSAA is set to 4x or 8x";
+            UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 4);
+            var issues = Analyze(IssueCategory.ProjectSetting,
+                i => i.descriptor.title.Equals(msaaTitle));
+            Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
+                $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 4x.");
+
+            UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 2);
+            issues = Analyze(IssueCategory.ProjectSetting,
+                i => i.descriptor.title.Equals(msaaTitle));
+            Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
+                $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 2x.");
+
+            UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, initialMsaaSetting);
         }
 
 #endif

@@ -9,11 +9,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     class ShaderAnalyzer : IShaderModuleAnalyzer
     {
-
-        internal const string PAS0000 = nameof(PAS0000);
+        internal const string PAA2000 = nameof(PAA2000);
 
         internal static readonly Descriptor k_SrpBatcherDescriptor = new Descriptor(
-            PAS0000,
+            PAA2000,
             "Shader: Not compatible with SRP batcher",
             Area.CPU,
             "The shader is not compatible with SRP batcher.",
@@ -51,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
 #if UNITY_2019_3_OR_NEWER
         internal static bool IsSrpBatchingEnabled => GraphicsSettings.defaultRenderPipeline != null &&
-                                                     GraphicsSettings.useScriptableRenderPipelineBatching;
+        GraphicsSettings.useScriptableRenderPipelineBatching;
 #else
         internal static bool IsSrpBatchingEnabled => false;
 #endif
