@@ -13,6 +13,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         const int k_MaxEventsPerHour = 100;
         const int k_MaxEventItems = 1000;
         const int k_MaxIssuesInAnalyzeSummary = 10;
+        const int k_EventVersion = 2;
 
         const string k_VendorKey = "unity.projectauditor";
         const string k_EventTopicName = "projectAuditorUsage";
@@ -21,7 +22,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public static void EnableAnalytics()
         {
-            var result = EditorAnalytics.RegisterEventWithLimit(k_EventTopicName, k_MaxEventsPerHour, k_MaxEventItems, k_VendorKey);
+            var result = EditorAnalytics.RegisterEventWithLimit(
+                k_EventTopicName, k_MaxEventsPerHour, k_MaxEventItems, k_VendorKey, k_EventVersion);
+
             if (result == AnalyticsResult.Ok)
                 s_EnableAnalytics = true;
         }
@@ -309,7 +312,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var uiButtonEvent = new ProjectAuditorEvent(GetEventName(uiButton), analytic);
 
-                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
+                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
             }
             return false;
@@ -323,7 +326,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var uiButtonEvent = new ProjectAuditorEventWithKeyValues(GetEventName(uiButton), analytic, payload);
 
-                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
+                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
             }
             return false;
@@ -339,7 +342,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
-                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
+                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
             }
             return false;
@@ -355,7 +358,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
-                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
+                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
             }
             return false;
