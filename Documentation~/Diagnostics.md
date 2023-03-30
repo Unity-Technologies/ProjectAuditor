@@ -15,6 +15,7 @@ Note that there are different ranges within both Code and Settings diagnostic ID
   - `PAA0xxx`: texture related settings
   - `PAA1xxx`: mesh related settings
   - `PAA2xxx`: shader related settings
+  - `PAA3xxx`: file system related settings (Resources folders, StreamingAssets, Addressables, etc)
 
 # Settings Diagnostics
 This is a full list of all builtin settings diagnostics:
@@ -80,3 +81,5 @@ Builtin asset-specific diagnostics:
 | PAA1000 | Mesh: Read/Write enabled                       | Graphics  | Any                  |
 | PAA1001 | Mesh: Index Format is 32 bits                  | Graphics  | Any                  |
 | PAA2000 | Shader: Not compatible with SRP batcher        | Graphics  | Any                  |
+| PAA3000 | Files: Resources folder asset & dependencies   | BuildSize | Any                  |
+| PAA3001 | Files: StreamingAssets folder size             | BuildSize | Any                  |
