@@ -405,7 +405,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 onOpenIssue = EditorInterop.OpenPackage,
                 type = typeof(DiagnosticView),
-                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageVersion
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageDiagnostics
             });
 
             ViewDescriptor.Register(new ViewDescriptor
