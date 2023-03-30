@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
 #if UNITY_2019_3_OR_NEWER && PACKAGE_URP
             var renderPipeline = GraphicsSettings.currentRenderPipeline;
-            if (renderPipeline == null || renderPipeline is not UniversalRenderPipelineAsset)
+            if (renderPipeline == null || !(renderPipeline is UniversalRenderPipelineAsset))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_URPAssetDescriptor)
                     .WithLocation("Project/Graphics");
@@ -155,6 +155,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 urpAsset.msaaSampleCount = value;
             }
         }
+
 #endif
 #endif
     }
