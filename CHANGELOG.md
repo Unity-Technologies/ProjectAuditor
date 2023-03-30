@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 * Bumped analytics events version number from v1 to v2
+* Asset diagnostics IDs for Resources/StreamingAsset folder issues
 
 ## [0.9.4-preview] - 2023-03-27
 
