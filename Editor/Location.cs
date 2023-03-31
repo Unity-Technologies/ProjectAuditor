@@ -65,6 +65,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Checks whether the location is valid
         /// </summary>
+        /// <returns>True is the location is valid</returns>
         public bool IsValid()
         {
             return !string.IsNullOrEmpty(m_Path);
