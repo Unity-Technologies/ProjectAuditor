@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
@@ -74,7 +75,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public string method;
         public string value;
 
-        internal Descriptor(string id, string title, string[] areas, string description, string solution)
+        public Descriptor(string id, string title, string[] areas, string description, string solution)
         {
             this.id = id;
             this.title = title;

@@ -71,15 +71,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "'{0}' version '{1}' is a preview/experimental version"
         };
 
-        public override string name => "Packages";
+        internal override string name => "Packages";
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        internal override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_PackageLayout,
             k_PackageVersionLayout
         };
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var request = Client.List();
             while (!request.IsCompleted)

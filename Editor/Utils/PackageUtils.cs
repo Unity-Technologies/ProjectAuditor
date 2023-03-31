@@ -6,11 +6,11 @@ using Unity.ProjectAuditor.Editor;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    public static class PackageUtils
+    internal static class PackageUtils
     {
         const string k_UnknownVersion = "Unknown";
 
-        public static int CompareVersions(string lhs, string rhs)
+        internal static int CompareVersions(string lhs, string rhs)
         {
             var REGEX = "[^0-9.]";
             var leftStr = Regex.Replace(lhs, REGEX, "", RegexOptions.IgnoreCase);
@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return leftVersion.CompareTo(rightVersion);
         }
 
-        public static string GetPackageVersion(string packageName)
+        internal static string GetPackageVersion(string packageName)
         {
             var request = Client.List();
             while (!request.IsCompleted)
@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return packageInfo.version;
         }
 
-        public static string GetPackageRecommendedVersion(UnityEditor.PackageManager.PackageInfo package)
+        internal static string GetPackageRecommendedVersion(UnityEditor.PackageManager.PackageInfo package)
         {
 #if UNITY_2023_1_OR_NEWER
             return package.versions.recommended;
@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #endif
         }
 
-        public static bool IsPackageInstalled(string packageName)
+        internal static bool IsPackageInstalled(string packageName)
         {
             var request = Client.List();
             while (!request.IsCompleted)

@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     static class DescriptorLoader
     {
-        public static List<Descriptor> LoadFromJson(string path, string name)
+        internal static List<Descriptor> LoadFromJson(string path, string name)
         {
             var rawDescriptors = Json.FromFile<Descriptor>(Path.Combine(path, name + ".json"));
             var descriptors = new List<Descriptor>(rawDescriptors.Length);

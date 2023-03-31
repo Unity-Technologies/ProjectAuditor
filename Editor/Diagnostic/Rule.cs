@@ -3,12 +3,12 @@ using System;
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     [Serializable]
-    public class Rule : IEquatable<Rule>
+    internal class Rule : IEquatable<Rule>
     {
-        public Severity severity;
-        public string filter;
+        internal Severity severity;
+        internal string filter;
 
-        public string id;
+        internal string id;
 
         public bool Equals(Rule other)
         {

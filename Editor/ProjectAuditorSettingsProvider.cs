@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor
             RefreshAssets();
         }
 
-        public void RefreshAssets()
+        internal void RefreshAssets()
         {
             m_CurrentSettings = m_DefaultSettings;
 
@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor
         /// Adds a settings asset that was stored in the past or just created by the user.
         /// </summary>
         /// <param name="settingsAsset">A ScriptableObject asset of type <see cref="ProjectAuditorSettings"/> to be used as the settings to tweak analyzer values/limits.</param>
-        public void AddSettingsFromAsset(ProjectAuditorSettings settingsAsset)
+        internal void AddSettingsFromAsset(ProjectAuditorSettings settingsAsset)
         {
             if (!m_SettingsAssets.Contains(settingsAsset))
             {

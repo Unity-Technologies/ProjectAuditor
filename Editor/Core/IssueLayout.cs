@@ -2,13 +2,13 @@ using System;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    public class IssueLayout
+    internal class IssueLayout
     {
-        public IssueCategory category;
-        public PropertyDefinition[] properties;
-        public bool hierarchy = false;
+        internal IssueCategory category;
+        internal PropertyDefinition[] properties;
+        internal bool hierarchy = false;
 
-        public int defaultGroupPropertyIndex
+        internal int defaultGroupPropertyIndex
         {
             get
             {

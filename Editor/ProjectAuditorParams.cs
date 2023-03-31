@@ -5,48 +5,48 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class ProjectAuditorParams
+    internal class ProjectAuditorParams
     {
         /// <summary>
         /// Categories to include in the audit. If null, all categories will be included.
         /// </summary>
-        public IssueCategory[] categories;
+        internal IssueCategory[] categories;
 
         /// <summary>
         /// Analysis platform. The default platform is the currently active build target.
         /// </summary>
-        public BuildTarget platform;
+        internal BuildTarget platform;
 
         /// <summary>
         /// Assemblies to analyze. If null, all compiled assemblies will be analyzed.
         /// </summary>
-        public string[] assemblyNames;
+        internal string[] assemblyNames;
 
         /// <summary>
         /// Code optimization mode. The default is <see cref="CodeOptimization.Release"/>.
         /// </summary>
-        public CodeOptimization codeOptimization;
+        internal CodeOptimization codeOptimization;
 
         /// <summary>
         /// Reports a batch of new issues. Note that this be called multiple times per analysis.
         /// </summary>
-        public Action<IEnumerable<ProjectIssue>> onIncomingIssues;
+        internal Action<IEnumerable<ProjectIssue>> onIncomingIssues;
 
         /// <summary>
         /// Notifies that all modules completed their analysis.
         /// </summary>
-        public Action<ProjectReport> onCompleted;
+        internal Action<ProjectReport> onCompleted;
 
         /// <summary>
         /// Notifies that a module completed its analysis.
         /// </summary>
-        public Action onModuleCompleted;
+        internal Action onModuleCompleted;
 
-        public ProjectReport existingReport;
+        internal ProjectReport existingReport;
 
-        public ProjectAuditorSettings settings;
+        internal ProjectAuditorSettings settings;
 
-        public ProjectAuditorParams()
+        internal ProjectAuditorParams()
         {
             platform = EditorUserBuildSettings.activeBuildTarget;
             codeOptimization = CodeOptimization.Release;

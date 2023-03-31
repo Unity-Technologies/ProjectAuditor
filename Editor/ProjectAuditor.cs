@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor
         readonly List<ProjectAuditorModule> m_Modules = new List<ProjectAuditorModule>();
         ProjectAuditorConfig m_Config;
 
-        public ProjectAuditorConfig config => m_Config;
+        internal ProjectAuditorConfig config => m_Config;
 
         IProjectAuditorSettingsProvider m_DefaultSettingsProvider;
 
@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor
         /// ProjectAuditor constructor
         /// </summary>
         /// <param name="projectAuditorConfig"> ProjectAuditor Configuration object</param>
-        public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
+        internal ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
         {
             m_Config = projectAuditorConfig;
             InitModules();
@@ -92,7 +92,7 @@ namespace Unity.ProjectAuditor.Editor
         /// ProjectAuditor constructor
         /// </summary>
         /// <param name="assetPath"> Path to the ProjectAuditorConfig asset</param>
-        public ProjectAuditor(string assetPath)
+        internal ProjectAuditor(string assetPath)
         {
             InitAsset(assetPath);
             InitModules();
@@ -127,7 +127,7 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Project Auditor [{instance.name}]: " + e.Message);
+                    Debug.LogError($"Project Auditor [{instance.name}]: {e.Message} {e.StackTrace}");
                     continue;
                 }
                 m_Modules.Add(instance);
@@ -146,7 +146,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="progress"> Progress bar, if applicable </param>
         /// <param name="projectAuditorParams"> Parameters to control the audit process </param>
         /// <returns> Generated report </returns>
-        public ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        internal ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             ProjectReport projectReport = null;
 
@@ -159,7 +159,7 @@ namespace Unity.ProjectAuditor.Editor
             return projectReport;
         }
 
-        public ProjectReport Audit(IProgress progress = null)
+        internal ProjectReport Audit(IProgress progress = null)
         {
             return Audit(new ProjectAuditorParams(), progress);
         }
@@ -169,7 +169,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="projectAuditorParams"> Parameters to control the audit process </param>
         /// <param name="progress"> Progress bar, if applicable </param>
-        public void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        internal void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.SelectMany(GetModules).Distinct() : m_Modules.Where(m => m.isEnabledByDefault).ToArray();
             var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.platform)).ToArray();
@@ -263,12 +263,12 @@ namespace Unity.ProjectAuditor.Editor
             return m_Modules.Any(a => a.isSupported && a.supportedLayouts.FirstOrDefault(l => l.category == category) != null);
         }
 
-        public IssueCategory[] GetCategories()
+        internal IssueCategory[] GetCategories()
         {
             return m_Modules.Where(module => module.isSupported).SelectMany(m => m.categories).ToArray();
         }
 
-        public IssueLayout GetLayout(IssueCategory category)
+        internal IssueLayout GetLayout(IssueCategory category)
         {
             var layouts = m_Modules.Where(a => a.isSupported).SelectMany(module => module.supportedLayouts).Where(l => l.category == category);
             return layouts.FirstOrDefault();
@@ -278,14 +278,14 @@ namespace Unity.ProjectAuditor.Editor
         /// Get or Register a category by name. If the name argument does match an existing category, a new category is registered.
         /// </summary>
         /// <returns> Returns the category enum</returns>
-        public static IssueCategory GetOrRegisterCategory(string name)
+        internal static IssueCategory GetOrRegisterCategory(string name)
         {
             if (!s_CustomCategories.ContainsKey(name))
                 s_CustomCategories.Add(name, IssueCategory.FirstCustomCategory + s_CustomCategories.Count);
             return s_CustomCategories[name];
         }
 
-        public static string GetCategoryName(IssueCategory category)
+        internal static string GetCategoryName(IssueCategory category)
         {
             if (category < IssueCategory.FirstCustomCategory)
                 return category.ToString();
@@ -303,7 +303,7 @@ namespace Unity.ProjectAuditor.Editor
         /// Number of available built-in and registered categories
         /// </summary>
         /// <returns> Returns the number of available categories</returns>
-        public static int NumCategories()
+        internal static int NumCategories()
         {
             return (int)IssueCategory.FirstCustomCategory + s_CustomCategories.Count;
         }

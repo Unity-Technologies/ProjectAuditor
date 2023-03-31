@@ -1,16 +1,18 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEditor;
 
+[assembly: InternalsVisibleTo("Unity.ProjectAuditor.Editor.UI.Framework")]
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    public static class Formatting
+    internal static class Formatting
     {
         /// <summary>
         /// Formats a given DateTime object as a string in the format "yyyy/MM/dd HH:mm".
         /// </summary>
         /// <param name="dateTime">The DateTime object to format.</param>
         /// <returns>A string representation of the input DateTime object in the specified format.</returns>
-        public static string FormatDateTime(DateTime dateTime)
+        internal static string FormatDateTime(DateTime dateTime)
         {
             return dateTime.ToString("yyyy/MM/dd HH:mm");
         }
@@ -20,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// </summary>
         /// <param name="timeSpan">The TimeSpan object to format.</param>
         /// <returns>A string representation of the input value.</returns>
-        public static string FormatDuration(TimeSpan timeSpan)
+        internal static string FormatDuration(TimeSpan timeSpan)
         {
             return timeSpan.Hours + ":" + timeSpan.Minutes.ToString("D2") + ":" + timeSpan.Seconds.ToString("D2");
         }
@@ -30,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// </summary>
         /// <param name="timeSpan">The TimeSpan object to format.</param>
         /// <returns>A string representation of the input TimeSpan object.</returns>
-        public static string FormatTime(TimeSpan timeSpan)
+        internal static string FormatTime(TimeSpan timeSpan)
         {
             var timeMs = timeSpan.TotalMilliseconds;
             if (timeMs < 1000)
@@ -45,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// </summary>
         /// <param name="timeMs">The time value to format, in milliseconds.</param>
         /// <returns>A string representation of the input float value.</returns>
-        public static string FormatTime(float timeMs)
+        internal static string FormatTime(float timeMs)
         {
             if (float.IsNaN(timeMs))
                 return "NaN";
@@ -57,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// </summary>
         /// <param name="number">The decimal number to format.</param>
         /// <returns>A string representation of the decimal number as a percentage.</returns>
-        public static string FormatPercentage(float number)
+        internal static string FormatPercentage(float number)
         {
             return $"{number:P1}";
         }
@@ -67,24 +69,24 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// </summary>
         /// <param name="size">Size value to format.</param>
         /// <returns>A string representation of the input value as a size.</returns>
-        public static string FormatSize(ulong size)
+        internal static string FormatSize(ulong size)
         {
             return EditorUtility.FormatBytes((long)size);
         }
 
         static readonly string k_StringSeparator = ", ";
 
-        public static string CombineStrings(string[] strings, string separator = null)
+        internal static string CombineStrings(string[] strings, string separator = null)
         {
             return string.Join(separator ?? k_StringSeparator, strings);
         }
 
-        public static string[] SplitStrings(string combinedString, string separator = null)
+        internal static string[] SplitStrings(string combinedString, string separator = null)
         {
             return combinedString.Split(new[] {separator ?? k_StringSeparator}, StringSplitOptions.None);
         }
 
-        public static string ReplaceStringSeparators(string combinedString, string separator)
+        internal static string ReplaceStringSeparators(string combinedString, string separator)
         {
             return combinedString.Replace(k_StringSeparator, separator);
         }

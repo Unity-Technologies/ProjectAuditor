@@ -38,19 +38,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         ProjectAuditorConfig m_Config;
 
-        public override string name => "MetaData";
+        internal override string name => "MetaData";
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        internal override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_IssueLayout
         };
 
-        public override void Initialize(ProjectAuditorConfig config)
+        internal override void Initialize(ProjectAuditorConfig config)
         {
             m_Config = config;
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var issues = new List<ProjectIssue>();
             NewMetaData(k_KeyDateAndTime, Formatting.FormatDateTime(DateTime.Now), issues);

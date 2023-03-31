@@ -3,11 +3,11 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    public class AnalysisPlatformAttribute : Attribute
+    internal class AnalysisPlatformAttribute : Attribute
     {
-        public BuildTarget platform { get;}
+        internal BuildTarget platform { get;}
 
-        public AnalysisPlatformAttribute(BuildTarget platform)
+        internal AnalysisPlatformAttribute(BuildTarget platform)
         {
             this.platform = platform;
         }

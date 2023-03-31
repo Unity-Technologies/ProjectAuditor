@@ -9,10 +9,10 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
     internal static class MonoCecilHelper
     {
         // Some sequence points do not map to any source document line. Such sequence points have a line number value equal to this constant (0xfeefee)
-        public const int HiddenLine = 16707566;
+        internal const int HiddenLine = 16707566;
 
         // for reference https://github.com/Unity-Technologies/UnityCsReference/blob/master/Editor/Mono/MonoCecil/MonoCecilHelper.cs
-        public static IEnumerable<TypeDefinition> AggregateAllTypeDefinitions(IEnumerable<TypeDefinition> types)
+        internal static IEnumerable<TypeDefinition> AggregateAllTypeDefinitions(IEnumerable<TypeDefinition> types)
         {
             var typeDefs = types.ToList();
             foreach (var typeDefinition in types)
@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             return typeDefs;
         }
 
-        public static bool IsOrInheritedFrom(TypeReference typeReference, string typeName)
+        internal static bool IsOrInheritedFrom(TypeReference typeReference, string typeName)
         {
             try
             {

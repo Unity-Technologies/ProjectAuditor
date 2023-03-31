@@ -57,7 +57,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             return ProjectIssue.Create(IssueCategory.Code, k_Descriptor, methodDefinition.Name);
         }
 
-        public static Descriptor GetDescriptor()
+        internal static Descriptor GetDescriptor()
         {
             return k_Descriptor;
         }

@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
 
+[assembly:InternalsVisibleTo("Unity.ProjectAuditor.Editor.Tests.Common")]
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
@@ -43,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField] string[] m_CustomProperties;
         [SerializeField] Severity m_Severity;
 
-        internal ProjectIssue(IssueCategory category, Descriptor descriptor, params object[] args)
+        public ProjectIssue(IssueCategory category, Descriptor descriptor, params object[] args)
         {
             m_Descriptor = descriptor;
             m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
@@ -51,7 +53,7 @@ namespace Unity.ProjectAuditor.Editor
             m_Severity = descriptor.defaultSeverity;
         }
 
-        internal ProjectIssue(IssueCategory category, string description)
+        public ProjectIssue(IssueCategory category, string description)
         {
             m_Description = description;
             m_Category = category;
@@ -63,13 +65,13 @@ namespace Unity.ProjectAuditor.Editor
         public string[] customProperties
         {
             get => m_CustomProperties;
-            internal set => m_CustomProperties = value;
+            /*public*/ set => m_CustomProperties = value;
         }
 
         public string description
         {
             get => m_Description;
-            internal set => m_Description = value;
+            /*public*/  set => m_Description = value;
         }
 
         /// <summary>
@@ -85,7 +87,7 @@ namespace Unity.ProjectAuditor.Editor
         public DependencyNode dependencies
         {
             get => m_Dependencies;
-            internal set => m_Dependencies = value;
+            /*public*/  set => m_Dependencies = value;
         }
 
         public int depth = 0;
@@ -102,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor
         public Location location
         {
             get => m_Location;
-            internal set => m_Location = value;
+            /*public*/  set => m_Location = value;
         }
 
         /// <summary>
@@ -159,7 +161,7 @@ namespace Unity.ProjectAuditor.Editor
             return GetCustomProperty(Convert.ToInt32(propertyEnum));
         }
 
-        internal string GetCustomProperty(int index)
+        public string GetCustomProperty(int index)
         {
             if (index >= m_CustomProperties.Length)
                 return string.Empty; // fail gracefully if layout changed

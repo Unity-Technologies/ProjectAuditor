@@ -4,15 +4,15 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public static class ChartUtil
+    internal static class ChartUtil
     {
-        public struct Element
+        internal struct Element
         {
-            public string Label;
-            public float Value;
-            public Color Color;
+            internal string Label;
+            internal float Value;
+            internal Color Color;
 
-            public Element(string label, float value, Color color)
+            internal Element(string label, float value, Color color)
             {
                 Label = label;
                 Value = value;
@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             fixedHeight = k_RowSize
         };
 
-        public static void DrawHorizontalStackedBar(string title, Element[] inValues, string labelFormat = "{0}", string numberFormat = "#")
+        internal static void DrawHorizontalStackedBar(string title, Element[] inValues, string labelFormat = "{0}", string numberFormat = "#")
         {
             EditorGUILayout.BeginVertical();
 

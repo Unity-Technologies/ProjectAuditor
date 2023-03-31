@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public class ProgressBar : IProgress
+    internal class ProgressBar : IProgress
     {
         int m_Current;
         string m_Description;

@@ -92,24 +92,24 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             return assemblyPaths.Select(PathUtils.ReplaceSeparators);
         }
 
-        public static IEnumerable<string> GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes flags)
+        internal static IEnumerable<string> GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes flags)
         {
             foreach (var dir in GetPrecompiledAssemblyPaths(flags).Select(Path.GetDirectoryName).Distinct())
                 yield return dir;
         }
 
-        public static bool IsUnityEngineAssembly(string assemblyName)
+        internal static bool IsUnityEngineAssembly(string assemblyName)
         {
             return GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.UnityEngine).FirstOrDefault(a => a.Contains(assemblyName)) != null;
         }
 
-        public static bool IsReadOnlyAssembly(string assemblyName)
+        internal static bool IsReadOnlyAssembly(string assemblyName)
         {
             var info = GetAssemblyInfoFromAssemblyName(assemblyName);
             return info.packageReadOnly;
         }
 
-        public static AssemblyInfo GetAssemblyInfoFromAssemblyPath(string assemblyPath)
+        internal static AssemblyInfo GetAssemblyInfoFromAssemblyPath(string assemblyPath)
         {
             var info = GetAssemblyInfoFromAssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
             info.path = assemblyPath;
@@ -161,7 +161,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         }
 
         // Known issue: packageResolvedPath is not available on 2018 so the path of package assets will remain Library/PackageCache/<package name>@version/...
-        public static string ResolveAssetPath(AssemblyInfo assemblyInfo, string path)
+        internal static string ResolveAssetPath(AssemblyInfo assemblyInfo, string path)
         {
             var fullPath = PathUtils.GetFullPath(path);
             // if it's a package, resolve from absolute+physical to logical+relative path

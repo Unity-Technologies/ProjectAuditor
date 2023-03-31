@@ -8,13 +8,13 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     public class CallTreeNode : DependencyNode
     {
-        internal readonly string m_Name;
+        public readonly string m_Name;
 
         public readonly string assemblyName;
         public readonly string methodName;
         public readonly string typeName;
 
-        internal CallTreeNode(MethodReference methodReference, CallTreeNode caller = null)
+        public CallTreeNode(MethodReference methodReference, CallTreeNode caller = null)
         {
             m_Name = methodReference.FullName;
             methodName = "(anonymous)"; // default value

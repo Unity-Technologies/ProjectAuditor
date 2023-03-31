@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public interface IProjectAuditorSettingsProvider
+    internal interface IProjectAuditorSettingsProvider
     {
         void Initialize();
 

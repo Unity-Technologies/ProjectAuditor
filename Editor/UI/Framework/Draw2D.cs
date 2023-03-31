@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public class Draw2D
+    internal class Draw2D
     {
-        public enum Origin
+        internal enum Origin
         {
             TopLeft,
             BottomLeft
@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         Vector4 m_ClipRect;
         bool m_ClipRectEnabled = false;
 
-        public Draw2D(string shaderName)
+        internal Draw2D(string shaderName)
         {
             m_ShaderName = shaderName;
             CheckAndSetupMaterial();
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return m_Material != null;
         }
 
-        public void OnGUI()
+        internal void OnGUI()
         {
             if (m_GLStyle == null)
             {
@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void SetClipRect(Rect clipRect)
+        internal void SetClipRect(Rect clipRect)
         {
             m_ClipRect = new Vector4(clipRect.x, clipRect.y, clipRect.x + clipRect.width, clipRect.y + clipRect.height);
             m_ClipRectEnabled = true;
@@ -74,7 +74,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Material.SetVector("_ClipRect", m_ClipRect);
         }
 
-        public void ClearClipRect()
+        internal void ClearClipRect()
         {
             m_ClipRectEnabled = false;
 
@@ -85,12 +85,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Material.SetVector("_ClipRect", m_ClipRect);
         }
 
-        public Rect GetClipRect()
+        internal Rect GetClipRect()
         {
             return new Rect(m_ClipRect.x, m_ClipRect.y, m_ClipRect.z - m_ClipRect.x, m_ClipRect.w - m_ClipRect.y);
         }
 
-        public bool DrawStart(Rect r, Origin origin = Origin.TopLeft)
+        internal bool DrawStart(Rect r, Origin origin = Origin.TopLeft)
         {
             if (Event.current.type != EventType.Repaint)
                 return false;
@@ -105,13 +105,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return true;
         }
 
-        public bool DrawStart(float w, float h, Origin origin = Origin.TopLeft, GUIStyle style = null)
+        internal bool DrawStart(float w, float h, Origin origin = Origin.TopLeft, GUIStyle style = null)
         {
             Rect r = GUILayoutUtility.GetRect(w, h, style == null ? m_GLStyle : style, GUILayout.ExpandWidth(false), GUILayout.ExpandHeight(false));
             return DrawStart(r, origin);
         }
 
-        public void DrawEnd()
+        internal void DrawEnd()
         {
         }
 
@@ -130,7 +130,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void DrawFilledBox(float x, float y, float w, float h, Color col)
+        internal void DrawFilledBox(float x, float y, float w, float h, Color col)
         {
             float x2 = x + w;
             float y2 = y + h;
@@ -160,12 +160,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void DrawFilledBox(float x, float y, float w, float h, float r, float g, float b)
+        internal void DrawFilledBox(float x, float y, float w, float h, float r, float g, float b)
         {
             DrawFilledBox(x, y, w, h, new Color(r, g, b));
         }
 
-        public void DrawLine(float x, float y, float x2, float y2, Color col)
+        internal void DrawLine(float x, float y, float x2, float y2, Color col)
         {
             Translate(ref x, ref y);
             Translate(ref x2, ref y2);
@@ -177,12 +177,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             GL.End();
         }
 
-        public void DrawLine(float x, float y, float x2, float y2, float r, float g, float b)
+        internal void DrawLine(float x, float y, float x2, float y2, float r, float g, float b)
         {
             DrawLine(x, y, x2, y2, new Color(r, g, b));
         }
 
-        public void DrawBox(float x, float y, float w, float h, Color col)
+        internal void DrawBox(float x, float y, float w, float h, Color col)
         {
             float x2 = x + w;
             float y2 = y + h;
@@ -200,7 +200,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             GL.End();
         }
 
-        public void DrawBox(float x, float y, float w, float h, float r, float g, float b)
+        internal void DrawBox(float x, float y, float w, float h, float r, float g, float b)
         {
             DrawBox(x, y, w, h, new Color(r, g, b));
         }

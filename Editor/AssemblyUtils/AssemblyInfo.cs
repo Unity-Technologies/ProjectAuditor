@@ -5,15 +5,15 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
     class AssemblyInfo
     {
-        public const string DefaultAssemblyFileName = "Assembly-CSharp.dll";
-        public static string DefaultAssemblyName => Path.GetFileNameWithoutExtension(DefaultAssemblyFileName);
+        internal const string DefaultAssemblyFileName = "Assembly-CSharp.dll";
+        internal static string DefaultAssemblyName => Path.GetFileNameWithoutExtension(DefaultAssemblyFileName);
 
-        public string name;            // assembly name without extension
-        public string path;            // absolute path
-        public string asmDefPath;
-        public string relativePath;
+        internal string name;            // assembly name without extension
+        internal string path;            // absolute path
+        internal string asmDefPath;
+        internal string relativePath;
 
-        public bool packageReadOnly;
-        public string packageResolvedPath;
+        internal bool packageReadOnly;
+        internal string packageResolvedPath;
     }
 }

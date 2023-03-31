@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public interface ITextureModuleAnalyzer : IModuleAnalyzer
+    internal interface ITextureModuleAnalyzer : IModuleAnalyzer
     {
         IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams,
             TextureImporter textureImporter,
