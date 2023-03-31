@@ -13,6 +13,9 @@ namespace Unity.ProjectAuditor.Editor
         ProjectAuditorSettings m_CurrentSettings;
         ProjectAuditorSettings m_DefaultSettings;
 
+        /// <summary>
+        /// Initializes default ProjectAuditorSettings objects, and loads any others that are found in the project
+        /// </summary>
         public void Initialize()
         {
             m_DefaultSettings = ScriptableObject.CreateInstance<ProjectAuditorSettings>();
@@ -21,6 +24,9 @@ namespace Unity.ProjectAuditor.Editor
             RefreshAssets();
         }
 
+        /// <summary>
+        /// Loads (or reloads) all ProjectAuditorSettings objects in the project
+        /// </summary>
         internal void RefreshAssets()
         {
             m_CurrentSettings = m_DefaultSettings;
@@ -52,8 +58,9 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Returns <see cref="ProjectAuditorSettings"/> that were last selected, initially the default settings.
+        /// Gets <see cref="ProjectAuditorSettings"/> that were last selected, initially the default settings.
         /// </summary>
+        /// <returns>A ProjectAuditorSettings</returns>
         public ProjectAuditorSettings GetCurrentSettings()
         {
             if (m_CurrentSettings == null)
@@ -65,6 +72,10 @@ namespace Unity.ProjectAuditor.Editor
             return m_CurrentSettings;
         }
 
+        /// <summary>
+        /// Gets all ProjectAuditorSettings objects
+        /// </summary>
+        /// <returns>An IEnumerable<ProjectAuditorSettings> of all the settings objects found in the project</returns>
         public IEnumerable<ProjectAuditorSettings> GetSettings()
         {
             RefreshAssets();
