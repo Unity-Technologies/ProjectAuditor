@@ -149,7 +149,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="projectAuditorParams"> Parameters to control the audit process </param>
         /// <param name="progress"> Progress bar, if applicable </param>
         /// <returns> Generated report </returns>
-        public ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        internal ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             ProjectReport projectReport = null;
 
@@ -167,7 +167,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="progress"> Progress bar, if applicable </param>
         /// <returns> Generated report </returns>
-        public ProjectReport Audit(IProgress progress = null)
+        internal ProjectReport Audit(IProgress progress = null)
         {
             return Audit(new ProjectAuditorParams(), progress);
         }
@@ -177,7 +177,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="projectAuditorParams"> Parameters to control the audit process </param>
         /// <param name="progress"> Progress bar, if applicable </param>
-        public void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        internal void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.SelectMany(GetModules).Distinct() : m_Modules.Where(m => m.isEnabledByDefault).ToArray();
             var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.platform)).ToArray();
