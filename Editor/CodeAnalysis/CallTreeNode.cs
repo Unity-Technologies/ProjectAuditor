@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
-    public class CallTreeNode : DependencyNode
+    internal class CallTreeNode : DependencyNode
     {
         public readonly string m_Name;
 

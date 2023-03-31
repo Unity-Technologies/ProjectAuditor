@@ -20,6 +20,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="category"> Issue category </param>
         /// <param name="descriptor"> Diagnostic descriptor </param>
         /// <param name="messageArgs"> Arguments to be used in the message formatting</param>
+        /// <returns>The IssueBuilder, constructed with the specified category, descriptor and message arguments</returns>
         public static IssueBuilder Create(IssueCategory category, Descriptor descriptor, params object[] messageArgs)
         {
             return new IssueBuilder(category, descriptor, messageArgs);
@@ -30,6 +31,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="category"> Issue category </param>
         /// <param name="description"> User-friendly description </param>
+        /// /// <returns>The IssueBuilder, constructed with the specified category and description string</returns>
         public static IssueBuilder Create(IssueCategory category, string description)
         {
             return new IssueBuilder(category, description);
@@ -60,14 +62,23 @@ namespace Unity.ProjectAuditor.Editor
             m_Severity = Severity.Default;
         }
 
+        /// <summary>
+        /// This issue's category
+        /// </summary>
         public IssueCategory category => m_Category;
 
+        /// <summary>
+        /// Custom properties
+        /// </summary>
         public string[] customProperties
         {
             get => m_CustomProperties;
             /*public*/ set => m_CustomProperties = value;
         }
 
+        /// <summary>
+        /// Project issue description
+        /// </summary>
         public string description
         {
             get => m_Description;
@@ -84,18 +95,33 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public bool wasFixed = false;
 
+        /// <summary>
+        /// Dependencies of this project issue
+        /// </summary>
         public DependencyNode dependencies
         {
             get => m_Dependencies;
             /*public*/  set => m_Dependencies = value;
         }
 
+        /// <summary>
+        /// Depth in display tree. 0 by default.
+        /// </summary>
         public int depth = 0;
 
+        /// <summary>
+        /// Name of the file that contains this issue
+        /// </summary>
         public string filename => m_Location == null ? string.Empty : m_Location.Filename;
 
+        /// <summary>
+        /// Relative path of the file that contains this issue
+        /// </summary>
         public string relativePath => m_Location == null ? string.Empty : m_Location.Path;
 
+        /// <summary>
+        /// Line in the file that contains this issue
+        /// </summary>
         public int line => m_Location == null ? 0 : m_Location.Line;
 
         /// <summary>
@@ -136,38 +162,74 @@ namespace Unity.ProjectAuditor.Editor
             set => m_Severity = value;
         }
 
+        /// <summary>
+        /// Checks whether this issue is a diagnostic
+        /// </summary>
+        /// <returns>True if the issue's descriptor is not null and is valid. Otherwise, returns false.</returns>
         public bool IsDiagnostic()
         {
             return descriptor != null && descriptor.IsValid();
         }
 
+        /// <summary>
+        /// Checks whether this issue is major or critical
+        /// </summary>
+        /// <returns>True of the issue's severity is Major or Critical. Otherwise, returns false.</returns>
         public bool IsMajorOrCritical()
         {
             return severity == Severity.Critical || severity == Severity.Major;
         }
 
+        /// <summary>
+        /// Checks whether this issue is valid
+        /// </summary>
+        /// <returns>True if the issue has a valid description string. Otherwise, returns false.</returns>
         public bool IsValid()
         {
             return description != null;
         }
 
+        /// <summary>
+        /// Gets the number of custom properties this issue has
+        /// </summary>
+        /// <returns>The number of custom property strings</returns>
         public int GetNumCustomProperties()
         {
             return m_CustomProperties != null ? m_CustomProperties.Length : 0;
         }
 
+        /// <summary>
+        /// Get a custom property string given an enum
+        /// </summary>
+        /// <param name="propertyEnum">Enum value indicating a property.</param>
+        /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
+        /// <returns>Property name string</returns>
         public string GetCustomProperty<T>(T propertyEnum) where T : struct
         {
             return GetCustomProperty(Convert.ToInt32(propertyEnum));
         }
 
-        public string GetCustomProperty(int index)
+        /// <summary>
+        /// Get a custom property string given an index into the custom properties array
+        /// </summary>
+        /// <param name="index">custom property index</param>
+        /// <returns>Property name string. Returns empty string if the custom properties array is null or empty or if the index is out of range.</returns>
+        internal string GetCustomProperty(int index)
         {
-            if (index >= m_CustomProperties.Length)
+            if (m_CustomProperties == null ||
+                m_CustomProperties.Length == 0 ||
+                index < 0 ||
+                index >= m_CustomProperties.Length)
                 return string.Empty; // fail gracefully if layout changed
-            return m_CustomProperties != null && m_CustomProperties.Length > 0 ? m_CustomProperties[index] : string.Empty;
+            return m_CustomProperties[index];
         }
 
+        /// <summary>
+        /// Check whether a custom property is a boolean type and whether its value is true
+        /// </summary>
+        /// <param name="propertyEnum">Enum value indicating a property.</param>
+        /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
+        /// <returns>Returns the property's value if the property is valid and if the value type is boolean. Otherwise, returns false.</returns>
         public bool GetCustomPropertyBool<T>(T propertyEnum) where T : struct
         {
             var valueAsString = GetCustomProperty(propertyEnum);
@@ -177,6 +239,12 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
+        /// <summary>
+        /// Check whether a custom property is an integer type and return its value
+        /// </summary>
+        /// <param name="propertyEnum">Enum value indicating a property.</param>
+        /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
+        /// <returns>Returns the property's value if the property is valid and if the value is an integer type. Otherwise, returns 0.</returns>
         public int GetCustomPropertyInt32<T>(T propertyEnum) where T : struct
         {
             var valueAsString = GetCustomProperty(propertyEnum);
@@ -186,6 +254,12 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
+        /// <summary>
+        /// Check whether a custom property is a long type and return its value
+        /// </summary>
+        /// <param name="propertyEnum">Enum value indicating a property.</param>
+        /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
+        /// <returns>Returns the property's value if the property is valid and if the value is a long type. Otherwise, returns 0.</returns>
         public long GetCustomPropertyInt64<T>(T propertyEnum) where T : struct
         {
             var valueAsString = GetCustomProperty(propertyEnum);
@@ -195,6 +269,12 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
+        /// <summary>
+        /// Check whether a custom property is a ulong type and return its value
+        /// </summary>
+        /// <param name="propertyEnum">Enum value indicating a property.</param>
+        /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
+        /// <returns>Returns the property's value if the property is valid and if the value is a ulong type. Otherwise, returns 0.</returns>
         public ulong GetCustomPropertyUInt64<T>(T propertyEnum) where T : struct
         {
             var valueAsString = GetCustomProperty(propertyEnum);
@@ -204,18 +284,36 @@ namespace Unity.ProjectAuditor.Editor
             return value;
         }
 
+        /// <summary>
+        /// Check whether a custom property is a float type and return its value
+        /// </summary>
+        /// <param name="propertyEnum">Enum value indicating a property.</param>
+        /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
+        /// <returns>Returns the property's value if the property is valid and if the value is a float type. Otherwise, returns 0.0f.</returns>
         public float GetCustomPropertyFloat<T>(T propertyEnum) where T : struct
         {
             float value;
             return float.TryParse(GetCustomProperty(propertyEnum), out value) ? value : 0.0f;
         }
 
+        /// <summary>
+        /// Check whether a custom property is a double type and return its value
+        /// </summary>
+        /// <param name="propertyEnum">Enum value indicating a property.</param>
+        /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
+        /// <returns>Returns the property's value if the property is valid and if the value is a double type. Otherwise, returns 0.0.</returns>
         public double GetCustomPropertyDouble<T>(T propertyEnum) where T : struct
         {
             double value;
             return double.TryParse(GetCustomProperty(propertyEnum), out value) ? value : 0.0;
         }
 
+        /// <summary>
+        /// Set a custom property
+        /// </summary>
+        /// /// <param name="propertyEnum">Enum value indicating a property.</param>
+        /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
+        /// <param name="property">An object containing a value for the property</param>
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct
         {
             m_CustomProperties[Convert.ToUInt32(propertyEnum)] = property.ToString();

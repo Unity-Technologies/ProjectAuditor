@@ -63,6 +63,9 @@ namespace Unity.ProjectAuditor.Editor
         readonly List<ProjectAuditorModule> m_Modules = new List<ProjectAuditorModule>();
         ProjectAuditorConfig m_Config;
 
+        /// <summary>
+        /// A ProjectAuditorConfig object to configure how analysis is performed
+        /// </summary>
         internal ProjectAuditorConfig config => m_Config;
 
         IProjectAuditorSettingsProvider m_DefaultSettingsProvider;
@@ -81,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor
         /// ProjectAuditor constructor
         /// </summary>
         /// <param name="projectAuditorConfig"> ProjectAuditor Configuration object</param>
-        internal ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
+        public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
         {
             m_Config = projectAuditorConfig;
             InitModules();
@@ -92,7 +95,7 @@ namespace Unity.ProjectAuditor.Editor
         /// ProjectAuditor constructor
         /// </summary>
         /// <param name="assetPath"> Path to the ProjectAuditorConfig asset</param>
-        internal ProjectAuditor(string assetPath)
+        public ProjectAuditor(string assetPath)
         {
             InitAsset(assetPath);
             InitModules();
@@ -143,10 +146,10 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Runs all modules that are both supported and enabled.
         /// </summary>
-        /// <param name="progress"> Progress bar, if applicable </param>
         /// <param name="projectAuditorParams"> Parameters to control the audit process </param>
+        /// <param name="progress"> Progress bar, if applicable </param>
         /// <returns> Generated report </returns>
-        internal ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             ProjectReport projectReport = null;
 
@@ -159,7 +162,12 @@ namespace Unity.ProjectAuditor.Editor
             return projectReport;
         }
 
-        internal ProjectReport Audit(IProgress progress = null)
+        /// <summary>
+        /// Runs all modules that are both supported and enabled, using default parameters.
+        /// </summary>
+        /// <param name="progress"> Progress bar, if applicable </param>
+        /// <returns> Generated report </returns>
+        public ProjectReport Audit(IProgress progress = null)
         {
             return Audit(new ProjectAuditorParams(), progress);
         }
@@ -169,7 +177,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="projectAuditorParams"> Parameters to control the audit process </param>
         /// <param name="progress"> Progress bar, if applicable </param>
-        internal void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.SelectMany(GetModules).Distinct() : m_Modules.Where(m => m.isEnabledByDefault).ToArray();
             var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.platform)).ToArray();
@@ -263,11 +271,20 @@ namespace Unity.ProjectAuditor.Editor
             return m_Modules.Any(a => a.isSupported && a.supportedLayouts.FirstOrDefault(l => l.category == category) != null);
         }
 
+        /// <summary>
+        /// Get all the categories which are reported by the supported modules
+        /// </summary>
+        /// <returns>An array of IssueCategory values</returns>
         internal IssueCategory[] GetCategories()
         {
             return m_Modules.Where(module => module.isSupported).SelectMany(m => m.categories).ToArray();
         }
 
+        /// <summary>
+        /// Get the layout for a category
+        /// </summary>
+        /// <param name="category">The category to get the layout for</param>
+        /// <returns>The IssueLayout for the specified category</returns>
         internal IssueLayout GetLayout(IssueCategory category)
         {
             var layouts = m_Modules.Where(a => a.isSupported).SelectMany(module => module.supportedLayouts).Where(l => l.category == category);
@@ -275,9 +292,10 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Get or Register a category by name. If the name argument does match an existing category, a new category is registered.
+        /// Get or Register a category by name. If the name argument does not match an existing category, a new category is registered.
         /// </summary>
-        /// <returns> Returns the category enum</returns>
+        /// <param name="name">The name of the category</param>
+        /// <returns>The category enum</returns>
         internal static IssueCategory GetOrRegisterCategory(string name)
         {
             if (!s_CustomCategories.ContainsKey(name))
@@ -285,6 +303,11 @@ namespace Unity.ProjectAuditor.Editor
             return s_CustomCategories[name];
         }
 
+        /// <summary>
+        /// Get the name of a category
+        /// </summary>
+        /// <param name="category">The category to get the name of</param>
+        /// <returns>The category name, or "Unknown" for an unregistered custom category</returns>
         internal static string GetCategoryName(IssueCategory category)
         {
             if (category < IssueCategory.FirstCustomCategory)
@@ -308,8 +331,15 @@ namespace Unity.ProjectAuditor.Editor
             return (int)IssueCategory.FirstCustomCategory + s_CustomCategories.Count;
         }
 
+        /// <summary>
+        ///   <para>Returns the relative callback order for callbacks.  Callbacks with lower values are called before ones with higher values.</para>
+        /// </summary>
         public int callbackOrder => 0;
 
+        /// <summary>
+        /// Callback function which is called before a build is started. Performs a full audit and logs the number of issues found.
+        /// </summary>
+        /// <param name="report">A report containing information about the build, such as its target platform and output path.</param>
         public void OnPreprocessBuild(BuildReport report)
         {
             if (m_Config.AnalyzeOnBuild)
