@@ -75,7 +75,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Gets all ProjectAuditorSettings objects
         /// </summary>
-        /// <returns>An IEnumerable<ProjectAuditorSettings> of all the settings objects found in the project</returns>
+        /// <returns>An IEnumerable of all the ProjectAuditorSettings objects found in the project.</returns>
         public IEnumerable<ProjectAuditorSettings> GetSettings()
         {
             RefreshAssets();
