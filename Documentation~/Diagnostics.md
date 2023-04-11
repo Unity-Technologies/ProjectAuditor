@@ -72,7 +72,7 @@ Builtin asset-specific diagnostics:
 | PAT0004 | Texture: Anisotropic level is more than 1     | Graphics  | Android, iOS, Switch |
 | PAT0005 | Texture: Solid color texture bigger than 1x1  | Graphics  | Any                  |
 | PAT0006 | Sprite Atlas: Too much empty space            | Graphics  | Any                  |
-| PAT0007 | Texture Atlas: Too much empty space           | Graphics  | Any                  |
+| PAA0007 | Texture Atlas: Too much empty space           | Graphics  | Any                  |
 | PAM0000 | Mesh: Read/Write enabled                      | Graphics  | Any                  |
 | PAM0001 | Mesh: Index Format is 32 bits                 | Graphics  | Any                  |
 | PAS0000 | Shader: Not compatible with SRP batcher       | Graphics  | Any                  |

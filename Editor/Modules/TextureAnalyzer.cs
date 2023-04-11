@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAT0003 = nameof(PAT0003);
         internal const string PAT0004 = nameof(PAT0004);
         internal const string PAT0005 = nameof(PAT0005);
-        internal const string PAT0007 = nameof(PAT0007);
+        internal const string PAA0007 = nameof(PAA0007);
 
         internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
             PAT0000,
@@ -134,7 +134,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         internal static readonly Descriptor k_AtlasTextureEmptyDescriptor = new Descriptor(
-            PAT0007,
+            PAA0007,
             "Atlas Texture : Too much empty space",
             new[] {Area.Memory},
             "The Atlas Texture texture has too much empty space. This increases the amount of memory usage and can be reduced.",
