@@ -105,7 +105,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// </summary>
         /// <param name="spriteAtlas">The Sprite Atlas to check.</param>
         /// <returns>The percent of empty space.</returns>
-        internal static int GetEmptySpacePerecentage(SpriteAtlas spriteAtlas)
+        internal static int GetEmptySpacePercentage(SpriteAtlas spriteAtlas)
         {
             var method = typeof(SpriteAtlasExtensions).GetMethod("GetPreviewTextures", BindingFlags.Static | BindingFlags.NonPublic);
             object obj = method.Invoke(null, new object[] { spriteAtlas });

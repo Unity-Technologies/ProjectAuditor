@@ -23,6 +23,7 @@ namespace Unity.ProjectAuditor.EditorTests
         const string k_TextureNameAnisotropicLevelOne = k_TextureName + "AnisotropicLevelOneText1234";
         const string k_TextureNameSolidColor = k_TextureName + "SolidColor";
         const string k_TextureNameNotSolidColor = k_TextureName + "NotSolidColor";
+        const string k_TextureNameEmptySpace = k_TextureName + "EmptySpace";
 
         const int k_Resolution = 1;
 
@@ -32,12 +33,13 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestTextureMipMapGui;
         TestAsset m_TestTextureMipMapSprite;
         TestAsset m_TestTextureReadWriteEnabled;
-        TestAsset m_TextureNameStreamingMipmapDisabled;
-        TestAsset m_TextureNameStreamingMipmapEnabled;
+        TestAsset m_TextureStreamingMipmapDisabled;
+        TestAsset m_TextureStreamingMipmapEnabled;
         TestAsset m_TestTextureAnisotropicLevelBig;
         TestAsset m_TestTextureAnisotropicLevelOne;
-        TestAsset m_TextureNameSolidColor;
-        TestAsset m_TextureNameNotSolidColor;
+        TestAsset m_TextureSolidColor;
+        TestAsset m_TextureNotSolidColor;
+        TestAsset m_TestTextureEmptySpace;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -92,22 +94,22 @@ namespace Unity.ProjectAuditor.EditorTests
             largeTexture.Apply();
 
             var encodedLargePNG = largeTexture.EncodeToPNG();
-            m_TextureNameStreamingMipmapDisabled =
+            m_TextureStreamingMipmapDisabled =
                 new TestAsset(k_TextureNameStreamingMipmapDisabled + ".png", encodedLargePNG);
 
             textureImporter =
-                AssetImporter.GetAtPath(m_TextureNameStreamingMipmapDisabled.relativePath) as TextureImporter;
+                AssetImporter.GetAtPath(m_TextureStreamingMipmapDisabled.relativePath) as TextureImporter;
             textureImporter.streamingMipmaps = false;
             //Size should not be compressed for testing purposes.
             //If compressed, it won't trigger a warning, as size will be below the minimal size
             textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
             textureImporter.SaveAndReimport();
 
-            m_TextureNameStreamingMipmapEnabled =
+            m_TextureStreamingMipmapEnabled =
                 new TestAsset(k_TextureNameStreamingMipmapEnabled + ".png", encodedLargePNG);
 
             textureImporter =
-                AssetImporter.GetAtPath(m_TextureNameStreamingMipmapEnabled.relativePath) as TextureImporter;
+                AssetImporter.GetAtPath(m_TextureStreamingMipmapEnabled.relativePath) as TextureImporter;
             textureImporter.streamingMipmaps = true;
             textureImporter.SaveAndReimport();
 
@@ -130,8 +132,8 @@ namespace Unity.ProjectAuditor.EditorTests
             solidColorTexture.SetPixel(1, 1, Color.red);
 
             var encodedSolidColorPNG = solidColorTexture.EncodeToPNG();
-            m_TextureNameSolidColor = new TestAsset(k_TextureNameSolidColor + ".png", encodedSolidColorPNG);
-            textureImporter = AssetImporter.GetAtPath(m_TextureNameSolidColor.relativePath) as TextureImporter;
+            m_TextureSolidColor = new TestAsset(k_TextureNameSolidColor + ".png", encodedSolidColorPNG);
+            textureImporter = AssetImporter.GetAtPath(m_TextureSolidColor.relativePath) as TextureImporter;
             textureImporter.SaveAndReimport();
 
             var notSolidColorTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
@@ -139,8 +141,20 @@ namespace Unity.ProjectAuditor.EditorTests
             notSolidColorTexture.SetPixel(1, 0, Color.red);
 
             var encodedNotSolidColorPNG = notSolidColorTexture.EncodeToPNG();
-            m_TextureNameNotSolidColor = new TestAsset(k_TextureNameNotSolidColor + ".png", encodedNotSolidColorPNG);
-            textureImporter = AssetImporter.GetAtPath(m_TextureNameNotSolidColor.relativePath) as TextureImporter;
+            m_TextureNotSolidColor = new TestAsset(k_TextureNameNotSolidColor + ".png", encodedNotSolidColorPNG);
+            textureImporter = AssetImporter.GetAtPath(m_TextureNotSolidColor.relativePath) as TextureImporter;
+            textureImporter.SaveAndReimport();
+
+            var emptyTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            emptyTexture.SetPixel(0, 0, new Color(1, 0, 0, 1));
+            emptyTexture.SetPixel(1, 0, new Color(1, 0, 0, 0));
+            emptyTexture.SetPixel(0, 1, new Color(1, 0, 0, 0));
+            emptyTexture.SetPixel(1, 1, new Color(1, 0, 0, 0));
+
+            var emptyTexturePNG = emptyTexture.EncodeToPNG();
+
+            m_TestTextureEmptySpace = new TestAsset(k_TextureNameEmptySpace + ".png", emptyTexturePNG);
+            textureImporter = AssetImporter.GetAtPath(m_TestTextureEmptySpace.relativePath) as TextureImporter;
             textureImporter.SaveAndReimport();
         }
 
@@ -265,7 +279,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Texture_StreamingMipmapDisabled_IsReported()
         {
             var textureDiagnostic =
-                AnalyzeAndFindAssetIssues(m_TextureNameStreamingMipmapDisabled, IssueCategory.AssetDiagnostic)
+                AnalyzeAndFindAssetIssues(m_TextureStreamingMipmapDisabled, IssueCategory.AssetDiagnostic)
                     .FirstOrDefault(i =>
                     i.descriptor.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor));
 
@@ -276,7 +290,7 @@ namespace Unity.ProjectAuditor.EditorTests
             textureDiagnostic.descriptor.Fix(textureDiagnostic);
 
             textureDiagnostic =
-                AnalyzeAndFindAssetIssues(m_TextureNameStreamingMipmapDisabled, IssueCategory.AssetDiagnostic)
+                AnalyzeAndFindAssetIssues(m_TextureStreamingMipmapDisabled, IssueCategory.AssetDiagnostic)
                     .FirstOrDefault(i =>
                     i.descriptor.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor));
 
@@ -287,7 +301,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Texture_StreamingMipmapEnabled_IsNotReported()
         {
             var textureDiagnostic =
-                AnalyzeAndFindAssetIssues(m_TextureNameStreamingMipmapEnabled, IssueCategory.AssetDiagnostic)
+                AnalyzeAndFindAssetIssues(m_TextureStreamingMipmapEnabled, IssueCategory.AssetDiagnostic)
                     .FirstOrDefault(i =>
                     i.descriptor.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor));
 
@@ -351,7 +365,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Texture_SolidTexture_IsReported()
         {
-            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureNameSolidColor, IssueCategory.AssetDiagnostic)
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureSolidColor, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureSolidColorDescriptor));
 
             Assert.IsNotNull(textureDiagnostic);
@@ -360,8 +374,27 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Texture_Not_SolidTexture_IsNotReported()
         {
-            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureNameNotSolidColor, IssueCategory.AssetDiagnostic)
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureNotSolidColor, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureSolidColorDescriptor));
+
+            Assert.IsNull(textureDiagnostic);
+        }
+
+        [Test]
+        public void Texture_Empty_Space_IsReported()
+        {
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TestTextureEmptySpace, IssueCategory.AssetDiagnostic)
+                .FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_AtlasTextureEmptyDescriptor));
+
+            Assert.IsNotNull(textureDiagnostic);
+    }
+
+        [Test]
+        public void Texture_Not_Empty_Space_IsNotReported()
+        {
+            //We don't need to create a new texture as we only need a not empty one
+            var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureSolidColor, IssueCategory.AssetDiagnostic)
+                .FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_AtlasTextureEmptyDescriptor));
 
             Assert.IsNull(textureDiagnostic);
         }
