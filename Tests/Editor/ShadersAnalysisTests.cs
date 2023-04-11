@@ -757,7 +757,7 @@ Shader ""Custom/SRPBatchCompatible""
             var issues = AnalyzeAndFindAssetIssues(m_SrpBatchNonCompatibleShaderResource, IssueCategory.AssetDiagnostic);
 
             Assert.IsNotEmpty(issues);
-            Assert.IsTrue(issues.Any(issue => issue.descriptor.id == ShaderAnalyzer.PAS0000),
+            Assert.IsTrue(issues.Any(issue => issue.descriptor.id == ShaderAnalyzer.PAA2000),
                 "The not compatible with SRP batcher shader should be reported.");
         }
 
@@ -774,7 +774,7 @@ Shader ""Custom/SRPBatchCompatible""
 
             var issues = AnalyzeAndFindAssetIssues(m_SrpBatchCompatibleShaderResource, IssueCategory.AssetDiagnostic);
 
-            Assert.IsFalse(issues.Any(issue => issue.descriptor.id == ShaderAnalyzer.PAS0000),
+            Assert.IsFalse(issues.Any(issue => issue.descriptor.id == ShaderAnalyzer.PAA2000),
                 "The compatible with SRP batcher shader should not be reported.");
         }
     }

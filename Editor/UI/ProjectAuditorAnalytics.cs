@@ -13,6 +13,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         const int k_MaxEventsPerHour = 100;
         const int k_MaxEventItems = 1000;
         const int k_MaxIssuesInAnalyzeSummary = 10;
+        const int k_EventVersion = 2;
 
         const string k_VendorKey = "unity.projectauditor";
         const string k_EventTopicName = "projectAuditorUsage";
@@ -21,13 +22,16 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public static void EnableAnalytics()
         {
-            var result = EditorAnalytics.RegisterEventWithLimit(k_EventTopicName, k_MaxEventsPerHour, k_MaxEventItems, k_VendorKey);
+            var result = EditorAnalytics.RegisterEventWithLimit(
+                k_EventTopicName, k_MaxEventsPerHour, k_MaxEventItems, k_VendorKey, k_EventVersion);
+
             if (result == AnalyticsResult.Ok)
                 s_EnableAnalytics = true;
         }
 
         public enum UIButton
         {
+            // General UI
             Analyze,
             Export,
             AssemblySelect,
@@ -40,26 +44,35 @@ namespace Unity.ProjectAuditor.Editor.UI
             OnlyCriticalIssues,
             Load,
             Save,
-            // views
+
+            // High level views
             Summary,
+            ProjectSettings,
+
+            // Code issues
             ApiCalls,
             CodeCompilerMessages,
             Generics,
-            ProjectSettings,
+
+            // Assets
             Assets,
             Shaders,
+            ShaderCompilerMessages,
             ShaderVariants,
+            ComputeShaderVariants,
+            Textures,
+            AudioClip,
+            Meshes,
+
+            // Build report
             BuildFiles,
             BuildSteps,
+
+            // Assemblies
             Assemblies,
-            ShaderCompilerMessages,
             PrecompiledAssemblies,
             Packages,
-            Textures,
-            PackageVersion,
-            AudioClip,
-            ComputeShaderVariants,
-            Meshes
+            PackageDiagnostics
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -158,38 +171,11 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             switch (uiButton)
             {
+                // General UI
                 case UIButton.Analyze:
                     return "analyze_button_click";
                 case UIButton.Export:
                     return "export_button_click";
-                case UIButton.Summary:
-                    return "summary_tab";
-                case UIButton.ApiCalls:
-                    return "api_tab";
-                case UIButton.Assets:
-                    return "assets_tab";
-                case UIButton.Shaders:
-                    return "shaders_tab";
-                case UIButton.ShaderCompilerMessages:
-                    return "shader_compiler_messages_tab";
-                case UIButton.ShaderVariants:
-                    return "shader_variants_tab";
-                case UIButton.ComputeShaderVariants:
-                    return "compute_shader_variants_tab";
-                case UIButton.ProjectSettings:
-                    return "settings_tab";
-                case UIButton.Generics:
-                    return "generics_tab";
-                case UIButton.BuildFiles:
-                    return "build_files_tab";
-                case UIButton.BuildSteps:
-                    return "build_steps_tab";
-                case UIButton.CodeCompilerMessages:
-                    return "compiler_messages_tab";
-                case UIButton.Assemblies:
-                    return "assemblies_tab";
-                case UIButton.PrecompiledAssemblies:
-                    return "precompiled_assemblies_tab";
                 case UIButton.AssemblySelect:
                     return "assembly_button_click";
                 case UIButton.AssemblySelectApply:
@@ -206,20 +192,59 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "show_muted_checkbox";
                 case UIButton.OnlyCriticalIssues:
                     return "only_hotpath_checkbox";
-                case UIButton.Save:
-                    return "save";
                 case UIButton.Load:
-                    return "load";
-                case UIButton.Packages:
-                    return "packages";
+                    return "load_button_clicked";
+                case UIButton.Save:
+                    return "save_button_clicked";
+
+                // High level views
+                case UIButton.Summary:
+                    return "summary_tab";
+                case UIButton.ProjectSettings:
+                    return "project_settings_tab";
+
+                // Code issues
+                case UIButton.ApiCalls:
+                    return "api_tab";
+                case UIButton.CodeCompilerMessages:
+                    return "compiler_messages_tab";
+                case UIButton.Generics:
+                    return "generics_tab";
+
+                // Assets
+                case UIButton.Assets:
+                    return "assets_tab";
+                case UIButton.Shaders:
+                    return "shaders_tab";
+                case UIButton.ShaderCompilerMessages:
+                    return "shader_compiler_messages_tab";
+                case UIButton.ShaderVariants:
+                    return "shader_variants_tab";
+                case UIButton.ComputeShaderVariants:
+                    return "compute_shader_variants_tab";
                 case UIButton.Textures:
-                    return "textures";
-                case UIButton.PackageVersion:
-                    return "package_version";
+                    return "textures_tab";
                 case UIButton.AudioClip:
-                    return "audio_clip";
+                    return "audio_clip_tab";
                 case UIButton.Meshes:
-                    return "meshes";
+                    return "meshes_tab";
+
+                // Build report
+                case UIButton.BuildFiles:
+                    return "build_files_tab";
+                case UIButton.BuildSteps:
+                    return "build_steps_tab";
+
+                // Assemblies
+                case UIButton.Assemblies:
+                    return "assemblies_tab";
+                case UIButton.PrecompiledAssemblies:
+                    return "precompiled_assemblies_tab";
+                case UIButton.Packages:
+                    return "packages_tab";
+                case UIButton.PackageDiagnostics:
+                    return "package_diagnostics_tab";
+
                 default:
                     Debug.LogFormat("SendUIButtonEvent: Unsupported button type : {0}", uiButton);
                     return "";
@@ -309,7 +334,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var uiButtonEvent = new ProjectAuditorEvent(GetEventName(uiButton), analytic);
 
-                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
+                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
             }
             return false;
@@ -323,7 +348,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var uiButtonEvent = new ProjectAuditorEventWithKeyValues(GetEventName(uiButton), analytic, payload);
 
-                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
+                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
             }
             return false;
@@ -339,7 +364,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
-                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
+                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
             }
             return false;
@@ -355,7 +380,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
-                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
+                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
             }
             return false;

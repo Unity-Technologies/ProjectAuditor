@@ -11,11 +11,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     class MeshAnalyzer : IMeshModuleAnalyzer
     {
-        internal const string PAM0000 = nameof(PAM0000);
-        internal const string PAM0001 = nameof(PAM0001);
+        internal const string PAA1000 = nameof(PAA1000);
+        internal const string PAA1001 = nameof(PAA1001);
 
         internal static readonly Descriptor k_MeshReadWriteEnabledDescriptor = new Descriptor(
-            PAM0000,
+            PAA1000,
             "Mesh: Read/Write enabled",
             Area.Memory,
             "Mesh Read/Write flag is enabled. This causes the mesh data to be duplicated in memory.",
@@ -27,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         internal static readonly Descriptor k_Mesh32BitIndexFormatUsedDescriptor = new Descriptor(
-            PAM0001,
+            PAA1001,
             "Mesh: Index Format is 32 bits",
             Area.Memory,
             "Mesh index buffer is using 32 bits format. This increases the mesh size and may not work on certain mobile devices.",

@@ -5,17 +5,27 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-* Added Solid Color Texture analyzer
 * Added Empty Sprite Atlas analyzer
 * Added Empty Atlas Texture analyzer
 
 ### Added
+
+### Changed
+* Bumped analytics events version number from v1 to v2
+* Asset diagnostics IDs for Resources/StreamingAsset folder issues
+
+## [0.9.4-preview] - 2023-03-27
+
+### Added
 * SRP Asset Settings analyzer.
 * Shader SRP Batcher analyzer.
+* Solid Color Texture analyzer
 * Texture anisotropic level analyzer.
+* Universal Render Pipeline analyzer.
 
 ### Changed
 * CHANGELOG.md format to ensure it adheres to Unity standards
+* Asset diagnostics IDs.
 
 ## [0.9.3-preview.3] - 2023-02-28
 

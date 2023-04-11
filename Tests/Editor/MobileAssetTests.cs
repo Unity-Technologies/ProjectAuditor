@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             CreateTemporaryStreamingAssets();
 
-            var assetDiagnostic = Analyze(IssueCategory.AssetDiagnostic, issue => issue.descriptor.id == AssetsModule.PAA0001);
+            var assetDiagnostic = Analyze(IssueCategory.AssetDiagnostic, issue => issue.descriptor.id == AssetsModule.PAA3001);
 
             RemoveTemporaryStreamingAssets();
 
@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             CreateTemporaryStreamingAssets();
 
-            var assetDiagnostic = Analyze(IssueCategory.AssetDiagnostic, issue => issue.descriptor.id == AssetsModule.PAA0001);
+            var assetDiagnostic = Analyze(IssueCategory.AssetDiagnostic, issue => issue.descriptor.id == AssetsModule.PAA3001);
 
             RemoveTemporaryStreamingAssets();
 
