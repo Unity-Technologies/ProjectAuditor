@@ -111,7 +111,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             object obj = method.Invoke(null, new object[] { spriteAtlas });
             Texture2D[] textures = obj as Texture2D[];
 
-            if (textures == null)
+            if (textures == null || textures.Length == 0)
             {
                 Debug.LogError($"Could not load texture from {spriteAtlas.name}");
                 return 0;
