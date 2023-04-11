@@ -224,17 +224,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             var texture2D = texture as Texture2D;
-            if (texture2D == null)
+            if (texture2D != null)
             {
-                Debug.LogError(texture.name + " is not a Texture2D!");
+                var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
+                if (emptyPercent >
+                    projectAuditorParams.settings.SpriteAtlasEmptySpaceLimit)
+                {
+                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_AtlasTextureEmptyDescriptor, textureName, emptyPercent)
+                        .WithLocation(textureImporter.assetPath);
+                }
             }
 
-            var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
-            if (emptyPercent >
-                projectAuditorParams.settings.SpriteAtlasEmptySpaceLimit)
+            else
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_AtlasTextureEmptyDescriptor, textureName, emptyPercent)
-                    .WithLocation(textureImporter.assetPath);
+                Debug.LogError(texture.name + " is not a Texture2D!");
             }
         }
 
