@@ -7,6 +7,9 @@ using UnityEditor.Compilation;
 
 namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
+    /// <summary>
+    /// Options for the compilation mode Project Auditor should use when performing code analysis
+    /// </summary>
     internal enum CompilationMode
     {
         /// <summary>
@@ -29,9 +32,20 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         Editor
     }
 
+    /// <summary>
+    /// Options for selecting the code optimization level to be used during code analysis
+    /// </summary>
+
     public enum CodeOptimization
     {
+        /// <summary>
+        /// Debug code optimization
+        /// </summary>
         Debug,
+
+        /// <summary>
+        /// Release code optimization
+        /// </summary>
         Release
     }
 

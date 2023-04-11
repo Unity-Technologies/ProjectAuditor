@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="descriptor"> Diagnostic descriptor </param>
         /// <param name="messageArgs"> Arguments to be used in the message formatting</param>
         /// <returns>The IssueBuilder, constructed with the specified category, descriptor and message arguments</returns>
-        public static IssueBuilder Create(IssueCategory category, Descriptor descriptor, params object[] messageArgs)
+        internal static IssueBuilder Create(IssueCategory category, Descriptor descriptor, params object[] messageArgs)
         {
             return new IssueBuilder(category, descriptor, messageArgs);
         }
@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="category"> Issue category </param>
         /// <param name="description"> User-friendly description </param>
         /// /// <returns>The IssueBuilder, constructed with the specified category and description string</returns>
-        public static IssueBuilder Create(IssueCategory category, string description)
+        internal static IssueBuilder Create(IssueCategory category, string description)
         {
             return new IssueBuilder(category, description);
         }
@@ -47,6 +47,12 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField] string[] m_CustomProperties;
         [SerializeField] Severity m_Severity;
 
+        /// <summary>
+        /// Constructs and returns an instance of ProjectIssue
+        /// </summary>
+        /// <param name="category">Issue category</param>
+        /// <param name="descriptor">Diagnostic descriptor</param>
+        /// <param name="args">Arguments to be used in the message formatting</param>
         public ProjectIssue(IssueCategory category, Descriptor descriptor, params object[] args)
         {
             m_Descriptor = descriptor;
@@ -55,6 +61,11 @@ namespace Unity.ProjectAuditor.Editor
             m_Severity = descriptor.defaultSeverity;
         }
 
+        /// <summary>
+        /// Constructs and returns an instance of ProjectIssue
+        /// </summary>
+        /// <param name="category">Issue category</param>
+        /// <param name="description">Issue description</param>
         public ProjectIssue(IssueCategory category, string description)
         {
             m_Description = description;
@@ -98,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Dependencies of this project issue
         /// </summary>
-        public DependencyNode dependencies
+        internal DependencyNode dependencies
         {
             get => m_Dependencies;
             /*public*/  set => m_Dependencies = value;

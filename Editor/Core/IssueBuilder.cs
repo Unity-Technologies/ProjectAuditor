@@ -4,7 +4,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    public class IssueBuilder
+    internal class IssueBuilder
     {
         ProjectIssue m_Issue;
 
