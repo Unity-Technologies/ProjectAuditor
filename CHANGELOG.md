@@ -5,16 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-* Added Empty Sprite Atlas analyzer
-* Added Empty Atlas Texture analyzer
 
-### Added
+## [0.10.0-exp] - 2023-04-12
 
 ### Changed
 * Bumped analytics events version number from v1 to v2
 * Made many APIs internal rather than public.
 * Added properly-formatted comments to enable API documentation for all remaining public types and methods
-* Asset diagnostics IDs for Resources/StreamingAsset folder issues
+* Changes to documentation in .md files to ensure standards compliance
 
 ## [0.9.4-preview] - 2023-03-27
 

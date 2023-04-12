@@ -12,9 +12,20 @@ Project Auditor is an experimental static analysis tool that analyzes assets, se
 
 > **Note**: The most recent Project Auditor version to support 2017 or earlier is [0.5.0-preview](https://github.com/Unity-Technologies/ProjectAuditor/releases/tag/0.5.0-preview).
 
+## Disclaimer
+This package is available as an experimental package, so it is not ready for production use. The features and documentation in this package might change before it is verified for release. 
+
 ## Installation
-It is recommended to install Project Auditor via the _Add package from git URL_ in Package Manager. For more information on this and alternative installation methods please refer to [Installing Project Auditor](Installing.md).
-> **Note**: At this time, Project Auditor is not discoverable via Package Manager so it has to be installed manually.
+
+To install this package, refer to the instructions that match your Unity Editor version: 
+
+### Version 2021.1 and later
+
+To install this package, follow the instructions for [adding a package by name](https://docs.unity3d.com/2021.1/Documentation/Manual/upm-ui-quick.html) in the Unity Editor. 
+
+### Version 2020.3 and earlier
+
+To install this package, follow the instructions for [installing hidden packages](https://docs.unity3d.com/Packages/Installation/manual/upm-ui-quick.html). 
 
 ## How to Use
 The Project Auditor editor window can be opened via *Window => Analysis => Project Auditor*. Click the Analyze button, then select a _View_ from the drop-down menu to review the list of potential issues to determine whether they are actual problems in your project. Every View provides:
@@ -48,6 +59,9 @@ For information on a specific view, check the corresponding page.
 * [Build Steps](BuildSteps.md)
 * [Build Size](BuildSize.md)
 
+## Table of contents
+* [Contents](./TableOfContents.md)
+
 ## Reporting issues
 If you have issues running Project Auditor in your Unity project, please report them on the [GitHub repository](https://github.com/Unity-Technologies/ProjectAuditor/issues).
 
@@ -65,6 +79,7 @@ The following table indicates the package directory structure:
 ## Document revision history
 |Date|Reason|
 |---|---|
+|Mar 9, 2023|Added table of contents and updated installation instructions|
 |Mar 11, 2022|Updated links to view-specific pages|
 |Jul 23, 2021|Added view-specific pages|
 |Apr 9, 2021|Updated index page with more detail|
