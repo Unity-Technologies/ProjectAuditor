@@ -15,6 +15,7 @@ Note that there are different ranges within both Code and Settings diagnostic ID
   - `PAA0xxx`: texture related settings
   - `PAA1xxx`: mesh related settings
   - `PAA2xxx`: shader related settings
+  - `PAA3xxx`: file system related settings (Resources folders, StreamingAssets, Addressables, etc)
 
 # Settings Diagnostics
 This is a full list of all builtin settings diagnostics:
@@ -77,6 +78,9 @@ Builtin asset-specific diagnostics:
 | PAA0003 | Texture: Streaming Mipmaps not enabled         | Graphics  | Any                  |
 | PAA0004 | Texture: Anisotropic level is more than 1      | Graphics  | Android, iOS, Switch |
 | PAA0005 | Texture: Solid color texture bigger than 1x1   | Graphics  | Any                  |
+| PAA0007 | Texture Atlas: Too much empty space            | Graphics  | Any                  |
 | PAA1000 | Mesh: Read/Write enabled                       | Graphics  | Any                  |
 | PAA1001 | Mesh: Index Format is 32 bits                  | Graphics  | Any                  |
 | PAA2000 | Shader: Not compatible with SRP batcher        | Graphics  | Any                  |
+| PAA3000 | Files: Resources folder asset & dependencies   | BuildSize | Any                  |
+| PAA3001 | Files: StreamingAssets folder size             | BuildSize | Any                  |
