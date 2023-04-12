@@ -19,6 +19,11 @@
           "ValidationTest": "Restricted File Type Validation",
           "ExceptionMessage": "/Editor/Utils/csc.rsp cannot be included in a package.",
           "PackageVersion": "0.10.0"
+        },
+	{
+            "ValidationTest": "Package Lifecycle Validation",
+            "ExceptionMessage": "In package.json, \"version\" < 1, please tag the package as 0.10.0-preview. Read more about this error and potential solutions at https://docs.unity3d.com/Packages/com.unity.package-validation-suite@latest/index.html?preview=1&subfolder=/manual/lifecycle_validation_error.html#version-1-please-tag-the-package-as-xxx-preview",
+            "PackageVersion": "0.10.0"
         }
     ],
     "WarningExceptions": []
