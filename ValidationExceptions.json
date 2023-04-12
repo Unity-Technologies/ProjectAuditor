@@ -3,22 +3,22 @@
         {
             "ValidationTest": "Restricted File Type Validation",
             "ExceptionMessage": "/Editor/csc.rsp cannot be included in a package.",
-            "PackageVersion": "0.9.4-preview"
+            "PackageVersion": "0.10.0"
         },
         {
           "ValidationTest": "Restricted File Type Validation",
           "ExceptionMessage": "/Editor/UI/csc.rsp cannot be included in a package.",
-          "PackageVersion": "0.9.4-preview"
+          "PackageVersion": "0.10.0"
         },
         {
           "ValidationTest": "Restricted File Type Validation",
           "ExceptionMessage": "/Editor/UI/Framework/csc.rsp cannot be included in a package.",
-          "PackageVersion": "0.9.4-preview"
+          "PackageVersion": "0.10.0"
         },
         {
           "ValidationTest": "Restricted File Type Validation",
           "ExceptionMessage": "/Editor/Utils/csc.rsp cannot be included in a package.",
-          "PackageVersion": "0.9.4-preview"
+          "PackageVersion": "0.10.0"
         }
     ],
     "WarningExceptions": []
