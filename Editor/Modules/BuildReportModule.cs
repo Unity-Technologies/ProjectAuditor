@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         internal interface IBuildReportProvider
         {
-            public BuildReport GetBuildReport(BuildTarget platform);
+            BuildReport GetBuildReport(BuildTarget platform);
         }
 
 #if BUILD_REPORT_API_SUPPORT
