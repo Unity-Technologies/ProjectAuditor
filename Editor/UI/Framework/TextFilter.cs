@@ -5,15 +5,15 @@ using Unity.ProjectAuditor.Editor.Core;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class TextFilter : IProjectIssueFilter
+    internal class TextFilter : IProjectIssueFilter
     {
-        public bool ignoreCase = true;
-        public bool searchDependencies = false;
-        public string searchString = string.Empty;
+        internal bool ignoreCase = true;
+        internal bool searchDependencies = false;
+        internal string searchString = string.Empty;
 
         readonly int[] searchablePropertyIndices;
 
-        public TextFilter(PropertyDefinition[] propertyDefinitions = null)
+        internal TextFilter(PropertyDefinition[] propertyDefinitions = null)
         {
             var indices = new List<int>();
             if (propertyDefinitions != null)

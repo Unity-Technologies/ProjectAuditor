@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         static readonly string[] k_UpdateMethodNames = {"Update", "LateUpdate", "FixedUpdate", "OnAnimatorIK", "OnAnimatorMove", "OnWillRenderObject", "OnRenderObject"};
 
-        public static bool IsMonoBehaviour(TypeReference typeReference)
+        internal static bool IsMonoBehaviour(TypeReference typeReference)
         {
             // handle special case where Assembly will fail to be Resolved
             if (typeReference.FullName.GetHashCode() == k_ILPostProcessorHashCode)
@@ -48,12 +48,12 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             return false;
         }
 
-        public static bool IsMonoBehaviourEvent(MethodDefinition methodDefinition)
+        internal static bool IsMonoBehaviourEvent(MethodDefinition methodDefinition)
         {
             return k_EventNames.Contains(methodDefinition.Name);
         }
 
-        public static bool IsMonoBehaviourUpdateMethod(MethodDefinition methodDefinition)
+        internal static bool IsMonoBehaviourUpdateMethod(MethodDefinition methodDefinition)
         {
             return k_UpdateMethodNames.Contains(methodDefinition.Name);
         }

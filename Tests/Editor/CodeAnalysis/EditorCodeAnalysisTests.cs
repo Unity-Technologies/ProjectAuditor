@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public class EditorCodeAnalysisTests
+    internal class EditorCodeAnalysisTests
     {
         [Test]
         public void EditorCodeAnalysis_GetAssemblies_IsFound()

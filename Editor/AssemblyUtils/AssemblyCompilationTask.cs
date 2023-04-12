@@ -7,22 +7,22 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
     class AssemblyCompilationTask
     {
-        public AssemblyBuilder builder;
-        public AssemblyCompilationTask[] dependencies;
-        public CompilerMessage[] messages;
-        public Stopwatch stopWatch;
+        internal AssemblyBuilder builder;
+        internal AssemblyCompilationTask[] dependencies;
+        internal CompilerMessage[] messages;
+        internal Stopwatch stopWatch;
 
         CompilationStatus m_CompilationStatus = CompilationStatus.NotStarted;
 
-        public string assemblyName => Path.GetFileNameWithoutExtension(builder.assemblyPath);
+        internal string assemblyName => Path.GetFileNameWithoutExtension(builder.assemblyPath);
 
-        public string assemblyPath => builder.assemblyPath;
+        internal string assemblyPath => builder.assemblyPath;
 
-        public long durationInMs => stopWatch != null ? stopWatch.ElapsedMilliseconds : 0;
+        internal long durationInMs => stopWatch != null ? stopWatch.ElapsedMilliseconds : 0;
 
-        public CompilationStatus status => m_CompilationStatus;
+        internal CompilationStatus status => m_CompilationStatus;
 
-        public bool IsDone()
+        internal bool IsDone()
         {
             switch (m_CompilationStatus)
             {
@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             }
         }
 
-        public void Update()
+        internal void Update()
         {
             switch (builder.status)
             {
@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             }
         }
 
-        public bool Success()
+        internal bool Success()
         {
             if (messages == null)
                 return false;

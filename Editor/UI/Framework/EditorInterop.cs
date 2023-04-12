@@ -8,9 +8,9 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public static class EditorInterop
+    internal static class EditorInterop
     {
-        public static void OpenCodeDescriptor(Descriptor descriptor)
+        internal static void OpenCodeDescriptor(Descriptor descriptor)
         {
             var unityVersion = InternalEditorUtility.GetUnityVersion();
             if (unityVersion.Major < 2017)
@@ -27,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public static void OpenCompilerMessageDescriptor(Descriptor descriptor)
+        internal static void OpenCompilerMessageDescriptor(Descriptor descriptor)
         {
             const string prefix = "CS";
             const string baseURL = "https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/";
@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public static void OpenTextFile<T>(Location location) where T : UnityEngine.Object
+        internal static void OpenTextFile<T>(Location location) where T : UnityEngine.Object
         {
             var obj = AssetDatabase.LoadAssetAtPath<T>(location.Path);
             if (obj != null)
@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public static void OpenPackage(Location location)
+        internal static void OpenPackage(Location location)
         {
 #if UNITY_2019_1_OR_NEWER
             var packageName = Path.GetFileName(location.Path);
@@ -55,13 +55,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 #endif
         }
 
-        public static void OpenProjectSettings(Location location)
+        internal static void OpenProjectSettings(Location location)
         {
             var window = SettingsService.OpenProjectSettings(location.Path);
             window.Repaint();
         }
 
-        public static void FocusOnAssetInProjectWindow(Location location)
+        internal static void FocusOnAssetInProjectWindow(Location location)
         {
             // Note that LoadMainAssetAtPath might fails, for example if there is a compile error in the script associated with the asset.
             //

@@ -6,34 +6,34 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     class IssueTableItem : TreeViewItem
     {
-        public readonly string GroupName;
-        public readonly ProjectIssue ProjectIssue;
+        internal readonly string GroupName;
+        internal readonly ProjectIssue ProjectIssue;
 
-        public IssueTableItem(int id, int depth, string displayName,
+        internal IssueTableItem(int id, int depth, string displayName,
                               ProjectIssue projectIssue, string groupName = null) : base(id, depth, displayName)
         {
             GroupName = groupName;
             ProjectIssue = projectIssue;
         }
 
-        public IssueTableItem(int id, int depth, string groupName) : base(id, depth)
+        internal IssueTableItem(int id, int depth, string groupName) : base(id, depth)
         {
             GroupName = groupName;
         }
 
-        public bool IsGroup()
+        internal bool IsGroup()
         {
             return (ProjectIssue == null);
         }
 
-        public string GetDisplayName()
+        internal string GetDisplayName()
         {
             if (IsGroup())
                 return displayName;
             return ProjectIssue.description;
         }
 
-        public bool Find(ProjectIssue issue)
+        internal bool Find(ProjectIssue issue)
         {
             if (ProjectIssue == issue)
                 return true;

@@ -6,11 +6,11 @@ using UnityEditor.Callbacks;
 
 namespace Unity.ProjectAuditor.Editor.Build
 {
-    public static class BuildReportHelper
+    internal static class BuildReportHelper
     {
         internal const string k_LastBuildReportPath = "Library/LastBuild.buildreport";
 
-        public static BuildReport GetLast()
+        internal static BuildReport GetLast()
         {
             if (!File.Exists(k_LastBuildReportPath))
                 return null; // a build report was not found in the Library folder
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.Build
         }
 
         [PostProcessBuild(1)]
-        public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
+        internal static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
         {
             if (UserPreferences.buildReportAutoSave)
             {

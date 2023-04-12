@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    public abstract class ProjectAuditorModuleWithAnalyzers<T> : ProjectAuditorModule where T : IModuleAnalyzer
+    internal abstract class ProjectAuditorModuleWithAnalyzers<T> : ProjectAuditorModule where T : IModuleAnalyzer
     {
         protected List<T> m_Analyzers;
 
@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             return m_Analyzers.Where(a => CoreUtils.SupportsPlatform(a.GetType(), platform)).ToArray();
         }
 
-        public override void Initialize(ProjectAuditorConfig config)
+        internal override void Initialize(ProjectAuditorConfig config)
         {
             base.Initialize(config);
 

@@ -4,15 +4,15 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    public static class Json
+    internal static class Json
     {
-        public static T[] From<T>(string json)
+        internal static T[] From<T>(string json)
         {
             var wrapper = JsonUtility.FromJson<Wrapper<T>>(json);
             return wrapper.Items;
         }
 
-        public static T[] FromFile<T>(string fileName)
+        internal static T[] FromFile<T>(string fileName)
         {
             var fullPath = Path.GetFullPath(fileName);
             var json = File.ReadAllText(fullPath);
@@ -21,13 +21,13 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return items;
         }
 
-        public static string To<T>(T[] array)
+        internal static string To<T>(T[] array)
         {
             var wrapper = new Wrapper<T> {Items = array};
             return JsonUtility.ToJson(wrapper);
         }
 
-        public static string To<T>(T[] array, bool prettyPrint)
+        internal static string To<T>(T[] array, bool prettyPrint)
         {
             var wrapper = new Wrapper<T> {Items = array};
             return JsonUtility.ToJson(wrapper, prettyPrint);

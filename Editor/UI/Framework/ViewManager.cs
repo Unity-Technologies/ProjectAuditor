@@ -11,7 +11,7 @@ using UnityEngine.Profiling;
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     [Serializable]
-    public sealed class ViewManager
+    internal sealed class ViewManager
     {
         class NullFilter : IProjectIssueFilter
         {
@@ -26,34 +26,34 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         [SerializeField] IssueCategory[] m_Categories;
         [SerializeField] int m_ActiveViewIndex;
 
-        public int activeViewIndex
+        internal int activeViewIndex
         {
             get { return m_ActiveViewIndex; }
         }
 
-        public int numViews => m_Views != null ? m_Views.Length : 0;
+        internal int numViews => m_Views != null ? m_Views.Length : 0;
 
-        public Action<IssueCategory> onAnalyze;
-        public Action onViewExported;
-        public Action<int> onViewChanged;
+        internal Action<IssueCategory> onAnalyze;
+        internal Action onViewExported;
+        internal Action<int> onViewChanged;
 
         internal ViewManager()
             : this(ViewDescriptor.GetAll().Select(d => d.category).ToArray())
         {
         }
 
-        public ViewManager(IssueCategory[] categories)
+        internal ViewManager(IssueCategory[] categories)
         {
             m_Categories = categories;
             m_ActiveViewIndex = 0;
         }
 
-        public bool IsValid()
+        internal bool IsValid()
         {
             return m_Views != null && m_Views.Length > 0;
         }
 
-        public void AddIssues(IReadOnlyCollection<ProjectIssue> issues)
+        internal void AddIssues(IReadOnlyCollection<ProjectIssue> issues)
         {
             Profiler.BeginSample("ViewManager.AddIssues");
             foreach (var view in m_Views)
@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Profiler.EndSample();
         }
 
-        public void Clear()
+        internal void Clear()
         {
             foreach (var view in m_Views)
             {
@@ -72,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void Create(ProjectAuditor projectAuditor, ViewStates viewStates, Action<ViewDescriptor, bool> onCreateView = null, IProjectIssueFilter filter = null)
+        internal void Create(ProjectAuditor projectAuditor, ViewStates viewStates, Action<ViewDescriptor, bool> onCreateView = null, IProjectIssueFilter filter = null)
         {
             if (filter == null)
                 filter = new NullFilter();
@@ -109,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Profiler.EndSample();
         }
 
-        public void ClearView(IssueCategory category)
+        internal void ClearView(IssueCategory category)
         {
             var view = GetView(category);
             if (view != null)
@@ -118,27 +118,27 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public AnalysisView GetActiveView()
+        internal AnalysisView GetActiveView()
         {
             return m_Views[m_ActiveViewIndex];
         }
 
-        public AnalysisView GetView(int index)
+        internal AnalysisView GetView(int index)
         {
             return m_Views[index];
         }
 
-        public bool HasView(IssueCategory category)
+        internal bool HasView(IssueCategory category)
         {
             return GetView(category) != null;
         }
 
-        public AnalysisView GetView(IssueCategory category)
+        internal AnalysisView GetView(IssueCategory category)
         {
             return m_Views.FirstOrDefault(v => v.desc.category == category);
         }
 
-        public void ChangeView(IssueCategory category)
+        internal void ChangeView(IssueCategory category)
         {
             var activeView = GetActiveView();
             if (activeView.desc.category == category)
@@ -168,7 +168,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         /// <summary>
         /// Mark all views as dirty. Use this to reload their tables.
         /// </summary>
-        public void MarkViewsAsDirty()
+        internal void MarkViewsAsDirty()
         {
             foreach (var view in m_Views)
             {
@@ -176,7 +176,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void LoadSettings()
+        internal void LoadSettings()
         {
             if (!IsValid())
                 return;
@@ -187,7 +187,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void SaveSettings()
+        internal void SaveSettings()
         {
             if (!IsValid())
                 return;

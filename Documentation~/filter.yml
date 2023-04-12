@@ -9,6 +9,12 @@ apiRules:
       uidRegex: ^Unity\.ProjectAuditor\.Editor\.Utils$
       type: Namespace
   - exclude:
+      uidRegex: ^Unity\.ProjectAuditor\.Editor\.Tests$
+      type: Namespace
+  - exclude:
+      uidRegex: ^Unity\.ProjectAuditor\.Editor\.Tests\.Common$
+      type: Namespace
+  - exclude:
       uidRegex: \.LoadDatabase\(
       type: Method
   - exclude:

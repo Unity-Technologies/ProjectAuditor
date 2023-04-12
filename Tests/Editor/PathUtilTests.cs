@@ -3,7 +3,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public class PathUtilTests
+    internal class PathUtilTests
     {
         [Test]
         public void PathUtils_InvalidChars_AreReplaced()

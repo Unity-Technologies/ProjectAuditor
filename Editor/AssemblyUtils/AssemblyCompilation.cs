@@ -7,7 +7,10 @@ using UnityEditor.Compilation;
 
 namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
-    public enum CompilationMode
+    /// <summary>
+    /// Options for the compilation mode Project Auditor should use when performing code analysis
+    /// </summary>
+    internal enum CompilationMode
     {
         /// <summary>
         ///   <para>Non-Development player (default)</para>
@@ -29,9 +32,20 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         Editor
     }
 
+    /// <summary>
+    /// Options for selecting the code optimization level to be used during code analysis
+    /// </summary>
+
     public enum CodeOptimization
     {
+        /// <summary>
+        /// Debug code optimization
+        /// </summary>
         Debug,
+
+        /// <summary>
+        /// Release code optimization
+        /// </summary>
         Release
     }
 
@@ -56,23 +70,23 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         /// <summary>
         ///   <para>Message code.</para>
         /// </summary>
-        public string code;
+        internal string code;
         /// <summary>
         ///   <para>Message type.</para>
         /// </summary>
-        public CompilerMessageType type;
+        internal CompilerMessageType type;
         /// <summary>
         ///   <para>Message body.</para>
         /// </summary>
-        public string message;
+        internal string message;
         /// <summary>
         ///   <para>File for the message.</para>
         /// </summary>
-        public string file;
+        internal string file;
         /// <summary>
         ///   <para>File line for the message.</para>
         /// </summary>
-        public int line;
+        internal int line;
     }
 
     enum CompilationStatus
@@ -88,13 +102,13 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         Dictionary<string, AssemblyCompilationTask> m_AssemblyCompilationTasks;
         string m_OutputFolder = string.Empty;
 
-        public string[] assemblyNames;
-        public CodeOptimization codeOptimization = CodeOptimization.Release;
-        public CompilationMode compilationMode = CompilationMode.Player;
-        public BuildTarget platform = EditorUserBuildSettings.activeBuildTarget;
-        public string[] roslynAnalyzers;
+        internal string[] assemblyNames;
+        internal CodeOptimization codeOptimization = CodeOptimization.Release;
+        internal CompilationMode compilationMode = CompilationMode.Player;
+        internal BuildTarget platform = EditorUserBuildSettings.activeBuildTarget;
+        internal string[] roslynAnalyzers;
 
-        public Action<AssemblyCompilationTask, CompilerMessage[]> onAssemblyCompilationFinished;
+        internal Action<AssemblyCompilationTask, CompilerMessage[]> onAssemblyCompilationFinished;
 
         public void Dispose()
         {
@@ -114,7 +128,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             m_OutputFolder = string.Empty;
         }
 
-        public AssemblyInfo[] Compile(IProgress progress = null)
+        internal AssemblyInfo[] Compile(IProgress progress = null)
         {
             var editorAssemblies = compilationMode == CompilationMode.Editor || compilationMode == CompilationMode.EditorPlayMode;
             var assemblies = GetAssemblies(editorAssemblies);

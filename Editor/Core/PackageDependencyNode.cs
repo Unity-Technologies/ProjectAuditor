@@ -1,6 +1,6 @@
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    public class PackageDependencyNode : DependencyNode
+    internal class PackageDependencyNode : DependencyNode
     {
         readonly string m_Name;
 

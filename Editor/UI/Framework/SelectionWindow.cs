@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public abstract class SelectionWindow : EditorWindow
+    internal abstract class SelectionWindow : EditorWindow
     {
         protected MultiSelectionTable m_SelectionTable;
         protected MultiColumnHeaderState m_MultiColumnHeaderState;
@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected abstract void CreateTable(TreeViewSelection selection, string[] names);
 
-        public static T Open<T>(string title, float screenX, float screenY,
+        internal static T Open<T>(string title, float screenX, float screenY,
             TreeViewSelection selection, string[] names, Action<TreeViewSelection> onSelection) where T : SelectionWindow
         {
             var window = GetWindow<T>(title);
@@ -26,13 +26,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return window;
         }
 
-        public static void CloseAll<T>() where T : SelectionWindow
+        internal static void CloseAll<T>() where T : SelectionWindow
         {
             var window = GetWindow<T>();
             window.Close();
         }
 
-        public static bool IsOpen<T>() where T : SelectionWindow
+        internal static bool IsOpen<T>() where T : SelectionWindow
         {
             var windows = Resources.FindObjectsOfTypeAll(typeof(T));
             if (windows != null && windows.Length > 0)

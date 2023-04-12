@@ -5,9 +5,9 @@ namespace Unity.ProjectAuditor.Editor.Core
 {
     class HTMLExporter : Exporter
     {
-        public HTMLExporter(string path, IssueLayout layout) : base(path, layout) {}
+        internal HTMLExporter(string path, IssueLayout layout) : base(path, layout) {}
 
-        public override void WriteHeader()
+        internal override void WriteHeader()
         {
             m_StreamWriter.Write(@"<html>" + m_StreamWriter.NewLine + @"<body>" + m_StreamWriter.NewLine);
             m_StreamWriter.Write(@"<table width='50%' cellpadding='10' style='margin-top:10px' cellspacing='3' border='1' rules='all'>" + m_StreamWriter.NewLine + @"<tr>" + m_StreamWriter.NewLine);
@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             m_StreamWriter.WriteLine(@"</tr>");
         }
 
-        public override void WriteFooter()
+        internal override void WriteFooter()
         {
             m_StreamWriter.Write(@"</body>" + m_StreamWriter.NewLine + @"</html>" + m_StreamWriter.NewLine);
         }

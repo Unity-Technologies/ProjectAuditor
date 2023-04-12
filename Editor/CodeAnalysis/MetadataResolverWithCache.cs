@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         IMetadataResolver m_Impl;
         Dictionary<object, object> m_Cache = new Dictionary<object, object>();
 
-        public MetadataResolverWithCache(IAssemblyResolver assemblyResolver)
+        internal MetadataResolverWithCache(IAssemblyResolver assemblyResolver)
         {
             m_Impl = new MetadataResolver(assemblyResolver);
         }

@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public static class Utility
+    internal static class Utility
     {
-        public enum IconType
+        internal enum IconType
         {
             Info,
             Warning,
@@ -69,25 +69,25 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         static GUIContent[] s_StatusWheel;
 
-        public static readonly GUIContent ClearSelection = new GUIContent("Clear Selection");
-        public static readonly GUIContent CopyToClipboard = new GUIContent("Copy to Clipboard");
-        public static readonly GUIContent OpenIssue = new GUIContent("Open Issue");
-        public static readonly GUIContent OpenScriptReference = new GUIContent("Open Script Reference");
+        internal static readonly GUIContent ClearSelection = new GUIContent("Clear Selection");
+        internal static readonly GUIContent CopyToClipboard = new GUIContent("Copy to Clipboard");
+        internal static readonly GUIContent OpenIssue = new GUIContent("Open Issue");
+        internal static readonly GUIContent OpenScriptReference = new GUIContent("Open Script Reference");
 
-        public class DropdownItem
+        internal class DropdownItem
         {
-            public GUIContent Content;
-            public GUIContent SelectionContent;
-            public bool Enabled;
-            public object UserData;
+            internal GUIContent Content;
+            internal GUIContent SelectionContent;
+            internal bool Enabled;
+            internal object UserData;
         }
 
-        public static bool BoldFoldout(bool toggle, GUIContent content)
+        internal static bool BoldFoldout(bool toggle, GUIContent content)
         {
             return EditorGUILayout.Foldout(toggle, content, SharedStyles.Foldout);
         }
 
-        public static void ToolbarDropdownList(DropdownItem[] items, int selectionIndex,
+        internal static void ToolbarDropdownList(DropdownItem[] items, int selectionIndex,
             GenericMenu.MenuFunction2 callback, params GUILayoutOption[] options)
         {
             var selectionContent = items[selectionIndex].SelectionContent;
@@ -129,7 +129,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return GUI.Button(rect, content, EditorStyles.toolbarDropDown);
         }
 
-        public static void DrawHelpButton(GUIContent content, string url)
+        internal static void DrawHelpButton(GUIContent content, string url)
         {
             if (GUILayout.Button(content, EditorStyles.toolbarButton, GUILayout.MaxWidth(25)))
             {
@@ -137,7 +137,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public static void DrawSelectedText(string text)
+        internal static void DrawSelectedText(string text)
         {
 #if UNITY_2019_1_OR_NEWER
             var treeViewSelectionStyle = (GUIStyle)"TV Selection";
@@ -161,7 +161,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public static string GetTreeViewSelectedSummary(TreeViewSelection selection, string[] names)
+        internal static string GetTreeViewSelectedSummary(TreeViewSelection selection, string[] names)
         {
             var selectedStrings = selection.GetSelectedStrings(names, true);
             var numStrings = selectedStrings.Length;
@@ -194,14 +194,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return $"BuildSettings.{platformName}.Small";
         }
 
-        public static GUIContent GetPlatformIcon(BuildTargetGroup buildTargetGroup)
+        internal static GUIContent GetPlatformIcon(BuildTargetGroup buildTargetGroup)
         {
             var iconName = GetPlatformIconName(buildTargetGroup);
 
             return EditorGUIUtility.IconContent(iconName);
         }
 
-        public static GUIContent GetIcon(IconType iconType, string tooltip = null)
+        internal static GUIContent GetIcon(IconType iconType, string tooltip = null)
         {
             switch (iconType)
             {
@@ -278,7 +278,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return null;
         }
 
-        public static GUIContent GetLogLevelIcon(Core.LogLevel logLevel, string tooltip = null)
+        internal static GUIContent GetLogLevelIcon(Core.LogLevel logLevel, string tooltip = null)
         {
             switch (logLevel)
             {
@@ -293,7 +293,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public static GUIContent GetTextWithLogLevelIcon(string text, string tooltip, Severity severity)
+        internal static GUIContent GetTextWithLogLevelIcon(string text, string tooltip, Severity severity)
         {
             switch (severity)
             {
@@ -308,7 +308,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public static GUIContent GetSeverityIcon(Severity severity, string tooltip = null)
+        internal static GUIContent GetSeverityIcon(Severity severity, string tooltip = null)
         {
             switch (severity)
             {
@@ -325,7 +325,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public static GUIContent GetSeverityIconWithText(Severity severity)
+        internal static GUIContent GetSeverityIconWithText(Severity severity)
         {
             switch (severity)
             {
@@ -363,7 +363,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return s_StatusWheel[frame];
         }
 
-        public static GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath)
+        internal static GUIContent GetTextContentWithAssetIcon(string displayName, string assetPath)
         {
             var icon = AssetDatabase.GetCachedIcon(assetPath);
             return EditorGUIUtility.TrTextContentWithIcon(displayName, assetPath, icon);
@@ -374,7 +374,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return AssetDatabase.LoadAssetAtPath<Texture2D>($"{ProjectAuditor.s_PackagePath}/Editor/Icons/{iconName}.png");
         }
 
-        public static Texture2D MakeColorTexture(Color col)
+        internal static Texture2D MakeColorTexture(Color col)
         {
             var pix = new Color[1];
             pix[0] = col;

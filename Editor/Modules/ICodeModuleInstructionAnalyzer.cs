@@ -6,7 +6,7 @@ using Unity.ProjectAuditor.Editor.Core;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public interface ICodeModuleInstructionAnalyzer : IModuleAnalyzer
+    internal interface ICodeModuleInstructionAnalyzer : IModuleAnalyzer
     {
         IReadOnlyCollection<OpCode> opCodes { get; }
 

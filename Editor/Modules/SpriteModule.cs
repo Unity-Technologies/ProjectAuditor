@@ -13,13 +13,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.AssetDiagnostic
         };
 
-        public override string name => "Sprites Atlas";
+        internal override string name => "Sprites Atlas";
 
-        public override bool isEnabledByDefault => false;
+        internal override bool isEnabledByDefault => false;
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts  => new IssueLayout[] { AssetsModule.k_IssueLayout };
+        internal override IReadOnlyCollection<IssueLayout> supportedLayouts  => new IssueLayout[] { AssetsModule.k_IssueLayout };
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
             var allSpriteAtlases = AssetDatabase.FindAssets("t:SpriteAtlas, a:assets");

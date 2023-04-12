@@ -15,36 +15,36 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// If enabled, ProjectAuditor will run every time the project is built.
         /// </summary>
-        public bool AnalyzeOnBuild;
+        internal bool AnalyzeOnBuild;
 
         /// <summary>
         /// If enabled, ProjectAuditor will try to partially analyze the project in the background.
         /// </summary>
-        public bool AnalyzeInBackground = true;
+        internal bool AnalyzeInBackground = true;
 
         /// <summary>
         /// Compilation mode
         /// </summary>
-        public CompilationMode CompilationMode;
+        internal CompilationMode CompilationMode;
 
         /// <summary>
         /// If enabled, ProjectAuditor will use Roslyn Analyzer DLLs that are present in the project
         /// </summary>
-        public bool UseRoslynAnalyzers;
+        internal bool UseRoslynAnalyzers;
 
         /// <summary>
         /// If enabled, any issue reported by ProjectAuditor will cause the build to fail.
         /// </summary>
-        public bool FailBuildOnIssues;
+        internal bool FailBuildOnIssues;
 
         [SerializeField]
         List<Rule> m_Rules = new List<Rule>();
 
-        public int NumRules => m_Rules.Count;
+        internal int NumRules => m_Rules.Count;
 
-        public ProjectAuditorSettings[] Settings;
+        internal ProjectAuditorSettings[] Settings;
 
-        public void AddRule(Rule ruleToAdd)
+        internal void AddRule(Rule ruleToAdd)
         {
             if (string.IsNullOrEmpty(ruleToAdd.filter))
             {
@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor
             m_Rules.Add(ruleToAdd);
         }
 
-        public Rule GetRule(Descriptor descriptor, string filter = "")
+        internal Rule GetRule(Descriptor descriptor, string filter = "")
         {
             // do not use Linq to avoid managed allocations
             foreach (var r in m_Rules)
@@ -69,12 +69,12 @@ namespace Unity.ProjectAuditor.Editor
             return null;
         }
 
-        public void ClearAllRules()
+        internal void ClearAllRules()
         {
             m_Rules.Clear();
         }
 
-        public void ClearRules(Descriptor descriptor, string filter = "")
+        internal void ClearRules(Descriptor descriptor, string filter = "")
         {
             var rules = m_Rules.Where(r => r.id == descriptor.id && r.filter.Equals(filter)).ToArray();
 
@@ -82,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor
                 m_Rules.Remove(rule);
         }
 
-        public Severity GetAction(Descriptor descriptor, string filter = "")
+        internal Severity GetAction(Descriptor descriptor, string filter = "")
         {
             // is there a rule that matches the filter?
             var projectRule = GetRule(descriptor, filter);

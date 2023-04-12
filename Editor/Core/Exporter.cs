@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    public abstract class Exporter : IDisposable
+    internal abstract class Exporter : IDisposable
     {
         protected readonly IssueLayout m_Layout;
         protected readonly StreamWriter m_StreamWriter;
@@ -20,9 +20,9 @@ namespace Unity.ProjectAuditor.Editor.Core
             m_StreamWriter.Close();
         }
 
-        public abstract void WriteHeader();
+        internal abstract void WriteHeader();
 
-        public void WriteIssues(ProjectIssue[] issues)
+        internal void WriteIssues(ProjectIssue[] issues)
         {
             foreach (var issue in issues)
                 WriteIssue(issue);
@@ -30,6 +30,6 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         protected abstract void WriteIssue(ProjectIssue issue);
 
-        public virtual void WriteFooter() {}
+        internal virtual void WriteFooter() {}
     }
 }

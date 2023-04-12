@@ -6,11 +6,11 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public static class ProjectIssueExtensions
+    internal static class ProjectIssueExtensions
     {
         internal const string k_NotAvailable = "N/A";
 
-        public static string GetContext(this ProjectIssue issue)
+        internal static string GetContext(this ProjectIssue issue)
         {
             if (issue.dependencies == null)
                 return string.Empty;
@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor
             return root.name;
         }
 
-        public static string GetProperty(this ProjectIssue issue, PropertyType propertyType)
+        internal static string GetProperty(this ProjectIssue issue, PropertyType propertyType)
         {
             switch (propertyType)
             {
@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        public static string GetPropertyGroup(this ProjectIssue issue, PropertyDefinition propertyDefinition)
+        internal static string GetPropertyGroup(this ProjectIssue issue, PropertyDefinition propertyDefinition)
         {
             switch (propertyDefinition.type)
             {

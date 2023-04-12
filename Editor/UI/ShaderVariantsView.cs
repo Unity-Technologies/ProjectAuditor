@@ -50,15 +50,15 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         struct PropertyFoldout
         {
-            public int id;
-            public bool enabled;
-            public GUIContent content;
-            public Vector2 scroll;
+            internal int id;
+            internal bool enabled;
+            internal GUIContent content;
+            internal Vector2 scroll;
         }
 
         PropertyFoldout[] m_PropertyFoldouts;
 
-        public override void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ViewStates viewStates, IProjectIssueFilter filter)
+        internal override void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ViewStates viewStates, IProjectIssueFilter filter)
         {
             var propertyFoldouts = new List<PropertyFoldout>();
 
@@ -119,7 +119,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        public override void DrawFilters()
+        internal override void DrawFilters()
         {
             if (m_Desc.category == IssueCategory.ShaderVariant)
             {
@@ -140,7 +140,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        public override void DrawDetails(ProjectIssue[] selectedIssues)
+        internal override void DrawDetails(ProjectIssue[] selectedIssues)
         {
             EditorGUILayout.BeginVertical(GUILayout.Width(300));
 

@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    public static class Installer
+    internal static class Installer
     {
         // Major.Minor.Micro followed by one of abxfp followed by an identifier, optionally suffixed with " (revisionhash)"
         static readonly Regex s_VersionPattern = new Regex(@"(?<shortVersion>\d+\.\d+\.\d+(?<suffix>((?<alphabeta>[abx])|[fp])[^\s]*))( \((?<revision>[a-fA-F\d]+)\))?",
             RegexOptions.Compiled);
 
-        public static string GetUnityHubModuleDownloadURL(string moduleName)
+        internal static string GetUnityHubModuleDownloadURL(string moduleName)
         {
             var fullVersion = InternalEditorUtility.GetFullUnityVersion();
             var revision = "";

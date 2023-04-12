@@ -3,18 +3,18 @@ using System.Collections.Generic;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public class TreeViewSelection
+    internal class TreeViewSelection
     {
-        public List<string> groups;
-        public List<string> selection;
+        internal List<string> groups;
+        internal List<string> selection;
 
-        public TreeViewSelection()
+        internal TreeViewSelection()
         {
             groups = new List<string>();
             selection = new List<string>();
         }
 
-        public TreeViewSelection(TreeViewSelection selection)
+        internal TreeViewSelection(TreeViewSelection selection)
         {
             groups = new List<string>();
             this.selection = new List<string>();
@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Set(selection);
         }
 
-        public void SetAll(string[] names)
+        internal void SetAll(string[] names)
         {
             groups.Clear();
             var allIdentifier = new TreeItemIdentifier("All", TreeItemIdentifier.kAll);
@@ -38,14 +38,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
         }
 
-        public void Set(string name)
+        internal void Set(string name)
         {
             groups.Clear();
             selection.Clear();
             selection.Add(name);
         }
 
-        public void SetGroup(string groupName)
+        internal void SetGroup(string groupName)
         {
             groups.Clear();
             selection.Clear();
@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             groups.Add(allTreeViewSelection.nameWithIndex);
         }
 
-        public void Set(TreeViewSelection selection)
+        internal void Set(TreeViewSelection selection)
         {
             groups.Clear();
             this.selection.Clear();
@@ -65,12 +65,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 this.selection.AddRange(selection.selection);
         }
 
-        public bool Contains(string name)
+        internal bool Contains(string name)
         {
             return selection.Contains(name);
         }
 
-        public bool ContainsAny(string[] names)
+        internal bool ContainsAny(string[] names)
         {
             foreach (string name in names)
             {
@@ -80,14 +80,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return false;
         }
 
-        public bool ContainsGroup(string groupName)
+        internal bool ContainsGroup(string groupName)
         {
             return groups.Contains(groupName);
         }
 
         // stephenm TODO - This seems wildly more complex than it needs to be... UNLESS assemblies can have sub-assemblies?
         // If that's the case, we need to test for that. Otherwise we need to strip a bunch of this complexity out.
-        public string[] GetSelectedStrings(string[] names, bool summarize)
+        internal string[] GetSelectedStrings(string[] names, bool summarize)
         {
             if (selection == null || selection.Count == 0)
             {

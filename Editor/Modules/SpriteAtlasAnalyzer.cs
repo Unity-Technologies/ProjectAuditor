@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -7,7 +8,7 @@ using UnityEngine.U2D;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class SpriteAnalyzer : ISpriteAtlasModuleAnalyzer
+    internal class SpriteAnalyzer : ISpriteAtlasModuleAnalyzer
     {
         internal const string PAA0006 = nameof(PAA0006);
 

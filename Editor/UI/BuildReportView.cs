@@ -13,9 +13,9 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         struct GroupStats
         {
-            public string assetGroup;
-            public int count;
-            public long size;
+            internal string assetGroup;
+            internal int count;
+            internal long size;
         }
 
         const int k_MaxGroupCount = 10;
@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
         }
 
-        public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
+        internal override void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
             base.AddIssues(allIssues);
             if (m_Desc.category == IssueCategory.BuildFile)
@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_MetaData.AddRange(allIssues.Where(i => i.category == IssueCategory.BuildSummary));
         }
 
-        public override void Clear()
+        internal override void Clear()
         {
             base.Clear();
 
@@ -110,7 +110,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        public override void DrawDetails(ProjectIssue[] selectedIssues)
+        internal override void DrawDetails(ProjectIssue[] selectedIssues)
         {
             EditorGUILayout.BeginVertical();
 

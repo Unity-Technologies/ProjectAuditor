@@ -43,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
         static ProjectAuditorWindow s_Instance;
 
-        public static ProjectAuditorWindow Instance
+        internal static ProjectAuditorWindow Instance
         {
             get
             {
@@ -686,12 +686,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ProjectAuditor.Audit(projectAuditorParams, new ProgressBar());
         }
 
-        public void AnalyzeShaderVariants()
+        internal void AnalyzeShaderVariants()
         {
             AuditSingleModule<ShadersModule>();
         }
 
-        public void ClearShaderVariants()
+        internal void ClearShaderVariants()
         {
             m_ProjectReport.ClearIssues(IssueCategory.ShaderVariant);
 
@@ -1396,7 +1396,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         [MenuItem("Window/Analysis/" + k_ProjectAuditorName)]
-        public static ProjectAuditorWindow ShowWindow()
+        internal static ProjectAuditorWindow ShowWindow()
         {
             var wnd = GetWindow(typeof(ProjectAuditorWindow)) as ProjectAuditorWindow;
             if (wnd != null)
@@ -1417,60 +1417,60 @@ namespace Unity.ProjectAuditor.Editor.UI
         // UI styles and layout
         static class LayoutSize
         {
-            public static readonly int MinWindowWidth = 410;
-            public static readonly int MinWindowHeight = 540;
-            public static readonly int FilterOptionsLeftLabelWidth = 100;
-            public static readonly int FilterOptionsEnumWidth = 50;
+            internal static readonly int MinWindowWidth = 410;
+            internal static readonly int MinWindowHeight = 540;
+            internal static readonly int FilterOptionsLeftLabelWidth = 100;
+            internal static readonly int FilterOptionsEnumWidth = 50;
         }
 
         static class Contents
         {
-            public static readonly GUIContent WindowTitle = new GUIContent(k_ProjectAuditorName);
+            internal static readonly GUIContent WindowTitle = new GUIContent(k_ProjectAuditorName);
 
-            public static readonly GUIContent AnalyzeButton =
+            internal static readonly GUIContent AnalyzeButton =
                 new GUIContent("Analyze", "Analyze Project and list all issues found.");
-            public static readonly GUIContent ModulesSelection =
+            internal static readonly GUIContent ModulesSelection =
                 new GUIContent("Modules", $"Select {k_ProjectAuditorName} modules.");
-            public static readonly GUIContent PlatformSelection =
+            internal static readonly GUIContent PlatformSelection =
                 new GUIContent("Platform", "Select the target platform.");
 
-            public static readonly GUIContent SettingsTitle = new GUIContent("Settings");
-            public static readonly GUIContent NewSettingsButton = new GUIContent("Create New Settings");
+            internal static readonly GUIContent SettingsTitle = new GUIContent("Settings");
+            internal static readonly GUIContent NewSettingsButton = new GUIContent("Create New Settings");
 
 #if UNITY_2019_1_OR_NEWER
-            public static readonly GUIContent SaveButton = Utility.GetIcon(Utility.IconType.Save, "Save current report to json file");
-            public static readonly GUIContent LoadButton = Utility.GetIcon(Utility.IconType.Load, "Load report from json file");
-            public static readonly GUIContent DiscardButton = Utility.GetIcon(Utility.IconType.Trash, "Discard the current report.");
+            internal static readonly GUIContent SaveButton = Utility.GetIcon(Utility.IconType.Save, "Save current report to json file");
+            internal static readonly GUIContent LoadButton = Utility.GetIcon(Utility.IconType.Load, "Load report from json file");
+            internal static readonly GUIContent DiscardButton = Utility.GetIcon(Utility.IconType.Trash, "Discard the current report.");
 #else
-            public static readonly GUIContent SaveButton = new GUIContent("Save", "Save current report to json file");
-            public static readonly GUIContent LoadButton = new GUIContent("Load", "Load report from json file");
-            public static readonly GUIContent DiscardButton = new GUIContent("Discard", "Discard the current report.");
+            internal static readonly GUIContent SaveButton = new GUIContent("Save", "Save current report to json file");
+            internal static readonly GUIContent LoadButton = new GUIContent("Load", "Load report from json file");
+            internal static readonly GUIContent DiscardButton = new GUIContent("Discard", "Discard the current report.");
 #endif
 
-            public static readonly GUIContent HelpButton = Utility.GetIcon(Utility.IconType.Help, "Open Manual (in a web browser)");
-            public static readonly GUIContent PreferencesMenuItem = EditorGUIUtility.TrTextContent("Preferences", $"Open User Preferences for {k_ProjectAuditorName}");
+            internal static readonly GUIContent HelpButton = Utility.GetIcon(Utility.IconType.Help, "Open Manual (in a web browser)");
+            internal static readonly GUIContent PreferencesMenuItem = EditorGUIUtility.TrTextContent("Preferences", $"Open User Preferences for {k_ProjectAuditorName}");
 
-            public static readonly GUIContent AssemblyFilter =
+            internal static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");
 
-            public static readonly GUIContent AssemblyFilterSelect =
+            internal static readonly GUIContent AssemblyFilterSelect =
                 new GUIContent("Select", "Select assemblies to examine");
 
-            public static readonly GUIContent AreaFilter =
+            internal static readonly GUIContent AreaFilter =
                 new GUIContent("Area : ", "Select performance areas to display");
 
-            public static readonly GUIContent AreaFilterSelect =
+            internal static readonly GUIContent AreaFilterSelect =
                 new GUIContent("Select", "Select performance areas to display");
 
-            public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore selected issues.");
-            public static readonly GUIContent UnmuteButton = new GUIContent("Unmute", "Always show selected issues.");
+            internal static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore selected issues.");
+            internal static readonly GUIContent UnmuteButton = new GUIContent("Unmute", "Always show selected issues.");
 
-            public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filtering Criteria");
-            public static readonly GUIContent ActionsFoldout = new GUIContent("Actions", "Actions on selected issues");
+            internal static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filtering Criteria");
+            internal static readonly GUIContent ActionsFoldout = new GUIContent("Actions", "Actions on selected issues");
 
-            public static readonly GUIContent WelcomeTextTitle = new GUIContent("Welcome to Project Auditor");
+            internal static readonly GUIContent WelcomeTextTitle = new GUIContent("Welcome to Project Auditor");
 
-            public static readonly GUIContent WelcomeText = new GUIContent(
+            internal static readonly GUIContent WelcomeText = new GUIContent(
 @"
 Project Auditor is an experimental static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report that contains the following:
 
@@ -1486,25 +1486,25 @@ A view allows the user to browse through the listed items and filter by string o
 "
             );
 
-            public static readonly GUIContent ConfigurationsTitle = new GUIContent("Configurations");
+            internal static readonly GUIContent ConfigurationsTitle = new GUIContent("Configurations");
 
-            public static readonly GUIContent Clear = new GUIContent("Clear");
-            public static readonly GUIContent Refresh = new GUIContent("Refresh");
+            internal static readonly GUIContent Clear = new GUIContent("Clear");
+            internal static readonly GUIContent Refresh = new GUIContent("Refresh");
 
-            public static readonly GUIContent CodeDiagnostics = new GUIContent("Diagnostics", "Code Diagnostics");
-            public static readonly GUIContent CodeCompilerMessages = new GUIContent("Messages", "Compiler Messages");
+            internal static readonly GUIContent CodeDiagnostics = new GUIContent("Diagnostics", "Code Diagnostics");
+            internal static readonly GUIContent CodeCompilerMessages = new GUIContent("Messages", "Compiler Messages");
 
-            public static readonly GUIContent Shaders = new GUIContent("Shaders", "Inspect Shaders");
-            public static readonly GUIContent ShaderCompilerMessages = new GUIContent("Messages", "Show Shader Compiler Messages");
-            public static readonly GUIContent ShaderVariants = new GUIContent("Variants", "Inspect Shader Variants");
+            internal static readonly GUIContent Shaders = new GUIContent("Shaders", "Inspect Shaders");
+            internal static readonly GUIContent ShaderCompilerMessages = new GUIContent("Messages", "Show Shader Compiler Messages");
+            internal static readonly GUIContent ShaderVariants = new GUIContent("Variants", "Inspect Shader Variants");
 
-            public static readonly GUIContent AssetDiagnostics = new GUIContent("Diagnostics", "Asset Diagnostics");
+            internal static readonly GUIContent AssetDiagnostics = new GUIContent("Diagnostics", "Asset Diagnostics");
 
-            public static readonly GUIContent BuildFiles = new GUIContent("Build Size");
-            public static readonly GUIContent BuildSteps = new GUIContent("Build Steps");
+            internal static readonly GUIContent BuildFiles = new GUIContent("Build Size");
+            internal static readonly GUIContent BuildSteps = new GUIContent("Build Steps");
 
-            public static readonly GUIContent Packages = new GUIContent("Packages", "Installed Packages");
-            public static readonly GUIContent PackageDiagnostics = new GUIContent("Diagnostics", "Package Diagnostics");
+            internal static readonly GUIContent Packages = new GUIContent("Packages", "Installed Packages");
+            internal static readonly GUIContent PackageDiagnostics = new GUIContent("Diagnostics", "Package Diagnostics");
         }
     }
 }

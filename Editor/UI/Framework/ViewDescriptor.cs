@@ -9,25 +9,25 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public class ViewDescriptor
+    internal class ViewDescriptor
     {
-        public Type type;
-        public IssueCategory category;
-        public string displayName;
-        public string menuLabel;
-        public int menuOrder;
-        public bool descriptionWithIcon;
-        public bool showAssemblySelection;
-        public bool showDependencyView;
-        public bool showFilters;
-        public bool showInfoPanel;
-        public GUIContent dependencyViewGuiContent;
-        public Func<ProjectIssue, string> getAssemblyName;
-        public Action<GenericMenu, ViewManager, ProjectIssue> onContextMenu;
-        public Action<ViewManager> onDrawToolbar;
-        public Action<Location> onOpenIssue;
-        public Action<Descriptor> onOpenManual;
-        public int analyticsEvent;
+        internal Type type;
+        internal IssueCategory category;
+        internal string displayName;
+        internal string menuLabel;
+        internal int menuOrder;
+        internal bool descriptionWithIcon;
+        internal bool showAssemblySelection;
+        internal bool showDependencyView;
+        internal bool showFilters;
+        internal bool showInfoPanel;
+        internal GUIContent dependencyViewGuiContent;
+        internal Func<ProjectIssue, string> getAssemblyName;
+        internal Action<GenericMenu, ViewManager, ProjectIssue> onContextMenu;
+        internal Action<ViewManager> onDrawToolbar;
+        internal Action<Location> onOpenIssue;
+        internal Action<Descriptor> onOpenManual;
+        internal int analyticsEvent;
 
         static readonly Dictionary<int, ViewDescriptor> s_ViewDescriptorsRegistry = new Dictionary<int, ViewDescriptor>();
 
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         /// Register a view via ViewDescriptor
         /// </summary>
         /// <returns> Returns 'true' on success, 'false' otherwise</returns>
-        public static bool Register(ViewDescriptor descriptor)
+        internal static bool Register(ViewDescriptor descriptor)
         {
             if (s_ViewDescriptorsRegistry.ContainsKey((int)descriptor.category))
                 return false;
@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return true;
         }
 
-        public static ViewDescriptor[] GetAll()
+        internal static ViewDescriptor[] GetAll()
         {
             return s_ViewDescriptorsRegistry.Select(pair => pair.Value).ToArray();
         }

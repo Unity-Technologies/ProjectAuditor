@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    public enum CodeProperty
+    internal enum CodeProperty
     {
         Assembly = 0,
         Num
@@ -115,9 +115,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         Thread m_AssemblyAnalysisThread;
 
-        public override string name => "Code";
+        internal override string name => "Code";
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        internal override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_AssemblyLayout,
             k_PrecompiledAssemblyLayout,
@@ -126,7 +126,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             k_GenericIssueLayout,
         };
 
-        public override void Initialize(ProjectAuditorConfig config)
+        internal override void Initialize(ProjectAuditorConfig config)
         {
             base.Initialize(config);
 
@@ -137,7 +137,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             m_OpCodes = m_Analyzers.Select(a => a.opCodes).SelectMany(c => c).Distinct().ToList();
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             if (m_Descriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
