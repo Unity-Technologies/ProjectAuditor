@@ -8,10 +8,10 @@ using UnityEngine.Assertions;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public class MultiSelectionTable : TreeView
+    internal class MultiSelectionTable : TreeView
     {
         // All columns
-        public enum Column
+        internal enum Column
         {
             ItemName,
             State,
@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         // stephenm TODO - Sorting doesn't work in this window (or in the Thread Selection Window in Profile Analyzer that
         // this is based on). So maybe rip this all out?
-        public enum SortOption
+        internal enum SortOption
         {
             ItemName,
             GroupName
@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         GUIStyle m_ActiveLineStyle;
 
-        public MultiSelectionTable(TreeViewState state, MultiColumnHeader multicolumnHeader, string[] names,
+        internal MultiSelectionTable(TreeViewState state, MultiColumnHeader multicolumnHeader, string[] names,
                                    TreeViewSelection selection) : base(state, multicolumnHeader)
         {
             m_AllIdentifier = new TreeItemIdentifier();
@@ -70,14 +70,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Reload();
         }
 
-        public void ClearSelection()
+        internal void ClearSelection()
         {
             m_Selection.selection.Clear();
             m_Selection.groups.Clear();
             Reload();
         }
 
-        public TreeViewSelection GetTreeViewSelection()
+        internal TreeViewSelection GetTreeViewSelection()
         {
             return m_Selection;
         }
@@ -536,7 +536,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return false;
         }
 
-        public static MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(HeaderData[] headerData)
+        internal static MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(HeaderData[] headerData)
         {
             var columnList = new List<MultiColumnHeaderState.Column>();
 
@@ -568,15 +568,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return state;
         }
 
-        public struct HeaderData
+        internal struct HeaderData
         {
-            public GUIContent content;
-            public float width;
-            public float minWidth;
-            public bool autoResize;
-            public bool allowToggleVisibility;
+            internal GUIContent content;
+            internal float width;
+            internal float minWidth;
+            internal bool autoResize;
+            internal bool allowToggleVisibility;
 
-            public HeaderData(string name, string tooltip = "", float _width = 50, float _minWidth = 30,
+            internal HeaderData(string name, string tooltip = "", float _width = 50, float _minWidth = 30,
                               bool _autoResize = true, bool _allowToggleVisibility = true)
             {
                 content = new GUIContent(name, tooltip);
@@ -601,7 +601,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     // stephenm TODO - Can ditch this if we ditch sorting.
     static class MyExtensionMethods
     {
-        public static IOrderedEnumerable<T> Order<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector,
+        internal static IOrderedEnumerable<T> Order<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector,
             bool ascending)
         {
             if (ascending)
@@ -609,7 +609,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return source.OrderByDescending(selector);
         }
 
-        public static IOrderedEnumerable<T> ThenBy<T, TKey>(this IOrderedEnumerable<T> source, Func<T, TKey> selector,
+        internal static IOrderedEnumerable<T> ThenBy<T, TKey>(this IOrderedEnumerable<T> source, Func<T, TKey> selector,
             bool ascending)
         {
             if (ascending)

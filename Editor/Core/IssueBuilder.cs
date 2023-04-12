@@ -4,18 +4,18 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    public class IssueBuilder
+    internal class IssueBuilder
     {
         ProjectIssue m_Issue;
 
         public static implicit operator ProjectIssue(IssueBuilder builder) => builder.m_Issue;
 
-        internal IssueBuilder(IssueCategory category, Descriptor descriptor, params object[] args)
+        public IssueBuilder(IssueCategory category, Descriptor descriptor, params object[] args)
         {
             m_Issue = new ProjectIssue(category, descriptor, args);
         }
 
-        internal IssueBuilder(IssueCategory category, string description)
+        public IssueBuilder(IssueCategory category, string description)
         {
             m_Issue = new ProjectIssue(category, description);
         }
@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             return this;
         }
 
-        internal IssueBuilder WithDepth(int depth)
+        public IssueBuilder WithDepth(int depth)
         {
             m_Issue.depth = depth;
             return this;

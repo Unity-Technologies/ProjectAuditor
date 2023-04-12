@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public class ViewTests
+    internal class ViewTests
     {
 #if UNITY_2019_4_OR_NEWER
         [UnityTest]

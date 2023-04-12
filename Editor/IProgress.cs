@@ -1,6 +1,6 @@
 namespace Unity.ProjectAuditor.Editor
 {
-    public interface IProgress
+    internal interface IProgress
     {
         /// <summary>
         /// Initializes the progress object.
@@ -12,7 +12,8 @@ namespace Unity.ProjectAuditor.Editor
 
         /// <summary>
         /// Advances the progress object by one step.
-        /// </summary>`
+        /// </summary>
+        /// <param name="description">Updated message</param>
         void Advance(string description = "");
 
         /// <summary>

@@ -6,7 +6,7 @@ using Unity.ProjectAuditor.Editor.Tests.Common;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class MeshTests : TestFixtureBase
+    internal class MeshTests : TestFixtureBase
     {
         const string k_SmallMeshName = "SmallTestMesh";
         const string k_LargeMeshName = "LargeTestMesh";
@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var foundIssues = AnalyzeAndFindAssetIssues(m_TestSmallMeshAsset, IssueCategory.AssetDiagnostic);
 
             Assert.IsNotEmpty(foundIssues);
-            Assert.IsTrue(foundIssues.Any(issue => issue.descriptor.id == MeshAnalyzer.PAM0001), "Small mesh should be reported");
+            Assert.IsTrue(foundIssues.Any(issue => issue.descriptor.id == MeshAnalyzer.PAA1001), "Small mesh should be reported");
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var foundIssues = AnalyzeAndFindAssetIssues(m_TestSmallMeshAsset, IssueCategory.AssetDiagnostic);
 
             Assert.IsNotEmpty(foundIssues);
-            Assert.IsTrue(foundIssues.Any(issue => issue.descriptor.id == MeshAnalyzer.PAM0000), "Read/Write mesh should be reported");
+            Assert.IsTrue(foundIssues.Any(issue => issue.descriptor.id == MeshAnalyzer.PAA1000), "Read/Write mesh should be reported");
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var foundIssues = AnalyzeAndFindAssetIssues(m_TestLargeMeshAsset, IssueCategory.AssetDiagnostic);
 
-            Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == MeshAnalyzer.PAM0000), "Read/Write mesh should no be reported");
+            Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == MeshAnalyzer.PAA1000), "Read/Write mesh should no be reported");
         }
     }
 }

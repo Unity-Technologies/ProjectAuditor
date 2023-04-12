@@ -2,7 +2,7 @@ using System;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    public class AssetDependencyNode : DependencyNode
+    internal class AssetDependencyNode : DependencyNode
     {
         public override string GetName()
         {

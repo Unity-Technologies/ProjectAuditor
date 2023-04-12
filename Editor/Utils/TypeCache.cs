@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    public static class TypeCache
+    internal static class TypeCache
     {
         static List<Type> s_Types;
 
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return types;
         }
 
-        public static IEnumerable<Type> GetTypesDerivedFrom(Type parentType)
+        internal static IEnumerable<Type> GetTypesDerivedFrom(Type parentType)
         {
             return GetAllTypes()
                 .Where(type => type != parentType && parentType.IsAssignableFrom(type));

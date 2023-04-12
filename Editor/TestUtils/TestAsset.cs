@@ -3,6 +3,7 @@ using System.IO;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
+using UnityEditor.U2D;
 
 namespace Unity.ProjectAuditor.Editor.Tests.Common
 {
@@ -41,7 +42,6 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             File.WriteAllBytes(relativePath, byteContent);
 
             Assert.True(File.Exists(relativePath));
-
             AssetDatabase.ImportAsset(relativePath, ImportAssetOptions.ForceUpdate);
         }
 
@@ -53,6 +53,29 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             return tempAsset;
         }
+
+#if UNITY_2020_1_OR_NEWER
+        //SpriteAtlasAsset Save is not compatible with the AssetDatabase save
+        //Alternative function to create a TestAsset from a SpriteAtlas
+        public static TestAsset SaveSpriteAtlasAsset(SpriteAtlasAsset asset, string fileName)
+        {
+            var tempAsset = new TestAsset(fileName);
+            #if UNITY_2021_1_OR_NEWER
+            SpriteAtlasAsset.Save(asset, tempAsset.relativePath);
+            #else
+            if (asset == null)
+                throw new ArgumentNullException("Parameter asset is null");
+            UnityEditorInternal.InternalEditorUtility.SaveToSerializedFileAndForget(new UnityEngine.Object[1]
+            {
+                asset
+            }, tempAsset.relativePath, EditorSettings.serializationMode != SerializationMode.ForceBinary);
+            #endif
+            AssetDatabase.ImportAsset(tempAsset.relativePath, ImportAssetOptions.ForceUpdate);
+
+            return tempAsset;
+        }
+
+#endif
 
         public static void Cleanup()
         {

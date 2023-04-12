@@ -21,39 +21,69 @@ namespace Unity.ProjectAuditor.Editor
     public sealed class ProjectAuditor
         : IPreprocessBuildWithReport
     {
-        internal const string DataPath = PackagePath + "/Data";
-        internal const string DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
+        internal static string s_DataPath => s_PackagePath + "/Data";
+        internal const string k_DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
+        internal const string k_CanonicalPackagePath = "Packages/" + k_PackageName;
 
-        public const string PackageName = "com.unity.project-auditor";
-        public const string PackagePath = "Packages/" + PackageName;
+        internal const string k_PackageName = "com.unity.project-auditor";
 
-        internal static string PackageVersion
+        internal static string s_PackagePath
         {
             get
             {
-                if (string.IsNullOrEmpty(s_PackageVersion))
-                    s_PackageVersion = PackageUtils.GetPackageVersion(PackageName);
-                return s_PackageVersion;
+                if (!string.IsNullOrEmpty(s_CachedPackagePath))
+                    return s_CachedPackagePath;
+
+                if (PackageUtils.IsPackageInstalled(k_PackageName))
+                    s_CachedPackagePath = k_CanonicalPackagePath;
+                else
+                {
+                    var paths = AssetDatabase.FindAssets("t:asmdef", new string[] { "Packages" }).Select(AssetDatabase.GUIDToAssetPath);
+                    var asmDefPath = paths.FirstOrDefault(path => path.EndsWith("Unity.ProjectAuditor.Editor.asmdef"));
+                    s_CachedPackagePath = PathUtils.GetDirectoryName(PathUtils.GetDirectoryName(asmDefPath));
+                }
+                return s_CachedPackagePath;
             }
         }
 
+        internal static string s_PackageVersion
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(s_CachedPackageVersion))
+                    s_CachedPackageVersion = PackageUtils.GetPackageVersion(k_PackageName);
+                return s_CachedPackageVersion;
+            }
+        }
+
+        static string s_CachedPackagePath;
+        static string s_CachedPackageVersion;
         static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
-        static string s_PackageVersion;
 
         readonly List<ProjectAuditorModule> m_Modules = new List<ProjectAuditorModule>();
         ProjectAuditorConfig m_Config;
 
-        public ProjectAuditorConfig config => m_Config;
+        /// <summary>
+        /// A ProjectAuditorConfig object to configure how analysis is performed
+        /// </summary>
+        internal ProjectAuditorConfig config => m_Config;
 
         IProjectAuditorSettingsProvider m_DefaultSettingsProvider;
 
+        /// <summary>
+        /// ProjectAuditor default constructor
+        /// </summary>
         public ProjectAuditor()
         {
-            InitAsset(DefaultAssetPath);
+            InitAsset(k_DefaultAssetPath);
             InitModules();
             InitDefaultSettingsProvider();
         }
 
+        /// <summary>
+        /// ProjectAuditor constructor
+        /// </summary>
+        /// <param name="projectAuditorConfig"> ProjectAuditor Configuration object</param>
         public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
         {
             m_Config = projectAuditorConfig;
@@ -100,7 +130,7 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Project Auditor [{instance.name}]: " + e.Message);
+                    Debug.LogError($"Project Auditor [{instance.name}]: {e.Message} {e.StackTrace}");
                     continue;
                 }
                 m_Modules.Add(instance);
@@ -116,10 +146,10 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Runs all modules that are both supported and enabled.
         /// </summary>
-        /// <param name="progress"> Progress bar, if applicable </param>
         /// <param name="projectAuditorParams"> Parameters to control the audit process </param>
+        /// <param name="progress"> Progress bar, if applicable </param>
         /// <returns> Generated report </returns>
-        public ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        internal ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             ProjectReport projectReport = null;
 
@@ -132,7 +162,12 @@ namespace Unity.ProjectAuditor.Editor
             return projectReport;
         }
 
-        public ProjectReport Audit(IProgress progress = null)
+        /// <summary>
+        /// Runs all modules that are both supported and enabled, using default parameters.
+        /// </summary>
+        /// <param name="progress"> Progress bar, if applicable </param>
+        /// <returns> Generated report </returns>
+        internal ProjectReport Audit(IProgress progress = null)
         {
             return Audit(new ProjectAuditorParams(), progress);
         }
@@ -142,7 +177,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="projectAuditorParams"> Parameters to control the audit process </param>
         /// <param name="progress"> Progress bar, if applicable </param>
-        public void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        internal void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.SelectMany(GetModules).Distinct() : m_Modules.Where(m => m.isEnabledByDefault).ToArray();
             var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.platform)).ToArray();
@@ -236,29 +271,44 @@ namespace Unity.ProjectAuditor.Editor
             return m_Modules.Any(a => a.isSupported && a.supportedLayouts.FirstOrDefault(l => l.category == category) != null);
         }
 
-        public IssueCategory[] GetCategories()
+        /// <summary>
+        /// Get all the categories which are reported by the supported modules
+        /// </summary>
+        /// <returns>An array of IssueCategory values</returns>
+        internal IssueCategory[] GetCategories()
         {
             return m_Modules.Where(module => module.isSupported).SelectMany(m => m.categories).ToArray();
         }
 
-        public IssueLayout GetLayout(IssueCategory category)
+        /// <summary>
+        /// Get the layout for a category
+        /// </summary>
+        /// <param name="category">The category to get the layout for</param>
+        /// <returns>The IssueLayout for the specified category</returns>
+        internal IssueLayout GetLayout(IssueCategory category)
         {
             var layouts = m_Modules.Where(a => a.isSupported).SelectMany(module => module.supportedLayouts).Where(l => l.category == category);
             return layouts.FirstOrDefault();
         }
 
         /// <summary>
-        /// Get or Register a category by name. If the name argument does match an existing category, a new category is registered.
+        /// Get or Register a category by name. If the name argument does not match an existing category, a new category is registered.
         /// </summary>
-        /// <returns> Returns the category enum</returns>
-        public static IssueCategory GetOrRegisterCategory(string name)
+        /// <param name="name">The name of the category</param>
+        /// <returns>The category enum</returns>
+        internal static IssueCategory GetOrRegisterCategory(string name)
         {
             if (!s_CustomCategories.ContainsKey(name))
                 s_CustomCategories.Add(name, IssueCategory.FirstCustomCategory + s_CustomCategories.Count);
             return s_CustomCategories[name];
         }
 
-        public static string GetCategoryName(IssueCategory category)
+        /// <summary>
+        /// Get the name of a category
+        /// </summary>
+        /// <param name="category">The category to get the name of</param>
+        /// <returns>The category name, or "Unknown" for an unregistered custom category</returns>
+        internal static string GetCategoryName(IssueCategory category)
         {
             if (category < IssueCategory.FirstCustomCategory)
                 return category.ToString();
@@ -276,13 +326,20 @@ namespace Unity.ProjectAuditor.Editor
         /// Number of available built-in and registered categories
         /// </summary>
         /// <returns> Returns the number of available categories</returns>
-        public static int NumCategories()
+        internal static int NumCategories()
         {
             return (int)IssueCategory.FirstCustomCategory + s_CustomCategories.Count;
         }
 
+        /// <summary>
+        /// Returns the relative callback order for callbacks. Callbacks with lower values are called before ones with higher values.
+        /// </summary>
         public int callbackOrder => 0;
 
+        /// <summary>
+        /// Callback function which is called before a build is started. Performs a full audit and logs the number of issues found.
+        /// </summary>
+        /// <param name="report">A report containing information about the build, such as its target platform and output path.</param>
         public void OnPreprocessBuild(BuildReport report)
         {
             if (m_Config.AnalyzeOnBuild)

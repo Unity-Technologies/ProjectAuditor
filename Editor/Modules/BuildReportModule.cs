@@ -13,13 +13,13 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public enum BuildReportMetaData
+    enum BuildReportMetaData
     {
         Value,
         Num
     }
 
-    public enum BuildReportFileProperty
+    enum BuildReportFileProperty
     {
         ImporterType = 0,
         RuntimeType,
@@ -29,18 +29,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    public enum BuildReportStepProperty
+    enum BuildReportStepProperty
     {
         Duration = 0,
         Message,
         Num
     }
 
-    public class BuildReportModule : ProjectAuditorModule
+    class BuildReportModule : ProjectAuditorModule
     {
         internal interface IBuildReportProvider
         {
-            BuildReport GetBuildReport(BuildTarget platform);
+            public BuildReport GetBuildReport(BuildTarget platform);
         }
 
 #if BUILD_REPORT_API_SUPPORT
@@ -103,20 +103,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static IBuildReportProvider DefaultBuildReportProvider => s_BuildReportProvider;
 
-        public override string name => "Build Report";
+        internal override string name => "Build Report";
 
 #if !BUILD_REPORT_API_SUPPORT
-        public override bool isSupported => false;
+        internal override bool isSupported => false;
 #endif
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        internal override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_MetaDataLayout,
             k_FileLayout,
             k_StepLayout
         };
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
 #if BUILD_REPORT_API_SUPPORT
             var buildReport = BuildReportProvider.GetBuildReport(projectAuditorParams.platform);

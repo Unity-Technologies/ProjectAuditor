@@ -6,21 +6,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     /// Global UI states. Note that these preferences will not persist between sessions.
     /// </summary>
     [Serializable]
-    public class ViewStates
+    internal class ViewStates
     {
-        public const int k_MinFontSize = 12;
-        public const int k_MaxFontSize = 22;
+        internal const int k_MinFontSize = 12;
+        internal const int k_MaxFontSize = 22;
 
         // foldout preferences
-        public bool info = true;
-        public bool filters = true;
-        public bool actions = true;
-        public bool dependencies = true;
+        internal bool info = true;
+        internal bool filters = true;
+        internal bool actions = true;
+        internal bool dependencies = true;
 
         // diagnostic preferences
-        public bool onlyCriticalIssues;
-        public bool mutedIssues;
+        internal bool onlyCriticalIssues;
+        internal bool mutedIssues;
 
-        public int fontSize = k_MinFontSize;
+        internal int fontSize = k_MinFontSize;
     }
 }

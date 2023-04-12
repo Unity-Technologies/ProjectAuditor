@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public class DocumentationTests : TestFixtureBase
+    internal class DocumentationTests : TestFixtureBase
     {
         [UnityTest]
         [Ignore("Known failure. This requires a change to be tagged.")]

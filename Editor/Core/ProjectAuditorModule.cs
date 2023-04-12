@@ -8,37 +8,37 @@ namespace Unity.ProjectAuditor.Editor.Core
     /// <summary>
     /// Project Auditor module base class. Any class derived from ProjectAuditorModule will be instantiated by ProjectAuditor and used to audit the project
     /// </summary>
-    public abstract class ProjectAuditorModule
+    internal abstract class ProjectAuditorModule
     {
         protected HashSet<Descriptor> m_Descriptors;
 
-        public abstract string name
+        internal abstract string name
         {
             get;
         }
 
-        public IssueCategory[] categories
+        internal IssueCategory[] categories
         {
             get { return supportedLayouts.Select(l => l.category).ToArray(); }
         }
 
-        public virtual bool isEnabledByDefault => true;
+        internal virtual bool isEnabledByDefault => true;
 
-        public virtual bool isSupported => true;
+        internal virtual bool isSupported => true;
 
-        public IReadOnlyCollection<Descriptor> supportedDescriptors => m_Descriptors != null ? m_Descriptors.ToArray() : Array.Empty<Descriptor>();
+        internal IReadOnlyCollection<Descriptor> supportedDescriptors => m_Descriptors != null ? m_Descriptors.ToArray() : Array.Empty<Descriptor>();
 
-        public abstract IReadOnlyCollection<IssueLayout> supportedLayouts
+        internal abstract IReadOnlyCollection<IssueLayout> supportedLayouts
         {
             get;
         }
 
-        public virtual void Initialize(ProjectAuditorConfig config)
+        internal virtual void Initialize(ProjectAuditorConfig config)
         {
             m_Descriptors = new HashSet<Descriptor>();
         }
 
-        public void RegisterDescriptor(Descriptor descriptor)
+        internal void RegisterDescriptor(Descriptor descriptor)
         {
             if (!m_Descriptors.Add(descriptor))
                 throw new Exception("Duplicate descriptor with id: " + descriptor.id);
@@ -49,6 +49,6 @@ namespace Unity.ProjectAuditor.Editor.Core
         /// </summary>
         /// <param name="projectAuditorParams"> Project audit parameters  </param>
         /// <param name="progress"> Progress bar, if applicable </param>
-        public abstract void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null);
+        internal abstract void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null);
     }
 }

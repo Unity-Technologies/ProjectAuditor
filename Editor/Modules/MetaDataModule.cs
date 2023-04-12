@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public enum MetaDataProperty
+    enum MetaDataProperty
     {
         Value = 0,
         Num
@@ -38,19 +38,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         ProjectAuditorConfig m_Config;
 
-        public override string name => "MetaData";
+        internal override string name => "MetaData";
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        internal override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_IssueLayout
         };
 
-        public override void Initialize(ProjectAuditorConfig config)
+        internal override void Initialize(ProjectAuditorConfig config)
         {
             m_Config = config;
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var issues = new List<ProjectIssue>();
             NewMetaData(k_KeyDateAndTime, Formatting.FormatDateTime(DateTime.Now), issues);
@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             NewMetaData(k_KeyAnalysisTarget, projectAuditorParams.platform, issues);
             NewMetaData(k_KeyCompilationMode, m_Config.CompilationMode, issues);
             NewMetaData(k_KeyRoslynAnalysis, m_Config.UseRoslynAnalyzers, issues);
-            NewMetaData(k_KeyProjectAuditorVersion, ProjectAuditor.PackageVersion, issues);
+            NewMetaData(k_KeyProjectAuditorVersion, ProjectAuditor.s_PackageVersion, issues);
             NewMetaData(k_KeyUnityVersion, Application.unityVersion, issues);
 
             projectAuditorParams.onIncomingIssues(issues);

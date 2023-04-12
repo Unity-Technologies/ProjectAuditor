@@ -25,12 +25,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        internal const string PAA0000 = nameof(PAA0000);
-        internal const string PAA0001 = nameof(PAA0001);
+        internal const string PAA3000 = nameof(PAA3000);
+        internal const string PAA3001 = nameof(PAA3001);
 
         static readonly Descriptor k_ResourcesFolderDescriptor = new Descriptor
             (
-            PAA0000,
+            PAA3000,
             "Resources folder asset & dependencies",
             Area.BuildSize,
             "The Resources folder is a common source of many problems in Unity projects. Improper use of the Resources folder can bloat the size of a project’s build, lead to uncontrollable excessive memory utilization, and significantly increase application startup times.",
@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         static readonly Descriptor k_StreamingAssetsFolderDescriptor = new Descriptor(
-            PAA0001,
+            PAA3001,
             "StreamingAssets folder size",
             Area.BuildSize,
             $"There are many files in the 'Assets/StreamingAssets' folder. Keeping them in the StreamingAssets folder will increase the build size.",
@@ -52,13 +52,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "StreamingAssets folder contains {0} of data",
         };
 
-        public override bool isEnabledByDefault => false;
+        internal override bool isEnabledByDefault => false;
 
-        public override string name => "Assets";
+        internal override string name => "Assets";
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
+        internal override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
 
-        public override void Initialize(ProjectAuditorConfig config)
+        internal override void Initialize(ProjectAuditorConfig config)
         {
             base.Initialize(config);
 
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             RegisterDescriptor(k_StreamingAssetsFolderDescriptor);
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var settings = projectAuditorParams.settings;
 

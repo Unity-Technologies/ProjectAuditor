@@ -29,13 +29,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         bool m_FlatView;
         int m_GroupPropertyIndex;
 
-        public bool flatView
+        internal bool flatView
         {
             get => m_FlatView;
             set => m_FlatView = value;
         }
 
-        public int groupPropertyIndex
+        internal int groupPropertyIndex
         {
             get => m_GroupPropertyIndex;
             set
@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
+        internal IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
                           ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config,
                           AnalysisView view) : base(state,
                                                     multicolumnHeader)
@@ -71,7 +71,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Clear();
         }
 
-        public void AddIssues(IReadOnlyCollection<ProjectIssue> issues)
+        internal void AddIssues(IReadOnlyCollection<ProjectIssue> issues)
         {
             // update groups
             var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex])).Distinct().ToArray();
@@ -95,7 +95,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_TreeViewItemIssues = itemsList.ToArray();
         }
 
-        public void Clear()
+        internal void Clear()
         {
             m_NextId = k_FirstId;
             m_TreeViewItemGroups.Clear();
@@ -197,7 +197,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return base.GetDescendantsThatHaveChildren(id);
         }
 
-        public void SetFontSize(int fontSize)
+        internal void SetFontSize(int fontSize)
         {
             rowHeight = k_DefaultRowHeight * fontSize / ViewStates.k_MinFontSize;
         }
@@ -448,12 +448,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public int GetNumMatchingIssues()
+        internal int GetNumMatchingIssues()
         {
             return m_NumMatchingIssues;
         }
 
-        public IssueTableItem[] GetSelectedItems()
+        internal IssueTableItem[] GetSelectedItems()
         {
             var ids = GetSelection();
             if (ids.Count() > 0)
@@ -602,24 +602,24 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             readonly IssueTableItem m_Item;
             readonly IssueLayout m_Layout;
 
-            public ItemTree(IssueTableItem i, IssueLayout layout)
+            internal ItemTree(IssueTableItem i, IssueLayout layout)
             {
                 m_Item = i;
                 m_Children = new List<ItemTree>();
                 m_Layout = layout;
             }
 
-            public int Depth
+            internal int Depth
             {
                 get { return m_Item == null ? -1 : m_Item.depth; }
             }
 
-            public void AddChild(ItemTree item)
+            internal void AddChild(ItemTree item)
             {
                 m_Children.Add(item);
             }
 
-            public void Sort(int[] columnSortOrder, bool[] isColumnAscending)
+            internal void Sort(int[] columnSortOrder, bool[] isColumnAscending)
             {
                 m_Children.Sort(delegate(ItemTree a, ItemTree b)
                 {
@@ -643,7 +643,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     child.Sort(columnSortOrder, isColumnAscending);
             }
 
-            public void ToList(List<TreeViewItem> list)
+            internal void ToList(List<TreeViewItem> list)
             {
                 // TODO be good to optimise this, rarely used, so not required
                 if (m_Item != null)
@@ -655,8 +655,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         static class Tooltip
         {
-            public static string Area = "Areas that this issue might have an impact on";
-            public static string HotPath = "Potential hot-path";
+            internal static string Area = "Areas that this issue might have an impact on";
+            internal static string HotPath = "Potential hot-path";
         }
     }
 }

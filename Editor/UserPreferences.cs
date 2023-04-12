@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public class UserPreferences
+    internal class UserPreferences
     {
         static readonly string k_PreferencesKey = "Preferences/Analysis/Project Auditor";
 
@@ -28,12 +28,12 @@ namespace Unity.ProjectAuditor.Editor
 
         internal static string loadSavePath = string.Empty;
 
-        public static string Path => k_PreferencesKey;
+        internal static string Path => k_PreferencesKey;
 
         /// <summary>
         /// If enabled, the BuildReport is automatically saved as asset after each build
         /// </summary>
-        public static bool buildReportAutoSave
+        internal static bool buildReportAutoSave
         {
             get => EditorPrefs.GetBool(k_BuildReportAutoSaveKey, k_BuildReportAutoSaveDefault);
             set => EditorPrefs.SetBool(k_BuildReportAutoSaveKey, value);
@@ -42,25 +42,25 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Customizable path to save the BuildReport
         /// </summary>
-        public static string buildReportPath
+        internal static string buildReportPath
         {
             get => EditorPrefs.GetString(k_BuildReportPathKey, k_BuildReportPathDefault);
             set => EditorPrefs.SetString(k_BuildReportPathKey, value);
         }
 
-        public static bool developerMode
+        internal static bool developerMode
         {
             get => EditorPrefs.GetBool(k_DeveloperModeKey, false);
             set => EditorPrefs.SetBool(k_DeveloperModeKey, value);
         }
 
-        public static bool logTimingsInfo
+        internal static bool logTimingsInfo
         {
             get => EditorPrefs.GetBool(k_LogTimingsInfoKey, false);
             set => EditorPrefs.SetBool(k_LogTimingsInfoKey, value);
         }
 
-        public static string settingsAsset
+        internal static string settingsAsset
         {
             get => EditorPrefs.GetString(k_EditorPrefsSettingsKey, "");
             set => EditorPrefs.SetString(k_EditorPrefsSettingsKey, value);
@@ -91,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor
                 developerMode = value;
 
                 // need to trigger domain reload so that Views are re-registered
-                AssetDatabase.ImportAsset(ProjectAuditor.PackagePath + "/Editor/UserPreferences.cs");
+                AssetDatabase.ImportAsset(ProjectAuditor.s_PackagePath + "/Editor/UserPreferences.cs");
             }
             logTimingsInfo = EditorGUILayout.Toggle(k_LogTimingsInfoLabel, logTimingsInfo);
 

@@ -11,7 +11,7 @@ using Unity.ProjectAuditor.Editor.Core;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    public enum AudioClipProperty
+    enum AudioClipProperty
     {
         ForceToMono = 0,
         LoadInBackground,
@@ -39,26 +39,23 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        public override string name => "AudioClip";
+        internal override string name => "AudioClip";
 
-        public override bool isEnabledByDefault => false;
+        internal override bool isEnabledByDefault => false;
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        internal override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_AudioClipLayout,
             AssetsModule.k_IssueLayout
         };
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var issues = new List<ProjectIssue>();
-            AnalyzeAudioClip(issues, projectAuditorParams.platform);
-            if (issues.Count > 0)
-                projectAuditorParams.onIncomingIssues(issues);
+            projectAuditorParams.onIncomingIssues(EnumerateAudioClips(projectAuditorParams.platform));
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
-        void AnalyzeAudioClip(List<ProjectIssue> issues, BuildTarget platform)
+        IEnumerable<ProjectIssue> EnumerateAudioClips(BuildTarget platform)
         {
             var GUIDsAudioClip = AssetDatabase.FindAssets("t:AudioClip");
             foreach (var guid in GUIDsAudioClip)
@@ -66,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 var importer = AssetImporter.GetAtPath(path) as AudioImporter;
                 var sampleSettings = importer.GetOverrideSampleSettings(platform.ToString());
-                var audioClipIssue = ProjectIssue.Create(IssueCategory.AudioClip, Path.GetFileNameWithoutExtension(path)).WithCustomProperties(new object[(int)AudioClipProperty.Num]
+                yield return ProjectIssue.Create(IssueCategory.AudioClip, Path.GetFileNameWithoutExtension(path)).WithCustomProperties(new object[(int)AudioClipProperty.Num]
                 {
                     importer.forceToMono,
                     importer.loadInBackground,
@@ -78,7 +75,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     sampleSettings.loadType,
                     sampleSettings.compressionFormat
                 }).WithLocation(path);
-                issues.Add(audioClipIssue);
             }
         }
     }

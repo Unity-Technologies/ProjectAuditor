@@ -30,7 +30,7 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
             m_ShowInfo = m_ShowWarn = m_ShowError = true;
         }
 
-        public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
+        internal override void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
             base.AddIssues(allIssues);
             var metaData = allIssues.FirstOrDefault(i => i.category == IssueCategory.MetaData && i.description.Equals(MetaDataModule.k_KeyCompilationMode));
@@ -41,7 +41,7 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
                 m_RoslynAnalysis = metaData.GetCustomPropertyBool(MetaDataProperty.Value);
         }
 
-        public override void DrawDetails(ProjectIssue[] selectedIssues)
+        internal override void DrawDetails(ProjectIssue[] selectedIssues)
         {
             using (new EditorGUILayout.VerticalScope(GUILayout.Width(LayoutSize.FoldoutWidth)))
             {
@@ -81,7 +81,7 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
             }
         }
 
-        public override void DrawViewOptions()
+        internal override void DrawViewOptions()
         {
             base.DrawViewOptions();
 

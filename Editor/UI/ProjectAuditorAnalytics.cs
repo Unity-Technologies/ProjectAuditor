@@ -13,21 +13,25 @@ namespace Unity.ProjectAuditor.Editor.UI
         const int k_MaxEventsPerHour = 100;
         const int k_MaxEventItems = 1000;
         const int k_MaxIssuesInAnalyzeSummary = 10;
+        const int k_EventVersion = 2;
 
         const string k_VendorKey = "unity.projectauditor";
         const string k_EventTopicName = "projectAuditorUsage";
 
         static bool s_EnableAnalytics;
 
-        public static void EnableAnalytics()
+        internal static void EnableAnalytics()
         {
-            var result = EditorAnalytics.RegisterEventWithLimit(k_EventTopicName, k_MaxEventsPerHour, k_MaxEventItems, k_VendorKey);
+            var result = EditorAnalytics.RegisterEventWithLimit(
+                k_EventTopicName, k_MaxEventsPerHour, k_MaxEventItems, k_VendorKey, k_EventVersion);
+
             if (result == AnalyticsResult.Ok)
                 s_EnableAnalytics = true;
         }
 
-        public enum UIButton
+        internal enum UIButton
         {
+            // General UI
             Analyze,
             Export,
             AssemblySelect,
@@ -40,26 +44,35 @@ namespace Unity.ProjectAuditor.Editor.UI
             OnlyCriticalIssues,
             Load,
             Save,
-            // views
+
+            // High level views
             Summary,
+            ProjectSettings,
+
+            // Code issues
             ApiCalls,
             CodeCompilerMessages,
             Generics,
-            ProjectSettings,
+
+            // Assets
             Assets,
             Shaders,
+            ShaderCompilerMessages,
             ShaderVariants,
+            ComputeShaderVariants,
+            Textures,
+            AudioClip,
+            Meshes,
+
+            // Build report
             BuildFiles,
             BuildSteps,
+
+            // Assemblies
             Assemblies,
-            ShaderCompilerMessages,
             PrecompiledAssemblies,
             Packages,
-            Textures,
-            PackageVersion,
-            AudioClip,
-            ComputeShaderVariants,
-            Meshes
+            PackageDiagnostics
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -68,12 +81,12 @@ namespace Unity.ProjectAuditor.Editor.UI
         struct ProjectAuditorEvent
         {
             // camelCase since these events get serialized to Json and naming convention in analytics is camelCase
-            public string action;    // Name of the buttom
-            public Int64 t_since_start; // Time since app start (in microseconds)
-            public Int64 duration; // Duration of event in ticks - 100-nanosecond intervals.
-            public Int64 ts; //Timestamp (milliseconds epoch) when action started.
+            internal string action;    // Name of the buttom
+            internal Int64 t_since_start; // Time since app start (in microseconds)
+            internal Int64 duration; // Duration of event in ticks - 100-nanosecond intervals.
+            internal Int64 ts; //Timestamp (milliseconds epoch) when action started.
 
-            public ProjectAuditorEvent(string name, Analytic analytic)
+            internal ProjectAuditorEvent(string name, Analytic analytic)
             {
                 action = name;
                 t_since_start = SecondsToMicroseconds(analytic.GetStartTime());
@@ -86,19 +99,19 @@ namespace Unity.ProjectAuditor.Editor.UI
         struct ProjectAuditorEventWithKeyValues
         {
             [Serializable]
-            public struct EventKeyValue
+            internal struct EventKeyValue
             {
-                public string key;
-                public string value;
+                internal string key;
+                internal string value;
             }
 
-            public string action;
-            public Int64 t_since_start;
-            public Int64 duration;
-            public Int64 ts;
-            public EventKeyValue[] action_params;
+            internal string action;
+            internal Int64 t_since_start;
+            internal Int64 duration;
+            internal Int64 ts;
+            internal EventKeyValue[] action_params;
 
-            public ProjectAuditorEventWithKeyValues(string name, Analytic analytic, Dictionary<string, string> payload)
+            internal ProjectAuditorEventWithKeyValues(string name, Analytic analytic, Dictionary<string, string> payload)
             {
                 action = name;
                 t_since_start = SecondsToMicroseconds(analytic.GetStartTime());
@@ -125,24 +138,24 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         [Serializable]
-        public struct IssueStats
+        internal struct IssueStats
         {
-            public string id;
-            public int numOccurrences;
-            public int numHotPathOccurrences;
+            internal string id;
+            internal int numOccurrences;
+            internal int numHotPathOccurrences;
         }
 
         [Serializable]
         class ProjectAuditorUIButtonEventWithIssueStats
         {
-            public string action;
-            public Int64 t_since_start;
-            public Int64 duration;
-            public Int64 ts;
+            internal string action;
+            internal Int64 t_since_start;
+            internal Int64 duration;
+            internal Int64 ts;
 
-            public IssueStats[] issue_stats;
+            internal IssueStats[] issue_stats;
 
-            public ProjectAuditorUIButtonEventWithIssueStats(string name, Analytic analytic, IssueStats[] payload)
+            internal ProjectAuditorUIButtonEventWithIssueStats(string name, Analytic analytic, IssueStats[] payload)
             {
                 action = name;
                 t_since_start = SecondsToMicroseconds(analytic.GetStartTime());
@@ -158,38 +171,11 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             switch (uiButton)
             {
+                // General UI
                 case UIButton.Analyze:
                     return "analyze_button_click";
                 case UIButton.Export:
                     return "export_button_click";
-                case UIButton.Summary:
-                    return "summary_tab";
-                case UIButton.ApiCalls:
-                    return "api_tab";
-                case UIButton.Assets:
-                    return "assets_tab";
-                case UIButton.Shaders:
-                    return "shaders_tab";
-                case UIButton.ShaderCompilerMessages:
-                    return "shader_compiler_messages_tab";
-                case UIButton.ShaderVariants:
-                    return "shader_variants_tab";
-                case UIButton.ComputeShaderVariants:
-                    return "compute_shader_variants_tab";
-                case UIButton.ProjectSettings:
-                    return "settings_tab";
-                case UIButton.Generics:
-                    return "generics_tab";
-                case UIButton.BuildFiles:
-                    return "build_files_tab";
-                case UIButton.BuildSteps:
-                    return "build_steps_tab";
-                case UIButton.CodeCompilerMessages:
-                    return "compiler_messages_tab";
-                case UIButton.Assemblies:
-                    return "assemblies_tab";
-                case UIButton.PrecompiledAssemblies:
-                    return "precompiled_assemblies_tab";
                 case UIButton.AssemblySelect:
                     return "assembly_button_click";
                 case UIButton.AssemblySelectApply:
@@ -206,20 +192,59 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "show_muted_checkbox";
                 case UIButton.OnlyCriticalIssues:
                     return "only_hotpath_checkbox";
-                case UIButton.Save:
-                    return "save";
                 case UIButton.Load:
-                    return "load";
-                case UIButton.Packages:
-                    return "packages";
+                    return "load_button_clicked";
+                case UIButton.Save:
+                    return "save_button_clicked";
+
+                // High level views
+                case UIButton.Summary:
+                    return "summary_tab";
+                case UIButton.ProjectSettings:
+                    return "project_settings_tab";
+
+                // Code issues
+                case UIButton.ApiCalls:
+                    return "api_tab";
+                case UIButton.CodeCompilerMessages:
+                    return "compiler_messages_tab";
+                case UIButton.Generics:
+                    return "generics_tab";
+
+                // Assets
+                case UIButton.Assets:
+                    return "assets_tab";
+                case UIButton.Shaders:
+                    return "shaders_tab";
+                case UIButton.ShaderCompilerMessages:
+                    return "shader_compiler_messages_tab";
+                case UIButton.ShaderVariants:
+                    return "shader_variants_tab";
+                case UIButton.ComputeShaderVariants:
+                    return "compute_shader_variants_tab";
                 case UIButton.Textures:
-                    return "textures";
-                case UIButton.PackageVersion:
-                    return "package_version";
+                    return "textures_tab";
                 case UIButton.AudioClip:
-                    return "audio_clip";
+                    return "audio_clip_tab";
                 case UIButton.Meshes:
-                    return "meshes";
+                    return "meshes_tab";
+
+                // Build report
+                case UIButton.BuildFiles:
+                    return "build_files_tab";
+                case UIButton.BuildSteps:
+                    return "build_steps_tab";
+
+                // Assemblies
+                case UIButton.Assemblies:
+                    return "assemblies_tab";
+                case UIButton.PrecompiledAssemblies:
+                    return "precompiled_assemblies_tab";
+                case UIButton.Packages:
+                    return "packages_tab";
+                case UIButton.PackageDiagnostics:
+                    return "package_diagnostics_tab";
+
                 default:
                     Debug.LogFormat("SendUIButtonEvent: Unsupported button type : {0}", uiButton);
                     return "";
@@ -301,7 +326,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         // -------------------------------------------------------------------------------------------------------------
 
-        public static bool SendEvent(UIButton uiButton, Analytic analytic)
+        internal static bool SendEvent(UIButton uiButton, Analytic analytic)
         {
             analytic.End();
 
@@ -309,13 +334,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var uiButtonEvent = new ProjectAuditorEvent(GetEventName(uiButton), analytic);
 
-                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
+                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
             }
             return false;
         }
 
-        public static bool SendEventWithKeyValues(UIButton uiButton, Analytic analytic, Dictionary<string, string> payload)
+        internal static bool SendEventWithKeyValues(UIButton uiButton, Analytic analytic, Dictionary<string, string> payload)
         {
             analytic.End();
 
@@ -323,13 +348,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var uiButtonEvent = new ProjectAuditorEventWithKeyValues(GetEventName(uiButton), analytic, payload);
 
-                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
+                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
             }
             return false;
         }
 
-        public static bool SendEventWithSelectionSummary(UIButton uiButton, Analytic analytic, ProjectIssue[] selectedIssues)
+        internal static bool SendEventWithSelectionSummary(UIButton uiButton, Analytic analytic, ProjectIssue[] selectedIssues)
         {
             analytic.End();
 
@@ -339,13 +364,13 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
-                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
+                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
             }
             return false;
         }
 
-        public static bool SendEventWithAnalyzeSummary(UIButton uiButton, Analytic analytic, ProjectReport projectReport)
+        internal static bool SendEventWithAnalyzeSummary(UIButton uiButton, Analytic analytic, ProjectReport projectReport)
         {
             analytic.End();
 
@@ -355,21 +380,21 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
-                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent);
+                var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
             }
             return false;
         }
 
         // -------------------------------------------------------------------------------------------------------------
-        public class Analytic
+        internal class Analytic
         {
             double m_StartTime;
             float m_DurationInSeconds;
             Int64 m_Timestamp;
             bool m_Blocking;
 
-            public Analytic()
+            internal Analytic()
             {
                 m_StartTime = EditorApplication.timeSinceStartup;
                 m_DurationInSeconds = 0;
@@ -377,33 +402,33 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Blocking = true;
             }
 
-            public void End()
+            internal void End()
             {
                 m_DurationInSeconds = (float)(EditorApplication.timeSinceStartup - m_StartTime);
             }
 
-            public double GetStartTime()
+            internal double GetStartTime()
             {
                 return m_StartTime;
             }
 
-            public float GetDurationInSeconds()
+            internal float GetDurationInSeconds()
             {
                 return m_DurationInSeconds;
             }
 
-            public Int64 GetTimestamp()
+            internal Int64 GetTimestamp()
             {
                 return m_Timestamp;
             }
 
-            public bool GetBlocking()
+            internal bool GetBlocking()
             {
                 return m_Blocking;
             }
         }
 
-        public static Analytic BeginAnalytic()
+        internal static Analytic BeginAnalytic()
         {
             return new Analytic();
         }
