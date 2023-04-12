@@ -70,10 +70,20 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// </summary>
         public Action<ProjectIssue> fixer;
 
-        // TODO: remove auditor-specific fields
-        internal string type;
-        internal string method;
-        internal string value;
+        /// <summary>
+        /// Name of the type (namespace and class/struct) of a known code API issue
+        /// </summary>
+        public string type;
+
+        /// <summary>
+        /// Name of the method of a known code API issue
+        /// </summary>
+        public string method;
+
+        /// <summary>
+        /// The evaluated value of a know code API issue
+        /// </summary>
+        public string value;
 
         /// <summary>
         /// Initializes and returns an instance of Descriptor

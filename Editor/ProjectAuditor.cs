@@ -332,7 +332,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        ///   <para>Returns the relative callback order for callbacks.  Callbacks with lower values are called before ones with higher values.</para>
+        /// Returns the relative callback order for callbacks. Callbacks with lower values are called before ones with higher values.
         /// </summary>
         public int callbackOrder => 0;
 

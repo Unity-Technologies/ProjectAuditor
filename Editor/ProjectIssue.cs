@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="category"> Issue category </param>
         /// <param name="description"> User-friendly description </param>
-        /// /// <returns>The IssueBuilder, constructed with the specified category and description string</returns>
+        /// <returns>The IssueBuilder, constructed with the specified category and description string</returns>
         internal static IssueBuilder Create(IssueCategory category, string description)
         {
             return new IssueBuilder(category, description);
@@ -84,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor
         public string[] customProperties
         {
             get => m_CustomProperties;
-            /*public*/ set => m_CustomProperties = value;
+            internal set => m_CustomProperties = value;
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Unity.ProjectAuditor.Editor
         public string description
         {
             get => m_Description;
-            /*public*/  set => m_Description = value;
+            internal set => m_Description = value;
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Get a custom property string given an index into the custom properties array
         /// </summary>
-        /// <param name="index">custom property index</param>
+        /// <param name="index">Custom property index</param>
         /// <returns>Property name string. Returns empty string if the custom properties array is null or empty or if the index is out of range.</returns>
         internal string GetCustomProperty(int index)
         {
