@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         internal static string GetPackageRecommendedVersion(UnityEditor.PackageManager.PackageInfo package)
         {
-#if UNITY_2023_1_OR_NEWER
+#if UNITY_2022_2_OR_NEWER
             return package.versions.recommended;
 #elif UNITY_2019_1_OR_NEWER
             return package.versions.verified;
