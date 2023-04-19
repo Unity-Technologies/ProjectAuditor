@@ -32,17 +32,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        internal override string name => "Meshes";
+        public override string name => "Meshes";
 
-        internal override bool isEnabledByDefault => false;
+        public override bool isEnabledByDefault => false;
 
-        internal override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_MeshLayout,
             AssetsModule.k_IssueLayout
         };
 
-        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
             var allMeshes = AssetDatabase.FindAssets("t:mesh, a:assets");

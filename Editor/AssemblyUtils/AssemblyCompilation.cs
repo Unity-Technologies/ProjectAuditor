@@ -70,23 +70,23 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         /// <summary>
         ///   <para>Message code.</para>
         /// </summary>
-        internal string code;
+        public string code;
         /// <summary>
         ///   <para>Message type.</para>
         /// </summary>
-        internal CompilerMessageType type;
+        public CompilerMessageType type;
         /// <summary>
         ///   <para>Message body.</para>
         /// </summary>
-        internal string message;
+        public string message;
         /// <summary>
         ///   <para>File for the message.</para>
         /// </summary>
-        internal string file;
+        public string file;
         /// <summary>
         ///   <para>File line for the message.</para>
         /// </summary>
-        internal int line;
+        public int line;
     }
 
     enum CompilationStatus
@@ -102,13 +102,13 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         Dictionary<string, AssemblyCompilationTask> m_AssemblyCompilationTasks;
         string m_OutputFolder = string.Empty;
 
-        internal string[] assemblyNames;
-        internal CodeOptimization codeOptimization = CodeOptimization.Release;
-        internal CompilationMode compilationMode = CompilationMode.Player;
-        internal BuildTarget platform = EditorUserBuildSettings.activeBuildTarget;
-        internal string[] roslynAnalyzers;
+        public string[] assemblyNames;
+        public CodeOptimization codeOptimization = CodeOptimization.Release;
+        public CompilationMode compilationMode = CompilationMode.Player;
+        public BuildTarget platform = EditorUserBuildSettings.activeBuildTarget;
+        public string[] roslynAnalyzers;
 
-        internal Action<AssemblyCompilationTask, CompilerMessage[]> onAssemblyCompilationFinished;
+        public Action<AssemblyCompilationTask, CompilerMessage[]> onAssemblyCompilationFinished;
 
         public void Dispose()
         {
@@ -128,7 +128,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             m_OutputFolder = string.Empty;
         }
 
-        internal AssemblyInfo[] Compile(IProgress progress = null)
+        public AssemblyInfo[] Compile(IProgress progress = null)
         {
             var editorAssemblies = compilationMode == CompilationMode.Editor || compilationMode == CompilationMode.EditorPlayMode;
             var assemblies = GetAssemblies(editorAssemblies);

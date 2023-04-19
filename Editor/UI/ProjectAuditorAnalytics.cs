@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static bool s_EnableAnalytics;
 
-        internal static void EnableAnalytics()
+        public static void EnableAnalytics()
         {
             var result = EditorAnalytics.RegisterEventWithLimit(
                 k_EventTopicName, k_MaxEventsPerHour, k_MaxEventItems, k_VendorKey, k_EventVersion);
@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 s_EnableAnalytics = true;
         }
 
-        internal enum UIButton
+        public enum UIButton
         {
             // General UI
             Analyze,
@@ -81,12 +81,12 @@ namespace Unity.ProjectAuditor.Editor.UI
         struct ProjectAuditorEvent
         {
             // camelCase since these events get serialized to Json and naming convention in analytics is camelCase
-            internal string action;    // Name of the buttom
-            internal Int64 t_since_start; // Time since app start (in microseconds)
-            internal Int64 duration; // Duration of event in ticks - 100-nanosecond intervals.
-            internal Int64 ts; //Timestamp (milliseconds epoch) when action started.
+            public string action;    // Name of the buttom
+            public Int64 t_since_start; // Time since app start (in microseconds)
+            public Int64 duration; // Duration of event in ticks - 100-nanosecond intervals.
+            public Int64 ts; //Timestamp (milliseconds epoch) when action started.
 
-            internal ProjectAuditorEvent(string name, Analytic analytic)
+            public ProjectAuditorEvent(string name, Analytic analytic)
             {
                 action = name;
                 t_since_start = SecondsToMicroseconds(analytic.GetStartTime());
@@ -99,19 +99,19 @@ namespace Unity.ProjectAuditor.Editor.UI
         struct ProjectAuditorEventWithKeyValues
         {
             [Serializable]
-            internal struct EventKeyValue
+            public struct EventKeyValue
             {
-                internal string key;
-                internal string value;
+                public string key;
+                public string value;
             }
 
-            internal string action;
-            internal Int64 t_since_start;
-            internal Int64 duration;
-            internal Int64 ts;
-            internal EventKeyValue[] action_params;
+            public string action;
+            public Int64 t_since_start;
+            public Int64 duration;
+            public Int64 ts;
+            public EventKeyValue[] action_params;
 
-            internal ProjectAuditorEventWithKeyValues(string name, Analytic analytic, Dictionary<string, string> payload)
+            public ProjectAuditorEventWithKeyValues(string name, Analytic analytic, Dictionary<string, string> payload)
             {
                 action = name;
                 t_since_start = SecondsToMicroseconds(analytic.GetStartTime());
@@ -140,22 +140,22 @@ namespace Unity.ProjectAuditor.Editor.UI
         [Serializable]
         internal struct IssueStats
         {
-            internal string id;
-            internal int numOccurrences;
-            internal int numHotPathOccurrences;
+            public string id;
+            public int numOccurrences;
+            public int numHotPathOccurrences;
         }
 
         [Serializable]
         class ProjectAuditorUIButtonEventWithIssueStats
         {
-            internal string action;
-            internal Int64 t_since_start;
-            internal Int64 duration;
-            internal Int64 ts;
+            public string action;
+            public Int64 t_since_start;
+            public Int64 duration;
+            public Int64 ts;
 
-            internal IssueStats[] issue_stats;
+            public IssueStats[] issue_stats;
 
-            internal ProjectAuditorUIButtonEventWithIssueStats(string name, Analytic analytic, IssueStats[] payload)
+            public ProjectAuditorUIButtonEventWithIssueStats(string name, Analytic analytic, IssueStats[] payload)
             {
                 action = name;
                 t_since_start = SecondsToMicroseconds(analytic.GetStartTime());
@@ -326,7 +326,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         // -------------------------------------------------------------------------------------------------------------
 
-        internal static bool SendEvent(UIButton uiButton, Analytic analytic)
+        public static bool SendEvent(UIButton uiButton, Analytic analytic)
         {
             analytic.End();
 
@@ -340,7 +340,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             return false;
         }
 
-        internal static bool SendEventWithKeyValues(UIButton uiButton, Analytic analytic, Dictionary<string, string> payload)
+        public static bool SendEventWithKeyValues(UIButton uiButton, Analytic analytic, Dictionary<string, string> payload)
         {
             analytic.End();
 
@@ -354,7 +354,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             return false;
         }
 
-        internal static bool SendEventWithSelectionSummary(UIButton uiButton, Analytic analytic, ProjectIssue[] selectedIssues)
+        public static bool SendEventWithSelectionSummary(UIButton uiButton, Analytic analytic, ProjectIssue[] selectedIssues)
         {
             analytic.End();
 
@@ -370,7 +370,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             return false;
         }
 
-        internal static bool SendEventWithAnalyzeSummary(UIButton uiButton, Analytic analytic, ProjectReport projectReport)
+        public static bool SendEventWithAnalyzeSummary(UIButton uiButton, Analytic analytic, ProjectReport projectReport)
         {
             analytic.End();
 
@@ -387,14 +387,14 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         // -------------------------------------------------------------------------------------------------------------
-        internal class Analytic
+        public class Analytic
         {
             double m_StartTime;
             float m_DurationInSeconds;
             Int64 m_Timestamp;
             bool m_Blocking;
 
-            internal Analytic()
+            public Analytic()
             {
                 m_StartTime = EditorApplication.timeSinceStartup;
                 m_DurationInSeconds = 0;
@@ -402,33 +402,33 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Blocking = true;
             }
 
-            internal void End()
+            public void End()
             {
                 m_DurationInSeconds = (float)(EditorApplication.timeSinceStartup - m_StartTime);
             }
 
-            internal double GetStartTime()
+            public double GetStartTime()
             {
                 return m_StartTime;
             }
 
-            internal float GetDurationInSeconds()
+            public float GetDurationInSeconds()
             {
                 return m_DurationInSeconds;
             }
 
-            internal Int64 GetTimestamp()
+            public Int64 GetTimestamp()
             {
                 return m_Timestamp;
             }
 
-            internal bool GetBlocking()
+            public bool GetBlocking()
             {
                 return m_Blocking;
             }
         }
 
-        internal static Analytic BeginAnalytic()
+        public static Analytic BeginAnalytic()
         {
             return new Analytic();
         }

@@ -1,11 +1,9 @@
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
 
-[assembly: InternalsVisibleTo("Unity.ProjectAuditor.Editor.Tests.Common")]
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
@@ -53,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="category">Issue category</param>
         /// <param name="descriptor">Diagnostic descriptor</param>
         /// <param name="args">Arguments to be used in the message formatting</param>
-        public ProjectIssue(IssueCategory category, Descriptor descriptor, params object[] args)
+        internal ProjectIssue(IssueCategory category, Descriptor descriptor, params object[] args)
         {
             m_Descriptor = descriptor;
             m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
@@ -66,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="category">Issue category</param>
         /// <param name="description">Issue description</param>
-        public ProjectIssue(IssueCategory category, string description)
+        internal ProjectIssue(IssueCategory category, string description)
         {
             m_Description = description;
             m_Category = category;

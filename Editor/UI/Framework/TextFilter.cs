@@ -7,13 +7,13 @@ namespace Unity.ProjectAuditor.Editor
 {
     internal class TextFilter : IProjectIssueFilter
     {
-        internal bool ignoreCase = true;
-        internal bool searchDependencies = false;
-        internal string searchString = string.Empty;
+        public bool ignoreCase = true;
+        public bool searchDependencies = false;
+        public string searchString = string.Empty;
 
         readonly int[] searchablePropertyIndices;
 
-        internal TextFilter(PropertyDefinition[] propertyDefinitions = null)
+        public TextFilter(PropertyDefinition[] propertyDefinitions = null)
         {
             var indices = new List<int>();
             if (propertyDefinitions != null)

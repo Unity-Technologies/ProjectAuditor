@@ -52,13 +52,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "StreamingAssets folder contains {0} of data",
         };
 
-        internal override bool isEnabledByDefault => false;
+        public override bool isEnabledByDefault => false;
 
-        internal override string name => "Assets";
+        public override string name => "Assets";
 
-        internal override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
 
-        internal override void Initialize(ProjectAuditorConfig config)
+        public override void Initialize(ProjectAuditorConfig config)
         {
             base.Initialize(config);
 
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             RegisterDescriptor(k_StreamingAssetsFolderDescriptor);
         }
 
-        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var settings = projectAuditorParams.settings;
 

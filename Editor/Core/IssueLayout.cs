@@ -4,11 +4,11 @@ namespace Unity.ProjectAuditor.Editor.Core
 {
     internal class IssueLayout
     {
-        internal IssueCategory category;
-        internal PropertyDefinition[] properties;
-        internal bool hierarchy = false;
+        public IssueCategory category;
+        public PropertyDefinition[] properties;
+        public bool hierarchy = false;
 
-        internal int defaultGroupPropertyIndex
+        public int defaultGroupPropertyIndex
         {
             get
             {

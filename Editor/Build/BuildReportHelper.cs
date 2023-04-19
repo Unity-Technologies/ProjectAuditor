@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor.Build
     {
         internal const string k_LastBuildReportPath = "Library/LastBuild.buildreport";
 
-        internal static BuildReport GetLast()
+        public static BuildReport GetLast()
         {
             if (!File.Exists(k_LastBuildReportPath))
                 return null; // a build report was not found in the Library folder
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.Build
         }
 
         [PostProcessBuild(1)]
-        internal static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
+        public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
         {
             if (UserPreferences.buildReportAutoSave)
             {

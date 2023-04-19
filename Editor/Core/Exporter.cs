@@ -20,9 +20,9 @@ namespace Unity.ProjectAuditor.Editor.Core
             m_StreamWriter.Close();
         }
 
-        internal abstract void WriteHeader();
+        public abstract void WriteHeader();
 
-        internal void WriteIssues(ProjectIssue[] issues)
+        public void WriteIssues(ProjectIssue[] issues)
         {
             foreach (var issue in issues)
                 WriteIssue(issue);
@@ -30,6 +30,6 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         protected abstract void WriteIssue(ProjectIssue issue);
 
-        internal virtual void WriteFooter() {}
+        public virtual void WriteFooter() {}
     }
 }

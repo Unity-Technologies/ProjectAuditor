@@ -4,7 +4,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     internal static class Utils
     {
-        internal static Severity LogTypeToSeverity(LogType logType)
+        public static Severity LogTypeToSeverity(LogType logType)
         {
             switch (logType)
             {

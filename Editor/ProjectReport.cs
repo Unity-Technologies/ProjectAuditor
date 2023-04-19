@@ -19,10 +19,10 @@ namespace Unity.ProjectAuditor.Editor
         [Serializable]
         class ModuleInfo
         {
-            internal string name;
-            internal IssueCategory[] categories;
-            internal DateTime startTime;
-            internal DateTime endTime;
+            public string name;
+            public IssueCategory[] categories;
+            public DateTime startTime;
+            public DateTime endTime;
         }
 
         [SerializeField] List<ModuleInfo> m_ModuleInfos = new List<ModuleInfo>();
@@ -31,13 +31,13 @@ namespace Unity.ProjectAuditor.Editor
 
         static Mutex s_Mutex = new Mutex();
 
-        internal int NumTotalIssues => m_Issues.Count;
+        public int NumTotalIssues => m_Issues.Count;
 
         // for internal use only
         internal ProjectReport()
         {}
 
-        internal void RecordModuleInfo(ProjectAuditorModule module, DateTime startTime, DateTime endTime)
+        public void RecordModuleInfo(ProjectAuditorModule module, DateTime startTime, DateTime endTime)
         {
             var name = module.name;
             var info = m_ModuleInfos.FirstOrDefault(m => m.name.Equals(name));
@@ -60,12 +60,12 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        internal bool HasCategory(IssueCategory category)
+        public bool HasCategory(IssueCategory category)
         {
             return m_ModuleInfos.Any(m => m.categories.Contains(category));
         }
 
-        internal IReadOnlyCollection<ProjectIssue> GetAllIssues()
+        public IReadOnlyCollection<ProjectIssue> GetAllIssues()
         {
             s_Mutex.WaitOne();
             var result = m_Issues.ToArray();
@@ -78,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="category"> Desired IssueCategory</param>
         /// <returns> Number of project issues</returns>
-        internal int GetNumIssues(IssueCategory category)
+        public int GetNumIssues(IssueCategory category)
         {
             s_Mutex.WaitOne();
             var result = m_Issues.Count(i => i.category == category);
@@ -91,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="category"> Desired IssueCategory</param>
         /// <returns> Array of project issues</returns>
-        internal IReadOnlyCollection<ProjectIssue> FindByCategory(IssueCategory category)
+        public IReadOnlyCollection<ProjectIssue> FindByCategory(IssueCategory category)
         {
             s_Mutex.WaitOne();
             var result = m_Issues.Where(i => i.category == category).ToArray();
@@ -104,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="descriptor"> Desired Descriptor</param>
         /// <returns> Array of project issues</returns>
-        internal IReadOnlyCollection<ProjectIssue> FindByDescriptor(Descriptor descriptor)
+        public IReadOnlyCollection<ProjectIssue> FindByDescriptor(Descriptor descriptor)
         {
             s_Mutex.WaitOne();
             var result = m_Issues.Where(i => i.descriptor != null && i.descriptor.Equals(descriptor)).ToArray();
@@ -112,14 +112,14 @@ namespace Unity.ProjectAuditor.Editor
             return result;
         }
 
-        internal void AddIssues(IEnumerable<ProjectIssue> issues)
+        public void AddIssues(IEnumerable<ProjectIssue> issues)
         {
             s_Mutex.WaitOne();
             m_Issues.AddRange(issues);
             s_Mutex.ReleaseMutex();
         }
 
-        internal void ClearIssues(IssueCategory category)
+        public void ClearIssues(IssueCategory category)
         {
             s_Mutex.WaitOne();
             m_Issues.RemoveAll(issue => issue.category == category);
@@ -133,7 +133,7 @@ namespace Unity.ProjectAuditor.Editor
             s_Mutex.ReleaseMutex();
         }
 
-        internal void ExportToCSV(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
+        public void ExportToCSV(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
             var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new CSVExporter(path, layout))
@@ -143,7 +143,7 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        internal void ExportToHTML(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
+        public void ExportToHTML(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
             var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new HTMLExporter(path, layout))
@@ -154,12 +154,12 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        internal void Save(string path)
+        public void Save(string path)
         {
             File.WriteAllText(path, JsonUtility.ToJson(this));
         }
 
-        internal static ProjectReport Load(string path)
+        public static ProjectReport Load(string path)
         {
             return JsonUtility.FromJson<ProjectReport>(File.ReadAllText(path));
         }

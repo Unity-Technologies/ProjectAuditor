@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
         }
 
-        internal override void AddIssues(IEnumerable<ProjectIssue> allIssues)
+        public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
             base.AddIssues(allIssues);
 
@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        internal override void Clear()
+        public override void Clear()
         {
             base.Clear();
 

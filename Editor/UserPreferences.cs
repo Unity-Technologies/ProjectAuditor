@@ -28,12 +28,12 @@ namespace Unity.ProjectAuditor.Editor
 
         internal static string loadSavePath = string.Empty;
 
-        internal static string Path => k_PreferencesKey;
+        public static string Path => k_PreferencesKey;
 
         /// <summary>
         /// If enabled, the BuildReport is automatically saved as asset after each build
         /// </summary>
-        internal static bool buildReportAutoSave
+        public static bool buildReportAutoSave
         {
             get => EditorPrefs.GetBool(k_BuildReportAutoSaveKey, k_BuildReportAutoSaveDefault);
             set => EditorPrefs.SetBool(k_BuildReportAutoSaveKey, value);
@@ -42,25 +42,25 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Customizable path to save the BuildReport
         /// </summary>
-        internal static string buildReportPath
+        public static string buildReportPath
         {
             get => EditorPrefs.GetString(k_BuildReportPathKey, k_BuildReportPathDefault);
             set => EditorPrefs.SetString(k_BuildReportPathKey, value);
         }
 
-        internal static bool developerMode
+        public static bool developerMode
         {
             get => EditorPrefs.GetBool(k_DeveloperModeKey, false);
             set => EditorPrefs.SetBool(k_DeveloperModeKey, value);
         }
 
-        internal static bool logTimingsInfo
+        public static bool logTimingsInfo
         {
             get => EditorPrefs.GetBool(k_LogTimingsInfoKey, false);
             set => EditorPrefs.SetBool(k_LogTimingsInfoKey, value);
         }
 
-        internal static string settingsAsset
+        public static string settingsAsset
         {
             get => EditorPrefs.GetString(k_EditorPrefsSettingsKey, "");
             set => EditorPrefs.SetString(k_EditorPrefsSettingsKey, value);

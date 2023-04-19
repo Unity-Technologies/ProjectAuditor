@@ -13,16 +13,16 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         struct Stats
         {
-            internal int numBuildSteps;
-            internal int numCodeIssues;
-            internal int numCompiledAssemblies;
-            internal int numCompilerErrors;
-            internal int numSettingIssues;
-            internal int numTotalAssemblies;
-            internal int numAssetIssues;
-            internal int numShaders;
-            internal int numPackages;
-            internal int numPackageDiagnostics;
+            public int numBuildSteps;
+            public int numCodeIssues;
+            public int numCompiledAssemblies;
+            public int numCompilerErrors;
+            public int numSettingIssues;
+            public int numTotalAssemblies;
+            public int numAssetIssues;
+            public int numShaders;
+            public int numPackages;
+            public int numPackageDiagnostics;
         }
 
         Stats m_Stats;
@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
         }
 
-        internal override void AddIssues(IEnumerable<ProjectIssue> allIssues)
+        public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
             base.AddIssues(allIssues);
 
@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Stats.numTotalAssemblies += allIssues.Count(i => i.category == IssueCategory.Assembly);
         }
 
-        internal override void Clear()
+        public override void Clear()
         {
             base.Clear();
 
@@ -112,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.LabelField("Select a View from the toolbar to start browsing the report");
         }
 
-        internal override void DrawContent(bool showDetails = false)
+        public override void DrawContent(bool showDetails = false)
         {
             EditorGUILayout.Space();
             EditorGUILayout.BeginVertical();

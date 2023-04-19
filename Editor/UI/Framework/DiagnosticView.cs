@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
         }
 
-        internal override void DrawDetails(ProjectIssue[] selectedIssues)
+        public override void DrawDetails(ProjectIssue[] selectedIssues)
         {
             var selectedDescriptors = selectedIssues.Select(i => i.descriptor).Distinct().ToArray();
 
@@ -101,11 +101,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         static class Contents
         {
-            internal static readonly GUIContent Details = new GUIContent("Details:", "Issue Details");
-            internal static readonly GUIContent Recommendation =
+            public static readonly GUIContent Details = new GUIContent("Details:", "Issue Details");
+            public static readonly GUIContent Recommendation =
                 new GUIContent("Recommendation:", "Recommendation on how to solve the issue");
-            internal static readonly GUIContent Documentation = new GUIContent("Documentation");
-            internal static readonly GUIContent QuickFix = new GUIContent("Quick Fix");
+            public static readonly GUIContent Documentation = new GUIContent("Documentation");
+            public static readonly GUIContent QuickFix = new GUIContent("Quick Fix");
         }
     }
 }

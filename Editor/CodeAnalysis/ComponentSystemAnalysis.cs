@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         static readonly string[] k_UpdateMethodNames = {"OnUpdate"};
 
-        internal static bool IsComponentSystem(TypeReference typeReference)
+        public static bool IsComponentSystem(TypeReference typeReference)
         {
             // handle special case where Assembly will fail to be Resolved
             if (typeReference.FullName.GetHashCode() == k_ILPostProcessorHashCode)
@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             return false;
         }
 
-        internal static bool IsOnUpdateMethod(MethodDefinition methodDefinition)
+        public static bool IsOnUpdateMethod(MethodDefinition methodDefinition)
         {
             return k_UpdateMethodNames.Contains(methodDefinition.Name);
         }
