@@ -86,7 +86,10 @@ namespace Unity.ProjectAuditor.EditorTests
         public void SpriteAtlas_Not_Empty_Is_Not_Reported()
         {
             if (m_TestSpriteAtlasFull == null)
+            {
                 Assert.Pass();
+                return;
+            }
 
             var textureDiagnostic =
                 AnalyzeAndFindAssetIssues(m_TestSpriteAtlasFull, IssueCategory.AssetDiagnostic)
@@ -99,7 +102,10 @@ namespace Unity.ProjectAuditor.EditorTests
         public void SpriteAtlas_Empty_Is_Reported()
         {
             if (m_TestSpriteAtlasEmpty == null)
+            {
                 Assert.Pass();
+                return;
+            }
 
             var textureDiagnostic =
                 AnalyzeAndFindAssetIssues(m_TestSpriteAtlasEmpty, IssueCategory.AssetDiagnostic)
