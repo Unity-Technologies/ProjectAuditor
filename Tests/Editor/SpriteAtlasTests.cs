@@ -82,29 +82,30 @@ namespace Unity.ProjectAuditor.EditorTests
         // ConditionalIgnoreAttributes don't seem to work either, so on Yamato we'll just quietly pass these tests if we
         // don't have good test data.
 #if UNITY_2020_1_OR_NEWER
+        [Test]
         public void SpriteAtlas_Not_Empty_Is_Not_Reported()
         {
-            if (m_TestSpriteAtlasFull != null)
-            {
-                var textureDiagnostic =
-                    AnalyzeAndFindAssetIssues(m_TestSpriteAtlasFull, IssueCategory.AssetDiagnostic)
-                        .FirstOrDefault(i => i.descriptor.Equals(SpriteAnalyzer.k_SpriteAtlasEmptyDescriptor));
+            if (m_TestSpriteAtlasFull == null)
+                Assert.Pass();
 
-                Assert.Null(textureDiagnostic);
-            }
+            var textureDiagnostic =
+                AnalyzeAndFindAssetIssues(m_TestSpriteAtlasFull, IssueCategory.AssetDiagnostic)
+                    .FirstOrDefault(i => i.descriptor.Equals(SpriteAnalyzer.k_SpriteAtlasEmptyDescriptor));
+
+            Assert.Null(textureDiagnostic);
         }
 
         [Test]
         public void SpriteAtlas_Empty_Is_Reported()
         {
-            if (m_TestSpriteAtlasEmpty != null)
-            {
-                var textureDiagnostic =
-                    AnalyzeAndFindAssetIssues(m_TestSpriteAtlasEmpty, IssueCategory.AssetDiagnostic)
-                        .FirstOrDefault(i => i.descriptor.Equals(SpriteAnalyzer.k_SpriteAtlasEmptyDescriptor));
+            if (m_TestSpriteAtlasEmpty == null)
+                Assert.Pass();
 
-                Assert.IsNotNull(textureDiagnostic);
-            }
+            var textureDiagnostic =
+                AnalyzeAndFindAssetIssues(m_TestSpriteAtlasEmpty, IssueCategory.AssetDiagnostic)
+                    .FirstOrDefault(i => i.descriptor.Equals(SpriteAnalyzer.k_SpriteAtlasEmptyDescriptor));
+
+            Assert.IsNotNull(textureDiagnostic);
         }
 
 #endif
