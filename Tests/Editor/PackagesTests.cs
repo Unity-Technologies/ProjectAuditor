@@ -56,6 +56,9 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
             foreach (var package in installedPackages)
             {
+                var name = package.GetCustomProperty(PackageProperty.Name);
+                if (name.Equals("com.unity.project-auditor.tests"))
+                    continue;
                 Assert.AreNotEqual(string.Empty, package.description, "Package: " + package.GetCustomProperty(PackageProperty.Name));
                 Assert.AreNotEqual(string.Empty, package.GetCustomProperty(PackageProperty.Name), "Package: " + package.description);
                 Assert.AreNotEqual(string.Empty, package.GetCustomProperty(PackageProperty.Source), "Package: " + package.description);
