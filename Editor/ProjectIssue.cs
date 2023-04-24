@@ -5,7 +5,7 @@ using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
 
-[assembly:InternalsVisibleTo("Unity.ProjectAuditor.Editor.Tests.Common")]
+[assembly: InternalsVisibleTo("Unity.ProjectAuditor.Editor.Tests.Common")]
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
@@ -112,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor
         internal DependencyNode dependencies
         {
             get => m_Dependencies;
-            /*public*/  set => m_Dependencies = value;
+            /*public*/ set => m_Dependencies = value;
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace Unity.ProjectAuditor.Editor
         public Location location
         {
             get => m_Location;
-            /*public*/  set => m_Location = value;
+            /*public*/ set => m_Location = value;
         }
 
         /// <summary>

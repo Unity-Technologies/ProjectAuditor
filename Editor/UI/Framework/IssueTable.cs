@@ -48,9 +48,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
 
         internal IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
-                          ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config,
-                          AnalysisView view) : base(state,
-                                                    multicolumnHeader)
+                            ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config,
+                            AnalysisView view) : base(state,
+                                                      multicolumnHeader)
         {
             m_Config = config;
             m_View = view;

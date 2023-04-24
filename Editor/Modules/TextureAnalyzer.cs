@@ -17,9 +17,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAA0003 = nameof(PAA0003);
         internal const string PAA0004 = nameof(PAA0004);
         internal const string PAA0005 = nameof(PAA0005);
-		internal const string PAA0007 = nameof(PAA0007);  
-      
-      internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
+        internal const string PAA0007 = nameof(PAA0007);
+
+        internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
             PAA0000,
             "Texture: Mipmaps not enabled",
             new[] {Area.GPU, Area.Quality},
@@ -234,7 +234,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         .WithLocation(textureImporter.assetPath);
                 }
             }
-
             else
             {
                 Debug.LogError(texture.name + " is not a Texture2D!");

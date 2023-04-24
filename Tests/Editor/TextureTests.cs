@@ -387,7 +387,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 .FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_AtlasTextureEmptyDescriptor));
 
             Assert.IsNotNull(textureDiagnostic);
-    }
+        }
 
         [Test]
         public void Texture_Not_Empty_Space_IsNotReported()

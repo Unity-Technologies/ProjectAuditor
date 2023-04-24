@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
 using UnityEditor.Build.Reporting;

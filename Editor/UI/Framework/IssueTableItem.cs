@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         internal readonly ProjectIssue ProjectIssue;
 
         internal IssueTableItem(int id, int depth, string displayName,
-                              ProjectIssue projectIssue, string groupName = null) : base(id, depth, displayName)
+                                ProjectIssue projectIssue, string groupName = null) : base(id, depth, displayName)
         {
             GroupName = groupName;
             ProjectIssue = projectIssue;

@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using File = System.IO.File;
 using SystemPath = System.IO.Path;
 
-[assembly:InternalsVisibleTo("Unity.ProjectAuditor.Editor.Tests.Common")]
+[assembly: InternalsVisibleTo("Unity.ProjectAuditor.Editor.Tests.Common")]
 namespace Unity.ProjectAuditor.Editor.Utils
 {
     internal static class PathUtils

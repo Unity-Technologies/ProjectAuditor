@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         GUIStyle m_ActiveLineStyle;
 
         internal MultiSelectionTable(TreeViewState state, MultiColumnHeader multicolumnHeader, string[] names,
-                                   TreeViewSelection selection) : base(state, multicolumnHeader)
+                                     TreeViewSelection selection) : base(state, multicolumnHeader)
         {
             m_AllIdentifier = new TreeItemIdentifier();
             m_AllIdentifier.SetName("All");
@@ -577,7 +577,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             internal bool allowToggleVisibility;
 
             internal HeaderData(string name, string tooltip = "", float _width = 50, float _minWidth = 30,
-                              bool _autoResize = true, bool _allowToggleVisibility = true)
+                                bool _autoResize = true, bool _allowToggleVisibility = true)
             {
                 content = new GUIContent(name, tooltip);
                 width = _width;
