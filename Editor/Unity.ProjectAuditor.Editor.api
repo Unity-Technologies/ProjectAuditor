@@ -3,26 +3,6 @@
 // make sure the XML doc file is present and located next to the scraped dll
 namespace Unity.ProjectAuditor.Editor
 {
-    public interface IProgress
-    {
-        public void Advance(string description = @"");
-        public void Clear();
-        public void Start(string title, string description, int total);
-    }
-
-    public interface IProjectAuditorSettingsProvider
-    {
-        public ProjectAuditorSettings GetCurrentSettings();
-        public System.Collections.Generic.IEnumerable<ProjectAuditorSettings> GetSettings();
-        public void Initialize();
-        public void SelectCurrentSettings(ProjectAuditorSettings settings);
-    }
-
-    public interface IProjectIssueFilter
-    {
-        public bool Match(ProjectIssue issue);
-    }
-
     public enum IssueCategory
     {
         Assembly = 11,
@@ -65,91 +45,47 @@ namespace Unity.ProjectAuditor.Editor
     public sealed class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPreprocessBuildWithReport
     {
         public int callbackOrder { get; }
-        public ProjectAuditorConfig config { get; }
         public ProjectAuditor() {}
         public ProjectAuditor(string assetPath) {}
         public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig) {}
-        public ProjectReport Audit(IProgress progress = default(IProgress));
-        public ProjectReport Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = default(IProgress));
-        public void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = default(IProgress));
-        public IssueCategory[] GetCategories();
-        public static string GetCategoryName(IssueCategory category);
-        public Core.IssueLayout GetLayout(IssueCategory category);
-        public static IssueCategory GetOrRegisterCategory(string name);
-        public static int NumCategories();
         public void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
     }
 
     public class ProjectAuditorConfig : UnityEngine.ScriptableObject
     {
-        public bool AnalyzeInBackground = true;
-        public bool AnalyzeOnBuild;
-        public AssemblyUtils.CompilationMode CompilationMode;
-        public bool FailBuildOnIssues;
-        public ProjectAuditorSettings[] Settings;
-        public bool UseRoslynAnalyzers;
-        public int NumRules { get; }
         public ProjectAuditorConfig() {}
-        public void AddRule(Diagnostic.Rule ruleToAdd);
-        public void ClearAllRules();
-        public void ClearRules(Diagnostic.Descriptor descriptor, string filter = @"");
-        public Diagnostic.Severity GetAction(Diagnostic.Descriptor descriptor, string filter = @"");
-        public Diagnostic.Rule GetRule(Diagnostic.Descriptor descriptor, string filter = @"");
-    }
-
-    public class ProjectAuditorParams
-    {
-        public string[] assemblyNames;
-        public IssueCategory[] categories;
-        public AssemblyUtils.CodeOptimization codeOptimization = AssemblyUtils.CodeOptimization.Release;
-        public ProjectReport existingReport;
-        public System.Action<ProjectReport> onCompleted;
-        public System.Action<System.Collections.Generic.IEnumerable<ProjectIssue>> onIncomingIssues;
-        public System.Action onModuleCompleted;
-        public UnityEditor.BuildTarget platform;
-        public ProjectAuditorSettings settings;
-        public ProjectAuditorParams() {}
     }
 
     [UnityEngine.CreateAssetMenu(menuName = @"Project Auditor/Project Auditor Settings")] public class ProjectAuditorSettings : UnityEngine.ScriptableObject
     {
-        public int MeshTriangleCountLimit = 5000;
-        public int MeshVerticeCountLimit = 5000;
-        public int SpriteAtlasEmptySpaceLimit = 50;
-        public int StreamingAssetsFolderSizeLimit = 50;
-        public int TextureSizeLimit = 2048;
-        public int TextureStreamingMipmapsSizeLimit = 4000;
         public ProjectAuditorSettings() {}
     }
 
-    public class ProjectAuditorSettingsProvider : IProjectAuditorSettingsProvider
+    public class ProjectAuditorSettingsProvider
     {
         public ProjectAuditorSettingsProvider() {}
-        public void AddSettingsFromAsset(ProjectAuditorSettings settingsAsset);
         public ProjectAuditorSettings GetCurrentSettings();
         public System.Collections.Generic.IEnumerable<ProjectAuditorSettings> GetSettings();
         public void Initialize();
-        public void RefreshAssets();
         public void SelectCurrentSettings(ProjectAuditorSettings settings);
     }
 
     public class ProjectIssue
     {
-        public int depth;
-        public bool wasFixed;
+        public int depth = 0;
+        public bool wasFixed = false;
         public IssueCategory category { get; }
         public string[] customProperties { get; }
-        public Core.DependencyNode dependencies { get; }
         public string description { get; }
         public Diagnostic.Descriptor descriptor { get; }
         public string filename { get; }
         public int line { get; }
-        public Location location { get; }
+        public Location location { get; set; }
         public Core.LogLevel logLevel { get; }
         public string relativePath { get; }
         public Diagnostic.Severity severity { get; set; }
-        public static Core.IssueBuilder Create(IssueCategory category, string description);
-        public static Core.IssueBuilder Create(IssueCategory category, Diagnostic.Descriptor descriptor, params object[] messageArgs);
+        public ProjectIssue(IssueCategory category, string description) {}
+        public ProjectIssue(IssueCategory category, Diagnostic.Descriptor descriptor, params object[] args) {}
         public string GetCustomProperty<T>(T propertyEnum) where T : struct, new();
         public bool GetCustomPropertyBool<T>(T propertyEnum) where T : struct, new();
         public double GetCustomPropertyDouble<T>(T propertyEnum) where T : struct, new();
@@ -163,20 +99,6 @@ namespace Unity.ProjectAuditor.Editor
         public bool IsValid();
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct, new();
     }
-
-    public sealed class ProjectReport
-    {
-        public int NumTotalIssues { get; }
-        public void ExportToCSV(string path, Core.IssueLayout layout, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
-        public void ExportToHTML(string path, Core.IssueLayout layout, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
-        public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> FindByCategory(IssueCategory category);
-        public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> FindByDescriptor(Diagnostic.Descriptor descriptor);
-        public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> GetAllIssues();
-        public int GetNumIssues(IssueCategory category);
-        public bool HasCategory(IssueCategory category);
-        public static ProjectReport Load(string path);
-        public void Save(string path);
-    }
 }
 
 namespace Unity.ProjectAuditor.Editor.AssemblyUtils
@@ -186,158 +108,15 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         Debug = 0,
         Release = 1,
     }
-
-    public enum CompilationMode
-    {
-        DevelopmentPlayer = 1,
-        Editor = 3,
-        EditorPlayMode = 2,
-        Player = 0,
-    }
-}
-
-namespace Unity.ProjectAuditor.Editor.Build
-{
-    public static class BuildReportHelper
-    {
-        public static UnityEditor.Build.Reporting.BuildReport GetLast();
-        [UnityEditor.Callbacks.PostProcessBuild(1)] public static void OnPostprocessBuild(UnityEditor.BuildTarget target, string pathToBuiltProject);
-    }
 }
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    public class AnalysisPlatformAttribute : System.Attribute
-    {
-        public UnityEditor.BuildTarget platform { get; }
-        public AnalysisPlatformAttribute(UnityEditor.BuildTarget platform) {}
-    }
-
-    public abstract class DependencyNode
-    {
-        public Location location;
-        protected System.Collections.Generic.List<DependencyNode> m_Children;
-        public bool perfCriticalContext;
-        public string name { get; }
-        public string prettyName { get; }
-        protected DependencyNode() {}
-        public void AddChild(DependencyNode child);
-        public DependencyNode GetChild(int index = 0);
-        public abstract string GetName();
-        public int GetNumChildren();
-        public abstract string GetPrettyName();
-        public bool HasChildren();
-        public bool HasValidChildren();
-        public abstract bool IsPerfCritical();
-        public void SortChildren();
-    }
-
-    public interface IModuleAnalyzer
-    {
-        public void Initialize(ProjectAuditorModule module);
-    }
-
-    public class IssueBuilder
-    {
-        public static ProjectIssue op_Implicit(IssueBuilder builder);
-        public IssueBuilder WithCustomProperties(object[] properties);
-        public IssueBuilder WithCustomProperties(int numProperties, object property);
-        public IssueBuilder WithDependencies(DependencyNode dependencies);
-        public IssueBuilder WithDescription(string description);
-        public IssueBuilder WithLocation(Location location);
-        public IssueBuilder WithLocation(string path, int line = 0);
-        public IssueBuilder WithLogLevel(LogLevel logLevel);
-        public IssueBuilder WithSeverity(Unity.ProjectAuditor.Editor.Diagnostic.Severity severity);
-    }
-
-    public class IssueLayout
-    {
-        public IssueCategory category;
-        public bool hierarchy;
-        public PropertyDefinition[] properties;
-        public int defaultGroupPropertyIndex { get; }
-        public IssueLayout() {}
-    }
-
     public enum LogLevel
     {
         Error = 0,
         Info = 2,
         Warning = 1,
-    }
-
-    public class PackageDependencyNode : DependencyNode
-    {
-        public PackageDependencyNode(string name, string[] deps = default(string[])) {}
-        public override string GetName();
-        public override string GetPrettyName();
-        public override bool IsPerfCritical();
-    }
-
-    public abstract class ProjectAuditorModule
-    {
-        protected System.Collections.Generic.HashSet<Unity.ProjectAuditor.Editor.Diagnostic.Descriptor> m_Descriptors;
-        public IssueCategory[] categories { get; }
-        public virtual bool isEnabledByDefault { get; }
-        public virtual bool isSupported { get; }
-        public abstract string name { get; }
-        public System.Collections.Generic.IReadOnlyCollection<Unity.ProjectAuditor.Editor.Diagnostic.Descriptor> supportedDescriptors { get; }
-        public abstract System.Collections.Generic.IReadOnlyCollection<IssueLayout> supportedLayouts { get; }
-        protected ProjectAuditorModule() {}
-        public abstract void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = default(IProgress));
-        public virtual void Initialize(ProjectAuditorConfig config);
-        public void RegisterDescriptor(Unity.ProjectAuditor.Editor.Diagnostic.Descriptor descriptor);
-    }
-
-    public abstract class ProjectAuditorModuleWithAnalyzers<T> : ProjectAuditorModule where T : IModuleAnalyzer
-    {
-        protected System.Collections.Generic.List<T> m_Analyzers;
-        protected ProjectAuditorModuleWithAnalyzers() {}
-        protected T[] GetPlatformAnalyzers(UnityEditor.BuildTarget platform);
-        public override void Initialize(ProjectAuditorConfig config);
-    }
-
-    public struct PropertyDefinition
-    {
-        public bool defaultGroup;
-        public PropertyFormat format;
-        public bool hidden;
-        public string longName;
-        public string name;
-        public PropertyType type;
-    }
-
-    public enum PropertyFormat
-    {
-        Bool = 1,
-        Bytes = 4,
-        Integer = 2,
-        Percentage = 6,
-        String = 0,
-        Time = 5,
-        ULong = 3,
-    }
-
-    public enum PropertyType
-    {
-        Area = 4,
-        Description = 0,
-        Descriptor = 1,
-        Directory = 6,
-        Filename = 7,
-        FileType = 8,
-        LogLevel = 3,
-        Num = 10,
-        Path = 5,
-        Platform = 9,
-        Severity = 2,
-    }
-
-    public struct PropertyTypeUtil
-    {
-        public static PropertyType FromCustom<T>(T customPropEnum) where T : struct, new();
-        public static bool IsCustom(PropertyType type);
-        public static int ToCustomIndex(PropertyType type);
     }
 }
 
@@ -373,36 +152,13 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public string title;
         public string type;
         public string value;
+        public Descriptor(string id, string title, string[] areas, string description, string solution) {}
         public Descriptor(string id, string title, Area area, string description, string solution) {}
         public Descriptor(string id, string title, Area[] areas, string description, string solution) {}
         public override bool Equals(object obj);
         public bool Equals(Descriptor other);
-        public void Fix(ProjectIssue issue);
         public override int GetHashCode();
         public bool IsValid();
-    }
-
-    public static class DescriptorExtensions
-    {
-        public static Area[] GetAreas(this Descriptor descriptor);
-        public static string GetAreasSummary(this Descriptor descriptor);
-        public static string GetFullTypeName(this Descriptor descriptor);
-        public static string GetPlatformsSummary(this Descriptor descriptor);
-        public static bool IsPlatformCompatible(this Descriptor descriptor, UnityEditor.BuildTarget buildTarget);
-        public static bool IsPlatformSpecific(this Descriptor descriptor, UnityEditor.BuildTarget buildTarget);
-    }
-
-    public class Rule : System.IEquatable<Rule>
-    {
-        public string filter;
-        public string id;
-        public Severity severity;
-        public Rule() {}
-        public override bool Equals(object obj);
-        public bool Equals(Rule other);
-        public override int GetHashCode();
-        public static bool operator ==(Rule a, Rule b);
-        public static bool operator !=(Rule a, Rule b);
     }
 
     public enum Severity
@@ -417,59 +173,5 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         Moderate = 4,
         None = 6,
         Warning = 4,
-    }
-}
-
-namespace Unity.ProjectAuditor.Editor.Modules
-{
-    public enum CodeProperty
-    {
-        Assembly = 0,
-        Num = 1,
-    }
-
-    public interface ICodeModuleInstructionAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
-    {
-        public System.Collections.Generic.IReadOnlyCollection<Mono.Cecil.Cil.OpCode> opCodes { get; }
-        public Unity.ProjectAuditor.Editor.Core.IssueBuilder Analyze(Mono.Cecil.MethodDefinition methodDefinition, Mono.Cecil.Cil.Instruction inst);
-    }
-
-    public interface IMeshModuleAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
-    {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, UnityEditor.AssetImporter assetImporter);
-    }
-
-    public interface ISettingsModuleAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
-    {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams);
-    }
-
-    public interface IShaderModuleAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
-    {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, UnityEngine.Shader shader, string assetPath);
-    }
-
-    public interface ISpriteAtlasModuleAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
-    {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, string assetPath);
-    }
-
-    public interface ITextureModuleAnalyzer : Unity.ProjectAuditor.Editor.Core.IModuleAnalyzer
-    {
-        public System.Collections.Generic.IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, UnityEditor.TextureImporter textureImporter, UnityEditor.TextureImporterPlatformSettings textureImporterPlatformSettings);
-    }
-
-    public enum TextureProperty
-    {
-        Format = 2,
-        ImporterType = 1,
-        MipMapEnabled = 4,
-        Num = 9,
-        Readable = 5,
-        Resolution = 6,
-        Shape = 0,
-        SizeOnDisk = 7,
-        StreamingMipMap = 8,
-        TextureCompression = 3,
     }
 }
