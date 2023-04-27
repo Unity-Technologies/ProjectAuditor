@@ -99,6 +99,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             textureImporter =
                 AssetImporter.GetAtPath(m_TextureStreamingMipmapDisabled.relativePath) as TextureImporter;
+            textureImporter.mipmapEnabled = true;
             textureImporter.streamingMipmaps = false;
             //Size should not be compressed for testing purposes.
             //If compressed, it won't trigger a warning, as size will be below the minimal size
