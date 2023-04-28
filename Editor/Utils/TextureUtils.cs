@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using UnityEditor;
 using UnityEditor.U2D;
 using UnityEngine;
@@ -17,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// <param name="textureImporter">The texture importer of the texture.</param>
         /// <param name="texture">The texture to check.</param>
         /// <returns>True if the texture is a single solid color above 1x1.</returns>
-        internal static bool IsTextureSolidColorTooBig(TextureImporter textureImporter, Texture texture)
+        public static bool IsTextureSolidColorTooBig(TextureImporter textureImporter, Texture texture)
         {
             bool isTooBig = false;
 
@@ -59,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// </summary>
         /// <param name="texture">The texture to check.</param>
         /// <returns>True if the texture is a single solid color.</returns>
-        internal static bool IsSolidColor(Texture2D texture)
+        static bool IsSolidColor(Texture2D texture)
         {
             // Skip "degenerate" textures like font atlases
             if (texture.width == 0 || texture.height == 0)
@@ -105,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// </summary>
         /// <param name="spriteAtlas">The Sprite Atlas to check.</param>
         /// <returns>The percent of empty space.</returns>
-        internal static int GetEmptySpacePercentage(SpriteAtlas spriteAtlas)
+        public static int GetEmptySpacePercentage(SpriteAtlas spriteAtlas)
         {
             var method = typeof(SpriteAtlasExtensions).GetMethod("GetPreviewTextures", BindingFlags.Static | BindingFlags.NonPublic);
             object obj = method.Invoke(null, new object[] { spriteAtlas });
@@ -129,7 +128,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return emptyPercent;
         }
 
-        internal static int GetEmptyPixelsPercent(Texture2D texture2D)
+        public static int GetEmptyPixelsPercent(Texture2D texture2D)
         {
             Color32[] pixels;
 
@@ -183,7 +182,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return ((int)Math.Round(percent * 100));
         }
 
-        internal static Texture2D CopyTexture(Texture2D texture)
+        static Texture2D CopyTexture(Texture2D texture)
         {
             RenderTexture tmp = RenderTexture.GetTemporary(
                 texture.width,
@@ -195,7 +194,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             // Backup the currently set RenderTexture
             RenderTexture previous = RenderTexture.active;
-            TextureFormat format = texture.format;
 
             Graphics.Blit(texture, tmp);
             RenderTexture.active = tmp;
@@ -208,77 +206,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
             RenderTexture.ReleaseTemporary(tmp);
 
             return newTexture;
-        }
-    }
-
-    /// <summary>
-    /// Conversion struct which takes advantage of Color32 struct layout for fast conversion to and from Int32.
-    /// </summary>
-    [StructLayout(LayoutKind.Explicit)]
-    internal struct Color32ToInt
-    {
-        /// <summary>
-        /// Int field which shares an offset with the color field.
-        /// Set m_Color to read a converted value from this field.
-        /// </summary>
-        [FieldOffset(0)] int m_Int;
-
-        /// <summary>
-        /// Color32 field which shares an offset with the int field.
-        /// Set m_Int to read a converted value from this field.
-        /// </summary>
-        [FieldOffset(0)] Color32 m_Color;
-
-        /// <summary>
-        /// The int value.
-        /// </summary>
-        internal int Int => m_Int;
-
-        /// <summary>
-        /// The color value.
-        /// </summary>
-        internal Color32 Color => m_Color;
-
-        /// <summary>
-        /// Constructor for Color32 to Int32 conversion.
-        /// </summary>
-        /// <param name="color">The color which will be converted to an int.</param>
-        Color32ToInt(Color32 color)
-        {
-            m_Int = 0;
-            m_Color = color;
-        }
-
-        /// <summary>
-        /// Constructor for Int32 to Color32 conversion.
-        /// </summary>
-        /// <param name="value">The int which will be converted to an Color32.</param>
-        Color32ToInt(int value)
-        {
-            m_Color = default;
-            m_Int = value;
-        }
-
-        /// <summary>
-        /// Convert a Color32 to an Int32.
-        /// </summary>
-        /// <param name="color">The Color32 which will be converted to an int.</param>
-        /// <returns>The int value for the given color.</returns>
-        internal static int Convert(Color32 color)
-        {
-            var convert = new Color32ToInt(color);
-            return convert.m_Int;
-        }
-
-        /// <summary>
-        /// Convert a Color32 to an Int32.
-        /// </summary>
-        /// <param name="value">The int which will be converted to an Color32.</param>
-        /// <returns>The Color32 value for the given int.</returns>
-        internal static Color32 Convert(int value)
-        {
-            var convert = new Color32ToInt(value);
-            return convert.m_Color;
         }
     }
 }
