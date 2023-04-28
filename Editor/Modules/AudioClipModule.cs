@@ -39,17 +39,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        internal override string name => "AudioClip";
+        public override string name => "AudioClip";
 
-        internal override bool isEnabledByDefault => false;
+        public override bool isEnabledByDefault => false;
 
-        internal override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_AudioClipLayout,
             AssetsModule.k_IssueLayout
         };
 
-        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             projectAuditorParams.onIncomingIssues(EnumerateAudioClips(projectAuditorParams.platform));
             projectAuditorParams.onModuleCompleted?.Invoke();

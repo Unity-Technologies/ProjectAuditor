@@ -5,10 +5,10 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     [Serializable]
     internal class Rule : IEquatable<Rule>
     {
-        internal Severity severity;
-        internal string filter;
+        public Severity severity;
+        public string filter;
 
-        internal string id;
+        public string id;
 
         public bool Equals(Rule other)
         {

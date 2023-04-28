@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected abstract void CreateTable(TreeViewSelection selection, string[] names);
 
-        internal static T Open<T>(string title, float screenX, float screenY,
+        public static T Open<T>(string title, float screenX, float screenY,
             TreeViewSelection selection, string[] names, Action<TreeViewSelection> onSelection) where T : SelectionWindow
         {
             var window = GetWindow<T>(title);
@@ -26,13 +26,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return window;
         }
 
-        internal static void CloseAll<T>() where T : SelectionWindow
+        public static void CloseAll<T>() where T : SelectionWindow
         {
             var window = GetWindow<T>();
             window.Close();
         }
 
-        internal static bool IsOpen<T>() where T : SelectionWindow
+        public static bool IsOpen<T>() where T : SelectionWindow
         {
             var windows = Resources.FindObjectsOfTypeAll(typeof(T));
             if (windows != null && windows.Length > 0)

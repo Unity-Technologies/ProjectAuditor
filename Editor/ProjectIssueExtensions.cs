@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         internal const string k_NotAvailable = "N/A";
 
-        internal static string GetContext(this ProjectIssue issue)
+        public static string GetContext(this ProjectIssue issue)
         {
             if (issue.dependencies == null)
                 return string.Empty;
@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor
             return root.name;
         }
 
-        internal static string GetProperty(this ProjectIssue issue, PropertyType propertyType)
+        public static string GetProperty(this ProjectIssue issue, PropertyType propertyType)
         {
             switch (propertyType)
             {
@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        internal static string GetPropertyGroup(this ProjectIssue issue, PropertyDefinition propertyDefinition)
+        public static string GetPropertyGroup(this ProjectIssue issue, PropertyDefinition propertyDefinition)
         {
             switch (propertyDefinition.type)
             {

@@ -74,32 +74,32 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class ShaderVariantData
     {
-        internal PassType passType;
-        internal string passName;
-        internal ShaderType shaderType;
-        internal string[] keywords;
-        internal string[] platformKeywords;
-        internal ShaderRequirements[] requirements;
-        internal GraphicsTier graphicsTier;
-        internal BuildTarget buildTarget;
-        internal ShaderCompilerPlatform compilerPlatform;
+        public PassType passType;
+        public string passName;
+        public ShaderType shaderType;
+        public string[] keywords;
+        public string[] platformKeywords;
+        public ShaderRequirements[] requirements;
+        public GraphicsTier graphicsTier;
+        public BuildTarget buildTarget;
+        public ShaderCompilerPlatform compilerPlatform;
     }
 
     class ComputeShaderVariantData
     {
-        internal string kernelName;
-        internal string[] keywords;
-        internal string[] platformKeywords;
-        internal GraphicsTier graphicsTier;
-        internal BuildTarget buildTarget;
-        internal ShaderCompilerPlatform compilerPlatform;
+        public string kernelName;
+        public string[] keywords;
+        public string[] platformKeywords;
+        public GraphicsTier graphicsTier;
+        public BuildTarget buildTarget;
+        public ShaderCompilerPlatform compilerPlatform;
     }
 
     class CompiledVariantData
     {
-        internal string pass;
-        internal string stage;
-        internal string[] keywords;
+        public string pass;
+        public string stage;
+        public string[] keywords;
     }
 
     class ShadersModule : ProjectAuditorModuleWithAnalyzers<IShaderModuleAnalyzer>
@@ -230,9 +230,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             new Dictionary<ComputeShader, List<ComputeShaderVariantData>>();
 #endif
 
-        internal override string name => "Shaders";
+        public override string name => "Shaders";
 
-        internal override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_ShaderLayout,
             k_ShaderVariantLayout,
@@ -247,7 +247,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #endif
         };
 
-        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var shaderPathMap = CollectShaders();
             ProcessShaders(projectAuditorParams, shaderPathMap, projectAuditorParams.onIncomingIssues);
@@ -615,7 +615,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        internal static void ExportSVC(string svcName, string path, ProjectIssue[] variants)
+        public static void ExportSVC(string svcName, string path, ProjectIssue[] variants)
         {
             var svc = new ShaderVariantCollection();
             svc.name = svcName;
@@ -638,7 +638,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetDatabase.CreateAsset(svc, path);
         }
 
-        internal static ParseLogResult ParsePlayerLog(string logFile, ProjectIssue[] builtVariants, IProgress progress = null)
+        public static ParseLogResult ParsePlayerLog(string logFile, ProjectIssue[] builtVariants, IProgress progress = null)
         {
             var compiledVariants = new Dictionary<string, List<CompiledVariantData>>();
             var lines = GetCompiledShaderLines(logFile);

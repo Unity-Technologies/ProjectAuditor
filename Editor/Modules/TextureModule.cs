@@ -42,17 +42,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        internal override string name => "Textures";
+        public override string name => "Textures";
 
-        internal override bool isEnabledByDefault => false;
+        public override bool isEnabledByDefault => false;
 
-        internal override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_TextureLayout,
             AssetsModule.k_IssueLayout
         };
 
-        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
             var allTextures = AssetDatabase.FindAssets("t:texture, a:assets");

@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return types;
         }
 
-        internal static IEnumerable<Type> GetTypesDerivedFrom(Type parentType)
+        public static IEnumerable<Type> GetTypesDerivedFrom(Type parentType)
         {
             return GetAllTypes()
                 .Where(type => type != parentType && parentType.IsAssignableFrom(type));

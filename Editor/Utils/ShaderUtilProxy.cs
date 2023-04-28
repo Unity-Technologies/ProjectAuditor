@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         }
 
         // note that this method is not present in ShaderUtil
-        internal static string[] GetCompilerPlatformNames()
+        public static string[] GetCompilerPlatformNames()
         {
             if (s_TypeShaderUtil == null)
                 Init();
@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return s_ShaderPlatformNames;
         }
 
-        internal static int GetShaderActiveSubshaderIndex(Shader shader)
+        public static int GetShaderActiveSubshaderIndex(Shader shader)
         {
             if (s_TypeShaderUtil == null)
                 Init();
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return (int)s_MethodGetShaderActiveSubshaderIndex.Invoke(null, new object[] { shader});
         }
 
-        internal static string[] GetShaderGlobalKeywords(Shader shader)
+        public static string[] GetShaderGlobalKeywords(Shader shader)
         {
             if (s_TypeShaderUtil == null)
                 Init();
@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return (string[])s_MethodGetShaderGlobalKeywords.Invoke(null, new object[] { shader});
         }
 
-        internal static string[] GetShaderLocalKeywords(Shader shader)
+        public static string[] GetShaderLocalKeywords(Shader shader)
         {
             if (s_TypeShaderUtil == null)
                 Init();
@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return (string[])s_MethodGetShaderLocalKeywords.Invoke(null, new object[] { shader});
         }
 
-        internal static int GetSRPBatcherCompatibilityCode(Shader shader, int subShaderIdx)
+        public static int GetSRPBatcherCompatibilityCode(Shader shader, int subShaderIdx)
         {
 #if UNITY_2019_1_OR_NEWER
             if (s_TypeShaderUtil == null)
@@ -104,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #endif
         }
 
-        internal static ulong GetVariantCount(Shader shader)
+        public static ulong GetVariantCount(Shader shader)
         {
             if (s_TypeShaderUtil == null)
                 Init();
@@ -115,7 +115,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return (ulong)s_MethodGetShaderVariantCount.Invoke(null, new object[] { shader, false});
         }
 
-        internal static bool HasInstancing(Shader shader)
+        public static bool HasInstancing(Shader shader)
         {
             if (s_TypeShaderUtil == null)
                 Init();
@@ -126,7 +126,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return (bool)s_MethodHasInstancing.Invoke(null, new object[] { shader});
         }
 
-        internal static bool HasSurfaceShaders(Shader shader)
+        public static bool HasSurfaceShaders(Shader shader)
         {
             if (s_TypeShaderUtil == null)
                 Init();

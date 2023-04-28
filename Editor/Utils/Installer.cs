@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         static readonly Regex s_VersionPattern = new Regex(@"(?<shortVersion>\d+\.\d+\.\d+(?<suffix>((?<alphabeta>[abx])|[fp])[^\s]*))( \((?<revision>[a-fA-F\d]+)\))?",
             RegexOptions.Compiled);
 
-        internal static string GetUnityHubModuleDownloadURL(string moduleName)
+        public static string GetUnityHubModuleDownloadURL(string moduleName)
         {
             var fullVersion = InternalEditorUtility.GetFullUnityVersion();
             var revision = "";

@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return new SerializedObject(playerSettings as UnityEngine.Object);
         }
 
-        internal static int GetVertexChannelCompressionMask()
+        public static int GetVertexChannelCompressionMask()
         {
             var serializedSettings = GetPlayerSettingsSerializedObject();
 
@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return compressionFlagsProperty.intValue;
         }
 
-        internal static void SetVertexChannelCompressionMask(int newValue)
+        public static void SetVertexChannelCompressionMask(int newValue)
         {
             var serializedSettings = GetPlayerSettingsSerializedObject();
 
@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             serializedSettings.ApplyModifiedProperties();
         }
 
-        internal static bool IsStaticBatchingEnabled(BuildTarget platform)
+        public static bool IsStaticBatchingEnabled(BuildTarget platform)
         {
             var method = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
                 BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return (int)args[1] > 0;
         }
 
-        internal static bool IsLightmapStreamingEnabled(BuildTargetGroup platform)
+        public static bool IsLightmapStreamingEnabled(BuildTargetGroup platform)
         {
             var method = typeof(PlayerSettings).GetMethod("GetLightmapStreamingEnabledForPlatformGroup",
                 BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
@@ -82,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return (bool)returnValue;
         }
 
-        internal static void SetLightmapStreaming(BuildTargetGroup platform, bool value)
+        public static void SetLightmapStreaming(BuildTargetGroup platform, bool value)
         {
             var method = typeof(PlayerSettings).GetMethod("SetLightmapStreamingEnabledForPlatformGroup",
                 BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
@@ -92,7 +92,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             method.Invoke(null, new object[] {platform, value});
         }
 
-        internal static void GetDefaultTextureCompressionFormat(BuildTargetGroup buildTargetGroup,
+        public static void GetDefaultTextureCompressionFormat(BuildTargetGroup buildTargetGroup,
             out int formatEnumIndex, out Array formatEnumValues)
         {
             formatEnumValues = default;

@@ -7,7 +7,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 {
     internal static class CoreUtils
     {
-        internal static bool SupportsPlatform(Type type, BuildTarget platform)
+        public static bool SupportsPlatform(Type type, BuildTarget platform)
         {
             if (!type.CustomAttributes.Any())
                 return true;

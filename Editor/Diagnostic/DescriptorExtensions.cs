@@ -7,22 +7,22 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     internal static class DescriptorExtensions
     {
-        internal static Area[] GetAreas(this Descriptor descriptor)
+        public static Area[] GetAreas(this Descriptor descriptor)
         {
             return descriptor.areas.Select(a => (Area)Enum.Parse(typeof(Area), a)).ToArray();
         }
 
-        internal static string GetAreasSummary(this Descriptor descriptor)
+        public static string GetAreasSummary(this Descriptor descriptor)
         {
             return Formatting.CombineStrings(descriptor.areas);
         }
 
-        internal static string GetPlatformsSummary(this Descriptor descriptor)
+        public static string GetPlatformsSummary(this Descriptor descriptor)
         {
             return (descriptor.platforms == null || descriptor.platforms.Length == 0) ? "Any" : Formatting.CombineStrings(descriptor.platforms);
         }
 
-        internal static string GetFullTypeName(this Descriptor descriptor)
+        public static string GetFullTypeName(this Descriptor descriptor)
         {
             return descriptor.type + "." + descriptor.method;
         }
@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// Check if the descriptor applies to the given platform
         /// </summary>
-        internal static bool IsPlatformCompatible(this Descriptor descriptor, BuildTarget buildTarget)
+        public static bool IsPlatformCompatible(this Descriptor descriptor, BuildTarget buildTarget)
         {
             if (descriptor.platforms == null || descriptor.platforms.Length == 0)
                 return true;
@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// Check if the descriptor applies only to the given platform
         /// </summary>
-        internal static bool IsPlatformSpecific(this Descriptor descriptor, BuildTarget buildTarget)
+        public static bool IsPlatformSpecific(this Descriptor descriptor, BuildTarget buildTarget)
         {
             if (descriptor.platforms == null || descriptor.platforms.Length != 1)
                 return false;

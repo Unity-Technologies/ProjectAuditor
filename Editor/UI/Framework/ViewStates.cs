@@ -8,19 +8,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     [Serializable]
     internal class ViewStates
     {
-        internal const int k_MinFontSize = 12;
-        internal const int k_MaxFontSize = 22;
+        public const int k_MinFontSize = 12;
+        public const int k_MaxFontSize = 22;
 
         // foldout preferences
-        internal bool info = true;
-        internal bool filters = true;
-        internal bool actions = true;
-        internal bool dependencies = true;
+        public bool info = true;
+        public bool filters = true;
+        public bool actions = true;
+        public bool dependencies = true;
 
         // diagnostic preferences
-        internal bool onlyCriticalIssues;
-        internal bool mutedIssues;
+        public bool onlyCriticalIssues;
+        public bool mutedIssues;
 
-        internal int fontSize = k_MinFontSize;
+        public int fontSize = k_MinFontSize;
     }
 }

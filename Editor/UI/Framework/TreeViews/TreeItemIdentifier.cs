@@ -5,18 +5,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     internal struct TreeItemIdentifier
     {
-        internal string nameWithIndex { get; private set; }
+        public string nameWithIndex { get; private set; }
 
-        internal string name { get; private set; }
+        public string name { get; private set; }
 
         // stephenm TODO - Pretty sure this can go. Assemblies don't have indeces. I think the most we'll need is a flag
         // to say whether this is the "All" TreeItemIdentifier (i.e. (nameWithIndex == "All"))
-        internal int index { get; private set; }
+        public int index { get; private set; }
 
-        internal static int kAll = -1;
-        internal static int kSingle = 0;
+        public static int kAll = -1;
+        public static int kSingle = 0;
 
-        internal TreeItemIdentifier(string _name, int _index)
+        public TreeItemIdentifier(string _name, int _index)
         {
             name = _name;
             index = _index;
@@ -26,14 +26,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 nameWithIndex = string.Format("{0}:{1}", index, name);
         }
 
-        internal TreeItemIdentifier(TreeItemIdentifier treeItemIdentifier)
+        public TreeItemIdentifier(TreeItemIdentifier treeItemIdentifier)
         {
             name = treeItemIdentifier.name;
             index = treeItemIdentifier.index;
             nameWithIndex = treeItemIdentifier.nameWithIndex;
         }
 
-        internal TreeItemIdentifier(string _nameWithIndex)
+        public TreeItemIdentifier(string _nameWithIndex)
         {
             // stephenm TODO - Pretty sure this can go. Assembly names don't have a foo:N (or N:foo?) naming convention like threads do.
             // So index should probably always be treated as 0 (sorry, "kSingle")
@@ -72,19 +72,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 nameWithIndex = string.Format("{0}:{1}", index, name);
         }
 
-        internal void SetName(string newName)
+        public void SetName(string newName)
         {
             name = newName;
             UpdateAssemblyNameWithIndex();
         }
 
-        internal void SetIndex(int newIndex)
+        public void SetIndex(int newIndex)
         {
             index = newIndex;
             UpdateAssemblyNameWithIndex();
         }
 
-        internal void SetAll()
+        public void SetAll()
         {
             SetIndex(kAll);
         }
@@ -92,9 +92,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
     class SelectionWindowTreeViewItem : TreeViewItem
     {
-        internal readonly TreeItemIdentifier TreeItemIdentifier;
+        public readonly TreeItemIdentifier TreeItemIdentifier;
 
-        internal SelectionWindowTreeViewItem(int id, int depth, string displayName, TreeItemIdentifier treeItemIdentifier)
+        public SelectionWindowTreeViewItem(int id, int depth, string displayName, TreeItemIdentifier treeItemIdentifier)
             : base(id, depth, displayName)
         {
             TreeItemIdentifier = treeItemIdentifier;

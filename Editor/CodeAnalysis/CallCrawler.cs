@@ -9,13 +9,13 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     class CallInfo
     {
-        internal readonly MethodReference callee;
-        internal readonly MethodReference caller;
-        internal readonly Location location;
-        internal readonly bool perfCriticalContext;
-        internal CallTreeNode hierarchy;
+        public readonly MethodReference callee;
+        public readonly MethodReference caller;
+        public readonly Location location;
+        public readonly bool perfCriticalContext;
+        public CallTreeNode hierarchy;
 
-        internal CallInfo(
+        public CallInfo(
             MethodReference callee,
             MethodReference caller,
             Location location,
@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
         readonly Dictionary<string, List<CallInfo>> m_BucketedCalls =
             new Dictionary<string, List<CallInfo>>();
 
-        internal void Add(CallInfo callInfo)
+        public void Add(CallInfo callInfo)
         {
             var key = callInfo.callee.FullName;
             List<CallInfo> calls;
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             calls.Add(callInfo);
         }
 
-        internal void BuildCallHierarchies(List<ProjectIssue> issues, IProgress progress = null)
+        public void BuildCallHierarchies(List<ProjectIssue> issues, IProgress progress = null)
         {
             if (issues.Count > 0)
             {

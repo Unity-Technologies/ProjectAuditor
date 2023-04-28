@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static GUIStyle s_TitleLabel;
         static GUIStyle s_LargeLabel;
 
-        internal static GUIStyle Foldout
+        public static GUIStyle Foldout
         {
             get
             {
@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal static GUIStyle BoldLabel
+        public static GUIStyle BoldLabel
         {
             get
             {
@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal static GUIStyle IconLabel
+        public static GUIStyle IconLabel
         {
             get
             {
@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal static GUIStyle Label
+        public static GUIStyle Label
         {
             get
             {
@@ -72,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal static GUIStyle LinkLabel
+        public static GUIStyle LinkLabel
         {
             get
             {
@@ -85,7 +85,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal static GUIStyle TextArea
+        public static GUIStyle TextArea
         {
             get
             {
@@ -102,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
 
 
-        internal static GUIStyle LabelWithDynamicSizeWithDynamicSize
+        public static GUIStyle LabelWithDynamicSizeWithDynamicSize
         {
             get
             {
@@ -115,7 +115,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal static GUIStyle TextAreaWithDynamicSize
+        public static GUIStyle TextAreaWithDynamicSize
         {
             get
             {
@@ -131,7 +131,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal static GUIStyle TitleLabel
+        public static GUIStyle TitleLabel
         {
             get
             {
@@ -145,7 +145,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal static GUIStyle LargeLabel
+        public static GUIStyle LargeLabel
         {
             get
             {
@@ -172,7 +172,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return s;
         }
 
-        internal static void SetFontDynamicSize(int fontSize)
+        public static void SetFontDynamicSize(int fontSize)
         {
             LabelWithDynamicSizeWithDynamicSize.fontSize = fontSize;
             TextAreaWithDynamicSize.fontSize = fontSize;

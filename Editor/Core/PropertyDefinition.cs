@@ -19,17 +19,17 @@ namespace Unity.ProjectAuditor.Editor.Core
 
     internal struct PropertyTypeUtil
     {
-        internal static PropertyType FromCustom<T>(T customPropEnum) where T : struct
+        public static PropertyType FromCustom<T>(T customPropEnum) where T : struct
         {
             return PropertyType.Num + Convert.ToInt32(customPropEnum);
         }
 
-        internal static int ToCustomIndex(PropertyType type)
+        public static int ToCustomIndex(PropertyType type)
         {
             return type - PropertyType.Num;
         }
 
-        internal static bool IsCustom(PropertyType type)
+        public static bool IsCustom(PropertyType type)
         {
             return type >= PropertyType.Num;
         }
@@ -48,11 +48,11 @@ namespace Unity.ProjectAuditor.Editor.Core
 
     internal struct PropertyDefinition
     {
-        internal PropertyType type;
-        internal PropertyFormat format;
-        internal string name;
-        internal string longName;
-        internal bool defaultGroup;
-        internal bool hidden;
+        public PropertyType type;
+        public PropertyFormat format;
+        public string name;
+        public string longName;
+        public bool defaultGroup;
+        public bool hidden;
     }
 }

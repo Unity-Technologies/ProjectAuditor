@@ -25,11 +25,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        internal override string name => "Settings";
+        public override string name => "Settings";
 
-        internal override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
 
-        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
             if (progress != null)

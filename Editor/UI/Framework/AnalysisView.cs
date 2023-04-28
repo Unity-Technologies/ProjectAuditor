@@ -35,14 +35,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         Utility.DropdownItem[] m_GroupDropdownItems;
         IssueTable m_Table;
 
-        internal ViewDescriptor desc
+        public ViewDescriptor desc
         {
             get { return m_Desc; }
         }
 
-        internal string documentationUrl => Documentation.GetPageUrl(new string(m_Desc.displayName.Where(char.IsLetterOrDigit).ToArray()));
+        public string documentationUrl => Documentation.GetPageUrl(new string(m_Desc.displayName.Where(char.IsLetterOrDigit).ToArray()));
 
-        internal int numIssues
+        public int numIssues
         {
             get
             {
@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal int numFilteredIssues
+        public int numFilteredIssues
         {
             get
             {
@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_ViewManager = viewManager;
         }
 
-        internal virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ViewStates viewStates, IProjectIssueFilter filter)
+        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ViewStates viewStates, IProjectIssueFilter filter)
         {
             m_Desc = descriptor;
             m_Config = config;
@@ -139,7 +139,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_HelpButtonContent = Utility.GetIcon(Utility.IconType.Help, helpButtonTooltip);
         }
 
-        internal virtual void AddIssues(IEnumerable<ProjectIssue> allIssues)
+        public virtual void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
             var issues = allIssues.Where(i => i.category == m_Desc.category).ToArray();
             if (issues.Length == 0)
@@ -151,7 +151,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Dirty = true;
         }
 
-        internal virtual void Clear()
+        public virtual void Clear()
         {
             m_Issues.Clear();
             m_Table.Clear();
@@ -162,7 +162,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         /// <summary>
         /// Mark view as dirty. Use this to force a table reload.
         /// </summary>
-        internal void MarkDirty()
+        public void MarkDirty()
         {
             m_Dirty = true;
         }
@@ -176,21 +176,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Dirty = false;
         }
 
-        internal bool IsDiagnostic()
+        public bool IsDiagnostic()
         {
             return m_Layout.properties.Any(p => p.type == PropertyType.Severity);
         }
 
-        internal bool IsValid()
+        public bool IsValid()
         {
             return m_Table != null;
         }
 
-        internal virtual void DrawFilters()
+        public virtual void DrawFilters()
         {
         }
 
-        internal virtual void DrawContent(bool showDetails = false)
+        public virtual void DrawContent(bool showDetails = false)
         {
             var selectedItems = m_Table.GetSelectedItems();
             var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
@@ -218,7 +218,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal void DrawTopPanel()
+        public void DrawTopPanel()
         {
             if (!m_Desc.showInfoPanel)
                 return;
@@ -258,7 +258,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndVertical();
         }
 
-        internal virtual void DrawSearch()
+        public virtual void DrawSearch()
         {
             EditorGUILayout.BeginHorizontal();
 
@@ -300,13 +300,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndHorizontal();
         }
 
-        internal virtual void DrawDetails(ProjectIssue[] selectedIssues)
+        public virtual void DrawDetails(ProjectIssue[] selectedIssues)
         {
             EditorGUILayout.BeginVertical();
             EditorGUILayout.EndVertical();
         }
 
-        internal virtual void DrawViewOptions()
+        public virtual void DrawViewOptions()
         {
             if (m_ViewManager.onAnalyze != null)
                 DrawToolbarButtonIcon(Contents.AnalyzeNowButton,  () => m_ViewManager.onAnalyze(m_Desc.category));
@@ -417,18 +417,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndVertical();
         }
 
-        internal void SetSearch(string filter)
+        public void SetSearch(string filter)
         {
             m_TextFilter.searchString = filter;
         }
 
-        internal ProjectIssue[] GetSelection()
+        public ProjectIssue[] GetSelection()
         {
             var selectedItems = m_Table.GetSelectedItems();
             return selectedItems.Where(item => item.parent != null).Select(i => i.ProjectIssue).ToArray();
         }
 
-        internal void SetSelection(Func<ProjectIssue, bool> predicate)
+        public void SetSelection(Func<ProjectIssue, bool> predicate)
         {
             RefreshIfDirty();
 
@@ -441,7 +441,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Table.SetSelection(selectedIDs);
         }
 
-        internal void ClearSelection()
+        public void ClearSelection()
         {
             m_Table.SetSelection(new List<int>());
         }
@@ -493,7 +493,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             LoadSettings();
         }
 
-        internal virtual void LoadSettings()
+        public virtual void LoadSettings()
         {
             var columns = m_Table.multiColumnHeader.state.columns;
             for (int i = 0; i < m_Layout.properties.Length; i++)
@@ -510,7 +510,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_TextFilter.searchString = EditorPrefs.GetString(GetPrefKey(k_SearchStringKey));
         }
 
-        internal virtual void SaveSettings()
+        public virtual void SaveSettings()
         {
             var columns = m_Table.multiColumnHeader.state.columns;
             for (int i = 0; i < m_Layout.properties.Length; i++)
@@ -529,7 +529,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return $"{k_PrefKeyPrefix}.{m_Desc.displayName}.{key}";
         }
 
-        internal static void DrawActionButton(GUIContent guiContent, Action onClick)
+        public static void DrawActionButton(GUIContent guiContent, Action onClick)
         {
             if (GUILayout.Button(guiContent, GUILayout.MaxWidth(LayoutSize.ActionButtonWidth), GUILayout.Height(LayoutSize.ActionButtonHeight)))
             {
@@ -537,7 +537,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal static void DrawToolbarButton(GUIContent guiContent, Action onClick)
+        public static void DrawToolbarButton(GUIContent guiContent, Action onClick)
         {
             if (GUILayout.Button(
                 guiContent, EditorStyles.toolbarButton,
@@ -547,7 +547,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        internal static void DrawToolbarButtonIcon(GUIContent guiContent, Action onClick)
+        public static void DrawToolbarButtonIcon(GUIContent guiContent, Action onClick)
         {
             if (GUILayout.Button(
                 guiContent, EditorStyles.toolbarButton,
@@ -571,8 +571,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         protected const string k_MultipleSelectionText = "<Multiple selection>";
 
-        internal static int toolbarButtonSize => LayoutSize.ToolbarButtonSize;
-        internal static int toolbarIconSize => LayoutSize.ToolbarIconSize;
+        public static int toolbarButtonSize => LayoutSize.ToolbarButtonSize;
+        public static int toolbarIconSize => LayoutSize.ToolbarIconSize;
 
         static readonly string[] k_ExportModeStrings =
         {
@@ -583,28 +583,28 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected static class LayoutSize
         {
-            internal static readonly int FoldoutWidth = 260;
-            internal static readonly int FoldoutMaxHeight = 220;
-            internal static readonly int DependencyViewHeight = 200;
-            internal static readonly int DetailsPanelWidth = 200;
-            internal static readonly int ToolbarButtonSize = 80;
-            internal static readonly int ToolbarIconSize = 32;
-            internal static readonly int ActionButtonHeight = 30;
-            internal static readonly int ActionButtonWidth = 200;
+            public static readonly int FoldoutWidth = 260;
+            public static readonly int FoldoutMaxHeight = 220;
+            public static readonly int DependencyViewHeight = 200;
+            public static readonly int DetailsPanelWidth = 200;
+            public static readonly int ToolbarButtonSize = 80;
+            public static readonly int ToolbarIconSize = 32;
+            public static readonly int ActionButtonHeight = 30;
+            public static readonly int ActionButtonWidth = 200;
         }
 
         static class Contents
         {
-            internal static readonly GUIContent AnalyzeNowButton = Utility.GetIcon(Utility.IconType.Refresh, "Analyze Now!");
-            internal static readonly GUIContent HierarchyButton = Utility.GetIcon(Utility.IconType.Hierarchy, "Show/Hide Hierarchy");
+            public static readonly GUIContent AnalyzeNowButton = Utility.GetIcon(Utility.IconType.Refresh, "Analyze Now!");
+            public static readonly GUIContent HierarchyButton = Utility.GetIcon(Utility.IconType.Hierarchy, "Show/Hide Hierarchy");
 
-            internal static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
-            internal static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
-            internal static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
+            public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
+            public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
+            public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
 
-            internal static readonly GUIContent InfoFoldout = new GUIContent("Information");
-            internal static readonly GUIContent SearchStringLabel = new GUIContent("Search : ", "Text search options");
-            internal static readonly GUIContent Dependencies = new GUIContent("Dependencies");
+            public static readonly GUIContent InfoFoldout = new GUIContent("Information");
+            public static readonly GUIContent SearchStringLabel = new GUIContent("Search : ", "Text search options");
+            public static readonly GUIContent Dependencies = new GUIContent("Dependencies");
         }
     }
 }

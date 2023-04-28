@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         readonly Action<Location> m_OnDoubleClick;
         DependencyNode m_Root;
 
-        internal DependencyView(TreeViewState treeViewState, Action<Location> onDoubleClick)
+        public DependencyView(TreeViewState treeViewState, Action<Location> onDoubleClick)
             : base(treeViewState)
         {
             m_OnDoubleClick = onDoubleClick;
@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return root;
         }
 
-        internal void SetRoot(DependencyNode root)
+        public void SetRoot(DependencyNode root)
         {
             if (m_Root != root)
             {

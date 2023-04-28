@@ -103,20 +103,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static IBuildReportProvider DefaultBuildReportProvider => s_BuildReportProvider;
 
-        internal override string name => "Build Report";
+        public override string name => "Build Report";
 
 #if !BUILD_REPORT_API_SUPPORT
-        internal override bool isSupported => false;
+        public override bool isSupported => false;
 #endif
 
-        internal override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_MetaDataLayout,
             k_FileLayout,
             k_StepLayout
         };
 
-        internal override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
 #if BUILD_REPORT_API_SUPPORT
             var buildReport = BuildReportProvider.GetBuildReport(projectAuditorParams.platform);

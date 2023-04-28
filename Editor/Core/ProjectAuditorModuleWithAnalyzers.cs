@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             return m_Analyzers.Where(a => CoreUtils.SupportsPlatform(a.GetType(), platform)).ToArray();
         }
 
-        internal override void Initialize(ProjectAuditorConfig config)
+        public override void Initialize(ProjectAuditorConfig config)
         {
             base.Initialize(config);
 

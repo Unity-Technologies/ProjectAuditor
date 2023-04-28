@@ -12,33 +12,33 @@ namespace Unity.ProjectAuditor.Editor.Core
     {
         protected HashSet<Descriptor> m_Descriptors;
 
-        internal abstract string name
+        public abstract string name
         {
             get;
         }
 
-        internal IssueCategory[] categories
+        public IssueCategory[] categories
         {
             get { return supportedLayouts.Select(l => l.category).ToArray(); }
         }
 
-        internal virtual bool isEnabledByDefault => true;
+        public virtual bool isEnabledByDefault => true;
 
-        internal virtual bool isSupported => true;
+        public virtual bool isSupported => true;
 
-        internal IReadOnlyCollection<Descriptor> supportedDescriptors => m_Descriptors != null ? m_Descriptors.ToArray() : Array.Empty<Descriptor>();
+        public IReadOnlyCollection<Descriptor> supportedDescriptors => m_Descriptors != null ? m_Descriptors.ToArray() : Array.Empty<Descriptor>();
 
-        internal abstract IReadOnlyCollection<IssueLayout> supportedLayouts
+        public abstract IReadOnlyCollection<IssueLayout> supportedLayouts
         {
             get;
         }
 
-        internal virtual void Initialize(ProjectAuditorConfig config)
+        public virtual void Initialize(ProjectAuditorConfig config)
         {
             m_Descriptors = new HashSet<Descriptor>();
         }
 
-        internal void RegisterDescriptor(Descriptor descriptor)
+        public void RegisterDescriptor(Descriptor descriptor)
         {
             if (!m_Descriptors.Add(descriptor))
                 throw new Exception("Duplicate descriptor with id: " + descriptor.id);
@@ -49,6 +49,6 @@ namespace Unity.ProjectAuditor.Editor.Core
         /// </summary>
         /// <param name="projectAuditorParams"> Project audit parameters  </param>
         /// <param name="progress"> Progress bar, if applicable </param>
-        internal abstract void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null);
+        public abstract void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null);
     }
 }

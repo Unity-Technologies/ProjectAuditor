@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
     {
         static PropertyInfo s_LogWhenShaderIsCompiled;
 
-        internal static bool logShaderCompilationSupported
+        public static bool logShaderCompilationSupported
         {
             get
             {
@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
         }
 
-        internal static bool logWhenShaderIsCompiled
+        public static bool logWhenShaderIsCompiled
         {
             get
             {
@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             }
         }
 
-        internal static UnityEngine.Object GetGraphicsSettings()
+        public static UnityEngine.Object GetGraphicsSettings()
         {
 #if UNITY_2020_2_OR_NEWER
             return GraphicsSettings.GetGraphicsSettings();

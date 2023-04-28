@@ -1,40 +1,38 @@
 using System;
-using System.Runtime.CompilerServices;
 using File = System.IO.File;
 using SystemPath = System.IO.Path;
 
-[assembly: InternalsVisibleTo("Unity.ProjectAuditor.Editor.Tests.Common")]
 namespace Unity.ProjectAuditor.Editor.Utils
 {
     internal static class PathUtils
     {
-        internal const char Separator = '/';
+        public const char Separator = '/';
 
         static readonly char k_DirectorySeparatorChar = SystemPath.DirectorySeparatorChar;
         static readonly char k_AltDirectorySeparatorChar = SystemPath.AltDirectorySeparatorChar;
         static readonly char k_VolumeSeparatorChar = SystemPath.VolumeSeparatorChar;
 
-        internal static string Combine(params string[] parts)
+        public static string Combine(params string[] parts)
         {
             return string.Join(Char.ToString(Separator), parts);
         }
 
-        internal static string Combine(string path1, string path2)
+        public static string Combine(string path1, string path2)
         {
             return ReplaceSeparators(SystemPath.Combine(path1, path2));
         }
 
-        internal static string GetDirectoryName(string path)
+        public static string GetDirectoryName(string path)
         {
             return ReplaceSeparators(SystemPath.GetDirectoryName(path));
         }
 
-        internal static string GetFullPath(string path)
+        public static string GetFullPath(string path)
         {
             return ReplaceSeparators(SystemPath.GetFullPath(path));
         }
 
-        internal static int GetExtensionIndexFromPath(string path)
+        public static int GetExtensionIndexFromPath(string path)
         {
             var length = path.Length;
 
@@ -63,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return length - 1;
         }
 
-        internal static int GetFilenameIndexFromPath(string path)
+        public static int GetFilenameIndexFromPath(string path)
         {
             var length = path.Length;
             var num = length;
@@ -78,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return 0;
         }
 
-        internal static string ReplaceSeparators(string path)
+        public static string ReplaceSeparators(string path)
         {
             var length = path.Length;
 
@@ -95,17 +93,17 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return new string(chars);
         }
 
-        internal static bool Exists(string path)
+        public static bool Exists(string path)
         {
             return File.Exists(path);
         }
 
-        internal static string ReplaceInvalidChars(string path)
+        public static string ReplaceInvalidChars(string path)
         {
             return path.Replace('|', '_').Replace(":", string.Empty);
         }
 
-        internal static string[] Split(string path)
+        public static string[] Split(string path)
         {
             return path.Split(Separator);
         }

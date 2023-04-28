@@ -12,7 +12,7 @@ using UnityEngine.U2D;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public class SpriteAtlasTests : TestFixtureBase
+    class SpriteAtlasTests : TestFixtureBase
     {
         const string k_SpriteAtlasName = "SpriteAtlasForTest";
         const string k_SpriteAtlasNameFull = k_SpriteAtlasName + "Full";
