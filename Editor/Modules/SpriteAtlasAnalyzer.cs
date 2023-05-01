@@ -8,19 +8,19 @@ using UnityEngine.U2D;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    internal class SpriteAnalyzer : ISpriteAtlasModuleAnalyzer
+    internal class SpriteAtlasAnalyzer : ISpriteAtlasModuleAnalyzer
     {
         internal const string PAA0006 = nameof(PAA0006);
 
         internal static readonly Descriptor k_SpriteAtlasEmptyDescriptor = new Descriptor(
             PAA0006,
-            "Sprite Atlas : Too much empty space",
+            "Sprite Atlas: Too much empty space",
             new[] {Area.Memory},
             "The sprite atlas texture has too much empty space. This increases the amount of memory usage and can be reduced.",
             "Consider reorganizing your Sprite Atlas Texture."
         )
         {
-            messageFormat = "Sprite Atlas '{0}' has too much empty space ({1} %)."
+            messageFormat = "Sprite Atlas '{0}' has too much empty space ({1}%)"
         };
 
         public void Initialize(ProjectAuditorModule module)
