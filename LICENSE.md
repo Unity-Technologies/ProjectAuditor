@@ -1,4 +1,4 @@
-Project Auditor copyright © 2020 Unity Technologies ApS
+Project Auditor copyright © 2023 Unity Technologies
 
 Licensed under the Unity Package Distribution License (see [Unity Package Distribution License](https://unity3d.com/legal/licenses/Unity_Package_Distribution_License)).
 
