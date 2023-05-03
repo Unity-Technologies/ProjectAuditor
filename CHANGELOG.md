@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Made many APIs internal rather than public.
 * Added properly-formatted comments to enable API documentation for all remaining public types and methods
 * Changes to documentation in .md files to ensure standards compliance
+* Ignore SpriteAtlas test failures
 
 ## [0.9.4-preview] - 2023-03-27
 
