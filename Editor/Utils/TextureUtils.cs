@@ -5,6 +5,7 @@ using UnityEditor.U2D;
 using UnityEngine;
 using UnityEngine.U2D;
 using Debug = UnityEngine.Debug;
+using Object = UnityEngine.Object;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
@@ -48,6 +49,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
             {
                 Texture2D copyTexture = CopyTexture(texture2D);
                 isTooBig = IsSolidColor(copyTexture);
+                //Release texture from Memory
+                Object.DestroyImmediate(copyTexture);
             }
 
             return isTooBig;
@@ -62,6 +65,14 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
             // Skip "degenerate" textures like font atlases
             if (texture.width == 0 || texture.height == 0)
+            {
+                return false;
+            }
+
+            var pixel1 = texture.GetPixel(0, 0);
+            var pixel2 = texture.GetPixel(1, 0);
+
+            if (pixel1 != pixel2)
             {
                 return false;
             }
@@ -151,6 +162,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 }
 
                 pixels = copyTexture.GetPixels32();
+                //Release texture from Memory
+                Object.DestroyImmediate(copyTexture);
             }
 
             // It is unlikely to get a null pixels array, but we should check just in case
