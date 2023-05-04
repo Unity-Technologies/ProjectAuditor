@@ -33,7 +33,7 @@ validate_{{ platform.name }}_{{ editor.version }}:
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - {% if platform.name == "centos" %}DISPLAY=:0 {% endif %}upm-ci package test -u {{ editor.version }} --type vetting-tests --platform editmode
+    - {% if platform.name == "centos" %}DISPLAY=:0 {% endif %}upm-ci package test -u {{ editor.version }} --type vetting-tests --platform editmode --warnings-as-errors
   artifacts:
     logs:
       paths:
