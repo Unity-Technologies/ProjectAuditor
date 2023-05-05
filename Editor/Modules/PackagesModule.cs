@@ -89,14 +89,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 projectAuditorParams.onModuleCompleted?.Invoke();
                 return;
             }
-            var issues = new List<ProjectIssue>();
             foreach (var package in request.Result)
             {
-                issues.AddRange(EnumerateInstalledPackages(package));
-                issues.AddRange(EnumeratePackageDiagnostics(package));
+                projectAuditorParams.onIncomingIssues(EnumerateInstalledPackages(package));
+                projectAuditorParams.onIncomingIssues(EnumeratePackageDiagnostics(package));
             }
-            if (issues.Count > 0)
-                projectAuditorParams.onIncomingIssues(issues);
             projectAuditorParams.onModuleCompleted?.Invoke();
         }
 
