@@ -218,6 +218,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.title), "Descriptor {0} has no title", descriptor.id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.description), "Descriptor {0} has no description", descriptor.id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.solution), "Descriptor {0} has no solution", descriptor.id);
+                Assert.IsFalse(descriptor.messageFormat.EndsWith("."), "Descriptor {0} message ends with '.'. Message: {1}", descriptor.id, descriptor.messageFormat);
                 Assert.NotNull(descriptor.areas);
             }
         }
