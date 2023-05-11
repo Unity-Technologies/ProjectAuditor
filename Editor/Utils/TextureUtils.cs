@@ -72,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             //Optimization lines
             //As GetPixels function can be costly, run a first test to check if texture is not solid color
             var pixel1 = texture.GetPixel(0, 0);
-            var pixel2 = texture.width != 0 ? texture.GetPixel(1, 0) : texture.GetPixel(0, 1);
+            var pixel2 = texture.width > 0 ? texture.GetPixel(1, 0) : texture.GetPixel(0, 1);
 
             if (pixel1 != pixel2)
             {
