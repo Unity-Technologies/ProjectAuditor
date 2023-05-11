@@ -102,14 +102,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static readonly Descriptor k_TextureAnisotropicLevelDescriptor = new Descriptor(
             PAA0004,
-            "Texture: Anisotropic level is higher than 1",
+            "Texture: Anisotropic level",
             new[] {Area.GPU, Area.Quality},
-            "The anisotropic level is higher than 1. Anisotropic filtering makes textures look better when viewed at a shallow angle, but it can be slower to process on the GPU.",
+            "The anisotropic level is greater than 1. Anisotropic filtering makes textures look better when viewed at a shallow angle, but it can be slower to process on the GPU.",
             "Consider setting the anisotropic level to 1."
         )
         {
             platforms = new[] {"Android", "iOS", "Switch"},
-            messageFormat = "Texture '{0}' has an anisotropic level higher than 1.",
+            messageFormat = "Texture '{0}' anisotropic level is set to '{1}'",
             fixer = (issue) =>
             {
                 var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
@@ -123,7 +123,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static readonly Descriptor k_TextureSolidColorDescriptor = new Descriptor(
             PAA0005,
-            "Texture: Solid color is not 1x1 size",
+            "Texture: Solid color",
             new[] {Area.Memory},
             "The texture is a solid color. This increases the amount of memory usage and can be reduced.",
             "Consider shrinking the texture to 1x1 size."
@@ -135,13 +135,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static readonly Descriptor k_AtlasTextureEmptyDescriptor = new Descriptor(
             PAA0007,
-            "Atlas Texture : Too much empty space",
+            "Atlas Texture: Too much empty space",
             new[] {Area.Memory},
             "The Atlas Texture texture has too much empty space. This increases the amount of memory usage and can be reduced.",
             "Consider reorganizing your Atlas Texture."
         )
         {
-            messageFormat = "Atlas Texture '{0}' has too much empty space ({1} %)."
+            messageFormat = "Atlas Texture '{0}' has too much empty space ({1} %)"
         };
 
         public void Initialize(ProjectAuditorModule module)
@@ -213,7 +213,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (textureImporter.mipmapEnabled && textureImporter.filterMode != FilterMode.Point && textureImporter.anisoLevel > 1)
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAnisotropicLevelDescriptor, textureName)
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAnisotropicLevelDescriptor, textureName, textureImporter.anisoLevel)
                     .WithLocation(textureImporter.assetPath);
             }
 
