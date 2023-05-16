@@ -587,7 +587,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
 #if UNITY_2019_3_OR_NEWER
-        private void TestSrpBatchingSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
+        void TestSrpBatchingSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
             bool? initialSetting = SrpAssetSettingsAnalyzer.GetSrpBatcherSetting(renderPipeline);
 
@@ -721,7 +721,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
 #if UNITY_2019_3_OR_NEWER && PACKAGE_URP
-        private void TestUrpHdrSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
+        void TestUrpHdrSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
             bool initialHdrSetting = UniversalRenderPipelineAnalyzer.GetHdrSetting(renderPipeline);
 
@@ -741,7 +741,7 @@ namespace Unity.ProjectAuditor.EditorTests
             UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, initialHdrSetting);
         }
 
-        private void TestUrpMsaaSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
+        void TestUrpMsaaSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
             int initialMsaaSetting = UniversalRenderPipelineAnalyzer.GetMsaaSampleCountSetting(renderPipeline);
 
