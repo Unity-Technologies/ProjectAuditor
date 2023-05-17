@@ -75,11 +75,18 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             var paramTypes = new Type[] {};
             var args = new object[] {};
 
-            var value = MethodEvaluator.Eval(assembly.Location,
-                descriptor.type, methodName, paramTypes, args);
+            try
+            {
+                var value = MethodEvaluator.Eval(assembly.Location,
+                    descriptor.type, methodName, paramTypes, args);
 
-            if (value.ToString() == descriptor.value)
-                return NewIssue(descriptor, descriptor.title);
+                if (value.ToString() == descriptor.value)
+                    return NewIssue(descriptor, descriptor.title);
+            }
+            catch (ArgumentException e)
+            {
+                Debug.LogWarning($"Could not evaluate {descriptor.type}.{methodName}. Exception: {e.Message}");
+            }
 
             return null;
         }
