@@ -27,7 +27,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS0025,
             "Player (Android): Managed Code Stripping",
             Area.BuildSize,
+#if UNITY_2021_2_OR_NEWER
             "The <b>Managed Stripping Level</b> in the Android Player Settings is set to <b>Disabled</b>, <b>Low</b> or <b>Minimal</b>. The generated build will be larger than necessary.",
+#else
+            "The <b>Managed Stripping Level</b> in the Android Player Settings is set to <b>Disabled</b> or <b>Low</b>. The generated build will be larger than necessary.",
+#endif
             "Set <b>Managed Stripping Level</b> in the Android Player Settings to Medium or High.")
         {
             platforms = new string[] { BuildTarget.Android.ToString() }
@@ -61,7 +65,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (k_AndroidManagedStrippingDescriptor.platforms.Contains(projectAuditorParams.platform.ToString()))
             {
                 var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.Android);
-                if (value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low || value == ManagedStrippingLevel.Minimal)
+                if (value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low
+#if UNITY_2021_2_OR_NEWER
+                                                            || value == ManagedStrippingLevel.Minimal
+#endif
+                                                            )
                     yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_AndroidManagedStrippingDescriptor)
                         .WithLocation("Project/Player");
             }
