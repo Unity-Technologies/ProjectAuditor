@@ -20,8 +20,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS1009,
             "URP: URP Asset is not specified",
             new[] {Area.GPU, Area.Quality},
-            "Project graphics settings do not refer to URP Asset.",
-            "Check the settings: Graphics > Scriptable Render Pipeline Settings, Quality > Render Pipeline Asset.")
+            "Graphics Settings do not refer to a URP Asset.",
+            "Check the settings: Graphics > Scriptable Render Pipeline Settings > Render Pipeline Asset.")
         {
             messageFormat = "URP: URP Asset is not specified"
         };
@@ -30,8 +30,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS1010,
             "URP: HDR is enabled",
             new[] {Area.GPU, Area.Quality},
-            "High Dynamic Range (HDR) is enabled in URP Asset for mobile platforms. HDR rendering can be very intensive on low-end mobile GPUs.",
-            "Disable HDR in URP Asset.")
+            "<b>HDR</b> (High Dynamic Range) is enabled in a URP Asset for mobile platforms. HDR rendering can be very intensive on low-end mobile GPUs.",
+            "Disable <b>HDR</b> in the URP Asset.")
         {
             platforms = new[] {"Android", "iOS", "Switch"},
             messageFormat = "URP: HDR is enabled in {0}.asset in {1}",
@@ -42,8 +42,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS1011,
             "URP: MSAA is set to 4x or 8x",
             new[] {Area.GPU, Area.Quality},
-            "Multi-sample anti-aliasing (MSAA) is set to 4x or 8x in URP Asset for mobile platforms. MSAA 4x/8x rendering can be intensive on low-end mobile GPUs.",
-            "Decrease MSAA value to 2x in URP Asset.")
+            "<b>Anti Aliasing (MSAA)</b> is set to <b>4x</b> or <b>8x</b> in a URP Asset for mobile platforms. MSAA 4x/8x rendering can be intensive on low-end mobile GPUs.",
+            "Decrease <b>Anti Aliasing (MSAA)</b> value to <b>2x</b> in the URP Asset.")
         {
             platforms = new[] {"Android", "iOS", "Switch"},
             messageFormat = "URP: MSAA is set to 4x or 8x in {0}.asset in {1}",
@@ -54,8 +54,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS1012,
             "URP: Stop NaN property is enabled",
             Area.GPU,
-            "Stop NaN property is enabled on a Camera component. This stops certain effects from breaking, but is a resource-intensive process. Only enable this feature if you experience NaN issues that you can not fix.",
-            "Disable Stop NaN property in all Camera components."
+            "The <b>Stop NaNs</b> property is enabled on a Camera component. This stops certain effects from breaking, but is a resource-intensive process on the GPU. Only enable this feature if you experience NaN issues that you cannot fix.",
+            "Disable <b>Stop NaNs</b> on as Camera components as you can."
         );
 
         public void Initialize(ProjectAuditorModule module)

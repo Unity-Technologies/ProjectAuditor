@@ -27,8 +27,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             PAS1003,
             "Graphics: Fog Shader Variant Stripping",
             new[] {Area.BuildSize},
-            "FogMode shader variants are always built. Forcing Fog shader variants to be built can increase the build size.",
-            "To reduce the number of shader variants, change <b>Edit ➔ Project Settings ➔ Graphics ➔ Fog Modes</b> to <b>Automatic</b> or disable <b>Linear/Exponential/Exponential Squared</b>.")
+            "<b>Fog Modes</b> in Graphics Settings are set to build all fog shader variants. Forcing Fog shader variants to be built can increase the build size.",
+            "Change <b>Graphics Settings ➔ Fog Modes</b> to <b>Automatic</b> or disable <b>Linear/Exponential/Exponential Squared</b>. This should reduce the number of shader variants generated for fog effects.")
         {
             fixer = (issue =>
             {

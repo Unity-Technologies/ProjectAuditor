@@ -20,8 +20,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS1008,
             "SRP Asset: SRP Batcher",
             Area.CPU,
-            "SRP batcher is disabled in Render Pipeline Asset.",
-            "Enable SRP batcher in Render Pipeline Asset. This will reduce the CPU time Unity requires to prepare and dispatch draw calls for materials that use the same shader variant.")
+            "<b>SRP Batcher</b> is disabled in a Render Pipeline Asset.",
+            "Enable <b>SRP Batcher</b> in Render Pipeline Asset. If the option is hidden, click the vertical ellipsis icon and select <b>Show Additional Properties</b>. Enabling the SRP Batcher will reduce the CPU time Unity requires to prepare and dispatch draw calls for materials that use the same shader variant.")
         {
             messageFormat = "SRP batcher is disabled in {0}.asset in {1}",
             fixer = FixSrpBatcherSetting

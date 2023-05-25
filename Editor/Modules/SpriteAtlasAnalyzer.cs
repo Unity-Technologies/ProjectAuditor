@@ -16,8 +16,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             PAA0006,
             "Sprite Atlas: Too much empty space",
             new[] {Area.Memory},
-            "The sprite atlas texture has too much empty space. This increases the amount of memory usage and can be reduced.",
-            "Consider reorganizing your Sprite Atlas Texture."
+            "The Sprite Atlas texture contains a lot of empty space. Empty space contributes to texture memory usage.",
+            "Consider reorganizing your Sprite Atlas Texture in order to reduce the amount of empty space."
         )
         {
             messageFormat = "Sprite Atlas '{0}' has too much empty space ({1}%)"

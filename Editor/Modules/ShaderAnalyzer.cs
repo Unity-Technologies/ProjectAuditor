@@ -15,11 +15,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             PAA2000,
             "Shader: Not compatible with SRP batcher",
             Area.CPU,
-            "The shader is not compatible with SRP batcher.",
-            "Consider adding SRP batcher compatibility to the shader. This will reduce the CPU time Unity requires to prepare and dispatch draw calls for materials that use the same shader variant."
+            "The shader is not compatible with SRP Batcher.",
+            "Consider adding SRP Batcher compatibility to the shader. This will reduce the CPU time Unity requires to prepare and dispatch draw calls for materials that use the same shader variant."
         )
         {
-            messageFormat = "Shader '{0}' is not compatible with SRP batcher",
+            messageFormat = "Shader '{0}' is not compatible with SRP Batcher",
             documentationUrl = "https://docs.unity3d.com/Manual/SRPBatcher.html"
         };
 

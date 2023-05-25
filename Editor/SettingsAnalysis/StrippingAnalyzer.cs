@@ -17,8 +17,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS0009,
             "Player: Engine Code Stripping",
             Area.BuildSize,
-            "Engine code stripping is disabled. The generated build will be larger than necessary.",
-            "Enable <b>stripEngineCode</b> in <b>Project Settings ➔ Player ➔ Other Settings</b>")
+            "The <b>Strip Engine Code</b> is option in Player Settings is disabled. The generated build will be larger than necessary.",
+            "Enable <b>Strip Engine Code</b> in <b>Player Settings ➔ Other Settings ➔ Optimization</b>")
         {
             platforms = new string[] { BuildTarget.Android.ToString(), BuildTarget.iOS.ToString(), BuildTarget.WebGL.ToString() }
         };
@@ -27,8 +27,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS0025,
             "Player (Android): Managed Code Stripping",
             Area.BuildSize,
-            "Managed code stripping on Android is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",
-            "Set managed stripping level to Medium or High.")
+            "The <b>Managed Stripping Level</b> in the Android Player Settings is set to <b>Disabled</b>, <b>Low</b> or <b>Minimal</b>. The generated build will be larger than necessary.",
+            "Set <b>Managed Stripping Level</b> in the Android Player Settings to Medium or High.")
         {
             platforms = new string[] { BuildTarget.Android.ToString() }
         };
@@ -37,8 +37,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS0026,
             "Player (iOS): Managed Code Stripping",
             Area.BuildSize,
-            "Managed code stripping on iOS is set to ManagedStrippingLevel.Low (or Disabled). The generated build will be larger than necessary.",
-            "Set managed stripping level to Medium or High.")
+            "The <b>Managed Stripping Level</b> in the iOS Player Settings is set to <b>Disabled</b>, <b>Low</b> or <b>Minimal</b>. The generated build will be larger than necessary.",
+            "Set <b>Managed Stripping Level</b> in the iOS Player Settings to Medium or High.")
         {
             platforms = new string[] { BuildTarget.iOS.ToString() }
         };
@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (k_AndroidManagedStrippingDescriptor.platforms.Contains(projectAuditorParams.platform.ToString()))
             {
                 var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.Android);
-                if (value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low)
+                if (value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low || value == ManagedStrippingLevel.Minimal)
                     yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_AndroidManagedStrippingDescriptor)
                         .WithLocation("Project/Player");
             }

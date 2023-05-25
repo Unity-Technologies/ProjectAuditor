@@ -18,8 +18,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS0013,
             "Physics: Layer Collision Matrix",
             new[] { Area.CPU },
-            "In Physics Settings, all of the boxes in the <b>Layer Collision Matrix</b> are ticked. This increases the CPU work that Unity must do when calculating collision detections.",
-            "Un-tick all of the boxes except the ones that represent collisions that should be considered by the physics system.");
+            "In Physics Settings, all of the boxes in the <b>Layer Collision Matrix</b> are ticked. This increases the CPU work required to calculate collision detections.",
+            "Un-tick all of the boxes except the ones that represent collisions that should be considered by the Physics system."
+            );
 
         public void Initialize(ProjectAuditorModule module)
         {

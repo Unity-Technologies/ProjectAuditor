@@ -50,10 +50,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         static readonly Descriptor k_RecommendPackageUpgrade = new Descriptor(
             PAP0001,
-            "Upgradable packages",
+            "Newer recommended package version",
             new[] { Area.Quality },
             "A newer recommended version of this package is available.",
-            "Upgrade the package via Package Manager."
+            "Update the package via Package Manager."
         )
         {
             messageFormat = "'{0}' could be updated from version '{1}' to '{2}'",
@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Experimental/Preview packages",
             new[] { Area.Quality },
             "Experimental or Preview packages are in the early stages of development and not yet ready for production.",
-            "We recommend using these only for testing purposes and to give us direct feedback"
+            "Experimental packages should only be used for testing purposes and to give feedback to Unity."
         )
         {
             messageFormat = "'{0}' version '{1}' is a preview/experimental version"

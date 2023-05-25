@@ -24,10 +24,11 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             PAC0192,
             "Debug.Log / Debug.LogFormat",
             Area.CPU,
-            "<b>Debug.Log</b> methods cause slowdowns, especially if used frequently.",
-            "Instead of removing code an option is to strip this code on release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a method where you call this. When logging is still used in your code a small optimization can be to leave out the callstack, if not required, by setting <b>Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)</b> via code."
+            "<b>Debug.Log</b> methods take a lot of CPU time, especially if used frequently.",
+            "Remove logging code, or strip it from release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a custom logging method that calls Debug.Log. Where logging is required in release builds, CPU times can be reduced by disabling stack traces in log messages. You can do this by setting <b>Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)</b>."
             )
         {
+            documentationUrl = "https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity7.html",
             messageFormat = "Use of Debug.{0} in '{1}'",
             defaultSeverity = Severity.Minor
         };
@@ -37,10 +38,11 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             PAC0193,
             "Debug.LogWarning / Debug.LogWarningFormat",
             Area.CPU,
-            "<b>Debug.LogWarning</b> methods cause slowdowns, especially if used frequently.",
-            "Instead of removing code an option is to strip this code on release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a method where you call this. When logging is still used in your code a small optimization can be to leave out the callstack, if not required, by setting <b>Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None)</b> via code."
+            "<b>Debug.LogWarning</b> methods take a lot of CPU time, especially if used frequently.",
+            "Remove logging code, or strip it from release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a custom logging method that calls Debug.LogWarning. Where logging is required in release builds, CPU times can be reduced by disabling stack traces in log messages. You can do this by setting <b>Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)</b>."
             )
         {
+            documentationUrl = "https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity7.html",
             messageFormat = "Use of Debug.{0} in '{1}'",
             defaultSeverity = Severity.Minor
         };

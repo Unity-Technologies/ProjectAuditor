@@ -17,8 +17,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             PAC2000,
             "Boxing Allocation",
             Area.Memory,
-            "Boxing happens where a value type, such as an integer, is converted into an object of reference type. This causes an allocation on the heap, which might increase the size of the managed heap and the frequency of Garbage Collection.",
-            "Try to avoid Boxing when possible."
+            "Boxing happens where a value type, such as an integer, is converted into an object of reference type. This causes an allocation on the managed heap.",
+            "Try to avoid boxing when possible. Create methods and APIs that can accept value types"
             )
         {
             documentationUrl = "https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/types/boxing-and-unboxing",
