@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         public string name;            // assembly name without extension
         public string path;            // absolute path
         public string asmDefPath;
-        public string relativePath;
+        public string relativePath;    // asmdef containing folder, relative to the project
 
         public bool packageReadOnly;
         public string packageResolvedPath;
