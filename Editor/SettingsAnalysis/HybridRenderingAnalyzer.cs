@@ -16,8 +16,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS1000,
             "Player Settings: Static batching is enabled",
             Area.CPU,
-            "Static batching is enabled and the package com.unity.rendering.hybrid is installed. Static batching is incompatible with the batching techniques used in the Hybrid Renderer and Scriptable Render Pipeline, and will result in poor rendering performance and excessive memory use.",
-            "Disable static batching in Player Settings"
+            "<b>Static Batching</b> is enabled in Player Settings and the package com.unity.rendering.hybrid is installed. Static batching is incompatible with the batching techniques used in the Hybrid Renderer and Scriptable Render Pipeline, and will result in poor rendering performance and excessive memory use.",
+            "Disable static batching in Player Settings."
         );
 
         public void Initialize(ProjectAuditorModule module)

@@ -33,8 +33,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             PAA3000,
             "Resources folder asset & dependencies",
             Area.BuildSize,
-            "The Resources folder is a common source of many problems in Unity projects. Improper use of the Resources folder can bloat the size of a project’s build, lead to uncontrollable excessive memory utilization, and significantly increase application startup times.",
-            "Use AssetBundles when possible"
+            "The <b>Resources folder</b> is a common source of many problems in Unity projects. Improper use of the Resources folder can bloat the size of a project’s build, lead to uncontrollable excessive memory utilization, and significantly increase application startup times.",
+            "Use AssetBundles or Addressables when possible."
             )
         {
             messageFormat = "'{0}' {1}"
@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             PAA3001,
             "StreamingAssets folder size",
             Area.BuildSize,
-            $"There are many files in the 'Assets/StreamingAssets' folder. Keeping them in the StreamingAssets folder will increase the build size.",
+            $"There are many files in the <b>StreamingAssets folder</b>. Keeping them in the StreamingAssets folder will increase the build size.",
             $"Try to move files outside this folder and use Asset Bundles or Addressables when possible."
         )
         {

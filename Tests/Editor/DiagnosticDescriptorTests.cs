@@ -218,7 +218,11 @@ namespace Unity.ProjectAuditor.EditorTests
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.title), "Descriptor {0} has no title", descriptor.id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.description), "Descriptor {0} has no description", descriptor.id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.solution), "Descriptor {0} has no solution", descriptor.id);
-                Assert.IsFalse(descriptor.messageFormat.EndsWith("."), "Descriptor {0} message ends with '.'. Message: {1}", descriptor.id, descriptor.messageFormat);
+
+                Assert.IsFalse(descriptor.title.EndsWith("."), "Descriptor {0} string must not end with a full stop. String: {1}", descriptor.id, descriptor.title);
+                Assert.IsTrue(descriptor.description.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.id, descriptor.description);
+                Assert.IsTrue(descriptor.solution.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.id, descriptor.solution);
+                Assert.IsFalse(descriptor.messageFormat.EndsWith("."), "Descriptor {0} string must not end with a full stop. String: {1}", descriptor.id, descriptor.messageFormat);
                 Assert.NotNull(descriptor.areas);
             }
         }

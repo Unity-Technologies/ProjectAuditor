@@ -18,18 +18,18 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static readonly Descriptor k_AssetLitShaderModeBothOrMixed = new Descriptor(
             PAS1001,
-            "HDRP: Render Pipeline Assets use both 'Lit Shader Mode' Forward and Deferred",
+            "HDRP: Render Pipeline Assets use both Lit Shader Modes",
             new[] { Area.BuildSize, Area.BuildTime },
-            "If HDRP 'Lit Shader Mode' is set to Both (or a mix of Forward and Deferred), shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
-            "Change Shader mode to Forward or Deferred."
+            "The <b>Lit Shader Mode</b> option in the HDRP Asset is set to <b>Both</b>. As a result, shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
+            "Change <b>Lit Shader Mode</b> to either <b>Forward</b> or <b>Deferred</b>."
         );
 
         static readonly Descriptor k_CameraLitShaderModeBothOrMixed = new Descriptor(
             PAS1002,
-            "HDRP: Cameras mix usage of 'Lit Shader Mode' Forward and Deferred",
+            "HDRP: Cameras mix usage of Lit Shader Modes",
             new[] { Area.BuildSize, Area.BuildTime },
-            "If Cameras use both 'Lit Shader Mode' Forward and Deferred, shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
-            "Change HDRP asset and all Cameras 'Lit Shader Mode' to either Forward or Deferred."
+            "Project contains Multiple HD Cameras, some of which have <b>Lit Shader Mode</b> set to <b>Forward</b>, and some to <b>Deferred</b>. As a result, shaders will be built for both Forward and Deferred rendering. This increases build time and size.",
+            "Change the <b>Lit Shader Mode</b> in all HDRP Assets and all Cameras to either <b>Forward</b> or <b>Deferred</b>."
         );
 
         public void Initialize(ProjectAuditorModule module)

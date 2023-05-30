@@ -318,7 +318,7 @@
             "type": "UnityEngine.ComputeBuffer",
             "method": "GetData",
             "areas": ["CPU"],
-            "description": "<b>ComputeBuffer.GetData()</b> stalls the CPU until the GPU has finished accessing the buffer. This can lead to significant CPU performance problems",
+            "description": "<b>ComputeBuffer.GetData()</b> stalls the CPU until the GPU has finished accessing the buffer. This can lead to significant CPU performance problems.",
             "solution": "Avoid reading back from ComputeBuffers if it is at all possible. If it's unavoidable, profile your project carefully and regularly to monitor the performance impact."
         },
         {
@@ -359,7 +359,7 @@
             "method": "SendMessage",
             "areas": ["CPU"],
             "description": "<b>GameObject.SendMessage()</b> is a very slow and CPU-intensive method.",
-            "solution": "Implement a custom system to replace SendMessage - get the components you want to send messages and call methods directly on them."
+            "solution": "Implement a custom system to replace SendMessage - get the components you want to send messages to and call methods directly on them."
         },
         {
             "id": "PAC0057",
@@ -367,7 +367,7 @@
             "method": "SendMessage",
             "areas": ["CPU"],
             "description": "<b>Component.SendMessage()</b> is a very slow and CPU-intensive method.",
-            "solution": "Implement a custom system to replace SendMessage - get the components you want to send messages and call methods directly on them."
+            "solution": "Implement a custom system to replace SendMessage - get the components you want to send messages to and call methods directly on them."
         },
         {
             "id": "PAC0058",
@@ -383,7 +383,7 @@
             "method": "corners",
             "areas": ["Memory"],
             "description": "The property <b>AI.NavMeshPath.corners</b> allocates managed memory.",
-            "solution": "Use <b>AI.NavMeshPath.GetCornersNonAlloc()</b> instead"
+            "solution": "Use <b>AI.NavMeshPath.GetCornersNonAlloc()</b> instead."
         },
         {
             "id": "PAC0060",
@@ -664,9 +664,9 @@
         {
             "id": "PAC0115",
             "type": "UnityEngine.Animator",
-            "method": "GetCurrentAnimationClipState",
+            "method": "GetCurrentAnimatorClipInfo",
             "areas": ["Memory"],
-            "description": "<b>Animator.GetCurrentAnimationClipState()</b> allocates managed memory.",
+            "description": "<b>Animator.GetCurrentAnimatorClipInfo()</b> allocates managed memory.",
             "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
         },
         {
@@ -1387,17 +1387,17 @@
             "id": "PAC0224",
             "type": "UnityEngine.Object",
             "method": "Instantiate",
-            "areas": ["CPU"],
-            "description": "Instantiating Objects at runtime can be a very expensive operation.",
-            "solution": "Try to avoid calling <b>Object.Instantiate</b> frequently-updated code."
+            "areas": ["CPU","Memory"],
+            "description": "Creating Objects at runtime by calling <b>Object.Instantiate</b> can take a significant amount of CPU time and allocates managed memory.",
+            "solution": "Try to avoid calling <b>Object.Instantiate</b> in frequently-updated code. Consider implementing an Object Pool. The <b>ObjectPool</b> class is available from Unity 2021.1 as a convenience."
         },
         {
             "id": "PAC0225",
             "type": "UnityEngine.GameObject",
             "method": "AddComponent",
-            "areas": ["CPU"],
-            "description": "Adding components to GameObjects at runtime can be a very expensive operation.",
-            "solution": "Try to avoid getting this property in frequently-updated code. Prefer instantiating GameObjects from Prefabs will all the necessary components instead."
+            "areas": ["CPU","Memory"],
+            "description": "Adding components to GameObjects at runtime can take a significant amount of CPU time and allocates managed memory.",
+            "solution": "Try to avoid adding or removing components in frequently-updated code. Prefer instantiating GameObjects from Prefabs will all the necessary components instead."
         },
         {
           "id": "PAC0227",
@@ -1405,8 +1405,8 @@
           "method": "WarmupAllShaders",
           "areas": ["CPU"],
           "defaultSeverity": 3,
-          "description": "<b>WarmupAllShaders</b> does not work properly on Metal and Vulkan. This might result in unexpected CPU spikes due to shader compilation.",
-          "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader used at runtime."
+          "description": "<b>WarmupAllShaders</b> does not work properly on Metal, Vulkan or DX12. This might result in unexpected CPU spikes due to shader compilation.",
+          "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader used at runtime. One way to achieve this is with the <b>UnityEngine.Experimental.Rendering.ShaderWarmup</b> API."
         },
         {
           "id": "PAC0228",
@@ -1414,8 +1414,8 @@
           "method": "WarmUp",
           "areas": ["CPU"],
           "defaultSeverity": 3,
-          "description": "<b>WarmUp</b> does not work properly on Metal and Vulkan. This might result in unexpected CPU spikes due to shader compilation.",
-          "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader variant used at runtime."
+          "description": "<b>WarmUp</b> does not work properly on Metal, Vulkan or DX12. This might result in unexpected CPU spikes due to shader compilation.",
+          "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader variant used at runtime. One way to achieve this is with the <b>UnityEngine.Experimental.Rendering.ShaderWarmup</b> API."
         },
         {
           "id": "PAC0229",
@@ -1437,8 +1437,8 @@
           "id": "PAC1000",
           "type": "System.Linq",
           "method": "*",
-          "areas": ["Memory"],
-          "description": "Linq allocates large amounts of managed memory.",
+          "areas": ["CPU","Memory"],
+          "description": "Linq allocates large amounts of managed memory and exhibits poor CPU performance.",
           "solution": "We strongly advise against using Linq in any frequently-updated code. Ban its usage from the project entirely, or confine it to initialization code and use it sparingly."
         },
         {
@@ -1455,7 +1455,7 @@
           "method": "Concat",
           "areas": ["Memory"],
           "defaultSeverity": 5,
-          "description": "String concatenation operations allocates managed memory",
+          "description": "String concatenation operations allocates managed memory.",
           "solution": "Try to avoid concatenating strings in frequently-updated code. Prefer using a StringBuilder instead, as this minimizes managed allocations."
         },
         {
@@ -1463,7 +1463,7 @@
           "type": "System.DateTime",
           "method": "Now",
           "areas": ["CPU"],
-          "description": "<b>System.DateTime.Now</b> is expensive because it needs to figure out the current timezone and daylight saving time information.",
+          "description": "<b>System.DateTime.Now</b> can take a lot of CPU time because it needs to figure out the current timezone and daylight saving time information.",
           "solution": "Try to avoid using this method in frequently-updated code. Prefer UnityEngine.Time.time or, if precise time is needed, use DateTime.UtcNow."
         },
         {
@@ -1471,7 +1471,7 @@
           "type": "System.AppDomain",
           "method": "GetAssemblies",
           "areas": ["CPU"],
-          "description": "<b>System.AppDomain.GetAssemblies</b> is expensive.",
+          "description": "<b>System.AppDomain.GetAssemblies</b> can take a lot of CPU time.",
           "solution": "Try to minimize calls to <b>System.AppDomain.GetAssemblies</b> by caching the returned assemblies. When possible, use <b>UnityEditor.TypeCache</b> for fast access to types, methods and fields."
         },
         {
@@ -1479,7 +1479,7 @@
           "type": "UnityEditor.AssetDatabase",
           "method": "FindAssets",
           "areas": ["CPU"],
-          "description": "<b>UnityEditor.AssetDatabase.FindAssets</b> is expensive and can slow down the Editor for long periods of time on large projects.",
+          "description": "<b>UnityEditor.AssetDatabase.FindAssets</b> is a CPU-intensive operation and can slow down the Editor for long periods of time on large projects.",
           "solution": "Try to minimize calls to <b>UnityEditor.AssetDatabase.FindAssets</b>."
         },
         {

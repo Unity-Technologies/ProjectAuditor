@@ -29,14 +29,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS0023,
             "Graphics: Forward Rendering",
             new[] { Area.GPU },
-            "The current build target uses forward rendering, as set in the <b>Rendering Path</b> settings in <b>Project Settings ➔ Graphics ➔ Tier Settings</b>.",
+            "The current build target uses forward rendering, as set in the <b>Rendering Path</b> settings in <b>Graphics Settings ➔ Tier Settings</b>. This can impact GPU performance in projects with nontrivial numbers of dynamic lights.",
             "This rendering path is suitable for games with simple rendering and lighting requirements - for instance, 2D games, or games which mainly use baked lighting. If the project makes use of a more than a few dynamic lights, consider experimenting with changing <b>Rendering Path</b> to Deferred to see whether doing so improves GPU rendering times.");
 
         static readonly Descriptor k_DeferredRenderingDescriptor = new Descriptor(
             PAS0024,
             "Graphics: Deferred Rendering",
             new[] { Area.GPU },
-            "The current build target uses deferred rendering, as set in the <b>Rendering Path</b> settings in <b>Project Settings ➔ Graphics ➔ Tier Settings</b>.",
+            "The current build target uses deferred rendering, as set in the <b>Rendering Path</b> settings in <b>Graphics Settings ➔ Tier Settings</b>. This can impact GPU performance in projects with simple rendering requirements.",
             "This rendering path is suitable for games with more complex rendering requirements - for instance, games that make uses of dynamic lighting or certain types of fullscreen post-processing effects. If the project doesn't make use of such rendering techniques, consider experimenting with changing <b>Rendering Path</b> to Forward to see whether doing so improves GPU rendering times.");
 
         public void Initialize(ProjectAuditorModule module)

@@ -26,8 +26,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS0002,
             "Player (iOS): Accelerometer",
             new[] { Area.CPU },
-            "The Accelerometer is enabled in iOS Player Settings.",
-            "Consider setting <b>Accelerometer Frequency</b> to Disabled if your application doesn't make use of the device's accelerometer. Disabling this option will save a tiny amount of CPU processing time.")
+            "<b>Accelerometer Frequency</b> in iOS Player Settings is not set to Disabled. Polling the device's accelerometer incurs a small amount of CPU processing time.",
+            "Set <b>Accelerometer Frequency</b> to <b>Disabled</b> if your application doesn't make use of the device's accelerometer.")
         {
             platforms = new[] { BuildTarget.iOS.ToString() }
         };
@@ -36,15 +36,15 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS0029,
             "Player: Splash Screen",
             new[] { Area.LoadTime },
-            "<b>Splash Screen</b> is enabled and will increase the time it takes to load into the first scene.",
-            "Disable the Splash Screen option in <b>Project Settings ➔ Player ➔ Splash Image ➔ Show Splash Screen</b>.");
+            "<b>Show Splash Screen</b> is enabled in the Player Settings. Displaying a splash screen will increase the time it takes to load into the first scene.",
+            "Disable the Splash Screen option in <b>Player Settings ➔ Splash Image ➔ Show Splash Screen</b>.");
 
         static readonly Descriptor k_SpeakerModeDescriptor = new Descriptor(
             PAS0033,
             "Audio: Speaker Mode",
-            new[] { Area.BuildSize },
-            "<b>UnityEngine.AudioSettings.speakerMode</b> is not set to <b>UnityEngine.AudioSpeakerMode.Mono</b>. The generated build will be larger than necessary.",
-            "To reduce runtime memory consumption of AudioClips change <b>Project Settings ➔ Audio ➔ Default Speaker Mode</b> to <b>Mono</b>. This will half memory usage of stereo AudioClips. It is also recommended considering enabling the <b>Force To Mono</b> AudioClip import setting to reduce import times and build size.")
+            new[] { Area.BuildSize, Area.Memory },
+            "<b>Default Speaker Mode</b> in Audio Settings is not set to <b>Mono</b>. This may result in a build which is larger than necessary and which occupies more audio memory at runtime. Many mobile devices have limited or nonexistent stereo speaker options.",
+            "Change <b>Audio Settings ➔ Default Speaker Mode</b> to <b>Mono</b>. You should also consider enabling the <b>Force To Mono</b> AudioClip import setting to reduce import times and build size.")
         {
             platforms = new[] { "Android", "iOS"},
             fixer = (issue => {
@@ -56,8 +56,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS1004,
             "Player: IL2CPP Compiler Configuration",
             new[] { Area.BuildTime },
-            "<b>C++ Compiler Configuration</b> is set to <b>Master</b>. This mode is intended for shipping builds and will significantly increase build times.",
-            "To reduce build times, change <b>Project Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
+            "<b>C++ Compiler Configuration</b> in Player Settings is set to <b>Master</b>. This mode is intended for shipping builds and will significantly increase build times.",
+            "Change <b>Player Settings ➔ Other Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
         {
             fixer = (issue => {
                 SetIL2CPPConfigurationToRelease();
@@ -70,8 +70,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS1005,
             "Player: IL2CPP Compiler Configuration",
             new[] { Area.CPU },
-            "<b>C++ Compiler Configuration</b> is set to <b>Debug</b>. This mode is intended for debugging and might have an impact on runtime performance.",
-            "To improve runtime performance, change <b>Project Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
+            "<b>C++ Compiler Configuration</b> is set to <b>Debug</b>. This mode is intended for debugging and might have an impact on runtime CPU performance.",
+            "Change <b>Player Settings ➔ Other Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
         {
             fixer = (issue =>
             {
@@ -85,8 +85,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS1006,
             "Player: Lightmaps Streaming Disabled",
             new[] { Area.GPU, Area.CPU },
-            "<b>Lightmap Streaming</b> is not enabled. This may lead to an increase of GPU memory",
-            "To reduce GPU memory, turn on Lightmap Streaming at <b>Player Settings ➔ Other Settings ➔ Lightmap Streaming</b>.")
+            "<b>Lightmap Streaming</b> in Player Settings is not enabled. As a result, all lightmap detail levels are loaded into GPU memory, potentially resulting in excessive lightmap texture memory usage.",
+            "Enable <b>Lightmap Streaming</b> in <b>Player Settings ➔ Other Settings ➔ Rendering</b>.")
         {
             fixer = (issue =>
             {

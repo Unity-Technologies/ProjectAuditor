@@ -19,15 +19,16 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS0015,
             "Physics2D: Layer Collision Matrix",
             new[] { Area.CPU },
-            "In Physics 2D Settings, all of the boxes in the <b>Layer Collision Matrix</b> are ticked. This increases the CPU work that Unity must do when calculating collision detections.",
-            "Un-tick all of the boxes except the ones that represent collisions that should be considered by the 2D physics system.");
+            "In Physics2D Settings, all of the boxes in the <b>Layer Collision Matrix</b> are ticked. This increases the CPU work required to calculate collision detections.",
+            "Un-tick all of the boxes except the ones that represent collisions that should be considered by the 2D physics system."
+        );
 
         static readonly Descriptor k_SimulationModeDescriptor = new Descriptor(
             PAS0032,
             "Physics2D: Simulation Mode",
             new[] { Area.CPU },
-            "<b>UnityEngine.Physics2D.simulationMode</b> is set to either <b>FixedUpdate</b> or <b>Update</b>. By using this mode, 2D physics simulation is executed on every update which might be expensive for some projects.",
-            "Change <b>Project Settings ➔ Physics 2D ➔ General Settings ➔ Simulation Mode</b> to <b>Script</b> to disable the 2d physics processing each frame. If physics simulation is required for certain special rendering, use <b>Script</b> mode to control <b>Physics2d.Simulate</b> on a per frame basis.")
+            "<b>Simulation Mode</b> in Physics2D Settings is set to either <b>FixedUpdate</b> or <b>Update</b>. As a result, 2D physics simulation is executed on every update which might be expensive for some projects.",
+            "Change <b>Physics 2D Settings ➔ Simulation Mode</b> to <b>Script</b> to disable the 2d physics processing each frame. If physics simulation is required for certain special rendering, use <b>Script</b> mode to control <b>Physics2d.Simulate</b> on a per frame basis.")
         {
             minimumVersion = "2020.2"
         };

@@ -18,24 +18,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
             PAA1000,
             "Mesh: Read/Write enabled",
             Area.Memory,
-            "Mesh Read/Write flag is enabled. This causes the mesh data to be duplicated in memory.",
-            "If not required, consider disabling the <b>Read/Write Enabled</b> option in the mesh inspector."
+            "The <b>Read/Write Enabled</b> flag in the Model Import Settings is enabled. This causes the mesh data to be duplicated in memory.",
+            "If not required, disable the <b>Read/Write Enabled</b> option in the Model Import Settings."
         )
         {
             messageFormat = "Mesh '{0}' Read/Write is enabled",
-            documentationUrl = "https://docs.unity3d.com/ScriptReference/Mesh-isReadable.html"
+            documentationUrl = "https://docs.unity3d.com/Manual/FBXImporter-Model.html"
         };
 
         internal static readonly Descriptor k_Mesh32BitIndexFormatUsedDescriptor = new Descriptor(
             PAA1001,
             "Mesh: Index Format is 32 bits",
             Area.Memory,
-            "Mesh index buffer is using 32 bits format. This increases the mesh size and may not work on certain mobile devices.",
-            "Consider using changing the <b>Index Format</b> option in the model inspector. This should be set to either <b>16 bits</b> or <b>Auto</b>."
+            "The <b>Index Format</b> in the Model Import Settings is set to <b>32 bit</b>. This increases the mesh size and may not work on certain mobile devices.",
+            "Consider using changing the <b>Index Format</b> option in the Model Import Settings. This should be set to either <b>16 bits</b> or <b>Auto</b>."
         )
         {
             messageFormat = "Mesh '{0}' Index Format is 32 bits",
-            documentationUrl = "https://docs.unity3d.com/ScriptReference/Mesh-indexFormat.html"
+            documentationUrl = "https://docs.unity3d.com/Manual/FBXImporter-Model.html"
         };
 
         public void Initialize(ProjectAuditorModule module)

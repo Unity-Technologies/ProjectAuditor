@@ -15,8 +15,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             PAS0003,
             "Player (iOS): Building multiple architectures",
             Area.BuildSize,
-            "In the iOS Player Settings, <b>Architecture</b> is set to Universal. This means that the application will be compiled for both 32-bit ARMv7 iOS devices (i.e. up to the iPhone 5 or 5c) and 64-bit ARM64 devices (iPhone 5s onwards), resulting in increased build times and binary size.",
-            "If your application isn't intended to support 32-bit iOS devices, change <b>Architecture</b> to ARM64.")
+            "In the iOS Player Settings, <b>Architecture</b> is set to <b>Universal</b>. This means that the application will be compiled for both 32-bit ARMv7 iOS devices (i.e. up to the iPhone 5 or 5c) and 64-bit ARM64 devices (iPhone 5s onwards), resulting in increased build times and binary size.",
+            "If your application isn't intended to support 32-bit iOS devices, change <b>Architecture</b> to <b>ARM64</b>.")
         {
             platforms = new string[] { BuildTarget.iOS.ToString() }
         };
