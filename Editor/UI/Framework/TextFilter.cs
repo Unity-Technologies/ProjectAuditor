@@ -73,7 +73,7 @@ namespace Unity.ProjectAuditor.Editor
             var callTreeNode = node as CallTreeNode;
             if (callTreeNode != null)
             {
-                if (MatchesSearch(callTreeNode.typeName) || MatchesSearch(callTreeNode.methodName))
+                if (MatchesSearch(callTreeNode.prettyTypeName) || MatchesSearch(callTreeNode.prettyMethodName))
                     return true;
             }
             if (recursive)

@@ -103,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
             // let's find all callers with matching callee
             List<CallInfo> callPairs;
-            if (m_BucketedCalls.TryGetValue(callee.m_Name, out callPairs))
+            if (m_BucketedCalls.TryGetValue(callee.methodFullName, out callPairs))
             {
                 var childrenCount = callPairs.Count;
                 var children = new DependencyNode[childrenCount];
@@ -125,7 +125,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                     };
 
                     // stop recursion, if applicable (note that this only prevents recursion when a method calls itself)
-                    if (!callerName.Equals(callee.m_Name))
+                    if (!callerName.Equals(callee.methodFullName))
                         BuildHierarchy(hierarchy, depth);
 
                     children[i] = hierarchy;

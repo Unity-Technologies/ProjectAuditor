@@ -14,13 +14,17 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TestAsset = new TestAsset("RootTest.cs", @"
+            m_TestAsset = new TestAsset("SimpleTest.cs", @"
 using System;
-class RootTest
+
+namespace MyTestNamespace
 {
-    Object CallerMethod()
+    class SimpleTest
     {
-        return 5;
+        Object CallerMethod()
+        {
+            return 5;
+        }
     }
 }");
 
@@ -76,10 +80,11 @@ class HierarchyTest
             var root = issues[0].dependencies as CallTreeNode;
 
             Assert.NotNull(root);
-            Assert.AreEqual("System.Object RootTest::CallerMethod()", root.m_Name);
+            Assert.AreEqual("System.Object MyTestNamespace.SimpleTest::CallerMethod()", root.methodFullName);
             Assert.AreEqual(AssemblyInfo.DefaultAssemblyFileName, root.assemblyName);
-            Assert.AreEqual("CallerMethod", root.methodName);
-            Assert.AreEqual("RootTest", root.typeName);
+            Assert.AreEqual("MyTestNamespace.SimpleTest", root.typeFullName);
+            Assert.AreEqual("CallerMethod", root.prettyMethodName);
+            Assert.AreEqual("SimpleTest", root.prettyTypeName);
             Assert.AreEqual(0, root.GetNumChildren());
         }
 
@@ -91,8 +96,8 @@ class HierarchyTest
             var root = issues[0].dependencies as CallTreeNode;
 
             Assert.NotNull(root);
-            Assert.AreEqual("X", root.methodName);
-            Assert.AreEqual("RecursiveTest", root.typeName);
+            Assert.AreEqual("X", root.prettyMethodName);
+            Assert.AreEqual("RecursiveTest", root.prettyTypeName);
             Assert.AreEqual(0, root.GetChild().GetNumChildren());
         }
 
