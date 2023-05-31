@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.Editor.Interfaces;
+using Unity.ProjectAuditor.Editor.Utils; // Required for TypeCache in Unity 2018
 using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Core

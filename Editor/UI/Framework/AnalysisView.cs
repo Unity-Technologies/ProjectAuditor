@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -10,7 +11,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    internal class AnalysisView : IProjectIssueFilter
+    internal class AnalysisView : IIssueFilter
     {
         enum ExportMode
         {
@@ -24,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected ProjectAuditorConfig m_Config;
         protected ViewStates m_ViewStates;
         protected ViewDescriptor m_Desc;
-        protected IProjectIssueFilter m_BaseFilter;
+        protected IIssueFilter m_BaseFilter;
         protected List<ProjectIssue> m_Issues = new List<ProjectIssue>();
         protected IssueLayout m_Layout;
         protected TextFilter m_TextFilter;
@@ -70,7 +71,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_ViewManager = viewManager;
         }
 
-        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ViewStates viewStates, IProjectIssueFilter filter)
+        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ViewStates viewStates, IIssueFilter filter)
         {
             m_Desc = descriptor;
             m_Config = config;

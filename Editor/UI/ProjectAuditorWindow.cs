@@ -7,6 +7,7 @@ using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -14,7 +15,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IProjectIssueFilter
+    class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IIssueFilter
     {
         enum AnalysisState
         {

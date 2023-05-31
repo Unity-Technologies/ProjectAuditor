@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
 using UnityEngine;

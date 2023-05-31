@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Interfaces;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    internal class TextFilter : IProjectIssueFilter
+    internal class TextFilter : IIssueFilter
     {
         public bool ignoreCase = true;
         public bool searchDependencies = false;

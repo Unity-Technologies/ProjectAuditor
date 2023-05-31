@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -13,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     [Serializable]
     internal sealed class ViewManager
     {
-        class NullFilter : IProjectIssueFilter
+        class NullFilter : IIssueFilter
         {
             public bool Match(ProjectIssue issue)
             {
@@ -72,7 +73,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void Create(ProjectAuditor projectAuditor, ViewStates viewStates, Action<ViewDescriptor, bool> onCreateView = null, IProjectIssueFilter filter = null)
+        public void Create(ProjectAuditor projectAuditor, ViewStates viewStates, Action<ViewDescriptor, bool> onCreateView = null, IIssueFilter filter = null)
         {
             if (filter == null)
                 filter = new NullFilter();

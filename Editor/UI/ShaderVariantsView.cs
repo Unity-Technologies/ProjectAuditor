@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -58,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         PropertyFoldout[] m_PropertyFoldouts;
 
-        public override void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ViewStates viewStates, IProjectIssueFilter filter)
+        public override void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ViewStates viewStates, IIssueFilter filter)
         {
             var propertyFoldouts = new List<PropertyFoldout>();
 
