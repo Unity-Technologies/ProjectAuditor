@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace Unity.ProjectAuditor.Editor.UI
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     class AreaSelectionWindow : SelectionWindow
     {
