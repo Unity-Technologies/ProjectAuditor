@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -223,7 +224,63 @@ namespace Unity.ProjectAuditor.EditorTests
                 Assert.IsTrue(descriptor.description.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.id, descriptor.description);
                 Assert.IsTrue(descriptor.solution.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.id, descriptor.solution);
                 Assert.IsFalse(descriptor.messageFormat.EndsWith("."), "Descriptor {0} string must not end with a full stop. String: {1}", descriptor.id, descriptor.messageFormat);
+
+                CheckHtmlTags(descriptor.description);
+                CheckHtmlTags(descriptor.solution);
+
                 Assert.NotNull(descriptor.areas);
+            }
+        }
+
+        void CheckHtmlTags(string input)
+        {
+            // Regular expression pattern for matching HTML tags
+            var pattern = @"<[^>]+?>";
+
+            // Match the pattern against the input string
+            var matches = Regex.Matches(input, pattern);
+
+            // Stack to track opening tags
+            var tagStack = new Stack<string>();
+
+            // Iterate through each matched tag
+            foreach (Match match in matches)
+            {
+                CheckTag(input, match.Value, tagStack);
+            }
+
+            // Check if all opening tags have matching closing tags
+            Assert.AreEqual(0, tagStack.Count, "String: {0}", input);
+        }
+
+        void CheckTag(string text, string tag, Stack<string> tagStack)
+        {
+            if (tag.Equals("<T>", StringComparison.OrdinalIgnoreCase))
+                return;
+
+            var pattern = @"^<([a-zA-Z]+)>$|^<\/([a-zA-Z]+)>$";
+
+            Assert.IsTrue(Regex.IsMatch(tag, pattern), tag);
+
+            if (tag.Equals("<b>", StringComparison.OrdinalIgnoreCase))
+            {
+                Assert.AreEqual(0, tagStack.Count, "Nested tags are not allowed. String: {0}", text);
+
+                // Opening <b> tag
+                tagStack.Push(tag);
+            }
+            else if (tag.Equals("</b>", StringComparison.OrdinalIgnoreCase))
+            {
+                // Closing </b> tag
+                if (tagStack.Count == 0 || !tagStack.Pop().Equals("<b>", StringComparison.OrdinalIgnoreCase))
+                {
+                    Assert.Fail("No corresponding opening <b> tag found. Tag: {0}. String {1}", tag, text);
+                }
+            }
+            else
+            {
+                Assert.IsFalse(tag.EndsWith("/>"), "Self-closing tags are not allowed. Tag: {0}. String {1}", tag, text);
+                Assert.Fail("Invalid/Unsupported Tag: {0}. String {1}", tag, text);
             }
         }
 
