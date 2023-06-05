@@ -74,39 +74,39 @@ namespace Unity.ProjectAuditor.EditorTests
                 );
 
             // check default values
-            Assert.True(DescriptorLoader.IsVersionCompatible(desc));
+            Assert.True(DescriptorExtensions.IsVersionCompatible(desc));
 
             desc.minimumVersion = string.Empty;
             desc.maximumVersion = string.Empty;
-            Assert.True(DescriptorLoader.IsVersionCompatible(desc));
+            Assert.True(DescriptorExtensions.IsVersionCompatible(desc));
 
             desc.minimumVersion = "0.0";
             desc.maximumVersion = null;
-            Assert.True(DescriptorLoader.IsVersionCompatible(desc));
+            Assert.True(DescriptorExtensions.IsVersionCompatible(desc));
 
             desc.minimumVersion = null;
             desc.maximumVersion = "0.0";
-            Assert.False(DescriptorLoader.IsVersionCompatible(desc));
+            Assert.False(DescriptorExtensions.IsVersionCompatible(desc));
 
             desc.minimumVersion = null;
             desc.maximumVersion = "9999.9";
-            Assert.True(DescriptorLoader.IsVersionCompatible(desc));
+            Assert.True(DescriptorExtensions.IsVersionCompatible(desc));
 
             desc.minimumVersion = "9999.9";
             desc.maximumVersion = null;
-            Assert.False(DescriptorLoader.IsVersionCompatible(desc));
+            Assert.False(DescriptorExtensions.IsVersionCompatible(desc));
 
             desc.minimumVersion = InternalEditorUtility.GetUnityVersion().ToString();
             desc.maximumVersion = null;
-            Assert.True(DescriptorLoader.IsVersionCompatible(desc));
+            Assert.True(DescriptorExtensions.IsVersionCompatible(desc));
 
             desc.minimumVersion = null;
             desc.maximumVersion = InternalEditorUtility.GetUnityVersion().ToString();
-            Assert.True(DescriptorLoader.IsVersionCompatible(desc));
+            Assert.True(DescriptorExtensions.IsVersionCompatible(desc));
 
             desc.minimumVersion = "1.1";
             desc.maximumVersion = "1.0";
-            var result = DescriptorLoader.IsVersionCompatible(desc);
+            var result = DescriptorExtensions.IsVersionCompatible(desc);
             LogAssert.Expect(LogType.Error, "Descriptor (TD2001) minimumVersion (1.1) is greater than maximumVersion (1.0).");
             Assert.False(result);
         }
@@ -139,7 +139,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "do nothing"
                 );
 
-            Assert.True(DescriptorLoader.IsPlatformCompatible(desc));
+            Assert.True(DescriptorExtensions.IsPlatformCompatible(desc));
         }
 
         [Test]
@@ -163,7 +163,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
             };
 
-            Assert.True(DescriptorLoader.IsPlatformCompatible(desc));
+            Assert.True(DescriptorExtensions.IsPlatformCompatible(desc));
         }
 
         [Test]
@@ -181,7 +181,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 platforms = new[] { BuildTarget.Android.ToString() }  // assuming Android is not installed by default
             };
 
-            Assert.False(DescriptorLoader.IsPlatformCompatible(desc));
+            Assert.False(DescriptorExtensions.IsPlatformCompatible(desc));
         }
 
         [Test]
