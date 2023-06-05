@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 #endif
         }
 
-        private static void FixSrpBatcherSetting(ProjectIssue issue)
+        static void FixSrpBatcherSetting(ProjectIssue issue)
         {
 #if UNITY_2019_3_OR_NEWER
             RenderPipelineUtils.FixAssetSetting(issue, p => SetSrpBatcherSetting(p, true));
@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
 
 #if UNITY_2019_3_OR_NEWER
-        private IEnumerable<ProjectIssue> Analyze(RenderPipelineAsset renderPipeline, int qualityLevel)
+        IEnumerable<ProjectIssue> Analyze(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
             bool? srpBatcherSetting = GetSrpBatcherSetting(renderPipeline);
             if (srpBatcherSetting != null && !srpBatcherSetting.Value)
@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
-        private static ProjectIssue CreateSrpBatcherIssue(int qualityLevel, string name)
+        static ProjectIssue CreateSrpBatcherIssue(int qualityLevel, string name)
         {
             return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, name, k_SRPBatcherSettingDescriptor);
         }
@@ -102,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
 
 #if PACKAGE_HDRP
-        private static FieldInfo GetSrpBatcherField(RenderPipelineAsset renderPipeline,
+        static FieldInfo GetSrpBatcherField(RenderPipelineAsset renderPipeline,
             out HDRenderPipelineAsset hdrpAsset)
         {
             hdrpAsset = null;
