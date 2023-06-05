@@ -487,7 +487,6 @@ Shader ""Custom/SRPBatchCompatible""
                     v.GetCustomProperty(ShaderVariantProperty.PlatformKeywords).Contains("UNITY_COLORSPACE_GAMMA"));
                 if (PlayerSettings.colorSpace == ColorSpace.Linear)
                     Assert.False(colorSpaceGammaKeywordFound, "ColorSpace is Linear but keyword UNITY_COLORSPACE_GAMMA was found");
-
                 else
                     Assert.True(colorSpaceGammaKeywordFound, "ColorSpace is Gamma but keyword UNITY_COLORSPACE_GAMMA was not found");
                 Assert.True(variantsForPlatform.All(v => v.GetCustomProperty(ShaderVariantProperty.Compiled).Equals(ShadersModule.k_NoRuntimeData)));
