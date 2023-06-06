@@ -9,11 +9,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     class SpriteModule : ProjectAuditorModuleWithAnalyzers<ISpriteAtlasModuleAnalyzer>
     {
-        internal static readonly IssueLayout k_IssueLayout = new IssueLayout
-        {
-            category = IssueCategory.AssetDiagnostic
-        };
-
         public override string name => "Sprites Atlas";
 
         public override bool isEnabledByDefault => false;
