@@ -220,6 +220,17 @@ namespace Unity.ProjectAuditor.EditorTests
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.description), "Descriptor {0} has no description", descriptor.id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.solution), "Descriptor {0} has no solution", descriptor.id);
 
+                Assert.NotNull(descriptor.areas);
+            }
+        }
+
+        [Test]
+        public void DiagnosticDescriptor_Descriptors_AreFormatted()
+        {
+            var projectAuditor = new Editor.ProjectAuditor();
+            var descriptors = projectAuditor.GetDescriptors();
+            foreach (var descriptor in descriptors)
+            {
                 Assert.IsFalse(descriptor.title.EndsWith("."), "Descriptor {0} string must not end with a full stop. String: {1}", descriptor.id, descriptor.title);
                 Assert.IsTrue(descriptor.description.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.id, descriptor.description);
                 Assert.IsTrue(descriptor.solution.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.id, descriptor.solution);
