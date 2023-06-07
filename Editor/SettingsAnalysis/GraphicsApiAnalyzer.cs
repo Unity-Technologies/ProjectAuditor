@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static readonly Descriptor k_OpenGLESAndMetalDescriptor = new Descriptor(
             PAS0005,
-            "Player (iOS): Metal & OpenGLES APIs",
+            "Player (iOS): Metal & OpenGLES APIs are both enabled",
             new[] { Area.BuildSize },
             "In the iOS Player Settings, both Metal and OpenGLES graphics APIs are enabled.",
             "To reduce build size, remove OpenGLES graphics API if the minimum spec target device supports Metal.")
@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static readonly Descriptor k_MetalDescriptor = new Descriptor(
             PAS0006,
-            "Player (iOS): Metal API",
+            "Player (iOS): Metal API is not enabled",
             new[] { Area.CPU },
             "In the iOS Player Settings, Metal is not enabled.",
             "Enable Metal graphics API for better CPU Performance.")
@@ -43,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static readonly Descriptor k_VulkanDescriptor = new Descriptor(
             PAS0031,
-            "Player (Android): Vulkan API",
+            "Player (Android): Vulkan API is not enabled",
             new[] { Area.CPU, Area.GPU },
             "In the Android Player Settings, Vulkan graphics API is not enabled.",
             "Enable Vulkan graphics API for better CPU Performance.")
