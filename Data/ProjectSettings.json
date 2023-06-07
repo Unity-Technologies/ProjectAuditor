@@ -2,7 +2,7 @@
     "Items": [
         {
             "id": "PAS0000",
-            "title": "Player: Metal API Validation",
+            "title": "Player: Metal API Validation is enabled",
             "type": "UnityEditor.PlayerSettings",
             "method": "enableMetalAPIValidation",
             "value": "True",
@@ -14,7 +14,7 @@
         },
         {
             "id": "PAS0001",
-            "title": "Player: Graphics Jobs",
+            "title": "Player: Graphics Jobs is disabled",
             "type": "UnityEditor.PlayerSettings",
             "method": "graphicsJobs",
             "value": "False",
@@ -24,7 +24,7 @@
         },
         {
             "id": "PAS0007",
-            "title": "Player: Prebake Collision Meshes",
+            "title": "Player: Prebake Collision Meshes is disabled",
             "type": "UnityEditor.PlayerSettings",
             "method": "bakeCollisionMeshes",
             "value": "False",
@@ -34,7 +34,7 @@
         },
         {
             "id": "PAS0008",
-            "title": "Player: Optimize Mesh Data",
+            "title": "Player: Optimize Mesh Data is disabled",
             "type": "UnityEditor.PlayerSettings",
             "method": "stripUnusedMeshComponents",
             "value": "False",
@@ -44,7 +44,7 @@
         },
         {
             "id": "PAS0010",
-            "title": "Player (WebGL): Data Caching",
+            "title": "Player (WebGL): Data Caching is disabled",
             "type": "UnityEditor.PlayerSettings+WebGL",
             "method": "dataCaching",
             "value": "False",
@@ -55,7 +55,7 @@
         },
         {
             "id": "PAS0011",
-            "title": "Player (WebGL): Linker Target",
+            "title": "Player (WebGL): Linker Target is deprecated",
             "type": "UnityEditor.PlayerSettings+WebGL",
             "method": "linkerTarget",
             "value": "Asm",
@@ -67,7 +67,7 @@
         },
         {
             "id": "PAS0012",
-            "title": "Physics: Auto Sync Transforms",
+            "title": "Physics: Auto Sync Transforms is enabled",
             "type": "UnityEngine.Physics",
             "method": "autoSyncTransforms",
             "value": "True",
@@ -77,7 +77,7 @@
         },
         {
             "id": "PAS0014",
-            "title": "Physics2D: Auto Sync Transforms",
+            "title": "Physics2D: Auto Sync Transforms is enabled",
             "type": "UnityEngine.Physics2D",
             "method": "autoSyncTransforms",
             "value": "True",
@@ -87,7 +87,7 @@
         },
         {
             "id": "PAS0027",
-            "title": "Player: Mipmap Stripping",
+            "title": "Player: Mipmap Stripping is disabled",
             "type": "UnityEditor.PlayerSettings",
             "method": "mipStripping",
             "value": "False",
@@ -98,7 +98,7 @@
         },
         {
             "id": "PAS0028",
-            "title": "Physics: Reuse Collision Callbacks",
+            "title": "Physics: Reuse Collision Callbacks is disabled",
             "type": "UnityEngine.Physics",
             "method": "reuseCollisionCallbacks",
             "value": "False",
@@ -109,7 +109,7 @@
         },
         {
             "id": "PAS0030",
-            "title": "Player (Android): Optimized Frame Pacing",
+            "title": "Player (Android): Optimized Frame Pacing is disabled",
             "type": "UnityEditor.PlayerSettings+Android",
             "method": "optimizedFramePacing",
             "value": "False",
@@ -122,7 +122,7 @@
         },
         {
             "id": "PAS0034",
-            "title": "Player: Use incremental GC disabled",
+            "title": "Player: Use incremental GC is disabled",
             "type": "UnityEditor.PlayerSettings",
             "method": "gcIncremental",
             "value": "False",

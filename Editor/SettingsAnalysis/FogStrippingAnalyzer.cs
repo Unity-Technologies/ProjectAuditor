@@ -26,9 +26,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         static readonly Descriptor k_FogModeDescriptor = new Descriptor(
             PAS1003,
-            "Graphics: Fog Shader Variant Stripping",
+            "Graphics: Fog Mode is enabled",
             new[] {Area.BuildSize},
-            "<b>Fog Modes</b> in Graphics Settings are set to build all fog shader variants. Forcing Fog shader variants to be built can increase the build size.",
+            "<b>Fog Modes</b> in Graphics Settings are set to build all fog shader variants for this fog mode. Forcing Fog shader variants to be built can increase the build size.",
             "Change <b>Graphics Settings ➔ Fog Modes</b> to <b>Automatic</b> or disable <b>Linear/Exponential/Exponential Squared</b>. This should reduce the number of shader variants generated for fog effects.")
         {
             fixer = (issue =>
@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 RemoveFogStripping();
             }),
 
-            messageFormat = "Graphics: FogMode '{0}' shader variants is always included in the build"
+            messageFormat = "Graphics: Fog Mode '{0}' shader variants are always included in the build"
         };
 
         public void Initialize(ProjectAuditorModule module)

@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static readonly Descriptor k_SRPBatcherSettingDescriptor = new Descriptor(
             PAS1008,
-            "SRP Asset: SRP Batcher",
+            "SRP Asset: SRP Batcher is disabled",
             Area.CPU,
             "<b>SRP Batcher</b> is disabled in a Render Pipeline Asset.",
             "Enable <b>SRP Batcher</b> in Render Pipeline Asset. If the option is hidden, click the vertical ellipsis icon and select <b>Show Additional Properties</b>. Enabling the SRP Batcher will reduce the CPU time Unity requires to prepare and dispatch draw calls for materials that use the same shader variant.")

@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static readonly Descriptor k_EngineCodeStrippingDescriptor = new Descriptor(
             PAS0009,
-            "Player: Engine Code Stripping",
+            "Player: Engine Code Stripping is disabled",
             Area.BuildSize,
             "The <b>Strip Engine Code</b> is option in Player Settings is disabled. The generated build will be larger than necessary.",
             "Enable <b>Strip Engine Code</b> in <b>Player Settings ➔ Other Settings ➔ Optimization</b>.")
@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static readonly Descriptor k_AndroidManagedStrippingDescriptor = new Descriptor(
             PAS0025,
-            "Player (Android): Managed Code Stripping",
+            "Player (Android): Managed Code Stripping is set to Disabled or Low",
             Area.BuildSize,
 #if UNITY_2021_2_OR_NEWER
             "The <b>Managed Stripping Level</b> in the Android Player Settings is set to <b>Disabled</b>, <b>Low</b> or <b>Minimal</b>. The generated build will be larger than necessary.",
@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static readonly Descriptor k_iOSManagedStrippingDescriptor = new Descriptor(
             PAS0026,
-            "Player (iOS): Managed Code Stripping",
+            "Player (iOS): Managed Code Stripping is set to Disabled, Low or Minimal",
             Area.BuildSize,
             "The <b>Managed Stripping Level</b> in the iOS Player Settings is set to <b>Disabled</b>, <b>Low</b> or <b>Minimal</b>. The generated build will be larger than necessary.",
             "Set <b>Managed Stripping Level</b> in the iOS Player Settings to Medium or High.")
