@@ -60,6 +60,13 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+        public void SettingsAnalysis_Quality_TextureStreamingIsReported()
+        {
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(QualitySettingsAnalyzer.PAS1007));
+            Assert.True(issues.Any(i => i.location.Path.Equals("Project/Quality/Very Low")));
+        }
+
+        [Test]
         public void SettingsAnalysis_Default_StaticBatchingEnabled()
         {
             Assert.True(PlayerSettingsUtil.IsStaticBatchingEnabled(EditorUserBuildSettings.activeBuildTarget));

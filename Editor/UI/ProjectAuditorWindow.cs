@@ -548,10 +548,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     var guid = AssetDatabase.AssetPathToGUID(location.Path);
                     if (string.IsNullOrEmpty(guid))
                     {
-                        if (location.Path.Equals("Project/Build"))
-                            BuildPlayerWindow.ShowBuildPlayerWindow();
-                        else
-                            EditorInterop.OpenProjectSettings(location);
+                        EditorInterop.OpenProjectSettings(location);
                     }
                     else
                     {

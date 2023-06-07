@@ -57,8 +57,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static void OpenProjectSettings(Location location)
         {
-            var window = SettingsService.OpenProjectSettings(location.Path);
-            window.Repaint();
+            if (location.Path.Equals("Project/Build"))
+                BuildPlayerWindow.ShowBuildPlayerWindow();
+            else
+            {
+                // Some Quality setting issue paths will end with the quality level name to identify a specific level
+                // However, the SettingsService API does not support this, so we need to strip the level name
+                var path = location.Path.StartsWith("Project/Quality") ? "Project/Quality" : location.Path;
+                var window = SettingsService.OpenProjectSettings(path);
+                window.Repaint();
+            }
         }
 
         public static void FocusOnAssetInProjectWindow(Location location)

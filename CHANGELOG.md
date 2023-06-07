@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 * Improved issue description and suggestion strings, to make them clearer and more consistent
 
+### Fixed
+* Ignoring texture streaming issues
+
 ## [0.10.0] - 2023-05-03
 
 ### Changed

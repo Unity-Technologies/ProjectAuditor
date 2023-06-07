@@ -100,10 +100,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (GetTextureStreamingDisabledQualityLevelsIndex().Count != 0)
             {
                 var qualityLevels = GetTextureStreamingDisabledQualityLevelsIndex();
-                for (int i = 0; i < qualityLevels.Count; i++)
+                foreach (var levelIndex in qualityLevels)
                 {
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_TextureStreamingDisabledDescriptor, QualitySettings.names[qualityLevels[i]]).
-                        WithCustomProperties(new object[] {qualityLevels[i]}).WithLocation("Project/Quality");
+                    var levelName = QualitySettings.names[levelIndex];
+                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_TextureStreamingDisabledDescriptor, levelName)
+                        .WithCustomProperties(new object[] {levelIndex})
+                        .WithLocation("Project/Quality/" + levelName);
                 }
             }
         }
