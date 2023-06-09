@@ -1,5 +1,5 @@
 # Project Auditor
-Project Auditor is an experimental static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report containing: Code and Settings diagnostics, the last BuildReport, and assets information.
+Project Auditor is a static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report containing: Code and Settings diagnostics, the last BuildReport, and assets information.
 
 ## Disclaimer
 This package is available as an experimental package, so it is not ready for production use. The features and documentation in this package might change before it is verified for release. 
