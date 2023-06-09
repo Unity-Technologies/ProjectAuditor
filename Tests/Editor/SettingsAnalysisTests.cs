@@ -81,8 +81,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.method.Equals("bakeCollisionMeshes"));
             var playerSettingIssue = issues.FirstOrDefault();
 
-            Assert.NotNull(playerSettingIssue);
-            Assert.AreEqual("Player: Prebake Collision Meshes", playerSettingIssue.description);
+            Assert.NotNull(playerSettingIssue, "Issue not found");
+            Assert.AreEqual("Player: Prebake Collision Meshes is disabled", playerSettingIssue.description);
             Assert.AreEqual("Project/Player", playerSettingIssue.location.Path);
             Assert.AreEqual("Player", playerSettingIssue.location.Filename);
             Assert.AreEqual(2, playerSettingIssue.descriptor.GetAreas().Length);
@@ -101,16 +101,16 @@ namespace Unity.ProjectAuditor.EditorTests
             // 0.02f is the default Time.fixedDeltaTime value and will be reported as an issue
             Time.fixedDeltaTime = 0.02f;
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.title.Equals("Time: Fixed Timestep"));
-            var fixedDeltaTimeIssue = issues.FirstOrDefault();
-            Assert.NotNull(fixedDeltaTimeIssue);
-            Assert.AreEqual("Time: Fixed Timestep", fixedDeltaTimeIssue.description);
-            Assert.AreEqual("Project/Time", fixedDeltaTimeIssue.location.Path);
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(TimeSettingsAnalyzer.PAS0016));
+            var playerSettingIssue = issues.FirstOrDefault();
+            Assert.NotNull(playerSettingIssue, "Issue not found");
+            Assert.AreEqual("Time: Fixed Timestep is set to the default value", playerSettingIssue.description);
+            Assert.AreEqual("Project/Time", playerSettingIssue.location.Path);
 
             // "fix" fixedDeltaTime so it's not reported anymore
             Time.fixedDeltaTime = 0.021f;
 
-            issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.title.Equals("Time: Fixed Timestep"));
+            issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(TimeSettingsAnalyzer.PAS0016));
             Assert.Null(issues.FirstOrDefault());
 
             // restore Time.fixedDeltaTime
@@ -299,7 +299,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(FogStrippingAnalyzer.PAS1003));
 
             Assert.AreEqual(1, issues.Length);
-            string description = $"Graphics: FogMode '{fogMode}' shader variants is always included in the build";
+
+            var description = $"Graphics: Fog Mode '{fogMode}' shader variants are always included in the build";
             Assert.AreEqual(description, issues[0].description);
 
             linearFogModeProperty.boolValue = linearEnabled;
@@ -369,14 +370,11 @@ namespace Unity.ProjectAuditor.EditorTests
             var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
             PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, il2CppCompilerConfiguration);
 
-            ProjectIssue[] issues = null;
-
             var id = il2CppCompilerConfiguration == Il2CppCompilerConfiguration.Master
                 ? PlayerSettingsAnalyzer.PAS1004
                 : PlayerSettingsAnalyzer.PAS1005;
 
-            issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
-
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
             var playerSettingIssue = issues.Length;
 
             Assert.AreEqual(1, playerSettingIssue);
@@ -398,9 +396,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
             PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Release);
 
-            ProjectIssue[] issues = null;
-
-            issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
             var playerSettingIssue = issues.FirstOrDefault();
 
             Assert.IsNull(playerSettingIssue);
@@ -419,9 +415,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.Mono2x);
 
-            ProjectIssue[] issues = null;
-
-            issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
             var playerSettingIssue = issues.FirstOrDefault();
 
             Assert.IsNull(playerSettingIssue);
@@ -521,8 +515,8 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void SettingsAnalysis_MipmapStreaming_Enabled_Is_Not_Reported()
         {
-            int initialQualityLevel = QualitySettings.GetQualityLevel();
-            List<bool> qualityLevelsValues = new List<bool>();
+            var initialQualityLevel = QualitySettings.GetQualityLevel();
+            var qualityLevelsValues = new List<bool>();
 
             for (var i = 0; i < QualitySettings.names.Length; i++)
             {
@@ -545,8 +539,8 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void SettingsAnalysis_Enable_StreamingMipmap()
         {
-            int initialQualityLevel = QualitySettings.GetQualityLevel();
-            List<bool> qualityLevelsValues = new List<bool>();
+            var initialQualityLevel = QualitySettings.GetQualityLevel();
+            var qualityLevelsValues = new List<bool>();
 
             for (var i = 0; i < QualitySettings.names.Length; i++)
             {
