@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAA3000 = nameof(PAA3000);
         internal const string PAA3001 = nameof(PAA3001);
 
-        static readonly Descriptor k_ResourcesFolderDescriptor = new Descriptor
+        static readonly Descriptor k_AssetInResourcesFolderDescriptor = new Descriptor
             (
             PAA3000,
             "Resources folder asset & dependencies",
@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             base.Initialize(config);
 
-            RegisterDescriptor(k_ResourcesFolderDescriptor);
+            RegisterDescriptor(k_AssetInResourcesFolderDescriptor);
             RegisterDescriptor(k_StreamingAssetsFolderDescriptor);
         }
 
@@ -158,7 +158,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             issues.Add(ProjectIssue.Create
                 (
                     IssueCategory.AssetDiagnostic,
-                    k_ResourcesFolderDescriptor,
+                    k_AssetInResourcesFolderDescriptor,
                     Path.GetFileName(assetPath), isInResources ? "is in a Resources folder" : "is a dependency of a Resources folder asset"
                 )
                 .WithDependencies(dependencyNode)
