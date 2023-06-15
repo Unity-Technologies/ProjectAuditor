@@ -160,9 +160,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var assetPath = textureImporter.assetPath;
 
-            // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
             var texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath);
+#if UNITY_2022_2_OR_NEWER
+            TextureFormat format = (TextureFormat)platformSettings.format;
+            if (platformSettings.format == TextureImporterFormat.Automatic)
+            {
+                format = (TextureFormat)textureImporter.GetAutomaticFormat(projectAuditorParams.platform.ToString());
+            }
+
+            var size = UnityEngine.Experimental.Rendering.GraphicsFormatUtility.ComputeMipChainSize(texture.width, texture.height, TextureUtils.GetTextureDepth(texture), format, texture.mipmapCount);
+#else
+            // This is not the correct size but we don't have access to the appropriate functionality on older versions to do much better without a lot more work.
             var size = Profiler.GetRuntimeMemorySizeLong(texture);
+#endif
             var resolution = texture.width + "x" + texture.height;
 
             yield return ProjectIssue.Create(IssueCategory.Texture, texture.name)

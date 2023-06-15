@@ -222,5 +222,46 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             return newTexture;
         }
+
+        public static int GetTextureDepth(Texture texture)
+        {
+            int textureDepth = 1;
+
+            switch (texture.dimension)
+            {
+                case UnityEngine.Rendering.TextureDimension.Tex3D:
+                {
+                    Texture3D texture3D = texture as Texture3D;
+                    textureDepth = texture3D.depth;
+
+                    break;
+                }
+
+                case UnityEngine.Rendering.TextureDimension.Cube:
+                {
+                    textureDepth = 6;
+
+                    break;
+                }
+
+                case UnityEngine.Rendering.TextureDimension.Tex2DArray:
+                {
+                    Texture2DArray texture2DArray = texture as Texture2DArray;
+                    textureDepth = texture2DArray.depth;
+
+                    break;
+                }
+
+                case UnityEngine.Rendering.TextureDimension.CubeArray:
+                {
+                    CubemapArray textureCubeArray = texture as CubemapArray;
+                    textureDepth = textureCubeArray.cubemapCount * 6;
+
+                    break;
+                }
+            }
+
+            return textureDepth;
+        }
     }
 }
