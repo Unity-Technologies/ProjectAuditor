@@ -25,9 +25,9 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestSpriteAtlasFull;
         TestAsset m_TestSpriteAtlasEmpty;
 
-        private TestAsset m_RedSquareSprite;
-        private TestAsset m_BlueSquareSprite;
-        private TestAsset m_EmptySquareSprite;
+        TestAsset m_RedSquareSprite;
+        TestAsset m_BlueSquareSprite;
+        TestAsset m_EmptySquareSprite;
 
         [OneTimeSetUp]
         public void SetUp()
