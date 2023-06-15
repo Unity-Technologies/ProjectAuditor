@@ -385,7 +385,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Texture_Empty_Space_IsReported()
         {
             var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TestTextureEmptySpace, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_AtlasTextureEmptyDescriptor));
+                .FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureAtlasEmptyDescriptor));
 
             Assert.IsNotNull(textureDiagnostic);
         }
@@ -395,7 +395,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             //We don't need to create a new texture as we only need a not empty one
             var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureSolidColor, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_AtlasTextureEmptyDescriptor));
+                .FirstOrDefault(i => i.descriptor.Equals(TextureAnalyzer.k_TextureAtlasEmptyDescriptor));
 
             Assert.IsNull(textureDiagnostic);
         }

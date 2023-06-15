@@ -134,15 +134,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             fixer = (issue) => { ResizeSolidTexture(issue.relativePath); }
         };
 
-        internal static readonly Descriptor k_AtlasTextureEmptyDescriptor = new Descriptor(
+        internal static readonly Descriptor k_TextureAtlasEmptyDescriptor = new Descriptor(
             PAA0007,
-            "Atlas Texture: Too much empty space",
+            "Texture Atlas: Too much empty space",
             new[] {Area.Memory},
-            "The Atlas texture contains a lot of empty space. Empty space contributes to texture memory usage.",
-            "Consider reorganizing your Atlas Texture in order to reduce the amount of empty space."
+            "The texture atlas contains a lot of empty space. Empty space contributes to texture memory usage.",
+            "Consider reorganizing your texture atlas in order to reduce the amount of empty space."
         )
         {
-            messageFormat = "Atlas Texture '{0}' has too much empty space ({1} %)"
+            messageFormat = "Texture Atlas '{0}' has too much empty space ({1} %)"
         };
 
         public void Initialize(ProjectAuditorModule module)
@@ -153,7 +153,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_TextureStreamingMipMapEnabledDescriptor);
             module.RegisterDescriptor(k_TextureAnisotropicLevelDescriptor);
             module.RegisterDescriptor(k_TextureSolidColorDescriptor);
-            module.RegisterDescriptor(k_AtlasTextureEmptyDescriptor);
+            module.RegisterDescriptor(k_TextureAtlasEmptyDescriptor);
         }
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, TextureImporter textureImporter, TextureImporterPlatformSettings platformSettings)
@@ -231,7 +231,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (emptyPercent >
                     projectAuditorParams.settings.SpriteAtlasEmptySpaceLimit)
                 {
-                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_AtlasTextureEmptyDescriptor, textureName, emptyPercent)
+                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor, textureName, emptyPercent)
                         .WithLocation(textureImporter.assetPath);
                 }
             }
