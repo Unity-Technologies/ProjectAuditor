@@ -122,9 +122,10 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void PackageUtils_InstalledPackage_IsReported()
+        [TestCase(Editor.ProjectAuditor.k_PackageName)]
+        public void PackageUtils_Package_IsInstalled(string packageName)
         {
-            Assert.IsTrue(PackageUtils.IsPackageInstalled(Editor.ProjectAuditor.k_PackageName));
+            Assert.IsTrue(PackageUtils.IsClientPackage(packageName), $"Package {packageName} is not installed");
         }
 
         [Test]

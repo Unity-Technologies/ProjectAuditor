@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor
                 if (!string.IsNullOrEmpty(s_CachedPackagePath))
                     return s_CachedPackagePath;
 
-                if (PackageUtils.IsPackageInstalled(k_PackageName))
+                if (PackageUtils.IsClientPackage(k_PackageName))
                     s_CachedPackagePath = k_CanonicalPackagePath;
                 else
                 {
@@ -51,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor
             get
             {
                 if (string.IsNullOrEmpty(s_CachedPackageVersion))
-                    s_CachedPackageVersion = PackageUtils.GetPackageVersion(k_PackageName);
+                    s_CachedPackageVersion = PackageUtils.GetClientPackageVersion(k_PackageName);
                 return s_CachedPackageVersion;
             }
         }
