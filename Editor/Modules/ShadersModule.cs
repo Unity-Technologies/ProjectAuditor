@@ -28,6 +28,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
         NumBuiltVariants,
         NumPasses,
         NumKeywords,
+        NumProperties,
+        NumTextureProperties,
         RenderQueue,
         Instancing,
         SrpBatcher,
@@ -54,6 +56,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Platform = 0,
         Tier,
         Kernel,
+        KernelThreadCount,
         Keywords,
         PlatformKeywords,
         Num
@@ -89,6 +92,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     class ComputeShaderVariantData
     {
         public string kernelName;
+        public string kernelThreadCount;
         public string[] keywords;
         public string[] platformKeywords;
         public GraphicsTier graphicsTier;
@@ -121,6 +125,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumBuiltVariants), format = PropertyFormat.Integer, name = "Built Fragment Variants", longName = "Number of fragment shader variants in the build for a single stage (e.g. fragment), per shader platform (e.g. GLES30)" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumPasses), format = PropertyFormat.Integer, name = "Num Passes", longName = "Number of Passes" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumKeywords), format = PropertyFormat.Integer, name = "Num Keywords", longName = "Number of Keywords" },
+#if UNITY_2019_3_OR_NEWER
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumProperties), format = PropertyFormat.Integer, name = "Num Properties", longName = "Number of Properties" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumTextureProperties), format = PropertyFormat.Integer, name = "Num Tex Properties", longName = "Number of Texture Properties" },
+#endif
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.RenderQueue), format = PropertyFormat.Integer, name = "Render Queue" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.Instancing), format = PropertyFormat.Bool, name = "Instancing", longName = "GPU Instancing Support" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.SrpBatcher), format = PropertyFormat.Bool, name = "SRP Batcher", longName = "SRP Batcher Compatible" },
@@ -193,6 +201,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Platform), format = PropertyFormat.String, name = "Graphics API" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Tier), format = PropertyFormat.String, name = "Tier" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Kernel), format = PropertyFormat.String, name = "Kernel" },
+#if UNITY_2021_2_OR_NEWER
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.KernelThreadCount), format = PropertyFormat.Integer, name = "Kernel Thread Count" },
+#endif
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Keywords), format = PropertyFormat.String, name = "Keywords" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.PlatformKeywords), format = PropertyFormat.String, name = "Platform Keywords" },
             }
@@ -223,6 +234,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string k_NoRuntimeData = "This feature requires runtime data.";
         internal const string k_NotAvailable = "This feature requires a build.";
         internal const string k_Unknown = "Unknown";
+        internal const string k_ComputeShaderMayHaveBadVariants = "Compute shader may have bad (but unused) variants preventing this from being evaluated.";
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData =
             new Dictionary<Shader, List<ShaderVariantData>>();
@@ -403,6 +415,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             shaderVariantData.compilerPlatform,
                             shaderVariantData.graphicsTier,
                             shaderVariantData.kernelName,
+                            shaderVariantData.kernelThreadCount,
                             CombineKeywords(shaderVariantData.keywords),
                             CombineKeywords(shaderVariantData.platformKeywords)
                         }));
@@ -479,6 +492,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var hasInstancing = ShaderUtilProxy.HasInstancing(shader);
                 var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(shader);
                 var isSrpBatcherCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(shader, subShaderIndex) == 0;
+                var texturePropertyCount = 0;
+#if UNITY_2019_3_OR_NEWER
+                var propertyCount = shader.GetPropertyCount();
+                for (int i = 0; i < propertyCount; ++i)
+                {
+                    if (shader.GetPropertyType(i)  == ShaderPropertyType.Texture)
+                    {
+                        ++texturePropertyCount;
+                    }
+                }
+#else
+                var propertyCount = 0;
+#endif
 
 #if UNITY_2019_1_OR_NEWER
                 passCount = shader.passCount;
@@ -491,6 +517,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         variantCountPerCompilerPlatform == -1 ? k_NotAvailable : variantCountPerCompilerPlatform.ToString(),
                         passCount == -1 ? k_NotAvailable : passCount.ToString(),
                         globalKeywords == null || localKeywords == null ? k_NotAvailable : (globalKeywords.Length + localKeywords.Length).ToString(),
+                        propertyCount,
+                        texturePropertyCount,
                         shader.renderQueue,
                         hasInstancing,
                         isSrpBatcherCompatible,
@@ -556,6 +584,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #if COMPUTE_SHADER_ANALYSIS
         public void OnProcessComputeShader(ComputeShader shader, string kernelName, IList<ShaderCompilerData> data)
         {
+            if (data.Count == 0)
+                return; // no variants
+
             if (!s_ComputeShaderVariantData.ContainsKey(shader))
             {
                 s_ComputeShaderVariantData.Add(shader, new List<ComputeShaderVariantData>());
@@ -564,9 +595,37 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var buildTargetPropertyInfo = typeof(ShaderCompilerData).GetRuntimeProperty("buildTarget");
             foreach (var shaderCompilerData in data)
             {
+                int kernelThreadCount = 0;
+#if UNITY_2021_2_OR_NEWER
+                if (shader.HasKernel(kernelName))
+                {
+                    var kernelIndex = shader.FindKernel(kernelName);
+                    // This is gross and it deserves some explaination.
+                    // Unlike raster shaders, it is possible for this callback to give you a compute kernel that's invalid for the keyword state.
+                    // This seems to only happen when you have a multi_compile without a leading _ default entry, but it's not guaranteed for that situation to cause a problem.
+                    // We care because calling GetKernelThreadGroupSizes for a "bad" kernel puts spurious errors in the console and we don't want that.
+                    // As it currently exists the check prevents all intended error scenarios but does also skip some perfectly valid kernels.
+                    // For now it's an ok compromise but the goal is to get the false positives down to zero.
+                    // In service of that, here's the current thinking behind the check.
+                    // 1) A variant can't have problems if the base shader defines no keywords.
+                    // 2) A variant can't have problems if it has every defined or enabled keyword of the base shader.
+                    // 3) A variant can have problems if it has keywords but the base shader has enabled no keywords.
+                    bool keywordSpaceValid =
+                        (shaderCompilerData.shaderKeywordSet.GetShaderKeywords().Length == shader.shaderKeywords.Length) ||
+                        (shaderCompilerData.shaderKeywordSet.GetShaderKeywords().Length == shader.keywordSpace.keywordCount) ||
+                        !((shader.shaderKeywords.Length == 0 && shaderCompilerData.shaderKeywordSet.GetShaderKeywords().Length != 0) && shader.keywordSpace.keywordCount > 0);
+                    if (keywordSpaceValid && shader.IsSupported(kernelIndex))
+                    {
+                        shader.GetKernelThreadGroupSizes(kernelIndex, out uint x, out uint y, out uint z);
+                        kernelThreadCount = (int)(x * y * z);
+                    }
+                }
+#endif
+
                 s_ComputeShaderVariantData[shader].Add(new ComputeShaderVariantData
                 {
                     kernelName = kernelName,
+                    kernelThreadCount = kernelThreadCount == 0 ? k_ComputeShaderMayHaveBadVariants : kernelThreadCount.ToString(),
                     keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
                     platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
                     graphicsTier = shaderCompilerData.graphicsTier,

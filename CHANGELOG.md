@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Added
+* Shader view reports total property count and texture property count for Unity 2019.3 and above
+* Compute shader variant view reports kernel thread count for Unity 2021.2 and above
+
 ### Changed
 * Improved issue description and suggestion strings, to make them clearer and more consistent
 
