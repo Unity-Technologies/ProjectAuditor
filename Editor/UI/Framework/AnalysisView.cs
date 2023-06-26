@@ -41,6 +41,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get { return m_Desc; }
         }
 
+        public virtual string description => $"A list of {m_Desc.displayName} found in the project.";
+
         public string documentationUrl => Documentation.GetPageUrl(new string(m_Desc.displayName.Where(char.IsLetterOrDigit).ToArray()));
 
         public int numIssues
@@ -221,11 +223,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void DrawTopPanel()
         {
-            if (!m_Desc.showInfoPanel)
-                return;
-
             using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
             {
+                EditorGUILayout.LabelField(description);
+
+                if (!m_Desc.showInfoPanel)
+                    return;
+
                 m_ViewStates.info = Utility.BoldFoldout(m_ViewStates.info, Contents.InfoFoldout);
                 if (m_ViewStates.info)
                 {

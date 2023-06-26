@@ -23,6 +23,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         GroupStats[] m_GroupStats;
         List<ProjectIssue> m_MetaData = new List<ProjectIssue>();
 
+        public override string description => m_Desc.category == IssueCategory.BuildFile ? "A list of files contributing to the build size." : "A list of build steps and their duration.";
+
         public BuildReportView(ViewManager viewManager) :
             base(viewManager)
         {
