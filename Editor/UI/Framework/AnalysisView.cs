@@ -227,6 +227,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 EditorGUILayout.LabelField(description);
 
+                // Add a bit of space to improve readability
+                EditorGUILayout.Space();
+
                 if (!m_Desc.showInfoPanel)
                     return;
 
