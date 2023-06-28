@@ -303,7 +303,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             DrawDataOptions();
 
-            Utility.DrawHelpButton(m_HelpButtonContent, documentationUrl);
 
             EditorGUILayout.EndHorizontal();
         }
