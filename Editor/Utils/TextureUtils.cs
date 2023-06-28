@@ -19,16 +19,21 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// <returns>True if the texture is a single solid color above 1x1.</returns>
         public static bool IsTextureSolidColorTooBig(TextureImporter textureImporter, Texture texture)
         {
-            bool isTooBig = false;
-
             if (texture == null)
             {
                 Debug.LogWarning($"Could not load texture at {textureImporter.assetPath}");
                 return false;
             }
 
-            // Skip non-2D textures (which don't support GetPixels)
-            if (!(texture is Texture2D texture2D))
+            // Skip textures of unsupported dimensions
+            if (!(
+                texture.dimension == UnityEngine.Rendering.TextureDimension.Tex2D
+#if UNITY_2019_2_OR_NEWER
+                || texture.dimension == UnityEngine.Rendering.TextureDimension.Tex2DArray
+                || texture.dimension == UnityEngine.Rendering.TextureDimension.Tex3D
+                || texture.dimension == UnityEngine.Rendering.TextureDimension.Cube
+#endif
+                ))
                 return false;
 
             // Skip textures which are child assets (fonts, embedded textures, etc.)
@@ -40,17 +45,89 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 return false;
             }
 
+            return IsSolidColorWithDimensionHandling(textureImporter, texture);
+        }
+
+        static bool IsSolidColorWithDimensionHandling(TextureImporter textureImporter, Texture texture)
+        {
+            bool isTooBig = false;
+
             // For non-readable textures, make it readable to use some functions (GetPixels())
-            if (textureImporter.isReadable)
+            switch (texture.dimension)
             {
-                isTooBig = IsSolidColor(texture2D);
-            }
-            else
-            {
-                Texture2D copyTexture = CopyTexture(texture2D);
-                isTooBig = IsSolidColor(copyTexture);
-                //Release texture from Memory
-                Object.DestroyImmediate(copyTexture);
+                case UnityEngine.Rendering.TextureDimension.Tex2D:
+                {
+                    Texture2D texture2D = texture as Texture2D;
+
+                    if (textureImporter.isReadable)
+                    {
+                        isTooBig = IsSolidColor(texture2D);
+                    }
+                    else
+                    {
+                        Texture2D copyTexture = CopyTexture(texture2D);
+                        isTooBig = IsSolidColor(copyTexture);
+                        Object.DestroyImmediate(copyTexture);
+                    }
+
+                    break;
+                }
+
+#if UNITY_2019_2_OR_NEWER
+                case UnityEngine.Rendering.TextureDimension.Tex2DArray:
+                {
+                    Texture2DArray texture2DArray = texture as Texture2DArray;
+
+                    if (textureImporter.isReadable)
+                    {
+                        isTooBig = IsSolidColor(texture2DArray);
+                    }
+                    else
+                    {
+                        Texture2DArray copyTexture = CopyTexture(texture2DArray);
+                        isTooBig = IsSolidColor(copyTexture);
+                        Object.DestroyImmediate(copyTexture);
+                    }
+
+                    break;
+                }
+
+                case UnityEngine.Rendering.TextureDimension.Tex3D:
+                {
+                    Texture3D texture3D = texture as Texture3D;
+
+                    if (textureImporter.isReadable)
+                    {
+                        isTooBig = IsSolidColor(texture3D);
+                    }
+                    else
+                    {
+                        Texture3D copyTexture = CopyTexture(texture3D);
+                        isTooBig = IsSolidColor(copyTexture);
+                        Object.DestroyImmediate(copyTexture);
+                    }
+
+                    break;
+                }
+
+                case UnityEngine.Rendering.TextureDimension.Cube:
+                {
+                    Cubemap textureCube = texture as Cubemap;
+
+                    if (textureImporter.isReadable)
+                    {
+                        isTooBig = IsSolidColor(textureCube);
+                    }
+                    else
+                    {
+                        Cubemap copyTexture = CopyTexture(textureCube);
+                        isTooBig = IsSolidColor(copyTexture);
+                        Object.DestroyImmediate(copyTexture);
+                    }
+
+                    break;
+                }
+#endif
             }
 
             return isTooBig;
@@ -98,18 +175,158 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             // Convert to int for faster comparison
             var colorValue = Color32ToInt.Convert(pixels[0]);
-            var isSolidColor = true;
             for (var i = 1; i < pixelCount; i++)
             {
                 var pixel = Color32ToInt.Convert(pixels[i]);
                 if (pixel != colorValue)
                 {
-                    isSolidColor = false;
-                    break;
+                    return false;
                 }
             }
 
-            return isSolidColor;
+            return true;
+        }
+
+        /// <summary>
+        /// Check if each slice in a texture array is comprised of a single solid color.
+        /// </summary>
+        /// <param name="texture">The texture array to check.</param>
+        /// <returns>True if each slice of the texture array is a single solid color.</returns>
+        static bool IsSolidColor(Texture2DArray texture)
+        {
+            // Skip "degenerate" textures like font atlases
+            if (texture.width == 0 || texture.height == 0)
+            {
+                return false;
+            }
+
+            // It doesn't matter if all slices are the same solid color, just that they are all solid colors.
+            for (int j = 0; j < texture.depth; ++j)
+            {
+                var pixels = texture.GetPixels32(j);
+
+                // It is unlikely to get a null pixels array, but we should check just in case
+                if (pixels == null)
+                {
+                    Debug.LogWarning($"Could not read {texture}");
+                    return false;
+                }
+
+                // It is unlikely, but possible that we got this far and there are no pixels.
+                var pixelCount = pixels.Length;
+                if (pixelCount == 0)
+                {
+                    Debug.LogWarning($"No pixels in {texture}");
+                    return false;
+                }
+
+                // Convert to int for faster comparison
+                var colorValue = Color32ToInt.Convert(pixels[0]);
+                for (var i = 1; i < pixelCount; i++)
+                {
+                    var pixel = Color32ToInt.Convert(pixels[i]);
+                    if (pixel != colorValue)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Check if each slice in a 3D texture is comprised of a single solid color.
+        /// </summary>
+        /// <param name="texture">The 3D texture to check.</param>
+        /// <returns>True if each slice of the 3D texture is a single solid color.</returns>
+        static bool IsSolidColor(Texture3D texture)
+        {
+            // Skip "degenerate" textures like font atlases
+            if (texture.width == 0 || texture.height == 0)
+            {
+                return false;
+            }
+
+            // It doesn't matter if all slices are the same solid color, just that they are all solid colors.
+            for (int j = 0; j < texture.depth; ++j)
+            {
+                var pixels = texture.GetPixels32(j);
+
+                // It is unlikely to get a null pixels array, but we should check just in case
+                if (pixels == null)
+                {
+                    Debug.LogWarning($"Could not read {texture}");
+                    return false;
+                }
+
+                // It is unlikely, but possible that we got this far and there are no pixels.
+                var pixelCount = pixels.Length;
+                if (pixelCount == 0)
+                {
+                    Debug.LogWarning($"No pixels in {texture}");
+                    return false;
+                }
+
+                // Convert to int for faster comparison
+                var colorValue = Color32ToInt.Convert(pixels[0]);
+                for (var i = 1; i < pixelCount; i++)
+                {
+                    var pixel = Color32ToInt.Convert(pixels[i]);
+                    if (pixel != colorValue)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Check if each face in a cubemap is comprised of a single solid color.
+        /// </summary>
+        /// <param name="texture">The cubemap to check.</param>
+        /// <returns>True if each face of a cubemap is a single solid color.</returns>
+        static bool IsSolidColor(Cubemap texture)
+        {
+            // Skip "degenerate" textures like font atlases
+            if (texture.width == 0 || texture.height == 0)
+            {
+                return false;
+            }
+
+            // It doesn't matter if all faces are the same solid color, just that they are all solid colors.
+            for (int j = 0; j < 6; ++j)
+            {
+                var pixels = texture.GetPixels((CubemapFace)j);
+
+                // It is unlikely to get a null pixels array, but we should check just in case
+                if (pixels == null)
+                {
+                    Debug.LogWarning($"Could not read {texture}");
+                    return false;
+                }
+
+                // It is unlikely, but possible that we got this far and there are no pixels.
+                var pixelCount = pixels.Length;
+                if (pixelCount == 0)
+                {
+                    Debug.LogWarning($"No pixels in {texture}");
+                    return false;
+                }
+
+                var colorValue = pixels[0];
+                for (var i = 1; i < pixelCount; i++)
+                {
+                    if (pixels[i] != colorValue)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -199,6 +416,10 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         static Texture2D CopyTexture(Texture2D texture)
         {
+#if UNITY_2019_2_OR_NEWER
+            Texture2D newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 0);
+            Graphics.CopyTexture(texture, newTexture);
+#else
             RenderTexture tmp = RenderTexture.GetTemporary(
                 texture.width,
                 texture.height,
@@ -219,9 +440,36 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             RenderTexture.active = previous;
             RenderTexture.ReleaseTemporary(tmp);
+#endif
 
             return newTexture;
         }
+
+#if UNITY_2019_2_OR_NEWER
+        static Texture2DArray CopyTexture(Texture2DArray texture)
+        {
+            Texture2DArray newTexture = new Texture2DArray(texture.width, texture.height, texture.depth, texture.format, texture.mipmapCount != 0);
+            Graphics.CopyTexture(texture, newTexture);
+
+            return newTexture;
+        }
+
+        static Texture3D CopyTexture(Texture3D texture)
+        {
+            Texture3D newTexture = new Texture3D(texture.width, texture.height, texture.depth, texture.format, texture.mipmapCount != 0);
+            Graphics.CopyTexture(texture, newTexture);
+
+            return newTexture;
+        }
+
+        static Cubemap CopyTexture(Cubemap texture)
+        {
+            Cubemap newTexture = new Cubemap(texture.width, texture.format, texture.mipmapCount != 0);
+            Graphics.CopyTexture(texture, newTexture);
+
+            return newTexture;
+        }
+#endif
 
         public static int GetTextureDepth(Texture texture)
         {
