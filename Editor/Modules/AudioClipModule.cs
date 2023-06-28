@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        public override string name => "AudioClip";
+        public override string name => "AudioClips";
 
         public override bool isEnabledByDefault => false;
 

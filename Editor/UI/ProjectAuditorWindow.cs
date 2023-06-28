@@ -412,7 +412,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.AudioClip,
-                displayName = "AudioClip",
+                displayName = "AudioClips",
                 menuLabel = "Assets/Audio Clips",
                 menuOrder = 107,
                 descriptionWithIcon = true,
