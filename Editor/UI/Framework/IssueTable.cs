@@ -277,9 +277,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             label = property.format == PropertyFormat.Time ? Formatting.FormatTime(sum) : Formatting.FormatPercentage(sum);
                         }
 
-                        GUI.enabled = false;
                         EditorGUI.LabelField(cellRect, label, labelStyle);
-                        GUI.enabled = true;
                     }
                 }
             }
