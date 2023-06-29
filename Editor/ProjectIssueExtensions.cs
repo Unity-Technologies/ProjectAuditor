@@ -90,6 +90,8 @@ namespace Unity.ProjectAuditor.Editor
 
             switch (propertyType)
             {
+                case PropertyType.LogLevel:
+                    return issueA.logLevel.CompareTo(issueB.logLevel);
                 case PropertyType.Severity:
                     return issueA.severity.CompareTo(issueB.severity);
                 case PropertyType.Area:

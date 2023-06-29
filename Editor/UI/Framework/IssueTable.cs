@@ -540,7 +540,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void SortIfNeeded(IList<TreeViewItem> rows)
         {
-            if (rows.Count <= 1) return;
+            if (rows == null || rows.Count <= 1)
+                return;
 
             if (multiColumnHeader.sortedColumnIndex == -1)
                 return; // No column to sort for (just use the order the data are in)

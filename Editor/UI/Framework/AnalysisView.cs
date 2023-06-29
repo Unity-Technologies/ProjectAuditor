@@ -36,6 +36,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         Utility.DropdownItem[] m_GroupDropdownItems;
         IssueTable m_Table;
 
+        int m_SortPropertyIndex = -1;
+        bool m_SortAscending = true;
+
         public ViewDescriptor desc
         {
             get { return m_Desc; }
@@ -104,12 +107,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     case PropertyType.Description:
                         width = 300;
+                        if (m_SortPropertyIndex == -1)
+                            m_SortPropertyIndex = i;
                         break;
                     case PropertyType.Path:
                         width = 500;
                         break;
+                    case PropertyType.LogLevel:
                     case PropertyType.Severity:
                         width = 24;
+                        m_SortPropertyIndex = i;
                         break;
                 }
 
@@ -125,8 +132,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 };
             }
 
+            var multiColumnHeader = new MultiColumnHeader(new MultiColumnHeaderState(columns));
+
+            // set default sorting column (priority: severity/logLevel, description or first column)
+            multiColumnHeader.SetSorting(m_SortPropertyIndex != -1 ? m_SortPropertyIndex : 0, m_SortAscending);
+
             m_Table = new IssueTable(state,
-                new MultiColumnHeader(new MultiColumnHeaderState(columns)),
+                multiColumnHeader,
                 m_Desc,
                 layout,
                 m_Config,
@@ -512,6 +524,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var defaultGroupPropertyIndex = m_Layout.defaultGroupPropertyIndex;
             m_Table.flatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey), defaultGroupPropertyIndex == -1);
             m_Table.groupPropertyIndex = EditorPrefs.GetInt(GetPrefKey(k_GroupPropertyIndexKey), defaultGroupPropertyIndex);
+            m_SortPropertyIndex = EditorPrefs.GetInt(GetPrefKey(k_SortPropertyIndexKey), 0);
+            m_SortAscending = EditorPrefs.GetBool(GetPrefKey(k_SortAscendingKey), true);
+            m_Table.multiColumnHeader.SetSorting(m_SortPropertyIndex, m_SortAscending);
+
             m_TextFilter.searchDependencies = EditorPrefs.GetBool(GetPrefKey(k_SearchDepsKey), false);
             m_TextFilter.ignoreCase = EditorPrefs.GetBool(GetPrefKey(k_SearchIgnoreCaseKey), true);
             m_TextFilter.searchString = EditorPrefs.GetString(GetPrefKey(k_SearchStringKey));
@@ -526,6 +542,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
             EditorPrefs.SetBool(GetPrefKey(k_FlatModeKey), m_Table.flatView);
             EditorPrefs.SetInt(GetPrefKey(k_GroupPropertyIndexKey), m_Table.groupPropertyIndex);
+
+            EditorPrefs.SetInt(GetPrefKey(k_SortPropertyIndexKey), m_SortPropertyIndex);
+            EditorPrefs.SetBool(GetPrefKey(k_SortAscendingKey), m_SortAscending);
+
             EditorPrefs.SetBool(GetPrefKey(k_SearchDepsKey), m_TextFilter.searchDependencies);
             EditorPrefs.SetBool(GetPrefKey(k_SearchIgnoreCaseKey), m_TextFilter.ignoreCase);
             EditorPrefs.SetString(GetPrefKey(k_SearchStringKey), m_TextFilter.searchString);
@@ -569,6 +589,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         const string k_ColumnSizeKey = "ColumnSize";
         const string k_FlatModeKey = "FlatMode";
         const string k_GroupPropertyIndexKey = "GroupPropertyIndex";
+        const string k_SortPropertyIndexKey = "SortPropertyIndex";
+        const string k_SortAscendingKey = "SortAscending";
         const string k_SearchDepsKey = "SearchDeps";
         const string k_SearchIgnoreCaseKey = "SearchIgnoreCase";
         const string k_SearchStringKey = "SearchString";
