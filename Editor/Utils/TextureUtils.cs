@@ -417,7 +417,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         static Texture2D CopyTexture(Texture2D texture)
         {
 #if UNITY_2019_2_OR_NEWER
-            Texture2D newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 0);
+            Texture2D newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
             Graphics.CopyTexture(texture, newTexture);
 #else
             RenderTexture tmp = RenderTexture.GetTemporary(
@@ -448,7 +448,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #if UNITY_2019_2_OR_NEWER
         static Texture2DArray CopyTexture(Texture2DArray texture)
         {
-            Texture2DArray newTexture = new Texture2DArray(texture.width, texture.height, texture.depth, texture.format, texture.mipmapCount != 0);
+            Texture2DArray newTexture = new Texture2DArray(texture.width, texture.height, texture.depth, texture.format, texture.mipmapCount != 1);
             Graphics.CopyTexture(texture, newTexture);
 
             return newTexture;
@@ -456,7 +456,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         static Texture3D CopyTexture(Texture3D texture)
         {
-            Texture3D newTexture = new Texture3D(texture.width, texture.height, texture.depth, texture.format, texture.mipmapCount != 0);
+            Texture3D newTexture = new Texture3D(texture.width, texture.height, texture.depth, texture.format, texture.mipmapCount != 1);
             Graphics.CopyTexture(texture, newTexture);
 
             return newTexture;
@@ -464,7 +464,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         static Cubemap CopyTexture(Cubemap texture)
         {
-            Cubemap newTexture = new Cubemap(texture.width, texture.format, texture.mipmapCount != 0);
+            Cubemap newTexture = new Cubemap(texture.width, texture.format, texture.mipmapCount != 1);
             Graphics.CopyTexture(texture, newTexture);
 
             return newTexture;
