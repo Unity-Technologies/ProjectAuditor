@@ -518,7 +518,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 menu.AddSeparator("");
                 menu.AddItem(Utility.CopyToClipboard, false, () =>
                 {
-                    CopyToClipboard(
+                    EditorInterop.CopyToClipboard(
                         item.IsGroup() ? item.GetDisplayName() : item.ProjectIssue.GetProperty(propertyType));
                 });
 
@@ -531,11 +531,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         void ClearSelection()
         {
             state.selectedIDs.Clear();
-        }
-
-        void CopyToClipboard(string text)
-        {
-            EditorGUIUtility.systemCopyBuffer = text;
         }
 
         void SortIfNeeded(IList<TreeViewItem> rows)

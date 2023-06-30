@@ -10,6 +10,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     internal static class EditorInterop
     {
+        public static void CopyToClipboard(string text)
+        {
+            EditorGUIUtility.systemCopyBuffer = text;
+        }
+
         public static void OpenCodeDescriptor(Descriptor descriptor)
         {
             var unityVersion = InternalEditorUtility.GetUnityVersion();

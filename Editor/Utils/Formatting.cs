@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Utils
@@ -87,6 +88,24 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static string ReplaceStringSeparators(string combinedString, string separator)
         {
             return combinedString.Replace(k_StringSeparator, separator);
+        }
+
+        public static string StripRichTextTags(string text)
+        {
+            text = RemoveRichTextTag(text, "b", string.Empty);
+            text = RemoveRichTextTag(text, "i", string.Empty);
+            text = RemoveRichTextTag(text, "u", string.Empty);
+            text = RemoveRichTextTag(text, "color", string.Empty);
+
+            return text;
+        }
+
+        static string RemoveRichTextTag(string input, string tagName, string replaceWith)
+        {
+            const string k_RichTextTagRegExp = "</?{0}[^<]*?>";
+
+            var reg = new Regex(String.Format(k_RichTextTagRegExp, tagName), RegexOptions.IgnoreCase);
+            return reg.Replace(input, replaceWith);
         }
     }
 }
