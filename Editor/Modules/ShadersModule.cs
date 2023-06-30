@@ -1,8 +1,3 @@
-#if UNITY_2020_1_OR_NEWER
-    #define COMPUTE_SHADER_ANALYSIS
-#endif
-
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -109,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class ShadersModule : ProjectAuditorModuleWithAnalyzers<IShaderModuleAnalyzer>
         , IPreprocessShaders
-#if COMPUTE_SHADER_ANALYSIS
+#if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
         , IPreprocessComputeShaders
 #endif
     {
@@ -125,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumBuiltVariants), format = PropertyFormat.Integer, name = "Built Fragment Variants", longName = "Number of fragment shader variants in the build for a single stage (e.g. fragment), per shader platform (e.g. GLES30)" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumPasses), format = PropertyFormat.Integer, name = "Num Passes", longName = "Number of Passes" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumKeywords), format = PropertyFormat.Integer, name = "Num Keywords", longName = "Number of Keywords" },
-#if UNITY_2019_3_OR_NEWER
+#if PA_CAN_USE_SHADER_GETPROPERTY_METHODS
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumProperties), format = PropertyFormat.Integer, name = "Num Properties", longName = "Number of Properties" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumTextureProperties), format = PropertyFormat.Integer, name = "Num Tex Properties", longName = "Number of Texture Properties" },
 #endif
@@ -201,7 +196,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Platform), format = PropertyFormat.String, name = "Graphics API" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Tier), format = PropertyFormat.String, name = "Tier" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Kernel), format = PropertyFormat.String, name = "Kernel" },
-#if UNITY_2021_2_OR_NEWER
+#if PA_CAN_USE_COMPUTESHADER_KEYWORDSPACE
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.KernelThreadCount), format = PropertyFormat.Integer, name = "Kernel Thread Count" },
 #endif
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Keywords), format = PropertyFormat.String, name = "Keywords" },
@@ -238,7 +233,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData =
             new Dictionary<Shader, List<ShaderVariantData>>();
-#if COMPUTE_SHADER_ANALYSIS
+#if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
         static Dictionary<ComputeShader, List<ComputeShaderVariantData>> s_ComputeShaderVariantData =
             new Dictionary<ComputeShader, List<ComputeShaderVariantData>>();
 #endif
@@ -251,7 +246,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             k_ShaderVariantLayout,
             AssetsModule.k_IssueLayout,
 
-#if COMPUTE_SHADER_ANALYSIS
+#if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
             k_ComputeShaderVariantLayout,
 #endif
 
@@ -398,7 +393,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void ProcessComputeShaders(BuildTarget platform, Action<IEnumerable<ProjectIssue>> onIncomingIssues)
         {
-#if COMPUTE_SHADER_ANALYSIS
+#if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
             var issues = new List<ProjectIssue>();
 
             foreach (var shaderCompilerData in s_ComputeShaderVariantData)
@@ -493,7 +488,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(shader);
                 var isSrpBatcherCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(shader, subShaderIndex) == 0;
                 var texturePropertyCount = 0;
-#if UNITY_2019_3_OR_NEWER
+#if PA_CAN_USE_SHADER_GETPROPERTY_METHODS
                 var propertyCount = shader.GetPropertyCount();
                 for (int i = 0; i < propertyCount; ++i)
                 {
@@ -561,7 +556,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static void ClearBuildData()
         {
             s_ShaderVariantData.Clear();
-#if COMPUTE_SHADER_ANALYSIS
+#if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
             s_ComputeShaderVariantData.Clear();
 #endif
 
@@ -581,7 +576,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public int callbackOrder => Int32.MaxValue;
 
-#if COMPUTE_SHADER_ANALYSIS
+#if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
         public void OnProcessComputeShader(ComputeShader shader, string kernelName, IList<ShaderCompilerData> data)
         {
             if (data.Count == 0)
@@ -596,7 +591,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             foreach (var shaderCompilerData in data)
             {
                 int kernelThreadCount = 0;
-#if UNITY_2021_2_OR_NEWER
+#if PA_CAN_USE_COMPUTESHADER_KEYWORDSPACE
                 if (shader.HasKernel(kernelName))
                 {
                     var kernelIndex = shader.FindKernel(kernelName);
@@ -835,7 +830,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return keywords.ToArray();
         }
 
-#if COMPUTE_SHADER_ANALYSIS
+#if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
         static string[] GetShaderKeywords(ComputeShader shader, ShaderKeyword[] shaderKeywords)
         {
 #if UNITY_2021_2_OR_NEWER

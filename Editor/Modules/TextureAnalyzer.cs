@@ -175,7 +175,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var assetPath = textureImporter.assetPath;
 
             var texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath);
-#if UNITY_2022_2_OR_NEWER
+#if PA_CAN_USE_COMPUTEMIPCHAINSIZE
             TextureFormat format = (TextureFormat)platformSettings.format;
             if (platformSettings.format == TextureImporterFormat.Automatic)
             {

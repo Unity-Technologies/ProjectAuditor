@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             // Skip textures of unsupported dimensions
             if (!(
                 texture.dimension == UnityEngine.Rendering.TextureDimension.Tex2D
-#if UNITY_2019_2_OR_NEWER
+#if PA_CAN_USE_TEXTURE_MIPMAPCOUNT
                 || texture.dimension == UnityEngine.Rendering.TextureDimension.Tex2DArray
                 || texture.dimension == UnityEngine.Rendering.TextureDimension.Tex3D
                 || texture.dimension == UnityEngine.Rendering.TextureDimension.Cube
@@ -73,7 +73,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     break;
                 }
 
-#if UNITY_2019_2_OR_NEWER
+#if PA_CAN_USE_TEXTURE_MIPMAPCOUNT
                 case UnityEngine.Rendering.TextureDimension.Tex2DArray:
                 {
                     Texture2DArray texture2DArray = texture as Texture2DArray;
@@ -416,7 +416,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         static Texture2D CopyTexture(Texture2D texture)
         {
-#if UNITY_2019_2_OR_NEWER
+#if PA_CAN_USE_TEXTURE_MIPMAPCOUNT
             Texture2D newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
             Graphics.CopyTexture(texture, newTexture);
 #else
@@ -445,7 +445,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return newTexture;
         }
 
-#if UNITY_2019_2_OR_NEWER
+#if PA_CAN_USE_TEXTURE_MIPMAPCOUNT
         static Texture2DArray CopyTexture(Texture2DArray texture)
         {
             Texture2DArray newTexture = new Texture2DArray(texture.width, texture.height, texture.depth, texture.format, texture.mipmapCount != 1);

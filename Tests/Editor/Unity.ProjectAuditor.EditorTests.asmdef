@@ -24,8 +24,33 @@
     "versionDefines": [
         {
             "name": "Unity",
+            "expression": "2019.2",
+            "define": "PA_CAN_USE_TEXTURE_MIPMAPCOUNT"
+        },
+        {
+            "name": "Unity",
+            "expression": "2019.3",
+            "define": "PA_CAN_USE_SHADER_GETPROPERTY_METHODS"
+        },
+        {
+            "name": "Unity",
             "expression": "2019.4",
             "define": "BUILD_REPORT_API_SUPPORT"
+        },
+        {
+            "name": "Unity",
+            "expression": "2020.2",
+            "define": "PA_CAN_USE_IPREPROCESSCOMPUTESHADERS"
+        },
+        {
+            "name": "Unity",
+            "expression": "2021.2",
+            "define": "PA_CAN_USE_COMPUTESHADER_KEYWORDSPACE"
+        },
+        {
+            "name": "Unity",
+            "expression": "2022.2",
+            "define": "PA_CAN_USE_COMPUTEMIPCHAINSIZE"
         },
         {
             "name": "com.unity.render-pipelines.universal",
