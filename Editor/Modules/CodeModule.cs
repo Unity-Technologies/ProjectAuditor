@@ -172,6 +172,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             projectAuditorParams.onIncomingIssues(roslynAnalyzerIssues);
 
+            var assemblyDirectories = new List<string>();
             var compilationPipeline = new AssemblyCompilation
             {
                 onAssemblyCompilationFinished = (compilationTask, compilerMessages) =>
@@ -193,6 +194,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 assemblyInfos = assemblyInfos.Where(a => projectAuditorParams.assemblyNames.Contains(a.name)).ToArray();
             }
+
+#if !UNITY_2019_1_OR_NEWER
+            // on old versions of Unity, some assemblies cannot be found by the Assembly Resolver (specifically mscorlib and netstandard)
+            assemblyDirectories.AddRange(AssemblyCompilation.GetAssemblyReferencePaths(m_Config.CompilationMode));
+#endif
 
             if (m_Config.CompilationMode == CompilationMode.Editor)
             {
@@ -253,8 +259,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     projectAuditorParams.onIncomingIssues(foundIssues);
                 projectAuditorParams.onModuleCompleted?.Invoke();
             });
-
-            var assemblyDirectories = new List<string>();
 
             assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UserAssembly | PrecompiledAssemblyTypes.UnityEngine | PrecompiledAssemblyTypes.SystemAssembly));
             if (m_Config.CompilationMode == CompilationMode.Editor)

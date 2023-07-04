@@ -146,7 +146,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
             IEnumerable<string> compiledAssemblyPaths;
             if (editorAssemblies)
-                compiledAssemblyPaths = CompileEditorAssemblies(assemblies);
+                compiledAssemblyPaths = GetEditorAssemblies(assemblies);
             else
                 compiledAssemblyPaths = CompilePlayerAssemblies(assemblies, progress);
 
@@ -178,7 +178,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             }
         }
 
-        IEnumerable<string> CompileEditorAssemblies(IEnumerable<Assembly> assemblies)
+        IEnumerable<string> GetEditorAssemblies(IEnumerable<Assembly> assemblies)
         {
             if (compilationMode == CompilationMode.EditorPlayMode)
             {
@@ -186,6 +186,14 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 assemblies = assemblies.Where(a => a.flags != AssemblyFlags.EditorAssembly);
             }
             return assemblies.Select(assembly => assembly.outputPath);
+        }
+
+        public static IEnumerable<string> GetAssemblyReferencePaths(CompilationMode compilationMode)
+        {
+            var editorAssemblies = compilationMode == CompilationMode.Editor || compilationMode == CompilationMode.EditorPlayMode;
+            var paths = GetAssemblies(editorAssemblies)
+                .SelectMany(a => a.compiledAssemblyReferences).Select(Path.GetDirectoryName).Distinct();
+            return paths;
         }
 
         IEnumerable<string> CompilePlayerAssemblies(Assembly[] assemblies, IProgress progress = null)
