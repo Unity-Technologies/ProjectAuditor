@@ -158,8 +158,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (precompiledAssemblies.Any())
                 projectAuditorParams.onIncomingIssues(precompiledAssemblies);
 
+            // find all roslyn analyzer DLLs
             var roslynAnalyzerAssets = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath)
                 .ToArray();
+
+            // report all roslyn analyzers as PrecompiledAssembly issues
             var roslynAnalyzerIssues = roslynAnalyzerAssets
                 .Select(roslynAnalyzerDllPath => (ProjectIssue)ProjectIssue.Create(
                 IssueCategory.PrecompiledAssembly,
