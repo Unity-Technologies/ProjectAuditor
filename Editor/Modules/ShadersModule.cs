@@ -113,7 +113,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.Shader,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.LogLevel},
+//                new PropertyDefinition { type = PropertyType.LogLevel},
                 new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size of the variants in the build" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumVariants), format = PropertyFormat.ULong, name = "Num Variants", longName = "Number of potential shader variants for a single stage (e.g. fragment), per shader platform (e.g. GLES30)" },
