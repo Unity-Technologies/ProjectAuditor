@@ -103,11 +103,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         static class Contents
         {
-            public static readonly GUIContent Details = new GUIContent("Details:", "Issue Details");
+            public static readonly GUIContent Details = new GUIContent("Details", "Issue Details");
             public static readonly GUIContent Recommendation =
-                new GUIContent("Recommendation:", "Recommendation on how to solve the issue");
-            public static readonly GUIContent Documentation = new GUIContent("Documentation");
-            public static readonly GUIContent QuickFix = new GUIContent("Quick Fix");
+                new GUIContent("Recommendation", "Recommendation on how to solve the issue");
+            public static readonly GUIContent Documentation = new GUIContent("Documentation", "Open the Unity documentation");
+            public static readonly GUIContent QuickFix = new GUIContent("Quick Fix", "Automatically fix the issue");
+            // public static readonly GUIContent Ignore = new GUIContent("Ignore", "Always ignore selected issue");
+            // public static readonly GUIContent IgnoreAll = new GUIContent("Ignore All", "Always ignore selected issues");
+            // public static readonly GUIContent Display = new GUIContent("Display", "Always show selected issue");
+            // public static readonly GUIContent DisplayAll = new GUIContent("Display All", "Always show selected issues");
         }
     }
 }

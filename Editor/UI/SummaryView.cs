@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Diagnostic;
@@ -123,17 +122,18 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUI.indentLevel++;
 
             // note that m_Issues might change during background analysis.
+            int itemIndex = 0;
             foreach (var issue in m_Issues.ToArray())
             {
-                DrawKeyValue(issue.description, issue.GetCustomProperty(MetaDataProperty.Value));
+                DrawKeyValue(issue.description, issue.GetCustomProperty(MetaDataProperty.Value), itemIndex++);
             }
             EditorGUI.indentLevel--;
             EditorGUILayout.EndVertical();
         }
 
-        void DrawKeyValue(string key, string value)
+        void DrawKeyValue(string key, string value, int itemIndex)
         {
-            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginHorizontal(itemIndex % 2 == 0 ? SharedStyles.Row : SharedStyles.RowAlternate);
             EditorGUILayout.LabelField($"{key}:", SharedStyles.Label, GUILayout.Width(160));
             EditorGUILayout.LabelField(value, SharedStyles.Label,  GUILayout.ExpandWidth(true));
             EditorGUILayout.EndHorizontal();

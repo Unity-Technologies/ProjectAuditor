@@ -5,10 +5,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     internal static class SharedStyles
     {
+        const int k_RowSize = 22;
+
         static GUIStyle s_Foldout;
         static GUIStyle s_BoldLabel;
         static GUIStyle s_IconLabel;
         static GUIStyle s_Label;
+        static GUIStyle s_LabelWithRichtext;
         static GUIStyle s_LinkLabel;
         static GUIStyle s_TextArea;
 
@@ -17,6 +20,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         static GUIStyle s_TitleLabel;
         static GUIStyle s_LargeLabel;
+        static GUIStyle s_WhiteLargeLabel;
+
+        static GUIStyle s_Row;
+        static GUIStyle s_RowAlternate;
 
         public static GUIStyle Foldout
         {
@@ -69,6 +76,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         wordWrap = false
                     };
                 return s_Label;
+            }
+        }
+
+        public static GUIStyle LabelRichText
+        {
+            get
+            {
+                if (s_LabelWithRichtext == null)
+                    s_LabelWithRichtext = new GUIStyle(EditorStyles.label)
+                    {
+                        richText = true
+                    };
+                return s_LabelWithRichtext;
             }
         }
 
@@ -159,6 +179,22 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        public static GUIStyle WhiteLargeLabel
+        {
+            get
+            {
+                if (s_WhiteLargeLabel == null)
+                {
+                    s_WhiteLargeLabel = new GUIStyle(EditorStyles.boldLabel);
+                    s_WhiteLargeLabel.fontSize = 14;
+                    s_WhiteLargeLabel.fixedHeight = 22;
+                    s_WhiteLargeLabel.normal.textColor = Color.white;
+                    s_WhiteLargeLabel.hover.textColor = Color.white;
+                }
+                return s_WhiteLargeLabel;
+            }
+        }
+
         static GUIStyle GetStyle(string styleName)
         {
             var s = GUI.skin.FindStyle(styleName);
@@ -176,6 +212,38 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             LabelWithDynamicSizeWithDynamicSize.fontSize = fontSize;
             TextAreaWithDynamicSize.fontSize = fontSize;
+        }
+
+        public static GUIStyle Row
+        {
+            get
+            {
+                if (s_Row == null || s_Row.normal.background == null)
+                {
+                    s_Row = new GUIStyle(GUIStyle.none)
+                    {
+                        normal = {background = Utility.MakeColorTexture(new Color(0.22f, 0.22f, 0.22f, 1.0f))},
+                        fixedHeight = k_RowSize
+                    };
+                }
+                return s_Row;
+            }
+        }
+
+        public static GUIStyle RowAlternate
+        {
+            get
+            {
+                if (s_RowAlternate == null || s_RowAlternate.normal.background == null)
+                {
+                    s_RowAlternate = new GUIStyle(GUIStyle.none)
+                    {
+                        normal = {background = Utility.MakeColorTexture(new Color(0.275f, 0.275f, 0.275f, 1.0f))},
+                        fixedHeight = k_RowSize
+                    };
+                }
+                return s_RowAlternate;
+            }
         }
     }
 }
