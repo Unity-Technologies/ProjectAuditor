@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAA0003 = nameof(PAA0003);
         internal const string PAA0004 = nameof(PAA0004);
         internal const string PAA0005 = nameof(PAA0005);
-        internal const string PAA0005_2 = nameof(PAA0005_2);
+        internal const string PAA0006 = nameof(PAA0006);
         internal const string PAA0007 = nameof(PAA0007);
 
         internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
@@ -137,7 +137,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         // NOTE:  This is only here to run the same analysis without a quick fix button.  Clean up when we either have appropriate quick fix for other dimensions or improved fixer support.
         internal static readonly Descriptor k_TextureSolidColorNoFixerDescriptor = new Descriptor(
-            PAA0005_2,
+            PAA0006,
             "Texture: Solid color is not 1x1 size",
             new[] { Area.Memory },
             "The texture is a single, solid color and is bigger than 1x1 pixels in size. Redundant texture data occupies memory unneccesarily.",
