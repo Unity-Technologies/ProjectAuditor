@@ -156,12 +156,21 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 return false;
             }
 
-            var pixels = texture.GetPixels32();
+            Color32[] pixels = null;
+            try
+            {
+                pixels = texture.GetPixels32();
+            }
+            catch (ArgumentException)
+            {
+                // in some cases, GetPixels32 fails with a "Texture X has no data." error and throws an exception
+                return false;
+            }
 
             // It is unlikely to get a null pixels array, but we should check just in case
             if (pixels == null)
             {
-                Debug.LogWarning($"Could not read {texture}");
+                Debug.LogWarning($"Could not read {texture.name}");
                 return false;
             }
 
@@ -169,7 +178,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             var pixelCount = pixels.Length;
             if (pixelCount == 0)
             {
-                Debug.LogWarning($"No pixels in {texture}");
+                Debug.LogWarning($"No pixels in {texture.name}");
                 return false;
             }
 
@@ -208,7 +217,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 // It is unlikely to get a null pixels array, but we should check just in case
                 if (pixels == null)
                 {
-                    Debug.LogWarning($"Could not read {texture}");
+                    Debug.LogWarning($"Could not read {texture.name}");
                     return false;
                 }
 
@@ -216,7 +225,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 var pixelCount = pixels.Length;
                 if (pixelCount == 0)
                 {
-                    Debug.LogWarning($"No pixels in {texture}");
+                    Debug.LogWarning($"No pixels in {texture.name}");
                     return false;
                 }
 
@@ -256,7 +265,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 // It is unlikely to get a null pixels array, but we should check just in case
                 if (pixels == null)
                 {
-                    Debug.LogWarning($"Could not read {texture}");
+                    Debug.LogWarning($"Could not read {texture.name}");
                     return false;
                 }
 
@@ -264,7 +273,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 var pixelCount = pixels.Length;
                 if (pixelCount == 0)
                 {
-                    Debug.LogWarning($"No pixels in {texture}");
+                    Debug.LogWarning($"No pixels in {texture.name}");
                     return false;
                 }
 
@@ -304,7 +313,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 // It is unlikely to get a null pixels array, but we should check just in case
                 if (pixels == null)
                 {
-                    Debug.LogWarning($"Could not read {texture}");
+                    Debug.LogWarning($"Could not read {texture.name}");
                     return false;
                 }
 
@@ -312,7 +321,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 var pixelCount = pixels.Length;
                 if (pixelCount == 0)
                 {
-                    Debug.LogWarning($"No pixels in {texture}");
+                    Debug.LogWarning($"No pixels in {texture.name}");
                     return false;
                 }
 
@@ -376,11 +385,24 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 var copyTexture = CopyTexture(texture2D);
                 if (copyTexture == null)
                 {
-                    Debug.LogWarning($"Could not copy {texture2D}");
+                    Debug.LogWarning($"Could not copy {texture2D.name}");
                     return 0;
                 }
 
-                pixels = copyTexture.GetPixels32();
+                try
+                {
+                    pixels = copyTexture.GetPixels32();
+                }
+                catch (ArgumentException)
+                {
+                    // in some cases, GetPixels32 fails with a "Texture X has no data." error and throws an exception
+
+                    //Release texture from Memory
+                    Object.DestroyImmediate(copyTexture);
+
+                    return 0;
+                }
+
                 //Release texture from Memory
                 Object.DestroyImmediate(copyTexture);
             }
@@ -388,7 +410,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             // It is unlikely to get a null pixels array, but we should check just in case
             if (pixels == null)
             {
-                Debug.LogWarning($"Could not read {texture2D}");
+                Debug.LogWarning($"Could not read {texture2D.name}");
                 return 0;
             }
 
@@ -396,7 +418,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             var pixelCount = pixels.Length;
             if (pixelCount == 0)
             {
-                Debug.LogWarning($"No pixels in {texture2D}");
+                Debug.LogWarning($"No pixels in {texture2D.name}");
                 return 0;
             }
 
@@ -441,7 +463,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             RenderTexture.active = previous;
             RenderTexture.ReleaseTemporary(tmp);
 #endif
-
+            newTexture.name = texture.name + " (temp)";
             return newTexture;
         }
 
