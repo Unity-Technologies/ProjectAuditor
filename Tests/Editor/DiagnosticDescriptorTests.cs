@@ -208,7 +208,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void DiagnosticDescriptor_Descriptors_AreValid()
         {
-            var regExp = new Regex("^[a-z]{3}[0-9]{4}", RegexOptions.IgnoreCase);
+            var regExp = new Regex("^[A-Z]{3}\\d{4}$", RegexOptions.IgnoreCase);
 
             var projectAuditor = new Editor.ProjectAuditor();
             var descriptors = projectAuditor.GetDescriptors();

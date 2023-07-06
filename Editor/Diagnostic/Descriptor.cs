@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     public sealed class Descriptor : IEquatable<Descriptor>
     {
         /// <summary>
-        /// An unique identifier for the diagnostic
+        /// An unique identifier for the diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits
         /// </summary>
         public string id;
 
