@@ -85,4 +85,3 @@ Builtin asset-specific diagnostics:
 | PAA2000 | Shader: Not compatible with SRP batcher                     | Graphics  | Any                  |
 | PAA3000 | Files: Resources folder asset & dependencies                | BuildSize | Any                  |
 | PAA3001 | Files: StreamingAssets folder size                          | BuildSize | Any                  |
-
