@@ -33,6 +33,8 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             m_SettingsProvider = new ProjectAuditorSettingsProvider();
             m_SettingsProvider.Initialize();
+
+            TestAsset.CreateTempFolder();
         }
 
         [OneTimeTearDown]

@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -34,6 +35,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             View,
             WhiteCheckMark,
             GreenCheckMark,
+            CopyToClipboard
         }
 
         // Log level
@@ -61,10 +63,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_SaveIconName = "SaveAs";
         static readonly string k_TrashIconName = "TreeEditor.Trash";
         static readonly string k_ViewIconName = "ViewToolOrbit";
+        static readonly string k_DisplayedIgnoredIssuesIconName = "animationvisibilitytoggleon";
+        static readonly string k_HiddenIgnoredIssuesIconName = "animationvisibilitytoggleoff";
+        static readonly string k_IgnoredIssuesLabel = " Ignored Issues";
+        static readonly string k_CopyToClipboardIconName = "Icon-CopyToClipboard";
 
         static Texture2D s_CriticalIcon;
         static Texture2D s_MajorIcon;
         static Texture2D s_ModerateIcon;
+        static Texture2D s_CopyToClipboardIcon;
+
         static Texture2D s_MinorIcon;
 
         static GUIContent[] s_StatusWheel;
@@ -244,6 +252,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     if (s_MinorIcon == null)
                         s_MinorIcon = LoadIcon(k_MinorIconName);
                     return EditorGUIUtility.TrIconContent(s_MinorIcon, tooltip);
+                case IconType.CopyToClipboard:
+                    if (string.IsNullOrEmpty(tooltip))
+                        tooltip = "Copy to Clipboard";
+                    if (s_CopyToClipboardIcon == null)
+                        s_CopyToClipboardIcon = LoadIcon(k_CopyToClipboardIconName);
+                    return EditorGUIUtility.TrIconContent(s_CopyToClipboardIcon, tooltip);
 
                 case IconType.Hierarchy:
                     return EditorGUIUtility.TrIconContent(k_HierarchyIconName, tooltip);
@@ -367,6 +381,20 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             var icon = AssetDatabase.GetCachedIcon(assetPath);
             return EditorGUIUtility.TrTextContentWithIcon(displayName, assetPath, icon);
+        }
+
+        internal static GUIContent GetDisplayIgnoredIssuesIconWithLabel()
+        {
+            var guiContent = EditorGUIUtility.TrIconContent(k_DisplayedIgnoredIssuesIconName);
+            guiContent.text = k_IgnoredIssuesLabel;
+            return guiContent;
+        }
+
+        internal static GUIContent GetHiddenIgnoredIssuesIconWithLabel()
+        {
+            var guiContent = EditorGUIUtility.TrIconContent(k_HiddenIgnoredIssuesIconName);
+            guiContent.text = k_IgnoredIssuesLabel;
+            return guiContent;
         }
 
         static Texture2D LoadIcon(string iconName)

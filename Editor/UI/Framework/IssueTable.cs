@@ -27,12 +27,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         int m_NextId;
         int m_NumMatchingIssues;
         bool m_FlatView;
+        bool m_IgnoreIssuesView;
         int m_GroupPropertyIndex;
 
         public bool flatView
         {
             get => m_FlatView;
             set => m_FlatView = value;
+        }
+
+        public bool ignoreIssuesView
+        {
+            get => m_IgnoreIssuesView;
+            set => m_IgnoreIssuesView = value;
         }
 
         public int groupPropertyIndex

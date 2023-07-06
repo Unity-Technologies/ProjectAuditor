@@ -70,17 +70,19 @@ This is a full list of all builtin settings diagnostics:
 # Asset Diagnostics
 Builtin asset-specific diagnostics:
 
-| ID      | Title                                          | Settings  | Platforms            |
-|---------|------------------------------------------------|-----------|----------------------|
-| PAA0000 | Texture: Mipmaps not enabled                   | Graphics  | Any                  |
-| PAA0001 | Texture: Mipmaps enabled on Sprite/UI texture  | Graphics  | Any                  |
-| PAA0002 | Texture: Read/Write enabled                    | Graphics  | Any                  |
-| PAA0003 | Texture: Streaming Mipmaps not enabled         | Graphics  | Any                  |
-| PAA0004 | Texture: Anisotropic level is more than 1      | Graphics  | Android, iOS, Switch |
-| PAA0005 | Texture: Solid color texture bigger than 1x1   | Graphics  | Any                  |
-| PAA0007 | Texture Atlas: Too much empty space            | Graphics  | Any                  |
-| PAA1000 | Mesh: Read/Write enabled                       | Graphics  | Any                  |
-| PAA1001 | Mesh: Index Format is 32 bits                  | Graphics  | Any                  |
-| PAA2000 | Shader: Not compatible with SRP batcher        | Graphics  | Any                  |
-| PAA3000 | Files: Resources folder asset & dependencies   | BuildSize | Any                  |
-| PAA3001 | Files: StreamingAssets folder size             | BuildSize | Any                  |
+| ID      | Title                                                       | Settings  | Platforms            |
+|---------|-------------------------------------------------------------|-----------|----------------------|
+| PAA0000 | Texture: Mipmaps not enabled                                | Graphics  | Any                  |
+| PAA0001 | Texture: Mipmaps enabled on Sprite/UI texture               | Graphics  | Any                  |
+| PAA0002 | Texture: Read/Write enabled                                 | Graphics  | Any                  |
+| PAA0003 | Texture: Streaming Mipmaps not enabled                      | Graphics  | Any                  |
+| PAA0004 | Texture: Anisotropic level is more than 1                   | Graphics  | Android, iOS, Switch |
+| PAA0005 | Texture: Solid color texture bigger than 1x1 with fixer     | Graphics  | Any                  |
+| PAA0006 | Texture: Solid color texture bigger than 1x1 without fixer  | Graphics  | Any                  |
+| PAA0007 | Texture Atlas: Too much empty space                         | Graphics  | Any                  |
+| PAA1000 | Mesh: Read/Write enabled                                    | Graphics  | Any                  |
+| PAA1001 | Mesh: Index Format is 32 bits                               | Graphics  | Any                  |
+| PAA2000 | Shader: Not compatible with SRP batcher                     | Graphics  | Any                  |
+| PAA3000 | Files: Resources folder asset & dependencies                | BuildSize | Any                  |
+| PAA3001 | Files: StreamingAssets folder size                          | BuildSize | Any                  |
+

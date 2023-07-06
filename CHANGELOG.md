@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Improved issue description and suggestion strings, to make them clearer and more consistent
 * Solid Color Texture analyzer now works for all texture types (2D, 2DArray, 3D, Cube) in Unity 2019.2 and above
 * Upgrade com.unity.nuget.mono-cecil to 1.11.4
+* Bumped analytics events version number from v1 to v2
+* Asset diagnostics IDs for Resources/StreamingAsset folder issues
 * Visualization of the Horizontal Stacked Bar and Legend Item
 
 ### Fixed

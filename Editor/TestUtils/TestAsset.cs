@@ -77,6 +77,12 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
 #endif
 
+        public static void CreateTempFolder()
+        {
+            if (!Directory.Exists(TempAssetsFolder))
+                Directory.CreateDirectory(TempAssetsFolder);
+        }
+
         public static void Cleanup()
         {
             if (Directory.Exists(TempAssetsFolder))

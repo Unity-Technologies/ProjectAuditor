@@ -25,6 +25,33 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static GUIStyle s_Row;
         static GUIStyle s_RowAlternate;
 
+        static GUIStyle s_DarkSmallButton;
+
+        public static GUIStyle DarkSmallButton
+        {
+            get
+            {
+                if (s_DarkSmallButton == null
+                    || s_DarkSmallButton.hover.background == null
+                    || s_DarkSmallButton.active.background == null)
+                {
+                    var s_LightBackground = Utility.MakeColorTexture(new Color(0.3f, 0.3f, 0.3f, 1));
+                    var s_ActivatedBackground = Utility.MakeColorTexture(new Color(0.4f, 0.4f, 0.4f, 1));
+
+                    s_DarkSmallButton = new GUIStyle()
+                    {
+                        normal = { textColor = Color.white },
+                        hover = { background = s_LightBackground, textColor = Color.white },
+                        active = { background = s_ActivatedBackground, textColor = Color.white },
+                        margin = new RectOffset(0, 0, 0, 0),
+                        alignment = TextAnchor.MiddleCenter
+                    };
+                }
+
+                return s_DarkSmallButton;
+            }
+        }
+
         public static GUIStyle Foldout
         {
             get

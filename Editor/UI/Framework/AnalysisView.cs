@@ -11,7 +11,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    internal class AnalysisView : IIssueFilter
+    public class AnalysisView : IIssueFilter
     {
         enum ExportMode
         {
@@ -315,7 +315,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             DrawDataOptions();
 
-
             EditorGUILayout.EndHorizontal();
         }
 
@@ -362,6 +361,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     DrawToolbarButton(Contents.CollapseAllButton,  () => SetRowsExpanded(false));
                     DrawToolbarButton(Contents.ExpandAllButton,  () => SetRowsExpanded(true));
                 }
+
+                var ignoredIssuesButton = m_Table.ignoreIssuesView
+                    ? Contents.HiddenIgnoredIssuesButton
+                    : Contents.DisplayedIgnoredIssuesButton;
+
+                DrawToolbarLargeButton(ignoredIssuesButton,  SetIgnoredIssuesView);
             }
         }
 
@@ -460,6 +465,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Table.SetSelection(selectedIDs);
         }
 
+        public void FrameSelection()
+        {
+            var selectedItems = m_Table.GetSelectedItems();
+            if (selectedItems.Length > 0)
+            {
+                var firstItem = selectedItems[0];
+                m_Table.FrameItem(firstItem.id);
+            }
+        }
+
         public void ClearSelection()
         {
             m_Table.SetSelection(new List<int>());
@@ -477,6 +492,28 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 m_Table.SetExpanded(new List<int>());
             }
+        }
+
+        void SetIgnoredIssuesView()
+        {
+            m_Table.ignoreIssuesView = !m_Table.ignoreIssuesView;
+            m_Table.Reload();
+        }
+
+        bool IsIgnored(ProjectIssue issue)
+        {
+            var descriptor = issue.descriptor;
+            if (issue.descriptor == null)
+                return false;
+            var context = issue.GetContext();
+            var rule = m_Config.GetRule(descriptor, context);
+
+            if (rule != null && m_Table.ignoreIssuesView)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         protected virtual void Export(Func<ProjectIssue, bool> predicate = null)
@@ -504,7 +541,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public virtual bool Match(ProjectIssue issue)
         {
-            return m_BaseFilter.Match(issue) && m_TextFilter.Match(issue);
+            return m_BaseFilter.Match(issue) && m_TextFilter.Match(issue) && !IsIgnored(issue);
         }
 
         internal void OnEnable()
@@ -523,6 +560,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             var defaultGroupPropertyIndex = m_Layout.defaultGroupPropertyIndex;
             m_Table.flatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey), defaultGroupPropertyIndex == -1);
+            m_Table.ignoreIssuesView = EditorPrefs.GetBool(GetPrefKey(k_IgnoredIssuesViewKey), false);
             m_Table.groupPropertyIndex = EditorPrefs.GetInt(GetPrefKey(k_GroupPropertyIndexKey), defaultGroupPropertyIndex);
             m_SortPropertyIndex = EditorPrefs.GetInt(GetPrefKey(k_SortPropertyIndexKey), 0);
             m_SortAscending = EditorPrefs.GetBool(GetPrefKey(k_SortAscendingKey), true);
@@ -541,6 +579,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 EditorPrefs.SetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width);
             }
             EditorPrefs.SetBool(GetPrefKey(k_FlatModeKey), m_Table.flatView);
+            EditorPrefs.SetBool(GetPrefKey(k_IgnoredIssuesViewKey), m_Table.ignoreIssuesView);
             EditorPrefs.SetInt(GetPrefKey(k_GroupPropertyIndexKey), m_Table.groupPropertyIndex);
 
             EditorPrefs.SetInt(GetPrefKey(k_SortPropertyIndexKey), m_SortPropertyIndex);
@@ -558,7 +597,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static void DrawActionButton(GUIContent guiContent, Action onClick)
         {
-            if (GUILayout.Button(guiContent, GUILayout.MaxWidth(LayoutSize.ActionButtonWidth), GUILayout.Height(LayoutSize.ActionButtonHeight)))
+            if (GUILayout.Button(guiContent, GUILayout.Height(LayoutSize.ActionButtonHeight)))
             {
                 onClick();
             }
@@ -569,6 +608,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (GUILayout.Button(
                 guiContent, EditorStyles.toolbarButton,
                 GUILayout.Width(toolbarButtonSize)))
+            {
+                onClick();
+            }
+        }
+
+        public static void DrawToolbarLargeButton(GUIContent guiContent, Action onClick)
+        {
+            if (GUILayout.Button(
+                guiContent, EditorStyles.toolbarButton,
+                GUILayout.Width(ToolbarLargeButtonSize)))
             {
                 onClick();
             }
@@ -588,6 +637,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         const string k_PrefKeyPrefix = "ProjectAuditor.AnalysisView.";
         const string k_ColumnSizeKey = "ColumnSize";
         const string k_FlatModeKey = "FlatMode";
+        const string k_IgnoredIssuesViewKey = "IgnoredIssuesView";
         const string k_GroupPropertyIndexKey = "GroupPropertyIndex";
         const string k_SortPropertyIndexKey = "SortPropertyIndex";
         const string k_SortAscendingKey = "SortAscending";
@@ -602,6 +652,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static int toolbarButtonSize => LayoutSize.ToolbarButtonSize;
         public static int toolbarIconSize => LayoutSize.ToolbarIconSize;
+        public static int ToolbarLargeButtonSize => LayoutSize.ToolbarLargeButtonSize;
 
         static readonly string[] k_ExportModeStrings =
         {
@@ -617,9 +668,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int DependencyViewHeight = 200;
             public static readonly int DetailsPanelWidth = 200;
             public static readonly int ToolbarButtonSize = 80;
+            public static readonly int ToolbarLargeButtonSize = 120;
             public static readonly int ToolbarIconSize = 32;
             public static readonly int ActionButtonHeight = 30;
-            public static readonly int ActionButtonWidth = 200;
+            public static readonly int CopyToClipboardButtonSize = 24;
         }
 
         static class Contents
@@ -630,6 +682,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
+            public static readonly GUIContent DisplayedIgnoredIssuesButton = Utility.GetDisplayIgnoredIssuesIconWithLabel();
+            public static readonly GUIContent HiddenIgnoredIssuesButton = Utility.GetHiddenIgnoredIssuesIconWithLabel();
 
             public static readonly GUIContent InfoFoldout = new GUIContent("Information");
             public static readonly GUIContent SearchStringLabel = new GUIContent("Search : ", "Text search options");

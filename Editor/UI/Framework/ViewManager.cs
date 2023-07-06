@@ -37,6 +37,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Action<IssueCategory> onAnalyze;
         public Action onViewExported;
         public Action<int> onViewChanged;
+        public Action<ProjectIssue[]>  onIgnoreIssues;
+        public Action<ProjectIssue[]>  onDisplayIssues;
+        public Action<ProjectIssue[]>  onQuickFixIssues;
+        public Action<string>  onShowDocumentation;
 
         public ViewManager()
             : this(ViewDescriptor.GetAll().Select(d => d.category).ToArray())
