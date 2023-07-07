@@ -11,7 +11,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    public class AnalysisView : IIssueFilter
+    internal class AnalysisView : IIssueFilter
     {
         enum ExportMode
         {
