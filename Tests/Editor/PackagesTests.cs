@@ -128,8 +128,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        [TestCase(Editor.ProjectAuditor.k_PackageName)]
-        [TestCase("com.unity.test-framework")]
+        [TestCase("com.unity.nuget.mono-cecil")]
         public void PackageUtils_Package_IsInstalled(string packageName)
         {
             Assert.IsTrue(PackageUtils.IsClientPackage(packageName), $"Package {packageName} is not installed");
