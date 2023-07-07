@@ -6,6 +6,7 @@ using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.SettingsAnalysis;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
@@ -71,7 +72,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var action = m_Config.GetAction(issue.descriptor, callingMethod);
 
             // expect default action specified in descriptor
-            Assert.AreEqual(issue.descriptor.defaultSeverity, action);
+            Assert.AreEqual(Severity.Default, action);
 
             // add rule with a filter.
             m_Config.AddRule(new Rule
@@ -188,6 +189,47 @@ namespace Unity.ProjectAuditor.EditorTests
             config.ClearAllRules();
 
             Assert.AreEqual(0, config.NumRules);
+        }
+
+        [Test]
+        public void Rule_CanIgnoreSettingIssue()
+        {
+            var descriptorId = QualitySettingsAnalyzer.PAS1007;
+            var filter = "Project/Quality/Very Low";
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(descriptorId));
+
+            Assert.GreaterOrEqual(issues.Length, 4);
+            Assert.AreNotEqual(Severity.None, m_Config.GetAction(descriptorId));
+            Assert.AreNotEqual(Severity.None, m_Config.GetAction(descriptorId, filter));
+
+            // ignore all issues corresponding to this descriptor
+            m_Config.AddRule(new Rule
+            {
+                id = descriptorId,
+                severity = Severity.None
+            });
+
+            // TODO: once override is implemented, the issue's severity should be Severity.None
+            //issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(descriptorId));
+
+            Assert.AreEqual(Severity.None, m_Config.GetAction(descriptorId));
+            Assert.AreEqual(Severity.None, m_Config.GetAction(descriptorId, filter));
+
+            m_Config.ClearRules(descriptorId);
+
+            // ignore only issues corresponding to this descriptor and filter
+            m_Config.AddRule(new Rule
+            {
+                id = descriptorId,
+                severity = Severity.None,
+                filter = filter
+            });
+
+            // TODO: once override is implemented, the issue's severity should be Severity.None
+            //issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(descriptorId));
+
+            Assert.AreNotEqual(Severity.None, m_Config.GetAction(descriptorId));
+            Assert.AreEqual(Severity.None, m_Config.GetAction(descriptorId, filter));
         }
     }
 }

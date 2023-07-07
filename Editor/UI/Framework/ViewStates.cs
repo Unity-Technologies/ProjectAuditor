@@ -14,12 +14,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         // foldout preferences
         public bool info = true;
         public bool filters = true;
-        public bool actions = true;
         public bool dependencies = true;
 
         // diagnostic preferences
         public bool onlyCriticalIssues;
-        public bool mutedIssues;
+        // TODO: we used to have mutedIssues as a global-state but now it's view-specific
+        // does it make sense to go back to use this?
+        //public bool mutedIssues;
 
         public int fontSize = k_MinFontSize;
     }

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,6 +12,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     internal class DiagnosticView : AnalysisView
     {
         public override string description => $"A list of {m_Desc.displayName} issues found in the project.";
+
+        Vector2 m_DetailsScrollPos;
+        Vector2 m_RecommendationScrollPos;
 
         public DiagnosticView(ViewManager viewManager) : base(viewManager)
         {
@@ -22,33 +26,101 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
 
-            EditorGUILayout.LabelField(Contents.Details, SharedStyles.BoldLabel);
+            using (new EditorGUILayout.HorizontalScope())
             {
-                if (selectedDescriptors.Length == 0)
-                    GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-                else if (selectedDescriptors.Length > 1)
-                    GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-                else // if (selectedDescriptors.Length == 1)
-                    GUILayout.TextArea(selectedDescriptors[0].description, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                EditorGUILayout.LabelField(Contents.Details, SharedStyles.BoldLabel);
+                {
+                    if (selectedDescriptors.Length != 0)
+                    {
+                        if (GUILayout.Button(Contents.CopyToClipboard, SharedStyles.DarkSmallButton,
+                            GUILayout.Width(LayoutSize.CopyToClipboardButtonSize),
+                            GUILayout.Height(LayoutSize.CopyToClipboardButtonSize)))
+                        {
+                            EditorInterop.CopyToClipboard(Formatting.StripRichTextTags(selectedDescriptors[0].description));
+                        }
+                    }
+                }
             }
 
-            EditorGUILayout.LabelField(Contents.Recommendation, SharedStyles.BoldLabel);
+            m_DetailsScrollPos =
+                EditorGUILayout.BeginScrollView(m_DetailsScrollPos, GUILayout.ExpandHeight(true));
+
+            if (selectedDescriptors.Length == 0)
+                GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextAreaWithDynamicSize,
+                    GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+            else if (selectedDescriptors.Length > 1)
+                GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize,
+                    GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+            else
+                GUILayout.TextArea(selectedDescriptors[0].description, SharedStyles.TextAreaWithDynamicSize,
+                    GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+
+            EditorGUILayout.EndScrollView();
+
+            ChartUtil.DrawLine(m_2D);
+            GUILayout.Space(10);
+
+            using (new EditorGUILayout.HorizontalScope())
             {
-                if (selectedDescriptors.Length == 0)
-                    GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-                else if (selectedDescriptors.Length > 1)
-                    GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-                else // if (selectedDescriptors.Length == 1)
-                    GUILayout.TextArea(selectedDescriptors[0].solution, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+                EditorGUILayout.LabelField(Contents.Recommendation, SharedStyles.BoldLabel);
+                {
+                    if (selectedDescriptors.Length != 0)
+                    {
+                        if (GUILayout.Button(Contents.CopyToClipboard, SharedStyles.DarkSmallButton,
+                            GUILayout.Width(LayoutSize.CopyToClipboardButtonSize),
+                            GUILayout.Height(LayoutSize.CopyToClipboardButtonSize)))
+                        {
+                            EditorInterop.CopyToClipboard(
+                                Formatting.StripRichTextTags(selectedDescriptors[0].solution));
+                        }
+                    }
+                }
             }
 
+            m_RecommendationScrollPos =
+                EditorGUILayout.BeginScrollView(m_RecommendationScrollPos, GUILayout.ExpandHeight(true));
+
+            if (selectedDescriptors.Length == 0)
+                GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextAreaWithDynamicSize,
+                    GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+            else if (selectedDescriptors.Length > 1)
+                GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize,
+                    GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+            else
+                GUILayout.TextArea(selectedDescriptors[0].solution, SharedStyles.TextAreaWithDynamicSize,
+                    GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
+
+            EditorGUILayout.EndScrollView();
+
+            var issuesAreIgnored = AreIssuesIgnored(selectedIssues);
             if (selectedDescriptors.Length == 1)
             {
+                if (issuesAreIgnored)
+                {
+                    DrawActionButton(Contents.Display, () =>
+                    {
+                        DisplayIssue(selectedIssues[0]);
+
+                        m_ViewManager.onDisplayIssues?.Invoke(selectedIssues);
+                    });
+                }
+                else
+                {
+                    DrawActionButton(Contents.Ignore, () =>
+                    {
+                        IgnoreIssue(selectedIssues[0], Severity.None);
+
+                        m_ViewManager.onIgnoreIssues?.Invoke(selectedIssues);
+                    });
+                }
+
                 if (!string.IsNullOrEmpty(selectedDescriptors[0].documentationUrl))
                 {
                     DrawActionButton(Contents.Documentation, () =>
                     {
                         Application.OpenURL(selectedDescriptors[0].documentationUrl);
+
+                        m_ViewManager.onShowDocumentation?.Invoke(selectedDescriptors[0]);
                     });
                 }
 
@@ -62,19 +134,127 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         {
                             selectedDescriptors[0].Fix(issue);
                         }
+
+                        m_ViewManager.onQuickFixIssues?.Invoke(selectedIssues);
                     });
 
                     GUI.enabled = true;
                 }
             }
 
+            if (selectedDescriptors.Length > 1)
+            {
+                if (issuesAreIgnored)
+                {
+                    DrawActionButton(Contents.DisplayAll, () =>
+                    {
+                        foreach (var t in selectedIssues)
+                        {
+                            DisplayIssue(t);
+                        }
+
+                        m_ViewManager.onDisplayIssues?.Invoke(selectedIssues);
+                    });
+                }
+                else
+                {
+                    DrawActionButton(Contents.IgnoreAll, () =>
+                    {
+                        foreach (var t in selectedIssues)
+                        {
+                            IgnoreIssue(t, Severity.None);
+                        }
+
+                        m_ViewManager.onIgnoreIssues?.Invoke(selectedIssues);
+                    });
+                }
+            }
+
             EditorGUILayout.EndVertical();
+        }
+
+        public override void DrawFilters()
+        {
+            EditorGUI.BeginChangeCheck();
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
+
+                var wasShowingCritical = m_ViewStates.onlyCriticalIssues;
+                m_ViewStates.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Major/Critical",
+                    m_ViewStates.onlyCriticalIssues, GUILayout.Width(170));
+
+                if (wasShowingCritical != m_ViewStates.onlyCriticalIssues)
+                    m_ViewManager.onShowMajorOrCriticalIssuesChanged?.Invoke(m_ViewStates.onlyCriticalIssues);
+            }
+
+            if (EditorGUI.EndChangeCheck())
+                MarkDirty();
         }
 
         protected override void DrawInfo()
         {
             EditorGUILayout.LabelField("\u2022 Use the Filters to reduce the number of reported issues");
-            EditorGUILayout.LabelField("\u2022 Use the Mute button to mark an issue as false-positive");
+            EditorGUILayout.LabelField("\u2022 Use the Ignore button to mark an issue as false-positive");
+        }
+
+        public override void DrawViewOptions()
+        {
+            base.DrawViewOptions();
+
+            var guiContent = m_Table.showIgnoredIssues
+                ? Contents.ShowIgnoredIssuesButton
+                : Contents.HideIgnoredIssuesButton;
+
+            if (GUILayout.Button(
+                guiContent, EditorStyles.toolbarButton,
+                GUILayout.Width(IgnoreIconSize)))
+            {
+                m_Table.showIgnoredIssues = !m_Table.showIgnoredIssues;
+                m_ViewManager.onShowIgnoredIssuesChanged?.Invoke(m_Table.showIgnoredIssues);
+                MarkDirty();
+            }
+        }
+
+        void IgnoreIssue(ProjectIssue issue, Severity ruleSeverity)
+        {
+            var descriptor = issue.descriptor;
+
+            // FIXME: GetContext will return empty string after domain reload
+            var context = issue.GetContext();
+            var rule = m_Config.GetRule(descriptor, context);
+
+            if (rule == null)
+                m_Config.AddRule(new Rule
+                {
+                    id = descriptor.id,
+                    filter = context,
+                    severity = ruleSeverity
+                });
+            else
+                rule.severity = ruleSeverity;
+        }
+
+        void DisplayIssue(ProjectIssue issue)
+        {
+            m_Config.ClearRules(issue.descriptor, issue.GetContext());
+        }
+
+        bool AreIssuesIgnored(ProjectIssue[] selectedIssues)
+        {
+            foreach (var issue in selectedIssues)
+            {
+                var descriptor = issue.descriptor;
+                var context = issue.GetContext();
+                var rule = m_Config.GetRule(descriptor, context);
+
+                //If at least one issue in the selection is not ignored, consider the whole selection as not ignored
+                if (rule == null)
+                    return false;
+            }
+
+            return true;
         }
 
         protected override void Export(Func<ProjectIssue, bool> predicate = null)
@@ -94,8 +274,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 EditorUtility.RevealInFinder(path);
 
-                if (m_ViewManager.onViewExported != null)
-                    m_ViewManager.onViewExported();
+                m_ViewManager.onViewExported?.Invoke();
 
                 UserPreferences.loadSavePath = Path.GetDirectoryName(path);
             }
@@ -108,10 +287,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 new GUIContent("Recommendation", "Recommendation on how to solve the issue");
             public static readonly GUIContent Documentation = new GUIContent("Documentation", "Open the Unity documentation");
             public static readonly GUIContent QuickFix = new GUIContent("Quick Fix", "Automatically fix the issue");
-            // public static readonly GUIContent Ignore = new GUIContent("Ignore", "Always ignore selected issue");
-            // public static readonly GUIContent IgnoreAll = new GUIContent("Ignore All", "Always ignore selected issues");
-            // public static readonly GUIContent Display = new GUIContent("Display", "Always show selected issue");
-            // public static readonly GUIContent DisplayAll = new GUIContent("Display All", "Always show selected issues");
+            public static readonly GUIContent ShowIgnoredIssuesButton = Utility.GetDisplayIgnoredIssuesIconWithLabel();
+            public static readonly GUIContent HideIgnoredIssuesButton = Utility.GetHiddenIgnoredIssuesIconWithLabel();
+            public static readonly GUIContent Ignore = new GUIContent("Ignore", "Always ignore selected issue");
+            public static readonly GUIContent IgnoreAll = new GUIContent("Ignore All", "Always ignore selected issues");
+            public static readonly GUIContent Display = new GUIContent("Display", "Always show selected issue");
+            public static readonly GUIContent DisplayAll = new GUIContent("Display All", "Always show selected issues");
+            public static readonly GUIContent CopyToClipboard = Utility.GetIcon(Utility.IconType.CopyToClipboard);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor
         public static string GetContext(this ProjectIssue issue)
         {
             if (issue.dependencies == null)
-                return string.Empty;
+                return issue.relativePath;
 
             var root = issue.dependencies;
             return root.name;

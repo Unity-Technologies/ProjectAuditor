@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
 using UnityEngine;
@@ -37,6 +38,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Action<IssueCategory> onAnalyze;
         public Action onViewExported;
         public Action<int> onViewChanged;
+        public Action<bool> onShowMajorOrCriticalIssuesChanged;
+        public Action<bool> onShowIgnoredIssuesChanged;
+        public Action<ProjectIssue[]>  onIgnoreIssues;
+        public Action<ProjectIssue[]>  onDisplayIssues;
+        public Action<ProjectIssue[]>  onQuickFixIssues;
+        public Action<Descriptor>  onShowDocumentation;
 
         public ViewManager()
             : this(ViewDescriptor.GetAll().Select(d => d.category).ToArray())

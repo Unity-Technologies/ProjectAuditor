@@ -28,13 +28,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected IIssueFilter m_BaseFilter;
         protected List<ProjectIssue> m_Issues = new List<ProjectIssue>();
         protected IssueLayout m_Layout;
+        protected IssueTable m_Table;
         protected TextFilter m_TextFilter;
         protected ViewManager m_ViewManager;
 
         DependencyView m_DependencyView;
         GUIContent m_HelpButtonContent;
         Utility.DropdownItem[] m_GroupDropdownItems;
-        IssueTable m_Table;
 
         int m_SortPropertyIndex = -1;
         bool m_SortAscending = true;
@@ -191,6 +191,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Dirty = false;
         }
 
+        // TODO: remove this method when not used anymore
         public bool IsDiagnostic()
         {
             return m_Layout.properties.Any(p => p.type == PropertyType.Severity);
@@ -558,7 +559,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static void DrawActionButton(GUIContent guiContent, Action onClick)
         {
-            if (GUILayout.Button(guiContent, GUILayout.MaxWidth(LayoutSize.ActionButtonWidth), GUILayout.Height(LayoutSize.ActionButtonHeight)))
+            if (GUILayout.Button(guiContent, GUILayout.Height(LayoutSize.ActionButtonHeight)))
             {
                 onClick();
             }
@@ -602,6 +603,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static int toolbarButtonSize => LayoutSize.ToolbarButtonSize;
         public static int toolbarIconSize => LayoutSize.ToolbarIconSize;
+        public static int IgnoreIconSize => LayoutSize.IgnoreButtonSize;
 
         static readonly string[] k_ExportModeStrings =
         {
@@ -617,9 +619,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int DependencyViewHeight = 200;
             public static readonly int DetailsPanelWidth = 200;
             public static readonly int ToolbarButtonSize = 80;
+            public static readonly int IgnoreButtonSize = 120;
             public static readonly int ToolbarIconSize = 32;
             public static readonly int ActionButtonHeight = 30;
-            public static readonly int ActionButtonWidth = 200;
+            public static readonly int CopyToClipboardButtonSize = 24;
         }
 
         static class Contents
