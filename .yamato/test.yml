@@ -11,13 +11,13 @@ test_{{ platform.name }}_{{ editor.version }}:
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - {% if platform.name == "centos" %}DISPLAY=:0 {% endif %}upm-ci package test -u {{ editor.version }} --type package-tests --platform editmode
+    - upm-ci package test -u {{ editor.version }} --type package-tests --platform editmode
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/package-pack.yml#pack
+    - .yamato/pack.yml#pack
 {% endfor -%}
 {% endfor -%}
 
@@ -33,13 +33,13 @@ validate_{{ platform.name }}_{{ editor.version }}:
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - {% if platform.name == "centos" %}DISPLAY=:0 {% endif %}upm-ci package test -u {{ editor.version }} --type vetting-tests --platform editmode --warnings-as-errors
+    - upm-ci package test -u {{ editor.version }} --type vetting-tests --platform editmode --warnings-as-errors
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/package-pack.yml#pack
+    - .yamato/pack.yml#pack
 {% endfor -%}
 {% endfor -%}
 
@@ -54,10 +54,10 @@ test_trigger:
           only:
             - "/.*/"
   dependencies:
-    - .yamato/package-pack.yml#pack
+    - .yamato/pack.yml#pack
 {% for editor in test_editors -%}
 {% for platform in test_platforms -%}
-    - .yamato/package-test.yml#test_{{platform.name}}_{{editor.version}}
-    - .yamato/package-test.yml#validate_{{platform.name}}_{{editor.version}}
+    - .yamato/test.yml#test_{{platform.name}}_{{editor.version}}
+    - .yamato/test.yml#validate_{{platform.name}}_{{editor.version}}
 {% endfor -%}
 {% endfor -%}

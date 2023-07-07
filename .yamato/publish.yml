@@ -19,10 +19,10 @@ publish:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-    - .yamato/package-pack.yml#pack
+    - .yamato/pack.yml#pack
 {% for editor in test_editors -%}
 {% for platform in test_platforms -%}
-    - .yamato/package-test.yml#test_{{ platform.name }}_{{ editor.version }}
-    - .yamato/package-test.yml#validate_{{ platform.name }}_{{ editor.version }}
+    - .yamato/test.yml#test_{{ platform.name }}_{{ editor.version }}
+    - .yamato/test.yml#validate_{{ platform.name }}_{{ editor.version }}
 {% endfor -%}
 {% endfor -%}
