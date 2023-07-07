@@ -564,7 +564,7 @@ Shader ""Custom/SRPBatchCompatible""
         }
 
         [Test]
-#if UNITY_2020_1_OR_NEWER || UNITY_EDITOR_LINUX
+#if UNITY_2021_1_OR_NEWER || UNITY_EDITOR_LINUX
         [Ignore("TODO: investigate reason for test failure")]
 #endif
         public void ShadersAnalysis_UnusedVariants_AreReported()
