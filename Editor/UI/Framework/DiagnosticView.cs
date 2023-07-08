@@ -208,14 +208,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 ? Contents.ShowIgnoredIssuesButton
                 : Contents.HideIgnoredIssuesButton;
 
-            if (GUILayout.Button(
-                guiContent, EditorStyles.toolbarButton,
-                GUILayout.Width(IgnoreIconSize)))
+            DrawToolbarLargeButton(guiContent, () =>
             {
                 m_Table.showIgnoredIssues = !m_Table.showIgnoredIssues;
                 m_ViewManager.onShowIgnoredIssuesChanged?.Invoke(m_Table.showIgnoredIssues);
                 MarkDirty();
-            }
+            });
         }
 
         void IgnoreIssue(ProjectIssue issue, Severity ruleSeverity)
