@@ -9,8 +9,9 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    internal class DiagnosticView : AnalysisView
+	internal class DiagnosticView : AnalysisView
     {
+
         public override string description => $"A list of {m_Desc.displayName} issues found in the project.";
 
         Vector2 m_DetailsScrollPos;
@@ -207,14 +208,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 ? Contents.ShowIgnoredIssuesButton
                 : Contents.HideIgnoredIssuesButton;
 
-            if (GUILayout.Button(
-                guiContent, EditorStyles.toolbarButton,
-                GUILayout.Width(IgnoreIconSize)))
+            DrawToolbarLargeButton(guiContent, () =>
             {
                 m_Table.showIgnoredIssues = !m_Table.showIgnoredIssues;
                 m_ViewManager.onShowIgnoredIssuesChanged?.Invoke(m_Table.showIgnoredIssues);
                 MarkDirty();
-            }
+            });
         }
 
         void IgnoreIssue(ProjectIssue issue, Severity ruleSeverity)

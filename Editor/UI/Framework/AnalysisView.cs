@@ -316,7 +316,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             DrawDataOptions();
 
-
             EditorGUILayout.EndHorizontal();
         }
 
@@ -461,6 +460,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Table.SetSelection(selectedIDs);
         }
 
+        public void FrameSelection()
+        {
+            var selectedItems = m_Table.GetSelectedItems();
+            if (selectedItems.Length > 0)
+            {
+                var firstItem = selectedItems[0];
+                m_Table.FrameItem(firstItem.id);
+            }
+        }
+
         public void ClearSelection()
         {
             m_Table.SetSelection(new List<int>());
@@ -524,6 +533,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             var defaultGroupPropertyIndex = m_Layout.defaultGroupPropertyIndex;
             m_Table.flatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey), defaultGroupPropertyIndex == -1);
+            m_Table.showIgnoredIssues = EditorPrefs.GetBool(GetPrefKey(k_ShowIgnoredIssuesKey), false);
             m_Table.groupPropertyIndex = EditorPrefs.GetInt(GetPrefKey(k_GroupPropertyIndexKey), defaultGroupPropertyIndex);
             m_SortPropertyIndex = EditorPrefs.GetInt(GetPrefKey(k_SortPropertyIndexKey), 0);
             m_SortAscending = EditorPrefs.GetBool(GetPrefKey(k_SortAscendingKey), true);
@@ -542,6 +552,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 EditorPrefs.SetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width);
             }
             EditorPrefs.SetBool(GetPrefKey(k_FlatModeKey), m_Table.flatView);
+            EditorPrefs.SetBool(GetPrefKey(k_ShowIgnoredIssuesKey), m_Table.showIgnoredIssues);
             EditorPrefs.SetInt(GetPrefKey(k_GroupPropertyIndexKey), m_Table.groupPropertyIndex);
 
             EditorPrefs.SetInt(GetPrefKey(k_SortPropertyIndexKey), m_SortPropertyIndex);
@@ -575,6 +586,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        public static void DrawToolbarLargeButton(GUIContent guiContent, Action onClick)
+        {
+            if (GUILayout.Button(
+                guiContent, EditorStyles.toolbarButton,
+                GUILayout.Width(LayoutSize.ToolbarLargeButtonSize)))
+            {
+                onClick();
+            }
+        }
+
         public static void DrawToolbarButtonIcon(GUIContent guiContent, Action onClick)
         {
             if (GUILayout.Button(
@@ -589,6 +610,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         const string k_PrefKeyPrefix = "ProjectAuditor.AnalysisView.";
         const string k_ColumnSizeKey = "ColumnSize";
         const string k_FlatModeKey = "FlatMode";
+        const string k_ShowIgnoredIssuesKey = "ShowIgnoredIssues";
         const string k_GroupPropertyIndexKey = "GroupPropertyIndex";
         const string k_SortPropertyIndexKey = "SortPropertyIndex";
         const string k_SortAscendingKey = "SortAscending";
@@ -603,7 +625,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static int toolbarButtonSize => LayoutSize.ToolbarButtonSize;
         public static int toolbarIconSize => LayoutSize.ToolbarIconSize;
-        public static int IgnoreIconSize => LayoutSize.IgnoreButtonSize;
 
         static readonly string[] k_ExportModeStrings =
         {
@@ -619,7 +640,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int DependencyViewHeight = 200;
             public static readonly int DetailsPanelWidth = 200;
             public static readonly int ToolbarButtonSize = 80;
-            public static readonly int IgnoreButtonSize = 120;
+            public static readonly int ToolbarLargeButtonSize = 120;
             public static readonly int ToolbarIconSize = 32;
             public static readonly int ActionButtonHeight = 30;
             public static readonly int CopyToClipboardButtonSize = 24;

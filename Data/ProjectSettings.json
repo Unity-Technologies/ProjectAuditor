@@ -108,19 +108,6 @@
             "minimumVersion": "2018.3"
         },
         {
-            "id": "PAS0030",
-            "title": "Player (Android): Optimized Frame Pacing is disabled",
-            "type": "UnityEditor.PlayerSettings+Android",
-            "method": "optimizedFramePacing",
-            "value": "False",
-            "areas": [ "CPU" ],
-            "platforms": ["Android"],
-            "description": "The <b>Optimized Frame Pacing</b> in Player Settings is disabled. This can lead to suboptimal performance. Android Frame Pacing syncs your rendering loop to the underlying display hardware, reducing stuttering and latency so that gameplay looks and feels smooth.",
-            "solution": "To enable this feature, choose <b>Project Settings ➔ Player ➔ Settings for Android ➔ Resolution and Presentation</b>, and select the <b>Optimized Frame Pacing</b> checkbox.",
-            "documentationUrl" : "https://docs.unity3d.com/ScriptReference/PlayerSettings.Android-optimizedFramePacing.html",
-            "minimumVersion": "2019.2"
-        },
-        {
             "id": "PAS0034",
             "title": "Player: Use incremental GC is disabled",
             "type": "UnityEditor.PlayerSettings",

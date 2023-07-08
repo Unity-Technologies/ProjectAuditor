@@ -77,6 +77,12 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Package_Installed_IsReported(string description, string name, PackageSource source, string[] dependencies = null)
         {
             var installedPackages = Analyze(IssueCategory.Package);
+            if (name.Equals(Editor.ProjectAuditor.k_PackageName) &&
+                !PackageUtils.IsClientPackage(Editor.ProjectAuditor.k_PackageName))
+            {
+                return;
+            }
+
             var package = installedPackages.FirstOrDefault(issue => issue.description == description);
 
             Assert.IsNotNull(package, "Package {0} not found. Packages: {1}", description, string.Join(", ", installedPackages.Select(p => p.description).ToArray()));
@@ -122,7 +128,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        [TestCase(Editor.ProjectAuditor.k_PackageName)]
+        [TestCase("com.unity.nuget.mono-cecil")]
         public void PackageUtils_Package_IsInstalled(string packageName)
         {
             Assert.IsTrue(PackageUtils.IsClientPackage(packageName), $"Package {packageName} is not installed");
