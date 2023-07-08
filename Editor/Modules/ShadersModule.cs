@@ -120,10 +120,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumBuiltVariants), format = PropertyFormat.Integer, name = "Built Fragment Variants", longName = "Number of fragment shader variants in the build for a single stage (e.g. fragment), per shader platform (e.g. GLES30)" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumPasses), format = PropertyFormat.Integer, name = "Num Passes", longName = "Number of Passes" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumKeywords), format = PropertyFormat.Integer, name = "Num Keywords", longName = "Number of Keywords" },
-#if PA_CAN_USE_SHADER_GETPROPERTY_METHODS
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumProperties), format = PropertyFormat.Integer, name = "Num Properties", longName = "Number of Properties" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumTextureProperties), format = PropertyFormat.Integer, name = "Num Tex Properties", longName = "Number of Texture Properties" },
-#endif
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.RenderQueue), format = PropertyFormat.Integer, name = "Render Queue" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.Instancing), format = PropertyFormat.Bool, name = "Instancing", longName = "GPU Instancing Support" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.SrpBatcher), format = PropertyFormat.Bool, name = "SRP Batcher", longName = "SRP Batcher Compatible" },
@@ -487,19 +485,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var hasInstancing = ShaderUtilProxy.HasInstancing(shader);
                 var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(shader);
                 var isSrpBatcherCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(shader, subShaderIndex) == 0;
-                var texturePropertyCount = 0;
-#if PA_CAN_USE_SHADER_GETPROPERTY_METHODS
-                var propertyCount = shader.GetPropertyCount();
-                for (int i = 0; i < propertyCount; ++i)
-                {
-                    if (shader.GetPropertyType(i)  == ShaderPropertyType.Texture)
-                    {
-                        ++texturePropertyCount;
-                    }
-                }
-#else
-                var propertyCount = 0;
-#endif
+                var propertyCount = ShaderUtilProxy.GetPropertyCount(shader);
+                var texturePropertyCount = ShaderUtilProxy.GetTexturePropertyCount(shader);
 
 #if UNITY_2019_1_OR_NEWER
                 passCount = shader.passCount;

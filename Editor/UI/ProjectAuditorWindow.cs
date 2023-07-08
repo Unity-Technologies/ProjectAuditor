@@ -114,16 +114,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!matchArea)
                 return false;
 
-            if (!m_ViewStates.mutedIssues)
-            {
-                Profiler.BeginSample("IsMuted");
-                var muted = m_ProjectAuditor.config.GetAction(issue.descriptor, issue.GetContext()) ==
-                    Severity.None;
-                Profiler.EndSample();
-                if (muted)
-                    return false;
-            }
-
             if (m_ViewStates.onlyCriticalIssues &&
                 !issue.IsMajorOrCritical())
                 return false;
@@ -203,10 +193,49 @@ namespace Unity.ProjectAuditor.Editor.UI
                     ProjectAuditorAnalytics.BeginAnalytic());
             };
 
+            m_ViewManager.onShowIgnoredIssuesChanged += showIgnoredIssues =>
+            {
+                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                var payload = new Dictionary<string, string>
+                {
+                    ["selected"] = showIgnoredIssues ? "true" : "false"
+                };
+                ProjectAuditorAnalytics.SendEventWithKeyValues(
+                    ProjectAuditorAnalytics.UIButton.ShowMuted,
+                    analytic, payload);
+            };
+
+            m_ViewManager.onIgnoreIssues = issues =>
+            {
+                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                foreach (var issue in issues)
+                {
+                    SetRuleForItem(issue, Severity.None);
+                }
+
+                activeView.ClearSelection();
+
+                ProjectAuditorAnalytics.SendEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
+                    analytic, issues);
+            };
+
+            m_ViewManager.onDisplayIssues = issues =>
+            {
+                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
+                foreach (var issue in issues)
+                {
+                    ClearRulesForItem(issue);
+                }
+
+                ProjectAuditorAnalytics.SendEventWithSelectionSummary(
+                    ProjectAuditorAnalytics.UIButton.Unmute, analytic, issues);
+            };
+
             m_ViewManager.onAnalyze += category =>
             {
                 AuditCategories(new[] {category});
             };
+
             m_ViewManager.onViewExported += () =>
             {
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Export,
@@ -888,104 +917,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     activeView.DrawSearch();
 
-                    // this is specific to diagnostics
-                    var isDiagnosticView = activeView.IsDiagnostic();
-                    if (isDiagnosticView)
-                    {
-                        EditorGUI.BeginChangeCheck();
-
-                        using (new EditorGUILayout.HorizontalScope())
-                        {
-                            EditorGUILayout.LabelField("Show :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-
-                            var wasShowingCritical = m_ViewStates.onlyCriticalIssues;
-                            m_ViewStates.onlyCriticalIssues = EditorGUILayout.ToggleLeft("Only Major/Critical",
-                                m_ViewStates.onlyCriticalIssues, GUILayout.Width(170));
-
-                            if (wasShowingCritical != m_ViewStates.onlyCriticalIssues)
-                            {
-                                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                                var payload = new Dictionary<string, string>
-                                {
-                                    ["selected"] = m_ViewStates.onlyCriticalIssues ? "true" : "false"
-                                };
-                                ProjectAuditorAnalytics.SendEventWithKeyValues(ProjectAuditorAnalytics.UIButton.OnlyCriticalIssues,
-                                    analytic, payload);
-                            }
-
-                            var wasDisplayingMuted = m_ViewStates.mutedIssues;
-                            m_ViewStates.mutedIssues = EditorGUILayout.ToggleLeft("Muted",
-                                m_ViewStates.mutedIssues, GUILayout.Width(120));
-
-                            if (wasDisplayingMuted != m_ViewStates.mutedIssues)
-                            {
-                                var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                                var payload = new Dictionary<string, string>
-                                {
-                                    ["selected"] = m_ViewStates.mutedIssues ? "true" : "false"
-                                };
-                                ProjectAuditorAnalytics.SendEventWithKeyValues(
-                                    ProjectAuditorAnalytics.UIButton.ShowMuted,
-                                    analytic, payload);
-                            }
-                            GUILayout.FlexibleSpace();
-                        }
-                        if (EditorGUI.EndChangeCheck())
-                            m_ShouldRefresh = true;
-                    }
-
-
                     activeView.DrawFilters();
-
-                    EditorGUI.indentLevel--;
-                }
-            }
-        }
-
-        void DrawActions()
-        {
-            if (!activeView.IsDiagnostic())
-                return;
-
-            using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
-            {
-                m_ViewStates.actions = Utility.BoldFoldout(m_ViewStates.actions, Contents.ActionsFoldout);
-                if (m_ViewStates.actions)
-                {
-                    EditorGUI.indentLevel++;
-
-                    using (new EditorGUILayout.HorizontalScope())
-                    {
-                        EditorGUILayout.LabelField("Selected :", GUILayout.ExpandWidth(true), GUILayout.Width(80));
-
-                        var selectedIssues = activeView.GetSelection();
-                        if (GUILayout.Button(Contents.MuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                        {
-                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                            foreach (var issue in selectedIssues)
-                            {
-                                SetRuleForItem(issue, Severity.None);
-                            }
-
-                            activeView.ClearSelection();
-
-                            ProjectAuditorAnalytics.SendEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
-                                analytic, selectedIssues);
-                        }
-
-                        if (GUILayout.Button(Contents.UnmuteButton, GUILayout.ExpandWidth(true), GUILayout.Width(100)))
-                        {
-                            var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                            foreach (var issue in selectedIssues)
-                            {
-                                ClearRulesForItem(issue);
-                            }
-
-                            ProjectAuditorAnalytics.SendEventWithSelectionSummary(
-                                ProjectAuditorAnalytics.UIButton.Unmute, analytic, selectedIssues);
-                        }
-                        GUILayout.FlexibleSpace();
-                    }
 
                     EditorGUI.indentLevel--;
                 }
@@ -1150,7 +1082,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (activeView.IsValid())
             {
                 DrawFilters();
-                DrawActions();
 
                 if (m_ShouldRefresh || m_AnalysisState == AnalysisState.Completed)
                 {
@@ -1460,11 +1391,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent AreaFilterSelect =
                 new GUIContent("Select", "Select performance areas to display");
 
-            public static readonly GUIContent MuteButton = new GUIContent("Mute", "Always ignore selected issues.");
-            public static readonly GUIContent UnmuteButton = new GUIContent("Unmute", "Always show selected issues.");
-
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filtering Criteria");
-            public static readonly GUIContent ActionsFoldout = new GUIContent("Actions", "Actions on selected issues");
 
             public static readonly GUIContent WelcomeTextTitle = new GUIContent("Welcome to Project Auditor");
 

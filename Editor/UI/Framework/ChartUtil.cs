@@ -124,7 +124,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndHorizontal();
         }
 
-       public static void DrawLine(Draw2D draw2D)
+        public static void DrawLine(Draw2D draw2D)
         {
             var rect = EditorGUILayout.GetControlRect(GUILayout.Height(1));
             var color = new Color(0.3f, 0.3f, 0.3f);

@@ -58,15 +58,20 @@ namespace Unity.ProjectAuditor.Editor
             m_Rules.Add(ruleToAdd);
         }
 
-        internal Rule GetRule(Descriptor descriptor, string filter = "")
+        internal Rule GetRule(string id, string filter = "")
         {
             // do not use Linq to avoid managed allocations
             foreach (var r in m_Rules)
             {
-                if (r.id == descriptor.id && r.filter.Equals(filter))
+                if (r.id == id && r.filter.Equals(filter))
                     return r;
             }
             return null;
+        }
+
+        internal Rule GetRule(Descriptor descriptor, string filter = "")
+        {
+            return GetRule(descriptor.id, filter);
         }
 
         internal void ClearAllRules()
@@ -74,28 +79,37 @@ namespace Unity.ProjectAuditor.Editor
             m_Rules.Clear();
         }
 
-        internal void ClearRules(Descriptor descriptor, string filter = "")
+        internal void ClearRules(string id, string filter = "")
         {
-            var rules = m_Rules.Where(r => r.id == descriptor.id && r.filter.Equals(filter)).ToArray();
+            var rules = m_Rules.Where(r => r.id == id && r.filter.Equals(filter)).ToArray();
 
             foreach (var rule in rules)
                 m_Rules.Remove(rule);
         }
 
-        internal Severity GetAction(Descriptor descriptor, string filter = "")
+        internal void ClearRules(Descriptor descriptor, string filter = "")
+        {
+            ClearRules(descriptor.id, filter);
+        }
+
+        internal Severity GetAction(string id, string filter = "")
         {
             // is there a rule that matches the filter?
-            var projectRule = GetRule(descriptor, filter);
+            var projectRule = GetRule(id, filter);
             if (projectRule != null)
                 return projectRule.severity;
 
             // is there a rule that matches descriptor?
-            projectRule = GetRule(descriptor);
+            projectRule = GetRule(id);
             if (projectRule != null)
                 return projectRule.severity;
 
-            // return the default descriptor action
-            return descriptor.defaultSeverity;
+            return Severity.Default;
+        }
+
+        internal Severity GetAction(Descriptor descriptor, string filter = "")
+        {
+            return GetAction(descriptor.id, filter);
         }
     }
 }

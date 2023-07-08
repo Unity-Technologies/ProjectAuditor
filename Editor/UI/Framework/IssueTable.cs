@@ -27,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         int m_NextId;
         int m_NumMatchingIssues;
         bool m_FlatView;
-        bool m_IgnoreIssuesView;
+        bool m_ShowIgnoredIssues;
         int m_GroupPropertyIndex;
 
         public bool flatView
@@ -36,10 +36,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             set => m_FlatView = value;
         }
 
-        public bool ignoreIssuesView
+        public bool showIgnoredIssues
         {
-            get => m_IgnoreIssuesView;
-            set => m_IgnoreIssuesView = value;
+            get => m_ShowIgnoredIssues;
+            set => m_ShowIgnoredIssues = value;
         }
 
         public int groupPropertyIndex
@@ -124,6 +124,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return root;
         }
 
+        bool IsIgnored(ProjectIssue issue)
+        {
+            if (showIgnoredIssues)
+                return false;
+
+            var descriptor = issue.descriptor;
+            var context = issue.GetContext();
+
+            return m_Config.GetAction(descriptor, context) == Severity.None;
+        }
+
         protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
         {
             m_Rows.Clear();
@@ -132,7 +143,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Profiler.BeginSample("IssueTable.Match");
             var filteredItems = m_TreeViewItemIssues.Where(item =>
             {
-                return m_View.Match(item.ProjectIssue);
+                return m_View.Match(item.ProjectIssue) && !IsIgnored(item.ProjectIssue);
             }).ToArray();
 
             Profiler.EndSample();

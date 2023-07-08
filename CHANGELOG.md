@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Added
-* DrawFilledCircle method to Draw2D
-* Styles LabelRichText, WhiteLargeLabel, Row, and RowAlternate to SharedStyles
+* Display/Ignore All buttons
+* Copy-to-Clipboard buttons to Details and Recommendations
+* Vertical scrollbar to Details and Recommendations
 * Shader view reports total property count and texture property count for Unity 2019.3 and above
 * Compute shader variant view reports kernel thread count for Unity 2021.2 and above
 * View-specific descriptions
@@ -20,6 +21,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Bumped analytics events version number from v1 to v2
 * Asset diagnostics IDs for Resources/StreamingAsset folder issues
 * Visualization of the Horizontal Stacked Bar and Legend Item
+
+### Removed
+* Actions section and Mute/Unmute buttons
 
 ### Fixed
 * UI default column sorting
