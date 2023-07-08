@@ -590,7 +590,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             if (GUILayout.Button(
                 guiContent, EditorStyles.toolbarButton,
-                GUILayout.Width(ToolbarLargeButtonSize)))
+                GUILayout.Width(LayoutSize.ToolbarLargeButtonSize)))
             {
                 onClick();
             }
@@ -625,7 +625,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static int toolbarButtonSize => LayoutSize.ToolbarButtonSize;
         public static int toolbarIconSize => LayoutSize.ToolbarIconSize;
-        public static int ToolbarLargeButtonSize => LayoutSize.ToolbarLargeButtonSize;
 
         static readonly string[] k_ExportModeStrings =
         {
@@ -642,7 +641,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int DetailsPanelWidth = 200;
             public static readonly int ToolbarButtonSize = 80;
             public static readonly int ToolbarLargeButtonSize = 120;
-            public static readonly int IgnoreButtonSize = 120;
             public static readonly int ToolbarIconSize = 32;
             public static readonly int ActionButtonHeight = 30;
             public static readonly int CopyToClipboardButtonSize = 24;
@@ -656,8 +654,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly GUIContent ExportButton = new GUIContent("Export", "Export current view to .csv file");
             public static readonly GUIContent ExpandAllButton = new GUIContent("Expand All");
             public static readonly GUIContent CollapseAllButton = new GUIContent("Collapse All");
-            public static readonly GUIContent DisplayedIgnoredIssuesButton = Utility.GetDisplayIgnoredIssuesIconWithLabel();
-            public static readonly GUIContent HiddenIgnoredIssuesButton = Utility.GetHiddenIgnoredIssuesIconWithLabel();
 
             public static readonly GUIContent InfoFoldout = new GUIContent("Information");
             public static readonly GUIContent SearchStringLabel = new GUIContent("Search : ", "Text search options");
