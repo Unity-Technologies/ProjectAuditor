@@ -491,6 +491,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             return newTexture;
         }
+
 #endif
 
         public static int GetTextureDepth(Texture texture)

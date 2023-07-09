@@ -9,9 +9,8 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-	internal class DiagnosticView : AnalysisView
+    internal class DiagnosticView : AnalysisView
     {
-
         public override string description => $"A list of {m_Desc.displayName} issues found in the project.";
 
         Vector2 m_DetailsScrollPos;
