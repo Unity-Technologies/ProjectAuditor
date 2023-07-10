@@ -99,6 +99,12 @@ namespace Unity.ProjectAuditor.Editor
             ClearRules(descriptor.id, filter);
         }
 
+        internal void ClearRules(ProjectIssue issue)
+        {
+            var descriptor = issue.descriptor;
+            ClearRules(descriptor, issue.GetContext());
+        }
+
         internal Severity GetAction(string id, string filter = "")
         {
             // is there a rule that matches the filter?
@@ -117,6 +123,27 @@ namespace Unity.ProjectAuditor.Editor
         internal Severity GetAction(Descriptor descriptor, string filter = "")
         {
             return GetAction(descriptor.id, filter);
+        }
+
+        internal void SetRule(ProjectIssue issue, Severity ruleSeverity)
+        {
+            var descriptor = issue.descriptor;
+
+            // FIXME: GetContext will return empty string on code issues after domain reload
+            var context = issue.GetContext();
+            var rule = GetRule(descriptor, context);
+
+            if (rule == null)
+                AddRule(new Rule
+                {
+                    id = descriptor.id,
+                    filter = context,
+                    severity = ruleSeverity
+                });
+            else
+                rule.severity = ruleSeverity;
+
+            EditorUtility.SetDirty(this);
         }
     }
 }

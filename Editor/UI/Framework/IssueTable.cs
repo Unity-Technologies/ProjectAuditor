@@ -124,28 +124,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return root;
         }
 
-        bool IsIgnored(ProjectIssue issue)
-        {
-            if (showIgnoredIssues)
-                return false;
-
-            var descriptor = issue.descriptor;
-            var context = issue.GetContext();
-
-            return m_Config.GetAction(descriptor, context) == Severity.None;
-        }
-
         protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
         {
             m_Rows.Clear();
 
             // find all issues matching the filters and make an array out of them
             Profiler.BeginSample("IssueTable.Match");
-            var filteredItems = m_TreeViewItemIssues.Where(item =>
-            {
-                return m_View.Match(item.ProjectIssue) && !IsIgnored(item.ProjectIssue);
-            }).ToArray();
-
+            var filteredItems = m_TreeViewItemIssues.Where(item => m_View.Match(item.ProjectIssue)).ToArray();
             Profiler.EndSample();
 
             m_NumMatchingIssues = filteredItems.Length;

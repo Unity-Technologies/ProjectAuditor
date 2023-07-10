@@ -208,10 +208,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ViewManager.onIgnoreIssues = issues =>
             {
                 var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                foreach (var issue in issues)
-                {
-                    SetRuleForItem(issue, Severity.None);
-                }
 
                 activeView.ClearSelection();
 
@@ -222,10 +218,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ViewManager.onDisplayIssues = issues =>
             {
                 var analytic = ProjectAuditorAnalytics.BeginAnalytic();
-                foreach (var issue in issues)
-                {
-                    ClearRulesForItem(issue);
-                }
 
                 ProjectAuditorAnalytics.SendEventWithSelectionSummary(
                     ProjectAuditorAnalytics.UIButton.Unmute, analytic, issues);
@@ -1185,29 +1177,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             // update assembly selection summary
             m_AssemblySelectionSummary = GetSelectedAssembliesSummary();
-        }
-
-        void SetRuleForItem(ProjectIssue issue, Severity ruleSeverity)
-        {
-            var descriptor = issue.descriptor;
-            var context = issue.GetContext();
-            var rule = m_ProjectAuditor.config.GetRule(descriptor, context);
-
-            if (rule == null)
-                m_ProjectAuditor.config.AddRule(new Rule
-                {
-                    id = descriptor.id,
-                    filter = context,
-                    severity = ruleSeverity
-                });
-            else
-                rule.severity = ruleSeverity;
-        }
-
-        void ClearRulesForItem(ProjectIssue issue)
-        {
-            var descriptor = issue.descriptor;
-            m_ProjectAuditor.config.ClearRules(descriptor, issue.GetContext());
         }
 
         void DrawToolbar()
