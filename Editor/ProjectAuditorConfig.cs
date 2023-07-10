@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
@@ -56,6 +57,8 @@ namespace Unity.ProjectAuditor.Editor
             }
 
             m_Rules.Add(ruleToAdd);
+
+            EditorUtility.SetDirty(this);
         }
 
         internal Rule GetRule(string id, string filter = "")
@@ -77,6 +80,8 @@ namespace Unity.ProjectAuditor.Editor
         internal void ClearAllRules()
         {
             m_Rules.Clear();
+
+            EditorUtility.SetDirty(this);
         }
 
         internal void ClearRules(string id, string filter = "")
@@ -85,6 +90,8 @@ namespace Unity.ProjectAuditor.Editor
 
             foreach (var rule in rules)
                 m_Rules.Remove(rule);
+
+            EditorUtility.SetDirty(this);
         }
 
         internal void ClearRules(Descriptor descriptor, string filter = "")

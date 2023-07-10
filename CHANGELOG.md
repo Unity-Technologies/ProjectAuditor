@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 * UI default column sorting
 * UI sorting criteria persistence after domain reload
+* Config changes not saved to corresponding asset 
 * Ignoring texture streaming issues
 * Texture size reporting on Unity 2022.2 and above is now accurate
 

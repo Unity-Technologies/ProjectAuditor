@@ -262,6 +262,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void OnDisable()
         {
+            // Make sure 'dirty' scriptable objects are saved to their corresponding assets
+            AssetDatabase.SaveAssets();
+
             m_ViewManager?.SaveSettings();
         }
 
