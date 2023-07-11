@@ -22,7 +22,6 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_ShaderResource;
         TestAsset m_PlayerLogResource;
         TestAsset m_PlayerLogWithNoCompilationResource;
-        TestAsset m_ShaderWithErrorResource;
         TestAsset m_EditorShaderResource;
 
         TestAsset m_ShaderUsingBuiltInKeywordResource;
@@ -164,18 +163,6 @@ namespace Unity.ProjectAuditor.EditorTests
 
 
             m_PlayerLogWithNoCompilationResource = new TestAsset("player_with_no_compilation.log", string.Empty);
-
-#if UNITY_2021_1_OR_NEWER
-            UnityEngine.TestTools.LogAssert.ignoreFailingMessages = true; // workaround for 2021.x failure
-#endif
-
-            // Don't initialize this for now as doing so causes a compile error that can affect other tests.
-#if UNITY_2019_1_OR_NEWER && false
-            m_ShaderWithErrorResource = new TestAsset("Resources/ShaderWithError.shader", @"
-            Sader ""Custom/ShaderWithError""
-            {
-            }");
-#endif
 
             m_ShaderUsingBuiltInKeywordResource = new TestAsset("Resources/ShaderUsingBuiltInKeyword.shader", @"
 Shader ""Custom/ShaderUsingBuiltInKeyword""
@@ -636,20 +623,6 @@ Shader ""Custom/SRPBatchCompatible""
 //            var isSrpBatcherSupported = RenderPipelineManager.currentPipeline != null;
 //            Assert.AreEqual(isSrpBatcherSupported, shaderIssue.GetCustomPropertyAsBool(ShaderProperty.SrpBatcher), "SRP Batcher {0} supported but the SrpBatcher property does not match.", isSrpBatcherSupported ? "is" : "is not");
         }
-
-#if UNITY_2019_1_OR_NEWER
-        [Test]
-        [Ignore("TODO: this shader is malformed in a way that currently causes other tests to fail.  Figure out the right way to pick up that error in this test without breaking everything else.")]
-        public void ShadersAnalysis_ShaderWithError_IsReported()
-        {
-            var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.severity == Severity.Error);
-
-            Assert.Positive(shadersWithErrors.Count());
-            var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.relativePath.Equals(m_ShaderWithErrorResource.relativePath));
-            Assert.NotNull(shaderIssue);
-        }
-
-#endif
 
 #if UNITY_2020_1_OR_NEWER
         // note that earlier Unity versions such as 2019.x do not report shader compiler messages

@@ -45,6 +45,15 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             AssetDatabase.ImportAsset(relativePath, ImportAssetOptions.ForceUpdate);
         }
 
+        public void CleanupLocal()
+        {
+            if (File.Exists(relativePath))
+            {
+                AssetDatabase.DeleteAsset(relativePath);
+                AssetDatabase.Refresh();
+            }
+        }
+
         public static TestAsset Save(UnityEngine.Object asset, string fileName)
         {
             var tempAsset = new TestAsset(fileName);
