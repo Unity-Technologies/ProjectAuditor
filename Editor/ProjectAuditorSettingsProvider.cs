@@ -18,10 +18,18 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public void Initialize()
         {
-            m_DefaultSettings = ScriptableObject.CreateInstance<ProjectAuditorSettings>();
-            m_DefaultSettings.name = "Default";
-
             RefreshAssets();
+        }
+
+        private ProjectAuditorSettings GetOrCreateDefaultSettings()
+        {
+            if (m_DefaultSettings == null)
+            {
+                m_DefaultSettings = ScriptableObject.CreateInstance<ProjectAuditorSettings>();
+                m_DefaultSettings.name = "Default";
+            }
+
+            return m_DefaultSettings;
         }
 
         /// <summary>
@@ -29,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         internal void RefreshAssets()
         {
-            m_CurrentSettings = m_DefaultSettings;
+            m_CurrentSettings = GetOrCreateDefaultSettings();
 
             var allSettingsAssets = AssetDatabase.FindAssets("t:ProjectAuditorSettings, a:assets");
 
@@ -53,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor
                 if (settings != null)
                     m_CurrentSettings = settings;
                 else
-                    SelectCurrentSettings(m_DefaultSettings);
+                    SelectCurrentSettings(GetOrCreateDefaultSettings());
             }
         }
 
@@ -65,7 +73,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             if (m_CurrentSettings == null)
             {
-                m_CurrentSettings = m_DefaultSettings;
+                m_CurrentSettings = GetOrCreateDefaultSettings();;
                 RefreshAssets();
             }
 
@@ -80,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             RefreshAssets();
 
-            yield return m_DefaultSettings;
+            yield return GetOrCreateDefaultSettings();
 
             foreach (var settingsAsset in m_SettingsAssets)
             {
