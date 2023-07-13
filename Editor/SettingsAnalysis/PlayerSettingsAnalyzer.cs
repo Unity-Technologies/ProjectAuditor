@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
-            if (k_AccelerometerDescriptor.platforms.Contains(projectAuditorParams.platform.ToString()) && IsAccelerometerEnabled())
+            if (k_AccelerometerDescriptor.IsPlatformCompatible(projectAuditorParams.platform) && IsAccelerometerEnabled())
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_AccelerometerDescriptor)
                     .WithLocation("Project/Player");

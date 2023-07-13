@@ -95,25 +95,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var issuesAreIgnored = AreIssuesIgnored(selectedIssues);
             if (selectedDescriptors.Length == 1)
             {
-                if (issuesAreIgnored)
-                {
-                    DrawActionButton(Contents.Display, () =>
-                    {
-                        DisplayIssue(selectedIssues[0]);
-
-                        m_ViewManager.onDisplayIssues?.Invoke(selectedIssues);
-                    });
-                }
-                else
-                {
-                    DrawActionButton(Contents.Ignore, () =>
-                    {
-                        IgnoreIssue(selectedIssues[0], Severity.None);
-
-                        m_ViewManager.onIgnoreIssues?.Invoke(selectedIssues);
-                    });
-                }
-
                 if (!string.IsNullOrEmpty(selectedDescriptors[0].documentationUrl))
                 {
                     DrawActionButton(Contents.Documentation, () =>
@@ -142,15 +123,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
             }
 
-            if (selectedDescriptors.Length > 1)
+            if (selectedIssues.Length > 0)
             {
                 if (issuesAreIgnored)
                 {
-                    DrawActionButton(Contents.DisplayAll, () =>
+                    DrawActionButton(selectedIssues.Length > 1 ? Contents.DisplayAll : Contents.Display, () =>
                     {
                         foreach (var t in selectedIssues)
                         {
-                            DisplayIssue(t);
+                            m_Config.ClearRules(t);
                         }
 
                         m_ViewManager.onDisplayIssues?.Invoke(selectedIssues);
@@ -158,11 +139,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
                 else
                 {
-                    DrawActionButton(Contents.IgnoreAll, () =>
+                    DrawActionButton(selectedIssues.Length > 1 ? Contents.IgnoreAll : Contents.Ignore, () =>
                     {
                         foreach (var t in selectedIssues)
                         {
-                            IgnoreIssue(t, Severity.None);
+                            m_Config.SetRule(t, Severity.None);
                         }
 
                         m_ViewManager.onIgnoreIssues?.Invoke(selectedIssues);
@@ -215,30 +196,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             });
         }
 
-        void IgnoreIssue(ProjectIssue issue, Severity ruleSeverity)
-        {
-            var descriptor = issue.descriptor;
-
-            // FIXME: GetContext will return empty string after domain reload
-            var context = issue.GetContext();
-            var rule = m_Config.GetRule(descriptor, context);
-
-            if (rule == null)
-                m_Config.AddRule(new Rule
-                {
-                    id = descriptor.id,
-                    filter = context,
-                    severity = ruleSeverity
-                });
-            else
-                rule.severity = ruleSeverity;
-        }
-
-        void DisplayIssue(ProjectIssue issue)
-        {
-            m_Config.ClearRules(issue.descriptor, issue.GetContext());
-        }
-
         bool AreIssuesIgnored(ProjectIssue[] selectedIssues)
         {
             foreach (var issue in selectedIssues)
@@ -276,6 +233,23 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 UserPreferences.loadSavePath = Path.GetDirectoryName(path);
             }
+        }
+
+        public override bool Match(ProjectIssue issue)
+        {
+            if (!base.Match(issue))
+                return false;
+
+            if (m_Table.showIgnoredIssues)
+                return true;
+
+            var descriptor = issue.descriptor;
+            if (!descriptor.IsValid())
+                return true;
+
+            var context = issue.GetContext();
+
+            return m_Config.GetAction(descriptor, context) != Severity.None;
         }
 
         static class Contents
