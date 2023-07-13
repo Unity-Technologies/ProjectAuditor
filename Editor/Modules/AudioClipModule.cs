@@ -1,16 +1,7 @@
-using System.Collections;
-using System;
 using System.Collections.Generic;
-using System.Globalization;
-using UnityEngine;
-using UnityEditor.PackageManager;
-using UnityEditor.PackageManager.Requests;
-using System.Linq;
 using UnityEditor;
-using System.IO;
-using System.Reflection;
 using Unity.ProjectAuditor.Editor.Core;
-using UnityEngine.Profiling;
+using Unity.ProjectAuditor.Editor.Interfaces;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -31,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class AudioClipModule : ProjectAuditorModule
+    class AudioClipModule : ProjectAuditorModuleWithAnalyzers<IAudioClipModuleAnalyzer>
     {
         static readonly IssueLayout k_AudioClipLayout = new IssueLayout
         {
@@ -67,60 +58,33 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            projectAuditorParams.onIncomingIssues(EnumerateAudioClips(projectAuditorParams.platform));
-            projectAuditorParams.onModuleCompleted?.Invoke();
-        }
+            var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
+            var allTextures = AssetDatabase.FindAssets("t:texture, a:assets");
+            var currentPlatformString = projectAuditorParams.platform.ToString();
+            var GUIDsAudioClip = AssetDatabase.FindAssets("t:AudioClip, a:assets");
 
-        public static object GetPropertyValue(AssetImporter assetImporter, string propertyName)
-        {
-            Type objType = assetImporter.GetType();
-            PropertyInfo propInfo = objType.GetProperty(propertyName,
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            progress?.Start("Finding Textures", "Search in Progress...", allTextures.Length);
 
-            if (propInfo == null)
-                throw new ArgumentOutOfRangeException("propertyName",
-                    string.Format("Couldn't find property {0} in type {1}", propertyName, objType.FullName));
-            return propInfo.GetValue(assetImporter, null);
-        }
-
-        IEnumerable<ProjectIssue> EnumerateAudioClips(BuildTarget platform)
-        {
-            var GUIDsAudioClip = AssetDatabase.FindAssets("t:AudioClip");
             foreach (var guid in GUIDsAudioClip)
             {
-                var path = AssetDatabase.GUIDToAssetPath(guid);
-                var importer = AssetImporter.GetAtPath(path) as AudioImporter;
-                var sampleSettings = importer.GetOverrideSampleSettings(platform.ToString());
-                // SteveM TODO: The analyzer will want this to avoid having to reload it, so make sure you can pass it in
-                var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
-
-                // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
-                var runtimeSize = Profiler.GetRuntimeMemorySizeLong(audioClip);
-                var origSize = (int)GetPropertyValue(importer, "origSize");
-                var compSize = (int)GetPropertyValue(importer, "compSize");
-
-                var ts = new TimeSpan(0, 0, 0, 0, (int)(audioClip.length * 1000.0f));
-
-                yield return ProjectIssue.Create(IssueCategory.AudioClip, Path.GetFileNameWithoutExtension(path)).WithCustomProperties(new object[(int)AudioClipProperty.Num]
+                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                var audioImporter = AssetImporter.GetAtPath(assetPath) as AudioImporter;
+                if (audioImporter == null)
                 {
-                    String.Format("{0:00}:{1:00}.{2:000}", ts.Minutes, ts.Seconds, ts.Milliseconds),
-                    origSize,
-                    compSize,
-                    runtimeSize,
-                    (100.0f * (float)compSize / (float)origSize).ToString("0.00", CultureInfo.InvariantCulture.NumberFormat) + "%",
-                    sampleSettings.compressionFormat,
-                    ((float)audioClip.frequency / 1000.0f).ToString("G0", CultureInfo.InvariantCulture.NumberFormat) + " KHz",
-                    importer.forceToMono,
-                    importer.loadInBackground,
-#if UNITY_2022_2_OR_NEWER
-                    sampleSettings.preloadAudioData,
-#else
-                    importer.preloadAudioData,
-#endif
-                    sampleSettings.loadType,
+                    continue;
+                }
 
-                }).WithLocation(path);
+                foreach (var analyzer in analyzers)
+                {
+                    projectAuditorParams.onIncomingIssues(analyzer.Analyze(projectAuditorParams, audioImporter));
+                }
+
+                progress?.Advance();
             }
+
+            progress?.Clear();
+
+            projectAuditorParams.onModuleCompleted?.Invoke();
         }
     }
 }
