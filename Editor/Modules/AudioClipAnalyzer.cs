@@ -113,7 +113,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Audio: AudioClip <b>Load Type</b> is <b>Decompress On Load</b>",
             new[] {Area.Memory, Area.LoadTime},
             "The AudioClip is long, and its <b>Load Type</b> is set to<b>Decompress On Load</b>. The clip's memory footprint may be excessive, and decompression may impact load times.",
-            "Consider setting the <b>Load Type</b> to <b>Compressed In Memory</b> or <b>Streaming</b>. If you have concerns about the CPU cost of decompressing <b>Compressed In Memory</b> clips for playback, consider a format which is fast to decompress, such as <b>ADPCM</b>.""
+            "Consider setting the <b>Load Type</b> to <b>Compressed In Memory</b> or <b>Streaming</b>. If you have concerns about the CPU cost of decompressing <b>Compressed In Memory</b> clips for playback, consider a format which is fast to decompress, such as <b>ADPCM</b>."
         )
         {
             messageFormat = "AudioClip '{0}' <b>Load Type</b> is <b>Decompress On Load</b>",
