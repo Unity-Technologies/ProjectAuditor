@@ -16,6 +16,7 @@ Note that there are different ranges within both Code and Settings diagnostic ID
   - `PAA1xxx`: mesh related settings
   - `PAA2xxx`: shader related settings
   - `PAA3xxx`: file system related settings (Resources folders, StreamingAssets, Addressables, etc)
+  - `PAA4xxx`: AudioClip related settings
 
 # Settings Diagnostics
 This is a full list of all builtin settings diagnostics:

@@ -15,168 +15,263 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     class AudioClipAnalyzer : IAudioClipModuleAnalyzer
     {
-        // internal const string PAA0000 = nameof(PAA0000);
-        // internal const string PAA0001 = nameof(PAA0001);
-        // internal const string PAA0002 = nameof(PAA0002);
-        // internal const string PAA0003 = nameof(PAA0003);
-        // internal const string PAA0004 = nameof(PAA0004);
-        // internal const string PAA0005 = nameof(PAA0005);
-        // internal const string PAA0006 = nameof(PAA0006);
-        // internal const string PAA0007 = nameof(PAA0007);
-        //
-        // internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
-        //     PAA0000,
-        //     "Texture: Mipmaps not enabled",
-        //     new[] {Area.GPU, Area.Quality},
-        //     "<b>Generate Mip Maps</b> in the Texture Import Settings is not enabled. Using textures that are not mipmapped in a 3D environment can impact rendering performance and introduce aliasing artifacts.",
-        //     "Consider enabling mipmaps using the <b>Advanced ➔ Generate Mip Maps</b> option in the Texture Import Settings."
-        // )
-        // {
-        //     messageFormat = "Texture '{0}' mipmaps generation is not enabled",
-        //     fixer = (issue) =>
-        //     {
-        //         var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
-        //         if (textureImporter != null)
-        //         {
-        //             textureImporter.mipmapEnabled = true;
-        //             textureImporter.SaveAndReimport();
-        //         }
-        //     }
-        // };
-        //
-        // internal static readonly Descriptor k_TextureMipMapEnabledDescriptor = new Descriptor(
-        //     PAA0001,
-        //     "Texture: Mipmaps enabled on Sprite/UI texture",
-        //     new[] {Area.BuildSize, Area.Quality},
-        //     "<b>Generate Mip Maps</b> is enabled in the Texture Import Settings for a Sprite/UI texture. This might reduce rendering quality of sprites and UI.",
-        //     "Consider disabling mipmaps using the <b>Advanced ➔ Generate Mip Maps</b> option in the texture inspector. This will also reduce your build size."
-        // )
-        // {
-        //     messageFormat = "Texture '{0}' mipmaps generation is enabled",
-        //     fixer = (issue) =>
-        //     {
-        //         var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
-        //         if (textureImporter != null)
-        //         {
-        //             textureImporter.mipmapEnabled = false;
-        //             textureImporter.SaveAndReimport();
-        //         }
-        //     }
-        // };
-        //
-        // internal static readonly Descriptor k_TextureReadWriteEnabledDescriptor = new Descriptor(
-        //     PAA0002,
-        //     "Texture: Read/Write enabled",
-        //     Area.Memory,
-        //     "The <b>Read/Write Enabled</b> flag in the Texture Import Settings is enabled. This causes the texture data to be duplicated in memory.",
-        //     "If not required, disable the <b>Read/Write Enabled</b> option in the Texture Import Settings."
-        // )
-        // {
-        //     messageFormat = "Texture '{0}' Read/Write is enabled",
-        //     documentationUrl = "https://docs.unity3d.com/Manual/class-TextureImporter.html",
-        //     fixer = (issue) =>
-        //     {
-        //         var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
-        //         if (textureImporter != null)
-        //         {
-        //             textureImporter.isReadable = false;
-        //             textureImporter.SaveAndReimport();
-        //         }
-        //     }
-        // };
-        //
-        // internal static readonly Descriptor k_TextureStreamingMipMapEnabledDescriptor = new Descriptor(
-        //     PAA0003,
-        //     "Texture: Mipmaps Streaming not enabled",
-        //     new[] {Area.Memory, Area.Quality},
-        //     "The <b>Streaming Mipmaps</b> option in the Texture Import Settings is not enabled. As a result, all mip levels for this texture are loaded into GPU memory for as long as the texture is loaded, potentially resulting in excessive texture memory usage.",
-        //     "Consider enabling the <b>Streaming Mipmaps</b> option in the Texture Import Settings."
-        // )
-        // {
-        //     messageFormat = "Texture '{0}' mipmaps streaming is not enabled",
-        //     fixer = (issue) =>
-        //     {
-        //         var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
-        //         if (textureImporter != null)
-        //         {
-        //             textureImporter.streamingMipmaps = true;
-        //             textureImporter.SaveAndReimport();
-        //         }
-        //     }
-        // };
-        //
-        // internal static readonly Descriptor k_TextureAnisotropicLevelDescriptor = new Descriptor(
-        //     PAA0004,
-        //     "Texture: Anisotropic level is higher than 1",
-        //     new[] {Area.GPU, Area.Quality},
-        //     "The <b>Anisotropic Level</b> in the Texture Import Settings is higher than 1. Anisotropic filtering makes textures look better when viewed at a shallow angle, but it can be slower to process on the GPU.",
-        //     "Consider setting the <b>Anisotropic Level</b> to 1."
-        // )
-        // {
-        //     platforms = new[] {"Android", "iOS", "Switch"},
-        //     messageFormat = "Texture '{0}' anisotropic level is set to '{1}'",
-        //     fixer = (issue) =>
-        //     {
-        //         var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
-        //         if (textureImporter != null)
-        //         {
-        //             textureImporter.anisoLevel = 1;
-        //             textureImporter.SaveAndReimport();
-        //         }
-        //     }
-        // };
-        //
-        // internal static readonly Descriptor k_TextureSolidColorDescriptor = new Descriptor(
-        //     PAA0005,
-        //     "Texture: Solid color is not 1x1 size",
-        //     new[] {Area.Memory},
-        //     "The texture is a single, solid color and is bigger than 1x1 pixels in size. Redundant texture data occupies memory unneccesarily.",
-        //     "Consider shrinking the texture to 1x1 size."
-        // )
-        // {
-        //     messageFormat = "Texture '{0}' is a solid color and not 1x1 size",
-        //     fixer = (issue) => { ResizeSolidTexture(issue.relativePath); }
-        // };
-        //
-        // // NOTE:  This is only here to run the same analysis without a quick fix button.  Clean up when we either have appropriate quick fix for other dimensions or improved fixer support.
-        // internal static readonly Descriptor k_TextureSolidColorNoFixerDescriptor = new Descriptor(
-        //     PAA0006,
-        //     "Texture: Solid color is not 1x1 size",
-        //     new[] { Area.Memory },
-        //     "The texture is a single, solid color and is bigger than 1x1 pixels in size. Redundant texture data occupies memory unneccesarily.",
-        //     "Consider shrinking the texture to 1x1 size."
-        // )
-        // {
-        //     messageFormat = "Texture '{0}' is a solid color and not 1x1 size"
-        // };
-        //
-        // internal static readonly Descriptor k_TextureAtlasEmptyDescriptor = new Descriptor(
-        //     PAA0007,
-        //     "Texture Atlas: Too much empty space",
-        //     new[] {Area.Memory},
-        //     "The texture atlas contains a lot of empty space. Empty space contributes to texture memory usage.",
-        //     "Consider reorganizing your texture atlas in order to reduce the amount of empty space."
-        // )
-        // {
-        //     messageFormat = "Texture Atlas '{0}' has too much empty space ({1} %)"
-        // };
+        internal const string PAA4000 = nameof(PAA4000);    // Long AudioClips which aren’t set to streaming
+        internal const string PAA4001 = nameof(PAA4001);    // Very small ACs (uncompressed size <200KB) that ARE set to streaming. These should probably be Decompress on Load
+        internal const string PAA4002 = nameof(PAA4002);    // Stereo clips not forced to Mono on mobile platforms
+        internal const string PAA4003 = nameof(PAA4003);    // Stereo clips not forced to Mono if they’re not streaming audio (only non-diagetic music should be stereo, really)
+        internal const string PAA4004 = nameof(PAA4004);    // Decompress on Load used with long clips
+        internal const string PAA4005 = nameof(PAA4005);    // Compressed In Memory used with compression formats that are not trivial to decompress (e.g. everything other than PCM or ADPCM)
+        internal const string PAA4006 = nameof(PAA4006);    // Bitrates > 44.1KHz on mobile
+        internal const string PAA4007 = nameof(PAA4007);    // Bitrates > 48KHz on non-mobile platforms
+        internal const string PAA4008 = nameof(PAA4008);    // Preload Audio Data ticked (increases load times and is only needed for audio that must start IMMEDIATELY upon scene load)
+        internal const string PAA4009 = nameof(PAA4009);    // If Load In Background isn’t enabled on ACs over (TUNEABLE) size/length (if it’s not ticked, loading will block the main thread)
+        internal const string PAA4010 = nameof(PAA4010);    // If MP3 is used. Vorbis is better
+        internal const string PAA4011 = nameof(PAA4011);    // Source assets that aren’t .WAV or .AIFF. Other formats (.MP3, .OGG, etc.) are lossy
+
+        // TODO - Put these in a config somewhere
+        private const int k_StreamingClipThresholdBytes = 200 * 1024;
+        private const int k_LongDecompressedClipThresholdBytes = 200 * 1024;
+        private const int k_LoadInBackGroundClipSizeThresholdBytes = 1024 * 1024;
+
+        private static string s_PlatformString = "";
+
+        internal static readonly Descriptor k_AudioLongClipDoesNotStreamDescriptor = new Descriptor(
+            PAA4000,
+            "Audio: Long AudioClip is not set to streaming",
+            Area.Memory,
+            "The AudioClip has a runtime memory footprint larger than the streaming buffer size of 200KB, but its <b>Load Type</b> is not set to <b>Streaming</b>. Storing the whole clip in memory rather than streaming it may be an inefficient use of memory.",
+            "Consider setting <b>Load Type</b> to <b>Streaming</b> in the AudioClip Import Settings."
+        )
+        {
+            messageFormat = "AudioClip '{0}' has <b>Load Type</b> that is not <b>Streaming</b>",
+            fixer = (issue) =>
+            {
+                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                if (audioImporter != null)
+                {
+                    var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
+                    sampleSettings.loadType = AudioClipLoadType.Streaming;
+                    audioImporter.SetOverrideSampleSettings(s_PlatformString, sampleSettings);
+                    audioImporter.SaveAndReimport();
+                }
+            }
+        };
+
+        internal static readonly Descriptor k_AudioShortClipStreamsDescriptor = new Descriptor(
+            PAA4001,
+            "Audio: Short AudioClip is set to streaming",
+            Area.Memory,
+            "The AudioClip has a runtime memory footprint smaller than the streaming buffer size of 200KB, but its <b>Load Type</b> is set to <b>Streaming</b>. Requiring a streaming buffer for this clip is an inefficient use of memory.",
+            "Set <b>Load Type</b> to <b>Compressed in Memory</b> or <b>Decompress On Load</b> in the AudioClip Import Settings."
+        )
+        {
+            messageFormat = "AudioClip '{0}' has <b>Load Type</b> set to <b>Streaming</b>",
+        };
+
+        internal static readonly Descriptor k_AudioStereoClipsOnMobileDescriptor = new Descriptor(
+            PAA4002,
+            "Audio: AudioClip is stereo",
+            Area.Memory,
+            "The audio source asset is in stereo, and <b>Force To Mono</b> is not enabled in the AudioClip Import Settings. Stereo clips are generally not needed on mobile platforms, and have double the memory footprint of mono clips.",
+            "Tick the <b>Force To Mono</b> checkbox in the AudioClip Import Settings."
+        )
+        {
+            messageFormat = "AudioClip '{0}' is stereo",
+            fixer = (issue) =>
+            {
+                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                if (audioImporter != null)
+                {
+                    audioImporter.forceToMono = true;
+                    audioImporter.SaveAndReimport();
+                }
+            }
+        };
+
+        internal static readonly Descriptor k_AudioStereoClipWhichIsNotStreamingDescriptor = new Descriptor(
+            PAA4003,
+            "Audio: AudioClip is stereo",
+            Area.Memory,
+            "The audio source asset is in stereo, <b>Force To Mono</b> is not enabled in the AudioClip Import Settings, and the <b>Load Type</b> is not <b>Streaming</b>, which implies the AudioClip may be used as a diagetic positional sound effect. Positional effects should be mono; only non-diagetic music and effects should be stereo.",
+            "Tick the <b>Force To Mono</b> checkbox in the AudioClip Import Settings."
+        )
+        {
+            messageFormat = "AudioClip '{0}' is stereo",
+            fixer = (issue) =>
+            {
+                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                if (audioImporter != null)
+                {
+                    audioImporter.forceToMono = true;
+                    audioImporter.SaveAndReimport();
+                }
+            }
+        };
+
+        internal static readonly Descriptor k_AudioLongDecompressedClipDescriptor = new Descriptor(
+            PAA4004,
+            "Audio: AudioClip <b>Load Type</b> is <b>Decompress On Load</b>",
+            new[] {Area.Memory, Area.LoadTime},
+            "The AudioClip is long, and its <b>Load Type</b> is set to<b>Decompress On Load</b>. The clip's memory footprint may be excessive, and decompression may impact load times.",
+            "Consider setting the <b>Load Type</b> to <b>Compressed In Memory</b> or <b>Streaming</b>. If you have concerns about the CPU cost of decompressing <b>Compressed In Memory</b> clips for playback, consider a format which is fast to decompress, such as <b>ADPCM</b>.""
+        )
+        {
+            messageFormat = "AudioClip '{0}' <b>Load Type</b> is <b>Decompress On Load</b>",
+        };
+
+        internal static readonly Descriptor k_AudioCompressedInMemoryDescriptor = new Descriptor(
+            PAA4005,
+            "Audio: Compressed AudioClip <b>Load Type</b> is <b>Compressed In Memory</b>",
+            Area.CPU,
+            "The AudioClip's <b>Load Type</b> is set to <b>Compressed In Memory</b> but the clip is imported with a format that is not trivial to decompress. Decompression will be performed every time the clip is played, and may impact CPU performance.",
+            "If runtime performance is impacted, either set the <b>Load Type</b> to <b>Decompress On Load</b> or set the <b>Compression Format</b> to <b>ADPCM</b>, which is fast to decompress."
+        )
+        {
+            messageFormat = "AudioClip '{0}' <b>Load Type</b> is <b>Compressed In Memory</b>",
+        };
+
+        internal static readonly Descriptor k_Audio441KHzMobileDescriptor = new Descriptor(
+            PAA4006,
+            "Audio: Sample Rate is over 44.1 KHz",
+            new[] {Area.Memory, Area.BuildSize, Area.LoadTime},
+            "The AudioClip's source sample rate is higher than 44.1 KHz, and the <b>Sample Rate Setting</b> does not override it. Mobile speakers and headphones are generally of mediocre quality and cannot discernibly reproduce very high-fidelity sounds, so this clip's file size and memory footprint is excessive.",
+            "Set the <b>Sample Rate Setting</b> to <b>Override</b> and the <b>Sample Rate</b> to a suitable value. <b>22050</b> Hz is fine for most sounds, and <b>44100</b> Hz (CD Quality) can be useful for prominent sounds or music if they include high frequencies."
+        )
+        {
+            messageFormat = "AudioClip '{0}' Sample Rate is over 44.1 KHz",
+            fixer = (issue) =>
+            {
+                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                if (audioImporter != null)
+                {
+                    var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
+                    sampleSettings.sampleRateSetting = AudioSampleRateSetting.OverrideSampleRate;
+                    sampleSettings.sampleRateOverride = 44100;
+                    audioImporter.SetOverrideSampleSettings(s_PlatformString, sampleSettings);
+                    audioImporter.SaveAndReimport();
+                }
+            }
+        };
+
+        internal static readonly Descriptor k_Audio48KHzDescriptor = new Descriptor(
+            PAA4007,
+            "Audio: Sample Rate is over 48 KHz",
+            new[] {Area.Memory, Area.BuildSize, Area.LoadTime},
+            "The AudioClip's source sample rate is higher than 48 KHz, and the <b>Sample Rate Setting</b> does not override it. Most Blu-Ray content is 48 KHz, and anything above that is generally only used during the studio recording process or for scientific applications. This clip's file size and memory footprint is excessive.",
+            "Set the <b>Sample Rate Setting</b> to <b>Override</b> and the <b>Sample Rate</b> to <b>48000</b> Hz or lower."
+        )
+        {
+            messageFormat = "AudioClip '{0}' Sample Rate is over 48KHz",
+            fixer = (issue) =>
+            {
+                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                if (audioImporter != null)
+                {
+                    var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
+                    sampleSettings.sampleRateSetting = AudioSampleRateSetting.OverrideSampleRate;
+                    sampleSettings.sampleRateOverride = 48000;
+                    audioImporter.SetOverrideSampleSettings(s_PlatformString, sampleSettings);
+                    audioImporter.SaveAndReimport();
+                }
+            }
+        };
+
+        internal static readonly Descriptor k_AudioPreloadDescriptor = new Descriptor(
+            PAA4008,
+            "Audio: Preload Audio Data is enabled",
+            Area.LoadTime,
+            "The <b>Preload Audio Data</b> checkbox is ticked for this AudioClip. This forces scene/prefab loading to wait synchronously until the AudioClip has completed loading before continuing running, and can impact scene load/initialization times.",
+            "Consider un-ticking the <b>Preload Audio Data</b> checkbox. Audio preloading is only required when the AudioClip must play at the exact moment the scene begins simulating, or if the audio timing must be very precise the first time it is played."
+        )
+        {
+            messageFormat = "AudioClip '{0}' is set to Preload Audio Data",
+            fixer = (issue) =>
+            {
+                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                if (audioImporter != null)
+                {
+                    audioImporter.preloadAudioData = false;
+                    audioImporter.SaveAndReimport();
+                }
+            }
+        };
+
+        internal static readonly Descriptor k_AudioLoadInBackgroundDisabledDescriptor = new Descriptor(
+            PAA4009,
+            "Audio: Load In Background is not enabled",
+            new [] {Area.CPU, Area.LoadTime},
+            "This AudioClip is large, and the <b>Load In Background</b> checkbox is not ticked. Loading will be performed synchronously and will block the main thread. This may impact load times or create CPU spikes, depending on when the clip is loaded.",
+            "Tick the <b>Load In Background</b> checkbox in the AudioClip Import Settings."
+        )
+        {
+            messageFormat = "AudioClip '{0}' Load In Background is not enabled",
+            fixer = (issue) =>
+            {
+                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                if (audioImporter != null)
+                {
+                    audioImporter.loadInBackground = true;
+                    audioImporter.SaveAndReimport();
+                }
+            }
+        };
+
+        internal static readonly Descriptor k_AudioMP3Descriptor = new Descriptor(
+            PAA4010,
+            "Audio: Compression Format is MP3",
+            Area.Quality,
+            "The AudioClip's <b>Compression Format</b> is set to <b>MP3</b>. MP3 is an old compression format which has been surpassed in efficiency and quality by newer formats such as Vorbis.",
+            "Set the <b>Compression Format</b> to <b>Vorbis</b> in the AudioClip's Import Settings."
+        )
+        {
+            messageFormat = "AudioClip '{0}' Compression Format is MP3",
+            fixer = (issue) =>
+            {
+                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                if (audioImporter != null)
+                {
+                    var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
+                    sampleSettings.compressionFormat = AudioCompressionFormat.Vorbis;
+                    audioImporter.SetOverrideSampleSettings(s_PlatformString, sampleSettings);
+                    audioImporter.SaveAndReimport();
+                }
+            }
+        };
+
+        // Source assets that aren’t .WAV or .AIFF. Other formats (.MP3, .OGG, etc.) are lossy
+        internal static readonly Descriptor k_AudioCompressedSourceAssetDescriptor = new Descriptor(
+            PAA4011,
+            "Audio: Source asset is in a lossy compressed format",
+            Area.Quality,
+            "The file format used by the source asset for the AudioClip uses a lossy compression format. The Asset Import process decompresses the audio data and recompresses it in the chosen runtime format. This may result in a further loss of sound quality.",
+            "Wherever possible, select a lossless file format such as .WAV or .AIFF for source assets."
+        )
+        {
+            messageFormat = "AudioClip '{0}' source asset is in a lossy compressed format",
+        };
 
         public void Initialize(ProjectAuditorModule module)
         {
-            // module.RegisterDescriptor(k_TextureMipMapNotEnabledDescriptor);
-            // module.RegisterDescriptor(k_TextureMipMapEnabledDescriptor);
-            // module.RegisterDescriptor(k_TextureReadWriteEnabledDescriptor);
-            // module.RegisterDescriptor(k_TextureStreamingMipMapEnabledDescriptor);
-            // module.RegisterDescriptor(k_TextureAnisotropicLevelDescriptor);
-            // module.RegisterDescriptor(k_TextureSolidColorDescriptor);
-            // module.RegisterDescriptor(k_TextureSolidColorNoFixerDescriptor);
-            // module.RegisterDescriptor(k_TextureAtlasEmptyDescriptor);
+            module.RegisterDescriptor(k_AudioLongClipDoesNotStreamDescriptor);
+            module.RegisterDescriptor(k_AudioShortClipStreamsDescriptor);
+            module.RegisterDescriptor(k_AudioStereoClipsOnMobileDescriptor);
+            module.RegisterDescriptor(k_AudioStereoClipWhichIsNotStreamingDescriptor);
+            module.RegisterDescriptor(k_AudioLongDecompressedClipDescriptor);
+            module.RegisterDescriptor(k_AudioCompressedInMemoryDescriptor);
+            module.RegisterDescriptor(k_Audio441KHzMobileDescriptor);
+            module.RegisterDescriptor(k_Audio48KHzDescriptor);
+            module.RegisterDescriptor(k_AudioPreloadDescriptor);
+            module.RegisterDescriptor(k_AudioLoadInBackgroundDisabledDescriptor);
+            module.RegisterDescriptor(k_AudioMP3Descriptor);
+            module.RegisterDescriptor(k_AudioCompressedSourceAssetDescriptor);
         }
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, AudioImporter audioImporter)
         {
             var assetPath = audioImporter.assetPath;
-            var sampleSettings = audioImporter.GetOverrideSampleSettings(projectAuditorParams.platform.ToString());
+            s_PlatformString = projectAuditorParams.platform.ToString();
+
+            var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
             var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
 
             // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
