@@ -31,19 +31,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
         // TODO - Put these in a config somewhere
         private const int k_StreamingClipThresholdBytes = 200 * 1024;
         private const int k_LongDecompressedClipThresholdBytes = 200 * 1024;
-        private const int k_LoadInBackGroundClipSizeThresholdBytes = 1024 * 1024;
+        private const int k_LoadInBackGroundClipSizeThresholdBytes = 200 * 1024;
 
         private static string s_PlatformString = "";
 
         internal static readonly Descriptor k_AudioLongClipDoesNotStreamDescriptor = new Descriptor(
             PAA4000,
-            "Audio: Long AudioClip is not set to streaming",
+            "Audio: Long AudioClip is not set to Streaming",
             Area.Memory,
             "The AudioClip has a runtime memory footprint larger than the streaming buffer size of 200KB, but its <b>Load Type</b> is not set to <b>Streaming</b>. Storing the whole clip in memory rather than streaming it may be an inefficient use of memory.",
             "Consider setting <b>Load Type</b> to <b>Streaming</b> in the AudioClip Import Settings."
         )
         {
-            messageFormat = "AudioClip '{0}' has <b>Load Type</b> that is not <b>Streaming</b>",
+            messageFormat = "AudioClip '{0}' Load Type is not set to Streaming",
             fixer = (issue) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Set <b>Load Type</b> to <b>Compressed in Memory</b> or <b>Decompress On Load</b> in the AudioClip Import Settings."
         )
         {
-            messageFormat = "AudioClip '{0}' has <b>Load Type</b> set to <b>Streaming</b>",
+            messageFormat = "AudioClip '{0}' Load Type is set to Streaming",
         };
 
         internal static readonly Descriptor k_AudioStereoClipsOnMobileDescriptor = new Descriptor(
@@ -110,24 +110,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static readonly Descriptor k_AudioLongDecompressedClipDescriptor = new Descriptor(
             PAA4004,
-            "Audio: AudioClip <b>Load Type</b> is <b>Decompress On Load</b>",
+            "Audio: AudioClip is set to Decompress On Load",
             new[] {Area.Memory, Area.LoadTime},
-            "The AudioClip is long, and its <b>Load Type</b> is set to<b>Decompress On Load</b>. The clip's memory footprint may be excessive, and decompression may impact load times.",
+            "The AudioClip is long, and its <b>Load Type</b> is set to <b>Decompress On Load</b>. The clip's memory footprint may be excessive, and decompression may impact load times.",
             "Consider setting the <b>Load Type</b> to <b>Compressed In Memory</b> or <b>Streaming</b>. If you have concerns about the CPU cost of decompressing <b>Compressed In Memory</b> clips for playback, consider a format which is fast to decompress, such as <b>ADPCM</b>."
         )
         {
-            messageFormat = "AudioClip '{0}' <b>Load Type</b> is <b>Decompress On Load</b>",
+            messageFormat = "AudioClip '{0}' is set to Decompress On Load",
         };
 
         internal static readonly Descriptor k_AudioCompressedInMemoryDescriptor = new Descriptor(
             PAA4005,
-            "Audio: Compressed AudioClip <b>Load Type</b> is <b>Compressed In Memory</b>",
+            "Audio: Compressed AudioClip is Compressed In Memory",
             Area.CPU,
             "The AudioClip's <b>Load Type</b> is set to <b>Compressed In Memory</b> but the clip is imported with a format that is not trivial to decompress. Decompression will be performed every time the clip is played, and may impact CPU performance.",
             "If runtime performance is impacted, either set the <b>Load Type</b> to <b>Decompress On Load</b> or set the <b>Compression Format</b> to <b>ADPCM</b>, which is fast to decompress."
         )
         {
-            messageFormat = "AudioClip '{0}' <b>Load Type</b> is <b>Compressed In Memory</b>",
+            messageFormat = "AudioClip '{0}' is Compressed In Memory",
         };
 
         internal static readonly Descriptor k_Audio441KHzMobileDescriptor = new Descriptor(
@@ -274,14 +274,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
             var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
 
+            // GET CLIP STATS
+
+            var clipName = Path.GetFileNameWithoutExtension(assetPath);
             // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
             var runtimeSize = Profiler.GetRuntimeMemorySizeLong(audioClip);
             var origSize = (int)GetPropertyValue(audioImporter, "origSize");
             var compSize = (int)GetPropertyValue(audioImporter, "compSize");
 
+            // REPORT FILE FOR AUDIOCLIP VIEW
+
             var ts = new TimeSpan(0, 0, 0, 0, (int)(audioClip.length * 1000.0f));
 
-            yield return ProjectIssue.Create(IssueCategory.AudioClip, Path.GetFileNameWithoutExtension(assetPath))
+            yield return ProjectIssue.Create(IssueCategory.AudioClip, clipName)
                 .WithCustomProperties(
                     new object[(int)AudioClipProperty.Num]
             {
@@ -303,62 +308,113 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             }).WithLocation(assetPath);
 
+            // DIAGNOSTICS
 
-//             // diagnostics
-//             var textureName = Path.GetFileNameWithoutExtension(assetPath);
-//
-//             if (!textureImporter.mipmapEnabled && textureImporter.textureType == TextureImporterType.Default)
-//             {
-//                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
-//                     k_TextureMipMapNotEnabledDescriptor, textureName)
-//                     .WithLocation(assetPath);
-//             }
-//
-//             if (textureImporter.mipmapEnabled &&
-//                 (textureImporter.textureType == TextureImporterType.Sprite || textureImporter.textureType == TextureImporterType.GUI)
-//             )
-//             {
-//                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
-//                     k_TextureMipMapEnabledDescriptor, textureName)
-//                     .WithLocation(assetPath);
-//             }
-//
-//             if (textureImporter.isReadable)
-//             {
-//                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureReadWriteEnabledDescriptor, textureName)
-//                     .WithLocation(textureImporter.assetPath);
-//             }
-//
-//             if (textureImporter.mipmapEnabled && !textureImporter.streamingMipmaps && size > Mathf.Pow(projectAuditorParams.settings.TextureStreamingMipmapsSizeLimit, 2))
-//             {
-//                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureStreamingMipMapEnabledDescriptor, textureName)
-//                     .WithLocation(textureImporter.assetPath);
-//             }
-//
-//             if (textureImporter.mipmapEnabled && textureImporter.filterMode != FilterMode.Point && textureImporter.anisoLevel > 1)
-//             {
-//                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAnisotropicLevelDescriptor, textureName, textureImporter.anisoLevel)
-//                     .WithLocation(textureImporter.assetPath);
-//             }
-//
-//             if (TextureUtils.IsTextureSolidColorTooBig(textureImporter, texture))
-//             {
-//                 var dimensionAppropriateDescriptor = texture.dimension == UnityEngine.Rendering.TextureDimension.Tex2D ? k_TextureSolidColorDescriptor : k_TextureSolidColorNoFixerDescriptor;
-//                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, dimensionAppropriateDescriptor, textureName)
-//                     .WithLocation(textureImporter.assetPath);
-//             }
-//
-//             var texture2D = texture as Texture2D;
-//             if (texture2D != null)
-//             {
-//                 var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
-//                 if (emptyPercent >
-//                     projectAuditorParams.settings.SpriteAtlasEmptySpaceLimit)
-//                 {
-//                     yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor, textureName, emptyPercent)
-//                         .WithLocation(textureImporter.assetPath);
-//                 }
-//             }
+            bool isMobileTarget = (projectAuditorParams.platform == BuildTarget.Android ||
+                                   projectAuditorParams.platform == BuildTarget.iOS ||
+                                   projectAuditorParams.platform == BuildTarget.Switch);
+
+            bool isStreaming = sampleSettings.loadType == AudioClipLoadType.Streaming;
+
+            var sourceFileExtension = System.IO.Path.GetExtension(assetPath).ToUpper() ?? string.Empty;
+            if (sourceFileExtension.StartsWith("."))
+                sourceFileExtension = sourceFileExtension.Substring(1);
+
+            if (compSize > k_StreamingClipThresholdBytes && !isStreaming)
+            {
+                yield return ProjectIssue.Create(
+                        IssueCategory.AssetDiagnostic, k_AudioLongClipDoesNotStreamDescriptor, clipName)
+                     .WithLocation(assetPath);
+            }
+
+            if (compSize < k_StreamingClipThresholdBytes && isStreaming)
+            {
+                yield return ProjectIssue.Create(
+                        IssueCategory.AssetDiagnostic, k_AudioShortClipStreamsDescriptor, clipName)
+                    .WithLocation(assetPath);
+            }
+
+            if (audioClip.channels > 1 && audioImporter.forceToMono == false)
+            {
+                if(isMobileTarget)
+                {
+                    yield return ProjectIssue.Create(
+                            IssueCategory.AssetDiagnostic, k_AudioStereoClipsOnMobileDescriptor, clipName)
+                        .WithLocation(assetPath);
+                }
+                else if(!isStreaming)
+                {
+                    yield return ProjectIssue.Create(
+                            IssueCategory.AssetDiagnostic, k_AudioStereoClipWhichIsNotStreamingDescriptor, clipName)
+                        .WithLocation(assetPath);
+                }
+            }
+
+            if (compSize > k_LongDecompressedClipThresholdBytes &&
+                sampleSettings.loadType == AudioClipLoadType.DecompressOnLoad)
+            {
+                yield return ProjectIssue.Create(
+                        IssueCategory.AssetDiagnostic, k_AudioLongDecompressedClipDescriptor, clipName)
+                    .WithLocation(assetPath);
+            }
+
+            if (sampleSettings.loadType == AudioClipLoadType.CompressedInMemory &&
+                sampleSettings.compressionFormat != AudioCompressionFormat.PCM &&
+                sampleSettings.compressionFormat != AudioCompressionFormat.ADPCM)
+            {
+                yield return ProjectIssue.Create(
+                        IssueCategory.AssetDiagnostic, k_AudioCompressedInMemoryDescriptor, clipName)
+                    .WithLocation(assetPath);
+            }
+
+            if (isMobileTarget)
+            {
+                if (audioClip.frequency > 44100)
+                {
+                    yield return ProjectIssue.Create(
+                            IssueCategory.AssetDiagnostic, k_Audio441KHzMobileDescriptor, clipName)
+                        .WithLocation(assetPath);
+                }
+            }
+            else
+            {
+                if (audioClip.frequency > 48000)
+                {
+                    yield return ProjectIssue.Create(
+                            IssueCategory.AssetDiagnostic, k_Audio48KHzDescriptor, clipName)
+                        .WithLocation(assetPath);
+                }
+            }
+
+            if (audioImporter.preloadAudioData)
+            {
+                yield return ProjectIssue.Create(
+                        IssueCategory.AssetDiagnostic, k_AudioPreloadDescriptor, clipName)
+                    .WithLocation(assetPath);
+            }
+
+            if (!audioImporter.loadInBackground && compSize > k_LoadInBackGroundClipSizeThresholdBytes)
+            {
+                yield return ProjectIssue.Create(
+                        IssueCategory.AssetDiagnostic, k_AudioLoadInBackgroundDisabledDescriptor, clipName)
+                    .WithLocation(assetPath);
+            }
+
+            if (sampleSettings.compressionFormat == AudioCompressionFormat.MP3)
+            {
+                yield return ProjectIssue.Create(
+                        IssueCategory.AssetDiagnostic, k_AudioMP3Descriptor, clipName)
+                    .WithLocation(assetPath);
+            }
+
+            if (sourceFileExtension != "WAV" &&
+                sourceFileExtension != "AIFF" &&
+                sourceFileExtension != "AIF")
+            {
+                yield return ProjectIssue.Create(
+                        IssueCategory.AssetDiagnostic, k_AudioCompressedSourceAssetDescriptor, clipName)
+                    .WithLocation(assetPath);
+            }
         }
 
         private static object GetPropertyValue(AssetImporter assetImporter, string propertyName)
