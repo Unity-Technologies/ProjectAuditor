@@ -425,7 +425,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public ProjectIssue[] GetSelection()
         {
             var selectedItems = m_Table.GetSelectedItems();
-            return selectedItems.Where(item => item.parent != null).Select(i => i.ProjectIssue).ToArray();
+            return selectedItems.Where(item => item.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
         }
 
         public void SetSelection(Func<ProjectIssue, bool> predicate)
