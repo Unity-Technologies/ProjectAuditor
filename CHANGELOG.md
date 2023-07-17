@@ -6,8 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+* Improved installation instructions
+
 ### Fixed
 * Invalid default ProjectAuditorSettings object
+* Saving of muted issues to Config asset
 
 ## [0.10.0] - 2023-05-03
 
