@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 * Improved installation instructions
 
+### Fixed
+* Saving of muted issues to Config asset
+
 ## [0.10.0] - 2023-05-03
 
 ### Changed
