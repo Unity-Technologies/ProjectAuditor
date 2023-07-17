@@ -3,9 +3,16 @@ There are several ways to install Project Auditor. Choose the most appropriate m
 > **Note**: To install Project Auditor for development purposes, go to this [page](Developing.md) instead.
 
 ## Installing as read-only Package
-At this time, Project Auditor is not discoverable via Package Manager so it has to be installed from its Git repository. The instructions that follow are specific to Project Auditor, however, more infromation on how a package can be added to a project as a dependency from Git, you can check the Package Manager [documentation](https://docs.unity3d.com/Manual/upm-git.html).
+At this time, Project Auditor is not discoverable via Package Manager. The installation process depends on your Unity version.
 
-### Package Manager UI (Recommended)
+### Version 2021.1 and later
+
+To install this package, follow the instructions for [adding a package by name](https://docs.unity3d.com/2021.1/Documentation/Manual/upm-ui-quick.html) in the Unity Editor. The package's name is `com.unity.project-auditor`.
+
+### Version 2020.3 and earlier
+The package can be installed directly from its public Git repository. The instructions that follow are specific to Project Auditor, however, more information on how a package can be added to a project as a dependency from Git, you can check the Package Manager [documentation](https://docs.unity3d.com/Manual/upm-git.html).
+
+#### Package Manager UI (Recommended)
 The easiest way to install Project Auditor in Unity 2018 (or newer) is via Package Manager with the following steps:
 
 Click on _Code_ and copy the repository __HTTPS__ URL to the clipboard
@@ -26,7 +33,7 @@ Note that to install a specific version, simply add `#<version>` at the end of t
 
 A list of releases can be found [here](https://github.com/Unity-Technologies/ProjectAuditor/releases).
 
-### Upgrade to a newer version
+#### Upgrade to a newer version
 Under the hood, the method described above adds `com.unity.project-auditor` as a dependency in the project `Packages/manifest.json` file. To upgrade to a new Project Auditor version, you can simply modify the tag. For example:
 
 ```
@@ -36,3 +43,6 @@ Under the hood, the method described above adds `com.unity.project-auditor` as a
   }
 }
 ```
+
+#### Install as a tarball
+If you are working in an old version of Unity (2020.3 or earlier) and cannot install the package directly from the Git URL for some reason, another option is to install the package from a tarball. See the Package Manager [documentation](https://docs.unity3d.com/Manual/upm-localpath.html) about tarballs for more information.
