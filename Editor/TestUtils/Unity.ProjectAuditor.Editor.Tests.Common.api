@@ -11,6 +11,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         public TestAsset(string fileName, byte[] byteContent) {}
         public TestAsset(string fileName, string content) {}
         public static void Cleanup();
+        public void CleanupLocal();
         public static void CreateTempFolder();
         public static TestAsset Save(UnityEngine.Object asset, string fileName);
         public static TestAsset SaveSpriteAtlasAsset(UnityEditor.U2D.SpriteAtlasAsset asset, string fileName);
