@@ -131,7 +131,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 id = TabId.Shaders, name = "Shaders", onDemand = false,
                 categories = new[]
                 {
-                    IssueCategory.Shader, IssueCategory.ShaderVariant, IssueCategory.ShaderCompilerMessage
+                    IssueCategory.Shader, IssueCategory.Material, IssueCategory.ShaderVariant, IssueCategory.ShaderCompilerMessage
                 }
             },
             new Tab
@@ -457,7 +457,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 category = IssueCategory.Shader,
                 displayName = "Shaders",
-                menuOrder = 2,
+                menuOrder = 1,
                 menuLabel = "Assets/Shaders/Shaders",
                 descriptionWithIcon = true,
                 showFilters = true,
@@ -474,8 +474,26 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     AnalysisView.DrawToolbarButton(Contents.ShaderCompilerMessages, () => viewManager.ChangeView(IssueCategory.ShaderCompilerMessage));
                     AnalysisView.DrawToolbarButton(Contents.ShaderVariants, () => viewManager.ChangeView(IssueCategory.ShaderVariant));
+                    AnalysisView.DrawToolbarButton(Contents.Materials, () => viewManager.ChangeView(IssueCategory.Material));
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Shaders
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.Material,
+                displayName = "Materials",
+                menuLabel = "Assets/Shaders/Materials",
+                menuOrder = 2,
+                showFilters = true,
+                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                onDrawToolbar = (viewManager) =>
+                {
+                    AnalysisView.DrawToolbarButton(Contents.ShaderCompilerMessages, () => viewManager.ChangeView(IssueCategory.ShaderCompilerMessage));
+                    AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
+                    AnalysisView.DrawToolbarButton(Contents.ShaderVariants, () => viewManager.ChangeView(IssueCategory.ShaderVariant));
+                },
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Materials
             });
 
 #if UNITY_2019_1_OR_NEWER
@@ -491,6 +509,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
                     AnalysisView.DrawToolbarButton(Contents.ShaderVariants, () => viewManager.ChangeView(IssueCategory.ShaderVariant));
+                    AnalysisView.DrawToolbarButton(Contents.Materials, () => viewManager.ChangeView(IssueCategory.Material));
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
             });
@@ -517,6 +536,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     AnalysisView.DrawToolbarButton(Contents.ShaderCompilerMessages, () => viewManager.ChangeView(IssueCategory.ShaderCompilerMessage));
                     AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
+                    AnalysisView.DrawToolbarButton(Contents.Materials, () => viewManager.ChangeView(IssueCategory.Material));
                 },
                 type = typeof(ShaderVariantsView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderVariants
@@ -1715,6 +1735,7 @@ A view allows the user to browse through the listed items and filter by string o
             public static readonly GUIContent CodeCompilerMessages = new GUIContent("Messages", "Compiler Messages");
 
             public static readonly GUIContent Shaders = new GUIContent("Shaders", "Inspect Shaders");
+            public static readonly GUIContent Materials = new GUIContent("Materials", "Show Materials List");
             public static readonly GUIContent ShaderCompilerMessages = new GUIContent("Messages", "Show Shader Compiler Messages");
             public static readonly GUIContent ShaderVariants = new GUIContent("Variants", "Inspect Shader Variants");
 

@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Shader view reports total property count and texture property count for Unity 2019.3 and above
 * Compute shader variant view reports kernel thread count for Unity 2021.2 and above
 * View-specific descriptions
+* Material list view in shader module
 
 ### Changed
 * Improved issue description and suggestion strings, to make them clearer and more consistent

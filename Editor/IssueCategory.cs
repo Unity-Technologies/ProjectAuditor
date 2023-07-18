@@ -115,6 +115,11 @@ namespace Unity.ProjectAuditor.Editor
         SpriteAtlas,
 
         /// <summary>
+        /// Category for showing materials grouped by shader
+        /// </summary>
+        Material,
+
+        /// <summary>
         /// Enum value indicating the first available custom category
         /// </summary>
         FirstCustomCategory
