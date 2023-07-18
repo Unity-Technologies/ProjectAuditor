@@ -234,11 +234,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void DrawTopPanel()
+        public void DrawTopPanel(bool drawDescription = true)
         {
             using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
             {
-                EditorGUILayout.LabelField(description);
+                if (drawDescription)
+                    EditorGUILayout.LabelField(description);
 
                 // Add a bit of space to improve readability
                 EditorGUILayout.Space();

@@ -98,8 +98,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     DrawSummaryItem("Compiled Assemblies: ", string.Format("{0} / {1}", m_Stats.numCompiledAssemblies, m_Stats.numTotalAssemblies), IssueCategory.Assembly);
                 if (m_Stats.numShaders > 0)
                     DrawSummaryItem("Shaders:", m_Stats.numShaders, IssueCategory.Shader);
-                if (m_Stats.numPackages > 0)
-                    DrawSummaryItem("Installed Packages:", m_Stats.numPackages, IssueCategory.Package);
 
                 DrawLine();
                 EditorGUI.indentLevel--;

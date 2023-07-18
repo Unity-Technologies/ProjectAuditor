@@ -56,7 +56,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         GUIContent[] m_PlatformContents;
         BuildTarget[] m_SupportedBuildTargets;
-        Utility.DropdownItem[] m_ViewDropdownItems;
         ProjectAuditor m_ProjectAuditor;
         bool m_ShouldRefresh;
         ProjectAuditorAnalytics.Analytic m_AnalyzeButtonAnalytic;
@@ -65,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         // UI
         TreeViewSelection m_AreaSelection;
         TreeViewSelection m_AssemblySelection;
-        Draw2D m_SeparatorLine;
+        Draw2D m_Draw2D;
 
         // Serialized fields
         [SerializeField] BuildTarget m_Platform = BuildTarget.NoTarget;
@@ -78,7 +77,85 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] ViewStates m_ViewStates = new ViewStates();
         [SerializeField] ViewManager m_ViewManager;
 
+        enum TabId
+        {
+            Summary,
+            Code,
+            Assets,
+            Shaders,
+            Settings,
+            Build,
+        }
+
+        [Serializable]
+        struct Tab
+        {
+            public TabId id;
+            public string name;
+            public bool onDemand;
+            public IssueCategory[] categories;
+            public IssueCategory[] availableCategories;
+            public int currentCategoryIndex;
+            public Utility.DropdownItem[] dropdown;
+        }
+
+        readonly Tab[] m_Tabs =
+        {
+            new Tab
+            {
+                id = TabId.Summary, name = "Summary", onDemand = false,
+                categories = new[]
+                {
+                    IssueCategory.MetaData
+                }
+            },
+            new Tab
+            {
+                id = TabId.Code, name = "Code", onDemand = true,
+                categories = new[]
+                {
+                    IssueCategory.Code, IssueCategory.Assembly, IssueCategory.CodeCompilerMessage,
+                    IssueCategory.PrecompiledAssembly, IssueCategory.GenericInstance
+                }
+            },
+            new Tab
+            {
+                id = TabId.Assets, name = "Assets", onDemand = true,
+                categories = new[]
+                {
+                    IssueCategory.AssetDiagnostic, IssueCategory.Texture, IssueCategory.Mesh, IssueCategory.AudioClip
+                }
+            },
+            new Tab
+            {
+                id = TabId.Shaders, name = "Shaders", onDemand = false,
+                categories = new[]
+                {
+                    IssueCategory.Shader, IssueCategory.ShaderVariant, IssueCategory.ShaderCompilerMessage
+                }
+            },
+            new Tab
+            {
+                id = TabId.Settings, name = "Settings", onDemand = false,
+                categories = new[]
+                {
+                    IssueCategory.ProjectSetting
+                }
+            },
+            new Tab
+            {
+                id = TabId.Build, name = "Build", onDemand = false,
+                categories = new[]
+                {
+                    IssueCategory.BuildStep, IssueCategory.BuildFile
+                }
+            },
+        };
+
         AnalysisView activeView => m_ViewManager.GetActiveView();
+
+        [SerializeField] int m_ActiveTabIndex = 0;
+        int m_TabButtonControlID;
 
         IProjectAuditorSettingsProvider m_SettingsProvider;
 
@@ -154,8 +231,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 m_ProjectAuditor = new ProjectAuditor();
 
-                var categories = m_ProjectReport.GetAllIssues().Select(i => i.category).Distinct().ToArray();
-                InitializeViews(categories, true);
+                InitializeViews(GetAllSupportedCategories(), true);
 
                 Profiler.BeginSample("Views Update");
                 m_ViewManager.AddIssues(m_ProjectReport.GetAllIssues());
@@ -167,11 +243,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_AnalysisState = AnalysisState.Initialized;
             }
 
-            m_SeparatorLine = new Draw2D("Unlit/ProjectAuditor");
+            m_Draw2D = new Draw2D("Unlit/ProjectAuditor");
 
             Profiler.BeginSample("Refresh");
             RefreshWindow();
             Profiler.EndSample();
+
+            wantsMouseMove = true;
         }
 
         void InitializeViews(IssueCategory[] categories, bool reload)
@@ -191,6 +269,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ProjectAuditorAnalytics.SendEvent(
                     (ProjectAuditorAnalytics.UIButton)viewDesc.analyticsEvent,
                     ProjectAuditorAnalytics.BeginAnalytic());
+            };
+
+            m_ViewManager.onViewChanged += i =>
+            {
+                var viewDesc = m_ViewManager.GetView(i).desc;
+                SyncTabOnViewChange(viewDesc.category);
             };
 
             m_ViewManager.onShowIgnoredIssuesChanged += showIgnoredIssues =>
@@ -236,20 +320,76 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Profiler.BeginSample("Views Creation");
 
-            var dropdownItems = new List<Utility.DropdownItem>(categories.Length);
-            m_ViewManager.Create(m_ProjectAuditor, m_ViewStates, (desc, isSupported) =>
-            {
-                dropdownItems.Add(new Utility.DropdownItem
-                {
-                    Content = new GUIContent(string.IsNullOrEmpty(desc.menuLabel) ? desc.displayName : desc.menuLabel),
-                    SelectionContent = new GUIContent("View: " + desc.displayName),
-                    Enabled = isSupported,
-                    UserData = desc.category
-                });
-            }, this);
-            m_ViewDropdownItems = dropdownItems.ToArray();
+            m_ViewManager.Create(m_ProjectAuditor, m_ViewStates, null, this);
+
+            InitializeTabs();
 
             Profiler.EndSample();
+        }
+
+        void InitializeTabs()
+        {
+            m_ActiveTabIndex = 0;
+
+            for (int i = 0; i < m_Tabs.Length; ++i)
+            {
+                var tab = m_Tabs[i];
+
+                RefreshTabCategories(ref tab);
+
+                tab.currentCategoryIndex = 0;
+
+                m_Tabs[i] = tab;
+            }
+        }
+
+        private void RefreshTabCategories(ref Tab tab)
+        {
+            List<IssueCategory> availableCategories = new List<IssueCategory>();
+            var dropDownItems = new List<Utility.DropdownItem>(tab.categories.Length);
+            var categoryIndex = 0;
+
+            foreach (var cat in tab.categories)
+            {
+                var view = m_ViewManager.GetView(cat);
+                if (view == null)
+                    continue;
+
+                var displayName = view.IsDiagnostic() ? "Diagnostic" : view.desc.displayName;
+
+                dropDownItems.Add(new Utility.DropdownItem
+                {
+                    Content = new GUIContent(displayName),
+                    SelectionContent = new GUIContent("View: " + displayName),
+                    Enabled = true,
+                    UserData = categoryIndex++
+                });
+
+                availableCategories.Add(cat);
+            }
+
+            if (dropDownItems.Count > 1)
+                tab.dropdown = dropDownItems.ToArray();
+            else
+                tab.dropdown = null;
+
+            tab.availableCategories = availableCategories.ToArray();
+        }
+
+        void SyncTabOnViewChange(IssueCategory newCatagory)
+        {
+            for (int tabIndex = 0; tabIndex < m_Tabs.Length; ++tabIndex)
+            {
+                for (int categoryIndex = 0; categoryIndex < m_Tabs[tabIndex].availableCategories.Length; ++categoryIndex)
+                {
+                    if (m_Tabs[tabIndex].availableCategories[categoryIndex] == newCatagory)
+                    {
+                        m_ActiveTabIndex = tabIndex;
+                        m_Tabs[m_ActiveTabIndex].currentCategoryIndex = categoryIndex;
+                        return;
+                    }
+                }
+            }
         }
 
         void OnDisable()
@@ -267,6 +407,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (m_AnalysisState != AnalysisState.Initializing && m_AnalysisState != AnalysisState.Initialized)
                 {
                     DrawToolbar();
+
+                    DrawTabs();
                 }
 
                 if (IsAnalysisValid())
@@ -631,12 +773,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ProjectAuditor = new ProjectAuditor();
 
-            var selectedCategories = GetSelectedCategories();
-            InitializeViews(selectedCategories, false);
+            InitializeViews(GetAllSupportedCategories(), false);
 
             var projectAuditorParams = new ProjectAuditorParams
             {
-                categories = m_SelectedModules == BuiltInModules.Everything ? null : selectedCategories,
+                categories = m_SelectedModules == BuiltInModules.Everything ? null : GetSelectedCategories(),
                 platform = m_Platform,
                 onIncomingIssues = issues =>
                 {
@@ -672,7 +813,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             AuditCategories(module.categories);
         }
 
-        void AuditCategories(IssueCategory[] categories)
+        void AuditCategories(IssueCategory[] categories, bool refreshSummaryView = false)
         {
             // a module might report more categories than requested so we need to make sure we clean up the views accordingly
             var modules = categories.SelectMany(m_ProjectAuditor.GetModules).ToArray();
@@ -699,13 +840,28 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                 },
                 existingReport = m_ProjectReport,
-                settings = m_SettingsProvider.GetCurrentSettings()
+                settings = m_SettingsProvider.GetCurrentSettings(),
+                onCompleted = projectReport =>
+                {
+                    m_ShouldRefresh = true;
+                    m_AnalysisState = AnalysisState.Completed;
+                }
             };
 
             var platform = m_ProjectReport.FindByCategory(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));
             if (platform != null)
                 projectAuditorParams.platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), platform.GetCustomProperty(MetaDataProperty.Value));
             m_ProjectAuditor.Audit(projectAuditorParams, new ProgressBar());
+
+            if (refreshSummaryView)
+            {
+                var summaryView = m_ViewManager.GetView(IssueCategory.MetaData);
+                if (summaryView != null)
+                {
+                    summaryView.Clear();
+                    summaryView.AddIssues(m_ProjectReport.GetAllIssues());
+                }
+            }
         }
 
         public void AnalyzeShaderVariants()
@@ -776,6 +932,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                 requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().categories);
 
             return requestedCategories.ToArray();
+        }
+
+        IssueCategory[] GetAllSupportedCategories()
+        {
+            List<IssueCategory> allTabCategories = new List<IssueCategory>();
+            foreach (var tab in m_Tabs)
+            {
+                allTabCategories.AddRange(tab.categories);
+            }
+
+            return allTabCategories.ToArray();
         }
 
         void DrawAssemblyFilter()
@@ -985,10 +1152,10 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             var rect = EditorGUILayout.GetControlRect(GUILayout.Height(1));
 
-            if (m_SeparatorLine.DrawStart(rect))
+            if (m_Draw2D.DrawStart(rect))
             {
-                m_SeparatorLine.DrawLine(0, 0, rect.width, 0, Color.black);
-                m_SeparatorLine.DrawEnd();
+                m_Draw2D.DrawLine(0, 0, rect.width, 0, Color.black);
+                m_Draw2D.DrawEnd();
             }
         }
 
@@ -1070,9 +1237,76 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        void DrawViewSelection()
+        {
+            // Sub categories dropdown, if there's more than one view
+            if (m_ViewManager != null && m_Tabs[m_ActiveTabIndex].dropdown != null)
+            {
+                using (new GUILayout.HorizontalScope(SharedStyles.TabBackground))
+                {
+                    Utility.ToolbarDropdownList(m_Tabs[m_ActiveTabIndex].dropdown,
+                        m_Tabs[m_ActiveTabIndex].currentCategoryIndex,
+                        (arg) =>
+                        {
+                            var categoryIndex = (int)arg;
+                            if (m_ProjectReport == null)
+                                return; // this happens from the summary view while the report is being generated
+
+                            var category = m_Tabs[m_ActiveTabIndex]
+                                .availableCategories[categoryIndex];
+                            if (!m_ProjectReport.HasCategory(category))
+                            {
+                                var displayName = m_ViewManager.GetView(category).desc.displayName;
+                                if (!EditorUtility.DisplayDialog(k_ProjectAuditorName,
+                                    $"'{displayName}' analysis will now begin.", "Ok",
+                                    "Cancel"))
+                                    return; // do not analyze and change view
+
+                                if (category == IssueCategory.Texture ||
+                                    category == IssueCategory.Mesh
+                                    || category == IssueCategory.AudioClip)
+                                {
+                                    List<IssueCategory> categories = new List<IssueCategory>();
+
+                                    // For asset categories, analyze all asset categories as a workaround:
+                                    // That way after the prompt above (which won't appear again for other asset categories!),
+                                    // we ensure all non-diagnostic asset views are populated with asset details.
+                                    if (m_ViewManager.GetView(IssueCategory.Texture) != null)
+                                        categories.Add(IssueCategory.Texture);
+                                    if (m_ViewManager.GetView(IssueCategory.Mesh) != null)
+                                        categories.Add(IssueCategory.Mesh);
+                                    if (m_ViewManager.GetView(IssueCategory.AudioClip) != null)
+                                        categories.Add(IssueCategory.AudioClip);
+
+                                    AuditCategories(categories.ToArray(), true);
+                                }
+                                else
+                                    AuditCategories(new[] { category }, true);
+
+                                var tab = m_Tabs[m_ActiveTabIndex];
+                                RefreshTabCategories(ref tab);
+                                m_Tabs[m_ActiveTabIndex] = tab;
+                            }
+
+                            m_ViewManager.ChangeView(category);
+                        }, GUILayout.Width(180));
+                }
+            }
+        }
+
         void DrawReport()
         {
-            activeView.DrawTopPanel();
+            GUILayout.Space(2);
+
+            using (new GUILayout.HorizontalScope(GUI.skin.box))
+            {
+                GUILayout.Label(activeView.description, GUILayout.MinWidth(360), GUILayout.ExpandWidth(true));
+                DrawViewSelection();
+
+                GUILayout.FlexibleSpace();
+            }
+
+            activeView.DrawTopPanel(false);
 
             if (activeView.IsValid())
             {
@@ -1183,28 +1417,9 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
-                const int largeButtonWidth = 200;
 #if UNITY_2019_1_OR_NEWER
                 GUILayout.Label(Utility.GetPlatformIcon(BuildPipeline.GetBuildTargetGroup(m_Platform)), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.toolbarIconSize));
 #endif
-                Utility.ToolbarDropdownList(m_ViewDropdownItems,
-                    m_ViewManager.activeViewIndex,
-                    (arg) =>
-                    {
-                        var category = (IssueCategory)arg;
-                        if (m_ProjectReport == null)
-                            return; // this happens from the summary view while the report is being generated
-                        if (!m_ProjectReport.HasCategory(category))
-                        {
-                            var displayName = m_ViewManager.GetView(category).desc.displayName;
-                            if (!EditorUtility.DisplayDialog(k_ProjectAuditorName, $"'{displayName}' analysis will now begin.", "Ok", "Cancel"))
-                                return; // do not analyze and change view
-
-                            AuditCategories(new[] {category});
-                        }
-
-                        m_ViewManager.ChangeView(category);
-                    }, GUILayout.Width(largeButtonWidth));
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
@@ -1238,6 +1453,119 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 Utility.DrawHelpButton(Contents.HelpButton, Documentation.GetPageUrl("index"));
             }
+        }
+
+        void DrawTabs()
+        {
+            int tabToAudit = -1;
+
+            using (new EditorGUILayout.VerticalScope(SharedStyles.TabBackground))
+            {
+                const int tabButtonWidth = 80;
+                const int tabButtonHeight = 27;
+
+                EditorGUILayout.BeginHorizontal(SharedStyles.TabBackground);
+
+                for (var i = 0; i < m_Tabs.Length; i++)
+                {
+                    GUI.enabled = m_ProjectReport != null;
+
+                    if (DrawTabButton(new GUIContent(m_Tabs[i].name), m_ActiveTabIndex == i,
+                        tabButtonWidth, tabButtonHeight))
+                    {
+                        var tab = m_Tabs[i];
+
+                        var hasAnyCategories = false;
+                        foreach (var category in tab.categories)
+                        {
+                            if (m_ProjectReport.HasCategory(category))
+                            {
+                                hasAnyCategories = true;
+                            }
+                        }
+
+                        if (!hasAnyCategories)
+                        {
+                            tabToAudit = i;
+                        }
+                        else
+                        {
+                            if (tab.availableCategories.Length > 0)
+                                m_ViewManager.ChangeView(tab.availableCategories[0]);
+                        }
+                    }
+
+                    GUI.enabled = true;
+                }
+
+                GUILayout.FlexibleSpace();
+                EditorGUILayout.EndHorizontal();
+            }
+
+            if (tabToAudit != -1)
+            {
+                var tab = m_Tabs[tabToAudit];
+
+                if (EditorUtility.DisplayDialog(k_ProjectAuditorName,
+                        $"'{tab.name}' analysis will now begin.", "Ok", "Cancel"))
+                {
+                    AuditCategories(tab.categories, true);
+
+                    RefreshTabCategories(ref tab);
+                    m_Tabs[tabToAudit] = tab;
+
+                    if (tab.availableCategories.Length > 0)
+                        m_ViewManager.ChangeView(tab.availableCategories[0]);
+                }
+            }
+        }
+
+        bool DrawTabButton(GUIContent content, bool isActive, int width, int height)
+        {
+            EditorGUILayout.BeginVertical();
+
+            bool wasButtonClicked = GUILayout.Button(content, SharedStyles.TabButton, GUILayout.Width(width), GUILayout.Height(height));
+            int id = GUIUtility.GetControlID(content, FocusType.Passive);
+            var isHoverState = GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition);
+
+            if (Event.current.type == EventType.MouseMove)
+            {
+                if (isHoverState)
+                {
+                    if (m_TabButtonControlID != id)
+                    {
+                        m_TabButtonControlID = id;
+                        if (mouseOverWindow != null)
+                        {
+                            mouseOverWindow.Repaint();
+                        }
+                    }
+                }
+                else
+                {
+                    if (m_TabButtonControlID == id)
+                    {
+                        m_TabButtonControlID = 0;
+                        if (mouseOverWindow != null)
+                        {
+                            mouseOverWindow.Repaint();
+                        }
+                    }
+                }
+            }
+
+            var rect = EditorGUILayout.GetControlRect(false, 3, SharedStyles.TabBackground, GUILayout.Width(width), GUILayout.Height(2));
+            if ((isActive || isHoverState) && m_Draw2D.DrawStart(rect))
+            {
+                var color = isActive ? SharedStyles.TabBottomActiveColor : SharedStyles.TabBottomHoverColor;
+
+                m_Draw2D.DrawFilledBox(0, 0, width, 2.5f, color);
+                m_Draw2D.DrawEnd();
+            }
+
+            EditorGUILayout.EndVertical();
+
+            return wasButtonClicked;
         }
 
         void SaveReport()
