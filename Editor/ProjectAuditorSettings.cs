@@ -37,5 +37,25 @@ namespace Unity.ProjectAuditor.Editor
         /// Percent of empty space allowed in a Sprite Atlas texture. Beyond that size we report an issue.
         /// </summary>
         internal int SpriteAtlasEmptySpaceLimit = 50;
+
+        /// <summary>
+        /// The runtime size (in bytes) above which we report an issue for non-streaming AudioClips. Unity's AudioClip streaming buffers are 200KB in size.
+        /// </summary>
+        internal int StreamingClipThresholdBytes = 200 * 1024;
+
+        /// <summary>
+        /// The runtime size (in bytes) above which we report an issue for AudioClips that are set to Decompress On Load.
+        /// </summary>
+        internal int LongDecompressedClipThresholdBytes = 200 * 1024;
+
+        /// <summary>
+        /// The file size (in bytes) above which we report advice on reducing the size of compressed AudioClips on mobile.
+        /// </summary>
+        internal int LongCompressedMobileClipThresholdBytes = 200 * 1024;
+
+        /// <summary>
+        /// The file size (in bytes) above which we recommend that AudioClips be flagged to load in the background.
+        /// </summary>
+        internal int LoadInBackGroundClipSizeThresholdBytes = 200 * 1024;
     }
 }

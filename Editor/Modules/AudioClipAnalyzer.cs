@@ -28,12 +28,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAA4010 = nameof(PAA4010);    // If MP3 is used. Vorbis is better
         internal const string PAA4011 = nameof(PAA4011);    // Source assets that aren’t .WAV or .AIFF. Other formats (.MP3, .OGG, etc.) are lossy
 
-        // TODO - Put these in a config somewhere
-        private const int k_StreamingClipThresholdBytes = 200 * 1024;
-        private const int k_LongDecompressedClipThresholdBytes = 200 * 1024;
-        private const int k_LongCompressedMobileClipThresholdBytes = 200 * 1024;
-        private const int k_LoadInBackGroundClipSizeThresholdBytes = 200 * 1024;
-
         private static string s_PlatformString = "";
 
         internal static readonly Descriptor k_AudioLongClipDoesNotStreamDescriptor = new Descriptor(
@@ -92,7 +86,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_AudioStereoClipWhichIsNotStreamingDescriptor = new Descriptor(
             PAA4003,
             "Audio: AudioClip is stereo",
-            Area.Memory,
+            new[] { Area.Memory, Area.Quality },
             "The audio source asset is in stereo, <b>Force To Mono</b> is not enabled in the AudioClip Import Settings, and the <b>Load Type</b> is not <b>Streaming</b>, which implies the AudioClip may be used as a diagetic positional sound effect. Positional effects should be mono; only non-diagetic music and effects should be stereo.",
             "Tick the <b>Force To Mono</b> checkbox in the AudioClip Import Settings."
         )
@@ -310,14 +304,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (sourceFileExtension.StartsWith("."))
                 sourceFileExtension = sourceFileExtension.Substring(1);
 
-            if (compSize > k_StreamingClipThresholdBytes && !isStreaming)
+            if (runtimeSize > projectAuditorParams.settings.StreamingClipThresholdBytes && !isStreaming)
             {
                 yield return ProjectIssue.Create(
                         IssueCategory.AssetDiagnostic, k_AudioLongClipDoesNotStreamDescriptor, clipName)
                      .WithLocation(assetPath);
             }
 
-            if (compSize < k_StreamingClipThresholdBytes && isStreaming)
+            if (runtimeSize < projectAuditorParams.settings.StreamingClipThresholdBytes && isStreaming)
             {
                 yield return ProjectIssue.Create(
                         IssueCategory.AssetDiagnostic, k_AudioShortClipStreamsDescriptor, clipName)
@@ -340,7 +334,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
             }
 
-            if (compSize > k_LongDecompressedClipThresholdBytes &&
+            if (runtimeSize > projectAuditorParams.settings.LongDecompressedClipThresholdBytes &&
                 sampleSettings.loadType == AudioClipLoadType.DecompressOnLoad)
             {
                 yield return ProjectIssue.Create(
@@ -358,7 +352,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             if (isMobileTarget &&
-                compSize > k_LongCompressedMobileClipThresholdBytes &&
+                compSize > projectAuditorParams.settings.LongCompressedMobileClipThresholdBytes &&
                 sampleSettings.compressionFormat != AudioCompressionFormat.PCM &&
                 sampleSettings.compressionFormat != AudioCompressionFormat.ADPCM &&
                 audioClip.frequency >= 48000 &&
@@ -369,7 +363,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(assetPath);
             }
 
-            // TODO - if a clip is compressed, it can't go higher than 48KHz. But we still want to report it.
+            // Annoyingly, if a clip is compressed, it can't go higher than 48KHz: The frequency gets clamped when it's
+            // passed to FMOD and it's not trivial to get the sample rate of the original source audio file. If we find
+            // a workaround for that, we should change this. In the meantime, it's useful for uncompressed samples at least.
             if (audioClip.frequency > 48000)
             {
                 yield return ProjectIssue.Create(
@@ -384,7 +380,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(assetPath);
             }
 
-            if (!audioImporter.loadInBackground && compSize > k_LoadInBackGroundClipSizeThresholdBytes)
+            if (!audioImporter.loadInBackground && compSize > projectAuditorParams.settings.LoadInBackGroundClipSizeThresholdBytes)
             {
                 yield return ProjectIssue.Create(
                         IssueCategory.AssetDiagnostic, k_AudioLoadInBackgroundDisabledDescriptor, clipName)
