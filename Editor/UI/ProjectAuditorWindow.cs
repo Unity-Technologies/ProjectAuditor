@@ -355,7 +355,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (view == null)
                     continue;
 
-                var displayName = view.IsDiagnostic() ? "Diagnostic" : view.desc.displayName;
+                var displayName = view.IsDiagnostic() ? "Diagnostics" : view.desc.displayName;
 
                 dropDownItems.Add(new Utility.DropdownItem
                 {
@@ -643,7 +643,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     menuLabel = "Experimental/Precompiled Assemblies",
                     menuOrder = 91,
                     showFilters = true,
-                    getAssemblyName = issue => issue.description,
                     onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
                     analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PrecompiledAssemblies
                 });
@@ -654,10 +653,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 displayName = "Assemblies",
                 menuLabel = "Code/Assemblies",
                 menuOrder = 98,
-                showAssemblySelection = true,
                 showFilters = true,
                 showDependencyView = true,
-                getAssemblyName = issue => issue.description,
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Assemblies
             });
@@ -688,10 +685,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 displayName = "Compiler Messages",
                 menuOrder = 98,
                 menuLabel = "Code/C# Compiler Messages",
-                //showAssemblySelection = true,
                 showFilters = true,
                 showInfoPanel = true,
-                //getAssemblyName = issue => issue.GetCustomProperty(CompilerMessageProperty.Assembly),
                 onDrawToolbar = (viewManager) =>
                 {
                     AnalysisView.DrawToolbarButton(Contents.CodeDiagnostics, () => viewManager.ChangeView(IssueCategory.Code));
