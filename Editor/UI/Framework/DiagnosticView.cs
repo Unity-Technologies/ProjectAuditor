@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     if (selectedDescriptors.Length != 0)
                     {
-                        if (GUILayout.Button(Contents.CopyToClipboard, SharedStyles.DarkSmallButton,
+                        if (GUILayout.Button(Contents.CopyToClipboard, SharedStyles.TabButton,
                             GUILayout.Width(LayoutSize.CopyToClipboardButtonSize),
                             GUILayout.Height(LayoutSize.CopyToClipboardButtonSize)))
                         {
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     if (selectedDescriptors.Length != 0)
                     {
-                        if (GUILayout.Button(Contents.CopyToClipboard, SharedStyles.DarkSmallButton,
+                        if (GUILayout.Button(Contents.CopyToClipboard, SharedStyles.TabButton,
                             GUILayout.Width(LayoutSize.CopyToClipboardButtonSize),
                             GUILayout.Height(LayoutSize.CopyToClipboardButtonSize)))
                         {

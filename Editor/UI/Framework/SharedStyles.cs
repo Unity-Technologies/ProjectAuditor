@@ -22,33 +22,90 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static GUIStyle s_LargeLabel;
         static GUIStyle s_WhiteLargeLabel;
 
-        static GUIStyle s_Row;
-        static GUIStyle s_RowAlternate;
+        static GUIStyle s_RowDark;
+        static GUIStyle s_RowAlternateDark;
+        static GUIStyle s_RowLight;
+        static GUIStyle s_RowAlternateLight;
 
-        static GUIStyle s_DarkSmallButton;
+        static GUIStyle s_TabButtonDark;
+        static GUIStyle s_TabButtonLight;
+        static GUIStyle s_TabBackgroundDark;
+        static GUIStyle s_TabBackgroundLight;
 
-        public static GUIStyle DarkSmallButton
+        static readonly Color k_TabBottomActiveColor = new Color(0.23f, 0.55f, 0.82f, 1);
+        static readonly Color k_TabBottomHoverDarkModeColor = new Color(0.9f, 0.9f, 0.9f, 1);
+        static readonly Color k_TabBottomHoverLightModeColor = new Color(0.2f, 0.2f, 0.2f, 1);
+
+        public static bool IsDarkMode => EditorGUIUtility.isProSkin;
+
+        public static Color TabBottomActiveColor => k_TabBottomActiveColor;
+        public static Color TabBottomHoverColor =>
+            IsDarkMode ? k_TabBottomHoverDarkModeColor : k_TabBottomHoverLightModeColor;
+
+        public static GUIStyle TabButton
         {
             get
             {
-                if (s_DarkSmallButton == null
-                    || s_DarkSmallButton.hover.background == null
-                    || s_DarkSmallButton.active.background == null)
+                if (IsDarkMode)
                 {
-                    var s_LightBackground = Utility.MakeColorTexture(new Color(0.3f, 0.3f, 0.3f, 1));
-                    var s_ActivatedBackground = Utility.MakeColorTexture(new Color(0.4f, 0.4f, 0.4f, 1));
-
-                    s_DarkSmallButton = new GUIStyle()
+                    if (s_TabButtonDark == null)
                     {
-                        normal = { textColor = Color.white },
-                        hover = { background = s_LightBackground, textColor = Color.white },
-                        active = { background = s_ActivatedBackground, textColor = Color.white },
-                        margin = new RectOffset(0, 0, 0, 0),
-                        alignment = TextAnchor.MiddleCenter
-                    };
-                }
+                        s_TabButtonDark = new GUIStyle()
+                        {
+                            normal = { textColor = Color.white },
+                            hover = { textColor = Color.white },
+                            active = { textColor = Color.white },
+                            margin = new RectOffset(0, 0, 0, 0),
+                            alignment = TextAnchor.MiddleCenter
+                        };
+                    }
 
-                return s_DarkSmallButton;
+                    return s_TabButtonDark;
+                }
+                else
+                {
+                    if (s_TabButtonLight == null)
+                    {
+                        s_TabButtonLight = new GUIStyle()
+                        {
+                            margin = new RectOffset(0, 0, 0, 0),
+                            alignment = TextAnchor.MiddleCenter
+                        };
+                    }
+
+                    return s_TabButtonLight;
+                }
+            }
+        }
+
+        public static GUIStyle TabBackground
+        {
+            get
+            {
+                if (IsDarkMode)
+                {
+                    if (s_TabBackgroundDark == null || s_TabBackgroundDark.normal.background == null)
+                    {
+                        var darkBackgroundTex = Utility.MakeColorTexture(new Color(0.173f, 0.173f, 0.173f, 1));
+
+                        s_TabBackgroundDark = new GUIStyle()
+                        {
+                            normal = { background = darkBackgroundTex },
+                            border = new RectOffset(2, 2, 2, 2),
+                        };
+                    }
+
+                    return s_TabBackgroundDark;
+                }
+                else
+                {
+                    if (s_TabBackgroundLight == null)
+                    {
+                        s_TabBackgroundLight = new GUIStyle();
+                    }
+
+                    return s_TabBackgroundLight;
+                }
             }
         }
 
@@ -245,15 +302,31 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             get
             {
-                if (s_Row == null || s_Row.normal.background == null)
+                if (IsDarkMode)
                 {
-                    s_Row = new GUIStyle(GUIStyle.none)
+                    if (s_RowDark == null || s_RowDark.normal.background == null)
                     {
-                        normal = {background = Utility.MakeColorTexture(new Color(0.22f, 0.22f, 0.22f, 1.0f))},
-                        fixedHeight = k_RowSize
-                    };
+                        s_RowDark = new GUIStyle(GUIStyle.none)
+                        {
+                            normal = { background = Utility.MakeColorTexture(new Color(0.22f, 0.22f, 0.22f, 1.0f)) },
+                            fixedHeight = k_RowSize
+                        };
+                    }
+
+                    return s_RowDark;
                 }
-                return s_Row;
+                else
+                {
+                    if (s_RowLight == null)
+                    {
+                        s_RowLight = new GUIStyle(GUIStyle.none)
+                        {
+                            fixedHeight = k_RowSize
+                        };
+                    }
+
+                    return s_RowLight;
+                }
             }
         }
 
@@ -261,15 +334,32 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             get
             {
-                if (s_RowAlternate == null || s_RowAlternate.normal.background == null)
+                if (IsDarkMode)
                 {
-                    s_RowAlternate = new GUIStyle(GUIStyle.none)
+                    if (s_RowAlternateDark == null || s_RowAlternateDark.normal.background == null)
                     {
-                        normal = {background = Utility.MakeColorTexture(new Color(0.275f, 0.275f, 0.275f, 1.0f))},
-                        fixedHeight = k_RowSize
-                    };
+                        s_RowAlternateDark = new GUIStyle(GUIStyle.none)
+                        {
+                            normal = { background = Utility.MakeColorTexture(new Color(0.275f, 0.275f, 0.275f, 1.0f)) },
+                            fixedHeight = k_RowSize
+                        };
+                    }
+
+                    return s_RowAlternateDark;
                 }
-                return s_RowAlternate;
+                else
+                {
+                    if (s_RowAlternateLight == null || s_RowAlternateLight.normal.background == null)
+                    {
+                        s_RowAlternateLight = new GUIStyle(GUIStyle.none)
+                        {
+                            normal = { background = Utility.MakeColorTexture(new Color(0.729f, 0.729f, 0.729f, 1.0f)) },
+                            fixedHeight = k_RowSize
+                        };
+                    }
+
+                    return s_RowAlternateLight;
+                }
             }
         }
     }
