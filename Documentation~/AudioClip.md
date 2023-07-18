@@ -6,9 +6,15 @@ This view reports all AudioClips in the project.
 
 ### Reported Properties: ###
 •	Name <br>
-•	format <br>
-•	forceToMono <br>
-•	loadInBackground <br>
-•	preloadAudioData <br>
-•	loadType <br>
-•	compressionFormat
+•	Format <br>
+•	Length <br>
+•	Source File Size <br>
+•	Imported File Size <br>
+•	Runtime Size <br>
+•	CompressionRatio <br>
+•	Compression Format <br>
+•	Force To Mono <br>
+•	Load In Background <br>
+•	Preload Audio Data <br>
+•	Load Type <br>
+•	Path

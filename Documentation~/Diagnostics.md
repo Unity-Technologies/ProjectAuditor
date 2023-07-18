@@ -71,18 +71,30 @@ This is a full list of all builtin settings diagnostics:
 # Asset Diagnostics
 Builtin asset-specific diagnostics:
 
-| ID      | Title                                                       | Settings  | Platforms            |
-|---------|-------------------------------------------------------------|-----------|----------------------|
-| PAA0000 | Texture: Mipmaps not enabled                                | Graphics  | Any                  |
-| PAA0001 | Texture: Mipmaps enabled on Sprite/UI texture               | Graphics  | Any                  |
-| PAA0002 | Texture: Read/Write enabled                                 | Graphics  | Any                  |
-| PAA0003 | Texture: Streaming Mipmaps not enabled                      | Graphics  | Any                  |
-| PAA0004 | Texture: Anisotropic level is more than 1                   | Graphics  | Android, iOS, Switch |
-| PAA0005 | Texture: Solid color texture bigger than 1x1 with fixer     | Graphics  | Any                  |
-| PAA0006 | Texture: Solid color texture bigger than 1x1 without fixer  | Graphics  | Any                  |
-| PAA0007 | Texture Atlas: Too much empty space                         | Graphics  | Any                  |
-| PAA1000 | Mesh: Read/Write enabled                                    | Graphics  | Any                  |
-| PAA1001 | Mesh: Index Format is 32 bits                               | Graphics  | Any                  |
-| PAA2000 | Shader: Not compatible with SRP batcher                     | Graphics  | Any                  |
-| PAA3000 | Files: Resources folder asset & dependencies                | BuildSize | Any                  |
-| PAA3001 | Files: StreamingAssets folder size                          | BuildSize | Any                  |
+| ID      | Title                                                       | Settings                    | Platforms                       |
+|---------|-------------------------------------------------------------|-----------------------------|---------------------------------|
+| PAA0000 | Texture: Mipmaps not enabled                                | Graphics                    | Any                             |
+| PAA0001 | Texture: Mipmaps enabled on Sprite/UI texture               | Graphics                    | Any                             |
+| PAA0002 | Texture: Read/Write enabled                                 | Graphics                    | Any                             |
+| PAA0003 | Texture: Streaming Mipmaps not enabled                      | Graphics                    | Any                             |
+| PAA0004 | Texture: Anisotropic level is more than 1                   | Graphics                    | Android, iOS, Switch            |
+| PAA0005 | Texture: Solid color texture bigger than 1x1 with fixer     | Graphics                    | Any                             |
+| PAA0006 | Texture: Solid color texture bigger than 1x1 without fixer  | Graphics                    | Any                             |
+| PAA0007 | Texture Atlas: Too much empty space                         | Graphics                    | Any                             |
+| PAA1000 | Mesh: Read/Write enabled                                    | Graphics                    | Any                             |
+| PAA1001 | Mesh: Index Format is 32 bits                               | Graphics                    | Any                             |
+| PAA2000 | Shader: Not compatible with SRP batcher                     | Graphics                    | Any                             |
+| PAA3000 | Files: Resources folder asset & dependencies                | BuildSize                   | Any                             |
+| PAA3001 | Files: StreamingAssets folder size                          | BuildSize                   | Any                             |
+| PAA4000 | Audio: Long AudioClip is not set to Streaming               | Memory                      | Any                             |
+| PAA4001 | Audio: Short AudioClip is set to streaming                  | Memory                      | Any                             |
+| PAA4002 | Audio: AudioClip is stereo                                  | Memory                      | Android, iOS, Switch            |
+| PAA4003 | Audio: AudioClip is stereo                                  | Memory, Quality             | Any except Android, iOS, Switch |
+| PAA4004 | Audio: AudioClip is set to Decompress On Load               | Memory, LoadTime            | Any                             |
+| PAA4005 | Audio: Compressed AudioClip is Compressed In Memory         | CPU                         | Any                             |
+| PAA4006 | Audio: Compressed clip could be optimized for mobile        | Memory, BuildSize           | Android, iOS, Switch            |
+| PAA4007 | Audio: Sample Rate is over 48 KHz                           | Memory, BuildSize, LoadTime | Any                             |
+| PAA4008 | Audio: Preload Audio Data is enabled                        | LoadTime                    | Any                             |
+| PAA4009 | Audio: Load In Background is not enabled                    | CPU, LoadTime               | Any                             |
+| PAA4010 | Audio: Compression Format is MP3                            | Quality                     | Any                             |
+| PAA4011 | Audio: Source asset is in a lossy compressed format         | Quality                     | Any                             |
