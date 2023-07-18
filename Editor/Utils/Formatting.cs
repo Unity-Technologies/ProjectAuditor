@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEditor;
 
@@ -23,7 +24,17 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// <returns>A string representation of the input value.</returns>
         public static string FormatDuration(TimeSpan timeSpan)
         {
-            return timeSpan.Hours + ":" + timeSpan.Minutes.ToString("D2") + ":" + timeSpan.Seconds.ToString("D2");
+            return $"{timeSpan.Hours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}";
+        }
+
+        /// <summary>
+        /// Formats a given TimeSpan object as a string in the format "HH:mm:ss".
+        /// </summary>
+        /// <param name="timeSpan">The TimeSpan object to format.</param>
+        /// <returns>A string representation of the input value.</returns>
+        public static string FormatDurationWithMs(TimeSpan timeSpan)
+        {
+            return $"{timeSpan.Minutes:00}:{timeSpan.Seconds:00}.{timeSpan.Milliseconds:000}";
         }
 
         /// <summary>
@@ -64,6 +75,16 @@ namespace Unity.ProjectAuditor.Editor.Utils
         }
 
         /// <summary>
+        /// Formats a decimal number as a percentage with two decimal places.
+        /// </summary>
+        /// <param name="number">The decimal number to format.</param>
+        /// <returns>A string representation of the decimal number as a percentage.</returns>
+        public static string FormatPercentage2(float number)
+        {
+            return $"{number:P2}";
+        }
+
+        /// <summary>
         /// Formats a given size in bytes as a string in the format "X bytes".
         /// </summary>
         /// <param name="size">Size value to format.</param>
@@ -71,6 +92,16 @@ namespace Unity.ProjectAuditor.Editor.Utils
         public static string FormatSize(ulong size)
         {
             return EditorUtility.FormatBytes((long)size);
+        }
+
+        /// <summary>
+        /// Formats a given frequency as a string in the format "X Hz" or "X KHz".
+        /// </summary>
+        /// <param name="size">Frequency value to format.</param>
+        /// <returns>A string representation of the input value as a frequency in Hz or KHz.</returns>
+        public static string FormatHz(int frequency)
+        {
+            return (frequency < 1000) ? $"{frequency} Hz" : $"{((float)frequency / 1000.0f):G0} KHz";
         }
 
         static readonly string k_StringSeparator = ", ";

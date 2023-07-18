@@ -27,6 +27,15 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+        public void Formatting_DurationWithMS_IsFormatted()
+        {
+            var time = new TimeSpan(0, 0, 24, 30, 123);
+            const string formatted = "24:30.123";
+
+            Assert.AreEqual(formatted, Formatting.FormatDurationWithMs(time));
+        }
+
+        [Test]
         public void Formatting_TimeNaN_IsFormatted()
         {
             Assert.AreEqual("NaN", Formatting.FormatTime(float.NaN));
@@ -41,13 +50,31 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(formatted, Formatting.FormatTime(time));
         }
 
-        [TestCase(0.12345f, "12.3 %")]
-        [TestCase(0.5f, "50.0 %")]
-        [TestCase(0.0f, "0.0 %")]
-        [TestCase(1.0f, "100.0 %")]
+        [TestCase(0.12345f, "12.3%")]
+        [TestCase(0.5f, "50.0%")]
+        [TestCase(0.0f, "0.0%")]
+        [TestCase(1.0f, "100.0%")]
         public void Formatting_Percentage_IsFormatted(float number, string expectedResult)
         {
             Assert.AreEqual(expectedResult, Formatting.FormatPercentage(number));
+        }
+
+        [TestCase(0.12345f, "12.35%")]
+        [TestCase(0.5f, "50.00%")]
+        [TestCase(0.0f, "0.00%")]
+        [TestCase(1.0f, "100.00%")]
+        public void Formatting_Percentage2_IsFormatted(float number, string expectedResult)
+        {
+            Assert.AreEqual(expectedResult, Formatting.FormatPercentage2(number));
+        }
+
+        [TestCase(440, "440 Hz")]
+        [TestCase(22050, "22.05 KHz")]
+        [TestCase(44100, "44.1 KHz")]
+        [TestCase(96000, "96 KHz")]
+        public void Formatting_Hz_IsFormatted(int number, string expectedResult)
+        {
+            Assert.AreEqual(expectedResult, Formatting.FormatHz(number));
         }
     }
 }

@@ -274,13 +274,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .WithCustomProperties(
                     new object[(int)AudioClipProperty.Num]
             {
-                String.Format("{0:00}:{1:00}.{2:000}", ts.Minutes, ts.Seconds, ts.Milliseconds),
+                Formatting.FormatDurationWithMs(ts),
                 origSize,
                 compSize,
                 runtimeSize,
-                (100.0f * (float)compSize / (float)origSize).ToString("0.00", CultureInfo.InvariantCulture.NumberFormat) + "%",
+                Formatting.FormatPercentage2((float) compSize / (float)origSize),
                 sampleSettings.compressionFormat,
-                ((float)audioClip.frequency / 1000.0f).ToString("G0", CultureInfo.InvariantCulture.NumberFormat) + " KHz",
+                Formatting.FormatHz(audioClip.frequency),
                 audioImporter.forceToMono,
                 audioImporter.loadInBackground,
 #if UNITY_2022_2_OR_NEWER
@@ -356,7 +356,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 sampleSettings.compressionFormat != AudioCompressionFormat.PCM &&
                 sampleSettings.compressionFormat != AudioCompressionFormat.ADPCM &&
                 audioClip.frequency >= 48000 &&
-                sampleSettings.quality > 0.98f)
+                sampleSettings.quality == 1.0f)
             {
                 yield return ProjectIssue.Create(
                         IssueCategory.AssetDiagnostic, k_AudioLargeCompressedMobileDescriptor, clipName)
