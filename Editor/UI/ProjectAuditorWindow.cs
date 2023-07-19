@@ -131,7 +131,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 id = TabId.Shaders, name = "Shaders", onDemand = false,
                 categories = new[]
                 {
-                    IssueCategory.Shader, IssueCategory.Material, IssueCategory.ShaderVariant, IssueCategory.ShaderCompilerMessage
+                    IssueCategory.Shader, IssueCategory.Material, IssueCategory.ShaderVariant, IssueCategory.ComputeShaderVariant, IssueCategory.ShaderCompilerMessage
                 }
             },
             new Tab
@@ -470,12 +470,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     });
                 },
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.ShaderCompilerMessages, () => viewManager.ChangeView(IssueCategory.ShaderCompilerMessage));
-                    AnalysisView.DrawToolbarButton(Contents.ShaderVariants, () => viewManager.ChangeView(IssueCategory.ShaderVariant));
-                    AnalysisView.DrawToolbarButton(Contents.Materials, () => viewManager.ChangeView(IssueCategory.Material));
-                },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Shaders
             });
 
@@ -487,12 +481,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 2,
                 showFilters = true,
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.ShaderCompilerMessages, () => viewManager.ChangeView(IssueCategory.ShaderCompilerMessage));
-                    AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
-                    AnalysisView.DrawToolbarButton(Contents.ShaderVariants, () => viewManager.ChangeView(IssueCategory.ShaderVariant));
-                },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Materials
             });
 
@@ -505,12 +493,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 4,
                 descriptionWithIcon = true,
                 onOpenIssue = EditorInterop.OpenTextFile<Shader>,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
-                    AnalysisView.DrawToolbarButton(Contents.ShaderVariants, () => viewManager.ChangeView(IssueCategory.ShaderVariant));
-                    AnalysisView.DrawToolbarButton(Contents.Materials, () => viewManager.ChangeView(IssueCategory.Material));
-                },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderCompilerMessages
             });
 
@@ -519,7 +501,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.ShaderVariant,
-                displayName = "Variants",
+                displayName = "Shader Variants",
                 menuOrder = 3,
                 menuLabel = "Assets/Shaders/Variants",
                 showFilters = true,
@@ -533,10 +515,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     AnalysisView.DrawToolbarButton(Contents.Clear, () => Instance.ClearShaderVariants());
 
                     GUILayout.FlexibleSpace();
-
-                    AnalysisView.DrawToolbarButton(Contents.ShaderCompilerMessages, () => viewManager.ChangeView(IssueCategory.ShaderCompilerMessage));
-                    AnalysisView.DrawToolbarButton(Contents.Shaders, () => viewManager.ChangeView(IssueCategory.Shader));
-                    AnalysisView.DrawToolbarButton(Contents.Materials, () => viewManager.ChangeView(IssueCategory.Material));
                 },
                 type = typeof(ShaderVariantsView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ShaderVariants
