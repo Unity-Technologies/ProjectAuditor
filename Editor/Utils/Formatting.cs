@@ -65,23 +65,14 @@ namespace Unity.ProjectAuditor.Editor.Utils
         }
 
         /// <summary>
-        /// Formats a decimal number as a percentage with one decimal place.
+        /// Formats a decimal number as a percentage with a specified number of decimal places.
         /// </summary>
         /// <param name="number">The decimal number to format.</param>
         /// <returns>A string representation of the decimal number as a percentage.</returns>
-        public static string FormatPercentage1(float number)
+        public static string FormatPercentage(float number, int numDecimalPlaces)
         {
-            return (100.0f * number).ToString("0.0", CultureInfo.InvariantCulture.NumberFormat) + "%";
-        }
-
-        /// <summary>
-        /// Formats a decimal number as a percentage with two decimal places.
-        /// </summary>
-        /// <param name="number">The decimal number to format.</param>
-        /// <returns>A string representation of the decimal number as a percentage.</returns>
-        public static string FormatPercentage2(float number)
-        {
-            return (100.0f * number).ToString("0.00", CultureInfo.InvariantCulture.NumberFormat) + "%";
+            string formatString = $"{{0:F{numDecimalPlaces}}}";
+            return String.Format(CultureInfo.InvariantCulture.NumberFormat, formatString, (100.0f * number)) + "%";
         }
 
         /// <summary>

@@ -278,7 +278,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 origSize,
                 compSize,
                 runtimeSize,
-                Formatting.FormatPercentage2((float) compSize / (float)origSize),
+                Formatting.FormatPercentage((float) compSize / (float)origSize, 2),
                 sampleSettings.compressionFormat,
                 Formatting.FormatHz(audioClip.frequency),
                 audioImporter.forceToMono,
