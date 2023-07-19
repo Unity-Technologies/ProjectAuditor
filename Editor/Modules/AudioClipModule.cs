@@ -1,27 +1,28 @@
-using System.Collections;
-using System;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor.PackageManager;
-using UnityEditor.PackageManager.Requests;
-using System.Linq;
 using UnityEditor;
-using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Interfaces;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
     enum AudioClipProperty
     {
-        ForceToMono = 0,
+        Length = 0,
+        SourceFileSize,
+        ImportedFileSize,
+        RuntimeSize,
+        CompressionRatio,
+        CompressionFormat,
+        SampleRate,
+        ForceToMono,
         LoadInBackground,
         PreloadAudioData,
         LoadType,
-        CompressionFormat,
+
         Num
     }
 
-    class AudioClipModule : ProjectAuditorModule
+    class AudioClipModule : ProjectAuditorModuleWithAnalyzers<IAudioClipModuleAnalyzer>
     {
         static readonly IssueLayout k_AudioClipLayout = new IssueLayout
         {
@@ -30,11 +31,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Name" },
                 new PropertyDefinition { type = PropertyType.FileType, name = "Format", defaultGroup = true },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.Length), format = PropertyFormat.String, name = "Length"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.SourceFileSize), format = PropertyFormat.Bytes, name = "Source File Size"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.ImportedFileSize), format = PropertyFormat.Bytes, name = "Imported File Size"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.RuntimeSize), format = PropertyFormat.Bytes, name = "Runtime Size"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.CompressionRatio), format = PropertyFormat.String, name = "Compression Ratio"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.CompressionFormat), format = PropertyFormat.String, name = "Compression Format"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.SampleRate), format = PropertyFormat.String, name = "Sample Rate"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.ForceToMono), format = PropertyFormat.Bool, name = "Force To Mono"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadInBackground), format = PropertyFormat.Bool, name = "Load In Background"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.PreloadAudioData), format = PropertyFormat.Bool, name = "Preload Audio Data" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadType), format = PropertyFormat.String, name = "Load Type" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.CompressionFormat), format = PropertyFormat.String, name = "Compression Format"},
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"}
             }
         };
@@ -51,31 +58,31 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            projectAuditorParams.onIncomingIssues(EnumerateAudioClips(projectAuditorParams.platform));
-            projectAuditorParams.onModuleCompleted?.Invoke();
-        }
+            var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
+            var GUIDsAudioClip = AssetDatabase.FindAssets("t:AudioClip, a:assets");
 
-        IEnumerable<ProjectIssue> EnumerateAudioClips(BuildTarget platform)
-        {
-            var GUIDsAudioClip = AssetDatabase.FindAssets("t:AudioClip");
+            progress?.Start("Finding AudioClips", "Search in Progress...", GUIDsAudioClip.Length);
+
             foreach (var guid in GUIDsAudioClip)
             {
-                var path = AssetDatabase.GUIDToAssetPath(guid);
-                var importer = AssetImporter.GetAtPath(path) as AudioImporter;
-                var sampleSettings = importer.GetOverrideSampleSettings(platform.ToString());
-                yield return ProjectIssue.Create(IssueCategory.AudioClip, Path.GetFileNameWithoutExtension(path)).WithCustomProperties(new object[(int)AudioClipProperty.Num]
+                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                var audioImporter = AssetImporter.GetAtPath(assetPath) as AudioImporter;
+                if (audioImporter == null)
                 {
-                    importer.forceToMono,
-                    importer.loadInBackground,
-#if UNITY_2022_2_OR_NEWER
-                    sampleSettings.preloadAudioData,
-#else
-                    importer.preloadAudioData,
-#endif
-                    sampleSettings.loadType,
-                    sampleSettings.compressionFormat
-                }).WithLocation(path);
+                    continue;
+                }
+
+                foreach (var analyzer in analyzers)
+                {
+                    projectAuditorParams.onIncomingIssues(analyzer.Analyze(projectAuditorParams, audioImporter));
+                }
+
+                progress?.Advance();
             }
+
+            progress?.Clear();
+
+            projectAuditorParams.onModuleCompleted?.Invoke();
         }
     }
 }

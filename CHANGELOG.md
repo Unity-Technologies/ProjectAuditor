@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Shader view reports total property count and texture property count for Unity 2019.3 and above
 * Compute shader variant view reports kernel thread count for Unity 2021.2 and above
 * View-specific descriptions
+* AudioClip diagnostics
 * Material list view in shader module
 
 ### Changed
@@ -20,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Solid Color Texture analyzer now works for all texture types (2D, 2DArray, 3D, Cube) in Unity 2019.2 and above
 * Upgrade com.unity.nuget.mono-cecil to 1.11.4
 * Visualization of the Horizontal Stacked Bar and Legend Item
+* Improved AudioClip asset table
 
 ### Removed
 * Actions section and Mute/Unmute buttons
