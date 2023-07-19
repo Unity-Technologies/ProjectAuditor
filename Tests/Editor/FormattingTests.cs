@@ -56,7 +56,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(1.0f, "100.0%")]
         public void Formatting_Percentage_IsFormatted(float number, string expectedResult)
         {
-            Assert.AreEqual(expectedResult, Formatting.FormatPercentage(number));
+            Assert.AreEqual(expectedResult, Formatting.FormatPercentage1(number));
         }
 
         [TestCase(0.12345f, "12.35%")]

@@ -69,9 +69,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// </summary>
         /// <param name="number">The decimal number to format.</param>
         /// <returns>A string representation of the decimal number as a percentage.</returns>
-        public static string FormatPercentage(float number)
+        public static string FormatPercentage1(float number)
         {
-            return $"{number:P1}";
+            return (100.0f * number).ToString("0.0", CultureInfo.InvariantCulture.NumberFormat) + "%";
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// <returns>A string representation of the decimal number as a percentage.</returns>
         public static string FormatPercentage2(float number)
         {
-            return $"{number:P2}";
+            return (100.0f * number).ToString("0.00", CultureInfo.InvariantCulture.NumberFormat) + "%";
         }
 
         /// <summary>
