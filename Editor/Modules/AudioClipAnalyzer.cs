@@ -174,7 +174,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
+#if UNITY_2022_2_OR_NEWER
+                    var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
+                    sampleSettings.preloadAudioData = false;
+                    audioImporter.SetOverrideSampleSettings(s_PlatformString, sampleSettings);
+#else
                     audioImporter.preloadAudioData = false;
+#endif
                     audioImporter.SaveAndReimport();
                 }
             }
@@ -304,6 +310,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (sourceFileExtension.StartsWith("."))
                 sourceFileExtension = sourceFileExtension.Substring(1);
 
+#if UNITY_2022_2_OR_NEWER
+            var preloadAudioData = sampleSettings.preloadAudioData;
+#else
+            var preloadAudioData = audioImporter.preloadAudioData;
+#endif
+
             if (runtimeSize > projectAuditorParams.settings.StreamingClipThresholdBytes && !isStreaming)
             {
                 yield return ProjectIssue.Create(
@@ -373,7 +385,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(assetPath);
             }
 
-            if (audioImporter.preloadAudioData)
+            if (preloadAudioData)
             {
                 yield return ProjectIssue.Create(
                         IssueCategory.AssetDiagnostic, k_AudioPreloadDescriptor, clipName)
