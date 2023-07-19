@@ -32,6 +32,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
+    enum MaterialProperty
+    {
+        Shader = 0,
+        Num
+    }
+
     enum ShaderVariantProperty
     {
         Compiled = 0,
@@ -128,6 +134,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.AlwaysIncluded), format = PropertyFormat.Bool, name = "Always Included", longName = "Always Included in Build" },
                 new PropertyDefinition { type = PropertyType.Path, name = "Source Asset"},
                 new PropertyDefinition { type = PropertyType.Directory, name = "Directory", defaultGroup = true}
+            }
+        };
+
+        static readonly IssueLayout k_MaterialLayout = new IssueLayout
+        {
+            category = IssueCategory.Material,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Material Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(MaterialProperty.Shader), format = PropertyFormat.String, name = "Shader", defaultGroup = true },
+                new PropertyDefinition { type = PropertyType.Path, name = "Source Asset" }
             }
         };
 
@@ -241,6 +258,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_ShaderLayout,
+            k_MaterialLayout,
             k_ShaderVariantLayout,
             AssetsModule.k_IssueLayout,
 
@@ -259,6 +277,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             ProcessShaders(projectAuditorParams, shaderPathMap, projectAuditorParams.onIncomingIssues);
 
             ProcessComputeShaders(projectAuditorParams.platform, projectAuditorParams.onIncomingIssues);
+
+            ProcessMaterials(projectAuditorParams.onIncomingIssues);
 
             // clear collected variants before next build
             ClearBuildData();
@@ -305,6 +325,27 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             return shaderPathMap;
+        }
+
+        Dictionary<Material, string> CollectMaterials()
+        {
+            var materialPathMap = new Dictionary<Material, string>();
+            var materialGuids = AssetDatabase.FindAssets("t:material");
+            foreach (var guid in materialGuids)
+            {
+                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+
+                var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
+                if (material == null)
+                {
+                    Debug.LogError(assetPath + " is not a Material.");
+                    continue;
+                }
+
+                materialPathMap.Add(material, assetPath);
+            }
+
+            return materialPathMap;
         }
 
         static Dictionary<Shader, string> GetBuiltShaderPaths()
@@ -417,6 +458,26 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (issues.Any())
                 onIncomingIssues(issues);
 #endif
+        }
+
+        void ProcessMaterials(Action<IEnumerable<ProjectIssue>> onIncomingIssues)
+        {
+            var issues = new List<ProjectIssue>();
+
+            var materialPathMap = CollectMaterials();
+            foreach (var material in materialPathMap)
+            {
+                issues.Add(ProjectIssue.Create(k_MaterialLayout.category, material.Key.name)
+                    .WithCustomProperties(new object[(int)MaterialProperty.Num]
+                    {
+                        material.Key.shader.name
+                    })
+                    .WithLocation(material.Value)
+                    );
+            }
+
+            if (issues.Any())
+                onIncomingIssues(issues);
         }
 
         IEnumerable<ProjectIssue> ProcessShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded)
