@@ -135,6 +135,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 modules = new[]
                 {
                     typeof(ShadersModule)
+                },
+                excludedModuleCategories = new[]
+                {
+                    IssueCategory.AssetDiagnostic
                 }
             },
             new Tab
