@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         [Serializable]
-        struct Tab
+        class Tab
         {
             public TabId id;
             public string name;
@@ -342,21 +342,19 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var tab = m_Tabs[i];
 
-                RefreshTabCategories(ref tab);
+                RefreshTabCategories(tab);
 
                 tab.currentCategoryIndex = 0;
-
-                m_Tabs[i] = tab;
             }
         }
 
-        private void RefreshTabCategories(ref Tab tab)
+        private void RefreshTabCategories(Tab tab)
         {
             List<IssueCategory> availableCategories = new List<IssueCategory>();
             var dropDownItems = new List<Utility.DropdownItem>();
             var categoryIndex = 0;
 
-            var categories = GetTabCategories(ref tab);
+            var categories = GetTabCategories(tab);
 
             foreach (var cat in categories)
             {
@@ -943,16 +941,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var tab = m_Tabs[i];
 
-                var categories = GetTabCategories(ref tab);
+                var categories = GetTabCategories(tab);
                 allTabCategories.AddRange(categories);
-
-                m_Tabs[i] = tab;
             }
 
             return allTabCategories.Distinct().ToArray();
         }
 
-        IssueCategory[] GetTabCategories(ref Tab tab)
+        IssueCategory[] GetTabCategories(Tab tab)
         {
             if (tab.allCategories != null)
                 return tab.allCategories;
@@ -1326,8 +1322,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     AuditCategories(new[] { category }, true);
 
                                 var tab = m_Tabs[m_ActiveTabIndex];
-                                RefreshTabCategories(ref tab);
-                                m_Tabs[m_ActiveTabIndex] = tab;
+                                RefreshTabCategories(tab);
                             }
 
                             m_ViewManager.ChangeView(category);
@@ -1553,8 +1548,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     AuditCategories(tab.allCategories, true);
 
-                    RefreshTabCategories(ref tab);
-                    m_Tabs[tabToAudit] = tab;
+                    RefreshTabCategories(tab);
 
                     if (tab.availableCategories.Length > 0)
                         m_ViewManager.ChangeView(tab.availableCategories[0]);
