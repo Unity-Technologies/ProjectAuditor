@@ -342,10 +342,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             m_ActiveTabIndex = 0;
 
-            for (int i = 0; i < m_Tabs.Length; ++i)
+            foreach (var tab in m_Tabs)
             {
-                var tab = m_Tabs[i];
-
                 RefreshTabCategories(tab);
 
                 tab.currentCategoryIndex = 0;
@@ -941,10 +939,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         IssueCategory[] GetAllSupportedCategories()
         {
             List<IssueCategory> allTabCategories = new List<IssueCategory>();
-            for (int i = 0; i < m_Tabs.Length; i++)
+            foreach (var tab in m_Tabs)
             {
-                var tab = m_Tabs[i];
-
                 var categories = GetTabCategories(tab);
                 allTabCategories.AddRange(categories);
             }
