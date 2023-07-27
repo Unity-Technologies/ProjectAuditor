@@ -1551,7 +1551,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (EditorUtility.DisplayDialog(k_ProjectAuditorName,
                     $"'{tab.name}' analysis will now begin.", "Ok", "Cancel"))
                 {
-                    AuditCategories(tab.categories, true);
+                    AuditCategories(tab.allCategories, true);
 
                     RefreshTabCategories(ref tab);
                     m_Tabs[tabToAudit] = tab;
