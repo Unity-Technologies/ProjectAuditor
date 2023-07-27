@@ -256,6 +256,17 @@ namespace Unity.ProjectAuditor.Editor
             return null;
         }
 
+        internal ProjectAuditorModule GetModule(Type t)
+        {
+            foreach (var module in m_Modules)
+            {
+                if (module.GetType() == t)
+                    return module;
+            }
+
+            return null;
+        }
+
         internal Descriptor[] GetDescriptors()
         {
             return m_Modules.SelectMany(m => m.supportedDescriptors).ToArray();
