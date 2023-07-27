@@ -92,8 +92,12 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             public TabId id;
             public string name;
-            public bool onDemand;
+
             public IssueCategory[] categories;
+            public Type[] modules;
+            public IssueCategory[] excludedModuleCategories;
+
+            public IssueCategory[] allCategories;
             public IssueCategory[] availableCategories;
             public int currentCategoryIndex;
             public Utility.DropdownItem[] dropdown;
@@ -103,24 +107,23 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             new Tab
             {
-                id = TabId.Summary, name = "Summary", onDemand = false,
-                categories = new[]
+                id = TabId.Summary, name = "Summary",
+                modules = new[]
                 {
-                    IssueCategory.MetaData
+                    typeof(MetaDataModule)
                 }
             },
             new Tab
             {
-                id = TabId.Code, name = "Code", onDemand = true,
-                categories = new[]
+                id = TabId.Code, name = "Code",
+                modules = new[]
                 {
-                    IssueCategory.Code, IssueCategory.Assembly, IssueCategory.CodeCompilerMessage,
-                    IssueCategory.PrecompiledAssembly, IssueCategory.GenericInstance
+                    typeof(CodeModule)
                 }
             },
             new Tab
             {
-                id = TabId.Assets, name = "Assets", onDemand = true,
+                id = TabId.Assets, name = "Assets",
                 categories = new[]
                 {
                     IssueCategory.AssetDiagnostic, IssueCategory.Texture, IssueCategory.Mesh, IssueCategory.AudioClip
@@ -128,26 +131,30 @@ namespace Unity.ProjectAuditor.Editor.UI
             },
             new Tab
             {
-                id = TabId.Shaders, name = "Shaders", onDemand = false,
-                categories = new[]
+                id = TabId.Shaders, name = "Shaders",
+                modules = new[]
                 {
-                    IssueCategory.Shader, IssueCategory.Material, IssueCategory.ShaderVariant, IssueCategory.ComputeShaderVariant, IssueCategory.ShaderCompilerMessage
+                    typeof(ShadersModule)
                 }
             },
             new Tab
             {
-                id = TabId.Settings, name = "Settings", onDemand = false,
-                categories = new[]
+                id = TabId.Settings, name = "Settings",
+                modules = new[]
                 {
-                    IssueCategory.ProjectSetting
+                    typeof(SettingsModule)
                 }
             },
             new Tab
             {
-                id = TabId.Build, name = "Build", onDemand = false,
-                categories = new[]
+                id = TabId.Build, name = "Build",
+                modules = new[]
                 {
-                    IssueCategory.BuildStep, IssueCategory.BuildFile
+                    typeof(BuildReportModule)
+                },
+                excludedModuleCategories = new[]
+                {
+                    IssueCategory.BuildSummary
                 }
             },
         };
@@ -346,10 +353,12 @@ namespace Unity.ProjectAuditor.Editor.UI
         private void RefreshTabCategories(ref Tab tab)
         {
             List<IssueCategory> availableCategories = new List<IssueCategory>();
-            var dropDownItems = new List<Utility.DropdownItem>(tab.categories.Length);
+            var dropDownItems = new List<Utility.DropdownItem>();
             var categoryIndex = 0;
 
-            foreach (var cat in tab.categories)
+            var categories = GetTabCategories(ref tab);
+
+            foreach (var cat in categories)
             {
                 var view = m_ViewManager.GetView(cat);
                 if (view == null)
@@ -930,12 +939,52 @@ namespace Unity.ProjectAuditor.Editor.UI
         IssueCategory[] GetAllSupportedCategories()
         {
             List<IssueCategory> allTabCategories = new List<IssueCategory>();
-            foreach (var tab in m_Tabs)
+            for (int i = 0; i < m_Tabs.Length; i++)
             {
-                allTabCategories.AddRange(tab.categories);
+                var tab = m_Tabs[i];
+
+                var categories = GetTabCategories(ref tab);
+                allTabCategories.AddRange(categories);
+
+                m_Tabs[i] = tab;
             }
 
-            return allTabCategories.ToArray();
+            return allTabCategories.Distinct().ToArray();
+        }
+
+        IssueCategory[] GetTabCategories(ref Tab tab)
+        {
+            if (tab.allCategories != null)
+                return tab.allCategories;
+
+            if (tab.modules != null && tab.modules.Length > 0)
+            {
+                List<IssueCategory> categories = new List<IssueCategory>();
+
+                foreach (var moduleType in tab.modules)
+                {
+                    var module = m_ProjectAuditor.GetModule(moduleType);
+
+                    if (module == null)
+                        continue;
+
+                    var tabValue = tab;
+
+                    var moduleCategories = module.supportedLayouts
+                        .Where(l => tabValue.excludedModuleCategories == null || tabValue.excludedModuleCategories.Contains(l.category) == false)
+                        .Select(l => l.category);
+
+                    categories.AddRange(moduleCategories);
+                }
+
+                tab.allCategories = categories.Distinct().ToArray();
+            }
+            else
+            {
+                tab.allCategories = tab.categories;
+            }
+
+            return tab.allCategories;
         }
 
         void DrawAssemblyFilter()
@@ -1469,7 +1518,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var tab = m_Tabs[i];
 
                         var hasAnyCategories = false;
-                        foreach (var category in tab.categories)
+                        foreach (var category in tab.allCategories)
                         {
                             if (m_ProjectReport.HasCategory(category))
                             {
@@ -1500,7 +1549,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 var tab = m_Tabs[tabToAudit];
 
                 if (EditorUtility.DisplayDialog(k_ProjectAuditorName,
-                        $"'{tab.name}' analysis will now begin.", "Ok", "Cancel"))
+                    $"'{tab.name}' analysis will now begin.", "Ok", "Cancel"))
                 {
                     AuditCategories(tab.categories, true);
 
