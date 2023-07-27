@@ -1527,8 +1527,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                         }
                         else
                         {
-                            if (tab.availableCategories.Length > 0)
-                                m_ViewManager.ChangeView(tab.availableCategories[0]);
+                            if (tab.availableCategories.Length > tab.currentCategoryIndex)
+                                m_ViewManager.ChangeView(tab.availableCategories[tab.currentCategoryIndex]);
                         }
                     }
 
