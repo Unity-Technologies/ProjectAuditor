@@ -78,7 +78,12 @@ namespace Unity.ProjectAuditor.EditorTests
             audioImporter.SetOverrideSampleSettings(platformString, sampleSettings);
 
             audioImporter.forceToMono = forceToMono;
+#if UNITY_2022_2_OR_NEWER
+            sampleSettings.preloadAudioData = preload;
+#else
             audioImporter.preloadAudioData = preload;
+#endif
+
             audioImporter.loadInBackground = loadInBackground;
 
             audioImporter.SaveAndReimport();
