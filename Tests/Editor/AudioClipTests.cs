@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             m_TestLongNonStreamingClipAsset = CreateTestAudioClip(
                 k_LongNonStreamingClipName, m_LongWavData, k_AndroidplatformString,
-                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad, false, true, false);
+                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
 
             m_TestShortNonStreamingClipAsset = CreateTestAudioClip(
                 k_ShortNonStreamingClipName, m_ShortWavData, k_AndroidplatformString,
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
         private TestAsset CreateTestAudioClip(string name, byte[] data, string platformString,
             AudioCompressionFormat format, AudioClipLoadType loadType,
-            bool forceToMono = false, bool preload = false, bool loadInBackground = true)
+            bool forceToMono = false, bool preload = true, bool loadInBackground = false)
         {
             var testAsset = new TestAsset(name, data);
             var audioImporter = AssetImporter.GetAtPath(testAsset.relativePath) as AudioImporter;
@@ -101,8 +101,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var asset = CreateTestAudioClip(
                 "PAA4000.wav", m_LongWavData, k_AndroidplatformString,
-                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad,
-                false, true, false);
+                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.descriptor.Equals(AudioClipAnalyzer.k_AudioLongClipDoesNotStreamDescriptor));
@@ -142,7 +141,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var asset = CreateTestAudioClip(
                 "PAA4002.wav", m_ShortWavData, k_AndroidplatformString,
-                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad, false);
+                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.descriptor.Equals(AudioClipAnalyzer.k_AudioStereoClipsOnMobileDescriptor));
@@ -171,7 +170,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var asset = CreateTestAudioClip(
                 "PAA4003.wav", m_ShortWavData, k_AndroidplatformString,
-                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad, false);
+                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.descriptor.Equals(AudioClipAnalyzer.k_AudioStereoClipWhichIsNotStreamingDescriptor));
@@ -262,7 +261,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var asset = CreateTestAudioClip(
                 "PAA4008.wav", m_ShortWavData, k_AndroidplatformString,
-                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad, true, true);
+                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad, true);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.descriptor.Equals(AudioClipAnalyzer.k_AudioPreloadDescriptor));
@@ -285,8 +284,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var asset = CreateTestAudioClip(
                 "PAA4009.wav", m_LongWavData, k_AndroidplatformString,
-                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad,
-                false, true, false);
+                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.descriptor.Equals(AudioClipAnalyzer.k_AudioLoadInBackgroundDisabledDescriptor));
@@ -396,8 +394,13 @@ namespace Unity.ProjectAuditor.EditorTests
             foundIssues = AnalyzeAndFindAssetIssues(m_TestPCMInMemoryClipAsset, IssueCategory.AssetDiagnostic);
             Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == AudioClipAnalyzer.PAA4005));
             Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == AudioClipAnalyzer.PAA4006));
-            Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == AudioClipAnalyzer.PAA4008)); // This clip isn't preloaded
             Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == AudioClipAnalyzer.PAA4009)); // It has loadInBackground = true
+
+            var asset = CreateTestAudioClip(
+                "xPAA4008.wav", m_ShortWavData, k_AndroidplatformString,
+                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad, true, false);
+            foundIssues = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic);
+            Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == AudioClipAnalyzer.PAA4008));
         }
     }
 }
