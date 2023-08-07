@@ -22,14 +22,14 @@ namespace Unity.ProjectAuditor.EditorTests
         const string k_CompressedInMemoryClipName = "CompressedInMemoryClip.wav";
         const string k_PCMInMemoryClipName = "PCMInMemoryClip.wav";
 
-        const string k_AndroidplatformString = "Android"; // TODO
-
         TestAsset m_TestLongNonStreamingClipAsset;
         TestAsset m_TestShortNonStreamingClipAsset;
         TestAsset m_TestLongStreamingClipAsset;
         TestAsset m_TestShortStreamingClipAsset;
         TestAsset m_TestCompressedInMemoryClipAsset;
         TestAsset m_TestPCMInMemoryClipAsset;
+
+        private string m_BuildTargetString;
 
 
         [OneTimeSetUp]
@@ -39,28 +39,30 @@ namespace Unity.ProjectAuditor.EditorTests
             m_LongWavData = AudioClipGeneratorUtil.CreateTestWav( 64000, 2, 48000);
             m_ShortWavData = AudioClipGeneratorUtil.CreateTestWav( 500, 2, 96000);
 
+            m_BuildTargetString = EditorUserBuildSettings.activeBuildTarget.ToString();
+
             m_TestLongNonStreamingClipAsset = CreateTestAudioClip(
-                k_LongNonStreamingClipName, m_LongWavData, k_AndroidplatformString,
+                k_LongNonStreamingClipName, m_LongWavData, m_BuildTargetString,
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
 
             m_TestShortNonStreamingClipAsset = CreateTestAudioClip(
-                k_ShortNonStreamingClipName, m_ShortWavData, k_AndroidplatformString,
+                k_ShortNonStreamingClipName, m_ShortWavData, m_BuildTargetString,
                 AudioCompressionFormat.Vorbis, AudioClipLoadType.DecompressOnLoad, true);
 
             m_TestLongStreamingClipAsset = CreateTestAudioClip(
-                k_LongStreamingClipName, m_LongWavData, k_AndroidplatformString,
+                k_LongStreamingClipName, m_LongWavData, m_BuildTargetString,
                 AudioCompressionFormat.PCM, AudioClipLoadType.Streaming);
 
             m_TestShortStreamingClipAsset = CreateTestAudioClip(
-                k_ShortStreamingClipName, m_ShortWavData, k_AndroidplatformString,
+                k_ShortStreamingClipName, m_ShortWavData, m_BuildTargetString,
                 AudioCompressionFormat.Vorbis, AudioClipLoadType.Streaming, true);
 
             m_TestCompressedInMemoryClipAsset = CreateTestAudioClip(
-                k_CompressedInMemoryClipName, m_VeryLongWavData, k_AndroidplatformString,
+                k_CompressedInMemoryClipName, m_VeryLongWavData, m_BuildTargetString,
                 AudioCompressionFormat.Vorbis, AudioClipLoadType.CompressedInMemory, true);
 
             m_TestPCMInMemoryClipAsset = CreateTestAudioClip(
-                k_PCMInMemoryClipName, m_ShortWavData, k_AndroidplatformString,
+                k_PCMInMemoryClipName, m_ShortWavData, m_BuildTargetString,
                 AudioCompressionFormat.PCM, AudioClipLoadType.CompressedInMemory, true);
         }
 
@@ -75,17 +77,18 @@ namespace Unity.ProjectAuditor.EditorTests
             var sampleSettings = audioImporter.GetOverrideSampleSettings(platformString);
             sampleSettings.compressionFormat = format;
             sampleSettings.loadType = loadType;
-            audioImporter.SetOverrideSampleSettings(platformString, sampleSettings);
 
-            audioImporter.forceToMono = forceToMono;
+
 #if UNITY_2022_2_OR_NEWER
             sampleSettings.preloadAudioData = preload;
 #else
             audioImporter.preloadAudioData = preload;
 #endif
 
+            audioImporter.forceToMono = forceToMono;
             audioImporter.loadInBackground = loadInBackground;
 
+            audioImporter.SetOverrideSampleSettings(platformString, sampleSettings);
             audioImporter.SaveAndReimport();
             return testAsset;
         }
@@ -100,7 +103,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void AudioClip_LongNonStreaming_IsReportedAndFixed()
         {
             var asset = CreateTestAudioClip(
-                "PAA4000.wav", m_LongWavData, k_AndroidplatformString,
+                "PAA4000.wav", m_LongWavData, m_BuildTargetString,
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
@@ -140,7 +143,7 @@ namespace Unity.ProjectAuditor.EditorTests
             m_Platform = BuildTarget.Android;
 
             var asset = CreateTestAudioClip(
-                "PAA4002.wav", m_ShortWavData, k_AndroidplatformString,
+                "PAA4002.wav", m_ShortWavData, BuildTarget.Android.ToString(),
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
@@ -162,14 +165,26 @@ namespace Unity.ProjectAuditor.EditorTests
 
         // PAA4003 Stereo clips not forced to Mono on non-mobile platforms if they’re not streaming audio (only non-diagetic music should be stereo, really)
         [Test]
-        [RequirePlatformSupport(BuildTarget.WebGL)]
+#if UNITY_EDITOR_WIN
+        [RequirePlatformSupport(BuildTarget.StandaloneWindows)]
+#elif UNITY_EDITOR_OSX
+        [RequirePlatformSupport(BuildTarget.StandaloneOSX)]
+#elif UNITY_EDITOR_LINUX
+        [RequirePlatformSupport(BuildTarget.StandaloneLinux)]
+#endif
         public void AudioClip_NonStreamingStereoClipNotForcedToMono_IsReportedAndFixed()
         {
             var platform = m_Platform;
-            m_Platform = BuildTarget.WebGL;
 
+#if UNITY_EDITOR_WIN
+            m_Platform = BuildTarget.StandaloneWindows;
+#elif UNITY_EDITOR_OSX
+            m_Platform = BuildTarget.StandaloneOSX;
+#elif UNITY_EDITOR_LINUX
+            m_Platform = BuildTarget.StandaloneLinux;
+#endif
             var asset = CreateTestAudioClip(
-                "PAA4003.wav", m_ShortWavData, k_AndroidplatformString,
+                "PAA4003.wav", m_ShortWavData, m_Platform.ToString(),
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
@@ -237,7 +252,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             // m_ShortWavData is 96KHz when not compressed
             var asset = CreateTestAudioClip(
-                "PAA4007.wav", m_ShortWavData, k_AndroidplatformString,
+                "PAA4007.wav", m_ShortWavData, m_BuildTargetString,
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad, true);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
@@ -260,8 +275,8 @@ namespace Unity.ProjectAuditor.EditorTests
         public void AudioClip_PreloadAudioData_IsReportedAndFixed()
         {
             var asset = CreateTestAudioClip(
-                "PAA4008.wav", m_ShortWavData, k_AndroidplatformString,
-                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad, true);
+                "PAA4008.wav", m_ShortWavData, m_BuildTargetString,
+                AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad, true, true);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.descriptor.Equals(AudioClipAnalyzer.k_AudioPreloadDescriptor));
@@ -283,7 +298,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void AudioClip_LoadInBackGroundNotEnabled_IsReportedAndFixed()
         {
             var asset = CreateTestAudioClip(
-                "PAA4009.wav", m_LongWavData, k_AndroidplatformString,
+                "PAA4009.wav", m_LongWavData, m_BuildTargetString,
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
@@ -303,10 +318,14 @@ namespace Unity.ProjectAuditor.EditorTests
 
         // PAA4010 If MP3 is used. Vorbis is better
         [Test]
+        [RequirePlatformSupport(BuildTarget.iOS)]
         public void AudioClip_MP3Compression_IsReportedAndFixed()
         {
+            var platform = m_Platform;
+            m_Platform = BuildTarget.iOS;
+
             var asset = CreateTestAudioClip(
-                "PAA4010.wav", m_LongWavData, k_AndroidplatformString,
+                "PAA4010.wav", m_LongWavData, BuildTarget.iOS.ToString(),
                 AudioCompressionFormat.MP3, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
@@ -322,6 +341,8 @@ namespace Unity.ProjectAuditor.EditorTests
                 .FirstOrDefault(i => i.descriptor.Equals(AudioClipAnalyzer.k_AudioMP3Descriptor));
 
             Assert.Null(issue);
+
+            m_Platform = platform;
         }
 
         // PAA4011 Source assets that aren’t .WAV or .AIFF. Other formats (.MP3, .OGG, etc.) are lossy
@@ -336,7 +357,13 @@ namespace Unity.ProjectAuditor.EditorTests
         // PAA4003 Stereo clips not forced to Mono on non-mobile platforms if they’re not streaming audio (only non-diagetic music should be stereo, really)
         // PAA4006 Large compressed samples on mobile: Decrease quality or downsample
         [Test]
-        [RequirePlatformSupport(BuildTarget.Android, BuildTarget.WebGL)]
+#if UNITY_EDITOR_WIN
+        [RequirePlatformSupport(BuildTarget.Android, BuildTarget.StandaloneWindows)]
+#elif UNITY_EDITOR_OSX
+        [RequirePlatformSupport(BuildTarget.Android, BuildTarget.StandaloneOSX)]
+#elif UNITY_EDITOR_LINUX
+        [RequirePlatformSupport(BuildTarget.Android, BuildTarget.StandaloneLinux)]
+#endif
         public void AudioClip_StereoFalsePositives_AreNotReported()
         {
             var platform = m_Platform;
@@ -348,7 +375,13 @@ namespace Unity.ProjectAuditor.EditorTests
             foundIssues = AnalyzeAndFindAssetIssues(m_TestLongNonStreamingClipAsset, IssueCategory.AssetDiagnostic);
             Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == AudioClipAnalyzer.PAA4003));
 
-            m_Platform = BuildTarget.WebGL;
+#if UNITY_EDITOR_WIN
+            m_Platform = BuildTarget.StandaloneWindows;
+#elif UNITY_EDITOR_OSX
+            m_Platform = BuildTarget.StandaloneOSX;
+#elif UNITY_EDITOR_LINUX
+            m_Platform = BuildTarget.StandaloneLinux;
+#endif
 
             foundIssues = AnalyzeAndFindAssetIssues(m_TestLongStreamingClipAsset, IssueCategory.AssetDiagnostic);
             Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == AudioClipAnalyzer.PAA4002));
@@ -397,7 +430,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == AudioClipAnalyzer.PAA4009)); // It has loadInBackground = true
 
             var asset = CreateTestAudioClip(
-                "xPAA4008.wav", m_ShortWavData, k_AndroidplatformString,
+                "xPAA4008.wav", m_ShortWavData, m_BuildTargetString,
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad, true, false);
             foundIssues = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic);
             Assert.IsFalse(foundIssues.Any(issue => issue.descriptor.id == AudioClipAnalyzer.PAA4008));

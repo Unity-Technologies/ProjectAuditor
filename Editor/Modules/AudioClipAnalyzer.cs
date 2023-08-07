@@ -274,14 +274,32 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var compSize = (int)GetPropertyValue(audioImporter, "compSize");
 
             var runtimeSize = Profiler.GetRuntimeMemorySizeLong(audioClip);
-            if (runtimeSize == k_AudioClipManagedSize && audioClip.loadType == AudioClipLoadType.Streaming)
+            // Profiler.GetRuntimeMemorySizeLong() has a habit of returning 694 bytes - that is, the size of the managed AudioClip object, but not
+            // the size of the native footprint of the AudioClip at runtime. So let's try calculating what we think that would be.
+            if (runtimeSize == k_AudioClipManagedSize)
             {
-                // For streaming AudioClips, Profiler.GetRuntimeMemorySizeLong() always returns 694 bytes - that is, the size of the managed AudioClip object, but not
-                // the size of the native buffer used to perform the actual streaming. To cut a long story short, the total size is:
-                // N * (k_StreamingBuffer + (1.6 * audioClip.frequency  * audioClip.channels) + k_AudioClipManagedSize bytes.
-                // N is the number of instances currently playing. In static analysis, we can't calculate N, so let's estimate it at it's most likely value: 1.
-                // 1.6 is a magic number representing "400ms of float sample data".
-                runtimeSize += k_StreamingBuffer + (int)(1.6 * audioClip.frequency * audioClip.channels);
+                // The decompression buffer is defined as "400ms of float sample data".
+                // 1 second of audio is (sizeof(float) * audioClip.frequency * audioClip.channels) bytes.
+                // So 400ms is 400 * ((sizeof(float) * audioClip.frequency * audioClip.channels) / 1000).
+                // We can simplify this to the following:
+                int decompressionBufferSize = (int)(1.6 * audioClip.frequency * audioClip.channels);
+
+                // NOTE: Actual runtime memory footprint at any given moment depends on the number of instances of an AudioClip that are currently playing.
+                // Each instance will need its own decompression buffer (if Streaming or CompressedInMemory) and streaming buffer (if Streaming)
+                // In static analysis, we can't calculate the maximum number of instances of a clip that could play simultaneously at runtime, so let's estimate it at it's most likely value: 1.
+                switch (audioClip.loadType)
+                {
+                    case AudioClipLoadType.DecompressOnLoad:
+                        // Since the decompression buffer is only needed during loading, let's ignore it. Just calculate the size of the decompressed PCM data.
+                        runtimeSize += sizeof(float) * audioClip.samples * audioClip.channels;
+                        break;
+                    case AudioClipLoadType.CompressedInMemory:
+                        runtimeSize += compSize + decompressionBufferSize;
+                        break;
+                    case AudioClipLoadType.Streaming:
+                        runtimeSize += k_StreamingBuffer + decompressionBufferSize;
+                        break;
+                }
             }
 
             // REPORT FILE FOR AUDIOCLIP VIEW
