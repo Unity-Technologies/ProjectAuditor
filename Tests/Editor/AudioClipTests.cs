@@ -170,7 +170,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #elif UNITY_EDITOR_OSX
         [RequirePlatformSupport(BuildTarget.StandaloneOSX)]
 #elif UNITY_EDITOR_LINUX
-        [RequirePlatformSupport(BuildTarget.StandaloneLinux)]
+        [RequirePlatformSupport(BuildTarget.StandaloneLinux64)]
 #endif
         public void AudioClip_NonStreamingStereoClipNotForcedToMono_IsReportedAndFixed()
         {
@@ -181,7 +181,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #elif UNITY_EDITOR_OSX
             m_Platform = BuildTarget.StandaloneOSX;
 #elif UNITY_EDITOR_LINUX
-            m_Platform = BuildTarget.StandaloneLinux;
+            m_Platform = BuildTarget.StandaloneLinux64;
 #endif
             var asset = CreateTestAudioClip(
                 "PAA4003.wav", m_ShortWavData, m_Platform.ToString(),
@@ -362,7 +362,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #elif UNITY_EDITOR_OSX
         [RequirePlatformSupport(BuildTarget.Android, BuildTarget.StandaloneOSX)]
 #elif UNITY_EDITOR_LINUX
-        [RequirePlatformSupport(BuildTarget.Android, BuildTarget.StandaloneLinux)]
+        [RequirePlatformSupport(BuildTarget.Android, BuildTarget.StandaloneLinux64)]
 #endif
         public void AudioClip_StereoFalsePositives_AreNotReported()
         {
@@ -380,7 +380,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #elif UNITY_EDITOR_OSX
             m_Platform = BuildTarget.StandaloneOSX;
 #elif UNITY_EDITOR_LINUX
-            m_Platform = BuildTarget.StandaloneLinux;
+            m_Platform = BuildTarget.StandaloneLinux64;
 #endif
 
             foundIssues = AnalyzeAndFindAssetIssues(m_TestLongStreamingClipAsset, IssueCategory.AssetDiagnostic);
