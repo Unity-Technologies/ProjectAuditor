@@ -286,7 +286,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 // NOTE: Actual runtime memory footprint at any given moment depends on the number of instances of an AudioClip that are currently playing.
                 // Each instance will need its own decompression buffer (if Streaming or CompressedInMemory) and streaming buffer (if Streaming)
-                // In static analysis, we can't calculate the maximum number of instances of a clip that could play simultaneously at runtime, so let's estimate it at it's most likely value: 1.
+                // In static analysis, we can't calculate the maximum number of instances of a clip that could play simultaneously at runtime, so let's estimate it at its most likely value: 1.
                 switch (audioClip.loadType)
                 {
                     case AudioClipLoadType.DecompressOnLoad:

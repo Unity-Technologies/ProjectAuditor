@@ -35,11 +35,11 @@ namespace Unity.ProjectAuditor.EditorTests
             const uint subChunk1Size = (uint)16;
             const ushort audioFormat = (ushort)1;
             var sampleRate = (uint)frequency;
-            var byteRate = (uint)(sampleRate * numChannels * bitsPerSample / 8);  // SampleRate * NumChannels * BitsPerSample/8
-            var blockAlign = (ushort)(numChannels * bitsPerSample / 8); // NumChannels * BitsPerSample/8
+            var byteRate = (uint)(sampleRate * numChannels * bitsPerSample / 8);
+            var blockAlign = (ushort)(numChannels * bitsPerSample / 8);
             const string subChunk2Id = "data";
-            var subChunk2Size = (uint)(data.Length * numChannels * bitsPerSample / 8); // NumSamples * NumChannels * BitsPerSample/8
-            var chunkSize = (uint)(36 + subChunk2Size); // 36 + SubChunk2Size
+            var subChunk2Size = (uint)(data.Length * numChannels * bitsPerSample / 8);
+            var chunkSize = (uint)(36 + subChunk2Size);
             // Start writing the file.
             WriteString(stream, chunkId);
             WriteInteger(stream, chunkSize);
