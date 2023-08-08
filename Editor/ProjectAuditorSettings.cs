@@ -39,9 +39,12 @@ namespace Unity.ProjectAuditor.Editor
         internal int SpriteAtlasEmptySpaceLimit = 50;
 
         /// <summary>
-        /// The runtime size (in bytes) above which we report an issue for non-streaming AudioClips. Unity's AudioClip streaming buffers are 200KB in size.
+        /// The runtime size (in bytes) above which we report an issue for non-streaming AudioClips.
         /// </summary>
-        internal int StreamingClipThresholdBytes = 200 * 1024;
+        /// <description>
+        /// The default value is the memory footprint of a single currently-playing instance of a streaming stereo 48KHz AudioClip.
+        /// </description>
+        internal int StreamingClipThresholdBytes = 1 * (64000 + (int)(1.6 * 48000 * 2)) + 694;
 
         /// <summary>
         /// The runtime size (in bytes) above which we report an issue for AudioClips that are set to Decompress On Load.

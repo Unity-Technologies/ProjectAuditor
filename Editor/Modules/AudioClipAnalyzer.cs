@@ -30,6 +30,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         private static string s_PlatformString = "";
 
+        private const int k_StreamingBuffer = 64000;        // The per-instance streaming buffer, which Unity's FMOD implementation defaults to 64000.
+        private const int k_AudioClipManagedSize = 694;     // The managed AudioClip object size, as reported by Profiler.GetRuntimeMemorySizeLong().
+
         internal static readonly Descriptor k_AudioLongClipDoesNotStreamDescriptor = new Descriptor(
             PAA4000,
             "Audio: Long AudioClip is not set to Streaming",
@@ -267,10 +270,37 @@ namespace Unity.ProjectAuditor.Editor.Modules
             // GET CLIP STATS
 
             var clipName = Path.GetFileNameWithoutExtension(assetPath);
-            // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
-            var runtimeSize = Profiler.GetRuntimeMemorySizeLong(audioClip);
             var origSize = (int)GetPropertyValue(audioImporter, "origSize");
             var compSize = (int)GetPropertyValue(audioImporter, "compSize");
+
+            var runtimeSize = Profiler.GetRuntimeMemorySizeLong(audioClip);
+            // Profiler.GetRuntimeMemorySizeLong() has a habit of returning 694 bytes - that is, the size of the managed AudioClip object, but not
+            // the size of the native footprint of the AudioClip at runtime. So let's try calculating what we think that would be.
+            if (runtimeSize == k_AudioClipManagedSize)
+            {
+                // The decompression buffer is defined as "400ms of float sample data".
+                // 1 second of audio is (sizeof(float) * audioClip.frequency * audioClip.channels) bytes.
+                // So 400ms is 400 * ((sizeof(float) * audioClip.frequency * audioClip.channels) / 1000).
+                // We can simplify this to the following:
+                int decompressionBufferSize = (int)(1.6 * audioClip.frequency * audioClip.channels);
+
+                // NOTE: Actual runtime memory footprint at any given moment depends on the number of instances of an AudioClip that are currently playing.
+                // Each instance will need its own decompression buffer (if Streaming or CompressedInMemory) and streaming buffer (if Streaming)
+                // In static analysis, we can't calculate the maximum number of instances of a clip that could play simultaneously at runtime, so let's estimate it at its most likely value: 1.
+                switch (audioClip.loadType)
+                {
+                    case AudioClipLoadType.DecompressOnLoad:
+                        // Since the decompression buffer is only needed during loading, let's ignore it. Just calculate the size of the decompressed PCM data.
+                        runtimeSize += sizeof(float) * audioClip.samples * audioClip.channels;
+                        break;
+                    case AudioClipLoadType.CompressedInMemory:
+                        runtimeSize += compSize + decompressionBufferSize;
+                        break;
+                    case AudioClipLoadType.Streaming:
+                        runtimeSize += k_StreamingBuffer + decompressionBufferSize;
+                        break;
+                }
+            }
 
             // REPORT FILE FOR AUDIOCLIP VIEW
 
@@ -306,6 +336,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             bool isStreaming = sampleSettings.loadType == AudioClipLoadType.Streaming;
 
+            // Size (bytes) of the decompressed PCM data for the clip.
+            int decompressedClipSize = audioClip.samples * audioClip.channels * sizeof(float);
+
             var sourceFileExtension = System.IO.Path.GetExtension(assetPath).ToUpper() ?? string.Empty;
             if (sourceFileExtension.StartsWith("."))
                 sourceFileExtension = sourceFileExtension.Substring(1);
@@ -323,7 +356,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                      .WithLocation(assetPath);
             }
 
-            if (runtimeSize < projectAuditorParams.settings.StreamingClipThresholdBytes && isStreaming)
+            if (decompressedClipSize < projectAuditorParams.settings.StreamingClipThresholdBytes && isStreaming)
             {
                 yield return ProjectIssue.Create(
                         IssueCategory.AssetDiagnostic, k_AudioShortClipStreamsDescriptor, clipName)
