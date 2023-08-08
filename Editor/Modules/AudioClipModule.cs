@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.Length), format = PropertyFormat.String, name = "Length"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.SourceFileSize), format = PropertyFormat.Bytes, name = "Source File Size"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.ImportedFileSize), format = PropertyFormat.Bytes, name = "Imported File Size"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.RuntimeSize), format = PropertyFormat.Bytes, name = "Runtime Size"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.RuntimeSize), format = PropertyFormat.Bytes, name = "Runtime Size (Estimate)"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.CompressionRatio), format = PropertyFormat.String, name = "Compression Ratio"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.CompressionFormat), format = PropertyFormat.String, name = "Compression Format"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.SampleRate), format = PropertyFormat.String, name = "Sample Rate"},
