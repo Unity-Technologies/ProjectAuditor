@@ -447,7 +447,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 if (message.code == null)
                 {
-                    Debug.LogWarningFormat("Missing information in compiler message for {0} assembly", assemblyInfo.name);
+                    if (!string.IsNullOrEmpty(message.message))
+                    {
+                        Debug.LogWarningFormat("Compiler message for {0} assembly is missing information and won't be shown in Project Auditor, but has the message: {1}",
+                            assemblyInfo.name, message.message);
+                    }
+                    else
+                    {
+                        Debug.LogWarningFormat("Missing information in compiler message for {0} assembly", assemblyInfo.name);
+                    }
                     continue;
                 }
 

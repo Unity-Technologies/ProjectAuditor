@@ -300,6 +300,30 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                                     break;
                             }
                         }
+                        else
+                        {
+                            // Copy messages that don't have the standard format. We can't extract a code string from these.
+                            messages[i] = new CompilerMessage
+                            {
+                                message = originalMessages[i].message,
+                                file = originalMessages[i].file,
+                                line = originalMessages[i].line,
+                                code = null
+                            };
+
+                            switch (originalMessages[i].type)
+                            {
+                                case UnityEditor.Compilation.CompilerMessageType.Error:
+                                    messages[i].type = CompilerMessageType.Error;
+                                    break;
+                                case UnityEditor.Compilation.CompilerMessageType.Info:
+                                    messages[i].type = CompilerMessageType.Info;
+                                    break;
+                                case UnityEditor.Compilation.CompilerMessageType.Warning:
+                                    messages[i].type = CompilerMessageType.Warning;
+                                    break;
+                            }
+                        }
                     }
 
                     assemblyCompilationFinished(path, messages);
