@@ -47,7 +47,7 @@ class ScriptWithError {
 }
 ");
 
-            // this is required to that we have an assembly which fails to compile. By doing so the default assembly won't be compiled as it's missing a dependency
+            // this is required so we have an assembly which fails to compile. By doing so the default assembly won't be compiled as it's missing a dependency
             m_TestAsmdef = new TestAsset(k_TempAssemblyFileName, @"
 {
     ""name"": ""Unity.ProjectAuditor.Temp"",
