@@ -316,12 +316,14 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                                 case UnityEditor.Compilation.CompilerMessageType.Error:
                                     messages[i].type = CompilerMessageType.Error;
                                     break;
-                                case UnityEditor.Compilation.CompilerMessageType.Info:
-                                    messages[i].type = CompilerMessageType.Info;
-                                    break;
                                 case UnityEditor.Compilation.CompilerMessageType.Warning:
                                     messages[i].type = CompilerMessageType.Warning;
                                     break;
+#if UNITY_2021_1_OR_NEWER
+                                case UnityEditor.Compilation.CompilerMessageType.Info:
+                                    messages[i].type = CompilerMessageType.Info;
+                                    break;
+#endif
                             }
                         }
                     }
