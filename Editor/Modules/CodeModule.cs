@@ -203,7 +203,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             assemblyDirectories.AddRange(AssemblyCompilation.GetAssemblyReferencePaths(m_Config.CompilationMode));
 #endif
 
-            if (m_Config.CompilationMode == CompilationMode.Editor)
+            if (m_Config.CompilationMode == CompilationMode.Editor ||
+                m_Config.CompilationMode == CompilationMode.EditorPlayMode)
             {
                 var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)ProjectIssue
                     .Create(IssueCategory.Assembly, assemblyInfo.name)
