@@ -126,7 +126,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 id = TabId.Assets, name = "Assets",
                 categories = new[]
                 {
-                    IssueCategory.AssetDiagnostic, IssueCategory.Texture, IssueCategory.Mesh, IssueCategory.AudioClip
+                    IssueCategory.AssetDiagnostic, IssueCategory.Texture, IssueCategory.Mesh, IssueCategory.AudioClip, IssueCategory.AnimatorController, IssueCategory.AnimationClip, IssueCategory.Avatar, IssueCategory.AvatarMask
                 }
             },
             new Tab
@@ -624,6 +624,54 @@ namespace Unity.ProjectAuditor.Editor.UI
                     AnalysisView.DrawToolbarButton(Contents.AssetDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
                 },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.AnimatorController,
+                displayName = "Animator Controllers",
+                menuLabel = "Assets/Animation/Animator Controllers",
+                menuOrder = 8,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AnimatorControllers
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.AnimationClip,
+                displayName = "Animation Clips",
+                menuLabel = "Assets/Animation/Animation Clips",
+                menuOrder = 9,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AnimationClips
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.Avatar,
+                displayName = "Avatars",
+                menuLabel = "Assets/Animation/Avatars",
+                menuOrder = 10,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Avatars
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.AvatarMask,
+                displayName = "Avatar Masks",
+                menuLabel = "Assets/Animation/Avatar Masks",
+                menuOrder = 11,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AvatarMasks
             });
 
             if (UserPreferences.developerMode)

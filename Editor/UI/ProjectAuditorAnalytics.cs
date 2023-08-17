@@ -64,6 +64,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             Textures,
             AudioClip,
             Meshes,
+            AnimatorControllers,
+            AnimationClips,
+            Avatars,
+            AvatarMasks,
 
             // Build report
             BuildFiles,
@@ -231,6 +235,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "audio_clip_tab";
                 case UIButton.Meshes:
                     return "meshes_tab";
+                case UIButton.AnimatorControllers:
+                    return "animator_controllers_tab";
+                case UIButton.AnimationClips:
+                    return "animation_clips_tab";
+                case UIButton.Avatars:
+                    return "avatars_tab";
+                case UIButton.AvatarMasks:
+                    return "avatar_masks_tab";
 
                 // Build report
                 case UIButton.BuildFiles:

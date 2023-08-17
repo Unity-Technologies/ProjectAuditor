@@ -24,6 +24,11 @@
     "versionDefines": [
         {
             "name": "Unity",
+            "expression": "2019.1",
+            "define": "PA_CAN_USE_AVATAR_HUMAN_DESCRIPTION"
+        },
+        {
+            "name": "Unity",
             "expression": "2019.2",
             "define": "PA_CAN_USE_TEXTURE_MIPMAPCOUNT"
         },

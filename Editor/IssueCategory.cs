@@ -120,6 +120,26 @@ namespace Unity.ProjectAuditor.Editor
         Material,
 
         /// <summary>
+        /// Issues relating to animator controllers
+        /// </summary>
+        AnimatorController,
+
+        /// <summary>
+        /// Issues relating to animation clips
+        /// </summary>
+        AnimationClip,
+
+        /// <summary>
+        /// Issues relating to avatars
+        /// </summary>
+        Avatar,
+
+        /// <summary>
+        /// Issues relating to avatar masks
+        /// </summary>
+        AvatarMask,
+
+        /// <summary>
         /// Enum value indicating the first available custom category
         /// </summary>
         FirstCustomCategory
