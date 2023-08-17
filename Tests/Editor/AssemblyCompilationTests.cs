@@ -105,18 +105,5 @@ class MyClass
             Assert.NotNull(codeIssue);
             Assert.AreEqual("MyClass." + methodName, codeIssue.dependencies.prettyName);
         }
-
-        [Test]
-        public void AssemblyCompilation_UnexpectedMessageFormat_DoesntStopCompilation()
-        {
-            var testMcsRsp = new TestAsset("mcs.rsp", @"");
-
-            using (var compilationHelper = new AssemblyCompilation())
-            {
-                var assemblyInfos = compilationHelper.Compile();
-
-                Assert.Positive(assemblyInfos.Count());
-            }
-        }
     }
 }

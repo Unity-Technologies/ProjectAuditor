@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Compilation;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
@@ -306,9 +308,9 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                             messages[i] = new CompilerMessage
                             {
                                 message = originalMessages[i].message,
-                                file = originalMessages[i].file,
+                                file = String.IsNullOrEmpty(originalMessages[i].file) ? PathUtils.GetDirectoryName(Application.dataPath) : originalMessages[i].file,
                                 line = originalMessages[i].line,
-                                code = null
+                                code = "<Unity>"
                             };
 
                             switch (originalMessages[i].type)
