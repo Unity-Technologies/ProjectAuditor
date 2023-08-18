@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Compilation;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
@@ -298,6 +300,32 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                                 case "info":
                                     messages[i].type = CompilerMessageType.Info;
                                     break;
+                            }
+                        }
+                        else
+                        {
+                            // Copy messages that don't have the standard format. We can't extract a code string from these.
+                            messages[i] = new CompilerMessage
+                            {
+                                message = originalMessages[i].message,
+                                file = String.IsNullOrEmpty(originalMessages[i].file) ? PathUtils.GetDirectoryName(Application.dataPath) : originalMessages[i].file,
+                                line = originalMessages[i].line,
+                                code = "<Unity>"
+                            };
+
+                            switch (originalMessages[i].type)
+                            {
+                                case UnityEditor.Compilation.CompilerMessageType.Error:
+                                    messages[i].type = CompilerMessageType.Error;
+                                    break;
+                                case UnityEditor.Compilation.CompilerMessageType.Warning:
+                                    messages[i].type = CompilerMessageType.Warning;
+                                    break;
+#if UNITY_2021_1_OR_NEWER
+                                case UnityEditor.Compilation.CompilerMessageType.Info:
+                                    messages[i].type = CompilerMessageType.Info;
+                                    break;
+#endif
                             }
                         }
                     }
