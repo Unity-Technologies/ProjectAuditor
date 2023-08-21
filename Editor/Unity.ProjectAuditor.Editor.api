@@ -5,17 +5,22 @@ namespace Unity.ProjectAuditor.Editor
 {
     public enum IssueCategory
     {
+        AnimationClip = 23,
+        AnimatorController = 22,
         Assembly = 11,
         AssetDiagnostic = 1,
         AudioClip = 17,
+        Avatar = 24,
+        AvatarMask = 25,
         BuildFile = 8,
         BuildStep = 9,
         BuildSummary = 10,
         Code = 4,
         CodeCompilerMessage = 5,
         ComputeShaderVariant = 18,
-        FirstCustomCategory = 21,
+        FirstCustomCategory = 26,
         GenericInstance = 6,
+        Material = 21,
         Mesh = 19,
         MetaData = 0,
         Package = 14,
@@ -53,11 +58,27 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectAuditorConfig : UnityEngine.ScriptableObject
     {
+        public bool AnalyzeInBackground = true;
+        public bool AnalyzeOnBuild;
+        public AssemblyUtils.CompilationMode CompilationMode;
+        public bool FailBuildOnIssues;
+        public ProjectAuditorSettings[] Settings;
+        public bool UseRoslynAnalyzers;
         public ProjectAuditorConfig() {}
     }
 
     [UnityEngine.CreateAssetMenu(menuName = @"Project Auditor/Project Auditor Settings")] public class ProjectAuditorSettings : UnityEngine.ScriptableObject
     {
+        public int LoadInBackGroundClipSizeThresholdBytes = 204800;
+        public int LongCompressedMobileClipThresholdBytes = 204800;
+        public int LongDecompressedClipThresholdBytes = 204800;
+        public int MeshTriangleCountLimit = 5000;
+        public int MeshVerticeCountLimit = 5000;
+        public int SpriteAtlasEmptySpaceLimit = 50;
+        public int StreamingAssetsFolderSizeLimit = 50;
+        public int StreamingClipThresholdBytes = 218294;
+        public int TextureSizeLimit = 2048;
+        public int TextureStreamingMipmapsSizeLimit = 4000;
         public ProjectAuditorSettings() {}
     }
 
@@ -105,6 +126,14 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
     {
         Debug = 0,
         Release = 1,
+    }
+
+    public enum CompilationMode
+    {
+        DevelopmentPlayer = 1,
+        Editor = 3,
+        EditorPlayMode = 2,
+        Player = 0,
     }
 }
 
