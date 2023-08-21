@@ -135,6 +135,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         }
 
                         m_ViewManager.onDisplayIssues?.Invoke(selectedIssues);
+
+                        ClearSelection();
                     });
                 }
                 else
@@ -147,6 +149,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         }
 
                         m_ViewManager.onIgnoreIssues?.Invoke(selectedIssues);
+
+                        ClearSelection();
                     });
                 }
             }

@@ -304,8 +304,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var analytic = ProjectAuditorAnalytics.BeginAnalytic();
 
-                activeView.ClearSelection();
-
                 ProjectAuditorAnalytics.SendEventWithSelectionSummary(ProjectAuditorAnalytics.UIButton.Mute,
                     analytic, issues);
             };
