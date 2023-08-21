@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
     /// <summary>
     /// Options for the compilation mode Project Auditor should use when performing code analysis
     /// </summary>
-    internal enum CompilationMode
+    public enum CompilationMode
     {
         /// <summary>
         ///   <para>Non-Development player (default)</para>

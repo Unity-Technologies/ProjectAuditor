@@ -11,31 +11,31 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Maximum mesh vertex count. If we find meshes with more triangles we report an issue.
         /// </summary>
-        internal int MeshVerticeCountLimit = 5000;
+        public int MeshVerticeCountLimit = 5000;
 
         /// <summary>
         /// Maximum mesh vertex count. If we find meshes with more triangles we report an issue.
         /// </summary>
-        internal int MeshTriangleCountLimit = 5000;
+        public int MeshTriangleCountLimit = 5000;
 
         /// <summary>
         /// Maximum texture size. If we find textures at this size we warn the user. If they exceed the size we report a critical issue.
         /// </summary>
-        internal int TextureSizeLimit = 2048;
+        public int TextureSizeLimit = 2048;
 
         /// <summary>
         /// Maximum size of all files in the StreamingAssets folder. Beyond that size we report an issue.
         /// </summary>
-        internal int StreamingAssetsFolderSizeLimit = 50;
+        public int StreamingAssetsFolderSizeLimit = 50;
 
         /// <summary>
         /// Maximum size when it is not necessary to enable Streaming Mipmaps. Beyond that size we report an issue.
         /// </summary>
-        internal int TextureStreamingMipmapsSizeLimit = 4000;
+        public int TextureStreamingMipmapsSizeLimit = 4000;
 
         /// <summary>
         /// Percent of empty space allowed in a Sprite Atlas texture. Beyond that size we report an issue.
         /// </summary>
-        internal int SpriteAtlasEmptySpaceLimit = 50;
+        public int SpriteAtlasEmptySpaceLimit = 50;
     }
 }
