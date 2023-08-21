@@ -437,12 +437,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (var message in compilerMessages)
             {
-                if (message.code == null)
-                {
-                    Debug.LogWarningFormat("Missing information in compiler message for {0} assembly", assemblyInfo.name);
-                    continue;
-                }
-
                 var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.file);
                 yield return ProjectIssue.Create(IssueCategory.CodeCompilerMessage, message.message)
                     .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
