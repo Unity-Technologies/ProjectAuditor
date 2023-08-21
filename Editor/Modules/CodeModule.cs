@@ -193,7 +193,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 assemblyInfos = assemblyInfos.Where(a => projectAuditorParams.assemblyNames.Contains(a.name)).ToArray();
             }
 
-            if (m_Config.CompilationMode == CompilationMode.Editor)
+            if (m_Config.CompilationMode == CompilationMode.Editor ||
+                m_Config.CompilationMode == CompilationMode.EditorPlayMode)
             {
                 var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)ProjectIssue
                     .Create(IssueCategory.Assembly, assemblyInfo.name)
