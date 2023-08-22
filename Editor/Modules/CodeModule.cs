@@ -193,7 +193,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 assemblyInfos = assemblyInfos.Where(a => projectAuditorParams.assemblyNames.Contains(a.name)).ToArray();
             }
 
-            if (m_Config.CompilationMode == CompilationMode.Editor)
+            if (m_Config.CompilationMode == CompilationMode.Editor ||
+                m_Config.CompilationMode == CompilationMode.EditorPlayMode)
             {
                 var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)ProjectIssue
                     .Create(IssueCategory.Assembly, assemblyInfo.name)
@@ -437,12 +438,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (var message in compilerMessages)
             {
-                if (message.code == null)
-                {
-                    Debug.LogWarningFormat("Missing information in compiler message for {0} assembly", assemblyInfo.name);
-                    continue;
-                }
-
                 var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.file);
                 yield return ProjectIssue.Create(IssueCategory.CodeCompilerMessage, message.message)
                     .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]

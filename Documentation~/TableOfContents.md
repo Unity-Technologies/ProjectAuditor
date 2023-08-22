@@ -23,5 +23,3 @@
 * Advanced
   * [Diagnostics](./Diagnostics.md)
   * [Developing](./Developing.md)
-  * [Extending](./Extending.md)
-    * [Reporting](./Reporting.md)
