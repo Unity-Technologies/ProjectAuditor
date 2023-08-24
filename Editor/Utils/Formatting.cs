@@ -95,6 +95,26 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return (frequency < 1000) ? $"{frequency} Hz" : $"{((float)frequency / 1000.0f):G0} KHz";
         }
 
+        /// <summary>
+        /// Formats a given float duration as a string in the format "X.XXX s".
+        /// </summary>
+        /// <param name="length">Length value to format.</param>
+        /// <returns>A string representation of the input value as a duration in seconds.</returns>
+        public static string FormatLengthInSeconds(float length)
+        {
+            return length.ToString("F3") + " s";
+        }
+
+        /// <summary>
+        /// Formats a given float framerate as a string in the format "X fps".
+        /// </summary>
+        /// <param name="framerate">Framerate value to format.</param>
+        /// <returns>A string representation of the input value as a framerate.</returns>
+        public static string FormatFramerate(float framerate)
+        {
+            return framerate + " fps";
+        }
+
         static readonly string k_StringSeparator = ", ";
 
         public static string CombineStrings(string[] strings, string separator = null)
