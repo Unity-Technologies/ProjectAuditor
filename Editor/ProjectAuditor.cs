@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         internal ProjectAuditorConfig config => m_Config;
 
-        IProjectAuditorSettingsProvider m_DefaultSettingsProvider;
+        IProjectAuditorDiagnosticParamsProvider m_DefaultDiagnosticParamsProvider;
 
         /// <summary>
         /// ProjectAuditor default constructor
@@ -139,8 +139,8 @@ namespace Unity.ProjectAuditor.Editor
 
         void InitDefaultSettingsProvider()
         {
-            m_DefaultSettingsProvider = new ProjectAuditorSettingsProvider();
-            m_DefaultSettingsProvider.Initialize();
+            m_DefaultDiagnosticParamsProvider = new ProjectAuditorDiagnosticParamsProvider();
+            m_DefaultDiagnosticParamsProvider.Initialize();
         }
 
         /// <summary>
@@ -193,8 +193,8 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
-            if (projectAuditorParams.settings == null)
-                projectAuditorParams.settings = m_DefaultSettingsProvider.GetCurrentSettings();
+            if (projectAuditorParams.diagnosticParams == null)
+                projectAuditorParams.diagnosticParams = m_DefaultDiagnosticParamsProvider.GetCurrentParams();
 
             var numModules = supportedModules.Length;
             if (numModules == 0)

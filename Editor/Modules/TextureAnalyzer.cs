@@ -230,7 +230,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(textureImporter.assetPath);
             }
 
-            if (textureImporter.mipmapEnabled && !textureImporter.streamingMipmaps && size > Mathf.Pow(projectAuditorParams.settings.TextureStreamingMipmapsSizeLimit, 2))
+            if (textureImporter.mipmapEnabled && !textureImporter.streamingMipmaps && size > Mathf.Pow(projectAuditorParams.diagnosticParams.TextureStreamingMipmapsSizeLimit, 2))
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureStreamingMipMapEnabledDescriptor, textureName)
                     .WithLocation(textureImporter.assetPath);
@@ -254,7 +254,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
                 if (emptyPercent >
-                    projectAuditorParams.settings.SpriteAtlasEmptySpaceLimit)
+                    projectAuditorParams.diagnosticParams.SpriteAtlasEmptySpaceLimit)
                 {
                     yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor, textureName, emptyPercent)
                         .WithLocation(textureImporter.assetPath);

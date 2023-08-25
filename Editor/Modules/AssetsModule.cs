@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var settings = projectAuditorParams.settings;
+            var settings = projectAuditorParams.diagnosticParams;
 
             var issues = new List<ProjectIssue>();
             AnalyzeResources(issues);
@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        static void AnalyzeStreamingAssets(ProjectAuditorSettings settings, IList<ProjectIssue> issues)
+        static void AnalyzeStreamingAssets(ProjectAuditorDiagnosticParams diagnosticParams, IList<ProjectIssue> issues)
         {
             if (Directory.Exists("Assets/StreamingAssets"))
             {
@@ -120,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     totalBytes += fileInfo.Length;
                 }
 
-                if (totalBytes > settings.StreamingAssetsFolderSizeLimit * 1024 * 1024)
+                if (totalBytes > diagnosticParams.StreamingAssetsFolderSizeLimit * 1024 * 1024)
                 {
                     issues.Add(
                         ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor,

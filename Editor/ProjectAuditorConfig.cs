@@ -40,11 +40,6 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public bool FailBuildOnIssues;
 
-        /// <summary>
-        /// Project-specific user settings to adjust values/limits analyzers test against
-        /// </summary>
-        public ProjectAuditorSettings[] Settings;
-
         // Internal members
 
         [SerializeField]

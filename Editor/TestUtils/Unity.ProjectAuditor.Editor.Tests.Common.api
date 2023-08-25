@@ -22,9 +22,9 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected string m_BuildPath;
         protected Unity.ProjectAuditor.Editor.AssemblyUtils.CodeOptimization m_CodeOptimization = Unity.ProjectAuditor.Editor.AssemblyUtils.CodeOptimization.Release;
         protected ProjectAuditorConfig m_Config;
+        protected ProjectAuditorDiagnosticParamsProvider m_DiagnosticParamsProvider;
         protected UnityEditor.BuildTarget m_Platform;
         protected ProjectAuditor m_ProjectAuditor;
-        protected ProjectAuditorSettingsProvider m_SettingsProvider;
         protected TestFixtureBase() {}
         protected ProjectIssue[] Analyze(System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
         protected ProjectIssue[] Analyze(IssueCategory category, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));

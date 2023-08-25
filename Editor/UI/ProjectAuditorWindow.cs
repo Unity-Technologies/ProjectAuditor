@@ -168,7 +168,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] int m_ActiveTabIndex = 0;
         int m_TabButtonControlID;
 
-        IProjectAuditorSettingsProvider m_SettingsProvider;
+        IProjectAuditorDiagnosticParamsProvider m_DiagnosticParamsProvider;
 
         public bool Match(ProjectIssue issue)
         {
@@ -233,8 +233,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             UpdateAssemblySelection();
             Profiler.EndSample();
 
-            m_SettingsProvider = new ProjectAuditorSettingsProvider();
-            m_SettingsProvider.Initialize();
+            m_DiagnosticParamsProvider = new ProjectAuditorDiagnosticParamsProvider();
+            m_DiagnosticParamsProvider.Initialize();
 
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid &&
@@ -839,7 +839,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     m_ShouldRefresh = true;
                 },
-                settings = m_SettingsProvider.GetCurrentSettings()
+                diagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams()
             };
             m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar());
         }
@@ -888,7 +888,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                 },
                 existingReport = m_ProjectReport,
-                settings = m_SettingsProvider.GetCurrentSettings(),
+                diagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams(),
                 onCompleted = projectReport =>
                 {
                     m_ShouldRefresh = true;
@@ -1252,18 +1252,18 @@ namespace Unity.ProjectAuditor.Editor.UI
             var dropdownRect = GUILayoutUtility.GetLastRect();
             dropdownRect.x += EditorGUIUtility.labelWidth + 2;
 
-            var currentSettings = m_SettingsProvider.GetCurrentSettings();
+            var currentSettings = m_DiagnosticParamsProvider.GetCurrentParams();
 
             if (EditorGUILayout.DropdownButton(new GUIContent(currentSettings.name), FocusType.Keyboard,
                 GUILayout.ExpandWidth(true)))
             {
                 GenericMenu menu = new GenericMenu();
 
-                var allSettings = m_SettingsProvider.GetSettings();
+                var allSettings = m_DiagnosticParamsProvider.GetParams();
                 foreach (var settings in allSettings)
                 {
                     menu.AddItem(new GUIContent(settings.name), false,
-                        () => { m_SettingsProvider.SelectCurrentSettings(settings); });
+                        () => { m_DiagnosticParamsProvider.SelectCurrentParams(settings); });
                 }
 
                 menu.DropDown(dropdownRect);
@@ -1279,9 +1279,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (relativePath != string.Empty)
                 {
-                    var newSettings = CreateInstance<ProjectAuditorSettings>();
+                    var newSettings = CreateInstance<ProjectAuditorDiagnosticParams>();
                     AssetDatabase.CreateAsset(newSettings, relativePath);
-                    m_SettingsProvider.SelectCurrentSettings(newSettings);
+                    m_DiagnosticParamsProvider.SelectCurrentParams(newSettings);
 
                     Selection.activeObject = newSettings;
                 }

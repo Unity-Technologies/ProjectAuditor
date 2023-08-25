@@ -62,12 +62,11 @@ namespace Unity.ProjectAuditor.Editor
         public bool AnalyzeOnBuild;
         public AssemblyUtils.CompilationMode CompilationMode;
         public bool FailBuildOnIssues;
-        public ProjectAuditorSettings[] Settings;
         public bool UseRoslynAnalyzers;
         public ProjectAuditorConfig() {}
     }
 
-    [UnityEngine.CreateAssetMenu(menuName = @"Project Auditor/Project Auditor Settings")] public class ProjectAuditorSettings : UnityEngine.ScriptableObject
+    [UnityEngine.CreateAssetMenu(menuName = @"Project Auditor/Project Auditor Diagnostic Params")] public class ProjectAuditorDiagnosticParams : UnityEngine.ScriptableObject
     {
         public int LoadInBackGroundClipSizeThresholdBytes = 204800;
         public int LongCompressedMobileClipThresholdBytes = 204800;
@@ -79,16 +78,16 @@ namespace Unity.ProjectAuditor.Editor
         public int StreamingClipThresholdBytes = 218294;
         public int TextureSizeLimit = 2048;
         public int TextureStreamingMipmapsSizeLimit = 4000;
-        public ProjectAuditorSettings() {}
+        public ProjectAuditorDiagnosticParams() {}
     }
 
-    public class ProjectAuditorSettingsProvider
+    public class ProjectAuditorDiagnosticParamsProvider
     {
-        public ProjectAuditorSettingsProvider() {}
-        public ProjectAuditorSettings GetCurrentSettings();
-        public System.Collections.Generic.IEnumerable<ProjectAuditorSettings> GetSettings();
+        public ProjectAuditorDiagnosticParamsProvider() {}
+        public ProjectAuditorDiagnosticParams GetCurrentParams();
+        public System.Collections.Generic.IEnumerable<ProjectAuditorDiagnosticParams> GetParams();
         public void Initialize();
-        public void SelectCurrentSettings(ProjectAuditorSettings settings);
+        public void SelectCurrentParams(ProjectAuditorDiagnosticParams diagnosticParams);
     }
 
     public class ProjectIssue

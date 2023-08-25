@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected ProjectAuditorConfig m_Config;
         protected string m_BuildPath;
         protected Editor.ProjectAuditor m_ProjectAuditor;
-        protected ProjectAuditorSettingsProvider m_SettingsProvider;
+        protected ProjectAuditorDiagnosticParamsProvider m_DiagnosticParamsProvider;
 
         [OneTimeSetUp]
         public void FixtureSetUp()
@@ -31,8 +31,8 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             m_ProjectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
 
-            m_SettingsProvider = new ProjectAuditorSettingsProvider();
-            m_SettingsProvider.Initialize();
+            m_DiagnosticParamsProvider = new ProjectAuditorDiagnosticParamsProvider();
+            m_DiagnosticParamsProvider.Initialize();
 
             TestAsset.CreateTempFolder();
         }
@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
                     foundIssues.AddRange(predicate == null ? issues : issues.Where(predicate));
                 },
                 platform = m_Platform,
-                settings = m_SettingsProvider.GetCurrentSettings()
+                diagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams()
             };
             m_ProjectAuditor.Audit(projectAuditorParams);
 
@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
                     foundIssues.AddRange(predicate == null ? categoryIssues : categoryIssues.Where(predicate));
                 },
                 platform = m_Platform,
-                settings = m_SettingsProvider.GetCurrentSettings()
+                diagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams()
             };
 
             projectAuditor.Audit(projectAuditorParams);

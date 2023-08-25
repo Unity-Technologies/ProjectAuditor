@@ -5,8 +5,8 @@ namespace Unity.ProjectAuditor.Editor
     /// <summary>
     /// Project-specific user settings to adjust values/limits analyzers test against
     /// </summary>
-    [CreateAssetMenu(menuName = "Project Auditor/Project Auditor Settings")]
-    public class ProjectAuditorSettings : ScriptableObject
+    [CreateAssetMenu(menuName = "Project Auditor/Project Auditor Diagnostic Params")]
+    public class ProjectAuditorDiagnosticParams : ScriptableObject
     {
         /// <summary>
         /// Maximum mesh vertex count. If we find meshes with more triangles we report an issue.
