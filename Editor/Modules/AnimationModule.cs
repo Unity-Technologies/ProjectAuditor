@@ -193,7 +193,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         size
                     })
                     .WithLocation(assetPath)
-                    );
+                );
 
                 progress?.Advance();
             }
@@ -242,7 +242,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         size
                     })
                     .WithLocation(assetPath)
-                    );
+                );
 
                 progress?.Advance();
             }
@@ -293,7 +293,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         size
                     })
                     .WithLocation(assetPath)
-                    );
+                );
 
                 progress?.Advance();
             }
@@ -331,7 +331,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         size
                     })
                     .WithLocation(assetPath)
-                    );
+                );
 
                 progress?.Advance();
             }
