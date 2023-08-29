@@ -178,7 +178,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "do nothing"
                 )
             {
-                platforms = new[] { BuildTarget.Android.ToString() }  // assuming Android is not installed by default
+                platforms = new[] { BuildTarget.Stadia.ToString() }  // assuming Stadia is not installed by default
             };
 
             Assert.False(desc.IsPlatformCompatible());

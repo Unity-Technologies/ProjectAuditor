@@ -23,6 +23,9 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected Unity.ProjectAuditor.Editor.AssemblyUtils.CodeOptimization m_CodeOptimization = Unity.ProjectAuditor.Editor.AssemblyUtils.CodeOptimization.Release;
         protected ProjectAuditorConfig m_Config;
         protected ProjectAuditorDiagnosticParamsProvider m_DiagnosticParamsProvider;
+        protected string m_OriginalCompanyName;
+        protected string m_OriginalProductName;
+        protected UnityEditor.AndroidArchitecture m_OriginalTargetArchitecture;
         protected UnityEditor.BuildTarget m_Platform;
         protected ProjectAuditor m_ProjectAuditor;
         protected TestFixtureBase() {}

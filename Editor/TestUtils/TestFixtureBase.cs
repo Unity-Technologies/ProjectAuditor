@@ -22,6 +22,9 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected string m_BuildPath;
         protected Editor.ProjectAuditor m_ProjectAuditor;
         protected ProjectAuditorDiagnosticParamsProvider m_DiagnosticParamsProvider;
+        protected AndroidArchitecture m_OriginalTargetArchitecture;
+        protected string m_OriginalCompanyName;
+        protected string m_OriginalProductName;
 
         [OneTimeSetUp]
         public void FixtureSetUp()
@@ -34,12 +37,33 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             m_DiagnosticParamsProvider = new ProjectAuditorDiagnosticParamsProvider();
             m_DiagnosticParamsProvider.Initialize();
 
+            if (m_Platform == BuildTarget.Android)
+            {
+                m_OriginalTargetArchitecture = PlayerSettings.Android.targetArchitectures;
+                if (m_OriginalTargetArchitecture == AndroidArchitecture.None)
+                    PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7;
+            }
+
+            m_OriginalCompanyName = PlayerSettings.companyName;
+            m_OriginalProductName = PlayerSettings.productName;
+
+            PlayerSettings.companyName = "DefaultCompany";
+            PlayerSettings.productName = "ProjectName";
+
             TestAsset.CreateTempFolder();
         }
 
         [OneTimeTearDown]
         public void FixtureTearDown()
         {
+            if (m_Platform == BuildTarget.Android)
+            {
+                PlayerSettings.Android.targetArchitectures = m_OriginalTargetArchitecture;
+            }
+
+            PlayerSettings.companyName = m_OriginalCompanyName;
+            PlayerSettings.productName = m_OriginalProductName;
+
             TestAsset.Cleanup();
         }
 
