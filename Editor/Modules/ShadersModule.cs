@@ -473,7 +473,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         material.Key.shader.name
                     })
                     .WithLocation(material.Value)
-                    );
+                );
             }
 
             if (issues.Any())

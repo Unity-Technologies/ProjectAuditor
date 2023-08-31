@@ -13,10 +13,10 @@ namespace Unity.ProjectAuditor.EditorTests
             var assemblyPrefix = "Unity.ProjectAuditor.";
             var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
             var assemblies = loadedAssemblies.Where(a => a.FullName.StartsWith(assemblyPrefix));
-			var types = assemblies.SelectMany(a => a.GetTypes());
+            var types = assemblies.SelectMany(a => a.GetTypes());
 
             Assert.Positive(assemblies.Count(), $"ProjectAuditor assemblies are not found.");
-			Assert.Positive(types.Count(), $"ProjectAuditor types are not found.");
+            Assert.Positive(types.Count(), $"ProjectAuditor types are not found.");
 
             foreach (var t in types)
             {

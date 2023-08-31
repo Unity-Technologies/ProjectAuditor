@@ -35,9 +35,9 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_VeryLongWavData = AudioClipGeneratorUtil.CreateTestWav( 640000, 2, 48000);
-            m_LongWavData = AudioClipGeneratorUtil.CreateTestWav( 64000, 2, 48000);
-            m_ShortWavData = AudioClipGeneratorUtil.CreateTestWav( 500, 2, 96000);
+            m_VeryLongWavData = AudioClipGeneratorUtil.CreateTestWav(640000, 2, 48000);
+            m_LongWavData = AudioClipGeneratorUtil.CreateTestWav(64000, 2, 48000);
+            m_ShortWavData = AudioClipGeneratorUtil.CreateTestWav(500, 2, 96000);
 
             m_BuildTargetString = EditorUserBuildSettings.activeBuildTarget.ToString();
 

@@ -100,6 +100,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             local_shaderWithShaderLabError.CleanupLocal();
         }
+
 #endif
     }
 }
