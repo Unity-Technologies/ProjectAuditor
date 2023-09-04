@@ -6,7 +6,9 @@ using Unity.ProjectAuditor.Editor.Modules;
 using UnityEngine.Rendering;
 #if PACKAGE_URP
 using UnityEngine.Rendering.Universal;
-#elif PACKAGE_HDRP
+#endif
+
+#if PACKAGE_HDRP
 using System.Reflection;
 using UnityEngine.Rendering.HighDefinition;
 #endif
