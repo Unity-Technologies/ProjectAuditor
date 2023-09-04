@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Actions section and Mute/Unmute buttons
 
 ### Fixed
+* Compilation if both URP and HDRP are installed
 * UI default column sorting
 * UI sorting criteria persistence after domain reload
 * Config changes not saved to corresponding asset 
