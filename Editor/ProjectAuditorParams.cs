@@ -28,6 +28,11 @@ namespace Unity.ProjectAuditor.Editor
         public CodeOptimization codeOptimization;
 
         /// <summary>
+        /// Compilation mode
+        /// </summary>
+        public CompilationMode compilationMode;
+
+        /// <summary>
         /// Reports a batch of new issues. Note that this be called multiple times per analysis.
         /// </summary>
         public Action<IEnumerable<ProjectIssue>> onIncomingIssues;
@@ -50,6 +55,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             platform = EditorUserBuildSettings.activeBuildTarget;
             codeOptimization = CodeOptimization.Release;
+            compilationMode = CompilationMode.Player;
         }
 
         public ProjectAuditorParams(ProjectAuditorParams original)
@@ -58,6 +64,7 @@ namespace Unity.ProjectAuditor.Editor
             platform = original.platform;
             assemblyNames = original.assemblyNames;
             codeOptimization = original.codeOptimization;
+            compilationMode = original.compilationMode;
 
             onIncomingIssues = original.onIncomingIssues;
             onCompleted = original.onCompleted;

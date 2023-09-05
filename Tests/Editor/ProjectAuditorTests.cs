@@ -88,8 +88,6 @@ namespace Unity.ProjectAuditor.EditorTests
         public void ProjectAuditor_Params_CallbacksAreInvoked()
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.CompilationMode = CompilationMode.Player;
-
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
 
             int numModules = 0;
@@ -109,6 +107,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
                     projectReport = report;
                 },
+                compilationMode = CompilationMode.Player,
                 diagnosticParams = settingsProvider.GetCurrentParams()
             });
 

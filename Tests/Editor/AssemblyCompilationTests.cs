@@ -94,10 +94,11 @@ class MyClass
         public void AssemblyCompilation_Player_IsCompiled(CompilationMode mode, string methodName)
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.CompilationMode = mode;
-
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-            var projectReport = projectAuditor.Audit();
+            var projectReport = projectAuditor.Audit(new ProjectAuditorParams
+            {
+                compilationMode = mode
+            });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
             var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TestAsset.relativePath));

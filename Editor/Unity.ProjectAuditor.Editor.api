@@ -58,11 +58,6 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectAuditorConfig : UnityEngine.ScriptableObject
     {
-        public bool AnalyzeInBackground = true;
-        public bool AnalyzeOnBuild;
-        public AssemblyUtils.CompilationMode CompilationMode;
-        public bool FailBuildOnIssues;
-        public bool UseRoslynAnalyzers;
         public ProjectAuditorConfig() {}
     }
 

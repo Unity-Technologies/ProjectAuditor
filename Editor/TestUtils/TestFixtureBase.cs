@@ -26,11 +26,14 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected string m_OriginalCompanyName;
         protected string m_OriginalProductName;
 
+        bool m_SavedAnalyzeInBackground;
+
         [OneTimeSetUp]
         public void FixtureSetUp()
         {
             m_Config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            m_Config.AnalyzeInBackground = false;
+            m_SavedAnalyzeInBackground = UserPreferences.analyzeInBackground;
+            UserPreferences.analyzeInBackground = false;
 
             m_ProjectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
 
@@ -65,6 +68,8 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             PlayerSettings.productName = m_OriginalProductName;
 
             TestAsset.Cleanup();
+
+            UserPreferences.analyzeInBackground = m_SavedAnalyzeInBackground;
         }
 
         protected ProjectIssue[] Analyze(Func<ProjectIssue, bool> predicate = null)
