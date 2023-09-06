@@ -16,7 +16,7 @@ test_coverage_{{ platform.name }}_{{ editor.version }}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/package-pack.yml#pack
+    - .yamato/pack.yml#pack
 {% endfor -%}
 {% endfor -%}
 
