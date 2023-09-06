@@ -464,6 +464,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             RenderTexture.ReleaseTemporary(tmp);
 #endif
             newTexture.name = texture.name + " (temp)";
+
             return newTexture;
         }
 
@@ -471,6 +472,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         static Texture2DArray CopyTexture(Texture2DArray texture)
         {
             Texture2DArray newTexture = new Texture2DArray(texture.width, texture.height, texture.depth, texture.format, texture.mipmapCount != 1);
+            newTexture.name = texture.name + " (temp)";
             Graphics.CopyTexture(texture, newTexture);
 
             return newTexture;
@@ -479,6 +481,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         static Texture3D CopyTexture(Texture3D texture)
         {
             Texture3D newTexture = new Texture3D(texture.width, texture.height, texture.depth, texture.format, texture.mipmapCount != 1);
+            newTexture.name = texture.name + " (temp)";
             Graphics.CopyTexture(texture, newTexture);
 
             return newTexture;
@@ -487,6 +490,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         static Cubemap CopyTexture(Cubemap texture)
         {
             Cubemap newTexture = new Cubemap(texture.width, texture.format, texture.mipmapCount != 1);
+            newTexture.name = texture.name + " (temp)";
             Graphics.CopyTexture(texture, newTexture);
 
             return newTexture;
