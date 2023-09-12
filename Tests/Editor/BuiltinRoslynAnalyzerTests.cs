@@ -10,12 +10,32 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     public class BuiltinRoslynAnalyzerTests : TestFixtureBase
     {
+        bool m_SavedUseRoslynAnalyzers;
+
         string m_Path =
             PathUtils.Combine(ProjectAuditor.Editor.ProjectAuditor.s_PackagePath, "RoslynAnalyzers");
 
 #pragma warning disable 0414
         TestAsset m_ScriptWithStaticMember;
 #pragma warning restore 0414
+
+        [OneTimeSetUp]
+        public void FixtureSetUp()
+        {
+            base.FixtureSetUp();
+
+            m_SavedUseRoslynAnalyzers = UserPreferences.useRoslynAnalyzers;
+
+            UserPreferences.useRoslynAnalyzers = true;
+        }
+
+        [OneTimeTearDown]
+        public void FixtureTearDown()
+        {
+            UserPreferences.useRoslynAnalyzers = m_SavedUseRoslynAnalyzers;
+
+            base.FixtureTearDown();
+        }
 
         [OneTimeSetUp]
         public void SetUp()
