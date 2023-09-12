@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -111,6 +112,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
+        static readonly IssueLayout k_DomainReloadIssueLayout = new IssueLayout
+        {
+            category = IssueCategory.DomainReload,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
+                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" },
+                new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
+            }
+        };
+
         ProjectAuditorConfig m_Config;
         List<OpCode> m_OpCodes;
 
@@ -125,6 +138,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             k_IssueLayout,
             k_CompilerMessageLayout,
             k_GenericIssueLayout,
+            k_DomainReloadIssueLayout
         };
 
         public override void Initialize(ProjectAuditorConfig config)
@@ -447,14 +461,36 @@ namespace Unity.ProjectAuditor.Editor.Modules
             foreach (var message in compilerMessages)
             {
                 var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.file);
-                yield return ProjectIssue.Create(IssueCategory.CodeCompilerMessage, message.message)
-                    .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
-                    {
+
+                // SteveM TODO - A more data-driven way to specify which view Roslyn messages should be sent to, depending on their code.
+                // Match a whole "word", starting with UDR and ending with exactly 4 digits, e.g. UDR1234
+                var rx = new Regex(@"\bUDR\d{4}\b");
+                if(rx.IsMatch(message.code))
+                {
+                    var descriptor = new Descriptor(
                         message.code,
-                        assemblyInfo.name
-                    })
-                    .WithLocation(relativePath, message.line)
-                    .WithLogLevel(CompilerMessageTypeToLogLevel(message.type));
+                        message.message,
+                        Area.IterationTime,
+                        RoslynTextLookup.GetDescription(message.code),
+                        RoslynTextLookup.GetRecommendation(message.code));
+
+                    yield return ProjectIssue.Create(IssueCategory.DomainReload, descriptor)
+                         .WithLocation(relativePath, message.line)
+                         .WithLogLevel(CompilerMessageTypeToLogLevel(message.type))
+                         .WithCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.name});
+                }
+                else
+                {
+                    yield return ProjectIssue.Create(IssueCategory.CodeCompilerMessage, message.message)
+                        .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
+                        {
+                            message.code,
+                            assemblyInfo.name
+                        })
+                        .WithLocation(relativePath, message.line)
+                        .WithLogLevel(CompilerMessageTypeToLogLevel(message.type));
+                }
+
             }
 
             Profiler.EndSample();

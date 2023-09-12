@@ -48,6 +48,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// Required by platform. Typically this issue must be fixed before submitting to the platform store
         /// </summary>
-        Requirement
+        Requirement,
+
+        /// <summary>
+        /// Issues which affect iteration time in the Editor and can hamper productivity during development
+        /// </summary>
+        IterationTime
     }
 }

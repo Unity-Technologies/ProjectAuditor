@@ -804,6 +804,21 @@ namespace Unity.ProjectAuditor.Editor.UI
                 type = typeof(BuildReportView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
             });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.DomainReload,
+                displayName = "Domain Reload",
+                menuLabel = "Code/Domain Reload",
+                menuOrder = 50,
+                showAssemblySelection = true,
+                showFilters = true,
+                showInfoPanel = true,
+                getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
+                onOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
+                onOpenManual = EditorInterop.OpenCodeDescriptor,
+                type = typeof(CodeDomainReloadView),
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ApiCalls
+            });
         }
 
         bool IsAnalysisValid()

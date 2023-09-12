@@ -140,6 +140,11 @@ namespace Unity.ProjectAuditor.Editor
         AvatarMask,
 
         /// <summary>
+        /// Issues that could result in undesired behavior if domain reloading is disabled
+        /// </summary>
+        DomainReload,
+
+        /// <summary>
         /// Enum value indicating the first available custom category
         /// </summary>
         FirstCustomCategory

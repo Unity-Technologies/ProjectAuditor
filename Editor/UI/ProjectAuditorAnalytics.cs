@@ -310,6 +310,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             return selectionsArray;
         }
 
+        // SteveM TODO - Analytics hooks for Domain Reload view.
         static IssueStats[] GetScriptIssuesSummary(ProjectReport projectReport)
         {
             var statsDict = new Dictionary<string, IssueStats>();
