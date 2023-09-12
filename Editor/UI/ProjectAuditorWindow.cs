@@ -827,6 +827,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var projectAuditorParams = new ProjectAuditorParams
             {
                 categories = m_SelectedModules == BuiltInModules.Everything ? null : GetSelectedCategories(),
+                compilationMode = m_CompilationMode,
                 platform = m_Platform,
                 onIncomingIssues = issues =>
                 {
