@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #pragma warning restore 0414
 
         [OneTimeSetUp]
-        public void FixtureSetUp()
+        public void EnableAnalyzers()
         {
             m_SavedUseRoslynAnalyzers = UserPreferences.useRoslynAnalyzers;
 
@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [OneTimeTearDown]
-        public void FixtureTearDown()
+        public void RestoreEnableAnalyzers()
         {
             UserPreferences.useRoslynAnalyzers = m_SavedUseRoslynAnalyzers;
         }
