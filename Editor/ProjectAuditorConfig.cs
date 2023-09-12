@@ -13,35 +13,6 @@ namespace Unity.ProjectAuditor.Editor
     /// </summary>
     public class ProjectAuditorConfig : ScriptableObject
     {
-        // Public members
-
-        /// <summary>
-        /// If enabled, ProjectAuditor will run every time the project is built.
-        /// </summary>
-        public bool AnalyzeOnBuild;
-
-        /// <summary>
-        /// If enabled, ProjectAuditor will try to partially analyze the project in the background.
-        /// </summary>
-        public bool AnalyzeInBackground = true;
-
-        /// <summary>
-        /// Compilation mode
-        /// </summary>
-        public CompilationMode CompilationMode;
-
-        /// <summary>
-        /// If enabled, ProjectAuditor will use Roslyn Analyzer DLLs that are present in the project
-        /// </summary>
-        public bool UseRoslynAnalyzers;
-
-        /// <summary>
-        /// If enabled, any issue reported by ProjectAuditor will cause the build to fail.
-        /// </summary>
-        public bool FailBuildOnIssues;
-
-        // Internal members
-
         [SerializeField]
         List<Rule> m_Rules = new List<Rule>();
 

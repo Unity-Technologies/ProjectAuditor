@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Display/Ignore All buttons
 * Copy-to-Clipboard buttons to Details and Recommendations
 * Vertical scrollbar to Details and Recommendations
+* CompilationMode selection to Welcome page
 * Shader view reports total property count and texture property count for Unity 2019.3 and above
 * Compute shader variant view reports kernel thread count for Unity 2021.2 and above
 * View-specific descriptions
@@ -27,9 +28,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Visualization of the Horizontal Stacked Bar and Legend Item
 * Improved AudioClip asset table
 * Clear table selection on unmuting issues
+* Move ProjectAuditorConfig fields to UserPreferences
 
 ### Removed
 * Actions section and Mute/Unmute buttons
+* Settings from ProjectAuditorConfig
 
 ### Fixed
 * Compilation if both URP and HDRP are installed

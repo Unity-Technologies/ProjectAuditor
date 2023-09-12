@@ -157,7 +157,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (m_Descriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
 
-            if (m_Config.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
+            if (UserPreferences.analyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
             var precompiledAssemblies = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All)
@@ -172,9 +172,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (precompiledAssemblies.Any())
                 projectAuditorParams.onIncomingIssues(precompiledAssemblies);
 
-            // find all roslyn analyzer DLLs
+            // find all roslyn analyzer DLLs by label
             var roslynAnalyzerAssets = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath)
-                .ToArray();
+                .ToList();
+
+            // find all roslyn analyzers packaged with Project Auditor
+            var assetPaths = AssetDatabase.FindAssets("", new[] { $"{ProjectAuditor.s_PackagePath}/RoslynAnalyzers" }).Select(AssetDatabase.GUIDToAssetPath);
+            foreach (var assetPath in assetPaths)
+            {
+                if (assetPath.EndsWith(".dll"))
+                    roslynAnalyzerAssets.Add(assetPath);
+            }
 
             // report all roslyn analyzers as PrecompiledAssembly issues
             var roslynAnalyzerIssues = roslynAnalyzerAssets
@@ -197,9 +205,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     projectAuditorParams.onIncomingIssues(ProcessCompilerMessages(compilationTask, compilerMessages));
                 },
                 codeOptimization = projectAuditorParams.codeOptimization,
-                compilationMode = m_Config.CompilationMode,
+                compilationMode = projectAuditorParams.compilationMode,
                 platform = projectAuditorParams.platform,
-                roslynAnalyzers = m_Config.UseRoslynAnalyzers ? roslynAnalyzerAssets : null,
+                roslynAnalyzers = UserPreferences.useRoslynAnalyzers ? roslynAnalyzerAssets.ToArray() : null,
                 assemblyNames = projectAuditorParams.assemblyNames
             };
 
@@ -214,11 +222,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
 #if !UNITY_2019_1_OR_NEWER
             // on old versions of Unity, some assemblies cannot be found by the Assembly Resolver (specifically mscorlib and netstandard)
-            assemblyDirectories.AddRange(AssemblyCompilation.GetAssemblyReferencePaths(m_Config.CompilationMode));
+            assemblyDirectories.AddRange(AssemblyCompilation.GetAssemblyReferencePaths(projectAuditorParams.compilationMode));
 #endif
 
-            if (m_Config.CompilationMode == CompilationMode.Editor ||
-                m_Config.CompilationMode == CompilationMode.EditorPlayMode)
+            if (projectAuditorParams.compilationMode == CompilationMode.Editor ||
+                projectAuditorParams.compilationMode == CompilationMode.EditorPlayMode)
             {
                 var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)ProjectIssue
                     .Create(IssueCategory.Assembly, assemblyInfo.name)
@@ -279,7 +287,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             });
 
             assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UserAssembly | PrecompiledAssemblyTypes.UnityEngine | PrecompiledAssemblyTypes.SystemAssembly));
-            if (m_Config.CompilationMode == CompilationMode.Editor)
+            if (projectAuditorParams.compilationMode == CompilationMode.Editor)
                 assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UnityEditor));
 
             Profiler.BeginSample("CodeModule.Audit.Analysis");
@@ -287,7 +295,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             // first phase: analyze assemblies generated from editable scripts
             AnalyzeAssemblies(localAssemblyInfos, projectAuditorParams.assemblyNames, assemblyDirectories, onCallFound, onIssueFoundInternal, null, progress);
 
-            var enableBackgroundAnalysis = m_Config.AnalyzeInBackground;
+            var enableBackgroundAnalysis = UserPreferences.analyzeInBackground;
 #if !UNITY_2019_3_OR_NEWER
             enableBackgroundAnalysis = false;
 #endif

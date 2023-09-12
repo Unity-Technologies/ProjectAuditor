@@ -16,7 +16,7 @@ test_coverage_{{ platform.name }}_{{ editor.version }}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/package-pack.yml#pack
+    - .yamato/pack.yml#pack
 {% endfor -%}
 {% endfor -%}
 
@@ -25,8 +25,8 @@ test_coverage_{{ platform.name }}_{{ editor.version }}:
 tests_coverage_all_{{ platform.name }}:
   name: _Run All Coverage Tests ({{ platform.name }})
   dependencies:
-    - .yamato/package-pack.yml#pack
+    - .yamato/pack.yml#pack
 {% for editor in test_editors -%}
-    - .yamato/package-coverage.yml#test_coverage_{{ platform.name }}_{{ editor.version }}
+    - .yamato/coverage.yml#test_coverage_{{ platform.name }}_{{ editor.version }}
 {% endfor -%}
 {% endfor -%}

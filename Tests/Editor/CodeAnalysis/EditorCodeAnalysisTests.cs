@@ -13,10 +13,11 @@ namespace Unity.ProjectAuditor.EditorTests
         public void EditorCodeAnalysis_GetAssemblies_IsFound()
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.CompilationMode = CompilationMode.Editor;
-
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-            var projectReport = projectAuditor.Audit();
+            var projectReport = projectAuditor.Audit(new ProjectAuditorParams
+            {
+                compilationMode = CompilationMode.Editor
+            });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
             var codeIssue = issues.FirstOrDefault(i => i.descriptor.type.Equals("System.AppDomain") && i.descriptor.method.Equals("GetAssemblies") && i.GetCustomProperty(CodeProperty.Assembly).Equals("Unity.ProjectAuditor.Editor"));
@@ -29,10 +30,11 @@ namespace Unity.ProjectAuditor.EditorTests
         public void EditorCodeAnalysis_FindAssets_IsFound()
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.CompilationMode = CompilationMode.Editor;
-
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-            var projectReport = projectAuditor.Audit();
+            var projectReport = projectAuditor.Audit(new ProjectAuditorParams
+            {
+                compilationMode = CompilationMode.Editor
+            });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
             var codeIssue = issues.FirstOrDefault(i => i.descriptor.type.Equals("UnityEditor.AssetDatabase") && i.descriptor.method.Equals("FindAssets") && i.GetCustomProperty(CodeProperty.Assembly).Equals("Unity.ProjectAuditor.Editor"));

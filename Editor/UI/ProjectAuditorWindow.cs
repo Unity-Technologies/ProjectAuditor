@@ -68,6 +68,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         // Serialized fields
         [SerializeField] BuildTarget m_Platform = BuildTarget.NoTarget;
+        [SerializeField] CompilationMode m_CompilationMode = CompilationMode.Player;
         [SerializeField] BuiltInModules m_SelectedModules = BuiltInModules.Everything;
         [SerializeField] string m_AreaSelectionSummary;
         [SerializeField] string[] m_AssemblyNames;
@@ -895,6 +896,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var projectAuditorParams = new ProjectAuditorParams
             {
                 categories = actualCategories,
+                compilationMode = m_CompilationMode,
                 onIncomingIssues = issues =>
                 {
                     foreach (var view in views)
@@ -1215,6 +1217,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             var selectedTarget = Array.IndexOf(m_SupportedBuildTargets, m_Platform);
             selectedTarget = EditorGUILayout.Popup(Contents.PlatformSelection, selectedTarget, m_PlatformContents);
             m_Platform = m_SupportedBuildTargets[selectedTarget];
+
+            m_CompilationMode = (CompilationMode)EditorGUILayout.EnumPopup(Contents.CompilationModeSelection, m_CompilationMode);
 
             EditorGUILayout.Space();
 
@@ -1759,6 +1763,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new GUIContent("Modules", $"Select {k_ProjectAuditorName} modules.");
             public static readonly GUIContent PlatformSelection =
                 new GUIContent("Platform", "Select the target platform.");
+            public static readonly GUIContent CompilationModeSelection =
+                new GUIContent("Compilation Mode", "Select the compilation mode.");
 
             public static readonly GUIContent SettingsTitle = new GUIContent("Settings");
             public static readonly GUIContent NewSettingsButton = new GUIContent("Create New Settings");

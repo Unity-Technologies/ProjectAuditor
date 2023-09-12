@@ -108,11 +108,11 @@ class InternalClass
         public void TextFilter_Filename_Matches()
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.CompilationMode = CompilationMode.Player;
-
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-
-            var projectReport = projectAuditor.Audit();
+            var projectReport = projectAuditor.Audit(new ProjectAuditorParams
+            {
+                compilationMode = CompilationMode.Player
+            });
             var issues = projectReport.FindByCategory(IssueCategory.Code);
             var stringFilter = new TextFilter
             {
@@ -128,11 +128,11 @@ class InternalClass
         public void TextFilter_RecursiveSearch_Matches()
         {
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.CompilationMode = CompilationMode.Player;
-
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-
-            var projectReport = projectAuditor.Audit();
+            var projectReport = projectAuditor.Audit(new ProjectAuditorParams
+            {
+                compilationMode = CompilationMode.Player
+            });
             var issues = projectReport.FindByCategory(IssueCategory.Code);
             var stringFilter = new TextFilter
             {
