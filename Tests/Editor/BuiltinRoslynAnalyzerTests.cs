@@ -22,8 +22,6 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void FixtureSetUp()
         {
-            base.FixtureSetUp();
-
             m_SavedUseRoslynAnalyzers = UserPreferences.useRoslynAnalyzers;
 
             UserPreferences.useRoslynAnalyzers = true;
@@ -33,8 +31,6 @@ namespace Unity.ProjectAuditor.EditorTests
         public void FixtureTearDown()
         {
             UserPreferences.useRoslynAnalyzers = m_SavedUseRoslynAnalyzers;
-
-            base.FixtureTearDown();
         }
 
         [OneTimeSetUp]
