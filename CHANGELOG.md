@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * AnimationClip reporting
 * Avatar reporting
 * AvatarMask reporting
+* Domain Reload Roslyn analyzer
 
 ### Changed
 * Improved issue description and suggestion strings, to make them clearer and more consistent
