@@ -104,7 +104,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             public Utility.DropdownItem[] dropdown;
         }
 
-        readonly Tab[] m_Tabs =
+        [SerializeField]
+        Tab[] m_Tabs =
         {
             new Tab
             {
@@ -339,13 +340,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void InitializeTabs()
         {
-            m_ActiveTabIndex = 0;
-
             foreach (var tab in m_Tabs)
             {
                 RefreshTabCategories(tab);
-
-                tab.currentCategoryIndex = 0;
             }
         }
 
