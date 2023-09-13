@@ -53,6 +53,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ApiCalls,
             CodeCompilerMessages,
             Generics,
+            DomainReload,
 
             // Assets
             Assets,
@@ -215,6 +216,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "compiler_messages_tab";
                 case UIButton.Generics:
                     return "generics_tab";
+                case UIButton.DomainReload:
+                    return "domain_reload_tab";
 
                 // Assets
                 case UIButton.Assets:

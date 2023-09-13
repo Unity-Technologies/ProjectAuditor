@@ -818,7 +818,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
                 onOpenManual = EditorInterop.OpenCodeDescriptor,
                 type = typeof(CodeDomainReloadView),
-                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.ApiCalls
+                analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.DomainReload
             });
         }
 
