@@ -158,9 +158,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (precompiledAssemblies.Any())
                 projectAuditorParams.onIncomingIssues(precompiledAssemblies);
 
-            // find all roslyn analyzer DLLs
+            // find all roslyn analyzer DLLs by label
             var roslynAnalyzerAssets = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath)
-                .ToArray();
+                .ToList();
+
+            // find all roslyn analyzers packaged with Project Auditor
+            var assetPaths = AssetDatabase.FindAssets("", new[] { $"{ProjectAuditor.s_PackagePath}/RoslynAnalyzers" }).Select(AssetDatabase.GUIDToAssetPath);
+            foreach (var assetPath in assetPaths)
+            {
+                if (assetPath.EndsWith(".dll"))
+                    roslynAnalyzerAssets.Add(assetPath);
+            }
 
             // report all roslyn analyzers as PrecompiledAssembly issues
             var roslynAnalyzerIssues = roslynAnalyzerAssets
@@ -185,7 +193,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 codeOptimization = projectAuditorParams.codeOptimization,
                 compilationMode = projectAuditorParams.compilationMode,
                 platform = projectAuditorParams.platform,
-                roslynAnalyzers = UserPreferences.useRoslynAnalyzers ? roslynAnalyzerAssets : null,
+                roslynAnalyzers = UserPreferences.useRoslynAnalyzers ? roslynAnalyzerAssets.ToArray() : null,
                 assemblyNames = projectAuditorParams.assemblyNames
             };
 
