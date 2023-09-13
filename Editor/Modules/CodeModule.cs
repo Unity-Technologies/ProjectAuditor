@@ -163,11 +163,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .ToList();
 
             // find all roslyn analyzers packaged with Project Auditor
-            var assetPaths = AssetDatabase.FindAssets("", new[] { $"{ProjectAuditor.s_PackagePath}/RoslynAnalyzers" }).Select(AssetDatabase.GUIDToAssetPath);
-            foreach (var assetPath in assetPaths)
+            if (Directory.Exists($"{ProjectAuditor.s_PackagePath}/RoslynAnalyzers"))
             {
-                if (assetPath.EndsWith(".dll"))
-                    roslynAnalyzerAssets.Add(assetPath);
+                var assetPaths = AssetDatabase.FindAssets("", new[] { $"{ProjectAuditor.s_PackagePath}/RoslynAnalyzers" }).Select(AssetDatabase.GUIDToAssetPath);
+                foreach (var assetPath in assetPaths)
+                {
+                    if (assetPath.EndsWith(".dll"))
+                        roslynAnalyzerAssets.Add(assetPath);
+                }
             }
 
             // report all roslyn analyzers as PrecompiledAssembly issues

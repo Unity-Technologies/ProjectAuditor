@@ -8,8 +8,8 @@ pack:
     - unity-downloader-cli -u 2018.4 -c editor --path .Editor --wait
     - .\.Editor\Unity.exe -quit -batchmode -createProject "temp/project"
     - mkdir temp\project\Assets\Editor
-    - copy Editor\CLI\* temp\project\Assets\Editor
-    - .\.Editor\Unity.exe -quit -batchmode -executeMethod Unity.ProjectAuditor.Editor.CLI.RoslynAnalyzerUtil.ImportDLL -sourcePath=../build_artifacts/build -logFile temp\Editor.log
+    - copy Editor\Internal\* temp\project\Assets\Editor
+    - .\.Editor\Unity.exe -quit -batchmode -executeMethod Unity.ProjectAuditor.Editor.Internal.RoslynAnalyzerUtil.ImportDLL -sourcePath=../build_artifacts/build -logFile temp\Editor.log
     - mkdir RoslynAnalyzers
     - xcopy temp\project\Assets\RoslynAnalyzers RoslynAnalyzers /H
     - xcopy temp\project\Assets\RoslynAnalyzers.meta . /H

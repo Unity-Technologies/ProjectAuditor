@@ -38,3 +38,6 @@ ehthumbs.db
 
 # formmatting tools generated files
 *.preformat.bak
+
+# PA-specific files
+RoslynAnalyzers*

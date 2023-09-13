@@ -3,11 +3,10 @@ using UnityEngine;
 using System.IO;
 using System.Linq;
 
-namespace Unity.ProjectAuditor.Editor.CLI
+namespace Unity.ProjectAuditor.Editor.Internal
 {
     public class RoslynAnalyzerUtil
     {
-        //[MenuItem("Tools/Import Roslyn Analyzer")]
         public static void ImportDLL()
         {
             var args = System.Environment.GetCommandLineArgs();
