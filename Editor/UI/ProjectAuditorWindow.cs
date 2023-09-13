@@ -814,7 +814,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showAssemblySelection = true,
                 showFilters = true,
                 showInfoPanel = true,
-                getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
+                getAssemblyName = issue => issue.GetCustomProperty(CompilerMessageProperty.Assembly),
                 onOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
                 onOpenManual = EditorInterop.OpenCodeDescriptor,
                 type = typeof(CodeDomainReloadView),

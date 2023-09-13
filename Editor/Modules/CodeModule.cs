@@ -117,9 +117,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.DomainReload,
             properties = new[]
             {
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Code), format = PropertyFormat.String, name = "Code", defaultGroup = true},
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" },
                 new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
             }
         };
@@ -485,7 +486,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     yield return ProjectIssue.Create(IssueCategory.DomainReload, descriptor)
                          .WithLocation(relativePath, message.line)
                          .WithLogLevel(CompilerMessageTypeToLogLevel(message.type))
-                         .WithCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.name});
+                         .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
+                         {
+                             message.code,
+                             assemblyInfo.name
+                         });
                 }
                 else
                 {
