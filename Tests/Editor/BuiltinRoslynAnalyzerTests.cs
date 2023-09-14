@@ -59,10 +59,11 @@ class ScriptWithStaticMember
             Assert.True(File.Exists(PathUtils.Combine(m_Path, "Domain_Reload_Analyzer.dll.meta")));
         }
 
+        // TODO - If we add other Roslyn analyzers which pipe to different issue categories (CompilerMessage by default), test them here
         [Test]
         public void RoslynAnalyzerPipeline_Issue_IsFound()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_ScriptWithStaticMember, IssueCategory.CodeCompilerMessage);
+            var issues = AnalyzeAndFindAssetIssues(m_ScriptWithStaticMember, IssueCategory.DomainReload);
 
             Assert.AreEqual(1, issues.Length);
 
