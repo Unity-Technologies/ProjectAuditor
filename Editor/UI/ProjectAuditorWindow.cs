@@ -599,10 +599,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 descriptionWithIcon = true,
                 showFilters = true,
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.AssetDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
-                },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Meshes
             });
 
@@ -615,10 +611,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 descriptionWithIcon = true,
                 showFilters = true,
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.AssetDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
-                },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
             });
 
@@ -721,10 +713,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showInfoPanel = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.CodeCompilerMessages, () => viewManager.ChangeView(IssueCategory.CodeCompilerMessage));
-                },
                 onOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
                 onOpenManual = EditorInterop.OpenCodeDescriptor,
                 type = typeof(CodeDiagnosticView),
@@ -738,10 +726,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuLabel = "Code/C# Compiler Messages",
                 showFilters = true,
                 showInfoPanel = true,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.CodeDiagnostics, () => viewManager.ChangeView(IssueCategory.Code));
-                },
                 onOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
                 onOpenManual = EditorInterop.OpenCompilerMessageDescriptor,
                 type = typeof(CompilerMessagesView),
@@ -778,10 +762,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 100,
                 showFilters = true,
                 showInfoPanel = true,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.BuildFiles, () => viewManager.ChangeView(IssueCategory.BuildFile));
-                },
                 type = typeof(BuildReportView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildSteps
             });
@@ -795,10 +775,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showInfoPanel = true,
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.BuildSteps, () => viewManager.ChangeView(IssueCategory.BuildStep));
-                },
                 type = typeof(BuildReportView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
             });
