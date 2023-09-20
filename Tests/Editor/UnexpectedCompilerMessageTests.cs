@@ -87,8 +87,8 @@ class MyClass
 
             var issue = issues.First();
 
-            // check descriptor
-            Assert.IsNull(issue.descriptor);
+            // check ID
+            Assert.IsTrue(string.IsNullOrEmpty(issue.Id));
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));

@@ -27,6 +27,8 @@ namespace Unity.ProjectAuditor.Editor
 
         [SerializeField] List<ModuleInfo> m_ModuleInfos = new List<ModuleInfo>();
 
+        [SerializeField] List<Descriptor> m_Descriptors = new List<Descriptor>();
+
         [SerializeField] List<ProjectIssue> m_Issues = new List<ProjectIssue>();
 
         static Mutex s_Mutex = new Mutex();
@@ -156,12 +158,32 @@ namespace Unity.ProjectAuditor.Editor
 
         public void Save(string path)
         {
+            m_Descriptors.Clear();
+
+            var descHashSet = new HashSet<Descriptor>();
+            Descriptor desc;
+            foreach (var issue in m_Issues)
+            {
+                if (!string.IsNullOrEmpty(issue.Id) &&
+                    DescriptorLibrary.TryGetDescriptor(issue.Id, out desc))
+                {
+                    descHashSet.Add(desc);
+                }
+            }
+
+            m_Descriptors = descHashSet.ToList();
+            m_Descriptors.Sort((x, y) => x.id.CompareTo(y.id));
+
             File.WriteAllText(path, JsonUtility.ToJson(this, UserPreferences.prettifyJsonOutput));
         }
 
         public static ProjectReport Load(string path)
         {
-            return JsonUtility.FromJson<ProjectReport>(File.ReadAllText(path));
+            var report = JsonUtility.FromJson<ProjectReport>(File.ReadAllText(path));
+
+            DescriptorLibrary.AddDescriptors(report.m_Descriptors);
+
+            return report;
         }
     }
 }

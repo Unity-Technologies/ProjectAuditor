@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 
 namespace Unity.ProjectAuditor.Editor.Core
@@ -38,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
             if (string.IsNullOrEmpty(id) || !m_Descriptors.ContainsKey(id))
             {
-                return new Descriptor("PAX0000", "NULL DESCRIPTOR", Area.CPU, "This descriptor is not meant to be used. Something has gone wrong", "Contact Unity to report a bug");
+                return null;
             }
 
             return m_Descriptors[id];
@@ -50,6 +51,19 @@ namespace Unity.ProjectAuditor.Editor.Core
                 return false;
 
             return m_Descriptors.ContainsKey(id);
+        }
+
+        public static void AddDescriptors(List<Descriptor> descriptors)
+        {
+            if (m_Descriptors == null)
+            {
+                m_Descriptors = new Dictionary<string, Descriptor>();
+            }
+
+            foreach (var descriptor in descriptors)
+            {
+                RegisterDescriptor(descriptor.id, descriptor);
+            }
         }
     }
 }
