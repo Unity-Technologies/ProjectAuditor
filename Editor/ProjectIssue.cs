@@ -15,29 +15,29 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Create Diagnostics-specific IssueBuilder
         /// </summary>
-        /// <param name="category"> Issue category </param>
-        /// <param name="descriptor"> Diagnostic descriptor </param>
-        /// <param name="messageArgs"> Arguments to be used in the message formatting</param>
-        /// <returns>The IssueBuilder, constructed with the specified category, descriptor and message arguments</returns>
-        internal static IssueBuilder Create(IssueCategory category, Descriptor descriptor, params object[] messageArgs)
+        /// <param name="category">Issue category</param>
+        /// <param name="id">Diagnostic descriptor ID</param>
+        /// <param name="messageArgs">Arguments to be used in the message formatting</param>
+        /// <returns>The IssueBuilder, constructed with the specified category, descriptor ID and message arguments</returns>
+        internal static IssueBuilder Create(IssueCategory category, string id, params object[] messageArgs)
         {
-            return new IssueBuilder(category, descriptor, messageArgs);
+            return new IssueBuilder(category, id, messageArgs);
         }
 
         /// <summary>
         /// Create General-purpose IssueBuilder
         /// </summary>
-        /// <param name="category"> Issue category </param>
-        /// <param name="description"> User-friendly description </param>
+        /// <param name="category">Issue category</param>
+        /// <param name="description">User-friendly description</param>
         /// <returns>The IssueBuilder, constructed with the specified category and description string</returns>
-        internal static IssueBuilder Create(IssueCategory category, string description)
+        internal static IssueBuilder CreateWithoutDiagnostic(IssueCategory category, string description)
         {
             return new IssueBuilder(category, description);
         }
 
+        [SerializeField] string m_Id;
         [SerializeField] IssueCategory m_Category;
         [SerializeField] string m_Description;
-        [SerializeField] Descriptor m_Descriptor;
 
         [SerializeField] DependencyNode m_Dependencies;
         [SerializeField] Location m_Location;
@@ -49,11 +49,11 @@ namespace Unity.ProjectAuditor.Editor
         /// Constructs and returns an instance of ProjectIssue
         /// </summary>
         /// <param name="category">Issue category</param>
-        /// <param name="descriptor">Diagnostic descriptor</param>
+        /// <param name="id">Diagnostic descriptor ID</param>
         /// <param name="args">Arguments to be used in the message formatting</param>
-        internal ProjectIssue(IssueCategory category, Descriptor descriptor, params object[] args)
+        internal ProjectIssue(IssueCategory category, string id, params object[] args)
         {
-            m_Descriptor = descriptor;
+            m_Id = id;
             m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
             m_Category = category;
             m_Severity = descriptor.defaultSeverity;
@@ -69,6 +69,15 @@ namespace Unity.ProjectAuditor.Editor
             m_Description = description;
             m_Category = category;
             m_Severity = Severity.Default;
+        }
+
+        /// <summary>
+        /// An unique identifier for the issue diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits
+        /// </summary>
+        public string Id
+        {
+            get => m_Id;
+            internal set => m_Id = value;
         }
 
         /// <summary>
@@ -97,7 +106,11 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Optional descriptor. Only used for diagnostics
         /// </summary>
-        public Descriptor descriptor => m_Descriptor;
+        public Descriptor descriptor
+        {
+            // SteveM TODO: Aim to remove this accessor entirely and just have client code pull the descriptor from the library itself when needed.
+            get { return DescriptorLibrary.GetDescriptor(m_Id);  }
+        }
 
         /// <summary>
         /// Determines whether the issue was fixed. Only used for diagnostics
@@ -177,7 +190,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns>True if the issue's descriptor is not null and is valid. Otherwise, returns false.</returns>
         public bool IsDiagnostic()
         {
-            return descriptor != null && descriptor.IsValid();
+            return !string.IsNullOrEmpty(Id);
         }
 
         /// <summary>

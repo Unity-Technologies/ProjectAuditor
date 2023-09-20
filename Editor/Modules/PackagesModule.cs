@@ -79,6 +79,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             k_PackageVersionLayout
         };
 
+        public override void Initialize(ProjectAuditorConfig config)
+        {
+            base.Initialize(config);
+
+            RegisterDescriptor(k_RecommendPackageUpgrade);
+            RegisterDescriptor(k_RecommendPackagePreView);
+        }
+
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var request = Client.List();
@@ -101,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var dependencies = package.dependencies.Select(d => d.name + " [" + d.version + "]").ToArray();
             var node = new PackageDependencyNode(package.displayName, dependencies);
-            yield return ProjectIssue.Create(IssueCategory.Package, package.displayName)
+            yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Package, package.displayName)
                 .WithCustomProperties(new object[(int)PackageProperty.Num]
                 {
                     package.name,
@@ -119,13 +127,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 if (!recommendedVersionString.Equals(package.version))
                 {
-                    yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade, package.name, package.version, recommendedVersionString)
+                    yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade.id, package.name, package.version, recommendedVersionString)
                         .WithLocation(package.assetPath);
                 }
             }
             else if (package.version.Contains("pre") || package.version.Contains("exp"))
             {
-                yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView, package.name, package.version)
+                yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView.id, package.name, package.version)
                     .WithLocation(package.assetPath);
             }
         }

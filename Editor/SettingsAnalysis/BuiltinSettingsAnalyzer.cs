@@ -101,7 +101,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             return ProjectIssue.Create
                 (
                     IssueCategory.ProjectSetting,
-                    descriptor,
+                    descriptor.id,
                     description
                 ).WithLocation(projectWindowPath);
         }

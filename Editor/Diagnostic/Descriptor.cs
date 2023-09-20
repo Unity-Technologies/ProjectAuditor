@@ -170,14 +170,5 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         {
             return id.GetHashCode();
         }
-
-        /// <summary>
-        /// Returns whether the Descriptor has a valid Issue ID
-        /// </summary>
-        /// <returns>False if the Issue ID string is null or empty. Otherwise, returns true.</returns>
-        public bool IsValid()
-        {
-            return !string.IsNullOrEmpty(id);
-        }
     }
 }

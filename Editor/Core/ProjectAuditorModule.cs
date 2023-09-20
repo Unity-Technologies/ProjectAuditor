@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor.Core
     /// </summary>
     internal abstract class ProjectAuditorModule
     {
-        protected HashSet<Descriptor> m_Descriptors;
+        protected HashSet<string> m_IDs;
 
         public abstract string name
         {
@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public virtual bool isSupported => true;
 
-        public IReadOnlyCollection<Descriptor> supportedDescriptors => m_Descriptors != null ? m_Descriptors.ToArray() : Array.Empty<Descriptor>();
+        public IReadOnlyCollection<string> supportedIDs => m_IDs != null ? m_IDs.ToArray() : Array.Empty<string>();
 
         public abstract IReadOnlyCollection<IssueLayout> supportedLayouts
         {
@@ -35,12 +35,14 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public virtual void Initialize(ProjectAuditorConfig config)
         {
-            m_Descriptors = new HashSet<Descriptor>();
+            m_IDs = new HashSet<string>();
         }
 
         public void RegisterDescriptor(Descriptor descriptor)
         {
-            if (!m_Descriptors.Add(descriptor))
+            DescriptorLibrary.RegisterDescriptor(descriptor.id, descriptor);
+
+            if (!m_IDs.Add(descriptor.id))
                 throw new Exception("Duplicate descriptor with id: " + descriptor.id);
         }
 

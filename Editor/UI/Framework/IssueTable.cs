@@ -290,12 +290,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 var issue = item.ProjectIssue;
                 if (issue.wasFixed)
                     GUI.enabled = false;
-                else if (issue.descriptor != null && issue.descriptor.IsValid())
+                else if (!string.IsNullOrEmpty(issue.Id))
                 {
-                    var descriptor = issue.descriptor;
-                    rule = m_Config.GetRule(descriptor, issue.GetContext());
+                    var id = issue.Id;
+                    rule = m_Config.GetRule(id, issue.GetContext());
                     if (rule == null)
-                        rule = m_Config.GetRule(descriptor); // try to find non-specific rule
+                        rule = m_Config.GetRule(id); // try to find non-specific rule
                     if (rule != null && rule.severity == Severity.None)
                         GUI.enabled = false;
                 }

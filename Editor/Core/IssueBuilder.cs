@@ -10,9 +10,9 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public static implicit operator ProjectIssue(IssueBuilder builder) => builder.m_Issue;
 
-        public IssueBuilder(IssueCategory category, Descriptor descriptor, params object[] args)
+        public IssueBuilder(IssueCategory category, string id, params object[] args)
         {
-            m_Issue = new ProjectIssue(category, descriptor, args);
+            m_Issue = new ProjectIssue(category, id, args);
         }
 
         public IssueBuilder(IssueCategory category, string description)

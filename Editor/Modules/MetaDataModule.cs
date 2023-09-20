@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void NewMetaData(string key, object value, IList<ProjectIssue> issues)
         {
-            var issue = ProjectIssue.Create(IssueCategory.MetaData, key)
+            var issue = ProjectIssue.CreateWithoutDiagnostic(IssueCategory.MetaData, key)
                 .WithCustomProperties(new object[(int)MetaDataProperty.Num] { value });
             issues.Add(issue);
         }

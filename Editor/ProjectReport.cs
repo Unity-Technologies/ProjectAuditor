@@ -156,7 +156,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public void Save(string path)
         {
-            File.WriteAllText(path, JsonUtility.ToJson(this));
+            File.WriteAllText(path, JsonUtility.ToJson(this, UserPreferences.prettifyJsonOutput));
         }
 
         public static ProjectReport Load(string path)

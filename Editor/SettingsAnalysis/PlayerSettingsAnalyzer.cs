@@ -110,34 +110,34 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             if (k_AccelerometerDescriptor.IsPlatformCompatible(projectAuditorParams.platform) && IsAccelerometerEnabled())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_AccelerometerDescriptor)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_AccelerometerDescriptor.id)
                     .WithLocation("Project/Player");
             }
             if (IsSplashScreenEnabledAndCanBeDisabled())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SplashScreenDescriptor)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SplashScreenDescriptor.id)
                     .WithLocation("Project/Player");
             }
             if (!IsSpeakerModeMono())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SpeakerModeDescriptor)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SpeakerModeDescriptor.id)
                     .WithLocation("Project/Player");
             }
             if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Master, projectAuditorParams))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationMasterDescriptor)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationMasterDescriptor.id)
                     .WithLocation("Project/Player");
             }
             if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Debug, projectAuditorParams))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationDebugDescriptor)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationDebugDescriptor.id)
                     .WithLocation("Project/Player");
             }
 
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.platform);
             if (!PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_LightmapStreamingEnabledDescriptor).
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_LightmapStreamingEnabledDescriptor.id).
                     WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }

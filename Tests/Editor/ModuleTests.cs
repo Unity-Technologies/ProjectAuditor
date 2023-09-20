@@ -13,8 +13,8 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     class CustomAuditor// : IAuditor
     {
-        private readonly Descriptor m_Descriptor =
-            new Descriptor("666", "This is a test descriptor", Area.CPU, "description", "solution");
+        private readonly Descriptor k_Descriptor =
+            new Descriptor("TD0000", "This is a test descriptor", Area.CPU, "description", "solution");
 
         readonly IssueLayout m_Layout = new IssueLayout
         {
@@ -25,18 +25,20 @@ namespace Unity.ProjectAuditor.EditorTests
             }
         };
 
-        public IEnumerable<Descriptor> GetDescriptors()
-        {
-            yield return m_Descriptor;
-        }
+        // public IEnumerable<Descriptor> GetDescriptors()
+        // {
+        //     yield return m_Descriptor;
+        // }
 
         public IEnumerable<IssueLayout> GetLayouts()
         {
             yield return m_Layout;
         }
 
-        public void Initialize(ProjectAuditorConfig config)
+        [OneTimeSetUp]
+        public void SetUp()
         {
+            DescriptorLibrary.RegisterDescriptor(k_Descriptor.id, k_Descriptor);
         }
 
         public void Reload(string path)
@@ -49,7 +51,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
         public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgress progress = null)
         {
-            onIssueFound(new ProjectIssue(IssueCategory.Code, m_Descriptor, "This is a test issue"));
+            onIssueFound(new ProjectIssue(IssueCategory.Code, k_Descriptor.id, "This is a test issue"));
             onComplete();
         }
     }

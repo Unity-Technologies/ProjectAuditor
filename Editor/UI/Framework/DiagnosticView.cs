@@ -204,9 +204,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             foreach (var issue in selectedIssues)
             {
-                var descriptor = issue.descriptor;
                 var context = issue.GetContext();
-                var rule = m_Config.GetRule(descriptor, context);
+                var rule = m_Config.GetRule(issue.Id, context);
 
                 //If at least one issue in the selection is not ignored, consider the whole selection as not ignored
                 if (rule == null)
@@ -227,7 +226,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     exporter.WriteHeader();
 
                     var matchingIssues = m_Issues.Where(issue => predicate == null || predicate(issue));
-                    matchingIssues = matchingIssues.Where(issue => issue.descriptor.IsValid() || m_Config.GetAction(issue.descriptor, issue.GetContext()) != Severity.None);
+                    matchingIssues = matchingIssues.Where(issue => !string.IsNullOrEmpty(issue.Id) || m_Config.GetAction(issue.Id, issue.GetContext()) != Severity.None);
                     exporter.WriteIssues(matchingIssues.ToArray());
                 }
 
@@ -247,13 +246,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (m_Table.showIgnoredIssues)
                 return true;
 
-            var descriptor = issue.descriptor;
-            if (!descriptor.IsValid())
+            var id = issue.Id;
+            if (string.IsNullOrEmpty(id))
                 return true;
 
             var context = issue.GetContext();
 
-            return m_Config.GetAction(descriptor, context) != Severity.None;
+            return m_Config.GetAction(id, context) != Severity.None;
         }
 
         static class Contents

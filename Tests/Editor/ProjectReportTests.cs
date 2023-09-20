@@ -50,19 +50,11 @@ class MyClass : MonoBehaviour
         public void ProjectReport_Issue_IsAdded()
         {
             var projectReport = new ProjectReport();
-            var p = new Descriptor
-                (
-                "TD2001",
-                "test",
-                Area.CPU,
-                "this is not actually a problem",
-                "do nothing"
-                );
 
             projectReport.AddIssues(new[] { new ProjectIssue
                                             (
                                                 IssueCategory.Code,
-                                                p,
+                                                "TD2001",
                                                 "dummy issue"
                                             ) }
             );

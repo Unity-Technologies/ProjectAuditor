@@ -45,11 +45,6 @@ namespace Unity.ProjectAuditor.Editor
             return null;
         }
 
-        internal Rule GetRule(Descriptor descriptor, string filter = "")
-        {
-            return GetRule(descriptor.id, filter);
-        }
-
         internal void ClearAllRules()
         {
             m_Rules.Clear();
@@ -67,15 +62,10 @@ namespace Unity.ProjectAuditor.Editor
             EditorUtility.SetDirty(this);
         }
 
-        internal void ClearRules(Descriptor descriptor, string filter = "")
-        {
-            ClearRules(descriptor.id, filter);
-        }
-
         internal void ClearRules(ProjectIssue issue)
         {
-            var descriptor = issue.descriptor;
-            ClearRules(descriptor, issue.GetContext());
+            var id = issue.Id;
+            ClearRules(id, issue.GetContext());
         }
 
         internal Severity GetAction(string id, string filter = "")
@@ -93,23 +83,18 @@ namespace Unity.ProjectAuditor.Editor
             return Severity.Default;
         }
 
-        internal Severity GetAction(Descriptor descriptor, string filter = "")
-        {
-            return GetAction(descriptor.id, filter);
-        }
-
         internal void SetRule(ProjectIssue issue, Severity ruleSeverity)
         {
-            var descriptor = issue.descriptor;
+            var id = issue.Id;
 
             // FIXME: GetContext will return empty string on code issues after domain reload
             var context = issue.GetContext();
-            var rule = GetRule(descriptor, context);
+            var rule = GetRule(id, context);
 
             if (rule == null)
                 AddRule(new Rule
                 {
-                    id = descriptor.id,
+                    id = id,
                     filter = context,
                     severity = ruleSeverity
                 });

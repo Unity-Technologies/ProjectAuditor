@@ -123,7 +123,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (totalBytes > diagnosticParams.StreamingAssetsFolderSizeLimit * 1024 * 1024)
                 {
                     issues.Add(
-                        ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor,
+                        ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor.id,
                             Formatting.FormatSize((ulong)totalBytes))
                     );
                 }
@@ -158,7 +158,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             issues.Add(ProjectIssue.Create
                 (
                     IssueCategory.AssetDiagnostic,
-                    k_AssetInResourcesFolderDescriptor,
+                    k_AssetInResourcesFolderDescriptor.id,
                     Path.GetFileName(assetPath), isInResources ? "is in a Resources folder" : "is a dependency of a Resources folder asset"
                 )
                 .WithDependencies(dependencyNode)

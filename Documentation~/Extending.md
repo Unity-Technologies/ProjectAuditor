@@ -9,7 +9,7 @@ This is a list of steps to create a module:
 1. Create a new module class that inherits from [ProjectAuditorModule](../Editor/Core/ProjectAuditorModule.cs).
 2. Override the *name* property, which returns a user-fiendly module name.
 3. Override the *supportedLayouts* property to return a collection of supported layouts. Note that a layout is used to define name, type and format of the properties of an issue produced by the analysis.
-4. If applicable, override the *supportedDescriptors* property to return a collection of supported descriptors. This can be skipped for the module does not report diagnostics.
+4. If applicable, override the *supportedDescriptors* property to return a collection of supported descriptor IDs. This can be skipped if the module does not report diagnostics.
 5. Register any module-specific categories via *ProjectAuditor.GetOrRegisterCategory*. Note that a category is a unique name used to classify the same kind of issues. 
 6. Override the *Audit* method. This is where you will implement your analysis.
    1. Create [ProjectIssue](../Editor/ProjectIssue.cs) objects, if any
@@ -50,9 +50,9 @@ namespace MyNamespace
 
         public override string name => "My Module";
 
-        public override IReadOnlyCollection<ProblemDescriptor> supportedDescriptors => new ProblemDescriptor[]
+        public override IReadOnlyCollection<string> supportedDescriptors => new string[]
         {
-            k_Descriptor
+            k_Descriptor.id
         };
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
