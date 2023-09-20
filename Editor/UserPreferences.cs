@@ -26,8 +26,7 @@ namespace Unity.ProjectAuditor.Editor
         static readonly string k_LogTimingsInfoLabel = "Log timing information";
 
         static readonly string k_PrettifyJSONOutputLabel = "Prettify saved JSON files";
-        static readonly bool k_PrettifyJSONOutputDefault = false;
-
+        
         static readonly string k_DeveloperModeLabel = "Enable Developer Mode";
 
         static string k_BuildReportAutoSaveLabel = "Auto Save Last Report";
