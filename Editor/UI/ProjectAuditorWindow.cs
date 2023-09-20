@@ -1793,18 +1793,7 @@ A view allows the user to browse through the listed items and filter by string o
             public static readonly GUIContent Clear = new GUIContent("Clear");
             public static readonly GUIContent Refresh = new GUIContent("Refresh");
 
-            public static readonly GUIContent CodeDiagnostics = new GUIContent("Diagnostics", "Code Diagnostics");
-            public static readonly GUIContent CodeCompilerMessages = new GUIContent("Messages", "Compiler Messages");
-
-            public static readonly GUIContent Shaders = new GUIContent("Shaders", "Inspect Shaders");
-            public static readonly GUIContent Materials = new GUIContent("Materials", "Show Materials List");
-            public static readonly GUIContent ShaderCompilerMessages = new GUIContent("Messages", "Show Shader Compiler Messages");
             public static readonly GUIContent ShaderVariants = new GUIContent("Variants", "Inspect Shader Variants");
-
-            public static readonly GUIContent AssetDiagnostics = new GUIContent("Diagnostics", "Asset Diagnostics");
-
-            public static readonly GUIContent BuildFiles = new GUIContent("Build Size");
-            public static readonly GUIContent BuildSteps = new GUIContent("Build Steps");
 
             public static readonly GUIContent Packages = new GUIContent("Packages", "Installed Packages");
             public static readonly GUIContent PackageDiagnostics = new GUIContent("Diagnostics", "Package Diagnostics");
