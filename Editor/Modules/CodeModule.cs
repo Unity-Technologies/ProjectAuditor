@@ -393,7 +393,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 perfCriticalContext = perfCriticalContext
             };
 
-            foreach (var inst in caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode)))
+            var instructions = caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode));
+            foreach (var inst in instructions)
             {
                 SequencePoint s = null;
                 for (var i = inst; i != null; i = i.Previous)

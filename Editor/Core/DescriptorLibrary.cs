@@ -20,9 +20,15 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public static bool TryGetDescriptor(string id, out Descriptor descriptor)
         {
-            if (m_Descriptors == null || string.IsNullOrEmpty(id))
+            if (m_Descriptors == null)
             {
                 m_Descriptors = new Dictionary<string, Descriptor>();
+                descriptor = null;
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(id))
+            {
                 descriptor = null;
                 return false;
             }
