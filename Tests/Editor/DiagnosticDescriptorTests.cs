@@ -167,6 +167,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(desc.IsPlatformCompatible());
         }
 
+#if !UNITY_2022_2_OR_NEWER
         [Test]
         public void DiagnosticDescriptor_Platform_IsNotCompatible()
         {
@@ -184,6 +185,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.False(desc.IsPlatformCompatible());
         }
+#endif
 
         [Test]
         public void DiagnosticDescriptor_Descriptor_IsRegistered()
@@ -204,7 +206,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetIDs();
 
             Assert.Contains(desc.id, IDs, "Descriptor {0} is not registered", desc.id);
-            Assert.IsTrue(DescriptorLibrary.IsDescriptorRegistered(desc.id), "Descriptor {0} not found in DescriptorLibrary", desc.id);
+            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(desc.id, out var descriptor), "Descriptor {0} not found in DescriptorLibrary", desc.id);
         }
 
         [Test]
@@ -216,7 +218,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetIDs();
             foreach (var id in IDs)
             {
-                Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out Descriptor descriptor), "Descriptor {0} not found in DescriptorLibrary", id);
+                Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out var descriptor), "Descriptor {0} not found in DescriptorLibrary", id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.id), "Descriptor has no id (title: {0})", descriptor.title);
                 Assert.IsTrue(regExp.IsMatch(descriptor.id), "Descriptor id format is not valid: " + descriptor.id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.title), "Descriptor {0} has no title", descriptor.id);
@@ -234,7 +236,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetIDs();
             foreach (var id in IDs)
             {
-                Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out Descriptor descriptor), "Descriptor {0} not found in DescriptorLibrary", id);
+                Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out var descriptor), "Descriptor {0} not found in DescriptorLibrary", id);
                 Assert.IsFalse(descriptor.title.EndsWith("."), "Descriptor {0} string must not end with a full stop. String: {1}", descriptor.id, descriptor.title);
                 Assert.IsTrue(descriptor.description.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.id, descriptor.description);
                 Assert.IsTrue(descriptor.solution.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.id, descriptor.solution);
@@ -358,7 +360,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetIDs();
             foreach (var id in IDs)
             {
-                Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out Descriptor desc), "Descriptor {0} not found in DescriptorLibrary", id);
+                Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out var desc), "Descriptor {0} not found in DescriptorLibrary", id);
                 for (int i = 0; i < desc.areas.Length; i++)
                 {
                     Area area;
@@ -376,7 +378,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetIDs();
             foreach (var id in IDs)
             {
-                Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out Descriptor desc), "Descriptor {0} not found in DescriptorLibrary", id);
+                Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out var desc), "Descriptor {0} not found in DescriptorLibrary", id);
 
                 if (string.IsNullOrEmpty(desc.documentationUrl))
                     continue;

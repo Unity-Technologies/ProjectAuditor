@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public static bool TryGetDescriptor(string id, out Descriptor descriptor)
         {
-            if (m_Descriptors == null)
+            if (m_Descriptors == null || string.IsNullOrEmpty(id))
             {
                 m_Descriptors = new Dictionary<string, Descriptor>();
                 descriptor = null;
@@ -28,29 +28,6 @@ namespace Unity.ProjectAuditor.Editor.Core
             }
 
             return m_Descriptors.TryGetValue(id, out descriptor);
-        }
-
-        public static Descriptor GetDescriptor(string id)
-        {
-            if (m_Descriptors == null)
-            {
-                m_Descriptors = new Dictionary<string, Descriptor>();
-            }
-
-            if (string.IsNullOrEmpty(id) || !m_Descriptors.ContainsKey(id))
-            {
-                return null;
-            }
-
-            return m_Descriptors[id];
-        }
-
-        public static bool IsDescriptorRegistered(string id)
-        {
-            if (m_Descriptors == null)
-                return false;
-
-            return m_Descriptors.ContainsKey(id);
         }
 
         public static void AddDescriptors(List<Descriptor> descriptors)

@@ -38,12 +38,21 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField] string m_Id;
         [SerializeField] IssueCategory m_Category;
         [SerializeField] string m_Description;
+        [SerializeField] Severity m_Severity;
 
         [SerializeField] DependencyNode m_Dependencies;
         [SerializeField] Location m_Location;
-
         [SerializeField] string[] m_CustomProperties;
-        [SerializeField] Severity m_Severity;
+
+        /// <summary>
+        /// Determines whether the issue was fixed. Only used for diagnostics
+        /// </summary>
+        public bool wasFixed = false;
+
+        /// <summary>
+        /// Depth in display tree. 0 by default.
+        /// </summary>
+        public int depth = 0;
 
         /// <summary>
         /// Constructs and returns an instance of ProjectIssue
@@ -54,9 +63,13 @@ namespace Unity.ProjectAuditor.Editor
         internal ProjectIssue(IssueCategory category, string id, params object[] args)
         {
             m_Id = id;
-            m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
             m_Category = category;
-            m_Severity = descriptor.defaultSeverity;
+
+            if (DescriptorLibrary.TryGetDescriptor(id, out var descriptor))
+            {
+                m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
+                m_Severity = descriptor.defaultSeverity;
+            }
         }
 
         /// <summary>
@@ -83,7 +96,10 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// This issue's category
         /// </summary>
-        public IssueCategory category => m_Category;
+        public IssueCategory category
+        {
+            get => m_Category;
+        }
 
         /// <summary>
         /// Custom properties
@@ -104,20 +120,6 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Optional descriptor. Only used for diagnostics
-        /// </summary>
-        public Descriptor descriptor
-        {
-            // SteveM TODO: Aim to remove this accessor entirely and just have client code pull the descriptor from the library itself when needed.
-            get { return DescriptorLibrary.GetDescriptor(m_Id);  }
-        }
-
-        /// <summary>
-        /// Determines whether the issue was fixed. Only used for diagnostics
-        /// </summary>
-        public bool wasFixed = false;
-
-        /// <summary>
         /// Dependencies of this project issue
         /// </summary>
         internal DependencyNode dependencies
@@ -125,11 +127,6 @@ namespace Unity.ProjectAuditor.Editor
             get => m_Dependencies;
             /*public*/ set => m_Dependencies = value;
         }
-
-        /// <summary>
-        /// Depth in display tree. 0 by default.
-        /// </summary>
-        public int depth = 0;
 
         /// <summary>
         /// Name of the file that contains this issue
@@ -180,7 +177,15 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public Severity severity
         {
-            get => m_Severity == Severity.Default && descriptor != null ? descriptor.defaultSeverity : m_Severity;
+            get
+            {
+                if (m_Severity == Severity.Default &&
+                    DescriptorLibrary.TryGetDescriptor(m_Id, out var desc))
+                {
+                    return desc.defaultSeverity;
+                }
+                return m_Severity;
+            }
             set => m_Severity = value;
         }
 

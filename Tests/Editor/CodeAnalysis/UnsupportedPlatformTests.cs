@@ -1,5 +1,6 @@
 using System.Linq;
 using NUnit.Framework;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using UnityEditor;
@@ -32,17 +33,18 @@ class MicrophoneUsageTest
         {
             m_Platform = BuildTarget.WebGL;
 
-            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.descriptor.id.Equals("PAC0233"));
+            var issue = AnalyzeAndFindAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.Id.Equals("PAC0233"));
 
-            Assert.NotNull(diagnostic);
-            Assert.AreEqual("'UnityEngine.Microphone.get_devices' usage", diagnostic.description);
-            Assert.Contains(Area.Support.ToString(), diagnostic.descriptor.areas);
+            Assert.NotNull(issue);
+            Assert.AreEqual("'UnityEngine.Microphone.get_devices' usage", issue.description);
+            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(issue.Id, out var descriptor));
+            Assert.Contains(Area.Support.ToString(), descriptor.areas);
         }
 
         [Test]
         public void CodeAnalysis_PlatformIssue_IsNotReported()
         {
-            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.descriptor.id.Equals("PAC0233"));
+            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.Id.Equals("PAC0233"));
 
             Assert.Null(diagnostic);
         }

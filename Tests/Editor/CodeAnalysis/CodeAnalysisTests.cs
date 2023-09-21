@@ -5,6 +5,7 @@ using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -242,13 +243,13 @@ class GenericInstantiation
             var myIssue = issues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            Assert.NotNull(myIssue.descriptor);
+            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(myIssue.Id, out var descriptor));
 
-            Assert.AreEqual(Severity.Moderate, myIssue.descriptor.defaultSeverity);
-            Assert.AreEqual(typeof(string), myIssue.descriptor.id.GetType());
-            Assert.AreEqual("PAC0066", myIssue.descriptor.id);
-            Assert.AreEqual("UnityEngine.Camera", myIssue.descriptor.type);
-            Assert.AreEqual("allCameras", myIssue.descriptor.method);
+            Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
+            Assert.AreEqual(typeof(string), myIssue.Id.GetType());
+            Assert.AreEqual("PAC0066", myIssue.Id);
+            Assert.AreEqual("UnityEngine.Camera", descriptor.type);
+            Assert.AreEqual("allCameras", descriptor.method);
 
             Assert.AreEqual(m_TestAsset.fileName, myIssue.filename);
             Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.description);
@@ -283,7 +284,7 @@ class GenericInstantiation
             var myIssue = filteredIssues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            Assert.NotNull(myIssue.descriptor);
+            Assert.IsFalse(string.IsNullOrEmpty(myIssue.Id));
             Assert.AreEqual("'UnityEngine.Component.tag' usage", myIssue.description);
         }
 
@@ -376,7 +377,8 @@ class GenericInstantiation
             var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'System.Linq.Enumerable.Sum' usage"));
 
             Assert.NotNull(issue);
-            Assert.AreEqual("System.Linq.*", issue.descriptor.title);
+            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(issue.Id, out var descriptor));
+            Assert.AreEqual("System.Linq.*", descriptor.title);
         }
 
         [Test]

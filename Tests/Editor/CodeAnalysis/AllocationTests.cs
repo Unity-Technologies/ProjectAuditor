@@ -142,11 +142,11 @@ class ParamsArrayAllocation
             Assert.AreEqual(2, issues.Count());
 
             Assert.AreEqual(IssueCategory.Code, issues[0].category);
-            Assert.AreEqual(AllocationAnalyzer.PAC2004, issues[0].descriptor.id);
+            Assert.AreEqual(AllocationAnalyzer.PAC2004, issues[0].Id);
             Assert.AreEqual("'Object' array allocation", issues[0].description);
 
             Assert.AreEqual(IssueCategory.Code, issues[1].category);
-            Assert.AreEqual(AllocationAnalyzer.PAC2005, issues[1].descriptor.id);
+            Assert.AreEqual(AllocationAnalyzer.PAC2005, issues[1].Id);
             Assert.AreEqual("Parameters array 'Object[] args' allocation", issues[1].description);
         }
     }

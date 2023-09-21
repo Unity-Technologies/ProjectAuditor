@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Tests.Common;
@@ -113,13 +114,14 @@ class MyClass
             var myIssue = issues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            Assert.NotNull(myIssue.descriptor);
+            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(myIssue.Id, out var descriptor));
+            Assert.NotNull(descriptor);
 
-            Assert.AreEqual(Severity.Moderate, myIssue.descriptor.defaultSeverity);
-            Assert.AreEqual(typeof(string), myIssue.descriptor.id.GetType());
-            Assert.AreEqual("PAC0066", myIssue.descriptor.id);
-            Assert.AreEqual("UnityEngine.Camera", myIssue.descriptor.type);
-            Assert.AreEqual("allCameras", myIssue.descriptor.method);
+            Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
+            Assert.AreEqual(typeof(string), myIssue.Id.GetType());
+            Assert.AreEqual("PAC0066", myIssue.Id);
+            Assert.AreEqual("UnityEngine.Camera", descriptor.type);
+            Assert.AreEqual("allCameras", descriptor.method);
 
             Assert.AreEqual(m_ScriptWithDiagnostic.fileName, myIssue.filename);
             Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.description);
