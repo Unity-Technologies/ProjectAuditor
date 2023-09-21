@@ -28,11 +28,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         [SerializeField] IssueCategory[] m_Categories;
         [SerializeField] int m_ActiveViewIndex;
 
-        public int activeViewIndex
-        {
-            get { return m_ActiveViewIndex; }
-        }
-
         public int numViews => m_Views != null ? m_Views.Length : 0;
 
         public Action<IssueCategory> onAnalyze;

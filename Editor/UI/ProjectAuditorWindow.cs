@@ -553,10 +553,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 displayName = "Installed Packages",
                 menuLabel = "Project/Packages/Installed",
                 menuOrder = 105,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.PackageDiagnostics, () => viewManager.ChangeView(IssueCategory.PackageDiagnostic));
-                },
                 onOpenIssue = EditorInterop.OpenPackage,
                 showDependencyView = true,
                 dependencyViewGuiContent = new GUIContent("Package Dependencies"),
@@ -569,10 +565,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 displayName = "Package Diagnostics",
                 menuLabel = "Project/Packages/Diagnostics",
                 menuOrder = 106,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.Packages, () => viewManager.ChangeView(IssueCategory.Package));
-                },
                 onOpenIssue = EditorInterop.OpenPackage,
                 type = typeof(DiagnosticView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageDiagnostics
