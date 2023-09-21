@@ -50,11 +50,6 @@ namespace Unity.ProjectAuditor.Editor
         public bool wasFixed = false;
 
         /// <summary>
-        /// Depth in display tree. 0 by default.
-        /// </summary>
-        public int depth = 0;
-
-        /// <summary>
         /// Constructs and returns an instance of ProjectIssue
         /// </summary>
         /// <param name="category">Issue category</param>

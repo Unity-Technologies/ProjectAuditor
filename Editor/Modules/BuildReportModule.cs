@@ -33,6 +33,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         Duration = 0,
         Message,
+        Depth,
         Num
     }
 
@@ -149,9 +150,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                     {
                         Formatting.FormatDuration(step.duration),
-                        step.name
+                        step.name,
+                        depth
                     })
-                    .WithDepth(depth)
                     .WithSeverity(Severity.Info);
 
                 foreach (var message in step.messages)
@@ -162,9 +163,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                         {
                             0,
-                            logMessage
+                            logMessage,
+                            depth + 1
                         })
-                        .WithDepth(depth + 1)
                         .WithSeverity(Diagnostic.Utils.LogTypeToSeverity(message.type));
                 }
             }

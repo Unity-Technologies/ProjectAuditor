@@ -59,12 +59,6 @@ namespace Unity.ProjectAuditor.Editor.Core
             return this;
         }
 
-        public IssueBuilder WithDepth(int depth)
-        {
-            m_Issue.depth = depth;
-            return this;
-        }
-
         public IssueBuilder WithLocation(Location location)
         {
             m_Issue.location = location;

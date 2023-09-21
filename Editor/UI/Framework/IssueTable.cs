@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -94,7 +95,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 itemsList.AddRange(m_TreeViewItemIssues);
             foreach (var issue in issues)
             {
-                var depth = m_Layout.hierarchy ? issue.depth : 1;
+                var depth = 1;
+                if (m_Layout.hierarchy)
+                {
+                    if (m_Desc.category == IssueCategory.BuildStep)
+                    {
+                        depth = issue.GetCustomPropertyInt32(BuildReportStepProperty.Depth);
+                    }
+                    else
+                        depth = 0;
+                }
                 var item = new IssueTableItem(m_NextId++, depth, issue.description, issue, issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
                 itemsList.Add(item);
             }
