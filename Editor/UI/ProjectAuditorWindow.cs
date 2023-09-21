@@ -145,7 +145,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             },
             new Tab
             {
-                id = TabId.Settings, name = "Settings",
+                id = TabId.Settings, name = "Project",
                 modules = new[]
                 {
                     typeof(SettingsModule)
