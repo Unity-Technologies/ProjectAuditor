@@ -149,7 +149,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #if UNITY_2021_1_OR_NEWER
             Assert.That(step.GetCustomPropertyInt32(BuildReportStepProperty.Depth), Is.EqualTo(3));
 #else
-            Assert.That(step.depth, Is.EqualTo(1));
+            Assert.That(step.GetCustomPropertyInt32(BuildReportStepProperty.Depth), Is.EqualTo(1));
 #endif
 
             step = issues.FirstOrDefault(i => i.description.Equals("Postprocess built player"));
