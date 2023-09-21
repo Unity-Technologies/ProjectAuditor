@@ -36,8 +36,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string k_KeyProjectAuditorVersion = "Project Auditor Version";
         internal const string k_KeyUnityVersion = "Unity Version";
 
-        ProjectAuditorConfig m_Config;
-
         public override string name => "MetaData";
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
@@ -47,7 +45,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Initialize(ProjectAuditorConfig config)
         {
-            m_Config = config;
         }
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
