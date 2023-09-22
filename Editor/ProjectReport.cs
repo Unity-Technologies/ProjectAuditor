@@ -104,9 +104,9 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Find all diagnostics that match a specific ID
         /// </summary>
-        /// <param name="id"> Desired ID</param>
+        /// <param name="id"> Desired diagnostic ID</param>
         /// <returns> Array of project issues</returns>
-        public IReadOnlyCollection<ProjectIssue> FindByID(string id)
+        public IReadOnlyCollection<ProjectIssue> FindByDiagnosticID(string id)
         {
             s_Mutex.WaitOne();
             var result = m_Issues.Where(i => !string.IsNullOrEmpty(i.Id) && i.Id.Equals(id)).ToArray();
