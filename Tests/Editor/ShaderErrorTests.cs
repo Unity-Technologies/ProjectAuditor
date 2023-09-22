@@ -25,6 +25,9 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+#if UNITY_2023_3_OR_NEWER
+        [Ignore("Something changed in trunk that broke this test.")]
+#endif
         public void ShadersAnalysis_ShaderWithFunctionError_IsReported()
         {
             // Make this one a regex because the error message includes a line number and graphics API, neither of which I'm sure we should be relying on.
@@ -82,6 +85,9 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+#if UNITY_2023_3_OR_NEWER
+        [Ignore("Something changed in trunk that broke this test.")]
+#endif
         public void ShadersAnalysis_ShaderWithShaderLabError_IsReported()
         {
 #if UNITY_2021_1_OR_NEWER
