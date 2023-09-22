@@ -367,6 +367,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (!methodDefinition.HasBody)
                         continue;
 
+                    // workaround for long analysis times when Burst is installed
+                    if (methodDefinition.DeclaringType.FullName.StartsWith("Unity.Burst.Editor.BurstDisassembler"))
+                        continue;
+
                     AnalyzeMethodBody(assemblyInfo, methodDefinition, onCallFound, onIssueFound);
                 }
             }
