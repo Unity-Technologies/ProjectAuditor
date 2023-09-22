@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static string GetDescription(string id)
         {
-            if(m_StringLookup == null)
+            if (m_StringLookup == null)
                 Initialize();
 
             return m_StringLookup[id].description;
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static string GetRecommendation(string id)
         {
-            if(m_StringLookup == null)
+            if (m_StringLookup == null)
                 Initialize();
 
             return m_StringLookup[id].solution;
