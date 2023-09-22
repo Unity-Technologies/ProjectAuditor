@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 
-namespace Unity.ProjectAuditor.Editor.Core
+namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     internal static class DescriptorLibrary
     {
