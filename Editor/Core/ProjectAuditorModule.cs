@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public virtual bool isSupported => true;
 
-        public IReadOnlyCollection<string> supportedIDs => m_IDs != null ? m_IDs.ToArray() : Array.Empty<string>();
+        public IReadOnlyCollection<string> supportedDescriptorIDs => m_IDs != null ? m_IDs.ToArray() : Array.Empty<string>();
 
         public abstract IReadOnlyCollection<IssueLayout> supportedLayouts
         {

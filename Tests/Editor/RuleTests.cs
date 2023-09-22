@@ -122,7 +122,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Rule_Test_CanBeAddedAndRemoved()
         {
             var settingsAuditor = m_ProjectAuditor.GetModule<SettingsModule>();
-            var IDs = settingsAuditor.supportedIDs;
+            var IDs = settingsAuditor.supportedDescriptorIDs;
             var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
             var firstID = IDs.FirstOrDefault();
 
