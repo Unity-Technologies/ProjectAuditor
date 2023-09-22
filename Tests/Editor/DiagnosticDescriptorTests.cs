@@ -203,7 +203,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             projectAuditor.GetModules(IssueCategory.Code)[0].RegisterDescriptor(desc);
 
-            var IDs = projectAuditor.GetIDs();
+            var IDs = projectAuditor.GetDiagnosticIDs();
 
             Assert.Contains(desc.id, IDs, "Descriptor {0} is not registered", desc.id);
             Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(desc.id, out var descriptor), "Descriptor {0} not found in DescriptorLibrary", desc.id);
@@ -215,7 +215,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var regExp = new Regex("^[A-Z]{3}\\d{4}$", RegexOptions.IgnoreCase);
 
             var projectAuditor = new Editor.ProjectAuditor();
-            var IDs = projectAuditor.GetIDs();
+            var IDs = projectAuditor.GetDiagnosticIDs();
             foreach (var id in IDs)
             {
                 Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out var descriptor), "Descriptor {0} not found in DescriptorLibrary", id);
@@ -233,7 +233,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void DiagnosticDescriptor_Descriptors_AreFormatted()
         {
             var projectAuditor = new Editor.ProjectAuditor();
-            var IDs = projectAuditor.GetIDs();
+            var IDs = projectAuditor.GetDiagnosticIDs();
             foreach (var id in IDs)
             {
                 Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out var descriptor), "Descriptor {0} not found in DescriptorLibrary", id);
@@ -307,7 +307,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void DiagnosticDescriptor_Descriptors_AreRegistered(string jsonFilename)
         {
             var projectAuditor = new Editor.ProjectAuditor();
-            var IDs = projectAuditor.GetIDs();
+            var IDs = projectAuditor.GetDiagnosticIDs();
 
             var loadedDescriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.s_DataPath, jsonFilename);
             foreach (var loadedDescriptor in loadedDescriptors)
@@ -357,7 +357,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void DiagnosticDescriptor_Areas_Exist()
         {
             var projectAuditor = new Editor.ProjectAuditor();
-            var IDs = projectAuditor.GetIDs();
+            var IDs = projectAuditor.GetDiagnosticIDs();
             foreach (var id in IDs)
             {
                 Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out var desc), "Descriptor {0} not found in DescriptorLibrary", id);
@@ -375,7 +375,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public IEnumerator DiagnosticDescriptor_DocumentationUrl_Exist()
         {
             var projectAuditor = new Editor.ProjectAuditor();
-            var IDs = projectAuditor.GetIDs();
+            var IDs = projectAuditor.GetDiagnosticIDs();
             foreach (var id in IDs)
             {
                 Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out var desc), "Descriptor {0} not found in DescriptorLibrary", id);
