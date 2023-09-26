@@ -48,7 +48,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Change <b>Audio Settings ➔ Default Speaker Mode</b> to <b>Mono</b>. You should also consider enabling the <b>Force To Mono</b> AudioClip import setting to reduce import times and build size.")
         {
             platforms = new[] { "Android", "iOS"},
-            fixer = (issue => {
+            fixer = (issue =>
+            {
                 FixSpeakerMode();
             })
         };
@@ -60,8 +61,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>C++ Compiler Configuration</b> in Player Settings is set to <b>Master</b>. This mode is intended for shipping builds and will significantly increase build times.",
             "Change <b>Player Settings ➔ Other Settings ➔ Configuration ➔ C++ Compiler Configuration</b> to <b>Release</b>.")
         {
-            fixer = (issue => {
-                SetIL2CPPConfigurationToRelease();
+            fixer = (issue =>
+            {
+                var buildTargetGroup = (BuildTargetGroup)issue.GetCustomPropertyInt32(0);
+                SetIL2CPPConfigurationToRelease(buildTargetGroup);
             }),
 
             messageFormat = "Player: C++ Compiler Configuration is set to 'Master'"
@@ -76,7 +79,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             fixer = (issue =>
             {
-                SetIL2CPPConfigurationToRelease();
+                var buildTargetGroup = (BuildTargetGroup)issue.GetCustomPropertyInt32(0);
+                SetIL2CPPConfigurationToRelease(buildTargetGroup);
             }),
 
             messageFormat = "Player: C++ Compiler Configuration is set to 'Debug'"
@@ -91,8 +95,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             fixer = (issue =>
             {
-                var buildGroupTarget = (BuildTargetGroup)issue.GetCustomPropertyInt32(0);
-                PlayerSettingsUtil.SetLightmapStreaming(buildGroupTarget, true);
+                var buildTargetGroup = (BuildTargetGroup)issue.GetCustomPropertyInt32(0);
+                PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, true);
             }),
         };
 
@@ -123,22 +127,24 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SpeakerModeDescriptor)
                     .WithLocation("Project/Player");
             }
+
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.platform);
             if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Master, projectAuditorParams))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationMasterDescriptor)
+                    .WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }
             if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Debug, projectAuditorParams))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationDebugDescriptor)
+                    .WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }
-
-            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.platform);
             if (!PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_LightmapStreamingEnabledDescriptor).
-                    WithCustomProperties(new object[] {buildTargetGroup})
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_LightmapStreamingEnabledDescriptor)
+                    .WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }
         }
@@ -190,9 +196,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 compilerConfiguration;
         }
 
-        internal static void SetIL2CPPConfigurationToRelease()
+        internal static void SetIL2CPPConfigurationToRelease(BuildTargetGroup buildTargetGroup)
         {
-            PlayerSettings.SetIl2CppCompilerConfiguration(EditorUserBuildSettings.selectedBuildTargetGroup, Il2CppCompilerConfiguration.Release);
+            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Release);
         }
     }
 }

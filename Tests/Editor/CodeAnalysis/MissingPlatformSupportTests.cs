@@ -16,13 +16,10 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAssetSystemThreading;
         TestAsset m_TestAssetMicrophone;
 
-        public MissingPlatformSupportTests()
-        {
-            m_Platform = BuildTarget.WebGL;
-        }
+        BuildTarget m_PrevPlatform;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_TestAssetSystemNet = new TestAsset("SystemNetUsageTest.cs", @"
 class SystemNetUsageTest
@@ -56,10 +53,24 @@ class MicrophoneUsageTest
 ");
         }
 
+        [SetUp]
+        public void SetUp()
+        {
+            m_PrevPlatform = m_Platform;
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            m_Platform = m_PrevPlatform;
+        }
+
         [Test]
         [RequirePlatformSupport(BuildTarget.WebGL)]
         public void CodeAnalysis_MissingPlatformSupport_SystemNetIsReportedOnWebGL()
         {
+            m_Platform = BuildTarget.WebGL;
+
             var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetSystemNet).FirstOrDefault(i => i.descriptor.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorSystemNet));
 
             Assert.NotNull(diagnostic);
@@ -71,6 +82,8 @@ class MicrophoneUsageTest
         [RequirePlatformSupport(BuildTarget.WebGL)]
         public void CodeAnalysis_MissingPlatformSupport_SystemThreadingIsReportedOnWebGL()
         {
+            m_Platform = BuildTarget.WebGL;
+
             var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetSystemThreading).FirstOrDefault(i => i.descriptor.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorSystemThreading));
 
             Assert.NotNull(diagnostic);
@@ -82,6 +95,8 @@ class MicrophoneUsageTest
         [RequirePlatformSupport(BuildTarget.WebGL)]
         public void CodeAnalysis_MissingPlatformSupport_MicrophoneIsReportedOnWebGL()
         {
+            m_Platform = BuildTarget.WebGL;
+
             var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.descriptor.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorMicrophone));
 
             Assert.NotNull(diagnostic);
@@ -92,13 +107,9 @@ class MicrophoneUsageTest
         [Test]
         public void CodeAnalysis_MissingPlatformSupport_IssueIsNotReported()
         {
-            m_Platform = EditorUserBuildSettings.activeBuildTarget;
-
             var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.descriptor.id.Equals("PAC0233"));
 
             Assert.Null(diagnostic);
-
-            m_Platform = BuildTarget.WebGL;
         }
     }
 }

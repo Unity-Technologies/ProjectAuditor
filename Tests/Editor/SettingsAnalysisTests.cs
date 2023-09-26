@@ -69,7 +69,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void SettingsAnalysis_Default_StaticBatchingEnabled()
         {
-            Assert.True(PlayerSettingsUtil.IsStaticBatchingEnabled(EditorUserBuildSettings.activeBuildTarget));
+            Assert.True(PlayerSettingsUtil.IsStaticBatchingEnabled(m_Platform));
         }
 
         [Test]
@@ -175,15 +175,15 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(true)]
         public void SettingsAnalysis_GraphicsMixedStandardShaderQuality_WithBuiltinRenderPipeline_IsReported(bool isMixed)
         {
-            var buildTarget = EditorUserBuildSettings.activeBuildTarget;
-            var buildGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
-            var savedTier1settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier1);
-            var savedTier2settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier2);
-            var savedTier3settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier3);
+            var buildTarget = m_Platform;
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
+            var savedTier1settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier1);
+            var savedTier2settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier2);
+            var savedTier3settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier3);
 
-            var tier1settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier1);
-            var tier2settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier2);
-            var tier3settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier3);
+            var tier1settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier1);
+            var tier2settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier2);
+            var tier3settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier3);
 #if UNITY_2019_3_OR_NEWER
             var defaultRenderPipeline = GraphicsSettings.defaultRenderPipeline;
 #endif
@@ -191,17 +191,17 @@ namespace Unity.ProjectAuditor.EditorTests
             tier2settings.standardShaderQuality = ShaderQuality.High;
             tier3settings.standardShaderQuality = isMixed ? ShaderQuality.Low : ShaderQuality.High;
 
-            EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, tier1settings);
-            EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, tier2settings);
-            EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, tier3settings);
+            EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier1, tier1settings);
+            EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier2, tier2settings);
+            EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier3, tier3settings);
 #if UNITY_2019_3_OR_NEWER
             GraphicsSettings.defaultRenderPipeline = null;
 #endif
             Assert.AreEqual(isMixed, BuiltinRenderPipelineAnalyzer.IsMixedStandardShaderQuality(buildTarget));
 
-            EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, savedTier1settings);
-            EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, savedTier2settings);
-            EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, savedTier3settings);
+            EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier1, savedTier1settings);
+            EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier2, savedTier2settings);
+            EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier3, savedTier3settings);
 #if UNITY_2019_3_OR_NEWER
             GraphicsSettings.defaultRenderPipeline = defaultRenderPipeline;
 #endif
@@ -211,15 +211,15 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(RenderingPath.DeferredShading)]
         public void SettingsAnalysis_GraphicsUsingRenderingPath_WithBuiltinRenderPipeline_IsReported(RenderingPath renderingPath)
         {
-            var buildTarget = EditorUserBuildSettings.activeBuildTarget;
-            var buildGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
-            var savedTier1settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier1);
-            var savedTier2settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier2);
-            var savedTier3settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier3);
+            var buildTarget = m_Platform;
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
+            var savedTier1settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier1);
+            var savedTier2settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier2);
+            var savedTier3settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier3);
 
-            var tier1settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier1);
-            var tier2settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier2);
-            var tier3settings = EditorGraphicsSettings.GetTierSettings(buildGroup, GraphicsTier.Tier3);
+            var tier1settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier1);
+            var tier2settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier2);
+            var tier3settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier3);
 #if UNITY_2019_3_OR_NEWER
             var defaultRenderPipeline = GraphicsSettings.defaultRenderPipeline;
 #endif
@@ -227,9 +227,9 @@ namespace Unity.ProjectAuditor.EditorTests
             tier2settings.renderingPath = renderingPath;
             tier3settings.renderingPath = renderingPath;
 
-            EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, tier1settings);
-            EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, tier2settings);
-            EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, tier3settings);
+            EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier1, tier1settings);
+            EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier2, tier2settings);
+            EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier3, tier3settings);
 #if UNITY_2019_3_OR_NEWER
             GraphicsSettings.defaultRenderPipeline = null;
 #endif
@@ -244,9 +244,9 @@ namespace Unity.ProjectAuditor.EditorTests
                 Assert.AreEqual(true, BuiltinRenderPipelineAnalyzer.IsUsingDeferredRendering(buildTarget));
             }
 
-            EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier1, savedTier1settings);
-            EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier2, savedTier2settings);
-            EditorGraphicsSettings.SetTierSettings(buildGroup, GraphicsTier.Tier3, savedTier3settings);
+            EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier1, savedTier1settings);
+            EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier2, savedTier2settings);
+            EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier3, savedTier3settings);
 #if UNITY_2019_3_OR_NEWER
             GraphicsSettings.defaultRenderPipeline = defaultRenderPipeline;
 #endif
@@ -362,8 +362,8 @@ namespace Unity.ProjectAuditor.EditorTests
         public void SettingsAnalysis_IL2CPP_Compiler_Configuration_IsReported(
             Il2CppCompilerConfiguration il2CppCompilerConfiguration)
         {
-            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-            var settings = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
+            var scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
 
             PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
 
@@ -375,11 +375,10 @@ namespace Unity.ProjectAuditor.EditorTests
                 : PlayerSettingsAnalyzer.PAS1005;
 
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
-            var playerSettingIssue = issues.Length;
 
-            Assert.AreEqual(1, playerSettingIssue);
+            Assert.AreEqual(1, issues.Length);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, settings);
+            PlayerSettings.SetScriptingBackend(buildTargetGroup, scriptingBackend);
             PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
         }
 
@@ -388,8 +387,8 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(PlayerSettingsAnalyzer.PAS1005)]
         public void SettingsAnalysis_Il2CppCompilerConfigurationRelease_IsNotReported(string id)
         {
-            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-            var settings = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
+            var scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
 
             PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
 
@@ -397,11 +396,10 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Release);
 
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
-            var playerSettingIssue = issues.FirstOrDefault();
 
-            Assert.IsNull(playerSettingIssue);
+            Assert.AreEqual(0, issues.Length);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, settings);
+            PlayerSettings.SetScriptingBackend(buildTargetGroup, scriptingBackend);
             PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
         }
 
@@ -410,50 +408,48 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(PlayerSettingsAnalyzer.PAS1005)]
         public void SettingsAnalysis_Il2CppCompilerConfigurationMaster_ScriptingBackendMono_IsNotReported(string id)
         {
-            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-            var settings = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
+            var scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
 
             PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.Mono2x);
 
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
-            var playerSettingIssue = issues.FirstOrDefault();
 
-            Assert.IsNull(playerSettingIssue);
+            Assert.AreEqual(0, issues.Length);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, settings);
+            PlayerSettings.SetScriptingBackend(buildTargetGroup, scriptingBackend);
         }
 
         [Test]
         public void SettingsAnalysis_SwitchIL2CPP_Compiler_Configuration_To_Release()
         {
-            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-            var settings = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
+            var scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
 
             PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
             var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
 
             PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Debug);
 
-            PlayerSettingsAnalyzer.SetIL2CPPConfigurationToRelease();
+            PlayerSettingsAnalyzer.SetIL2CPPConfigurationToRelease(buildTargetGroup);
             Assert.AreEqual(Il2CppCompilerConfiguration.Release, PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup));
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, settings);
+            PlayerSettings.SetScriptingBackend(buildTargetGroup, scriptingBackend);
             PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
         }
 
         [Test]
         public void SettingsAnalysis_LightmapStreaming_Disabled_Reported()
         {
-            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
             var currentState = PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup);
 
             PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, false);
 
             var id = PlayerSettingsAnalyzer.PAS1006;
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
-            var playerSettingIssue = issues.FirstOrDefault();
 
-            Assert.NotNull(playerSettingIssue);
+            Assert.AreEqual(1, issues.Length);
 
             PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, currentState);
         }
@@ -461,16 +457,15 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void SettingsAnalysis_LightmapStreaming_Disabled_Is_Not_Reported()
         {
-            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
             var currentState = PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup);
 
             PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, true);
 
             var id = PlayerSettingsAnalyzer.PAS1006;
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.id.Equals(id));
-            var playerSettingIssue = issues.FirstOrDefault();
 
-            Assert.IsNull(playerSettingIssue);
+            Assert.AreEqual(0, issues.Length);
 
             PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, currentState);
         }
@@ -480,7 +475,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(false)]
         public void SettingsAnalysis_Enable_LightMapStreaming(bool isEnabled)
         {
-            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
             var currentState = PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup);
 
             PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, isEnabled);
