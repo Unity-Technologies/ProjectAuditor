@@ -29,9 +29,7 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.Severity:
                     return issue.severity.ToString();
                 case PropertyType.Area:
-                    return DescriptorLibrary.TryGetDescriptor(issue.Id, out descriptor)
-                        ? descriptor.GetAreasSummary()
-                        : null;
+                    return DescriptorLibrary.GetDescriptor(issue.Id).GetAreasSummary();
                 case PropertyType.FileType:
                     if (issue.location == null)
                         return k_NotAvailable;
@@ -42,9 +40,7 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.Description:
                     return issue.description;
                 case PropertyType.Descriptor:
-                    return DescriptorLibrary.TryGetDescriptor(issue.Id, out descriptor)
-                        ? descriptor.title
-                        : null;
+                    return DescriptorLibrary.GetDescriptor(issue.Id).title;
                 case PropertyType.Filename:
                     if (string.IsNullOrEmpty(issue.filename))
                         return k_NotAvailable;
@@ -58,9 +54,7 @@ namespace Unity.ProjectAuditor.Editor
                         return k_NotAvailable;
                     return PathUtils.GetDirectoryName(issue.location.Path);
                 case PropertyType.Platform:
-                    return DescriptorLibrary.TryGetDescriptor(issue.Id, out descriptor)
-                        ? descriptor.GetPlatformsSummary()
-                        : "Any";
+                    return DescriptorLibrary.GetDescriptor(issue.Id).GetPlatformsSummary();
                 default:
                     var propertyIndex = propertyType - PropertyType.Num;
                     return issue.GetCustomProperty(propertyIndex);
@@ -102,10 +96,8 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.Severity:
                     return issueA.severity.CompareTo(issueB.severity);
                 case PropertyType.Area:
-                    var areasA =
-                        DescriptorLibrary.TryGetDescriptor(issueA.Id, out Descriptor descA) ? descA.areas : Array.Empty<string>();
-                    var areasB =
-                        DescriptorLibrary.TryGetDescriptor(issueB.Id, out Descriptor descB) ? descB.areas : Array.Empty<string>();
+                    var areasA = DescriptorLibrary.GetDescriptor(issueA.Id).areas;
+                    var areasB = DescriptorLibrary.GetDescriptor(issueB.Id).areas;
 
                     var minLength = Math.Min(areasA.Length, areasB.Length);
 

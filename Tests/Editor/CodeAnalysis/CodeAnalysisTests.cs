@@ -243,7 +243,7 @@ class GenericInstantiation
             var myIssue = issues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(myIssue.Id, out var descriptor));
+            var descriptor = DescriptorLibrary.GetDescriptor(myIssue.Id);
 
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
             Assert.AreEqual(typeof(string), myIssue.Id.GetType());
@@ -377,7 +377,7 @@ class GenericInstantiation
             var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'System.Linq.Enumerable.Sum' usage"));
 
             Assert.NotNull(issue);
-            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(issue.Id, out var descriptor));
+            var descriptor = DescriptorLibrary.GetDescriptor(issue.Id);
             Assert.AreEqual("System.Linq.*", descriptor.title);
         }
 

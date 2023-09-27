@@ -41,7 +41,7 @@ class MyClass
             var myIssue = issues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(myIssue.Id, out var descriptor));
+            var descriptor = DescriptorLibrary.GetDescriptor(myIssue.Id);
 
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
             Assert.AreEqual("PAC1000", myIssue.Id);

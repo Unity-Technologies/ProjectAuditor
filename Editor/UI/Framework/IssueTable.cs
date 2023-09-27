@@ -329,12 +329,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     break;
 
                     case PropertyType.Area:
-                        if (DescriptorLibrary.TryGetDescriptor(issue.Id, out var descriptor))
-                        {
-                            var areaNames = descriptor.GetAreasSummary();
-                            EditorGUI.LabelField(cellRect, new GUIContent(areaNames, Tooltip.Area), labelStyle);
-                        }
-
+                        var areaNames = DescriptorLibrary.GetDescriptor(issue.Id).GetAreasSummary();
+                        EditorGUI.LabelField(cellRect, new GUIContent(areaNames, Tooltip.Area), labelStyle);
                         break;
                     case PropertyType.Description:
                         GUIContent guiContent = null;
@@ -517,14 +513,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     });
                 }
 
-                if (item.ProjectIssue != null &&
-                    DescriptorLibrary.TryGetDescriptor(item.ProjectIssue.Id, out var desc))
+                var desc = item.ProjectIssue != null && !string.IsNullOrEmpty(item.ProjectIssue.Id) ? DescriptorLibrary.GetDescriptor(item.ProjectIssue.Id) : null;
+                if (m_Desc.onOpenManual != null && desc != null && desc.type.StartsWith("UnityEngine."))
                 {
-                    if (m_Desc.onOpenManual != null && desc.type.StartsWith("UnityEngine."))
+                    menu.AddItem(Utility.OpenScriptReference, false, () =>
                     {
-                        menu.AddItem(Utility.OpenScriptReference, false,
-                            () => { m_Desc.onOpenManual(desc); });
-                    }
+                        m_Desc.onOpenManual(desc);
+                    });
                 }
 
                 if (m_Desc.onContextMenu != null)

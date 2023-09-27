@@ -161,13 +161,11 @@ namespace Unity.ProjectAuditor.Editor
             m_Descriptors.Clear();
 
             var descHashSet = new HashSet<Descriptor>();
-            Descriptor desc;
             foreach (var issue in m_Issues)
             {
-                if (!string.IsNullOrEmpty(issue.Id) &&
-                    DescriptorLibrary.TryGetDescriptor(issue.Id, out desc))
+                if (!string.IsNullOrEmpty(issue.Id))
                 {
-                    descHashSet.Add(desc);
+                    descHashSet.Add(DescriptorLibrary.GetDescriptor(issue.Id));
                 }
             }
 

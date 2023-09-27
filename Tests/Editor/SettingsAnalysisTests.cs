@@ -79,11 +79,11 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettings.bakeCollisionMeshes = false;
 
             var issues = Analyze(IssueCategory.ProjectSetting, i =>
-                DescriptorLibrary.TryGetDescriptor(i.Id, out var desc) &&
-                desc.method.Equals("bakeCollisionMeshes"));
+                !string.IsNullOrEmpty(i.Id) &&
+                DescriptorLibrary.GetDescriptor(i.Id).method.Equals("bakeCollisionMeshes"));
 
             var playerSettingIssue = issues.FirstOrDefault();
-            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(playerSettingIssue.Id, out var descriptor));
+            var descriptor = DescriptorLibrary.GetDescriptor(playerSettingIssue.Id);
 
             Assert.NotNull(playerSettingIssue, "Issue not found");
             Assert.AreEqual("Player: Prebake Collision Meshes is disabled", playerSettingIssue.description);
@@ -598,7 +598,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
             SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, false);
             var issues = Analyze(IssueCategory.ProjectSetting,
-                i => DescriptorLibrary.TryGetDescriptor(i.Id, out var desc) && desc.title.Equals("SRP Asset: SRP Batcher"));
+                i => !string.IsNullOrEmpty(i.Id) &&
+                     DescriptorLibrary.GetDescriptor(i.Id).title.Equals("SRP Asset: SRP Batcher"));
             var srpBatchingIssue = issues.FirstOrDefault();
             Assert.NotNull(srpBatchingIssue);
             Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
@@ -606,7 +607,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
             SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, true);
             issues = Analyze(IssueCategory.ProjectSetting,
-                i => DescriptorLibrary.TryGetDescriptor(i.Id, out var desc) && desc.title.Equals("SRP Asset: SRP Batcher"));
+                i => !string.IsNullOrEmpty(i.Id) &&
+                     DescriptorLibrary.GetDescriptor(i.Id).title.Equals("SRP Asset: SRP Batcher"));
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have enabled SRP Batcher.");
 

@@ -22,7 +22,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public override void DrawDetails(ProjectIssue[] selectedIssues)
         {
+            Descriptor descriptor = new Descriptor(null, null, Area.CPU, null, null);
             var selectedIDs = selectedIssues.Select(i => i.Id).Distinct().ToArray();
+            var numSelectedIDs = selectedIDs.Length;
+            if (numSelectedIDs > 0)
+            {
+                descriptor = DescriptorLibrary.GetDescriptor(selectedIDs[0]);
+            }
 
             EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));
 
@@ -30,16 +36,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 EditorGUILayout.LabelField(Contents.Details, SharedStyles.BoldLabel);
                 {
-                    if (selectedIDs.Length != 0)
+                    if (numSelectedIDs != 0)
                     {
                         if (GUILayout.Button(Contents.CopyToClipboard, SharedStyles.TabButton,
                             GUILayout.Width(LayoutSize.CopyToClipboardButtonSize),
                             GUILayout.Height(LayoutSize.CopyToClipboardButtonSize)))
                         {
-                            if (DescriptorLibrary.TryGetDescriptor(selectedIDs[0], out var descriptor))
-                            {
-                                EditorInterop.CopyToClipboard(Formatting.StripRichTextTags(descriptor.description));
-                            }
+                            EditorInterop.CopyToClipboard(Formatting.StripRichTextTags(descriptor.description));
                         }
                     }
                 }
@@ -48,13 +51,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_DetailsScrollPos =
                 EditorGUILayout.BeginScrollView(m_DetailsScrollPos, GUILayout.ExpandHeight(true));
 
-            if (selectedIDs.Length == 0)
+            if (numSelectedIDs == 0)
                 GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-            else if (selectedIDs.Length > 1)
+            else if (numSelectedIDs > 1)
                 GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-            else if (DescriptorLibrary.TryGetDescriptor(selectedIDs[0], out var descriptor))
+            else
             {
                 GUILayout.TextArea(descriptor.description, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
@@ -69,17 +72,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 EditorGUILayout.LabelField(Contents.Recommendation, SharedStyles.BoldLabel);
                 {
-                    if (selectedIDs.Length != 0)
+                    if (numSelectedIDs != 0)
                     {
                         if (GUILayout.Button(Contents.CopyToClipboard, SharedStyles.TabButton,
                             GUILayout.Width(LayoutSize.CopyToClipboardButtonSize),
                             GUILayout.Height(LayoutSize.CopyToClipboardButtonSize)))
                         {
-                            if (DescriptorLibrary.TryGetDescriptor(selectedIDs[0], out var descriptor))
-                            {
-                                EditorInterop.CopyToClipboard(
-                                    Formatting.StripRichTextTags(descriptor.solution));
-                            }
+                            EditorInterop.CopyToClipboard(Formatting.StripRichTextTags(descriptor.solution));
                         }
                     }
                 }
@@ -88,13 +87,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_RecommendationScrollPos =
                 EditorGUILayout.BeginScrollView(m_RecommendationScrollPos, GUILayout.ExpandHeight(true));
 
-            if (selectedIDs.Length == 0)
+            if (numSelectedIDs == 0)
                 GUILayout.TextArea(k_NoSelectionText, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-            else if (selectedIDs.Length > 1)
+            else if (numSelectedIDs > 1)
                 GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
-            else if (DescriptorLibrary.TryGetDescriptor(selectedIDs[0], out var descriptor))
+            else
             {
                 GUILayout.TextArea(descriptor.solution, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
@@ -103,36 +102,33 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndScrollView();
 
             var issuesAreIgnored = AreIssuesIgnored(selectedIssues);
-            if (selectedIDs.Length == 1)
+            if (numSelectedIDs == 1)
             {
-                if (DescriptorLibrary.TryGetDescriptor(selectedIDs[0], out var descriptor))
+                if (!string.IsNullOrEmpty(descriptor.documentationUrl))
                 {
-                    if (!string.IsNullOrEmpty(descriptor.documentationUrl))
+                    DrawActionButton(Contents.Documentation, () =>
                     {
-                        DrawActionButton(Contents.Documentation, () =>
-                        {
-                            Application.OpenURL(descriptor.documentationUrl);
+                        Application.OpenURL(descriptor.documentationUrl);
 
-                            m_ViewManager.onShowDocumentation?.Invoke(descriptor);
-                        });
-                    }
+                        m_ViewManager.onShowDocumentation?.Invoke(descriptor);
+                    });
+                }
 
-                    if (descriptor.fixer != null)
+                if (descriptor.fixer != null)
+                {
+                    GUI.enabled = selectedIssues.Any(i => !i.wasFixed);
+
+                    DrawActionButton(Contents.QuickFix, () =>
                     {
-                        GUI.enabled = selectedIssues.Any(i => !i.wasFixed);
-
-                        DrawActionButton(Contents.QuickFix, () =>
+                        foreach (var issue in selectedIssues)
                         {
-                            foreach (var issue in selectedIssues)
-                            {
-                                descriptor.Fix(issue);
-                            }
+                            descriptor.Fix(issue);
+                        }
 
-                            m_ViewManager.onQuickFixIssues?.Invoke(selectedIssues);
-                        });
+                        m_ViewManager.onQuickFixIssues?.Invoke(selectedIssues);
+                    });
 
-                        GUI.enabled = true;
-                    }
+                    GUI.enabled = true;
                 }
             }
 

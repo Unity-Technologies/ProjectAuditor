@@ -206,7 +206,9 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetDiagnosticIDs();
 
             Assert.Contains(desc.id, IDs, "Descriptor {0} is not registered", desc.id);
-            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(desc.id, out var descriptor), "Descriptor {0} not found in DescriptorLibrary", desc.id);
+
+            // This will throw an exception if the Descriptor is somehow registered in the module but not in the DescriptorLibrary
+            var descriptor = DescriptorLibrary.GetDescriptor(desc.id);
         }
 
         [Test]
@@ -218,7 +220,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetDiagnosticIDs();
             foreach (var id in IDs)
             {
-                Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out var descriptor), "Descriptor {0} not found in DescriptorLibrary", id);
+                var descriptor = DescriptorLibrary.GetDescriptor(id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.id), "Descriptor has no id (title: {0})", descriptor.title);
                 Assert.IsTrue(regExp.IsMatch(descriptor.id), "Descriptor id format is not valid: " + descriptor.id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.title), "Descriptor {0} has no title", descriptor.id);
@@ -236,7 +238,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetDiagnosticIDs();
             foreach (var id in IDs)
             {
-                Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out var descriptor), "Descriptor {0} not found in DescriptorLibrary", id);
+                var descriptor = DescriptorLibrary.GetDescriptor(id);
                 Assert.IsFalse(descriptor.title.EndsWith("."), "Descriptor {0} string must not end with a full stop. String: {1}", descriptor.id, descriptor.title);
                 Assert.IsTrue(descriptor.description.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.id, descriptor.description);
                 Assert.IsTrue(descriptor.solution.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.id, descriptor.solution);
@@ -360,11 +362,11 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetDiagnosticIDs();
             foreach (var id in IDs)
             {
-                Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out var desc), "Descriptor {0} not found in DescriptorLibrary", id);
-                for (int i = 0; i < desc.areas.Length; i++)
+                var descriptor = DescriptorLibrary.GetDescriptor(id);
+                for (int i = 0; i < descriptor.areas.Length; i++)
                 {
                     Area area;
-                    Assert.True(Enum.TryParse(desc.areas[i], out area), "Invalid area {0} for descriptor {1}", desc.areas[i], desc.id);
+                    Assert.True(Enum.TryParse(descriptor.areas[i], out area), "Invalid area {0} for descriptor {1}", descriptor.areas[i], descriptor.id);
                 }
             }
         }
@@ -378,12 +380,12 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetDiagnosticIDs();
             foreach (var id in IDs)
             {
-                Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(id, out var desc), "Descriptor {0} not found in DescriptorLibrary", id);
+                var descriptor = DescriptorLibrary.GetDescriptor(id);
 
-                if (string.IsNullOrEmpty(desc.documentationUrl))
+                if (string.IsNullOrEmpty(descriptor.documentationUrl))
                     continue;
 
-                var documentationUrl = desc.documentationUrl;
+                var documentationUrl = descriptor.documentationUrl;
                 var request = UnityWebRequest.Get(documentationUrl);
                 yield return request.SendWebRequest();
 

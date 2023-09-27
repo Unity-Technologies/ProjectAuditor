@@ -57,14 +57,11 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="args">Arguments to be used in the message formatting</param>
         internal ProjectIssue(IssueCategory category, string id, params object[] args)
         {
+            var descriptor = DescriptorLibrary.GetDescriptor(id);
             m_Id = id;
             m_Category = category;
-
-            if (DescriptorLibrary.TryGetDescriptor(id, out var descriptor))
-            {
-                m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
-                m_Severity = descriptor.defaultSeverity;
-            }
+            m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
+            m_Severity = descriptor.defaultSeverity;
         }
 
         /// <summary>
@@ -172,15 +169,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public Severity severity
         {
-            get
-            {
-                if (m_Severity == Severity.Default &&
-                    DescriptorLibrary.TryGetDescriptor(m_Id, out var desc))
-                {
-                    return desc.defaultSeverity;
-                }
-                return m_Severity;
-            }
+            get => m_Severity == Severity.Default && !string.IsNullOrEmpty(m_Id) ? DescriptorLibrary.GetDescriptor(m_Id).defaultSeverity : m_Severity;
             set => m_Severity = value;
         }
 

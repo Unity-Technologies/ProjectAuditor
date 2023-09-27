@@ -18,22 +18,9 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             return alreadyFound;
         }
 
-        public static bool TryGetDescriptor(string id, out Descriptor descriptor)
+        public static Descriptor GetDescriptor(string id)
         {
-            if (m_Descriptors == null)
-            {
-                m_Descriptors = new Dictionary<string, Descriptor>();
-                descriptor = null;
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(id))
-            {
-                descriptor = null;
-                return false;
-            }
-
-            return m_Descriptors.TryGetValue(id, out descriptor);
+            return m_Descriptors[id];
         }
 
         public static void AddDescriptors(List<Descriptor> descriptors)

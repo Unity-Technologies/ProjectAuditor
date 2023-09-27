@@ -345,7 +345,7 @@ class MyClass : MonoBehaviour
             Assert.AreEqual(1, issues.Count);
 
             var issue = issues.First();
-            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(issue.Id, out var descriptor));
+            var descriptor = DescriptorLibrary.GetDescriptor(issue.Id);
             var expectedIssueLine = $"\"{issue.description}\",\"{Severity.Moderate}\",\"{descriptor.GetAreasSummary()}\",\"{issue.filename}\",\"{descriptor.GetPlatformsSummary()}\"";
 
             var issueExported = false;
@@ -379,7 +379,7 @@ class MyClass : MonoBehaviour
             Assert.AreEqual(1, issues.Count);
 
             var issue = issues.First();
-            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(issue.Id, out var descriptor));
+            var descriptor = DescriptorLibrary.GetDescriptor(issue.Id);
             var issueExported = false;
             var formatCorrect = false;
             using (var file = new StreamReader(path))

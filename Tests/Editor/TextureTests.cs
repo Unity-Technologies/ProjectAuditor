@@ -219,7 +219,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 .FirstOrDefault(i => i.Id.Equals(TextureAnalyzer.k_TextureMipMapEnabledDescriptor.id));
 
             Assert.NotNull(textureDiagnostic);
-            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(textureDiagnostic.Id, out var descriptor));
+            var descriptor = DescriptorLibrary.GetDescriptor(textureDiagnostic.Id);
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 
@@ -238,7 +238,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 .FirstOrDefault(i => i.Id.Equals(TextureAnalyzer.k_TextureMipMapEnabledDescriptor.id));
 
             Assert.NotNull(textureDiagnostic);
-            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(textureDiagnostic.Id, out var descriptor));
+            var descriptor = DescriptorLibrary.GetDescriptor(textureDiagnostic.Id);
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 
@@ -258,7 +258,7 @@ namespace Unity.ProjectAuditor.EditorTests
                     .FirstOrDefault(i => i.Id.Equals(TextureAnalyzer.k_TextureReadWriteEnabledDescriptor.id));
 
             Assert.NotNull(textureDiagnostic);
-            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(textureDiagnostic.Id, out var descriptor));
+            var descriptor = DescriptorLibrary.GetDescriptor(textureDiagnostic.Id);
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 
@@ -289,7 +289,7 @@ namespace Unity.ProjectAuditor.EditorTests
                     i.Id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.id));
 
             Assert.NotNull(textureDiagnostic);
-            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(textureDiagnostic.Id, out var descriptor));
+            var descriptor = DescriptorLibrary.GetDescriptor(textureDiagnostic.Id);
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 
@@ -322,7 +322,7 @@ namespace Unity.ProjectAuditor.EditorTests
                     .FirstOrDefault(i => i.Id.Equals(TextureAnalyzer.k_TextureAnisotropicLevelDescriptor.id));
 
             Assert.NotNull(textureDiagnostic);
-            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(textureDiagnostic.Id, out var descriptor));
+            var descriptor = DescriptorLibrary.GetDescriptor(textureDiagnostic.Id);
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 

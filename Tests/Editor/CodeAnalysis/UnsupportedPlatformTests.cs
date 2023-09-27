@@ -37,7 +37,7 @@ class MicrophoneUsageTest
 
             Assert.NotNull(issue);
             Assert.AreEqual("'UnityEngine.Microphone.get_devices' usage", issue.description);
-            Assert.IsTrue(DescriptorLibrary.TryGetDescriptor(issue.Id, out var descriptor));
+            var descriptor = DescriptorLibrary.GetDescriptor(issue.Id);
             Assert.Contains(Area.Support.ToString(), descriptor.areas);
         }
 
