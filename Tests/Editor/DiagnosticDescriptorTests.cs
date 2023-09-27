@@ -167,7 +167,6 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(desc.IsPlatformCompatible());
         }
 
-#if !UNITY_2022_2_OR_NEWER
         [Test]
         public void DiagnosticDescriptor_Platform_IsNotCompatible()
         {
@@ -185,7 +184,6 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.False(desc.IsPlatformCompatible());
         }
-#endif
 
         [Test]
         public void DiagnosticDescriptor_Descriptor_IsRegistered()
