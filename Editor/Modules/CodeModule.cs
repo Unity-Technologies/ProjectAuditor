@@ -367,6 +367,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (!methodDefinition.HasBody)
                         continue;
 
+                    // workaround for long analysis times when Burst is installed
+                    if (methodDefinition.DeclaringType.FullName.StartsWith("Unity.Burst.Editor.BurstDisassembler"))
+                        continue;
+
                     AnalyzeMethodBody(assemblyInfo, methodDefinition, onCallFound, onIssueFound);
                 }
             }
@@ -478,7 +482,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // SteveM TODO - A more data-driven way to specify which view Roslyn messages should be sent to, depending on their code.
                 // Match a whole "word", starting with UDR and ending with exactly 4 digits, e.g. UDR1234
                 var rx = new Regex(@"\bUDR\d{4}\b");
-                if(rx.IsMatch(message.code))
+                if (rx.IsMatch(message.code))
                 {
                     var descriptor = new Descriptor(
                         message.code,
@@ -509,7 +513,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         .WithLocation(relativePath, message.line)
                         .WithLogLevel(CompilerMessageTypeToLogLevel(message.type));
                 }
-
             }
 
             Profiler.EndSample();

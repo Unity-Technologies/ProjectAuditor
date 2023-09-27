@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.EditorTests
             m_LongWavData = AudioClipGeneratorUtil.CreateTestWav(64000, 2, 48000);
             m_ShortWavData = AudioClipGeneratorUtil.CreateTestWav(500, 2, 96000);
 
-            m_BuildTargetString = EditorUserBuildSettings.activeBuildTarget.ToString();
+            m_BuildTargetString = m_Platform.ToString();
 
             m_TestLongNonStreamingClipAsset = CreateTestAudioClip(
                 k_LongNonStreamingClipName, m_LongWavData, m_BuildTargetString,

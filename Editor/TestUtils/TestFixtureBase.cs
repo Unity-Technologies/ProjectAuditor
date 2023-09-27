@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         static readonly string s_TempSceneFilename = Path.Combine(TestAsset.TempAssetsFolder, "TestScene.unity");
 
         protected CodeOptimization m_CodeOptimization = CodeOptimization.Release;
-        protected BuildTarget m_Platform = EditorUserBuildSettings.activeBuildTarget;
+        protected BuildTarget m_Platform = GetStandaloneBuildTarget();
         protected ProjectAuditorConfig m_Config;
         protected string m_BuildPath;
         protected Editor.ProjectAuditor m_ProjectAuditor;
@@ -27,6 +27,20 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected string m_OriginalProductName;
 
         bool m_SavedAnalyzeInBackground;
+
+        static BuildTarget GetStandaloneBuildTarget()
+        {
+#if UNITY_EDITOR_WIN
+            return BuildTarget.StandaloneWindows64;
+#elif UNITY_EDITOR_OSX
+            return BuildTarget.StandaloneOSX;
+#elif UNITY_EDITOR_LINUX
+            return BuildTarget.StandaloneLinux64;
+#else
+            // Log a warning or throw an exception
+            return BuildTarget.NoTarget;  // NoTarget is an invalid BuildTarget, for demonstration purposes.
+#endif
+        }
 
         [OneTimeSetUp]
         public void FixtureSetUp()

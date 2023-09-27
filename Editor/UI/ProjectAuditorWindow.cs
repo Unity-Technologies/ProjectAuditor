@@ -145,7 +145,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             },
             new Tab
             {
-                id = TabId.Settings, name = "Settings",
+                id = TabId.Settings, name = "Project",
                 modules = new[]
                 {
                     typeof(SettingsModule)
@@ -554,10 +554,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 displayName = "Installed Packages",
                 menuLabel = "Project/Packages/Installed",
                 menuOrder = 105,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.PackageDiagnostics, () => viewManager.ChangeView(IssueCategory.PackageDiagnostic));
-                },
                 onOpenIssue = EditorInterop.OpenPackage,
                 showDependencyView = true,
                 dependencyViewGuiContent = new GUIContent("Package Dependencies"),
@@ -570,10 +566,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 displayName = "Package Diagnostics",
                 menuLabel = "Project/Packages/Diagnostics",
                 menuOrder = 106,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.Packages, () => viewManager.ChangeView(IssueCategory.Package));
-                },
                 onOpenIssue = EditorInterop.OpenPackage,
                 type = typeof(DiagnosticView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.PackageDiagnostics
@@ -600,10 +592,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 descriptionWithIcon = true,
                 showFilters = true,
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.AssetDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
-                },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Meshes
             });
 
@@ -616,10 +604,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 descriptionWithIcon = true,
                 showFilters = true,
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.AssetDiagnostics, () => viewManager.ChangeView(IssueCategory.AssetDiagnostic));
-                },
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.Textures
             });
 
@@ -722,10 +706,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showInfoPanel = true,
                 dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
                 getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.CodeCompilerMessages, () => viewManager.ChangeView(IssueCategory.CodeCompilerMessage));
-                },
                 onOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
                 onOpenManual = EditorInterop.OpenCodeDescriptor,
                 type = typeof(CodeDiagnosticView),
@@ -739,10 +719,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuLabel = "Code/C# Compiler Messages",
                 showFilters = true,
                 showInfoPanel = true,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.CodeDiagnostics, () => viewManager.ChangeView(IssueCategory.Code));
-                },
                 onOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
                 onOpenManual = EditorInterop.OpenCompilerMessageDescriptor,
                 type = typeof(CompilerMessagesView),
@@ -779,10 +755,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 100,
                 showFilters = true,
                 showInfoPanel = true,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.BuildFiles, () => viewManager.ChangeView(IssueCategory.BuildFile));
-                },
                 type = typeof(BuildReportView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildSteps
             });
@@ -796,10 +768,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showInfoPanel = true,
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                onDrawToolbar = (viewManager) =>
-                {
-                    AnalysisView.DrawToolbarButton(Contents.BuildSteps, () => viewManager.ChangeView(IssueCategory.BuildStep));
-                },
                 type = typeof(BuildReportView),
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.BuildFiles
             });
@@ -1818,18 +1786,7 @@ A view allows the user to browse through the listed items and filter by string o
             public static readonly GUIContent Clear = new GUIContent("Clear");
             public static readonly GUIContent Refresh = new GUIContent("Refresh");
 
-            public static readonly GUIContent CodeDiagnostics = new GUIContent("Diagnostics", "Code Diagnostics");
-            public static readonly GUIContent CodeCompilerMessages = new GUIContent("Messages", "Compiler Messages");
-
-            public static readonly GUIContent Shaders = new GUIContent("Shaders", "Inspect Shaders");
-            public static readonly GUIContent Materials = new GUIContent("Materials", "Show Materials List");
-            public static readonly GUIContent ShaderCompilerMessages = new GUIContent("Messages", "Show Shader Compiler Messages");
             public static readonly GUIContent ShaderVariants = new GUIContent("Variants", "Inspect Shader Variants");
-
-            public static readonly GUIContent AssetDiagnostics = new GUIContent("Diagnostics", "Asset Diagnostics");
-
-            public static readonly GUIContent BuildFiles = new GUIContent("Build Size");
-            public static readonly GUIContent BuildSteps = new GUIContent("Build Steps");
 
             public static readonly GUIContent Packages = new GUIContent("Packages", "Installed Packages");
             public static readonly GUIContent PackageDiagnostics = new GUIContent("Diagnostics", "Package Diagnostics");
