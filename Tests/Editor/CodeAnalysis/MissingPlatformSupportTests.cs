@@ -76,7 +76,7 @@ class MicrophoneUsageTest
 
             Assert.NotNull(diagnostic);
             Assert.AreEqual("'System.Boolean System.Net.Sockets.TcpClient::get_Connected()' usage", diagnostic.description);
-            Assert.Contains("Support", DescriptorLibrary.GetDescriptor(diagnostic.id).areas);
+            Assert.Contains("Support", diagnostic.id.GetDescriptor().areas);
         }
 
         [Test]
@@ -89,7 +89,7 @@ class MicrophoneUsageTest
 
             Assert.NotNull(diagnostic);
             Assert.AreEqual("'System.Void System.Threading.Thread::Sleep(System.Int32)' usage", diagnostic.description);
-            Assert.Contains("Support", DescriptorLibrary.GetDescriptor(diagnostic.id).areas);
+            Assert.Contains("Support", diagnostic.id.GetDescriptor().areas);
         }
 
         [Test]
@@ -102,7 +102,7 @@ class MicrophoneUsageTest
 
             Assert.NotNull(diagnostic);
             Assert.AreEqual("'System.String[] UnityEngine.Microphone::get_devices()' usage", diagnostic.description);
-            Assert.Contains("Support", DescriptorLibrary.GetDescriptor(diagnostic.id).areas);
+            Assert.Contains("Support", diagnostic.id.GetDescriptor().areas);
         }
 
         [Test]

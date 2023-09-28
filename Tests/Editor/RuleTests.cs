@@ -210,7 +210,7 @@ namespace Unity.ProjectAuditor.EditorTests
             });
 
             // TODO: once override is implemented, the issue's severity should be Severity.None
-            //issues = Analyze(IssueCategory.ProjectSetting, i => i.iid.Equals(descriptorId));
+            //issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(descriptorId));
 
             Assert.AreEqual(Severity.None, m_Config.GetAction(descriptorId));
             Assert.AreEqual(Severity.None, m_Config.GetAction(descriptorId, filter));
@@ -226,7 +226,7 @@ namespace Unity.ProjectAuditor.EditorTests
             });
 
             // TODO: once override is implemented, the issue's severity should be Severity.None
-            //issues = Analyze(IssueCategory.ProjectSetting, i => i.iid.Equals(descriptorId));
+            //issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(descriptorId));
 
             Assert.AreNotEqual(Severity.None, m_Config.GetAction(descriptorId));
             Assert.AreEqual(Severity.None, m_Config.GetAction(descriptorId, filter));

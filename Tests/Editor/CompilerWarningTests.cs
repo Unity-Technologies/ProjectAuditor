@@ -41,7 +41,7 @@ class ScriptWithWarning {
             var issue = issues.First();
 
             // check ID
-            Assert.True(string.IsNullOrEmpty(issue.id));
+            Assert.IsFalse(issue.id.IsValid());
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));

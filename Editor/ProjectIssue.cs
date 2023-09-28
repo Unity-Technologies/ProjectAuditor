@@ -3,6 +3,7 @@ using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -10,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor
     /// ProjectAuditor Issue found in the current project
     /// </summary>
     [Serializable]
-    public class ProjectIssue
+    public class ProjectIssue : ISerializationCallbackReceiver
     {
         /// <summary>
         /// Create Diagnostics-specific IssueBuilder
@@ -35,7 +36,9 @@ namespace Unity.ProjectAuditor.Editor
             return new IssueBuilder(category, description);
         }
 
-        [SerializeField] string m_Id;
+        DescriptorID m_DescriptorID;
+        // TODO: This is a fudge. Ideally DescriptorID would serialize to/forom a simple string and we wouldn't need to keep this.
+        [SerializeField] string m_ID;
         [SerializeField] IssueCategory m_Category;
         [SerializeField] string m_Description;
         [SerializeField] Severity m_Severity;
@@ -57,9 +60,10 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="args">Arguments to be used in the message formatting</param>
         internal ProjectIssue(IssueCategory category, string id, params object[] args)
         {
-            var descriptor = DescriptorLibrary.GetDescriptor(id);
-            m_Id = id;
+            m_DescriptorID = new DescriptorID(id);
             m_Category = category;
+
+            var descriptor = m_DescriptorID.GetDescriptor();
             m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
             m_Severity = descriptor.defaultSeverity;
         }
@@ -71,18 +75,19 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="description">Issue description</param>
         internal ProjectIssue(IssueCategory category, string description)
         {
-            m_Description = description;
+            m_DescriptorID = new DescriptorID(null);  // Empty, invalid descriptor
             m_Category = category;
+            m_Description = description;
             m_Severity = Severity.Default;
         }
 
         /// <summary>
         /// An unique identifier for the issue diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits
         /// </summary>
-        public string id
+        public DescriptorID id
         {
-            get => m_Id;
-            internal set => m_Id = value;
+            get => m_DescriptorID;
+            internal set => m_DescriptorID = value;
         }
 
         /// <summary>
@@ -169,7 +174,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public Severity severity
         {
-            get => m_Severity == Severity.Default && !string.IsNullOrEmpty(m_Id) ? DescriptorLibrary.GetDescriptor(m_Id).defaultSeverity : m_Severity;
+            get => m_Severity == Severity.Default && !string.IsNullOrEmpty(m_DescriptorID) ? m_DescriptorID.GetDescriptor().defaultSeverity : m_Severity;
             set => m_Severity = value;
         }
 
@@ -328,6 +333,17 @@ namespace Unity.ProjectAuditor.Editor
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct
         {
             m_CustomProperties[Convert.ToUInt32(propertyEnum)] = property.ToString();
+        }
+
+        // TODO: This is a fudge. Ideally DescriptorID would serialize to/forom a simple string and we wouldn't need to keep this.
+        public void OnBeforeSerialize()
+        {
+            m_ID = m_DescriptorID.AsString();
+        }
+
+        public void OnAfterDeserialize()
+        {
+            m_DescriptorID = m_ID;
         }
     }
 }

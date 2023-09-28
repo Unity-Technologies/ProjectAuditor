@@ -329,7 +329,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     break;
 
                     case PropertyType.Area:
-                        var areaNames = DescriptorLibrary.GetDescriptor(issue.id).GetAreasSummary();
+                        var areaNames = issue.id.GetDescriptor().GetAreasSummary();
                         EditorGUI.LabelField(cellRect, new GUIContent(areaNames, Tooltip.Area), labelStyle);
                         break;
                     case PropertyType.Description:
@@ -513,7 +513,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     });
                 }
 
-                var desc = item.ProjectIssue != null && !string.IsNullOrEmpty(item.ProjectIssue.id) ? DescriptorLibrary.GetDescriptor(item.ProjectIssue.id) : null;
+                var desc = item.ProjectIssue != null && !string.IsNullOrEmpty(item.ProjectIssue.id) ? item.ProjectIssue.id.GetDescriptor() : null;
                 if (m_Desc.onOpenManual != null && desc != null && desc.type.StartsWith("UnityEngine."))
                 {
                     menu.AddItem(Utility.OpenScriptReference, false, () =>

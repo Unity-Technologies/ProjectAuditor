@@ -89,7 +89,7 @@ class MyClass
             var issue = issues.First();
 
             // check ID
-            Assert.IsTrue(string.IsNullOrEmpty(issue.id));
+            Assert.IsFalse(issue.id.IsValid());
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
@@ -114,7 +114,7 @@ class MyClass
             var myIssue = issues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            var descriptor = DescriptorLibrary.GetDescriptor(myIssue.id);
+            var descriptor = myIssue.id.GetDescriptor();
             Assert.NotNull(descriptor);
 
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);

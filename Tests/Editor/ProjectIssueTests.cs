@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.EditorTests
     {
         Descriptor m_Descriptor = new Descriptor
             (
-                "TD2001",
+                "TDD2001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
         Descriptor m_CriticalIssueDescriptor = new Descriptor
             (
-                "TD2002",
+                "TDD2002",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",

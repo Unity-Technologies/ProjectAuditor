@@ -165,7 +165,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (!string.IsNullOrEmpty(issue.id))
                 {
-                    descHashSet.Add(DescriptorLibrary.GetDescriptor(issue.id));
+                    descHashSet.Add(issue.id.GetDescriptor());
                 }
             }
 
@@ -173,7 +173,7 @@ namespace Unity.ProjectAuditor.Editor
             m_Descriptors.Sort((x, y) => x.id.CompareTo(y.id));
 
             // Makes for more readable reports, but is too slow
-            // m_Issues.Sort((x, y) => x.iid.CompareTo(y.iid));
+            // m_Issues.Sort((x, y) => x.id.CompareTo(y.id));
 
             File.WriteAllText(path, JsonUtility.ToJson(this, UserPreferences.prettifyJsonOutput));
         }

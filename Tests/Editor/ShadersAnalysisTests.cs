@@ -441,7 +441,7 @@ Shader ""Custom/SRPBatchCompatible""
 
             var variants = issues.Where(i => i.description.Equals(k_ShaderName)).ToArray();
             Assert.Positive(variants.Length);
-            Assert.True(variants.All(v => string.IsNullOrEmpty(v.id)));
+            Assert.True(variants.All(v => !v.id.IsValid()));
             Assert.True(variants.All(v => v.GetCustomProperty(ShaderVariantProperty.Tier).Equals("Tier1")));
 
             var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty(ShaderVariantProperty.Platform)).Distinct();
@@ -596,7 +596,7 @@ Shader ""Custom/SRPBatchCompatible""
             Assert.NotNull(shaderIssue);
 
             // check ID
-            Assert.True(string.IsNullOrEmpty(shaderIssue.id));
+            Assert.IsFalse(shaderIssue.id.IsValid());
 
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());

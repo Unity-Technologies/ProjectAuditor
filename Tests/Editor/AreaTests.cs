@@ -20,12 +20,12 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettings.stripUnusedMeshComponents = false;
 
             var issues = Analyze(IssueCategory.ProjectSetting, i =>
-                DescriptorLibrary.GetDescriptor(i.id).method.Equals("stripUnusedMeshComponents"));
+                i.id.GetDescriptor().method.Equals("stripUnusedMeshComponents"));
 
             var issue = issues.FirstOrDefault();
             Assert.NotNull(issue);
 
-            var descriptor = DescriptorLibrary.GetDescriptor(issue.id);
+            var descriptor = issue.id.GetDescriptor();
             var areas = descriptor.GetAreas();
             Assert.AreEqual(3, areas.Length);
             Assert.Contains(Area.BuildSize, areas);

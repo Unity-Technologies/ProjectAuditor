@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var a = new Descriptor
                 (
-                "TD2001",
+                "TDD2001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 );
             var b = new Descriptor
                 (
-                "TD2001",
+                "TDD2001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var p = new Descriptor
                 (
-                "TD2001",
+                "TDD2001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new Descriptor
                 (
-                "TD2001",
+                "TDD2001",
                 "test",
                 Area.CPU,
                 "this is not actually a problem",
@@ -117,7 +117,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new Descriptor
                 (
-                "TD2001",
+                "TDD2001",
                 "test",
                 new[] {Area.CPU, Area.Memory},
                 "this is not actually a problem",
@@ -133,7 +133,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new Descriptor
                 (
-                "TD2001",
+                "TDD2001",
                 "test",
                 new[] {Area.CPU},
                 "this is not actually a problem",
@@ -148,7 +148,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new Descriptor
                 (
-                "TD2001",
+                "TDD2001",
                 "test",
                 new[] {Area.CPU},
                 "this is not actually a problem",
@@ -172,7 +172,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new Descriptor
                 (
-                "TD2001",
+                "TDD2001",
                 "test",
                 new[] {Area.CPU},
                 "this is not actually a problem",
@@ -190,7 +190,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var desc = new Descriptor
                 (
-                "TD2001",
+                "TDD2001",
                 "test",
                 new[] { Area.CPU },
                 "this is not actually a problem",
@@ -206,7 +206,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.Contains(desc.id, IDs, "Descriptor {0} is not registered", desc.id);
 
             // This will throw an exception if the Descriptor is somehow registered in the module but not in the DescriptorLibrary
-            var descriptor = DescriptorLibrary.GetDescriptor(desc.id);
+            var descriptor = new DescriptorID(desc.id).GetDescriptor();
         }
 
         [Test]
@@ -218,7 +218,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetDiagnosticIDs();
             foreach (var id in IDs)
             {
-                var descriptor = DescriptorLibrary.GetDescriptor(id);
+                var descriptor = id.GetDescriptor();
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.id), "Descriptor has no id (title: {0})", descriptor.title);
                 Assert.IsTrue(regExp.IsMatch(descriptor.id), "Descriptor id format is not valid: " + descriptor.id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.title), "Descriptor {0} has no title", descriptor.id);
@@ -236,7 +236,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetDiagnosticIDs();
             foreach (var id in IDs)
             {
-                var descriptor = DescriptorLibrary.GetDescriptor(id);
+                var descriptor = id.GetDescriptor();
                 Assert.IsFalse(descriptor.title.EndsWith("."), "Descriptor {0} string must not end with a full stop. String: {1}", descriptor.id, descriptor.title);
                 Assert.IsTrue(descriptor.description.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.id, descriptor.description);
                 Assert.IsTrue(descriptor.solution.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.id, descriptor.solution);
@@ -360,7 +360,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetDiagnosticIDs();
             foreach (var id in IDs)
             {
-                var descriptor = DescriptorLibrary.GetDescriptor(id);
+                var descriptor = id.GetDescriptor();
                 for (int i = 0; i < descriptor.areas.Length; i++)
                 {
                     Area area;
@@ -378,7 +378,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetDiagnosticIDs();
             foreach (var id in IDs)
             {
-                var descriptor = DescriptorLibrary.GetDescriptor(id);
+                var descriptor = id.GetDescriptor();
 
                 if (string.IsNullOrEmpty(descriptor.documentationUrl))
                     continue;

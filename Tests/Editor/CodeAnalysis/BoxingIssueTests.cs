@@ -49,11 +49,11 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(IssueCategory.Code, boxingInt.category);
 
             // check ID
-            Assert.False(string.IsNullOrEmpty(boxingInt.id));
+            Assert.True(boxingInt.id.IsValid());
 
             Assert.AreEqual(BoxingAnalyzer.PAC2000, boxingInt.id);
 
-            var descriptor = DescriptorLibrary.GetDescriptor(boxingInt.id);
+            var descriptor = boxingInt.id.GetDescriptor();
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
             Assert.True(string.IsNullOrEmpty(descriptor.type));
             Assert.True(string.IsNullOrEmpty(descriptor.method));
@@ -79,11 +79,11 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(IssueCategory.Code, boxingFloat.category);
 
             // check ID
-            Assert.False(string.IsNullOrEmpty(boxingFloat.id));
+            Assert.True(boxingFloat.id.IsValid());
 
             Assert.AreEqual(BoxingAnalyzer.PAC2000, boxingFloat.id);
 
-            var descriptor = DescriptorLibrary.GetDescriptor(boxingFloat.id);
+            var descriptor = boxingFloat.id.GetDescriptor();
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
             Assert.True(string.IsNullOrEmpty(descriptor.type));
             Assert.True(string.IsNullOrEmpty(descriptor.method));

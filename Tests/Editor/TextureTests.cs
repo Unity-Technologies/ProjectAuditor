@@ -219,7 +219,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 .FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureMipMapEnabledDescriptor.id));
 
             Assert.NotNull(textureDiagnostic);
-            var descriptor = DescriptorLibrary.GetDescriptor(textureDiagnostic.id);
+            var descriptor = textureDiagnostic.id.GetDescriptor();
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 
@@ -238,7 +238,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 .FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureMipMapEnabledDescriptor.id));
 
             Assert.NotNull(textureDiagnostic);
-            var descriptor = DescriptorLibrary.GetDescriptor(textureDiagnostic.id);
+            var descriptor = textureDiagnostic.id.GetDescriptor();
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 
@@ -258,7 +258,7 @@ namespace Unity.ProjectAuditor.EditorTests
                     .FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureReadWriteEnabledDescriptor.id));
 
             Assert.NotNull(textureDiagnostic);
-            var descriptor = DescriptorLibrary.GetDescriptor(textureDiagnostic.id);
+            var descriptor = textureDiagnostic.id.GetDescriptor();
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 
@@ -289,7 +289,7 @@ namespace Unity.ProjectAuditor.EditorTests
                     i.id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.id));
 
             Assert.NotNull(textureDiagnostic);
-            var descriptor = DescriptorLibrary.GetDescriptor(textureDiagnostic.id);
+            var descriptor = textureDiagnostic.id.GetDescriptor();
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 
@@ -322,7 +322,7 @@ namespace Unity.ProjectAuditor.EditorTests
                     .FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureAnisotropicLevelDescriptor.id));
 
             Assert.NotNull(textureDiagnostic);
-            var descriptor = DescriptorLibrary.GetDescriptor(textureDiagnostic.id);
+            var descriptor = textureDiagnostic.id.GetDescriptor();
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 

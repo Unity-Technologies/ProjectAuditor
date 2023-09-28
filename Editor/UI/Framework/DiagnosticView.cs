@@ -27,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var numSelectedIDs = selectedIDs.Length;
             if (numSelectedIDs > 0)
             {
-                descriptor = DescriptorLibrary.GetDescriptor(selectedIDs[0]);
+                descriptor = selectedIDs[0].GetDescriptor();
             }
 
             EditorGUILayout.BeginVertical(GUILayout.Width(LayoutSize.FoldoutWidth));

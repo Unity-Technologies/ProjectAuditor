@@ -54,7 +54,7 @@ class MyClass : MonoBehaviour
             projectReport.AddIssues(new[] { new ProjectIssue
                                             (
                                                 IssueCategory.Code,
-                                                "TD2001",
+                                                "TDD2001",
                                                 "dummy issue"
                                             ) }
             );
@@ -345,7 +345,7 @@ class MyClass : MonoBehaviour
             Assert.AreEqual(1, issues.Count);
 
             var issue = issues.First();
-            var descriptor = DescriptorLibrary.GetDescriptor(issue.id);
+            var descriptor = issue.id.GetDescriptor();
             var expectedIssueLine = $"\"{issue.description}\",\"{Severity.Moderate}\",\"{descriptor.GetAreasSummary()}\",\"{issue.filename}\",\"{descriptor.GetPlatformsSummary()}\"";
 
             var issueExported = false;
@@ -379,7 +379,7 @@ class MyClass : MonoBehaviour
             Assert.AreEqual(1, issues.Count);
 
             var issue = issues.First();
-            var descriptor = DescriptorLibrary.GetDescriptor(issue.id);
+            var descriptor = issue.id.GetDescriptor();
             var issueExported = false;
             var formatCorrect = false;
             using (var file = new StreamReader(path))
