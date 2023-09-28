@@ -34,10 +34,12 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                     Debug.LogError("Invalid ID string supplied to DescriptorID");
                     m_AsInt = -1;
                 }
-
-                var characters = (short)((char)(id[0] - 'A') << 10 | (char)(id[1] - 'A') << 5 | (char)(id[2] - 'A'));
-                var numerical = UInt16.Parse(id.Substring(3));
-                m_AsInt = characters << 16 | numerical;
+                else
+                {
+                    var characters = (short)((char)(id[0] - 'A') << 10 | (char)(id[1] - 'A') << 5 | (char)(id[2] - 'A'));
+                    var numerical = UInt16.Parse(id.Substring(3));
+                    m_AsInt = characters << 16 | numerical;
+                }
             }
         }
 
