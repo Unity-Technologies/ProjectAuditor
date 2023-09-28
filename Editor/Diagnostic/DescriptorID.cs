@@ -24,23 +24,21 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             {
                 // No error message. This is valid when constructing non-diagnostic ProjectIssues
                 m_AsInt = -1;
+                return;
             }
-            else
+
+            // ID must be a whole word (\b), beginning with exactly 3 uppercase letters, followed by exactly 4 digits
+            var regExp = new Regex(@"\b[A-Z]{3}\d{4}\b");
+            if (!regExp.IsMatch(id))
             {
-                // ID must be a whole word (\b), beginning with exactly 3 uppercase letters, followed by exactly 4 digits
-                var regExp = new Regex(@"\b[A-Z]{3}\d{4}\b");
-                if (!regExp.IsMatch(id))
-                {
-                    Debug.LogError("Invalid ID string supplied to DescriptorID");
-                    m_AsInt = -1;
-                }
-                else
-                {
-                    var characters = (short)((char)(id[0] - 'A') << 10 | (char)(id[1] - 'A') << 5 | (char)(id[2] - 'A'));
-                    var numerical = UInt16.Parse(id.Substring(3));
-                    m_AsInt = characters << 16 | numerical;
-                }
+                Debug.LogError("Invalid ID string supplied to DescriptorID");
+                m_AsInt = -1;
+                return;
             }
+
+            var characters = (short)((char)(id[0] - 'A') << 10 | (char)(id[1] - 'A') << 5 | (char)(id[2] - 'A'));
+            var numerical = UInt16.Parse(id.Substring(3));
+            m_AsInt = characters << 16 | numerical;
         }
 
         public bool IsValid()
