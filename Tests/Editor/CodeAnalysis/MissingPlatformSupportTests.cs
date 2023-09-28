@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using UnityEditor;
@@ -71,11 +72,11 @@ class MicrophoneUsageTest
         {
             m_Platform = BuildTarget.WebGL;
 
-            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetSystemNet).FirstOrDefault(i => i.descriptor.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorSystemNet));
+            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetSystemNet).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorSystemNet.id));
 
             Assert.NotNull(diagnostic);
             Assert.AreEqual("'System.Boolean System.Net.Sockets.TcpClient::get_Connected()' usage", diagnostic.description);
-            Assert.Contains("Support", diagnostic.descriptor.areas);
+            Assert.Contains("Support", DescriptorLibrary.GetDescriptor(diagnostic.Id).areas);
         }
 
         [Test]
@@ -84,11 +85,11 @@ class MicrophoneUsageTest
         {
             m_Platform = BuildTarget.WebGL;
 
-            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetSystemThreading).FirstOrDefault(i => i.descriptor.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorSystemThreading));
+            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetSystemThreading).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorSystemThreading.id));
 
             Assert.NotNull(diagnostic);
             Assert.AreEqual("'System.Void System.Threading.Thread::Sleep(System.Int32)' usage", diagnostic.description);
-            Assert.Contains("Support", diagnostic.descriptor.areas);
+            Assert.Contains("Support", DescriptorLibrary.GetDescriptor(diagnostic.Id).areas);
         }
 
         [Test]
@@ -97,17 +98,17 @@ class MicrophoneUsageTest
         {
             m_Platform = BuildTarget.WebGL;
 
-            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.descriptor.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorMicrophone));
+            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorMicrophone.id));
 
             Assert.NotNull(diagnostic);
             Assert.AreEqual("'System.String[] UnityEngine.Microphone::get_devices()' usage", diagnostic.description);
-            Assert.Contains("Support", diagnostic.descriptor.areas);
+            Assert.Contains("Support", DescriptorLibrary.GetDescriptor(diagnostic.Id).areas);
         }
 
         [Test]
         public void CodeAnalysis_MissingPlatformSupport_IssueIsNotReported()
         {
-            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.descriptor.id.Equals("PAC0233"));
+            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.Id.Equals("PAC0233"));
 
             Assert.Null(diagnostic);
         }
