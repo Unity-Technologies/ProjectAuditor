@@ -89,7 +89,7 @@ class MyClass
             var issue = issues.First();
 
             // check ID
-            Assert.IsTrue(string.IsNullOrEmpty(issue.Id));
+            Assert.IsTrue(string.IsNullOrEmpty(issue.id));
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
@@ -114,12 +114,12 @@ class MyClass
             var myIssue = issues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            var descriptor = DescriptorLibrary.GetDescriptor(myIssue.Id);
+            var descriptor = DescriptorLibrary.GetDescriptor(myIssue.id);
             Assert.NotNull(descriptor);
 
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
-            Assert.AreEqual(typeof(string), myIssue.Id.GetType());
-            Assert.AreEqual("PAC0066", myIssue.Id);
+            Assert.AreEqual(typeof(string), myIssue.id.GetType());
+            Assert.AreEqual("PAC0066", myIssue.id);
             Assert.AreEqual("UnityEngine.Camera", descriptor.type);
             Assert.AreEqual("allCameras", descriptor.method);
 

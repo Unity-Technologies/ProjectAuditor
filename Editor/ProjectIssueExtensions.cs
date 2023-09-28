@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.Severity:
                     return issue.severity.ToString();
                 case PropertyType.Area:
-                    return DescriptorLibrary.GetDescriptor(issue.Id).GetAreasSummary();
+                    return DescriptorLibrary.GetDescriptor(issue.id).GetAreasSummary();
                 case PropertyType.FileType:
                     if (issue.location == null)
                         return k_NotAvailable;
@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.Description:
                     return issue.description;
                 case PropertyType.Descriptor:
-                    return DescriptorLibrary.GetDescriptor(issue.Id).title;
+                    return DescriptorLibrary.GetDescriptor(issue.id).title;
                 case PropertyType.Filename:
                     if (string.IsNullOrEmpty(issue.filename))
                         return k_NotAvailable;
@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor
                         return k_NotAvailable;
                     return PathUtils.GetDirectoryName(issue.location.Path);
                 case PropertyType.Platform:
-                    return DescriptorLibrary.GetDescriptor(issue.Id).GetPlatformsSummary();
+                    return DescriptorLibrary.GetDescriptor(issue.id).GetPlatformsSummary();
                 default:
                     var propertyIndex = propertyType - PropertyType.Num;
                     return issue.GetCustomProperty(propertyIndex);
@@ -96,8 +96,8 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.Severity:
                     return issueA.severity.CompareTo(issueB.severity);
                 case PropertyType.Area:
-                    var areasA = DescriptorLibrary.GetDescriptor(issueA.Id).areas;
-                    var areasB = DescriptorLibrary.GetDescriptor(issueB.Id).areas;
+                    var areasA = DescriptorLibrary.GetDescriptor(issueA.id).areas;
+                    var areasB = DescriptorLibrary.GetDescriptor(issueB.id).areas;
 
                     var minLength = Math.Min(areasA.Length, areasB.Length);
 

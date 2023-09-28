@@ -243,11 +243,11 @@ class GenericInstantiation
             var myIssue = issues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            var descriptor = DescriptorLibrary.GetDescriptor(myIssue.Id);
+            var descriptor = DescriptorLibrary.GetDescriptor(myIssue.id);
 
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
-            Assert.AreEqual(typeof(string), myIssue.Id.GetType());
-            Assert.AreEqual("PAC0066", myIssue.Id);
+            Assert.AreEqual(typeof(string), myIssue.id.GetType());
+            Assert.AreEqual("PAC0066", myIssue.id);
             Assert.AreEqual("UnityEngine.Camera", descriptor.type);
             Assert.AreEqual("allCameras", descriptor.method);
 
@@ -284,7 +284,7 @@ class GenericInstantiation
             var myIssue = filteredIssues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            Assert.IsFalse(string.IsNullOrEmpty(myIssue.Id));
+            Assert.IsFalse(string.IsNullOrEmpty(myIssue.id));
             Assert.AreEqual("'UnityEngine.Component.tag' usage", myIssue.description);
         }
 
@@ -377,7 +377,7 @@ class GenericInstantiation
             var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'System.Linq.Enumerable.Sum' usage"));
 
             Assert.NotNull(issue);
-            var descriptor = DescriptorLibrary.GetDescriptor(issue.Id);
+            var descriptor = DescriptorLibrary.GetDescriptor(issue.id);
             Assert.AreEqual("System.Linq.*", descriptor.title);
         }
 

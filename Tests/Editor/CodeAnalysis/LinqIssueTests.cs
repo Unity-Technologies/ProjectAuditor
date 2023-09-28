@@ -41,10 +41,10 @@ class MyClass
             var myIssue = issues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            var descriptor = DescriptorLibrary.GetDescriptor(myIssue.Id);
+            var descriptor = DescriptorLibrary.GetDescriptor(myIssue.id);
 
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
-            Assert.AreEqual("PAC1000", myIssue.Id);
+            Assert.AreEqual("PAC1000", myIssue.id);
             Assert.AreEqual("System.Linq", descriptor.type);
             Assert.AreEqual("*", descriptor.method);
 

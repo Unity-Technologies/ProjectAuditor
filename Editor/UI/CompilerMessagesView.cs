@@ -53,7 +53,7 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
                     return;
                 }
 
-                var selectedDescriptors = selectedIssues.Select(i => !string.IsNullOrEmpty(i.Id)).Distinct().ToArray();
+                var selectedDescriptors = selectedIssues.Select(i => !string.IsNullOrEmpty(i.id)).Distinct().ToArray();
                 if (selectedDescriptors.Length > 1)
                 {
                     GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));

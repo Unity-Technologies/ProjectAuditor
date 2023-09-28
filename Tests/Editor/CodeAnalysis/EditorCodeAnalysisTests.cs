@@ -22,9 +22,9 @@ namespace Unity.ProjectAuditor.EditorTests
             });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
-            var codeIssue = issues.FirstOrDefault(i => !string.IsNullOrEmpty(i.Id) &&
-                                                       DescriptorLibrary.GetDescriptor(i.Id).type.Equals("System.AppDomain") &&
-                                                       DescriptorLibrary.GetDescriptor(i.Id).method.Equals("GetAssemblies") &&
+            var codeIssue = issues.FirstOrDefault(i => !string.IsNullOrEmpty(i.id) &&
+                                                       DescriptorLibrary.GetDescriptor(i.id).type.Equals("System.AppDomain") &&
+                                                       DescriptorLibrary.GetDescriptor(i.id).method.Equals("GetAssemblies") &&
                                                        i.GetCustomProperty(CodeProperty.Assembly).Equals("Unity.ProjectAuditor.Editor"));
 
             Assert.NotNull(codeIssue);
@@ -42,14 +42,14 @@ namespace Unity.ProjectAuditor.EditorTests
             });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
-            var codeIssue = issues.FirstOrDefault(i => !string.IsNullOrEmpty(i.Id) &&
-                                                       DescriptorLibrary.GetDescriptor(i.Id).type.Equals("UnityEditor.AssetDatabase") &&
-                                                       DescriptorLibrary.GetDescriptor(i.Id).method.Equals("FindAssets") &&
+            var codeIssue = issues.FirstOrDefault(i => !string.IsNullOrEmpty(i.id) &&
+                                                       DescriptorLibrary.GetDescriptor(i.id).type.Equals("UnityEditor.AssetDatabase") &&
+                                                       DescriptorLibrary.GetDescriptor(i.id).method.Equals("FindAssets") &&
                                                        i.GetCustomProperty(CodeProperty.Assembly).Equals("Unity.ProjectAuditor.Editor"));
 
             Assert.NotNull(codeIssue);
             Assert.AreEqual("'UnityEditor.AssetDatabase.FindAssets' usage", codeIssue.description);
-            Assert.AreEqual("PAC0232", codeIssue.Id);
+            Assert.AreEqual("PAC0232", codeIssue.id);
         }
     }
 }

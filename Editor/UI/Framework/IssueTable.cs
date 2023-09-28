@@ -300,9 +300,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 var issue = item.ProjectIssue;
                 if (issue.wasFixed)
                     GUI.enabled = false;
-                else if (!string.IsNullOrEmpty(issue.Id))
+                else if (!string.IsNullOrEmpty(issue.id))
                 {
-                    var id = issue.Id;
+                    var id = issue.id;
                     rule = m_Config.GetRule(id, issue.GetContext());
                     if (rule == null)
                         rule = m_Config.GetRule(id); // try to find non-specific rule
@@ -329,7 +329,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     break;
 
                     case PropertyType.Area:
-                        var areaNames = DescriptorLibrary.GetDescriptor(issue.Id).GetAreasSummary();
+                        var areaNames = DescriptorLibrary.GetDescriptor(issue.id).GetAreasSummary();
                         EditorGUI.LabelField(cellRect, new GUIContent(areaNames, Tooltip.Area), labelStyle);
                         break;
                     case PropertyType.Description:
@@ -513,7 +513,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     });
                 }
 
-                var desc = item.ProjectIssue != null && !string.IsNullOrEmpty(item.ProjectIssue.Id) ? DescriptorLibrary.GetDescriptor(item.ProjectIssue.Id) : null;
+                var desc = item.ProjectIssue != null && !string.IsNullOrEmpty(item.ProjectIssue.id) ? DescriptorLibrary.GetDescriptor(item.ProjectIssue.id) : null;
                 if (m_Desc.onOpenManual != null && desc != null && desc.type.StartsWith("UnityEngine."))
                 {
                     menu.AddItem(Utility.OpenScriptReference, false, () =>

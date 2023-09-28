@@ -64,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor
 
         internal void ClearRules(ProjectIssue issue)
         {
-            var id = issue.Id;
+            var id = issue.id;
             ClearRules(id, issue.GetContext());
         }
 
@@ -85,7 +85,7 @@ namespace Unity.ProjectAuditor.Editor
 
         internal void SetRule(ProjectIssue issue, Severity ruleSeverity)
         {
-            var id = issue.Id;
+            var id = issue.id;
 
             // FIXME: GetContext will return empty string on code issues after domain reload
             var context = issue.GetContext();

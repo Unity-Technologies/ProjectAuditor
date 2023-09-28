@@ -340,12 +340,12 @@ class MyClass : MonoBehaviour
 
             var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
-            var issues = AnalyzeAndExport(category,  path, "csv", i => i.Id.Equals("PAS0007"));
+            var issues = AnalyzeAndExport(category,  path, "csv", i => i.id.Equals("PAS0007"));
 
             Assert.AreEqual(1, issues.Count);
 
             var issue = issues.First();
-            var descriptor = DescriptorLibrary.GetDescriptor(issue.Id);
+            var descriptor = DescriptorLibrary.GetDescriptor(issue.id);
             var expectedIssueLine = $"\"{issue.description}\",\"{Severity.Moderate}\",\"{descriptor.GetAreasSummary()}\",\"{issue.filename}\",\"{descriptor.GetPlatformsSummary()}\"";
 
             var issueExported = false;
@@ -374,12 +374,12 @@ class MyClass : MonoBehaviour
 
             var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.html", category.ToString().ToLower());
-            var issues = AnalyzeAndExport(category,  path, "html", i => i.Id.Equals("PAS0007"));
+            var issues = AnalyzeAndExport(category,  path, "html", i => i.id.Equals("PAS0007"));
 
             Assert.AreEqual(1, issues.Count);
 
             var issue = issues.First();
-            var descriptor = DescriptorLibrary.GetDescriptor(issue.Id);
+            var descriptor = DescriptorLibrary.GetDescriptor(issue.id);
             var issueExported = false;
             var formatCorrect = false;
             using (var file = new StreamReader(path))

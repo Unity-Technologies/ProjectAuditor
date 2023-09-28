@@ -62,8 +62,8 @@ class ClassLoggingWithoutConditionalAttribute
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetClassWithConditionalAttribute);
 
-            Assert.IsFalse(issues.Any(i => i.Id == DebugLogAnalyzer.PAC0192));
-            Assert.IsFalse(issues.Any(i => i.Id == DebugLogAnalyzer.PAC0193));
+            Assert.IsFalse(issues.Any(i => i.id == DebugLogAnalyzer.PAC0192));
+            Assert.IsFalse(issues.Any(i => i.id == DebugLogAnalyzer.PAC0193));
         }
 
         [Test]
@@ -71,8 +71,8 @@ class ClassLoggingWithoutConditionalAttribute
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetClassWithOutConditionalAttribute);
 
-            Assert.IsTrue(issues.Any(i => i.Id == DebugLogAnalyzer.PAC0192));
-            Assert.IsTrue(issues.Any(i => i.Id == DebugLogAnalyzer.PAC0193));
+            Assert.IsTrue(issues.Any(i => i.id == DebugLogAnalyzer.PAC0192));
+            Assert.IsTrue(issues.Any(i => i.id == DebugLogAnalyzer.PAC0193));
         }
     }
 }

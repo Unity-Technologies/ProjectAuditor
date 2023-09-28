@@ -86,7 +86,7 @@ class UxmlAttributeDescriptionPropertyUsage
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetObjectName);
 
-            var propertyNameIssues = issues.Where(i => i.Id == "PAC0231").ToArray();
+            var propertyNameIssues = issues.Where(i => i.id == "PAC0231").ToArray();
 
             Assert.AreEqual(3, propertyNameIssues.Length);
             Assert.True(propertyNameIssues.All(i => i.description.Equals("'UnityEngine.Object.name' usage")));
@@ -98,7 +98,7 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetBaseTypePropertyUsage);
 
             var propertyOfBaseTypeIssues = issues.Where(
-                i => i.Id == "PAC0039" || i.Id == "PAC0084" || i.Id == "PAC0085")
+                i => i.id == "PAC0039" || i.id == "PAC0084" || i.id == "PAC0085")
                 .ToArray();
 
             Assert.AreEqual(6, propertyOfBaseTypeIssues.Length);
@@ -110,7 +110,7 @@ class UxmlAttributeDescriptionPropertyUsage
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetUxmlAttributeDescriptionPropertyUsage);
 
-            var propertyUxmlAttributeIssues = issues.Where(i => i.Id == "PAC0191").ToArray();
+            var propertyUxmlAttributeIssues = issues.Where(i => i.id == "PAC0191").ToArray();
 
             Assert.AreEqual(1, propertyUxmlAttributeIssues.Length);
             Assert.AreEqual("'UnityEngine.UIElements.UxmlAttributeDescription.obsoleteNames' usage", propertyUxmlAttributeIssues[0].description);

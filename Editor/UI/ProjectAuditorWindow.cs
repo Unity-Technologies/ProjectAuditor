@@ -199,7 +199,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Profiler.BeginSample("MatchArea");
             var matchArea = m_AreaSelection.ContainsGroup("All") ||
-                            (!string.IsNullOrEmpty(issue.Id) && m_AreaSelection.ContainsAny(DescriptorLibrary.GetDescriptor(issue.Id).areas));
+                            (!string.IsNullOrEmpty(issue.id) && m_AreaSelection.ContainsAny(DescriptorLibrary.GetDescriptor(issue.id).areas));
 
             Profiler.EndSample();
             if (!matchArea)

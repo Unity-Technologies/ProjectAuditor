@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void SettingsAnalysis_Quality_TextureStreamingIsReported()
         {
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(QualitySettingsAnalyzer.PAS1007));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(QualitySettingsAnalyzer.PAS1007));
             Assert.True(issues.Any(i => i.location.Path.Equals("Project/Quality/Very Low")));
         }
 
@@ -79,11 +79,11 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettings.bakeCollisionMeshes = false;
 
             var issues = Analyze(IssueCategory.ProjectSetting, i =>
-                !string.IsNullOrEmpty(i.Id) &&
-                DescriptorLibrary.GetDescriptor(i.Id).method.Equals("bakeCollisionMeshes"));
+                !string.IsNullOrEmpty(i.id) &&
+                DescriptorLibrary.GetDescriptor(i.id).method.Equals("bakeCollisionMeshes"));
 
             var playerSettingIssue = issues.FirstOrDefault();
-            var descriptor = DescriptorLibrary.GetDescriptor(playerSettingIssue.Id);
+            var descriptor = DescriptorLibrary.GetDescriptor(playerSettingIssue.id);
 
             Assert.NotNull(playerSettingIssue, "Issue not found");
             Assert.AreEqual("Player: Prebake Collision Meshes is disabled", playerSettingIssue.description);
@@ -105,7 +105,7 @@ namespace Unity.ProjectAuditor.EditorTests
             // 0.02f is the default Time.fixedDeltaTime value and will be reported as an issue
             Time.fixedDeltaTime = 0.02f;
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(TimeSettingsAnalyzer.PAS0016));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(TimeSettingsAnalyzer.PAS0016));
             var playerSettingIssue = issues.FirstOrDefault();
             Assert.NotNull(playerSettingIssue, "Issue not found");
             Assert.AreEqual("Time: Fixed Timestep is set to the default value", playerSettingIssue.description);
@@ -114,7 +114,7 @@ namespace Unity.ProjectAuditor.EditorTests
             // "fix" fixedDeltaTime so it's not reported anymore
             Time.fixedDeltaTime = 0.021f;
 
-            issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(TimeSettingsAnalyzer.PAS0016));
+            issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(TimeSettingsAnalyzer.PAS0016));
             Assert.Null(issues.FirstOrDefault());
 
             // restore Time.fixedDeltaTime
@@ -140,7 +140,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var audioConfiguration = AudioSettings.GetConfiguration();
             AudioSettings.speakerMode = AudioSpeakerMode.Stereo;
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals("PAS0033"));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals("PAS0033"));
             var playerSettingIssue = issues.FirstOrDefault();
 
             Assert.NotNull(playerSettingIssue);
@@ -300,7 +300,7 @@ namespace Unity.ProjectAuditor.EditorTests
             serializedObject.ApplyModifiedProperties();
             Assert.IsTrue(FogStrippingAnalyzer.IsFogModeEnabled(fogMode));
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(FogStrippingAnalyzer.PAS1003));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(FogStrippingAnalyzer.PAS1003));
 
             Assert.AreEqual(1, issues.Length);
 
@@ -346,7 +346,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             serializedObject.ApplyModifiedProperties();
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(FogStrippingAnalyzer.PAS1003));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(FogStrippingAnalyzer.PAS1003));
             var playerSettingIssue = issues.FirstOrDefault();
 
             Assert.IsNull(playerSettingIssue);
@@ -378,7 +378,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 ? PlayerSettingsAnalyzer.PAS1004
                 : PlayerSettingsAnalyzer.PAS1005;
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(id));
 
             Assert.AreEqual(1, issues.Length);
 
@@ -399,7 +399,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
             PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Release);
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(id));
 
             Assert.AreEqual(0, issues.Length);
 
@@ -417,7 +417,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.Mono2x);
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(id));
 
             Assert.AreEqual(0, issues.Length);
 
@@ -451,7 +451,7 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, false);
 
             var id = PlayerSettingsAnalyzer.PAS1006;
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(id));
 
             Assert.AreEqual(1, issues.Length);
 
@@ -467,7 +467,7 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, true);
 
             var id = PlayerSettingsAnalyzer.PAS1006;
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(id));
 
             Assert.AreEqual(0, issues.Length);
 
@@ -501,7 +501,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 QualitySettings.streamingMipmapsActive = false;
 
                 var id = QualitySettingsAnalyzer.PAS1007;
-                var issues = Analyze(IssueCategory.ProjectSetting, j => j.Id.Equals(id));
+                var issues = Analyze(IssueCategory.ProjectSetting, j => j.id.Equals(id));
                 var qualitySettingIssue = issues.FirstOrDefault();
 
                 Assert.NotNull(qualitySettingIssue);
@@ -526,7 +526,7 @@ namespace Unity.ProjectAuditor.EditorTests
             }
 
             var id = QualitySettingsAnalyzer.PAS1007;
-            var issues = Analyze(IssueCategory.ProjectSetting, j => j.Id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, j => j.id.Equals(id));
             var qualitySettingIssue = issues.FirstOrDefault();
 
             Assert.IsNull(qualitySettingIssue);
@@ -593,8 +593,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
             SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, false);
             var issues = Analyze(IssueCategory.ProjectSetting,
-                i => !string.IsNullOrEmpty(i.Id) &&
-                     DescriptorLibrary.GetDescriptor(i.Id).title.Equals("SRP Asset: SRP Batcher"));
+                i => !string.IsNullOrEmpty(i.id) &&
+                     DescriptorLibrary.GetDescriptor(i.id).title.Equals("SRP Asset: SRP Batcher"));
             var srpBatchingIssue = issues.FirstOrDefault();
             Assert.NotNull(srpBatchingIssue);
             Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
@@ -602,8 +602,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
             SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, true);
             issues = Analyze(IssueCategory.ProjectSetting,
-                i => !string.IsNullOrEmpty(i.Id) &&
-                     DescriptorLibrary.GetDescriptor(i.Id).title.Equals("SRP Asset: SRP Batcher"));
+                i => !string.IsNullOrEmpty(i.id) &&
+                     DescriptorLibrary.GetDescriptor(i.id).title.Equals("SRP Asset: SRP Batcher"));
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have enabled SRP Batcher.");
 

@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
 
-            var allCamerasIssues = issues.Where(i => i.Id == "PAC0066").ToArray();
+            var allCamerasIssues = issues.Where(i => i.id == "PAC0066").ToArray();
 
             Assert.AreEqual(1, allCamerasIssues.Count());
 
@@ -69,7 +69,7 @@ namespace Unity.ProjectAuditor.EditorTests
             m_Config.ClearAllRules();
 
             var callingMethod = issue.GetContext();
-            var action = m_Config.GetAction(issue.Id, callingMethod);
+            var action = m_Config.GetAction(issue.id, callingMethod);
 
             // expect default action specified in descriptor
             Assert.AreEqual(Severity.Default, action);
@@ -77,14 +77,14 @@ namespace Unity.ProjectAuditor.EditorTests
             // add rule with a filter.
             m_Config.AddRule(new Rule
             {
-                id = issue.Id,
+                id = issue.id,
                 severity = Severity.None,
                 filter = callingMethod
             });
 
             Assert.AreEqual(1, m_Config.NumRules);
 
-            action = m_Config.GetAction(issue.Id, callingMethod);
+            action = m_Config.GetAction(issue.id, callingMethod);
 
             // issue has been muted so it should not be reported
             Assert.AreEqual(Severity.None, action);
@@ -105,12 +105,12 @@ namespace Unity.ProjectAuditor.EditorTests
             // retry after domain reload
             var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
 
-            var allCamerasIssues = issues.Where(i => i.Id == "PAC0066").ToArray();
+            var allCamerasIssues = issues.Where(i => i.id == "PAC0066").ToArray();
 
             Assert.AreEqual(1, allCamerasIssues.Count());
 
             var callingMethod = allCamerasIssues[0].GetContext();
-            var action = m_SerializedConfig.GetAction(allCamerasIssues[0].Id, callingMethod);
+            var action = m_SerializedConfig.GetAction(allCamerasIssues[0].id, callingMethod);
 
             // issue has been muted so it should not be reported
             Assert.AreEqual(Severity.None, action);
@@ -196,7 +196,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var descriptorId = QualitySettingsAnalyzer.PAS1007;
             var filter = "Project/Quality/Very Low";
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(descriptorId));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(descriptorId));
 
             Assert.GreaterOrEqual(issues.Length, 4);
             Assert.AreNotEqual(Severity.None, m_Config.GetAction(descriptorId));
@@ -210,7 +210,7 @@ namespace Unity.ProjectAuditor.EditorTests
             });
 
             // TODO: once override is implemented, the issue's severity should be Severity.None
-            //issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(descriptorId));
+            //issues = Analyze(IssueCategory.ProjectSetting, i => i.iid.Equals(descriptorId));
 
             Assert.AreEqual(Severity.None, m_Config.GetAction(descriptorId));
             Assert.AreEqual(Severity.None, m_Config.GetAction(descriptorId, filter));
@@ -226,7 +226,7 @@ namespace Unity.ProjectAuditor.EditorTests
             });
 
             // TODO: once override is implemented, the issue's severity should be Severity.None
-            //issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(descriptorId));
+            //issues = Analyze(IssueCategory.ProjectSetting, i => i.iid.Equals(descriptorId));
 
             Assert.AreNotEqual(Severity.None, m_Config.GetAction(descriptorId));
             Assert.AreEqual(Severity.None, m_Config.GetAction(descriptorId, filter));

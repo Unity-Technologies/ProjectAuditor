@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// An unique identifier for the issue diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits
         /// </summary>
-        public string Id
+        public string id
         {
             get => m_Id;
             internal set => m_Id = value;
@@ -179,7 +179,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns>True if the issue's descriptor is not null and is valid. Otherwise, returns false.</returns>
         public bool IsDiagnostic()
         {
-            return !string.IsNullOrEmpty(Id);
+            return !string.IsNullOrEmpty(id);
         }
 
         /// <summary>

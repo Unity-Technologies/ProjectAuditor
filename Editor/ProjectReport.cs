@@ -109,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor
         public IReadOnlyCollection<ProjectIssue> FindByDiagnosticID(string id)
         {
             s_Mutex.WaitOne();
-            var result = m_Issues.Where(i => !string.IsNullOrEmpty(i.Id) && i.Id.Equals(id)).ToArray();
+            var result = m_Issues.Where(i => !string.IsNullOrEmpty(i.id) && i.id.Equals(id)).ToArray();
             s_Mutex.ReleaseMutex();
             return result;
         }
@@ -163,9 +163,9 @@ namespace Unity.ProjectAuditor.Editor
             var descHashSet = new HashSet<Descriptor>();
             foreach (var issue in m_Issues)
             {
-                if (!string.IsNullOrEmpty(issue.Id))
+                if (!string.IsNullOrEmpty(issue.id))
                 {
-                    descHashSet.Add(DescriptorLibrary.GetDescriptor(issue.Id));
+                    descHashSet.Add(DescriptorLibrary.GetDescriptor(issue.id));
                 }
             }
 
@@ -173,7 +173,7 @@ namespace Unity.ProjectAuditor.Editor
             m_Descriptors.Sort((x, y) => x.id.CompareTo(y.id));
 
             // Makes for more readable reports, but is too slow
-            // m_Issues.Sort((x, y) => x.Id.CompareTo(y.Id));
+            // m_Issues.Sort((x, y) => x.iid.CompareTo(y.iid));
 
             File.WriteAllText(path, JsonUtility.ToJson(this, UserPreferences.prettifyJsonOutput));
         }

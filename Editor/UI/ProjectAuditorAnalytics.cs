@@ -292,7 +292,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             foreach (var issue in selectedIssues)
             {
-                var id = issue.Id;
+                var id = issue.id;
 
                 IssueStats summary;
                 if (!selectionsDict.TryGetValue(id, out summary))
@@ -320,7 +320,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var scriptIssues = projectReport.FindByCategory(IssueCategory.Code);
             foreach (var issue in scriptIssues)
             {
-                var id = issue.Id;
+                var id = issue.id;
                 IssueStats stats;
                 if (!statsDict.TryGetValue(id, out stats))
                 {

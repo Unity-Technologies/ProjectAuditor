@@ -113,7 +113,7 @@ class ScriptWithError {
             var issue = issues.First();
 
             // check ID
-            Assert.IsTrue(string.IsNullOrEmpty(issue.Id));
+            Assert.IsTrue(string.IsNullOrEmpty(issue.id));
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
@@ -142,7 +142,7 @@ class ScriptWithError {
             var issue = issues.First();
 
             // check ID
-            Assert.IsTrue(string.IsNullOrEmpty(issue.Id));
+            Assert.IsTrue(string.IsNullOrEmpty(issue.id));
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.Assembly));
@@ -165,7 +165,7 @@ class ScriptWithError {
             var issue = issues.First();
 
             // check ID
-            Assert.IsTrue(string.IsNullOrEmpty(issue.Id));
+            Assert.IsTrue(string.IsNullOrEmpty(issue.id));
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.Assembly));
