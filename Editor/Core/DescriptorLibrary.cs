@@ -50,6 +50,9 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public void OnBeforeSerialize()
         {
             // update list from dictionary
+            // TODO: Serialization is needed to survive domain reload, and when writing a ProjectReport out to file.
+            // In both cases the list only really needs to contain the Descriptors that correspond to ProjectIssues
+            // actually found in the report, so if we had the report object we could potentially do some filtering here.
             m_SerializedDescriptors = m_Descriptors.Values.ToList();
         }
 
