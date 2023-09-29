@@ -34,19 +34,6 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             return m_Descriptors[idAsInt];
         }
 
-        public static void AddDescriptors(List<Descriptor> descriptors)
-        {
-            if (m_Descriptors == null)
-            {
-                m_Descriptors = new Dictionary<int, Descriptor>();
-            }
-
-            foreach (var descriptor in descriptors)
-            {
-                RegisterDescriptor(descriptor.id, descriptor);
-            }
-        }
-
         public void OnBeforeSerialize()
         {
             // update list from dictionary
