@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Settings from ProjectAuditorConfig
 
 ### Fixed
+* Analysis never completes if an exception is thrown
 * Compilation if both URP and HDRP are installed
 * UI default column sorting
 * UI sorting criteria persistence after domain reload

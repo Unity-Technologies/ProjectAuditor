@@ -209,7 +209,7 @@ namespace Unity.ProjectAuditor.Editor
             foreach (var module in supportedModules)
             {
                 var moduleStartTime = DateTime.Now;
-                module.Audit(new ProjectAuditorParams(projectAuditorParams)
+                var moduleParams = new ProjectAuditorParams(projectAuditorParams)
                 {
                     onIncomingIssues = results =>
                     {
@@ -221,7 +221,7 @@ namespace Unity.ProjectAuditor.Editor
                     {
                         var moduleEndTime = DateTime.Now;
                         if (logTimingsInfo)
-                            Debug.Log(module.name + " module took: " +
+                            Debug.Log($"Project Auditor module {module.name} took: " +
                                 (moduleEndTime - moduleStartTime).TotalMilliseconds / 1000.0 + " seconds.");
 
                         report.RecordModuleInfo(module, moduleStartTime, moduleEndTime);
@@ -233,12 +233,23 @@ namespace Unity.ProjectAuditor.Editor
                         {
                             stopwatch.Stop();
                             if (logTimingsInfo)
-                                Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
+                                Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f +
+                                    " seconds.");
 
                             projectAuditorParams.onCompleted?.Invoke(report);
                         }
                     }
-                }, progress);
+                };
+
+                try
+                {
+                    module.Audit(moduleParams, progress);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Project Auditor module {module.name} failed: " + e.Message + " " + e.StackTrace);
+                    moduleParams.onModuleCompleted();
+                }
             }
 
             if (logTimingsInfo)
