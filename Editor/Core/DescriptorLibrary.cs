@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     [Serializable]
     public class DescriptorLibrary : ISerializationCallbackReceiver
     {
-        static Dictionary<int, Descriptor> m_Descriptors;
+        static Dictionary<int, Descriptor> s_Descriptors;
 
         [SerializeField]
         List<Descriptor> m_SerializedDescriptors;
@@ -21,17 +21,17 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
         public static bool RegisterDescriptor(DescriptorID id, Descriptor descriptor)
         {
-            if(m_Descriptors == null)
-                m_Descriptors = new Dictionary<int, Descriptor>();
+            if(s_Descriptors == null)
+                s_Descriptors = new Dictionary<int, Descriptor>();
 
-            bool alreadyFound = m_Descriptors.ContainsKey(id);
-            m_Descriptors[id] = descriptor;
+            bool alreadyFound = s_Descriptors.ContainsKey(id);
+            s_Descriptors[id] = descriptor;
             return alreadyFound;
         }
 
         public static Descriptor GetDescriptor(int idAsInt)
         {
-            return m_Descriptors[idAsInt];
+            return s_Descriptors[idAsInt];
         }
 
         public void OnBeforeSerialize()
@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             // TODO: Serialization is needed to survive domain reload, and when writing a ProjectReport out to file.
             // In both cases the list only really needs to contain the Descriptors that correspond to ProjectIssues
             // actually found in the report, so if we had the report object we could potentially do some filtering here.
-            m_SerializedDescriptors = m_Descriptors.Values.ToList();
+            m_SerializedDescriptors = s_Descriptors.Values.ToList();
         }
 
         public void OnAfterDeserialize()
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             // version of the tool with updated descriptors, we might want to keep those descriptors in the library
             // rather than overwrite them with the ones that were saved alongside the issues. Right now it's such an
             // edge case that it doesn't really seem worth spending time on.
-            m_Descriptors = m_SerializedDescriptors.ToDictionary(m => new DescriptorID(m.id).AsInt(), m => m);
+            s_Descriptors = m_SerializedDescriptors.ToDictionary(m => new DescriptorID(m.id).AsInt(), m => m);
             m_SerializedDescriptors = null;
         }
     }

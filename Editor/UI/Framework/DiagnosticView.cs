@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public override void DrawDetails(ProjectIssue[] selectedIssues)
         {
-            Descriptor descriptor = new Descriptor(null, null, Area.CPU, null, null);
+            Descriptor descriptor = null;
             var selectedIDs = selectedIssues.Select(i => i.id).Distinct().ToArray();
             var numSelectedIDs = selectedIDs.Length;
             if (numSelectedIDs > 0)

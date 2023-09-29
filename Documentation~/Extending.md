@@ -50,7 +50,7 @@ namespace MyNamespace
 
         public override string name => "My Module";
 
-        public override IReadOnlyCollection<string> supportedDescriptors => new string[]
+        public override IReadOnlyCollection<DescriptorID> supportedDescriptorIDs => new DescriptorID[]
         {
             k_Descriptor.id
         };

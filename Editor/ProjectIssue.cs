@@ -335,7 +335,7 @@ namespace Unity.ProjectAuditor.Editor
             m_CustomProperties[Convert.ToUInt32(propertyEnum)] = property.ToString();
         }
 
-        // TODO: This is a fudge. Ideally DescriptorID would serialize to/forom a simple string and we wouldn't need to keep this.
+        // TODO: This is a fudge. Ideally DescriptorID would serialize to/from a simple string and we wouldn't need to keep this.
         public void OnBeforeSerialize()
         {
             m_ID = m_DescriptorID.AsString();
