@@ -51,7 +51,7 @@ namespace Unity.ProjectAuditor.EditorTests
             // check ID
             Assert.True(boxingInt.id.IsValid());
 
-            Assert.AreEqual(BoxingAnalyzer.PAC2000, boxingInt.id);
+            Assert.AreEqual(BoxingAnalyzer.PAC2000, boxingInt.id.ToString());
 
             var descriptor = boxingInt.id.GetDescriptor();
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.EditorTests
             // check ID
             Assert.True(boxingFloat.id.IsValid());
 
-            Assert.AreEqual(BoxingAnalyzer.PAC2000, boxingFloat.id);
+            Assert.AreEqual(BoxingAnalyzer.PAC2000, boxingFloat.id.ToString());
 
             var descriptor = boxingFloat.id.GetDescriptor();
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);

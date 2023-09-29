@@ -44,7 +44,7 @@ class MyClass
             var descriptor = myIssue.id.GetDescriptor();
 
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
-            Assert.AreEqual("PAC1000", myIssue.id);
+            Assert.AreEqual("PAC1000", myIssue.id.ToString());
             Assert.AreEqual("System.Linq", descriptor.type);
             Assert.AreEqual("*", descriptor.method);
 

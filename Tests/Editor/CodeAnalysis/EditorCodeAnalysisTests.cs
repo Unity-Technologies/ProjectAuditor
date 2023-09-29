@@ -49,7 +49,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.NotNull(codeIssue);
             Assert.AreEqual("'UnityEditor.AssetDatabase.FindAssets' usage", codeIssue.description);
-            Assert.AreEqual("PAC0232", codeIssue.id);
+            Assert.AreEqual("PAC0232", codeIssue.id.ToString());
         }
     }
 }

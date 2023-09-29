@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     [Serializable]
-    public struct DescriptorID
+    public struct DescriptorID : IEquatable<DescriptorID>
     {
         private int m_AsInt;
         private string m_AsString;
@@ -59,6 +59,16 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public Descriptor GetDescriptor()
         {
             return DescriptorLibrary.GetDescriptor(AsInt());
+        }
+
+        public bool Equals(DescriptorID other)
+        {
+            return m_AsInt == other.m_AsInt;
+        }
+
+        public bool Equals(string other)
+        {
+            return m_AsString == other;
         }
     }
 }

@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var descriptor = issue.id.GetDescriptor();
 
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
-            Assert.AreEqual(EmptyMethodAnalyzer.GetDescriptorID(), issue.id);
+            Assert.AreEqual(EmptyMethodAnalyzer.GetDescriptorID(), issue.id.ToString());
             Assert.True(string.IsNullOrEmpty(descriptor.type));
             Assert.True(string.IsNullOrEmpty(descriptor.method));
 

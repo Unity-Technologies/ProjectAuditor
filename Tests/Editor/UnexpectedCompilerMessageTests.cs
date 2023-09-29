@@ -118,8 +118,8 @@ class MyClass
             Assert.NotNull(descriptor);
 
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
-            Assert.AreEqual(typeof(string), myIssue.id.GetType());
-            Assert.AreEqual("PAC0066", myIssue.id);
+            Assert.AreEqual(typeof(DescriptorID), myIssue.id.GetType());
+            Assert.AreEqual("PAC0066", myIssue.id.ToString());
             Assert.AreEqual("UnityEngine.Camera", descriptor.type);
             Assert.AreEqual("allCameras", descriptor.method);
 

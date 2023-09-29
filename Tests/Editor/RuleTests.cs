@@ -105,7 +105,7 @@ namespace Unity.ProjectAuditor.EditorTests
             // retry after domain reload
             var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
 
-            var allCamerasIssues = issues.Where(i => i.id == "PAC0066").ToArray();
+            var allCamerasIssues = issues.Where(i => i.id.Equals("PAC0066")).ToArray();
 
             Assert.AreEqual(1, allCamerasIssues.Count());
 

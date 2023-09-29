@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.EditorTests
             desc.minimumVersion = "1.1";
             desc.maximumVersion = "1.0";
             var result = desc.IsVersionCompatible();
-            LogAssert.Expect(LogType.Error, "Descriptor (TD2001) minimumVersion (1.1) is greater than maximumVersion (1.0).");
+            LogAssert.Expect(LogType.Error, "Descriptor (TDD2001) minimumVersion (1.1) is greater than maximumVersion (1.0).");
             Assert.False(result);
         }
 
@@ -203,7 +203,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var IDs = projectAuditor.GetDiagnosticIDs();
 
-            Assert.Contains(desc.id, IDs, "Descriptor {0} is not registered", desc.id);
+            Assert.NotZero(IDs.Count(id => id.AsString() == desc.id), "Descriptor {0} is not registered", desc.id);
 
             // This will throw an exception if the Descriptor is somehow registered in the module but not in the DescriptorLibrary
             var descriptor = new DescriptorID(desc.id).GetDescriptor();
@@ -312,7 +312,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var loadedDescriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.s_DataPath, jsonFilename);
             foreach (var loadedDescriptor in loadedDescriptors)
             {
-                Assert.Contains(loadedDescriptor.id, IDs, "Descriptor {0} is not registered", loadedDescriptor.id);
+                Assert.NotZero(IDs.Count(id => id.AsString() == loadedDescriptor.id), "Descriptor {0} is not registered", loadedDescriptor.id);
             }
         }
 

@@ -114,7 +114,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(issue);
             var descriptor = issue.id.GetDescriptor();
             Assert.NotNull(descriptor.fixer);
-            Assert.IsTrue(issue.id == AudioClipAnalyzer.PAA4000);
+            Assert.AreEqual(AudioClipAnalyzer.PAA4000, issue.id.ToString());
 
             descriptor.Fix(issue);
 
@@ -133,7 +133,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.NotNull(issue);
             Assert.IsTrue(issue.id.IsValid());
-            Assert.IsTrue(issue.id == AudioClipAnalyzer.PAA4001);
+            Assert.AreEqual(AudioClipAnalyzer.PAA4001, issue.id.ToString());
         }
 
         // PAA4002 Stereo clips not forced to Mono on mobile platforms
@@ -153,7 +153,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.NotNull(issue);
             Assert.IsTrue(issue.id.IsValid());
-            Assert.IsTrue(issue.id == AudioClipAnalyzer.PAA4002);
+            Assert.AreEqual(AudioClipAnalyzer.PAA4002, issue.id.ToString());
 
             var descriptor = issue.id.GetDescriptor();
             descriptor.Fix(issue);
@@ -195,7 +195,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.NotNull(issue);
             Assert.IsTrue(issue.id.IsValid());
-            Assert.IsTrue(issue.id == AudioClipAnalyzer.PAA4003);
+            Assert.AreEqual(AudioClipAnalyzer.PAA4003, issue.id.ToString());
 
             var descriptor = issue.id.GetDescriptor();
             descriptor.Fix(issue);
@@ -217,7 +217,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.NotNull(issue);
             Assert.IsTrue(issue.id.IsValid());
-            Assert.IsTrue(issue.id == AudioClipAnalyzer.PAA4004);
+            Assert.AreEqual(AudioClipAnalyzer.PAA4004, issue.id.ToString());
         }
 
         // PAA4005 Compressed In Memory used with compression formats that are not trivial to decompress (e.g. everything other than PCM or ADPCM)
@@ -229,7 +229,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.NotNull(issue);
             Assert.IsTrue(issue.id.IsValid());
-            Assert.IsTrue(issue.id == AudioClipAnalyzer.PAA4005);
+            Assert.AreEqual(AudioClipAnalyzer.PAA4005, issue.id.ToString());
         }
 
         // PAA4006 Large compressed samples on mobile: Decrease quality or downsample
@@ -245,7 +245,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.NotNull(issue);
             Assert.IsTrue(issue.id.IsValid());
-            Assert.IsTrue(issue.id == AudioClipAnalyzer.PAA4006);
+            Assert.AreEqual(AudioClipAnalyzer.PAA4006, issue.id.ToString());
 
             m_Platform = platform;
         }
@@ -264,7 +264,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.NotNull(issue);
             Assert.IsTrue(issue.id.IsValid());
-            Assert.IsTrue(issue.id == AudioClipAnalyzer.PAA4007);
+            Assert.AreEqual(AudioClipAnalyzer.PAA4007, issue.id.ToString());
 
             var descriptor = issue.id.GetDescriptor();
             descriptor.Fix(issue);
@@ -288,7 +288,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.NotNull(issue);
             Assert.IsTrue(issue.id.IsValid());
-            Assert.IsTrue(issue.id == AudioClipAnalyzer.PAA4008);
+            Assert.AreEqual(AudioClipAnalyzer.PAA4008, issue.id.ToString());
 
             var descriptor = issue.id.GetDescriptor();
             descriptor.Fix(issue);
@@ -312,7 +312,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.NotNull(issue);
             Assert.IsTrue(issue.id.IsValid());
-            Assert.IsTrue(issue.id == AudioClipAnalyzer.PAA4009);
+            Assert.AreEqual(AudioClipAnalyzer.PAA4009, issue.id.ToString());
 
             var descriptor = issue.id.GetDescriptor();
             descriptor.Fix(issue);
@@ -340,7 +340,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.NotNull(issue);
             Assert.IsTrue(issue.id.IsValid());
-            Assert.IsTrue(issue.id == AudioClipAnalyzer.PAA4010);
+            Assert.AreEqual(AudioClipAnalyzer.PAA4010, issue.id.ToString());
 
             var descriptor = issue.id.GetDescriptor();
             descriptor.Fix(issue);
