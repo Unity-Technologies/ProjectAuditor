@@ -36,9 +36,14 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                 return;
             }
 
+            m_AsInt = HashDescriptorString(id);
+        }
+
+        public static int HashDescriptorString(string id)
+        {
             var characters = (short)((char)(id[0] - 'A') << 10 | (char)(id[1] - 'A') << 5 | (char)(id[2] - 'A'));
             var numerical = UInt16.Parse(id.Substring(3));
-            m_AsInt = characters << 16 | numerical;
+            return characters << 16 | numerical;
         }
 
         public bool IsValid()

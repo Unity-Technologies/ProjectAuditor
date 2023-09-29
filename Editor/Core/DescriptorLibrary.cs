@@ -37,7 +37,12 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
             foreach (var descriptor in descriptors)
             {
-                RegisterDescriptor(descriptor.id, descriptor);
+                // Don't overwrite existing descriptor data from a saved report: an updated package may have specified
+                // newer versions of this data which we'll want to keep.
+                if (!m_Descriptors.ContainsKey(DescriptorID.HashDescriptorString(descriptor.id)))
+                {
+                    RegisterDescriptor(descriptor.id, descriptor);
+                }
             }
         }
     }
