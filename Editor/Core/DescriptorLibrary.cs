@@ -43,18 +43,14 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
             foreach (var descriptor in descriptors)
             {
-                // Don't overwrite existing descriptor data from a saved report: an updated package may have specified
-                // newer versions of this data which we'll want to keep.
-                if (!m_Descriptors.ContainsKey(DescriptorID.HashDescriptorString(descriptor.id)))
-                {
-                    RegisterDescriptor(descriptor.id, descriptor);
-                }
+                RegisterDescriptor(descriptor.id, descriptor);
             }
         }
 
         public void OnBeforeSerialize()
         {
             // update list from dictionary
+
             // TODO: Serialization is needed to survive domain reload, and when writing a ProjectReport out to file.
             // In both cases the list only really needs to contain the Descriptors that correspond to ProjectIssues
             // actually found in the report, so if we had the report object we could potentially do some filtering here.
@@ -64,6 +60,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public void OnAfterDeserialize()
         {
             // update dictionary from list
+
+            // TODO: _Hypothetically_, if we're here after loading an old report from JSON, and if we're in a newer
+            // version of the tool with updated descriptors, we might want to keep those descriptors in the library
+            // rather than overwrite them with the ones that were saved alongside the issues. Right now it's such an
+            // edge case that it doesn't really seem worth spending time on.
             m_Descriptors = m_SerializedDescriptors.ToDictionary(m => new DescriptorID(m.id).AsInt(), m => m);
             m_SerializedDescriptors = null;
         }
