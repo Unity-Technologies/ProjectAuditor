@@ -112,8 +112,8 @@ class ScriptWithError {
 
             var issue = issues.First();
 
-            // check descriptor
-            Assert.IsNull(issue.descriptor);
+            // check ID
+            Assert.IsFalse(issue.id.IsValid());
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
@@ -141,8 +141,8 @@ class ScriptWithError {
 
             var issue = issues.First();
 
-            // check descriptor
-            Assert.IsNull(issue.descriptor);
+            // check ID
+            Assert.IsFalse(issue.id.IsValid());
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.Assembly));
@@ -164,8 +164,8 @@ class ScriptWithError {
 
             var issue = issues.First();
 
-            // check descriptor
-            Assert.IsNull(issue.descriptor);
+            // check ID
+            Assert.IsFalse(issue.id.IsValid());
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.Assembly));

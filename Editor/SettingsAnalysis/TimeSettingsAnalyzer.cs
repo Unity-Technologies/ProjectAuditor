@@ -37,10 +37,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
             if (UnityEngine.Time.fixedDeltaTime - 0.02f < Mathf.Epsilon)
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FixedTimestepDescriptor)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FixedTimestepDescriptor.id)
                     .WithLocation("Project/Time");
             if (UnityEngine.Time.maximumDeltaTime - 0.1f < Mathf.Epsilon)
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_MaximumAllowedTimestepDescriptor)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_MaximumAllowedTimestepDescriptor.id)
                     .WithLocation("Project/Time");
         }
     }

@@ -10,9 +10,9 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public static implicit operator ProjectIssue(IssueBuilder builder) => builder.m_Issue;
 
-        public IssueBuilder(IssueCategory category, Descriptor descriptor, params object[] args)
+        public IssueBuilder(IssueCategory category, DescriptorID id, params object[] args)
         {
-            m_Issue = new ProjectIssue(category, descriptor, args);
+            m_Issue = new ProjectIssue(category, id, args);
         }
 
         public IssueBuilder(IssueCategory category, string description)
@@ -56,12 +56,6 @@ namespace Unity.ProjectAuditor.Editor.Core
         public IssueBuilder WithDependencies(DependencyNode dependencies)
         {
             m_Issue.dependencies = dependencies;
-            return this;
-        }
-
-        public IssueBuilder WithDepth(int depth)
-        {
-            m_Issue.depth = depth;
             return this;
         }
 

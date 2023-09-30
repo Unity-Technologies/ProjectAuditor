@@ -64,18 +64,18 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (projectAuditorParams.platform == BuildTarget.iOS)
             {
                 if (IsUsingOpenGLESAndMetal())
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor)
+                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor.id)
                         .WithLocation("Project/Player");
 
                 if (IsNotUsingMetal())
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_MetalDescriptor)
+                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_MetalDescriptor.id)
                         .WithLocation("Project/Player");
             }
 
             if (projectAuditorParams.platform == BuildTarget.Android)
             {
                 if (IsNotUsingVulkan())
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_VulkanDescriptor)
+                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_VulkanDescriptor.id)
                         .WithLocation("Project/Player");
             }
         }

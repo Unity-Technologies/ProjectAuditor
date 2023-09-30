@@ -33,14 +33,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var spriteAtlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(assetPath);
 
-            yield return ProjectIssue.Create(IssueCategory.SpriteAtlas, spriteAtlas.name)
+            yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.SpriteAtlas, spriteAtlas.name)
                 .WithLocation(new Location(assetPath));
 
             var emptyPercent = TextureUtils.GetEmptySpacePercentage(spriteAtlas);
             if (emptyPercent > projectAuditorParams.diagnosticParams.SpriteAtlasEmptySpaceLimit)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
-                    k_SpriteAtlasEmptyDescriptor, spriteAtlas.name, emptyPercent)
+                    k_SpriteAtlasEmptyDescriptor.id, spriteAtlas.name, emptyPercent)
                     .WithLocation(assetPath);
             }
         }

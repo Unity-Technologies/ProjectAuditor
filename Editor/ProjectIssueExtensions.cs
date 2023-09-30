@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.Severity:
                     return issue.severity.ToString();
                 case PropertyType.Area:
-                    return issue.descriptor.GetAreasSummary();
+                    return issue.id.GetDescriptor().GetAreasSummary();
                 case PropertyType.FileType:
                     if (issue.location == null)
                         return k_NotAvailable;
@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.Description:
                     return issue.description;
                 case PropertyType.Descriptor:
-                    return issue.descriptor.title;
+                    return issue.id.GetDescriptor().title;
                 case PropertyType.Filename:
                     if (string.IsNullOrEmpty(issue.filename))
                         return k_NotAvailable;
@@ -53,7 +53,7 @@ namespace Unity.ProjectAuditor.Editor
                         return k_NotAvailable;
                     return PathUtils.GetDirectoryName(issue.location.Path);
                 case PropertyType.Platform:
-                    return issue.descriptor.GetPlatformsSummary();
+                    return issue.id.GetDescriptor().GetPlatformsSummary();
                 default:
                     var propertyIndex = propertyType - PropertyType.Num;
                     return issue.GetCustomProperty(propertyIndex);
@@ -95,8 +95,9 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.Severity:
                     return issueA.severity.CompareTo(issueB.severity);
                 case PropertyType.Area:
-                    var areasA = issueA.descriptor.areas;
-                    var areasB = issueB.descriptor.areas;
+                    var areasA = issueA.id.GetDescriptor().areas;
+                    var areasB = issueB.id.GetDescriptor().areas;
+
                     var minLength = Math.Min(areasA.Length, areasB.Length);
 
                     for (var i = 0; i < minLength; i++)

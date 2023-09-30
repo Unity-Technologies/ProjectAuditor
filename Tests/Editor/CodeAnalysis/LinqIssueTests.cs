@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -40,12 +41,12 @@ class MyClass
             var myIssue = issues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            Assert.NotNull(myIssue.descriptor);
+            var descriptor = myIssue.id.GetDescriptor();
 
-            Assert.AreEqual(Severity.Moderate, myIssue.descriptor.defaultSeverity);
-            Assert.AreEqual("PAC1000", myIssue.descriptor.id);
-            Assert.AreEqual("System.Linq", myIssue.descriptor.type);
-            Assert.AreEqual("*", myIssue.descriptor.method);
+            Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
+            Assert.AreEqual("PAC1000", myIssue.id.ToString());
+            Assert.AreEqual("System.Linq", descriptor.type);
+            Assert.AreEqual("*", descriptor.method);
 
             Assert.AreEqual(m_TestAsset.fileName, myIssue.filename);
             Assert.AreEqual("'System.Linq.Enumerable.Count' usage", myIssue.description, "Description: {0}", myIssue.description);

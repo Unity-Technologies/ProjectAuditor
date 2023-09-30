@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Tests.Common;
@@ -87,8 +88,8 @@ class MyClass
 
             var issue = issues.First();
 
-            // check descriptor
-            Assert.IsNull(issue.descriptor);
+            // check ID
+            Assert.IsFalse(issue.id.IsValid());
 
             // check issue
             Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
@@ -113,13 +114,14 @@ class MyClass
             var myIssue = issues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            Assert.NotNull(myIssue.descriptor);
+            var descriptor = myIssue.id.GetDescriptor();
+            Assert.NotNull(descriptor);
 
-            Assert.AreEqual(Severity.Moderate, myIssue.descriptor.defaultSeverity);
-            Assert.AreEqual(typeof(string), myIssue.descriptor.id.GetType());
-            Assert.AreEqual("PAC0066", myIssue.descriptor.id);
-            Assert.AreEqual("UnityEngine.Camera", myIssue.descriptor.type);
-            Assert.AreEqual("allCameras", myIssue.descriptor.method);
+            Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
+            Assert.AreEqual(typeof(DescriptorID), myIssue.id.GetType());
+            Assert.AreEqual("PAC0066", myIssue.id.ToString());
+            Assert.AreEqual("UnityEngine.Camera", descriptor.type);
+            Assert.AreEqual("allCameras", descriptor.method);
 
             Assert.AreEqual(m_ScriptWithDiagnostic.fileName, myIssue.filename);
             Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.description);

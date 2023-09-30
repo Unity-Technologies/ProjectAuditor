@@ -96,7 +96,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 }
             }
 
-            return ProjectIssue.Create(IssueCategory.Code, descriptor)
+            return ProjectIssue.Create(IssueCategory.Code, descriptor.id)
                 .WithDescription(description);
         }
     }

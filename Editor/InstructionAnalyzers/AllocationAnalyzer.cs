@@ -99,7 +99,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                     var lastParam = callee.Parameters.Last();
                     if (lastParam.HasCustomAttributes && lastParam.CustomAttributes.Any(a => a.AttributeType.FullName.GetHashCode() == k_ParamArrayAtributeHashCode))
                     {
-                        return ProjectIssue.Create(IssueCategory.Code, k_ParamArrayAllocationDescriptor, lastParam.ParameterType.Name, lastParam.Name);
+                        return ProjectIssue.Create(IssueCategory.Code, k_ParamArrayAllocationDescriptor.id, lastParam.ParameterType.Name, lastParam.Name);
                     }
                 }
                 return null;
@@ -115,18 +115,18 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 var isClosure = typeReference.Name.StartsWith("<>c__DisplayClass");
                 if (isClosure)
                 {
-                    return ProjectIssue.Create(IssueCategory.Code, k_ClosureAllocationDescriptor, callerMethodDefinition.DeclaringType.Name, callerMethodDefinition.Name);
+                    return ProjectIssue.Create(IssueCategory.Code, k_ClosureAllocationDescriptor.id, callerMethodDefinition.DeclaringType.Name, callerMethodDefinition.Name);
                 }
                 else
                 {
-                    return ProjectIssue.Create(IssueCategory.Code, k_ObjectAllocationDescriptor, typeReference.FullName);
+                    return ProjectIssue.Create(IssueCategory.Code, k_ObjectAllocationDescriptor.id, typeReference.FullName);
                 }
             }
             else // OpCodes.Newarr
             {
                 var typeReference = (TypeReference)inst.Operand;
 
-                return ProjectIssue.Create(IssueCategory.Code, k_ArrayAllocationDescriptor, typeReference.Name);
+                return ProjectIssue.Create(IssueCategory.Code, k_ArrayAllocationDescriptor.id, typeReference.Name);
             }
         }
     }

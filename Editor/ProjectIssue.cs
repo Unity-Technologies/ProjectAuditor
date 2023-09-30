@@ -3,6 +3,7 @@ using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -10,52 +11,60 @@ namespace Unity.ProjectAuditor.Editor
     /// ProjectAuditor Issue found in the current project
     /// </summary>
     [Serializable]
-    public class ProjectIssue
+    public class ProjectIssue : ISerializationCallbackReceiver
     {
         /// <summary>
         /// Create Diagnostics-specific IssueBuilder
         /// </summary>
-        /// <param name="category"> Issue category </param>
-        /// <param name="descriptor"> Diagnostic descriptor </param>
-        /// <param name="messageArgs"> Arguments to be used in the message formatting</param>
-        /// <returns>The IssueBuilder, constructed with the specified category, descriptor and message arguments</returns>
-        internal static IssueBuilder Create(IssueCategory category, Descriptor descriptor, params object[] messageArgs)
+        /// <param name="category">Issue category</param>
+        /// <param name="id">Diagnostic descriptor ID</param>
+        /// <param name="messageArgs">Arguments to be used in the message formatting</param>
+        /// <returns>The IssueBuilder, constructed with the specified category, descriptor ID and message arguments</returns>
+        internal static IssueBuilder Create(IssueCategory category, string id, params object[] messageArgs)
         {
-            return new IssueBuilder(category, descriptor, messageArgs);
+            return new IssueBuilder(category, id, messageArgs);
         }
 
         /// <summary>
         /// Create General-purpose IssueBuilder
         /// </summary>
-        /// <param name="category"> Issue category </param>
-        /// <param name="description"> User-friendly description </param>
+        /// <param name="category">Issue category</param>
+        /// <param name="description">User-friendly description</param>
         /// <returns>The IssueBuilder, constructed with the specified category and description string</returns>
-        internal static IssueBuilder Create(IssueCategory category, string description)
+        internal static IssueBuilder CreateWithoutDiagnostic(IssueCategory category, string description)
         {
             return new IssueBuilder(category, description);
         }
 
+        DescriptorID m_DescriptorID;
+        // TODO: This is a fudge. Ideally DescriptorID would serialize to/forom a simple string and we wouldn't need to keep this.
+        [SerializeField] string m_ID;
         [SerializeField] IssueCategory m_Category;
         [SerializeField] string m_Description;
-        [SerializeField] Descriptor m_Descriptor;
+        [SerializeField] Severity m_Severity;
 
         [SerializeField] DependencyNode m_Dependencies;
         [SerializeField] Location m_Location;
-
         [SerializeField] string[] m_CustomProperties;
-        [SerializeField] Severity m_Severity;
+
+        /// <summary>
+        /// Determines whether the issue was fixed. Only used for diagnostics
+        /// </summary>
+        public bool wasFixed = false;
 
         /// <summary>
         /// Constructs and returns an instance of ProjectIssue
         /// </summary>
         /// <param name="category">Issue category</param>
-        /// <param name="descriptor">Diagnostic descriptor</param>
+        /// <param name="id">Diagnostic descriptor ID</param>
         /// <param name="args">Arguments to be used in the message formatting</param>
-        internal ProjectIssue(IssueCategory category, Descriptor descriptor, params object[] args)
+        internal ProjectIssue(IssueCategory category, string id, params object[] args)
         {
-            m_Descriptor = descriptor;
-            m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
+            m_DescriptorID = new DescriptorID(id);
             m_Category = category;
+
+            var descriptor = m_DescriptorID.GetDescriptor();
+            m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
             m_Severity = descriptor.defaultSeverity;
         }
 
@@ -66,15 +75,28 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="description">Issue description</param>
         internal ProjectIssue(IssueCategory category, string description)
         {
-            m_Description = description;
+            m_DescriptorID = new DescriptorID(null);  // Empty, invalid descriptor
             m_Category = category;
+            m_Description = description;
             m_Severity = Severity.Default;
+        }
+
+        /// <summary>
+        /// An unique identifier for the issue diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits
+        /// </summary>
+        public DescriptorID id
+        {
+            get => m_DescriptorID;
+            internal set => m_DescriptorID = value;
         }
 
         /// <summary>
         /// This issue's category
         /// </summary>
-        public IssueCategory category => m_Category;
+        public IssueCategory category
+        {
+            get => m_Category;
+        }
 
         /// <summary>
         /// Custom properties
@@ -95,16 +117,6 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Optional descriptor. Only used for diagnostics
-        /// </summary>
-        public Descriptor descriptor => m_Descriptor;
-
-        /// <summary>
-        /// Determines whether the issue was fixed. Only used for diagnostics
-        /// </summary>
-        public bool wasFixed = false;
-
-        /// <summary>
         /// Dependencies of this project issue
         /// </summary>
         internal DependencyNode dependencies
@@ -112,11 +124,6 @@ namespace Unity.ProjectAuditor.Editor
             get => m_Dependencies;
             /*public*/ set => m_Dependencies = value;
         }
-
-        /// <summary>
-        /// Depth in display tree. 0 by default.
-        /// </summary>
-        public int depth = 0;
 
         /// <summary>
         /// Name of the file that contains this issue
@@ -167,7 +174,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public Severity severity
         {
-            get => m_Severity == Severity.Default && descriptor != null ? descriptor.defaultSeverity : m_Severity;
+            get => m_Severity == Severity.Default && m_DescriptorID.IsValid() ? m_DescriptorID.GetDescriptor().defaultSeverity : m_Severity;
             set => m_Severity = value;
         }
 
@@ -177,7 +184,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns>True if the issue's descriptor is not null and is valid. Otherwise, returns false.</returns>
         public bool IsDiagnostic()
         {
-            return descriptor != null && descriptor.IsValid();
+            return id.IsValid();
         }
 
         /// <summary>
@@ -326,6 +333,17 @@ namespace Unity.ProjectAuditor.Editor
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct
         {
             m_CustomProperties[Convert.ToUInt32(propertyEnum)] = property.ToString();
+        }
+
+        // TODO: This is a fudge. Ideally DescriptorID would serialize to/from a simple string and we wouldn't need to keep this.
+        public void OnBeforeSerialize()
+        {
+            m_ID = m_DescriptorID.AsString();
+        }
+
+        public void OnAfterDeserialize()
+        {
+            m_DescriptorID = m_ID;
         }
     }
 }

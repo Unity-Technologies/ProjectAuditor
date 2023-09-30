@@ -54,17 +54,17 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             {
                 if (IsMixedStandardShaderQuality(projectAuditorParams.platform))
                 {
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_ShaderQualityDescriptor)
+                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_ShaderQualityDescriptor.id)
                         .WithLocation("Project/Graphics");
                 }
                 if (IsUsingForwardRendering(projectAuditorParams.platform))
                 {
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_ForwardRenderingDescriptor)
+                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_ForwardRenderingDescriptor.id)
                         .WithLocation("Project/Graphics");
                 }
                 if (IsUsingDeferredRendering(projectAuditorParams.platform))
                 {
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DeferredRenderingDescriptor)
+                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DeferredRenderingDescriptor.id)
                         .WithLocation("Project/Graphics");
                 }
             }

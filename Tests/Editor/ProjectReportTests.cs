@@ -50,19 +50,11 @@ class MyClass : MonoBehaviour
         public void ProjectReport_Issue_IsAdded()
         {
             var projectReport = new ProjectReport();
-            var p = new Descriptor
-                (
-                "TD2001",
-                "test",
-                Area.CPU,
-                "this is not actually a problem",
-                "do nothing"
-                );
 
             projectReport.AddIssues(new[] { new ProjectIssue
                                             (
                                                 IssueCategory.Code,
-                                                p,
+                                                "TDD2001",
                                                 "dummy issue"
                                             ) }
             );
@@ -348,12 +340,13 @@ class MyClass : MonoBehaviour
 
             var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
-            var issues = AnalyzeAndExport(category,  path, "csv", i => i.descriptor.id.Equals("PAS0007"));
+            var issues = AnalyzeAndExport(category,  path, "csv", i => i.id.Equals("PAS0007"));
 
             Assert.AreEqual(1, issues.Count);
 
             var issue = issues.First();
-            var expectedIssueLine = $"\"{issue.description}\",\"{Severity.Moderate}\",\"{issue.descriptor.GetAreasSummary()}\",\"{issue.filename}\",\"{issue.descriptor.GetPlatformsSummary()}\"";
+            var descriptor = issue.id.GetDescriptor();
+            var expectedIssueLine = $"\"{issue.description}\",\"{Severity.Moderate}\",\"{descriptor.GetAreasSummary()}\",\"{issue.filename}\",\"{descriptor.GetPlatformsSummary()}\"";
 
             var issueExported = false;
             using (var file = new StreamReader(path))
@@ -381,11 +374,12 @@ class MyClass : MonoBehaviour
 
             var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.html", category.ToString().ToLower());
-            var issues = AnalyzeAndExport(category,  path, "html", i => i.descriptor.id.Equals("PAS0007"));
+            var issues = AnalyzeAndExport(category,  path, "html", i => i.id.Equals("PAS0007"));
 
             Assert.AreEqual(1, issues.Count);
 
             var issue = issues.First();
+            var descriptor = issue.id.GetDescriptor();
             var issueExported = false;
             var formatCorrect = false;
             using (var file = new StreamReader(path))
@@ -432,7 +426,7 @@ class MyClass : MonoBehaviour
                             index++;
                         }
                         line = file.ReadLine();
-                        if (line.Equals($"<td>{issue.descriptor.GetAreasSummary()}</td>"))
+                        if (line.Equals($"<td>{descriptor.GetAreasSummary()}</td>"))
                         {
                             index++;
                         }
@@ -442,7 +436,7 @@ class MyClass : MonoBehaviour
                             index++;
                         }
                         line = file.ReadLine();
-                        if (line.Equals($"<td>{issue.descriptor.GetPlatformsSummary()}</td>"))
+                        if (line.Equals($"<td>{descriptor.GetPlatformsSummary()}</td>"))
                         {
                             index++;
                         }
