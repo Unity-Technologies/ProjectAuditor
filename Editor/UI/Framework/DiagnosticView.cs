@@ -235,7 +235,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     exporter.WriteHeader();
 
                     var matchingIssues = m_Issues.Where(issue => predicate == null || predicate(issue));
-                    matchingIssues = matchingIssues.Where(issue => !string.IsNullOrEmpty(issue.id) || m_Config.GetAction(issue.id, issue.GetContext()) != Severity.None);
+                    matchingIssues = matchingIssues.Where(issue => issue.id.IsValid() || m_Config.GetAction(issue.id, issue.GetContext()) != Severity.None);
                     exporter.WriteIssues(matchingIssues.ToArray());
                 }
 
@@ -256,7 +256,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return true;
 
             var id = issue.id;
-            if (string.IsNullOrEmpty(id))
+            if (!id.IsValid())
                 return true;
 
             var context = issue.GetContext();

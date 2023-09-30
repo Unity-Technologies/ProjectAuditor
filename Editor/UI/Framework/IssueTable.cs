@@ -300,7 +300,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 var issue = item.ProjectIssue;
                 if (issue.wasFixed)
                     GUI.enabled = false;
-                else if (!string.IsNullOrEmpty(issue.id))
+                else if (issue.id.IsValid())
                 {
                     var id = issue.id;
                     rule = m_Config.GetRule(id, issue.GetContext());
@@ -513,7 +513,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     });
                 }
 
-                var desc = item.ProjectIssue != null && !string.IsNullOrEmpty(item.ProjectIssue.id) ? item.ProjectIssue.id.GetDescriptor() : null;
+                var desc = item.ProjectIssue != null && item.ProjectIssue.id.IsValid() ? item.ProjectIssue.id.GetDescriptor() : null;
                 if (m_Desc.onOpenManual != null && desc != null && desc.type.StartsWith("UnityEngine."))
                 {
                     menu.AddItem(Utility.OpenScriptReference, false, () =>

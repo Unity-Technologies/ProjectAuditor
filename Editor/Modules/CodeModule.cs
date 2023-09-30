@@ -258,7 +258,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var onCompleteInternal = new Action<IProgress>(bar =>
             {
                 // remove issues if platform does not match
-                foundIssues.RemoveAll(i => !string.IsNullOrEmpty(i.id) &&
+                foundIssues.RemoveAll(i => i.id.IsValid() &&
                                            !i.id.GetDescriptor().IsPlatformCompatible(projectAuditorParams.platform));
 
                 var diagnostics = foundIssues.Where(i => i.category != IssueCategory.GenericInstance).ToList();

@@ -109,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor
         public IReadOnlyCollection<ProjectIssue> FindByDiagnosticID(string id)
         {
             s_Mutex.WaitOne();
-            var result = m_Issues.Where(i => !string.IsNullOrEmpty(i.id) && i.id.Equals(id)).ToArray();
+            var result = m_Issues.Where(i => i.id.IsValid() && i.id.Equals(id)).ToArray();
             s_Mutex.ReleaseMutex();
             return result;
         }

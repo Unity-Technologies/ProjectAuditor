@@ -174,7 +174,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public Severity severity
         {
-            get => m_Severity == Severity.Default && !string.IsNullOrEmpty(m_DescriptorID) ? m_DescriptorID.GetDescriptor().defaultSeverity : m_Severity;
+            get => m_Severity == Severity.Default && m_DescriptorID.IsValid() ? m_DescriptorID.GetDescriptor().defaultSeverity : m_Severity;
             set => m_Severity = value;
         }
 
@@ -184,7 +184,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns>True if the issue's descriptor is not null and is valid. Otherwise, returns false.</returns>
         public bool IsDiagnostic()
         {
-            return !string.IsNullOrEmpty(id);
+            return id.IsValid();
         }
 
         /// <summary>
