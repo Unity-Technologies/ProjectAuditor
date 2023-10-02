@@ -122,7 +122,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SplashScreenDescriptor.id)
                     .WithLocation("Project/Player");
             }
-            if (!IsSpeakerModeMono())
+            if (k_SpeakerModeDescriptor.IsPlatformCompatible(projectAuditorParams.platform) && !IsSpeakerModeMono())
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SpeakerModeDescriptor.id)
                     .WithLocation("Project/Player");

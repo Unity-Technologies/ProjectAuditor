@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DefaultLayerCollisionMatrixDescriptor.id)
                     .WithLocation("Project/Physics 2D");
             }
-            if (IsNotUsingSimulationModeScript())
+            if (k_SimulationModeDescriptor.IsVersionCompatible() && IsNotUsingSimulationModeScript())
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SimulationModeDescriptor.id)
                     .WithLocation("Project/Physics 2D");

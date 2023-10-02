@@ -70,15 +70,15 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             var methodReference = (MethodReference)inst.Operand;
-            if (methodReference.DeclaringType.FullName.StartsWith("System.Net."))
+            if (k_DescriptorSystemNet.IsPlatformCompatible(projectAuditorParams.platform) && methodReference.DeclaringType.FullName.StartsWith("System.Net."))
             {
                 return ProjectIssue.Create(IssueCategory.Code, k_DescriptorSystemNet.id, methodReference.FullName);
             }
-            if (methodReference.DeclaringType.FullName.StartsWith("System.Threading."))
+            if (k_DescriptorSystemThreading.IsPlatformCompatible(projectAuditorParams.platform) && methodReference.DeclaringType.FullName.StartsWith("System.Threading."))
             {
                 return ProjectIssue.Create(IssueCategory.Code, k_DescriptorSystemThreading.id, methodReference.FullName);
             }
-            if (methodReference.DeclaringType.FullName.Equals("UnityEngine.Microphone"))
+            if (k_DescriptorMicrophone.IsPlatformCompatible(projectAuditorParams.platform) && methodReference.DeclaringType.FullName.Equals("UnityEngine.Microphone"))
             {
                 return ProjectIssue.Create(IssueCategory.Code, k_DescriptorMicrophone.id, methodReference.FullName);
             }
