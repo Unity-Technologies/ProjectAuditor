@@ -660,13 +660,13 @@ namespace Unity.ProjectAuditor.EditorTests
 
                 cameraData.stopNaN = true;
                 var issues = Analyze(IssueCategory.ProjectSetting,
-                    i => i.descriptor.title.Equals(stopNaNTitle));
+                    i => i.id.GetDescriptor().title.Equals(stopNaNTitle));
                 var issuesLength = issues.Length;
                 Assert.IsTrue(issuesLength > 0);
 
                 cameraData.stopNaN = false;
                 issues = Analyze(IssueCategory.ProjectSetting,
-                    i => i.descriptor.title.Equals(stopNaNTitle));
+                    i => i.id.GetDescriptor().title.Equals(stopNaNTitle));
                 var issuesLength2 = issues.Length;
                 Assert.IsTrue(issuesLength - issuesLength2 == 1);
 
