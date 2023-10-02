@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             else
             {
 #if UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH
-                foreach (var analyzeSrpAsset in RenderPipelineUtils.AnalyzeAssets(Analyze)) yield return analyzeSrpAsset;
+                foreach (var analyzeSrpAsset in RenderPipelineUtils.AnalyzeAssets(projectAuditorParams, Analyze)) yield return analyzeSrpAsset;
 
                 var allCameraData = RenderPipelineUtils
                     .GetAllComponents<UniversalAdditionalCameraData>();
@@ -111,16 +111,16 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
 
 #if UNITY_2019_3_OR_NEWER
-        private IEnumerable<ProjectIssue> Analyze(RenderPipelineAsset renderPipeline, int qualityLevel)
+        private IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, RenderPipelineAsset renderPipeline, int qualityLevel)
         {
 #if PACKAGE_URP
-            if (GetHdrSetting(renderPipeline))
+            if (k_HdrSettingDescriptor.IsPlatformCompatible(projectAuditorParams.platform) && GetHdrSetting(renderPipeline))
             {
                 yield return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, renderPipeline.name,
                     k_HdrSettingDescriptor.id);
             }
 
-            if (GetMsaaSampleCountSetting(renderPipeline) >= 4)
+            if (k_MsaaSampleCountSettingDescriptor.IsPlatformCompatible(projectAuditorParams.platform) && GetMsaaSampleCountSetting(renderPipeline) >= 4)
             {
                 yield return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, renderPipeline.name,
                     k_MsaaSampleCountSettingDescriptor.id);

@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
 #if UNITY_2019_3_OR_NEWER
-            return RenderPipelineUtils.AnalyzeAssets(Analyze);
+            return RenderPipelineUtils.AnalyzeAssets(projectAuditorParams, Analyze);
 #else
             yield break;
 #endif
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
 
 #if UNITY_2019_3_OR_NEWER
-        IEnumerable<ProjectIssue> Analyze(RenderPipelineAsset renderPipeline, int qualityLevel)
+        IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, RenderPipelineAsset renderPipeline, int qualityLevel)
         {
             bool? srpBatcherSetting = GetSrpBatcherSetting(renderPipeline);
             if (srpBatcherSetting != null && !srpBatcherSetting.Value)
