@@ -278,9 +278,9 @@ namespace Unity.ProjectAuditor.Editor
             return null;
         }
 
-        internal Descriptor[] GetDescriptors()
+        internal DescriptorID[] GetDiagnosticIDs()
         {
-            return m_Modules.SelectMany(m => m.supportedDescriptors).ToArray();
+            return m_Modules.SelectMany(m => m.supportedDescriptorIDs).ToArray();
         }
 
         internal ProjectAuditorModule[] GetModules(IssueCategory category)

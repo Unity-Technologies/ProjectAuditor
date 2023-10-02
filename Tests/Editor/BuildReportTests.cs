@@ -142,19 +142,19 @@ namespace Unity.ProjectAuditor.EditorTests
             var issues = AnalyzeBuild(IssueCategory.BuildStep);
             var step = issues.FirstOrDefault(i => i.description.Equals("Build player"));
             Assert.NotNull(step);
-            Assert.That(step.depth, Is.EqualTo(0));
+            Assert.That(step.GetCustomPropertyInt32(BuildReportStepProperty.Depth), Is.EqualTo(0));
 
             step = issues.FirstOrDefault(i => i.description.Equals("Compile scripts"));
             Assert.NotNull(step, "\"Compile scripts\" string not found");
 #if UNITY_2021_1_OR_NEWER
-            Assert.That(step.depth, Is.EqualTo(3));
+            Assert.That(step.GetCustomPropertyInt32(BuildReportStepProperty.Depth), Is.EqualTo(3));
 #else
-            Assert.That(step.depth, Is.EqualTo(1));
+            Assert.That(step.GetCustomPropertyInt32(BuildReportStepProperty.Depth), Is.EqualTo(1));
 #endif
 
             step = issues.FirstOrDefault(i => i.description.Equals("Postprocess built player"));
             Assert.NotNull(step, "\"Postprocess built player\" string not found");
-            Assert.That(step.depth, Is.EqualTo(1));
+            Assert.That(step.GetCustomPropertyInt32(BuildReportStepProperty.Depth), Is.EqualTo(1));
         }
     }
 }

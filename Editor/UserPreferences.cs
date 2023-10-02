@@ -25,6 +25,8 @@ namespace Unity.ProjectAuditor.Editor
 
         static readonly string k_LogTimingsInfoLabel = "Log timing information";
 
+        static readonly string k_PrettifyJSONOutputLabel = "Prettify saved JSON files";
+        
         static readonly string k_DeveloperModeLabel = "Enable Developer Mode";
 
         static string k_BuildReportAutoSaveLabel = "Auto Save Last Report";
@@ -97,6 +99,12 @@ namespace Unity.ProjectAuditor.Editor
             set => EditorPrefs.SetBool(MakeKey(nameof(developerMode)), value);
         }
 
+        public static bool prettifyJsonOutput
+        {
+            get => EditorPrefs.GetBool(MakeKey(nameof(prettifyJsonOutput)), false);
+            set => EditorPrefs.SetBool(MakeKey(nameof(prettifyJsonOutput)), value);
+        }
+
         public static bool logTimingsInfo
         {
             get => EditorPrefs.GetBool(MakeKey(nameof(logTimingsInfo)), false);
@@ -141,6 +149,8 @@ namespace Unity.ProjectAuditor.Editor
                 // need to trigger domain reload so that Views are re-registered
                 AssetDatabase.ImportAsset(ProjectAuditor.s_PackagePath + "/Editor/UserPreferences.cs");
             }
+
+            prettifyJsonOutput = EditorGUILayout.Toggle(k_PrettifyJSONOutputLabel, prettifyJsonOutput);
 
             EditorGUILayout.LabelField("Analysis", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;

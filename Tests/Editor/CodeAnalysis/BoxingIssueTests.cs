@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Tests.Common;
@@ -47,14 +48,17 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(1, boxingInt.line);
             Assert.AreEqual(IssueCategory.Code, boxingInt.category);
 
-            // check descriptor
-            Assert.NotNull(boxingInt.descriptor);
-            Assert.AreEqual(Severity.Moderate, boxingInt.descriptor.defaultSeverity);
-            Assert.AreEqual(BoxingAnalyzer.PAC2000, boxingInt.descriptor.id);
-            Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.type));
-            Assert.True(string.IsNullOrEmpty(boxingInt.descriptor.method));
-            Assert.False(string.IsNullOrEmpty(boxingInt.descriptor.title));
-            Assert.AreEqual("Boxing Allocation", boxingInt.descriptor.title);
+            // check ID
+            Assert.True(boxingInt.id.IsValid());
+
+            Assert.AreEqual(BoxingAnalyzer.PAC2000, boxingInt.id.ToString());
+
+            var descriptor = boxingInt.id.GetDescriptor();
+            Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
+            Assert.True(string.IsNullOrEmpty(descriptor.type));
+            Assert.True(string.IsNullOrEmpty(descriptor.method));
+            Assert.False(string.IsNullOrEmpty(descriptor.title));
+            Assert.AreEqual("Boxing Allocation", descriptor.title);
         }
 
         [Test]
@@ -74,14 +78,17 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(1, boxingFloat.line);
             Assert.AreEqual(IssueCategory.Code, boxingFloat.category);
 
-            // check descriptor
-            Assert.NotNull(boxingFloat.descriptor);
-            Assert.AreEqual(Severity.Moderate, boxingFloat.descriptor.defaultSeverity);
-            Assert.AreEqual(BoxingAnalyzer.PAC2000, boxingFloat.descriptor.id);
-            Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.type));
-            Assert.True(string.IsNullOrEmpty(boxingFloat.descriptor.method));
-            Assert.False(string.IsNullOrEmpty(boxingFloat.descriptor.title));
-            Assert.AreEqual("Boxing Allocation", boxingFloat.descriptor.title);
+            // check ID
+            Assert.True(boxingFloat.id.IsValid());
+
+            Assert.AreEqual(BoxingAnalyzer.PAC2000, boxingFloat.id.ToString());
+
+            var descriptor = boxingFloat.id.GetDescriptor();
+            Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
+            Assert.True(string.IsNullOrEmpty(descriptor.type));
+            Assert.True(string.IsNullOrEmpty(descriptor.method));
+            Assert.False(string.IsNullOrEmpty(descriptor.title));
+            Assert.AreEqual("Boxing Allocation", descriptor.title);
         }
 
         [Test]

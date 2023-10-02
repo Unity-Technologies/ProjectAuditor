@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Tests.Common;
@@ -43,12 +44,12 @@ namespace Unity.ProjectAuditor.EditorTests
             var issue = scriptIssues.FirstOrDefault();
 
             Assert.NotNull(issue);
-            Assert.NotNull(issue.descriptor);
+            var descriptor = issue.id.GetDescriptor();
 
-            Assert.AreEqual(Severity.Moderate, issue.descriptor.defaultSeverity);
-            Assert.AreEqual(EmptyMethodAnalyzer.GetDescriptor().id, issue.descriptor.id);
-            Assert.True(string.IsNullOrEmpty(issue.descriptor.type));
-            Assert.True(string.IsNullOrEmpty(issue.descriptor.method));
+            Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
+            Assert.AreEqual(EmptyMethodAnalyzer.GetDescriptorID(), issue.id.ToString());
+            Assert.True(string.IsNullOrEmpty(descriptor.type));
+            Assert.True(string.IsNullOrEmpty(descriptor.method));
 
             Assert.AreEqual(m_MonoBehaviourWithEmptyEventMethod.fileName, issue.filename);
             Assert.AreEqual("MonoBehaviour method 'Update' is empty", issue.description);

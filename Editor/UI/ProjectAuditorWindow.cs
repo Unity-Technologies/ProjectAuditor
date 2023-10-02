@@ -198,8 +198,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             // TODO: the rest of this logic is common to all diagnostic views. It should be moved to the AnalysisView
 
             Profiler.BeginSample("MatchArea");
-            var matchArea = m_AreaSelection.ContainsAny(issue.descriptor.areas) ||
-                m_AreaSelection.ContainsGroup("All");
+            var matchArea = m_AreaSelection.ContainsGroup("All") ||
+                            (issue.id.IsValid() && m_AreaSelection.ContainsAny(issue.id.GetDescriptor().areas));
+
             Profiler.EndSample();
             if (!matchArea)
                 return false;

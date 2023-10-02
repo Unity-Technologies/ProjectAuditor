@@ -103,6 +103,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "Resources/unity_builtin_extra",
                 "Unity.SourceGenerators/",
                 PathUtils.Combine(AssemblyInfoProvider.s_ProjectPath, "Unity.SourceGenerators"),
+                PathUtils.Combine(AssemblyInfoProvider.s_ProjectPath, "Unity.Entities.SourceGen"),
                 "Built-in",                        // prefix for built-in resources such as textures (not a real prefix path)
             };
 

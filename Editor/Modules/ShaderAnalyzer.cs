@@ -43,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (!isSrpBatchingCompatible && IsSrpBatchingEnabled)
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_SrpBatcherDescriptor, shader.name)
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_SrpBatcherDescriptor.id, shader.name)
                     .WithLocation(assetPath);
             }
 #endif

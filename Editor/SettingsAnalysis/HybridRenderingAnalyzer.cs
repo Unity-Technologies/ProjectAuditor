@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
             if (PlayerSettingsUtil.IsStaticBatchingEnabled(projectAuditorParams.platform))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_Descriptor);
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_Descriptor.id);
             }
 #else
             yield break;

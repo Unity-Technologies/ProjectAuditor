@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static ProjectIssue CreateSrpBatcherIssue(int qualityLevel, string name)
         {
-            return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, name, k_SRPBatcherSettingDescriptor);
+            return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, name, k_SRPBatcherSettingDescriptor.id);
         }
 
         internal static bool? GetSrpBatcherSetting(RenderPipelineAsset renderPipeline)

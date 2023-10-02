@@ -443,7 +443,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != platform)
                         continue;
 
-                    issues.Add(ProjectIssue.Create(k_ComputeShaderVariantLayout.category, computeShaderName)
+                    issues.Add(ProjectIssue.CreateWithoutDiagnostic(k_ComputeShaderVariantLayout.category, computeShaderName)
                         .WithCustomProperties(new object[(int)ComputeShaderVariantProperty.Num]
                         {
                             shaderVariantData.compilerPlatform,
@@ -467,7 +467,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var materialPathMap = CollectMaterials();
             foreach (var material in materialPathMap)
             {
-                issues.Add(ProjectIssue.Create(k_MaterialLayout.category, material.Key.name)
+                issues.Add(ProjectIssue.CreateWithoutDiagnostic(k_MaterialLayout.category, material.Key.name)
                     .WithCustomProperties(new object[(int)MaterialProperty.Num]
                     {
                         material.Key.shader.name
@@ -503,7 +503,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var message = shaderMessage.message;
                 if (message.EndsWith("\n"))
                     message = message.Substring(0, message.Length - 2);
-                yield return ProjectIssue.Create(IssueCategory.ShaderCompilerMessage, message)
+                yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.ShaderCompilerMessage, message)
                     .WithCustomProperties(new object[(int)ShaderMessageProperty.Num]
                     {
                         shaderName,
@@ -525,7 +525,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (shaderHasError)
             {
-                yield return ProjectIssue.Create(IssueCategory.Shader, Path.GetFileNameWithoutExtension(assetPath))
+                yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Shader, Path.GetFileNameWithoutExtension(assetPath))
                     .WithCustomProperties((int)ShaderProperty.Num, k_NotAvailable)
                     .WithLocation(assetPath)
                     .WithSeverity(severity);
@@ -552,7 +552,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #if UNITY_2019_1_OR_NEWER
                 passCount = shader.passCount;
 #endif
-                yield return ProjectIssue.Create(IssueCategory.Shader, shaderName)
+                yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Shader, shaderName)
                     .WithCustomProperties(new object[(int)ShaderProperty.Num]
                     {
                         assetSize,
@@ -583,7 +583,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != platform)
                         continue;
 
-                    yield return ProjectIssue.Create(IssueCategory.ShaderVariant, shader.name)
+                    yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.ShaderVariant, shader.name)
                         .WithLocation(assetPath)
                         .WithCustomProperties(new object[(int)ShaderVariantProperty.Num]
                         {

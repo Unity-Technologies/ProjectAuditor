@@ -80,7 +80,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var textureDiagnostic =
                 AnalyzeAndFindAssetIssues(m_TestSpriteAtlasFull, IssueCategory.AssetDiagnostic)
-                    .FirstOrDefault(i => i.descriptor.Equals(SpriteAtlasAnalyzer.k_SpriteAtlasEmptyDescriptor));
+                    .FirstOrDefault(i => i.id.Equals(SpriteAtlasAnalyzer.k_SpriteAtlasEmptyDescriptor.id));
 
             Assert.Null(textureDiagnostic);
         }
@@ -91,7 +91,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var textureDiagnostic =
                 AnalyzeAndFindAssetIssues(m_TestSpriteAtlasEmpty, IssueCategory.AssetDiagnostic)
-                    .FirstOrDefault(i => i.descriptor.Equals(SpriteAtlasAnalyzer.k_SpriteAtlasEmptyDescriptor));
+                    .FirstOrDefault(i => i.id.Equals(SpriteAtlasAnalyzer.k_SpriteAtlasEmptyDescriptor.id));
 
             Assert.IsNotNull(textureDiagnostic);
         }

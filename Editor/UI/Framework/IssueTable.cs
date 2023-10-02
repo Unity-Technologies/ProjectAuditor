@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -94,7 +95,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 itemsList.AddRange(m_TreeViewItemIssues);
             foreach (var issue in issues)
             {
-                var depth = m_Layout.hierarchy ? issue.depth : 1;
+                var depth = 1;
+                if (m_Layout.hierarchy)
+                {
+                    if (m_Desc.category == IssueCategory.BuildStep)
+                    {
+                        depth = issue.GetCustomPropertyInt32(BuildReportStepProperty.Depth);
+                    }
+                    else
+                        depth = 0;
+                }
                 var item = new IssueTableItem(m_NextId++, depth, issue.description, issue, issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
                 itemsList.Add(item);
             }
@@ -290,12 +300,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 var issue = item.ProjectIssue;
                 if (issue.wasFixed)
                     GUI.enabled = false;
-                else if (issue.descriptor != null && issue.descriptor.IsValid())
+                else if (issue.id.IsValid())
                 {
-                    var descriptor = issue.descriptor;
-                    rule = m_Config.GetRule(descriptor, issue.GetContext());
+                    var id = issue.id;
+                    rule = m_Config.GetRule(id, issue.GetContext());
                     if (rule == null)
-                        rule = m_Config.GetRule(descriptor); // try to find non-specific rule
+                        rule = m_Config.GetRule(id); // try to find non-specific rule
                     if (rule != null && rule.severity == Severity.None)
                         GUI.enabled = false;
                 }
@@ -319,7 +329,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     break;
 
                     case PropertyType.Area:
-                        var areaNames = issue.descriptor.GetAreasSummary();
+                        var areaNames = issue.id.GetDescriptor().GetAreasSummary();
                         EditorGUI.LabelField(cellRect, new GUIContent(areaNames, Tooltip.Area), labelStyle);
                         break;
                     case PropertyType.Description:
@@ -503,12 +513,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     });
                 }
 
-                var desc = item.ProjectIssue != null && item.ProjectIssue.descriptor != null ? item.ProjectIssue.descriptor : null;
+                var desc = item.ProjectIssue != null && item.ProjectIssue.id.IsValid() ? item.ProjectIssue.id.GetDescriptor() : null;
                 if (m_Desc.onOpenManual != null && desc != null && desc.type.StartsWith("UnityEngine."))
                 {
                     menu.AddItem(Utility.OpenScriptReference, false, () =>
                     {
-                        m_Desc.onOpenManual(item.ProjectIssue.descriptor);
+                        m_Desc.onOpenManual(desc);
                     });
                 }
 

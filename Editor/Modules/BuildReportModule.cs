@@ -33,6 +33,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         Duration = 0,
         Message,
+        Depth,
         Num
     }
 
@@ -145,26 +146,26 @@ namespace Unity.ProjectAuditor.Editor.Modules
             foreach (var step in buildReport.steps)
             {
                 var depth = step.depth;
-                yield return ProjectIssue.Create(IssueCategory.BuildStep, step.name)
+                yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.BuildStep, step.name)
                     .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                     {
                         Formatting.FormatDuration(step.duration),
-                        step.name
+                        step.name,
+                        depth
                     })
-                    .WithDepth(depth)
                     .WithSeverity(Severity.Info);
 
                 foreach (var message in step.messages)
                 {
                     var logMessage = message.content;
                     var description = new StringReader(logMessage).ReadLine(); // only take first line
-                    yield return ProjectIssue.Create(IssueCategory.BuildStep, description)
+                    yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.BuildStep, description)
                         .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                         {
                             0,
-                            logMessage
+                            logMessage,
+                            depth + 1
                         })
-                        .WithDepth(depth + 1)
                         .WithSeverity(Diagnostic.Utils.LogTypeToSeverity(message.type));
                 }
             }
@@ -184,7 +185,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     var assetImporter = AssetImporter.GetAtPath(assetPath);
                     var description = string.IsNullOrEmpty(assetPath) ? k_Unknown : Path.GetFileNameWithoutExtension(assetPath);
 
-                    yield return ProjectIssue.Create(IssueCategory.BuildFile, description)
+                    yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.BuildFile, description)
                         .WithLocation(assetPath)
                         .WithCustomProperties(new object[(int)BuildReportFileProperty.Num]
                         {
@@ -200,7 +201,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         ProjectIssue NewMetaData(string key, object value)
         {
-            return ProjectIssue.Create(IssueCategory.BuildSummary, key)
+            return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.BuildSummary, key)
                 .WithCustomProperties(new object[(int)BuildReportMetaData.Num] { value });
         }
 

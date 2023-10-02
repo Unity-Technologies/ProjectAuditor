@@ -42,12 +42,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             // PlayerSettings.GetArchitecture returns an integer value associated with the architecture of a BuildTargetPlatformGroup. 0 - None, 1 - ARM64, 2 - Universal.
             if (projectAuditorParams.platform == BuildTarget.iOS && PlayerSettings.GetArchitecture(BuildTargetGroup.iOS) == 2)
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DescriptorIOS)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DescriptorIOS.id)
                     .WithLocation("Project/Player");
 
             if (projectAuditorParams.platform == BuildTarget.Android && (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARMv7) != 0 &&
                 (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) != 0)
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DescriptorAndroid)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DescriptorAndroid.id)
                     .WithLocation("Project/Player");
         }
     }

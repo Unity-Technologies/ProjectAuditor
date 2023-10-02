@@ -27,6 +27,8 @@ namespace Unity.ProjectAuditor.Editor
 
         [SerializeField] List<ModuleInfo> m_ModuleInfos = new List<ModuleInfo>();
 
+        [SerializeField] private DescriptorLibrary m_DescriptorLibrary = new DescriptorLibrary();
+
         [SerializeField] List<ProjectIssue> m_Issues = new List<ProjectIssue>();
 
         static Mutex s_Mutex = new Mutex();
@@ -100,14 +102,14 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// find all diagnostics of a specific descriptor
+        /// Find all diagnostics that match a specific ID
         /// </summary>
-        /// <param name="descriptor"> Desired Descriptor</param>
+        /// <param name="id"> Desired diagnostic ID</param>
         /// <returns> Array of project issues</returns>
-        public IReadOnlyCollection<ProjectIssue> FindByDescriptor(Descriptor descriptor)
+        public IReadOnlyCollection<ProjectIssue> FindByDiagnosticID(string id)
         {
             s_Mutex.WaitOne();
-            var result = m_Issues.Where(i => i.descriptor != null && i.descriptor.Equals(descriptor)).ToArray();
+            var result = m_Issues.Where(i => i.id.IsValid() && i.id.Equals(id)).ToArray();
             s_Mutex.ReleaseMutex();
             return result;
         }
@@ -156,7 +158,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public void Save(string path)
         {
-            File.WriteAllText(path, JsonUtility.ToJson(this));
+            File.WriteAllText(path, JsonUtility.ToJson(this, UserPreferences.prettifyJsonOutput));
         }
 
         public static ProjectReport Load(string path)

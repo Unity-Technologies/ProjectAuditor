@@ -48,19 +48,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             if (IsFogModeEnabled(FogMode.Linear))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, FogMode.Linear)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor.id, FogMode.Linear)
                     .WithLocation("Project/Graphics");
             }
 
             if (IsFogModeEnabled(FogMode.Exponential))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, FogMode.Exponential)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor.id, FogMode.Exponential)
                     .WithLocation("Project/Graphics");
             }
 
             if (IsFogModeEnabled(FogMode.ExponentialSquared))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, FogMode.ExponentialSquared)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor.id, FogMode.ExponentialSquared)
                     .WithLocation("Project/Graphics");
             }
         }

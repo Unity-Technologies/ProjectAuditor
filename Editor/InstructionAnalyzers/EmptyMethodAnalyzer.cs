@@ -55,12 +55,12 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             if (!MonoBehaviourAnalysis.IsMonoBehaviourEvent(methodDefinition))
                 return null;
 
-            return ProjectIssue.Create(IssueCategory.Code, k_Descriptor, methodDefinition.Name);
+            return ProjectIssue.Create(IssueCategory.Code, k_Descriptor.id, methodDefinition.Name);
         }
 
-        internal static Descriptor GetDescriptor()
+        internal static string GetDescriptorID()
         {
-            return k_Descriptor;
+            return k_Descriptor.id;
         }
     }
 }

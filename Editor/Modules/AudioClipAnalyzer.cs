@@ -306,7 +306,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             var ts = new TimeSpan(0, 0, 0, 0, (int)(audioClip.length * 1000.0f));
 
-            yield return ProjectIssue.Create(IssueCategory.AudioClip, clipName)
+            yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.AudioClip, clipName)
                 .WithCustomProperties(
                     new object[(int)AudioClipProperty.Num]
                     {
@@ -351,14 +351,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (runtimeSize > projectAuditorParams.diagnosticParams.StreamingClipThresholdBytes && !isStreaming)
             {
                 yield return ProjectIssue.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioLongClipDoesNotStreamDescriptor, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioLongClipDoesNotStreamDescriptor.id, clipName)
                     .WithLocation(assetPath);
             }
 
             if (decompressedClipSize < projectAuditorParams.diagnosticParams.StreamingClipThresholdBytes && isStreaming)
             {
                 yield return ProjectIssue.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioShortClipStreamsDescriptor, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioShortClipStreamsDescriptor.id, clipName)
                     .WithLocation(assetPath);
             }
 
@@ -367,13 +367,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (isMobileTarget)
                 {
                     yield return ProjectIssue.Create(
-                        IssueCategory.AssetDiagnostic, k_AudioStereoClipsOnMobileDescriptor, clipName)
+                        IssueCategory.AssetDiagnostic, k_AudioStereoClipsOnMobileDescriptor.id, clipName)
                         .WithLocation(assetPath);
                 }
                 else if (!isStreaming)
                 {
                     yield return ProjectIssue.Create(
-                        IssueCategory.AssetDiagnostic, k_AudioStereoClipWhichIsNotStreamingDescriptor, clipName)
+                        IssueCategory.AssetDiagnostic, k_AudioStereoClipWhichIsNotStreamingDescriptor.id, clipName)
                         .WithLocation(assetPath);
                 }
             }
@@ -382,7 +382,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 sampleSettings.loadType == AudioClipLoadType.DecompressOnLoad)
             {
                 yield return ProjectIssue.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioLongDecompressedClipDescriptor, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioLongDecompressedClipDescriptor.id, clipName)
                     .WithLocation(assetPath);
             }
 
@@ -391,7 +391,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 sampleSettings.compressionFormat != AudioCompressionFormat.ADPCM)
             {
                 yield return ProjectIssue.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioCompressedInMemoryDescriptor, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioCompressedInMemoryDescriptor.id, clipName)
                     .WithLocation(assetPath);
             }
 
@@ -403,7 +403,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 sampleSettings.quality == 1.0f)
             {
                 yield return ProjectIssue.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioLargeCompressedMobileDescriptor, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioLargeCompressedMobileDescriptor.id, clipName)
                     .WithLocation(assetPath);
             }
 
@@ -413,28 +413,28 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (audioClip.frequency > 48000)
             {
                 yield return ProjectIssue.Create(
-                    IssueCategory.AssetDiagnostic, k_Audio48KHzDescriptor, clipName)
+                    IssueCategory.AssetDiagnostic, k_Audio48KHzDescriptor.id, clipName)
                     .WithLocation(assetPath);
             }
 
             if (preloadAudioData)
             {
                 yield return ProjectIssue.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioPreloadDescriptor, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioPreloadDescriptor.id, clipName)
                     .WithLocation(assetPath);
             }
 
             if (!audioImporter.loadInBackground && compSize > projectAuditorParams.diagnosticParams.LoadInBackGroundClipSizeThresholdBytes)
             {
                 yield return ProjectIssue.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioLoadInBackgroundDisabledDescriptor, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioLoadInBackgroundDisabledDescriptor.id, clipName)
                     .WithLocation(assetPath);
             }
 
             if (sampleSettings.compressionFormat == AudioCompressionFormat.MP3)
             {
                 yield return ProjectIssue.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioMP3Descriptor, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioMP3Descriptor.id, clipName)
                     .WithLocation(assetPath);
             }
 
@@ -443,7 +443,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 sourceFileExtension != "AIF")
             {
                 yield return ProjectIssue.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioCompressedSourceAssetDescriptor, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioCompressedSourceAssetDescriptor.id, clipName)
                     .WithLocation(assetPath);
             }
         }

@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Improved AudioClip asset table
 * Clear table selection on unmuting issues
 * Move ProjectAuditorConfig fields to UserPreferences
+* ProjectReport serialization files changed so that saved JSON is <= half the size it was before
 
 ### Removed
 * Actions section and Mute/Unmute buttons
