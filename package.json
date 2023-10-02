@@ -9,6 +9,7 @@
       "analysis"
     ],
     "dependencies": {
-      "com.unity.nuget.mono-cecil": "1.11.4"
+      "com.unity.nuget.mono-cecil": "1.11.4",
+      "com.unity.nuget.newtonsoft-json": "3.2.1"
     }
 }

@@ -117,13 +117,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (GetHdrSetting(renderPipeline))
             {
                 yield return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, renderPipeline.name,
-                    k_HdrSettingDescriptor);
+                    k_HdrSettingDescriptor.id);
             }
 
             if (GetMsaaSampleCountSetting(renderPipeline) >= 4)
             {
                 yield return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, renderPipeline.name,
-                    k_MsaaSampleCountSettingDescriptor);
+                    k_MsaaSampleCountSettingDescriptor.id);
             }
 #else
             yield break;
