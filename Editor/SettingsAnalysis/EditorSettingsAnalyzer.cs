@@ -24,6 +24,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "In Editor Settings, enable the <b>Enter Play Mode Settings > Enter Play Mode Options</b> option, then disable the <b>Reload Domain</b> option. Be sure to view the <b>Code/Domain Reload</b> view in this tool for additional things you may need to fix as a result of disabling domain reload."
         )
         {
+            maximumVersion = "2023.4",
             fixer = (issue) =>
             {
                 EditorSettings.enterPlayModeOptionsEnabled = true;
@@ -38,6 +39,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "In Editor Settings, enable the <b>Enter Play Mode Settings > Enter Play Mode Options</b> option, then disable the <b>Reload Domain</b> checkbox. Be sure to view the <b>Code/Domain Reload</b> view in this tool for additional things you may need to fix as a result of disabling domain reload."
         )
         {
+            maximumVersion = "2023.4",
             fixer = (issue) =>
             {
                 EditorSettings.enterPlayModeOptions |= EnterPlayModeOptions.DisableDomainReload;
@@ -52,16 +54,18 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
-            if (!EditorSettings.enterPlayModeOptionsEnabled)
+            if (k_EnterPlayModeOptionsDescriptor.IsVersionCompatible() &&
+                !EditorSettings.enterPlayModeOptionsEnabled)
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_EnterPlayModeOptionsDescriptor)
+                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_EnterPlayModeOptionsDescriptor.id)
                     .WithLocation("Project/Editor");
             }
             else
             {
-                if ((EditorSettings.enterPlayModeOptions & EnterPlayModeOptions.DisableDomainReload) != EnterPlayModeOptions.DisableDomainReload)
+                if (k_DomainReloadDescriptor.IsVersionCompatible() &&
+                    (EditorSettings.enterPlayModeOptions & EnterPlayModeOptions.DisableDomainReload) != EnterPlayModeOptions.DisableDomainReload)
                 {
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DomainReloadDescriptor)
+                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DomainReloadDescriptor.id)
                         .WithLocation("Project/Editor");
                 }
             }
