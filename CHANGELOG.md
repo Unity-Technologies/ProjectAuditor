@@ -23,7 +23,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Domain Reload Roslyn analyzer
 * New Area category for IterationTime issues
 * Code/Domain Reload view, showing any issues raised by the Domain Reload Roslyn analyzer
-* Domain Reload diagnostic issues in the Settings view if Domain Reload is enabled
 * Diagnostics for unsupported APIs on WebGL target
 
 ### Changed
