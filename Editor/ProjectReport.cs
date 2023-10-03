@@ -5,8 +5,9 @@ using System.Linq;
 using System.Threading;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
+using Newtonsoft.Json;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -16,24 +17,58 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     internal sealed class ProjectReport
     {
+        internal const string k_CurrentVersion = "0.2";
+
+        [JsonProperty("version")]
+        [SerializeField]
+        string m_Version = k_CurrentVersion;
+
         [Serializable]
         class ModuleInfo
         {
             public string name;
+
+            [JsonIgnore]
             public IssueCategory[] categories;
+
             public DateTime startTime;
             public DateTime endTime;
         }
 
-        [SerializeField] List<ModuleInfo> m_ModuleInfos = new List<ModuleInfo>();
+        [SerializeField]
+        [JsonProperty("moduleMetadata")]
+        List<ModuleInfo> m_ModuleInfos = new List<ModuleInfo>();
 
-        [SerializeField] private DescriptorLibrary m_DescriptorLibrary = new DescriptorLibrary();
+        [SerializeField]
+        DescriptorLibrary m_DescriptorLibrary = new DescriptorLibrary();
 
-        [SerializeField] List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+        [JsonProperty("issues")]
+        [SerializeField]
+        List<ProjectIssue> m_Issues = new List<ProjectIssue>();
 
         static Mutex s_Mutex = new Mutex();
 
+        [JsonProperty("descriptors")]
+        internal List<Descriptor> Descriptors
+        {
+            get
+            {
+                m_DescriptorLibrary.OnBeforeSerialize();
+                return m_DescriptorLibrary.m_SerializedDescriptors;
+            }
+            set
+            {
+                m_DescriptorLibrary.m_SerializedDescriptors = value;
+                m_DescriptorLibrary.OnAfterDeserialize();
+            }
+        }
+
+        [JsonIgnore]
         public int NumTotalIssues => m_Issues.Count;
+
+        [JsonIgnore]
+        public string Version => m_Version;
+
 
         // for internal use only
         internal ProjectReport()
@@ -145,6 +180,11 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
+        public bool IsValid()
+        {
+            return m_Issues.All(i => i.IsValid());
+        }
+
         public void ExportToHTML(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
             var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
@@ -158,12 +198,12 @@ namespace Unity.ProjectAuditor.Editor
 
         public void Save(string path)
         {
-            File.WriteAllText(path, JsonUtility.ToJson(this, UserPreferences.prettifyJsonOutput));
+            File.WriteAllText(path, JsonConvert.SerializeObject(this, UserPreferences.prettifyJsonOutput ? Newtonsoft.Json.Formatting.Indented : Formatting.None));
         }
 
         public static ProjectReport Load(string path)
         {
-            return JsonUtility.FromJson<ProjectReport>(File.ReadAllText(path));
+            return JsonConvert.DeserializeObject<ProjectReport>(File.ReadAllText(path));
         }
     }
 }

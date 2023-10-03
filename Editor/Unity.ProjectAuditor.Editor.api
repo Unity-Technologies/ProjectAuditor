@@ -37,14 +37,14 @@ namespace Unity.ProjectAuditor.Editor
 
     public class Location
     {
-        public string Extension { get; }
-        public string Filename { get; }
-        public string FormattedFilename { get; }
-        public string FormattedPath { get; }
-        public int Line { get; }
-        public string Path { get; }
+        [Newtonsoft.Json.JsonIgnore] public string Extension { get; }
+        [Newtonsoft.Json.JsonIgnore] public string Filename { get; }
+        [Newtonsoft.Json.JsonIgnore] public string FormattedFilename { get; }
+        [Newtonsoft.Json.JsonIgnore] public string FormattedPath { get; }
+        [Newtonsoft.Json.JsonProperty(@"line")] public int Line { get; }
+        [Newtonsoft.Json.JsonProperty(@"path")] public string Path { get; }
         public Location(string path) {}
-        public Location(string path, int line) {}
+        [Newtonsoft.Json.JsonConstructor] public Location(string path, int line) {}
         public bool IsValid();
     }
 
@@ -88,17 +88,16 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectIssue
     {
-        public int depth = 0;
         public bool wasFixed = false;
-        public IssueCategory category { get; }
-        public string[] customProperties { get; }
-        public string description { get; }
-        public Diagnostic.Descriptor descriptor { get; }
-        public string filename { get; }
-        public int line { get; }
+        [Newtonsoft.Json.JsonProperty(@"category", NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public IssueCategory category { get; }
+        [Newtonsoft.Json.JsonProperty(@"properties", NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string[] customProperties { get; }
+        [Newtonsoft.Json.JsonProperty(@"description")] public string description { get; }
+        [Newtonsoft.Json.JsonIgnore] public string filename { get; }
+        [Newtonsoft.Json.JsonIgnore] public Diagnostic.DescriptorID id { get; }
+        [Newtonsoft.Json.JsonIgnore] public int line { get; }
         public Location location { get; set; }
-        public Core.LogLevel logLevel { get; }
-        public string relativePath { get; }
+        [Newtonsoft.Json.JsonIgnore] public Core.LogLevel logLevel { get; }
+        [Newtonsoft.Json.JsonIgnore] public string relativePath { get; }
         public Diagnostic.Severity severity { get; set; }
         public string GetCustomProperty<T>(T propertyEnum) where T : struct, new();
         public bool GetCustomPropertyBool<T>(T propertyEnum) where T : struct, new();
@@ -160,28 +159,53 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
     public sealed class Descriptor : System.IEquatable<Descriptor>
     {
-        public string[] areas;
-        public Severity defaultSeverity = Severity.Moderate|Severity.Warning;
-        public string description;
-        public string documentationUrl;
-        public System.Action<ProjectIssue> fixer;
-        public string id;
-        public string maximumVersion;
-        public string messageFormat = @"{0}";
-        public string method;
-        public string minimumVersion;
-        public string[] platforms;
-        public string solution;
-        public string title;
-        public string type;
-        public string value;
+        [Newtonsoft.Json.JsonRequired] public string[] areas;
+        [Newtonsoft.Json.JsonRequired] public Severity defaultSeverity;
+        [Newtonsoft.Json.JsonRequired] public string description;
+        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string documentationUrl;
+        [Newtonsoft.Json.JsonIgnore] public System.Action<ProjectIssue> fixer;
+        [Newtonsoft.Json.JsonRequired] public string id;
+        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string maximumVersion;
+        public string messageFormat;
+        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string method;
+        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string minimumVersion;
+        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string[] platforms;
+        [Newtonsoft.Json.JsonRequired] public string solution;
+        [Newtonsoft.Json.JsonRequired] public string title;
+        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string type;
+        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string value;
         public Descriptor(string id, string title, string[] areas, string description, string solution) {}
         public Descriptor(string id, string title, Area area, string description, string solution) {}
         public Descriptor(string id, string title, Area[] areas, string description, string solution) {}
         public override bool Equals(object obj);
         public bool Equals(Descriptor other);
         public override int GetHashCode();
+    }
+
+    public struct DescriptorID : System.IEquatable<DescriptorID>
+    {
+        public DescriptorID(string id) {}
+        public int AsInt();
+        public string AsString();
+        public bool Equals(string other);
+        public bool Equals(DescriptorID other);
+        public Descriptor GetDescriptor();
+        public static int HashDescriptorString(string id);
         public bool IsValid();
+        public static int op_Implicit(DescriptorID d);
+        public static string op_Implicit(DescriptorID d);
+        public static DescriptorID op_Implicit(string id);
+        public override string ToString();
+    }
+
+    public class DescriptorLibrary : UnityEngine.ISerializationCallbackReceiver
+    {
+        public DescriptorLibrary() {}
+        public static Descriptor GetDescriptor(int idAsInt);
+        public void OnAfterDeserialize();
+        public void OnBeforeSerialize();
+        public static bool RegisterDescriptor(string id, Descriptor descriptor);
+        public static bool RegisterDescriptor(DescriptorID id, Descriptor descriptor);
     }
 
     public enum Severity
@@ -196,5 +220,14 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         Moderate = 4,
         None = 6,
         Warning = 4,
+    }
+}
+
+namespace Unity.ProjectAuditor.Editor.Internal
+{
+    public class RoslynAnalyzerUtil
+    {
+        public RoslynAnalyzerUtil() {}
+        public static void ImportDLL();
     }
 }

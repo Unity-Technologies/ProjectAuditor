@@ -199,7 +199,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Profiler.BeginSample("MatchArea");
             var matchArea = m_AreaSelection.ContainsGroup("All") ||
-                            (issue.id.IsValid() && m_AreaSelection.ContainsAny(issue.id.GetDescriptor().areas));
+                (issue.id.IsValid() && m_AreaSelection.ContainsAny(issue.id.GetDescriptor().areas));
 
             Profiler.EndSample();
             if (!matchArea)
@@ -241,7 +241,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid &&
-                m_ProjectReport.GetAllIssues().All(i => i.IsValid()))
+                m_ProjectReport.IsValid())
             {
                 m_ProjectAuditor = new ProjectAuditor();
 

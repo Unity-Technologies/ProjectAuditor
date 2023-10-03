@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Newtonsoft.Json;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor
     /// ProjectAuditor Issue found in the current project
     /// </summary>
     [Serializable]
-    public class ProjectIssue : ISerializationCallbackReceiver
+    public class ProjectIssue
     {
         /// <summary>
         /// Create Diagnostics-specific IssueBuilder
@@ -36,9 +37,8 @@ namespace Unity.ProjectAuditor.Editor
             return new IssueBuilder(category, description);
         }
 
-        DescriptorID m_DescriptorID;
-        // TODO: This is a fudge. Ideally DescriptorID would serialize to/forom a simple string and we wouldn't need to keep this.
-        [SerializeField] string m_ID;
+        [JsonIgnore]
+        [SerializeField] DescriptorID m_DescriptorID;
         [SerializeField] IssueCategory m_Category;
         [SerializeField] string m_Description;
         [SerializeField] Severity m_Severity;
@@ -51,6 +51,13 @@ namespace Unity.ProjectAuditor.Editor
         /// Determines whether the issue was fixed. Only used for diagnostics
         /// </summary>
         public bool wasFixed = false;
+
+        [JsonConstructor]
+        internal ProjectIssue()
+        {
+            // only for json serialization purposes
+            m_DescriptorID = new DescriptorID(string.Empty);
+        }
 
         /// <summary>
         /// Constructs and returns an instance of ProjectIssue
@@ -84,23 +91,38 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// An unique identifier for the issue diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits
         /// </summary>
+        [JsonIgnore]
         public DescriptorID id
         {
             get => m_DescriptorID;
             internal set => m_DescriptorID = value;
         }
 
+        [JsonProperty("diagnosticID", NullValueHandling = NullValueHandling.Ignore)]
+        internal string diagnoticIDAsString
+        {
+            get { return m_DescriptorID.AsString(); }
+            set
+            {
+                // TODO: check if ID is registered
+                m_DescriptorID = new DescriptorID(value);
+            }
+        }
+
         /// <summary>
         /// This issue's category
         /// </summary>
+        [JsonProperty("category", NullValueHandling = NullValueHandling.Ignore)]
         public IssueCategory category
         {
             get => m_Category;
+            internal set => m_Category = value;
         }
 
         /// <summary>
         /// Custom properties
         /// </summary>
+        [JsonProperty("properties", NullValueHandling = NullValueHandling.Ignore)]
         public string[] customProperties
         {
             get => m_CustomProperties;
@@ -110,6 +132,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Project issue description
         /// </summary>
+        [JsonProperty("description")]
         public string description
         {
             get => m_Description;
@@ -128,16 +151,19 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Name of the file that contains this issue
         /// </summary>
+        [JsonIgnore]
         public string filename => m_Location == null ? string.Empty : m_Location.Filename;
 
         /// <summary>
         /// Relative path of the file that contains this issue
         /// </summary>
+        [JsonIgnore]
         public string relativePath => m_Location == null ? string.Empty : m_Location.Path;
 
         /// <summary>
         /// Line in the file that contains this issue
         /// </summary>
+        [JsonIgnore]
         public int line => m_Location == null ? 0 : m_Location.Line;
 
         /// <summary>
@@ -152,6 +178,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Log level
         /// </summary>
+        [JsonIgnore]
         public LogLevel logLevel
         {
             get
@@ -333,17 +360,6 @@ namespace Unity.ProjectAuditor.Editor
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct
         {
             m_CustomProperties[Convert.ToUInt32(propertyEnum)] = property.ToString();
-        }
-
-        // TODO: This is a fudge. Ideally DescriptorID would serialize to/from a simple string and we wouldn't need to keep this.
-        public void OnBeforeSerialize()
-        {
-            m_ID = m_DescriptorID.AsString();
-        }
-
-        public void OnAfterDeserialize()
-        {
-            m_DescriptorID = m_ID;
         }
     }
 }
