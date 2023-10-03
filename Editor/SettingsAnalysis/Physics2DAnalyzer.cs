@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             const int numLayers = 32;
             for (var i = 0; i < numLayers; ++i)
-                for (var j = 0; j < i; ++j)
+                for (var j = i; j < numLayers; ++j)
                     if (Physics2D.GetIgnoreLayerCollision(i, j))
                         return false;
             return true;
