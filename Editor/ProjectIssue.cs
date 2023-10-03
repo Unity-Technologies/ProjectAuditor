@@ -122,7 +122,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Custom properties
         /// </summary>
-        [JsonProperty("properties")]
+        [JsonProperty("properties", NullValueHandling = NullValueHandling.Ignore)]
         public string[] customProperties
         {
             get => m_CustomProperties;

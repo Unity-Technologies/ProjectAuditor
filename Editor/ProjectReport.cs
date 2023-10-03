@@ -27,7 +27,10 @@ namespace Unity.ProjectAuditor.Editor
         class ModuleInfo
         {
             public string name;
+
+            [JsonIgnore]
             public IssueCategory[] categories;
+
             public DateTime startTime;
             public DateTime endTime;
         }
@@ -175,6 +178,11 @@ namespace Unity.ProjectAuditor.Editor
                 exporter.WriteHeader();
                 exporter.WriteIssues(issues);
             }
+        }
+
+        public bool IsValid()
+        {
+            return m_Issues.All(i => i.IsValid());
         }
 
         public void ExportToHTML(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)

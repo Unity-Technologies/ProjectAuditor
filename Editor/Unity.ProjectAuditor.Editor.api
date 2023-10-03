@@ -90,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         public bool wasFixed = false;
         [Newtonsoft.Json.JsonProperty(@"category", NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public IssueCategory category { get; }
-        [Newtonsoft.Json.JsonProperty(@"properties")] public string[] customProperties { get; }
+        [Newtonsoft.Json.JsonProperty(@"properties", NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string[] customProperties { get; }
         [Newtonsoft.Json.JsonProperty(@"description")] public string description { get; }
         [Newtonsoft.Json.JsonIgnore] public string filename { get; }
         [Newtonsoft.Json.JsonIgnore] public Diagnostic.DescriptorID id { get; }

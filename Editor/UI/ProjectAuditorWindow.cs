@@ -241,7 +241,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid &&
-                m_ProjectReport.GetAllIssues().All(i => i.IsValid()))
+                m_ProjectReport.IsValid())
             {
                 m_ProjectAuditor = new ProjectAuditor();
 
