@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Newtonsoft.Json;
 
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
@@ -13,11 +14,13 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// An unique identifier for the diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits
         /// </summary>
+        [JsonRequired]
         public string id;
 
         /// <summary>
         /// Diagnostic title
         /// </summary>
+        [JsonRequired]
         public string title;
 
         /// <summary>
@@ -28,62 +31,80 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// Default severity of the diagnostic
         /// </summary>
+        [JsonRequired]
         public Severity defaultSeverity;
 
         /// <summary>
         /// Affected areas
         /// </summary>
+        [JsonRequired]
         public string[] areas;
 
         /// <summary>
         /// Affected platforms. If null, the diagnostic applies to all platforms
         /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string[] platforms;
 
         /// <summary>
         /// Description of the diagnostic
         /// </summary>
+        [JsonRequired]
         public string description;
 
         /// <summary>
         /// Recommendation to fix the diagnostic
         /// </summary>
+        [JsonRequired]
         public string solution;
 
         /// <summary>
         /// Url to documentation
         /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string documentationUrl;
 
         /// <summary>
         /// Minimum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions
         /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string minimumVersion;
 
         /// <summary>
         /// Maximum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions
         /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string maximumVersion;
 
         /// <summary>
         /// Optional Auto-fixer
         /// </summary>
+        [JsonIgnore]
         public Action<ProjectIssue> fixer;
 
         /// <summary>
         /// Name of the type (namespace and class/struct) of a known code API issue
         /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string type;
 
         /// <summary>
         /// Name of the method of a known code API issue
         /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string method;
 
         /// <summary>
         /// The evaluated value of a know code API issue
         /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string value;
+
+        [JsonConstructor]
+        internal Descriptor()
+        {
+            // only for json serialization purposes
+        }
 
         /// <summary>
         /// Initializes and returns an instance of Descriptor

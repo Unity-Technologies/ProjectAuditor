@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
@@ -15,31 +16,37 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// File extension
         /// </summary>
+        [JsonIgnore]
         public string Extension => System.IO.Path.GetExtension(m_Path) ?? string.Empty;
 
         /// <summary>
         /// Filename
         /// </summary>
+        [JsonIgnore]
         public string Filename => string.IsNullOrEmpty(m_Path) ? string.Empty : System.IO.Path.GetFileName(m_Path);
 
         /// <summary>
         /// Formatted filename with line number
         /// </summary>
+        [JsonIgnore]
         public string FormattedFilename => GetFormattedPath(Filename);
 
         /// <summary>
         /// Formatted path with line number
         /// </summary>
+        [JsonIgnore]
         public string FormattedPath => GetFormattedPath(Path);
 
         /// <summary>
         /// Line number
         /// </summary>
+        [JsonProperty("line")]
         public int Line => m_Line;
 
         /// <summary>
         /// Full path
         /// </summary>
+        [JsonProperty("path")]
         public string Path => m_Path ?? string.Empty;
 
         /// <summary>
@@ -56,6 +63,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="path">File path</param>
         /// <param name="line">Line number</param>
+        [JsonConstructor]
         public Location(string path, int line)
         {
             m_Path = path;

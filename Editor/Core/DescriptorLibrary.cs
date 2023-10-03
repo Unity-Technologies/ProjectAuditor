@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         static Dictionary<int, Descriptor> s_Descriptors;
 
         [SerializeField]
-        List<Descriptor> m_SerializedDescriptors;
+        internal List<Descriptor> m_SerializedDescriptors;
 
         public static bool RegisterDescriptor(string id, Descriptor descriptor)
         {
@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
         public static bool RegisterDescriptor(DescriptorID id, Descriptor descriptor)
         {
-            if(s_Descriptors == null)
+            if (s_Descriptors == null)
                 s_Descriptors = new Dictionary<int, Descriptor>();
 
             bool alreadyFound = s_Descriptors.ContainsKey(id);

@@ -7,7 +7,10 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     [Serializable]
     public struct DescriptorID : IEquatable<DescriptorID>
     {
+        [SerializeField]
         int m_AsInt;
+
+        [SerializeField]
         string m_AsString;
 
         public static implicit operator string(DescriptorID d) => d.m_AsString;
