@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -18,7 +19,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                     method = rawDescriptor.method ?? string.Empty,
                     value = rawDescriptor.value,
                     platforms = rawDescriptor.platforms,
-                    defaultSeverity = rawDescriptor.defaultSeverity == Severity.Default ? Severity.Moderate : rawDescriptor.defaultSeverity
+                    defaultSeverity = rawDescriptor.defaultSeverity == Severity.Default ? Severity.Moderate : rawDescriptor.defaultSeverity,
+                    documentationUrl = rawDescriptor.documentationUrl ?? String.Empty,
+                    minimumVersion = rawDescriptor.minimumVersion ?? String.Empty,
+                    maximumVersion = rawDescriptor.maximumVersion ?? string.Empty
+
                 };
                 if (string.IsNullOrEmpty(desc.title))
                 {

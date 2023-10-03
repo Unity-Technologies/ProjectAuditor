@@ -315,6 +315,9 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+#if !(UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
+        [Ignore("This requires a mobile platform.")]
+#endif
         public void Texture_AnisotropicLevel_IsReported()
         {
             var textureDiagnostic =
@@ -336,6 +339,9 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+#if !(UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
+        [Ignore("This requires a mobile platform.")]
+#endif
         public void Texture_AnisotropicLevel_IsNotReported()
         {
             var textureDiagnostic =

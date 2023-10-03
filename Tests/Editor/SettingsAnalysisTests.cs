@@ -134,6 +134,9 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+#if !(UNITY_ANDROID || UNITY_IOS)
+        [Ignore("This requires a mobile platform.")]
+#endif
         public void SettingsAnalysis_AudioMode_SpeakerModeStereo_IsReported()
         {
             var audioConfiguration = AudioSettings.GetConfiguration();
