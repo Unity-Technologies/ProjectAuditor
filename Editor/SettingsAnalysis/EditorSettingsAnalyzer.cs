@@ -9,6 +9,7 @@ using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+#if UNITY_2020_1_OR_NEWER
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class EditorSettingsAnalyzer : ISettingsModuleAnalyzer
@@ -72,3 +73,4 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
     }
 }
+#endif
