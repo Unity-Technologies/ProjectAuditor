@@ -1647,6 +1647,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorUtility.RevealInFinder(path);
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Save, ProjectAuditorAnalytics.BeginAnalytic());
             }
+
+            GUIUtility.ExitGUI();
         }
 
         void LoadReport()
