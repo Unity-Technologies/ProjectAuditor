@@ -271,10 +271,92 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(issues.Any(i => i.location.Path.Equals("Project/Quality/" + settingsName)) == false);
         }
 
+#if !PACKAGE_HYBRID_RENDERER
+        [Ignore("This requires the Hybrid Renderer package")]
+#endif
         [Test]
-        public void SettingsAnalysis_Default_StaticBatchingEnabled()
+        public void HybridRendererSettingsAnalysis_Default_StaticBatching_Enabled_IsReported()
         {
-            Assert.True(PlayerSettingsUtil.IsStaticBatchingEnabled(m_Platform));
+            var getterMethod = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
+                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
+
+            var setterMethod = typeof(PlayerSettings).GetMethod("SetBatchingForPlatform",
+                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
+
+            Assert.True(getterMethod != null, "GetBatchingForPlatform method does not exist");
+            Assert.True(setterMethod != null, "SetBatchingForPlatform method does not exist");
+
+            const int initialStaticBatching = 0;
+            const int initialDynamicBatching = 0;
+            var getterArgs = new object[]
+            {
+                m_Platform,
+                initialStaticBatching,
+                initialDynamicBatching
+            };
+
+            getterMethod.Invoke(null, getterArgs);
+
+            const int staticBatching = 1;
+            const int dynamicBatching = 0;
+            var setterArgs = new object[]
+            {
+                m_Platform,
+                staticBatching,
+                dynamicBatching
+            };
+
+            setterMethod.Invoke(null, setterArgs);
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id == HybridRenderingAnalyzer.PAS1000);
+
+            setterMethod.Invoke(null, getterArgs);
+
+            Assert.True(issues.Length == 1);
+        }
+
+#if !PACKAGE_HYBRID_RENDERER
+        [Ignore("This requires the Hybrid Renderer package")]
+#endif
+        [Test]
+        public void HybridRendererSettingsAnalysis_StaticBatching_Disabled_IsNotReported()
+        {
+            var getterMethod = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
+                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
+
+            var setterMethod = typeof(PlayerSettings).GetMethod("SetBatchingForPlatform",
+                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
+
+            Assert.True(getterMethod != null, "GetBatchingForPlatform method does not exist");
+            Assert.True(setterMethod != null, "SetBatchingForPlatform method does not exist");
+
+            const int initialStaticBatching = 0;
+            const int initialDynamicBatching = 0;
+            var getterArgs = new object[]
+            {
+                m_Platform,
+                initialStaticBatching,
+                initialDynamicBatching
+            };
+
+            getterMethod.Invoke(null, getterArgs);
+
+            const int staticBatching = 0;
+            const int dynamicBatching = 0;
+            var setterArgs = new object[]
+            {
+                m_Platform,
+                staticBatching,
+                dynamicBatching
+            };
+
+            setterMethod.Invoke(null, setterArgs);
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id == HybridRenderingAnalyzer.PAS1000);
+
+            setterMethod.Invoke(null, getterArgs);
+
+            Assert.True(issues.Length == 0);
         }
 
         [Test]
