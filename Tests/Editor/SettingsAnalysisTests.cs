@@ -12,6 +12,7 @@ using Unity.ProjectAuditor.Editor.Tests.Common;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Rendering;
+using UnityEditor.TestTools;
 using UnityEngine;
 using UnityEngine.Rendering;
 using FogMode = Unity.ProjectAuditor.Editor.Modules.FogMode;
@@ -134,11 +135,12 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-#if !(UNITY_ANDROID || UNITY_IOS)
-        [Ignore("This requires a mobile platform.")]
-#endif
+        [RequirePlatformSupport(BuildTarget.Android)]
         public void SettingsAnalysis_AudioMode_SpeakerModeStereo_IsReported()
         {
+            var oldPlatform = m_Platform;
+            m_Platform = BuildTarget.Android;
+
             var audioConfiguration = AudioSettings.GetConfiguration();
             AudioSettings.speakerMode = AudioSpeakerMode.Stereo;
 
@@ -148,6 +150,8 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(playerSettingIssue);
 
             AudioSettings.Reset(audioConfiguration);
+
+            m_Platform = oldPlatform;
         }
 
         [TestCase(false)]

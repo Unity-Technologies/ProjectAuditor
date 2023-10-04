@@ -5,6 +5,7 @@ using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using UnityEditor;
+using UnityEditor.TestTools;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -315,11 +316,12 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-#if !(UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
-        [Ignore("This requires a mobile platform.")]
-#endif
+        [RequirePlatformSupport(BuildTarget.Android)]
         public void Texture_AnisotropicLevel_IsReported()
         {
+            var oldPlatform = m_Platform;
+            m_Platform = BuildTarget.Android;
+
             var textureDiagnostic =
                 AnalyzeAndFindAssetIssues(m_TestTextureAnisotropicLevelBig, IssueCategory.AssetDiagnostic)
                     .FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureAnisotropicLevelDescriptor.id));
@@ -336,12 +338,11 @@ namespace Unity.ProjectAuditor.EditorTests
                     .FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureAnisotropicLevelDescriptor.id));
 
             Assert.Null(textureDiagnostic);
+
+            m_Platform = oldPlatform;
         }
 
         [Test]
-#if !(UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
-        [Ignore("This requires a mobile platform.")]
-#endif
         public void Texture_AnisotropicLevel_IsNotReported()
         {
             var textureDiagnostic =

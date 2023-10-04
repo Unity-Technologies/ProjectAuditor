@@ -415,7 +415,6 @@ namespace Unity.ProjectAuditor.EditorTests
 
             // PAS0005 should only be available if iOS Editor component is installed
             var foundID = IDs.Contains(new DescriptorID("PAS0005"));
-            DescriptorID testyBoy = null;
 
             // Yamato tests don't have iOS as a supported build target, but we want to pass tests locally as well,
             // where iOS support might be installed.
