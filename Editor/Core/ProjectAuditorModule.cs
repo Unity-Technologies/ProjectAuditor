@@ -53,6 +53,11 @@ namespace Unity.ProjectAuditor.Editor.Core
                 throw new Exception("Duplicate descriptor with id: " + descriptor.id);
         }
 
+        public bool SupportsDescriptor(DescriptorID id)
+        {
+            return m_IDs.Contains(id);
+        }
+
         /// <summary>
         /// This method audits the Unity project specific IssueCategory issues.
         /// </summary>
