@@ -259,7 +259,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 // remove issues if platform does not match
                 foundIssues.RemoveAll(i => i.id.IsValid() &&
-                                           !i.id.GetDescriptor().IsPlatformCompatible(projectAuditorParams.platform));
+                                           !i.id.GetDescriptor().IsApplicable(projectAuditorParams));
 
                 var diagnostics = foundIssues.Where(i => i.category != IssueCategory.GenericInstance).ToList();
                 Profiler.BeginSample("CodeModule.Audit.BuildCallHierarchies");

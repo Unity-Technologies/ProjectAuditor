@@ -39,6 +39,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             return descriptor.platforms.Contains(buildTarget.ToString());
         }
 
+        public static bool IsApplicable(this Descriptor desc, ProjectAuditorParams projectAuditorParams)
+        {
+            return desc.IsVersionCompatible() && desc.IsPlatformCompatible(projectAuditorParams.platform);
+        }
+
         /// <summary>
         /// Check if any descriptor's platforms are supported by the current editor
         /// </summary>

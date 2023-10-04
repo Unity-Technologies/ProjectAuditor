@@ -112,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
-            if (k_AccelerometerDescriptor.IsPlatformCompatible(projectAuditorParams.platform) && IsAccelerometerEnabled())
+            if (k_AccelerometerDescriptor.IsApplicable(projectAuditorParams) && IsAccelerometerEnabled())
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_AccelerometerDescriptor.id)
                     .WithLocation("Project/Player");
@@ -122,7 +122,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SplashScreenDescriptor.id)
                     .WithLocation("Project/Player");
             }
-            if (k_SpeakerModeDescriptor.IsPlatformCompatible(projectAuditorParams.platform) && !IsSpeakerModeMono())
+            if (k_SpeakerModeDescriptor.IsApplicable(projectAuditorParams) && !IsSpeakerModeMono())
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SpeakerModeDescriptor.id)
                     .WithLocation("Project/Player");

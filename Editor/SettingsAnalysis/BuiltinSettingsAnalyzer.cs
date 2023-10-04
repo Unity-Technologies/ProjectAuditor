@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (m_Descriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
 
-            foreach (var descriptor in m_Descriptors.Where(d => d.IsPlatformCompatible(projectAuditorParams.platform)))
+            foreach (var descriptor in m_Descriptors.Where(d => d.IsApplicable(projectAuditorParams)))
             {
                 var issue = Evaluate(descriptor);
                 if (issue != null)

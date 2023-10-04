@@ -57,13 +57,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
-            if (k_EngineCodeStrippingDescriptor.IsPlatformCompatible(projectAuditorParams.platform) && !PlayerSettings.stripEngineCode)
+            if (k_EngineCodeStrippingDescriptor.IsApplicable(projectAuditorParams) && !PlayerSettings.stripEngineCode)
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_EngineCodeStrippingDescriptor.id)
                     .WithLocation("Project/Player");
             }
 
-            if (k_AndroidManagedStrippingDescriptor.IsPlatformCompatible(projectAuditorParams.platform))
+            if (k_AndroidManagedStrippingDescriptor.IsApplicable(projectAuditorParams))
             {
                 var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.Android);
                 if (value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low
@@ -75,7 +75,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                         .WithLocation("Project/Player");
             }
 
-            if (k_iOSManagedStrippingDescriptor.IsPlatformCompatible(projectAuditorParams.platform))
+            if (k_iOSManagedStrippingDescriptor.IsApplicable(projectAuditorParams))
             {
                 var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.iOS);
                 if (value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low)

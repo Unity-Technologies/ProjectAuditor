@@ -114,13 +114,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         private IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, RenderPipelineAsset renderPipeline, int qualityLevel)
         {
 #if PACKAGE_URP
-            if (k_HdrSettingDescriptor.IsPlatformCompatible(projectAuditorParams.platform) && GetHdrSetting(renderPipeline))
+            if (k_HdrSettingDescriptor.IsApplicable(projectAuditorParams) && GetHdrSetting(renderPipeline))
             {
                 yield return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, renderPipeline.name,
                     k_HdrSettingDescriptor.id);
             }
 
-            if (k_MsaaSampleCountSettingDescriptor.IsPlatformCompatible(projectAuditorParams.platform) && GetMsaaSampleCountSetting(renderPipeline) >= 4)
+            if (k_MsaaSampleCountSettingDescriptor.IsApplicable(projectAuditorParams) && GetMsaaSampleCountSetting(renderPipeline) >= 4)
             {
                 yield return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, renderPipeline.name,
                     k_MsaaSampleCountSettingDescriptor.id);
