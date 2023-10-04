@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             public string name;
 
-            [JsonIgnore]
+            // this is used by HasCategory
             public IssueCategory[] categories;
 
             public DateTime startTime;
