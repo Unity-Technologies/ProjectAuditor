@@ -50,6 +50,8 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Determines whether the issue was fixed. Only used for diagnostics
         /// </summary>
+        [JsonIgnore]
+        [SerializeField]
         public bool wasFixed = false;
 
         [JsonConstructor]
