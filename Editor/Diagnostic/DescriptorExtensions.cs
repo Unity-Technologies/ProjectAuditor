@@ -41,7 +41,8 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
         public static bool IsApplicable(this Descriptor desc, ProjectAuditorParams projectAuditorParams)
         {
-            return desc.IsVersionCompatible() && desc.IsPlatformCompatible(projectAuditorParams.platform);
+            return desc.IsVersionCompatible(projectAuditorParams.unityVersion) &&
+                   desc.IsPlatformCompatible(projectAuditorParams.platform);
         }
 
         /// <summary>
@@ -78,7 +79,16 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// </summary>
         public static bool IsVersionCompatible(this Descriptor desc)
         {
-            var unityVersion = InternalEditorUtility.GetUnityVersion();
+            // Caution: GetUnityVersion() is a main thread only API. We pass a copy of the value into ProjectAuditor
+            // via ProjectAuditorParams if we need to do checks in multi-threaded code in Modules.
+            return desc.IsVersionCompatible(InternalEditorUtility.GetUnityVersion());
+        }
+
+        /// <summary>
+        /// Check if the descriptor's version is compatible with the current editor
+        /// </summary>
+        public static bool IsVersionCompatible(this Descriptor desc, Version unityVersion)
+        {
             var minimumVersion = (Version)null;
             var maximumVersion = (Version)null;
 

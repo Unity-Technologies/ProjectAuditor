@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using UnityEditor;
+using UnityEditorInternal;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -51,11 +52,15 @@ namespace Unity.ProjectAuditor.Editor
 
         public ProjectAuditorDiagnosticParams diagnosticParams;
 
+        internal Version unityVersion;
+
         public ProjectAuditorParams()
         {
             platform = EditorUserBuildSettings.activeBuildTarget;
             codeOptimization = CodeOptimization.Release;
             compilationMode = CompilationMode.Player;
+
+            unityVersion = InternalEditorUtility.GetUnityVersion();
         }
 
         public ProjectAuditorParams(ProjectAuditorParams original)
@@ -73,6 +78,8 @@ namespace Unity.ProjectAuditor.Editor
             existingReport = original.existingReport;
 
             diagnosticParams = original.diagnosticParams;
+            
+            unityVersion = InternalEditorUtility.GetUnityVersion();
         }
     }
 }
