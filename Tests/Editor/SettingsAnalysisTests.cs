@@ -24,52 +24,339 @@ namespace Unity.ProjectAuditor.EditorTests
     class SettingsAnalysisTests : TestFixtureBase
     {
         [Test]
-        public void SettingsAnalysis_Default_AccelerometerFrequency()
+        public void SettingsAnalysis_Default_AccelerometerFrequency_IsReported()
         {
-            Assert.True(PlayerSettingsAnalyzer.IsAccelerometerEnabled());
+            var accelerometerFrequency = PlayerSettings.accelerometerFrequency;
+            var platform = m_Platform;
+
+            PlayerSettings.accelerometerFrequency = 1;
+            m_Platform = BuildTarget.iOS;
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(PlayerSettingsAnalyzer.PAS0002));
+
+            m_Platform = platform;
+            PlayerSettings.accelerometerFrequency = accelerometerFrequency;
+
+            Assert.True(issues.Length == 1);
         }
 
         [Test]
-        public void SettingsAnalysis_Default_PhysicsLayerCollisionMatrix()
+        public void SettingsAnalysis_Disabled_AccelerometerFrequency_IsNotReported()
         {
-            Assert.True(PhysicsAnalyzer.IsDefaultLayerCollisionMatrix());
+            var accelerometerFrequency = PlayerSettings.accelerometerFrequency;
+            var platform = m_Platform;
+
+            PlayerSettings.accelerometerFrequency = 0;
+            m_Platform = BuildTarget.iOS;
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(PlayerSettingsAnalyzer.PAS0002));
+
+            m_Platform = platform;
+            PlayerSettings.accelerometerFrequency = accelerometerFrequency;
+
+            Assert.True(issues.Length == 0);
         }
 
         [Test]
-        public void SettingsAnalysis_Default_Physics2DLayerCollisionMatrix()
+        public void SettingsAnalysis_Default_PhysicsLayerCollisionMatrix_IsReported()
         {
-            Assert.True(Physics2DAnalyzer.IsDefaultLayerCollisionMatrix());
+            const int numLayers = 32;
+            var oldValues = new bool[528];
+
+            int count = 0;
+            for (var i = 0; i < numLayers; ++i)
+                for (var j = i; j < numLayers; ++j)
+                    oldValues[count++] = Physics.GetIgnoreLayerCollision(i, j);
+
+            for (var i = 0; i < numLayers; ++i)
+                for (var j = i; j < numLayers; ++j)
+                    Physics.IgnoreLayerCollision(i, j, false);
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(PhysicsAnalyzer.PAS0013));
+
+            count = 0;
+            for (var i = 0; i < numLayers; ++i)
+                for (var j = i; j < numLayers; ++j)
+                    Physics.IgnoreLayerCollision(i, j, oldValues[count++]);
+
+            Assert.True(issues.Length == 1);
         }
 
         [Test]
-        public void SettingsAnalysis_Default_QualitySettings()
+        public void SettingsAnalysis_NonDefault_PhysicsLayerCollisionMatrix_IsNotReported()
         {
-            Assert.True(QualitySettingsAnalyzer.IsUsingDefaultSettings());
+            var oldValue = Physics.GetIgnoreLayerCollision(0, 0);
+
+            Physics.IgnoreLayerCollision(0, 0, true);
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(PhysicsAnalyzer.PAS0013));
+
+            Physics.IgnoreLayerCollision(0, 0, oldValue);
+
+            Assert.True(issues.Length == 0);
         }
 
         [Test]
-        public void SettingsAnalysis_Default_QualityAsyncUploadTimeSlice()
+        public void SettingsAnalysis_Default_Physics2DLayerCollisionMatrix_IsReported()
         {
-            Assert.True(QualitySettingsAnalyzer.IsDefaultAsyncUploadTimeSlice());
+            const int numLayers = 32;
+            var oldValues = new bool[528];
+
+            int count = 0;
+            for (var i = 0; i < numLayers; ++i)
+                for (var j = i; j < numLayers; ++j)
+                    oldValues[count++] = Physics2D.GetIgnoreLayerCollision(i, j);
+
+            for (var i = 0; i < numLayers; ++i)
+                for (var j = i; j < numLayers; ++j)
+                    Physics2D.IgnoreLayerCollision(i, j, false);
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(Physics2DAnalyzer.PAS0015));
+
+            count = 0;
+            for (var i = 0; i < numLayers; ++i)
+                for (var j = i; j < numLayers; ++j)
+                    Physics2D.IgnoreLayerCollision(i, j, oldValues[count++]);
+
+            Assert.True(issues.Length == 1);
         }
 
         [Test]
-        public void SettingsAnalysis_Default_QualityAsyncUploadBufferSize()
+        public void SettingsAnalysis_NonDefault_Physics2DLayerCollisionMatrix_IsNotReported()
         {
-            Assert.True(QualitySettingsAnalyzer.IsDefaultAsyncUploadBufferSize());
+            var oldValue = Physics2D.GetIgnoreLayerCollision(0, 0);
+
+            Physics2D.IgnoreLayerCollision(0, 0, true);
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(Physics2DAnalyzer.PAS0015));
+
+            Physics2D.IgnoreLayerCollision(0, 0, oldValue);
+
+            Assert.True(issues.Length == 0);
         }
 
         [Test]
-        public void SettingsAnalysis_Quality_TextureStreamingIsReported()
+        public void SettingsAnalysis_Default_QualityAsyncUploadTimeSlice_IsReported()
         {
+            Assert.True(QualitySettings.names.Length > 0, "Expected at least one Quality Settings entry, not zero/none. Test is incomplete.");
+
+            var qualityLevel = QualitySettings.GetQualityLevel();
+            QualitySettings.SetQualityLevel(0);
+
+            var timeSlice = QualitySettings.asyncUploadTimeSlice;
+            QualitySettings.asyncUploadTimeSlice = 2;
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(QualitySettingsAnalyzer.PAS0020));
+
+            QualitySettings.asyncUploadTimeSlice = timeSlice;
+            QualitySettings.SetQualityLevel(qualityLevel);
+
+            Assert.True(issues.Any(i => i.location.Path.Equals("Project/Quality")));
+        }
+
+        [Test]
+        public void SettingsAnalysis_NonDefault_QualityAsyncUploadTimeSlice_IsNotReported()
+        {
+            Assert.True(QualitySettings.names.Length > 0, "Expected at least one Quality Settings entry, not zero/none. Test is incomplete.");
+
+            var qualityLevel = QualitySettings.GetQualityLevel();
+            var timeSliceValues = new int[QualitySettings.names.Length];
+
+            for (int i = 0; i < QualitySettings.names.Length; ++i)
+            {
+                QualitySettings.SetQualityLevel(i);
+                timeSliceValues[i] = QualitySettings.asyncUploadTimeSlice;
+                QualitySettings.asyncUploadTimeSlice = 10;
+            }
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(QualitySettingsAnalyzer.PAS0020));
+
+            for (int i = 0; i < QualitySettings.names.Length; ++i)
+            {
+                QualitySettings.SetQualityLevel(i);
+                QualitySettings.asyncUploadTimeSlice = timeSliceValues[i];
+            }
+
+            QualitySettings.SetQualityLevel(qualityLevel);
+
+            Assert.True(issues.Length == 0);
+        }
+
+        [Test]
+        public void SettingsAnalysis_Default_QualityAsyncUploadBufferSize_IsReported()
+        {
+            Assert.True(QualitySettings.names.Length > 0, "Expected at least one Quality Settings entry, not zero/none. Test is incomplete.");
+
+            var qualityLevel = QualitySettings.GetQualityLevel();
+            QualitySettings.SetQualityLevel(0);
+
+            var bufferSize = QualitySettings.asyncUploadBufferSize;
+            QualitySettings.asyncUploadBufferSize = 4;
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(QualitySettingsAnalyzer.PAS0021));
+
+            QualitySettings.asyncUploadBufferSize = bufferSize;
+            QualitySettings.SetQualityLevel(qualityLevel);
+
+            Assert.True(issues.Any(i => i.location.Path.Equals("Project/Quality")));
+        }
+
+        [Test]
+        public void SettingsAnalysis_NonDefault_QualityAsyncUploadBufferSize_IsNotReported()
+        {
+            Assert.True(QualitySettings.names.Length > 0, "Expected at least one Quality Settings entry, not zero/none. Test is incomplete.");
+
+            var qualityLevel = QualitySettings.GetQualityLevel();
+            var bufferValues = new int[QualitySettings.names.Length];
+
+            for (int i = 0; i < QualitySettings.names.Length; ++i)
+            {
+                QualitySettings.SetQualityLevel(i);
+                bufferValues[i] = QualitySettings.asyncUploadBufferSize;
+                QualitySettings.asyncUploadBufferSize = 10;
+            }
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(QualitySettingsAnalyzer.PAS0021));
+
+            for (int i = 0; i < QualitySettings.names.Length; ++i)
+            {
+                QualitySettings.SetQualityLevel(i);
+                QualitySettings.asyncUploadBufferSize = bufferValues[i];
+            }
+
+            QualitySettings.SetQualityLevel(qualityLevel);
+
+            Assert.True(issues.Length == 0);
+        }
+
+        [Test]
+        public void SettingsAnalysis_Quality_Disabled_TextureStreaming_IsReported()
+        {
+            Assert.True(QualitySettings.names.Length > 0, "Expected at least one Quality Settings entry, not zero/none. Test is incomplete.");
+
+            var settingsName = QualitySettings.names[0];
+
+            var qualityLevel = QualitySettings.GetQualityLevel();
+            QualitySettings.SetQualityLevel(0);
+
+            var mipmapsActive = QualitySettings.streamingMipmapsActive;
+            QualitySettings.streamingMipmapsActive = false;
+
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(QualitySettingsAnalyzer.PAS1007));
-            Assert.True(issues.Any(i => i.location.Path.Equals("Project/Quality/Very Low")));
+
+            QualitySettings.streamingMipmapsActive = mipmapsActive;
+            QualitySettings.SetQualityLevel(qualityLevel);
+
+            Assert.True(issues.Any(i => i.location.Path.Equals("Project/Quality/" + settingsName)));
         }
 
         [Test]
-        public void SettingsAnalysis_Default_StaticBatchingEnabled()
+        public void SettingsAnalysis_Quality_Enabled_TextureStreaming_IsNotReported()
         {
-            Assert.True(PlayerSettingsUtil.IsStaticBatchingEnabled(m_Platform));
+            Assert.True(QualitySettings.names.Length > 0, "Expected at least one Quality Settings entry, not zero/none. Test is incomplete.");
+
+            var settingsName = QualitySettings.names[0];
+
+            var qualityLevel = QualitySettings.GetQualityLevel();
+            QualitySettings.SetQualityLevel(0);
+
+            var mipmapsActive = QualitySettings.streamingMipmapsActive;
+            QualitySettings.streamingMipmapsActive = true;
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(QualitySettingsAnalyzer.PAS1007));
+
+            QualitySettings.streamingMipmapsActive = mipmapsActive;
+            QualitySettings.SetQualityLevel(qualityLevel);
+
+            Assert.True(issues.Any(i => i.location.Path.Equals("Project/Quality/" + settingsName)) == false);
+        }
+
+#if !PACKAGE_HYBRID_RENDERER
+        [Ignore("This requires the Hybrid Renderer package")]
+#endif
+        [Test]
+        public void HybridRendererSettingsAnalysis_Default_StaticBatching_Enabled_IsReported()
+        {
+            var getterMethod = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
+                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
+
+            var setterMethod = typeof(PlayerSettings).GetMethod("SetBatchingForPlatform",
+                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
+
+            Assert.True(getterMethod != null, "GetBatchingForPlatform method does not exist");
+            Assert.True(setterMethod != null, "SetBatchingForPlatform method does not exist");
+
+            const int initialStaticBatching = 0;
+            const int initialDynamicBatching = 0;
+            var getterArgs = new object[]
+            {
+                m_Platform,
+                initialStaticBatching,
+                initialDynamicBatching
+            };
+
+            getterMethod.Invoke(null, getterArgs);
+
+            const int staticBatching = 1;
+            const int dynamicBatching = 0;
+            var setterArgs = new object[]
+            {
+                m_Platform,
+                staticBatching,
+                dynamicBatching
+            };
+
+            setterMethod.Invoke(null, setterArgs);
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id == HybridRenderingAnalyzer.PAS1000);
+
+            setterMethod.Invoke(null, getterArgs);
+
+            Assert.True(issues.Length == 1);
+        }
+
+#if !PACKAGE_HYBRID_RENDERER
+        [Ignore("This requires the Hybrid Renderer package")]
+#endif
+        [Test]
+        public void HybridRendererSettingsAnalysis_StaticBatching_Disabled_IsNotReported()
+        {
+            var getterMethod = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
+                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
+
+            var setterMethod = typeof(PlayerSettings).GetMethod("SetBatchingForPlatform",
+                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
+
+            Assert.True(getterMethod != null, "GetBatchingForPlatform method does not exist");
+            Assert.True(setterMethod != null, "SetBatchingForPlatform method does not exist");
+
+            const int initialStaticBatching = 0;
+            const int initialDynamicBatching = 0;
+            var getterArgs = new object[]
+            {
+                m_Platform,
+                initialStaticBatching,
+                initialDynamicBatching
+            };
+
+            getterMethod.Invoke(null, getterArgs);
+
+            const int staticBatching = 0;
+            const int dynamicBatching = 0;
+            var setterArgs = new object[]
+            {
+                m_Platform,
+                staticBatching,
+                dynamicBatching
+            };
+
+            setterMethod.Invoke(null, setterArgs);
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id == HybridRenderingAnalyzer.PAS1000);
+
+            setterMethod.Invoke(null, getterArgs);
+
+            Assert.True(issues.Length == 0);
         }
 
         [Test]
@@ -592,7 +879,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, false);
             var issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.id.IsValid() && i.id.GetDescriptor().title.Equals("SRP Asset: SRP Batcher"));
+                i => i.id.IsValid() && i.id.GetDescriptor().id == SrpAssetSettingsAnalyzer.PAS1008);
             var srpBatchingIssue = issues.FirstOrDefault();
             Assert.NotNull(srpBatchingIssue);
             Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
@@ -600,7 +887,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, true);
             issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.id.IsValid() && i.id.GetDescriptor().title.Equals("SRP Asset: SRP Batcher"));
+                i => i.id.IsValid() && i.id.GetDescriptor().id == SrpAssetSettingsAnalyzer.PAS1008);
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have enabled SRP Batcher.");
 
