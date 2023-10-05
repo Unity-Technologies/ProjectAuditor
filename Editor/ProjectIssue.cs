@@ -100,10 +100,10 @@ namespace Unity.ProjectAuditor.Editor
             internal set => m_DescriptorID = value;
         }
 
-        [JsonProperty("diagnosticID", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("diagnosticID")]
         internal string diagnoticIDAsString
         {
-            get { return m_DescriptorID.AsString(); }
+            get { return m_DescriptorID.IsValid() ? m_DescriptorID.AsString() : null; }
             set
             {
                 // TODO: check if ID is registered
@@ -114,17 +114,24 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// This issue's category
         /// </summary>
-        [JsonProperty("category", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore]
         public IssueCategory category
         {
             get => m_Category;
             internal set => m_Category = value;
         }
 
+        [JsonProperty("category")]
+        internal string categoryForJson
+        {
+            get => m_Category.ToString();
+            set => m_Category = (IssueCategory)Enum.Parse(typeof(IssueCategory), value);
+        }
+
         /// <summary>
         /// Custom properties
         /// </summary>
-        [JsonProperty("properties", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("properties")]
         public string[] customProperties
         {
             get => m_CustomProperties;
@@ -201,10 +208,18 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Diagnostics-specific severity
         /// </summary>
+        [JsonIgnore]
         public Severity severity
         {
             get => m_Severity == Severity.Default && m_DescriptorID.IsValid() ? m_DescriptorID.GetDescriptor().defaultSeverity : m_Severity;
             set => m_Severity = value;
+        }
+
+        [JsonProperty("severity")]
+        internal string severityString
+        {
+            get => m_Severity.ToString();
+            set => m_Severity = (Severity)Enum.Parse(typeof(Severity), value);
         }
 
         /// <summary>
