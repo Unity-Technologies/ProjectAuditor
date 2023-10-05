@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditorInternal;
@@ -41,8 +42,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
         public static bool IsApplicable(this Descriptor desc, ProjectAuditorParams projectAuditorParams)
         {
-            return desc.IsVersionCompatible(projectAuditorParams.unityVersion) &&
-                   desc.IsPlatformCompatible(projectAuditorParams.platform);
+            return desc.IsVersionCompatible() && desc.IsPlatformCompatible(projectAuditorParams.platform);
         }
 
         /// <summary>
@@ -74,21 +74,21 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             return descriptor.platforms[0].Equals(buildTarget.ToString());
         }
 
+        static Version s_unityVersion = (Version)null;
+
         /// <summary>
         /// Check if the descriptor's version is compatible with the current editor
         /// </summary>
         public static bool IsVersionCompatible(this Descriptor desc)
         {
-            // Caution: GetUnityVersion() is a main thread only API. We pass a copy of the value into ProjectAuditor
-            // via ProjectAuditorParams if we need to do checks in multi-threaded code in Modules.
-            return desc.IsVersionCompatible(InternalEditorUtility.GetUnityVersion());
-        }
+            if (s_unityVersion == null)
+            {
+                var unityVersionString = Application.unityVersion;
+                unityVersionString = unityVersionString.Remove(
+                    Regex.Match(unityVersionString, "[A-Za-z]").Index);
+                s_unityVersion = new Version(unityVersionString);
+            }
 
-        /// <summary>
-        /// Check if the descriptor's version is compatible with the current editor
-        /// </summary>
-        public static bool IsVersionCompatible(this Descriptor desc, Version unityVersion)
-        {
             var minimumVersion = (Version)null;
             var maximumVersion = (Version)null;
 
@@ -122,9 +122,9 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                 return false;
             }
 
-            if (minimumVersion != null && unityVersion < minimumVersion)
+            if (minimumVersion != null && s_unityVersion < minimumVersion)
                 return false;
-            if (maximumVersion != null && unityVersion > maximumVersion)
+            if (maximumVersion != null && s_unityVersion > maximumVersion)
                 return false;
 
             return true;

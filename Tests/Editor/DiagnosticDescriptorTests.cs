@@ -97,12 +97,16 @@ namespace Unity.ProjectAuditor.EditorTests
             desc.maximumVersion = null;
             Assert.False(desc.IsVersionCompatible());
 
-            desc.minimumVersion = InternalEditorUtility.GetUnityVersion().ToString();
+            var unityVersionString = Application.unityVersion;
+            unityVersionString = unityVersionString.Remove(
+                Regex.Match(unityVersionString, "[A-Za-z]").Index);
+
+            desc.minimumVersion = unityVersionString;
             desc.maximumVersion = null;
             Assert.True(desc.IsVersionCompatible());
 
             desc.minimumVersion = null;
-            desc.maximumVersion = InternalEditorUtility.GetUnityVersion().ToString();
+            desc.maximumVersion = unityVersionString;
             Assert.True(desc.IsVersionCompatible());
 
             desc.minimumVersion = "1.1";
