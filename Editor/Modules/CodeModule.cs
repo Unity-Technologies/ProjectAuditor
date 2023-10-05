@@ -134,9 +134,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
+            k_IssueLayout,
             k_AssemblyLayout,
             k_PrecompiledAssemblyLayout,
-            k_IssueLayout,
             k_CompilerMessageLayout,
             k_GenericIssueLayout,
             k_DomainReloadIssueLayout
@@ -259,7 +259,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 // remove issues if platform does not match
                 foundIssues.RemoveAll(i => i.id.IsValid() &&
-                                           !i.id.GetDescriptor().IsPlatformCompatible(projectAuditorParams.platform));
+                    !i.id.GetDescriptor().IsPlatformCompatible(projectAuditorParams.platform));
 
                 var diagnostics = foundIssues.Where(i => i.category != IssueCategory.GenericInstance).ToList();
                 Profiler.BeginSample("CodeModule.Audit.BuildCallHierarchies");
@@ -494,13 +494,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     DescriptorLibrary.RegisterDescriptor(descriptor.id, descriptor);
 
                     yield return ProjectIssue.Create(IssueCategory.DomainReload, descriptor.id)
-                         .WithLocation(relativePath, message.line)
-                         .WithLogLevel(CompilerMessageTypeToLogLevel(message.type))
-                         .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
-                         {
-                             message.code,
-                             assemblyInfo.name
-                         });
+                        .WithLocation(relativePath, message.line)
+                        .WithLogLevel(CompilerMessageTypeToLogLevel(message.type))
+                        .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
+                        {
+                            message.code,
+                            assemblyInfo.name
+                        });
                 }
                 else
                 {
