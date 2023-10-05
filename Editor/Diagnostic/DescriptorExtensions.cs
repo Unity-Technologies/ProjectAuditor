@@ -74,19 +74,19 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             return descriptor.platforms[0].Equals(buildTarget.ToString());
         }
 
-        static Version s_unityVersion = (Version)null;
+        static Version s_UnityVersion = (Version)null;
 
         /// <summary>
         /// Check if the descriptor's version is compatible with the current editor
         /// </summary>
         public static bool IsVersionCompatible(this Descriptor desc)
         {
-            if (s_unityVersion == null)
+            if (s_UnityVersion == null)
             {
                 var unityVersionString = Application.unityVersion;
                 unityVersionString = unityVersionString.Remove(
                     Regex.Match(unityVersionString, "[A-Za-z]").Index);
-                s_unityVersion = new Version(unityVersionString);
+                s_UnityVersion = new Version(unityVersionString);
             }
 
             var minimumVersion = (Version)null;
@@ -122,9 +122,9 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                 return false;
             }
 
-            if (minimumVersion != null && s_unityVersion < minimumVersion)
+            if (minimumVersion != null && s_UnityVersion < minimumVersion)
                 return false;
-            if (maximumVersion != null && s_unityVersion > maximumVersion)
+            if (maximumVersion != null && s_UnityVersion > maximumVersion)
                 return false;
 
             return true;
