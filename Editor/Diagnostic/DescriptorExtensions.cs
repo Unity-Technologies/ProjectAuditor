@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditorInternal;
@@ -39,6 +40,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             return descriptor.platforms.Contains(buildTarget.ToString());
         }
 
+        public static bool IsApplicable(this Descriptor desc, ProjectAuditorParams projectAuditorParams)
+        {
+            return desc.IsVersionCompatible() && desc.IsPlatformCompatible(projectAuditorParams.platform);
+        }
+
         /// <summary>
         /// Check if any descriptor's platforms are supported by the current editor
         /// </summary>
@@ -68,12 +74,21 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             return descriptor.platforms[0].Equals(buildTarget.ToString());
         }
 
+        static Version s_UnityVersion = (Version)null;
+
         /// <summary>
         /// Check if the descriptor's version is compatible with the current editor
         /// </summary>
         public static bool IsVersionCompatible(this Descriptor desc)
         {
-            var unityVersion = InternalEditorUtility.GetUnityVersion();
+            if (s_UnityVersion == null)
+            {
+                var unityVersionString = Application.unityVersion;
+                unityVersionString = unityVersionString.Remove(
+                    Regex.Match(unityVersionString, "[A-Za-z]").Index);
+                s_UnityVersion = new Version(unityVersionString);
+            }
+
             var minimumVersion = (Version)null;
             var maximumVersion = (Version)null;
 
@@ -107,9 +122,9 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                 return false;
             }
 
-            if (minimumVersion != null && unityVersion < minimumVersion)
+            if (minimumVersion != null && s_UnityVersion < minimumVersion)
                 return false;
-            if (maximumVersion != null && unityVersion > maximumVersion)
+            if (maximumVersion != null && s_UnityVersion > maximumVersion)
                 return false;
 
             return true;

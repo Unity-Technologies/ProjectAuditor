@@ -36,7 +36,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 module.RegisterDescriptor(descriptor);
             }
 
-            var methodDescriptors = descriptors.Where(descriptor => !descriptor.method.Equals("*") && !string.IsNullOrEmpty(descriptor.type));
+            var methodDescriptors = descriptors.Where(
+                descriptor => !descriptor.method.Equals("*") &&
+                              !string.IsNullOrEmpty(descriptor.type) &&
+                              module.SupportsDescriptor(descriptor.id));
 
             m_Descriptors = new Dictionary<string, List<Descriptor>>();
             foreach (var d in methodDescriptors)

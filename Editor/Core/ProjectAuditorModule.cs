@@ -40,10 +40,22 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public void RegisterDescriptor(Descriptor descriptor)
         {
+            // Don't register descriptors that aren't applicable to this Unity version, or to platforms that aren't supported
+            if (!descriptor.IsPlatformCompatible())
+                return;
+
+            if (!descriptor.IsVersionCompatible())
+                return;
+
             DescriptorLibrary.RegisterDescriptor(descriptor.id, descriptor);
 
             if (!m_IDs.Add(descriptor.id))
                 throw new Exception("Duplicate descriptor with id: " + descriptor.id);
+        }
+
+        public bool SupportsDescriptor(DescriptorID id)
+        {
+            return m_IDs.Contains(id);
         }
 
         /// <summary>
