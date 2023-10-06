@@ -1204,6 +1204,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(height)))
                     {
                         Analyze();
+                        GUIUtility.ExitGUI();
                     }
                 }
 
