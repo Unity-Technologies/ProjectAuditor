@@ -25,6 +25,7 @@ namespace Unity.ProjectAuditor.EditorTests
     class SettingsAnalysisTests : TestFixtureBase
     {
         [Test]
+        [RequirePlatformSupport(BuildTarget.iOS)]
         public void SettingsAnalysis_Default_AccelerometerFrequency_IsReported()
         {
             var accelerometerFrequency = PlayerSettings.accelerometerFrequency;
@@ -42,6 +43,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+        [RequirePlatformSupport(BuildTarget.iOS)]
         public void SettingsAnalysis_Disabled_AccelerometerFrequency_IsNotReported()
         {
             var accelerometerFrequency = PlayerSettings.accelerometerFrequency;
