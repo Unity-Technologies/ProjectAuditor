@@ -20,8 +20,8 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                     value = rawDescriptor.value,
                     platforms = rawDescriptor.platforms,
                     defaultSeverity = rawDescriptor.defaultSeverity == Severity.Default ? Severity.Moderate : rawDescriptor.defaultSeverity,
-                    documentationUrl = rawDescriptor.documentationUrl ?? String.Empty,
-                    minimumVersion = rawDescriptor.minimumVersion ?? String.Empty,
+                    documentationUrl = rawDescriptor.documentationUrl ?? string.Empty,
+                    minimumVersion = rawDescriptor.minimumVersion ?? string.Empty,
                     maximumVersion = rawDescriptor.maximumVersion ?? string.Empty
 
                 };

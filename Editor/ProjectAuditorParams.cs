@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using UnityEditor;
-using UnityEditorInternal;
 
 namespace Unity.ProjectAuditor.Editor
 {
