@@ -17,20 +17,20 @@ namespace Unity.ProjectAuditor.EditorTests
     {
         Descriptor m_Descriptor = new Descriptor
             (
-                "TDD2001",
-                "test",
-                Area.CPU,
-                "this is not actually a problem",
-                "do nothing"
+            "TDD2001",
+            "test",
+            Area.CPU,
+            "this is not actually a problem",
+            "do nothing"
             );
 
         Descriptor m_CriticalIssueDescriptor = new Descriptor
             (
-                "TDD2002",
-                "test",
-                Area.CPU,
-                "this is not actually a problem",
-                "do nothing"
+            "TDD2002",
+            "test",
+            Area.CPU,
+            "this is not actually a problem",
+            "do nothing"
             )
         {
             defaultSeverity = Severity.Critical

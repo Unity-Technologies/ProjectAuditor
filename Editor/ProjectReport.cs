@@ -45,7 +45,6 @@ namespace Unity.ProjectAuditor.Editor
                         catStrings[i] = categories[i].ToString();
                     }
                     return catStrings;
-
                 }
                 set
                 {
