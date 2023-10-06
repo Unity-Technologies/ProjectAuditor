@@ -23,7 +23,6 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                     documentationUrl = rawDescriptor.documentationUrl ?? string.Empty,
                     minimumVersion = rawDescriptor.minimumVersion ?? string.Empty,
                     maximumVersion = rawDescriptor.maximumVersion ?? string.Empty
-
                 };
                 if (string.IsNullOrEmpty(desc.title))
                 {
