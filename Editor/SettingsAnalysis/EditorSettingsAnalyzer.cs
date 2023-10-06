@@ -1,13 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
-using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
-using UnityEditor.Rendering;
-using UnityEngine;
-using UnityEngine.Rendering;
 
 #if UNITY_2020_1_OR_NEWER
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
