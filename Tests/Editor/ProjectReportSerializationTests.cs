@@ -15,6 +15,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void ProjectReportSerialization_Report_CanSaveAndLoad()
         {
             var report = m_ProjectAuditor.Audit();
+
             report.Save(k_ReportPath);
 
             var loadedReport = ProjectReport.Load(k_ReportPath);
@@ -22,6 +23,8 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(report.Version, loadedReport.Version);
             Assert.AreEqual(report.NumTotalIssues, loadedReport.NumTotalIssues);
             Assert.IsTrue(report.IsValid());
+            Assert.IsTrue(report.HasCategory(IssueCategory.Code));
+            Assert.IsTrue(report.HasCategory(IssueCategory.ProjectSetting));
         }
 
         [Test]

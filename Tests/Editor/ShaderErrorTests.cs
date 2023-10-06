@@ -1,10 +1,13 @@
+using System.Collections;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Tests.Common;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -24,11 +27,8 @@ namespace Unity.ProjectAuditor.EditorTests
         {
         }
 
-        [Test]
-#if UNITY_2023_3_OR_NEWER
-        [Ignore("Something changed in trunk that broke this test.")]
-#endif
-        public void ShadersAnalysis_ShaderWithFunctionError_IsReported()
+        [UnityTest]
+        public IEnumerator ShadersAnalysis_ShaderWithFunctionError_IsReported()
         {
             // Make this one a regex because the error message includes a line number and graphics API, neither of which I'm sure we should be relying on.
             UnityEngine.TestTools.LogAssert.Expect(LogType.Error, new System.Text.RegularExpressions.Regex("(Shader error in 'Custom/ShaderWithFunctionError': syntax error: unexpected token '}')(.)+"));
@@ -75,6 +75,13 @@ namespace Unity.ProjectAuditor.EditorTests
                 }
             }");
 
+#if UNITY_2019_1_OR_NEWER
+            while (ShaderUtil.anythingCompiling)
+            {
+                yield return null;
+            }
+#endif
+
             var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.severity == Severity.Error);
 
             Assert.Positive(shadersWithErrors.Count());
@@ -84,11 +91,8 @@ namespace Unity.ProjectAuditor.EditorTests
             local_shaderWithFunctionError.CleanupLocal();
         }
 
-        [Test]
-#if UNITY_2023_3_OR_NEWER
-        [Ignore("Something changed in trunk that broke this test.")]
-#endif
-        public void ShadersAnalysis_ShaderWithShaderLabError_IsReported()
+        [UnityTest]
+        public IEnumerator ShadersAnalysis_ShaderWithShaderLabError_IsReported()
         {
 #if UNITY_2021_1_OR_NEWER
             UnityEngine.TestTools.LogAssert.Expect(LogType.Error, "Shader error in '': Parse error: syntax error, unexpected TVAL_ID, expecting TOK_SHADER at line 2");
@@ -97,6 +101,13 @@ namespace Unity.ProjectAuditor.EditorTests
             Sader ""Custom/ShaderWithShaderLabError""
             {
             }");
+
+#if UNITY_2019_1_OR_NEWER
+            while (ShaderUtil.anythingCompiling)
+            {
+                yield return null;
+            }
+#endif
 
             var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.severity == Severity.Error);
 

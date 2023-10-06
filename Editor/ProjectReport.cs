@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             public string name;
 
-            [JsonIgnore]
+            // this is used by HasCategory
             public IssueCategory[] categories;
 
             public DateTime startTime;
@@ -42,9 +42,19 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField]
         DescriptorLibrary m_DescriptorLibrary = new DescriptorLibrary();
 
-        [JsonProperty("issues")]
+        [JsonIgnore]
         [SerializeField]
         List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+
+        [JsonProperty("issues")]
+        internal ProjectIssue[] UnfixedIssues
+        {
+            get
+            {
+                return m_Issues.Where(i => !i.wasFixed).ToArray();
+            }
+            set => m_Issues = value.ToList();
+        }
 
         static Mutex s_Mutex = new Mutex();
 
