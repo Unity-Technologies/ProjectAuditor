@@ -325,14 +325,14 @@ namespace Unity.ProjectAuditor.EditorTests
 
         // PAA4010 If MP3 is used. Vorbis is better
         [Test]
-        [RequirePlatformSupport(BuildTarget.iOS)]
+        [RequirePlatformSupport(BuildTarget.Android)]
         public void AudioClip_MP3Compression_IsReportedAndFixed()
         {
             var platform = m_Platform;
-            m_Platform = BuildTarget.iOS;
+            m_Platform = BuildTarget.Android;
 
             var asset = CreateTestAudioClip(
-                "PAA4010.wav", m_LongWavData, BuildTarget.iOS.ToString(),
+                "PAA4010.wav", m_LongWavData, BuildTarget.Android.ToString(),
                 AudioCompressionFormat.MP3, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)

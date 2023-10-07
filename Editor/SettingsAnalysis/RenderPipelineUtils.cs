@@ -46,9 +46,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
 #if UNITY_2019_3_OR_NEWER
         internal static IEnumerable<ProjectIssue> AnalyzeAssets(
-            Func<RenderPipelineAsset, int, IEnumerable<ProjectIssue>> analyze)
+            ProjectAuditorParams projectAuditorParams,
+            Func<ProjectAuditorParams, RenderPipelineAsset, int, IEnumerable<ProjectIssue>> analyze)
         {
-            IEnumerable<ProjectIssue> issues = analyze(GraphicsSettings.defaultRenderPipeline, -1);
+            IEnumerable<ProjectIssue> issues = analyze(projectAuditorParams, GraphicsSettings.defaultRenderPipeline, -1);
             foreach (ProjectIssue issue in issues)
             {
                 yield return issue;
@@ -59,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             {
                 QualitySettings.SetQualityLevel(i);
 
-                issues = analyze(QualitySettings.renderPipeline, i);
+                issues = analyze(projectAuditorParams, QualitySettings.renderPipeline, i);
                 foreach (ProjectIssue issue in issues)
                 {
                     yield return issue;

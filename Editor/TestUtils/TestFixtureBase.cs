@@ -88,6 +88,8 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
         protected ProjectIssue[] Analyze(Func<ProjectIssue, bool> predicate = null)
         {
+            ValidateTargetPlatform();
+
             var foundIssues = new List<ProjectIssue>();
 
             var projectAuditorParams = new ProjectAuditorParams
@@ -107,6 +109,8 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
         protected ProjectIssue[] Analyze(IssueCategory category, Func<ProjectIssue, bool> predicate = null)
         {
+            ValidateTargetPlatform();
+
             var foundIssues = new List<ProjectIssue>();
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
             var projectAuditorParams = new ProjectAuditorParams
@@ -158,6 +162,8 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
         protected void Build(bool isDevelopment = true, string buildFileName = "test", Action preBuildAction = null, Action postBuildAction = null)
         {
+            ValidateTargetPlatform();
+
             // We must save the scene or the build will fail https://unity.slack.com/archives/C3F85MBDL/p1615991512002200
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), s_TempSceneFilename);
 
@@ -191,6 +197,11 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             Directory.Delete(m_BuildPath, true);
 
             AssetDatabase.DeleteAsset(s_TempSceneFilename);
+        }
+
+        protected void ValidateTargetPlatform()
+        {
+            Assert.IsTrue(BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(m_Platform), m_Platform));
         }
     }
 }

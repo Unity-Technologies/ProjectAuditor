@@ -58,6 +58,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             OpCodes.Callvirt
         };
 
+        bool descriptorSystemNetSupported;
+        bool descriptorSystemThreadingSupported;
+        bool descriptorMicrophoneSupported;
+
         public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
         public void Initialize(ProjectAuditorModule module)
@@ -65,20 +69,24 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_DescriptorSystemNet);
             module.RegisterDescriptor(k_DescriptorSystemThreading);
             module.RegisterDescriptor(k_DescriptorMicrophone);
+
+            descriptorSystemNetSupported = module.SupportsDescriptor(k_DescriptorSystemNet.id);
+            descriptorSystemThreadingSupported = module.SupportsDescriptor(k_DescriptorSystemThreading.id);
+            descriptorMicrophoneSupported = module.SupportsDescriptor(k_DescriptorMicrophone.id);
         }
 
         public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
         {
             var methodReference = (MethodReference)inst.Operand;
-            if (methodReference.DeclaringType.FullName.StartsWith("System.Net."))
+            if (descriptorSystemNetSupported && methodReference.DeclaringType.FullName.StartsWith("System.Net."))
             {
                 return ProjectIssue.Create(IssueCategory.Code, k_DescriptorSystemNet.id, methodReference.FullName);
             }
-            if (methodReference.DeclaringType.FullName.StartsWith("System.Threading."))
+            if (descriptorSystemThreadingSupported && methodReference.DeclaringType.FullName.StartsWith("System.Threading."))
             {
                 return ProjectIssue.Create(IssueCategory.Code, k_DescriptorSystemThreading.id, methodReference.FullName);
             }
-            if (methodReference.DeclaringType.FullName.Equals("UnityEngine.Microphone"))
+            if (descriptorMicrophoneSupported && methodReference.DeclaringType.FullName.Equals("UnityEngine.Microphone"))
             {
                 return ProjectIssue.Create(IssueCategory.Code, k_DescriptorMicrophone.id, methodReference.FullName);
             }

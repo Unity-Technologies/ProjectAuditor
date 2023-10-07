@@ -97,12 +97,16 @@ namespace Unity.ProjectAuditor.EditorTests
             desc.maximumVersion = null;
             Assert.False(desc.IsVersionCompatible());
 
-            desc.minimumVersion = InternalEditorUtility.GetUnityVersion().ToString();
+            var unityVersionString = Application.unityVersion;
+            unityVersionString = unityVersionString.Remove(
+                Regex.Match(unityVersionString, "[A-Za-z]").Index);
+
+            desc.minimumVersion = unityVersionString;
             desc.maximumVersion = null;
             Assert.True(desc.IsVersionCompatible());
 
             desc.minimumVersion = null;
-            desc.maximumVersion = InternalEditorUtility.GetUnityVersion().ToString();
+            desc.maximumVersion = unityVersionString;
             Assert.True(desc.IsVersionCompatible());
 
             desc.minimumVersion = "1.1";
@@ -312,7 +316,13 @@ namespace Unity.ProjectAuditor.EditorTests
             var loadedDescriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.s_DataPath, jsonFilename);
             foreach (var loadedDescriptor in loadedDescriptors)
             {
-                Assert.NotZero(IDs.Count(id => id.AsString() == loadedDescriptor.id), "Descriptor {0} is not registered", loadedDescriptor.id);
+                // Only test Descriptors that are compatible with the Unity version and at least one installed build target
+                // (We know incompatible Descriptors won't be registered in our instance of ProjectAuditor)
+                if (loadedDescriptor.IsPlatformCompatible() && loadedDescriptor.IsVersionCompatible())
+                {
+                    Assert.NotZero(IDs.Count(id => id.AsString() == loadedDescriptor.id),
+                        "Descriptor {0} is not registered", loadedDescriptor.id);
+                }
             }
         }
 
@@ -334,6 +344,11 @@ namespace Unity.ProjectAuditor.EditorTests
             var descriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.s_DataPath, jsonFilename);
             foreach (var desc in descriptors)
             {
+                // Only test Descriptors that are compatible with the Unity version and at least one installed build target
+                // (We know incompatible Descriptors won't be registered in our instance of ProjectAuditor)
+                if (!desc.IsPlatformCompatible() || !desc.IsVersionCompatible())
+                    continue;
+
                 var type = types.FirstOrDefault(t => t.FullName.Equals(desc.type));
 
                 Assert.True((desc.method.Equals("*") || type != null), "Invalid Type : " + desc.type);
@@ -397,13 +412,27 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void DiagnosticDescriptor_UnsupportedPlatform_IsNotLoaded()
+        public void DiagnosticDescriptor_UnsupportedPlatform_IsNotRegistered()
         {
-            var descriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.s_DataPath, "ProjectSettings");
-            var platDescriptor = descriptors.FirstOrDefault(d => d.id.Equals("PAS0005"));
+            var projectAuditor = new Editor.ProjectAuditor();
+            var IDs = projectAuditor.GetDiagnosticIDs();
 
             // PAS0005 should only be available if iOS Editor component is installed
-            Assert.IsNull(platDescriptor);
+            var foundID = IDs.Contains(new DescriptorID("PAS0005"));
+
+            // Yamato tests don't have iOS as a supported build target, but we want to pass tests locally as well,
+            // where iOS support might be installed.
+            var buildTarget = BuildTarget.iOS;
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
+
+            if (BuildPipeline.IsBuildTargetSupported(buildTargetGroup, buildTarget))
+            {
+                Assert.IsTrue(foundID);
+            }
+            else
+            {
+                Assert.IsFalse(foundID);
+            }
         }
     }
 }

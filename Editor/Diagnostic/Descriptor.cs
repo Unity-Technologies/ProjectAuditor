@@ -43,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// Affected platforms. If null, the diagnostic applies to all platforms
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty]
         public string[] platforms;
 
         /// <summary>
@@ -61,20 +61,43 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// Url to documentation
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore]
         public string documentationUrl;
+
+        [JsonProperty("documentationUrl")]
+        internal string documentationUrlForJson
+        {
+            get => string.IsNullOrEmpty(documentationUrl) ? null : documentationUrl;
+            set => documentationUrl = string.IsNullOrEmpty(value) ? String.Empty : value;
+        }
 
         /// <summary>
         /// Minimum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore]
         public string minimumVersion;
+
+        [JsonProperty("minimumVersion")]
+        internal string minimumVersionForJson
+        {
+            get => string.IsNullOrEmpty(minimumVersion) ? null : minimumVersion;
+            set => minimumVersion = string.IsNullOrEmpty(value) ? String.Empty : value;
+        }
+
 
         /// <summary>
         /// Maximum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore]
         public string maximumVersion;
+
+        [JsonProperty("maximumVersion")]
+        internal string maximumVersionForJson
+        {
+            get => string.IsNullOrEmpty(maximumVersion) ? null : maximumVersion;
+            set => maximumVersion = string.IsNullOrEmpty(value) ? String.Empty : value;
+        }
+
 
         /// <summary>
         /// Optional Auto-fixer
@@ -85,20 +108,41 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// Name of the type (namespace and class/struct) of a known code API issue
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore]
         public string type;
+
+        [JsonProperty("type")]
+        internal string typeForJson
+        {
+            get => string.IsNullOrEmpty(type) ? null : type;
+            set => type = string.IsNullOrEmpty(value) ? String.Empty : value;
+        }
 
         /// <summary>
         /// Name of the method of a known code API issue
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore]
         public string method;
+
+        [JsonProperty("method")]
+        internal string methodForJson
+        {
+            get => string.IsNullOrEmpty(method) ? null : method;
+            set => method = string.IsNullOrEmpty(value) ? String.Empty : value;
+        }
 
         /// <summary>
         /// The evaluated value of a know code API issue
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore]
         public string value;
+
+        [JsonProperty("value")]
+        internal string valueForJson
+        {
+            get => string.IsNullOrEmpty(value) ? null : value;
+            set => this.value = string.IsNullOrEmpty(value) ? String.Empty : value;
+        }
 
         [JsonConstructor]
         internal Descriptor()

@@ -18,14 +18,15 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
-                compilationMode = CompilationMode.Editor
+                compilationMode = CompilationMode.Editor,
+                categories = new[] { IssueCategory.Code }
             });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
             var codeIssue = issues.FirstOrDefault(i => i.id.IsValid() &&
-                                                       i.id.GetDescriptor().type.Equals("System.AppDomain") &&
-                                                       i.id.GetDescriptor().method.Equals("GetAssemblies") &&
-                                                       i.GetCustomProperty(CodeProperty.Assembly).Equals("Unity.ProjectAuditor.Editor"));
+                i.id.GetDescriptor().type.Equals("System.AppDomain") &&
+                i.id.GetDescriptor().method.Equals("GetAssemblies") &&
+                i.GetCustomProperty(CodeProperty.Assembly).Equals("Unity.ProjectAuditor.Editor"));
 
             Assert.NotNull(codeIssue);
             Assert.AreEqual("'System.AppDomain.GetAssemblies' usage", codeIssue.description);
@@ -38,14 +39,15 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
-                compilationMode = CompilationMode.Editor
+                compilationMode = CompilationMode.Editor,
+                categories = new[] { IssueCategory.Code }
             });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
             var codeIssue = issues.FirstOrDefault(i => i.id.IsValid() &&
-                                                       i.id.GetDescriptor().type.Equals("UnityEditor.AssetDatabase") &&
-                                                       i.id.GetDescriptor().method.Equals("FindAssets") &&
-                                                       i.GetCustomProperty(CodeProperty.Assembly).Equals("Unity.ProjectAuditor.Editor"));
+                i.id.GetDescriptor().type.Equals("UnityEditor.AssetDatabase") &&
+                i.id.GetDescriptor().method.Equals("FindAssets") &&
+                i.GetCustomProperty(CodeProperty.Assembly).Equals("Unity.ProjectAuditor.Editor"));
 
             Assert.NotNull(codeIssue);
             Assert.AreEqual("'UnityEditor.AssetDatabase.FindAssets' usage", codeIssue.description);

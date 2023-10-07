@@ -73,7 +73,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var issues = new List<ProjectIssue>();
             AnalyzeResources(issues);
 
-            if (k_StreamingAssetsFolderDescriptor.IsPlatformCompatible(projectAuditorParams.platform))
+            if (k_StreamingAssetsFolderDescriptor.IsApplicable(projectAuditorParams))
                 AnalyzeStreamingAssets(settings, issues);
 
             if (issues.Any())

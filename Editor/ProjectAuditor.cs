@@ -179,11 +179,21 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="progress"> Progress bar, if applicable </param>
         internal void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.SelectMany(GetModules).Distinct() : m_Modules.Where(m => m.isEnabledByDefault).ToArray();
-            var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.platform)).ToArray();
             var report = projectAuditorParams.existingReport;
             if (report == null)
                 report = new ProjectReport();
+
+            var platform = projectAuditorParams.platform;
+            if (!BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(platform), platform))
+            {
+                // Error and early out if the user has request analysis of a platform which the Unity Editor doesn't have installed support for
+                Debug.LogError($"Build target {platform.ToString()} is not supported in this Unity Editor");
+                projectAuditorParams.onCompleted(report);
+                return;
+            }
+
+            var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.SelectMany(GetModules).Distinct() : m_Modules.Where(m => m.isEnabledByDefault).ToArray();
+            var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.platform)).ToArray();
 
             if (projectAuditorParams.categories != null)
             {

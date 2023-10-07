@@ -46,8 +46,15 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Full path
         /// </summary>
-        [JsonProperty("path")]
+        [JsonIgnore]
         public string Path => m_Path ?? string.Empty;
+
+        [JsonProperty("path")]
+        internal string pathForJson
+        {
+            get => string.IsNullOrEmpty(m_Path) ? null : m_Path;
+            set => m_Path = string.IsNullOrEmpty(value) ? String.Empty : value;
+        }
 
         /// <summary>
         /// Constructor
