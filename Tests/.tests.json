@@ -1,3 +1,4 @@
 {
-	"createSeparatePackage": true
+  "createSeparatePackage": true,
+  "displayName": "Project Auditor Tests"
 }
