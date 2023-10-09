@@ -1,6 +1,8 @@
 using System;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
@@ -48,6 +50,24 @@ namespace Unity.ProjectAuditor.EditorTests
             var location = new Location("Project/Player");
             Assert.IsTrue(location.IsValid());
             Assert.AreEqual("Project/Player", location.Path);
+        }
+
+        [Test]
+        public void Location_UnityPath_IsShortened()
+        {
+            var filename = "Dummy.cs";
+            var path = PathUtils.Combine(EditorApplication.applicationContentsPath, filename);
+            var location = new Location(path);
+
+            // check path after initialization
+            Assert.AreEqual(path, location.Path);
+            Assert.IsTrue(location.PathForJson.StartsWith("UNITY_PATH/Data"));
+
+            location.PathForJson = location.PathForJson;
+
+            // check path after fake serialization
+            Assert.AreEqual(path, location.Path);
+            Assert.IsTrue(location.PathForJson.StartsWith("UNITY_PATH/Data"));
         }
     }
 }

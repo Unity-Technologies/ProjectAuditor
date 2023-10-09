@@ -29,9 +29,22 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsTrue(report.HasCategory(IssueCategory.ProjectSetting));
         }
 
+        void AssertForbiddenProperty(JObject jobject, string propertyName)
+        {
+            Assert.IsFalse(jobject.ContainsKey(propertyName),
+                $"Property '{propertyName}' is found. JObject: {jobject}");
+        }
+
+        void AssertRequiredProperty(JObject jobject, string propertyName)
+        {
+            Assert.IsTrue(jobject.ContainsKey(propertyName),
+                $"Property '{propertyName}' is not found. JObject: {jobject}");
+        }
+
         void AssertRequiredPropertyIsValid(JObject jobject, string propertyName)
         {
-            Assert.IsTrue(jobject.ContainsKey(propertyName), $"Property '{propertyName}' is not found. JObject: {jobject}");
+            AssertRequiredProperty(jobject, propertyName);
+
             Assert.IsNotNull(jobject[propertyName].Value<string>(), $"Property '{propertyName}' cannot be null. JObject: {jobject}");
             Assert.IsFalse(jobject[propertyName].Value<string>().Equals(""), $"Property '{propertyName}' cannot be empty. JObject: {jobject}");
         }
@@ -93,7 +106,13 @@ namespace Unity.ProjectAuditor.EditorTests
 
                         if (issue.ContainsKey("diagnosticID"))
                         {
+                            AssertRequiredProperty(issue, "location");
+                            AssertRequiredPropertyIsValid(issue["location"] as JObject, "path");
                             AssertRequiredPropertyIsValid(issue, "severity");
+                        }
+                        else
+                        {
+                            AssertForbiddenProperty(issue, "severity");
                         }
                     }
                     else

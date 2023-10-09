@@ -1,5 +1,6 @@
 using System;
 using Newtonsoft.Json;
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
@@ -50,10 +51,22 @@ namespace Unity.ProjectAuditor.Editor
         public string Path => m_Path ?? string.Empty;
 
         [JsonProperty("path")]
-        internal string pathForJson
+        internal string PathForJson
         {
-            get => string.IsNullOrEmpty(m_Path) ? null : m_Path;
-            set => m_Path = string.IsNullOrEmpty(value) ? String.Empty : value;
+            get
+            {
+                if (string.IsNullOrEmpty(m_Path))
+                    return null;
+                return m_Path.Replace(EditorApplication.applicationContentsPath,
+                    "UNITY_PATH/Data");
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    m_Path = string.Empty;
+                else
+                    m_Path = value.Replace("UNITY_PATH/Data", EditorApplication.applicationContentsPath);
+            }
         }
 
         /// <summary>
