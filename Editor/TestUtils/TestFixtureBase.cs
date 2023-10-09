@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
         bool m_SavedAnalyzeInBackground;
 
-        static BuildTarget GetStandaloneBuildTarget()
+        public static BuildTarget GetStandaloneBuildTarget()
         {
 #if UNITY_EDITOR_WIN
             return BuildTarget.StandaloneWindows64;

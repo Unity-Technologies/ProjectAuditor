@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Diagnostic

@@ -108,8 +108,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
         IEnumerable<ProjectIssue> EnumerateInstalledPackages(UnityEditor.PackageManager.PackageInfo package)
         {
             var dependencies = package.dependencies.Select(d => d.name + " [" + d.version + "]").ToArray();
-            var node = new PackageDependencyNode(package.displayName, dependencies);
-            yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Package, package.displayName)
+            var displayName = string.IsNullOrEmpty(package.displayName) ? package.name : package.displayName;
+            var node = new PackageDependencyNode(displayName, dependencies);
+            yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Package, displayName)
                 .WithCustomProperties(new object[(int)PackageProperty.Num]
                 {
                     package.name,

@@ -83,7 +83,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     audioImporter.forceToMono = true;
                     audioImporter.SaveAndReimport();
                 }
-            }
+            },
+            platforms = new[] {"Android", "iOS"}
         };
 
         internal static readonly Descriptor k_AudioStereoClipWhichIsNotStreamingDescriptor = new Descriptor(
@@ -138,6 +139,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             messageFormat = "AudioClip '{0}' Compressed clip could be optimized for mobile",
+            platforms = new[] {"Android", "iOS"}
         };
 
         internal static readonly Descriptor k_Audio48KHzDescriptor = new Descriptor(

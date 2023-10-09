@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Tests.Common;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -159,13 +160,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "do nothing"
                 )
             {
-#if UNITY_EDITOR_WIN
-                platforms = new[] { BuildTarget.StandaloneWindows64.ToString() }
-#elif UNITY_EDITOR_OSX
-                platforms = new[] { BuildTarget.StandaloneOSX.ToString() }
-#else
-                platforms = new[] { BuildTarget.StandaloneLinux64.ToString() }
-#endif
+                platforms = new[] { TestFixtureBase.GetStandaloneBuildTarget().ToString() }
             };
 
             Assert.True(desc.IsPlatformSupported());

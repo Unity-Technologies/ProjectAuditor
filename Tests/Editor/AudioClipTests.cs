@@ -168,24 +168,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
         // PAA4003 Stereo clips not forced to Mono on non-mobile platforms if they’re not streaming audio (only non-diagetic music should be stereo, really)
         [Test]
-#if UNITY_EDITOR_WIN
-        [RequirePlatformSupport(BuildTarget.StandaloneWindows)]
-#elif UNITY_EDITOR_OSX
-        [RequirePlatformSupport(BuildTarget.StandaloneOSX)]
-#elif UNITY_EDITOR_LINUX
-        [RequirePlatformSupport(BuildTarget.StandaloneLinux64)]
-#endif
         public void AudioClip_NonStreamingStereoClipNotForcedToMono_IsReportedAndFixed()
         {
-            var platform = m_Platform;
-
-#if UNITY_EDITOR_WIN
-            m_Platform = BuildTarget.StandaloneWindows;
-#elif UNITY_EDITOR_OSX
-            m_Platform = BuildTarget.StandaloneOSX;
-#elif UNITY_EDITOR_LINUX
-            m_Platform = BuildTarget.StandaloneLinux64;
-#endif
             var asset = CreateTestAudioClip(
                 "PAA4003.wav", m_ShortWavData, m_Platform.ToString(),
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
@@ -204,8 +188,6 @@ namespace Unity.ProjectAuditor.EditorTests
                 .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioStereoClipWhichIsNotStreamingDescriptor.id));
 
             Assert.Null(issue);
-
-            m_Platform = platform;
         }
 
         // PAA4004 Decompress on Load used with long clips
@@ -365,13 +347,7 @@ namespace Unity.ProjectAuditor.EditorTests
         // PAA4003 Stereo clips not forced to Mono on non-mobile platforms if they’re not streaming audio (only non-diagetic music should be stereo, really)
         // PAA4006 Large compressed samples on mobile: Decrease quality or downsample
         [Test]
-#if UNITY_EDITOR_WIN
-        [RequirePlatformSupport(BuildTarget.Android, BuildTarget.StandaloneWindows)]
-#elif UNITY_EDITOR_OSX
-        [RequirePlatformSupport(BuildTarget.Android, BuildTarget.StandaloneOSX)]
-#elif UNITY_EDITOR_LINUX
-        [RequirePlatformSupport(BuildTarget.Android, BuildTarget.StandaloneLinux64)]
-#endif
+        [RequirePlatformSupport(BuildTarget.Android)]
         public void AudioClip_StereoFalsePositives_AreNotReported()
         {
             var platform = m_Platform;
@@ -383,13 +359,7 @@ namespace Unity.ProjectAuditor.EditorTests
             foundIssues = AnalyzeAndFindAssetIssues(m_TestLongNonStreamingClipAsset, IssueCategory.AssetDiagnostic);
             Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4003));
 
-#if UNITY_EDITOR_WIN
-            m_Platform = BuildTarget.StandaloneWindows;
-#elif UNITY_EDITOR_OSX
-            m_Platform = BuildTarget.StandaloneOSX;
-#elif UNITY_EDITOR_LINUX
-            m_Platform = BuildTarget.StandaloneLinux64;
-#endif
+            m_Platform = platform; // restore standalone platform
 
             foundIssues = AnalyzeAndFindAssetIssues(m_TestLongStreamingClipAsset, IssueCategory.AssetDiagnostic);
             Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4002));
@@ -399,8 +369,6 @@ namespace Unity.ProjectAuditor.EditorTests
 
             foundIssues = AnalyzeAndFindAssetIssues(m_TestCompressedInMemoryClipAsset, IssueCategory.AssetDiagnostic);
             Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4006));
-
-            m_Platform = platform;
         }
 
         // Testing to make sure we don't report false positives for:

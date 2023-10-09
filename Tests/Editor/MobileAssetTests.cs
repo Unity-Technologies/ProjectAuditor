@@ -15,6 +15,7 @@ namespace Unity.ProjectAuditor.EditorTests
         string m_RelativeTexturePath;
         bool m_DeleteStreamingAssetsFolder;
 
+        [OneTimeSetUp]
         public void CreateTemporaryStreamingAssets()
         {
             var texture = new Texture2D(4096, 4096);
@@ -39,6 +40,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(File.Exists(m_RelativeTexturePath));
         }
 
+        [OneTimeTearDown]
         public void RemoveTemporaryStreamingAssets()
         {
             File.Delete(m_RelativeTexturePath);
@@ -51,16 +53,12 @@ namespace Unity.ProjectAuditor.EditorTests
 
         [Test]
         [RequirePlatformSupport(BuildTarget.Android)]
-        public void Android_StreamingAssetsFolderTooLarge_IsReported()
+        public void StreamingAssets_FolderTooLarge_IsReported()
         {
             var platform = m_Platform;
             m_Platform = BuildTarget.Android;
 
-            CreateTemporaryStreamingAssets();
-
             var assetDiagnostic = Analyze(IssueCategory.AssetDiagnostic, issue => issue.id == AssetsModule.PAA3001);
-
-            RemoveTemporaryStreamingAssets();
 
             Assert.IsNotEmpty(assetDiagnostic);
 
@@ -68,21 +66,12 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        [RequirePlatformSupport(BuildTarget.iOS)]
-        public void iOS_StreamingAssetsFolderTooLarge_IsReported()
+        public void StreamingAssets_FolderTooLarge_IsNotReported()
         {
-            var platform = m_Platform;
-            m_Platform = BuildTarget.iOS;
-
-            CreateTemporaryStreamingAssets();
-
             var assetDiagnostic = Analyze(IssueCategory.AssetDiagnostic, issue => issue.id == AssetsModule.PAA3001);
 
-            RemoveTemporaryStreamingAssets();
-
-            Assert.IsNotEmpty(assetDiagnostic);
-
-            m_Platform = platform;
+            // it should not be reported on default analysis platform (Standalone)
+            Assert.IsEmpty(assetDiagnostic);
         }
     }
 }
