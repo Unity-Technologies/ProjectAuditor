@@ -144,7 +144,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "do nothing"
                 );
 
-            Assert.True(desc.IsPlatformCompatible());
+            Assert.True(desc.IsPlatformSupported());
         }
 
         [Test]
@@ -168,7 +168,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
             };
 
-            Assert.True(desc.IsPlatformCompatible());
+            Assert.True(desc.IsPlatformSupported());
         }
 
         [Test]
@@ -186,7 +186,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 platforms = new[] { BuildTarget.WSAPlayer.ToString() }  // assuming WSAPlayer is not installed by default
             };
 
-            Assert.False(desc.IsPlatformCompatible());
+            Assert.False(desc.IsPlatformSupported());
         }
 
         [Test]
@@ -318,7 +318,7 @@ namespace Unity.ProjectAuditor.EditorTests
             {
                 // Only test Descriptors that are compatible with the Unity version and at least one installed build target
                 // (We know incompatible Descriptors won't be registered in our instance of ProjectAuditor)
-                if (loadedDescriptor.IsPlatformCompatible() && loadedDescriptor.IsVersionCompatible())
+                if (loadedDescriptor.IsPlatformSupported() && loadedDescriptor.IsVersionCompatible())
                 {
                     Assert.NotZero(IDs.Count(id => id.AsString() == loadedDescriptor.id),
                         "Descriptor {0} is not registered", loadedDescriptor.id);
@@ -346,7 +346,7 @@ namespace Unity.ProjectAuditor.EditorTests
             {
                 // Only test Descriptors that are compatible with the Unity version and at least one installed build target
                 // (We know incompatible Descriptors won't be registered in our instance of ProjectAuditor)
-                if (!desc.IsPlatformCompatible() || !desc.IsVersionCompatible())
+                if (!desc.IsPlatformSupported() || !desc.IsVersionCompatible())
                     continue;
 
                 var type = types.FirstOrDefault(t => t.FullName.Equals(desc.type));
