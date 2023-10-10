@@ -38,5 +38,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected void CleanupBuild();
         [NUnit.Framework.OneTimeSetUp] public void FixtureSetUp();
         [NUnit.Framework.OneTimeTearDown] public void FixtureTearDown();
+        public static UnityEditor.BuildTarget GetStandaloneBuildTarget();
+        protected void ValidateTargetPlatform();
     }
 }

@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor
         [Newtonsoft.Json.JsonIgnore] public string FormattedFilename { get; }
         [Newtonsoft.Json.JsonIgnore] public string FormattedPath { get; }
         [Newtonsoft.Json.JsonProperty(@"line")] public int Line { get; }
-        [Newtonsoft.Json.JsonProperty(@"path")] public string Path { get; }
+        [Newtonsoft.Json.JsonIgnore] public string Path { get; }
         public Location(string path) {}
         [Newtonsoft.Json.JsonConstructor] public Location(string path, int line) {}
         public bool IsValid();
@@ -88,9 +88,9 @@ namespace Unity.ProjectAuditor.Editor
 
     public class ProjectIssue
     {
-        public bool wasFixed = false;
-        [Newtonsoft.Json.JsonProperty(@"category", NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public IssueCategory category { get; }
-        [Newtonsoft.Json.JsonProperty(@"properties", NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string[] customProperties { get; }
+        [Newtonsoft.Json.JsonIgnore] [UnityEngine.SerializeField] public bool wasFixed = false;
+        [Newtonsoft.Json.JsonIgnore] public IssueCategory category { get; }
+        [Newtonsoft.Json.JsonProperty(@"properties")] public string[] customProperties { get; }
         [Newtonsoft.Json.JsonProperty(@"description")] public string description { get; }
         [Newtonsoft.Json.JsonIgnore] public string filename { get; }
         [Newtonsoft.Json.JsonIgnore] public Diagnostic.DescriptorID id { get; }
@@ -98,7 +98,7 @@ namespace Unity.ProjectAuditor.Editor
         public Location location { get; set; }
         [Newtonsoft.Json.JsonIgnore] public Core.LogLevel logLevel { get; }
         [Newtonsoft.Json.JsonIgnore] public string relativePath { get; }
-        public Diagnostic.Severity severity { get; set; }
+        [Newtonsoft.Json.JsonIgnore] public Diagnostic.Severity severity { get; set; }
         public string GetCustomProperty<T>(T propertyEnum) where T : struct, new();
         public bool GetCustomPropertyBool<T>(T propertyEnum) where T : struct, new();
         public double GetCustomPropertyDouble<T>(T propertyEnum) where T : struct, new();
@@ -162,18 +162,18 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         [Newtonsoft.Json.JsonRequired] public string[] areas;
         [Newtonsoft.Json.JsonRequired] public Severity defaultSeverity;
         [Newtonsoft.Json.JsonRequired] public string description;
-        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string documentationUrl;
+        [Newtonsoft.Json.JsonIgnore] public string documentationUrl;
         [Newtonsoft.Json.JsonIgnore] public System.Action<ProjectIssue> fixer;
         [Newtonsoft.Json.JsonRequired] public string id;
-        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string maximumVersion;
+        [Newtonsoft.Json.JsonIgnore] public string maximumVersion;
         public string messageFormat;
-        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string method;
-        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string minimumVersion;
-        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string[] platforms;
+        [Newtonsoft.Json.JsonIgnore] public string method;
+        [Newtonsoft.Json.JsonIgnore] public string minimumVersion;
+        [Newtonsoft.Json.JsonProperty] public string[] platforms;
         [Newtonsoft.Json.JsonRequired] public string solution;
         [Newtonsoft.Json.JsonRequired] public string title;
-        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string type;
-        [Newtonsoft.Json.JsonProperty(NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)] public string value;
+        [Newtonsoft.Json.JsonIgnore] public string type;
+        [Newtonsoft.Json.JsonIgnore] public string value;
         public Descriptor(string id, string title, string[] areas, string description, string solution) {}
         public Descriptor(string id, string title, Area area, string description, string solution) {}
         public Descriptor(string id, string title, Area[] areas, string description, string solution) {}
