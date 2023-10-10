@@ -279,7 +279,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_ViewManager = new ViewManager(viewDescriptors.Select(d => d.category).ToArray()); // view manager needs sorted categories
             }
 
-            m_ViewManager.onViewChanged += i =>
+            m_ViewManager.OnActiveViewChanged += i =>
             {
                 var viewDesc = m_ViewManager.GetView(i).desc;
                 ProjectAuditorAnalytics.SendEvent(
@@ -287,13 +287,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                     ProjectAuditorAnalytics.BeginAnalytic());
             };
 
-            m_ViewManager.onViewChanged += i =>
+            m_ViewManager.OnActiveViewChanged += i =>
             {
                 var viewDesc = m_ViewManager.GetView(i).desc;
                 SyncTabOnViewChange(viewDesc.category);
             };
 
-            m_ViewManager.onShowIgnoredIssuesChanged += showIgnoredIssues =>
+            m_ViewManager.OnIgnoredIssuesVisibilityChanged += showIgnoredIssues =>
             {
                 var analytic = ProjectAuditorAnalytics.BeginAnalytic();
                 var payload = new Dictionary<string, string>
@@ -305,7 +305,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     analytic, payload);
             };
 
-            m_ViewManager.onIgnoreIssues = issues =>
+            m_ViewManager.OnSelectedIssuesIgnoreRequested = issues =>
             {
                 var analytic = ProjectAuditorAnalytics.BeginAnalytic();
 
@@ -313,7 +313,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     analytic, issues);
             };
 
-            m_ViewManager.onDisplayIssues = issues =>
+            m_ViewManager.OnSelectedIssuesDisplayRequested = issues =>
             {
                 var analytic = ProjectAuditorAnalytics.BeginAnalytic();
 
@@ -321,12 +321,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                     ProjectAuditorAnalytics.UIButton.Unmute, analytic, issues);
             };
 
-            m_ViewManager.onAnalyze += category =>
+            m_ViewManager.OnAnalysisRequested += category =>
             {
                 AuditCategories(new[] {category});
             };
 
-            m_ViewManager.onViewExported += () =>
+            m_ViewManager.OnViewExportCompleted += () =>
             {
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Export,
                     ProjectAuditorAnalytics.BeginAnalytic());

@@ -28,17 +28,22 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         [SerializeField] IssueCategory[] m_Categories;
         [SerializeField] int m_ActiveViewIndex;
 
-        public int numViews => m_Views != null ? m_Views.Length : 0;
+        public int NumViews => m_Views != null ? m_Views.Length : 0;
 
-        public Action<IssueCategory> onAnalyze;
-        public Action onViewExported;
-        public Action<int> onViewChanged;
-        public Action<bool> onShowMajorOrCriticalIssuesChanged;
-        public Action<bool> onShowIgnoredIssuesChanged;
-        public Action<ProjectIssue[]>  onIgnoreIssues;
-        public Action<ProjectIssue[]>  onDisplayIssues;
-        public Action<ProjectIssue[]>  onQuickFixIssues;
-        public Action<Descriptor>  onShowDocumentation;
+        // user interactions
+        public Action<int> OnActiveViewChanged;
+        public Action<bool> OnMajorOrCriticalIssuesVisibilityChanged;
+        public Action<bool> OnIgnoredIssuesVisibilityChanged;
+
+        // events that trigger future operations
+        public Action<IssueCategory> OnAnalysisRequested;
+        public Action<ProjectIssue[]>  OnSelectedIssuesIgnoreRequested;
+        public Action<ProjectIssue[]>  OnSelectedIssuesDisplayRequested;
+        public Action<ProjectIssue[]>  OnSelectedIssuesQuickFixRequested;
+        public Action<ProjectIssue[]>  OnSelectedIssuesDocumentationRequested;
+
+        // events based on past operations
+        public Action OnViewExportCompleted;
 
         public ViewManager()
             : this(ViewDescriptor.GetAll().Select(d => d.category).ToArray())
@@ -163,8 +168,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 m_ActiveViewIndex = index;
 
-                if (onViewChanged != null)
-                    onViewChanged(m_ActiveViewIndex);
+                if (OnActiveViewChanged != null)
+                    OnActiveViewChanged(m_ActiveViewIndex);
             }
         }
 

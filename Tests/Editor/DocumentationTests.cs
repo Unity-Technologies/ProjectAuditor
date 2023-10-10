@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var viewManager = new ViewManager((IssueCategory[])Enum.GetValues(typeof(IssueCategory)));
             viewManager.Create(new Editor.ProjectAuditor(m_Config), new ViewStates());
-            for (var i = 0; i < viewManager.numViews; i++)
+            for (var i = 0; i < viewManager.NumViews; i++)
             {
                 if (viewManager.GetView(i).desc.category == IssueCategory.MetaData)
                     continue;

@@ -328,8 +328,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public virtual void DrawViewOptions()
         {
-            if (m_ViewManager.onAnalyze != null)
-                DrawToolbarButtonIcon(Contents.AnalyzeNowButton,  () => m_ViewManager.onAnalyze(m_Desc.category));
+            if (m_ViewManager.OnAnalysisRequested != null)
+                DrawToolbarButtonIcon(Contents.AnalyzeNowButton,  () => m_ViewManager.OnAnalysisRequested(m_Desc.category));
 
             m_Table.SetFontSize(m_ViewStates.fontSize);
 
@@ -506,8 +506,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 EditorUtility.RevealInFinder(path);
 
-                if (m_ViewManager.onViewExported != null)
-                    m_ViewManager.onViewExported();
+                if (m_ViewManager.OnViewExportCompleted != null)
+                    m_ViewManager.OnViewExportCompleted();
 
                 UserPreferences.loadSavePath = Path.GetDirectoryName(path);
             }

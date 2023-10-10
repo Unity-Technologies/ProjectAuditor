@@ -110,7 +110,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     {
                         Application.OpenURL(descriptor.documentationUrl);
 
-                        m_ViewManager.onShowDocumentation?.Invoke(descriptor);
+                        m_ViewManager.OnSelectedIssuesDocumentationRequested?.Invoke(selectedIssues);
                     });
                 }
 
@@ -125,7 +125,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             descriptor.Fix(issue);
                         }
 
-                        m_ViewManager.onQuickFixIssues?.Invoke(selectedIssues);
+                        m_ViewManager.OnSelectedIssuesQuickFixRequested?.Invoke(selectedIssues);
                     });
 
                     GUI.enabled = true;
@@ -143,7 +143,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             m_Config.ClearRules(t);
                         }
 
-                        m_ViewManager.onDisplayIssues?.Invoke(selectedIssues);
+                        m_ViewManager.OnSelectedIssuesDisplayRequested?.Invoke(selectedIssues);
 
                         ClearSelection();
                     });
@@ -157,7 +157,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             m_Config.SetRule(t, Severity.None);
                         }
 
-                        m_ViewManager.onIgnoreIssues?.Invoke(selectedIssues);
+                        m_ViewManager.OnSelectedIssuesIgnoreRequested?.Invoke(selectedIssues);
 
                         ClearSelection();
                     });
@@ -180,7 +180,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     m_ViewStates.onlyCriticalIssues, GUILayout.Width(170));
 
                 if (wasShowingCritical != m_ViewStates.onlyCriticalIssues)
-                    m_ViewManager.onShowMajorOrCriticalIssuesChanged?.Invoke(m_ViewStates.onlyCriticalIssues);
+                    m_ViewManager.OnMajorOrCriticalIssuesVisibilityChanged?.Invoke(m_ViewStates.onlyCriticalIssues);
             }
 
             if (EditorGUI.EndChangeCheck())
@@ -204,7 +204,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             DrawToolbarLargeButton(guiContent, () =>
             {
                 m_Table.showIgnoredIssues = !m_Table.showIgnoredIssues;
-                m_ViewManager.onShowIgnoredIssuesChanged?.Invoke(m_Table.showIgnoredIssues);
+                m_ViewManager.OnIgnoredIssuesVisibilityChanged?.Invoke(m_Table.showIgnoredIssues);
                 MarkDirty();
             });
         }
@@ -241,7 +241,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 EditorUtility.RevealInFinder(path);
 
-                m_ViewManager.onViewExported?.Invoke();
+                m_ViewManager.OnViewExportCompleted?.Invoke();
 
                 UserPreferences.loadSavePath = Path.GetDirectoryName(path);
             }
