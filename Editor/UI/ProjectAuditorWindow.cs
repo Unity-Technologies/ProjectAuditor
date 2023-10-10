@@ -268,7 +268,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void InitializeViews(IssueCategory[] categories, bool reload)
         {
-            if (m_ViewManager == null || !reload)
+            var initialize = m_ViewManager == null || !reload;
+
+            if (initialize)
             {
                 var viewDescriptors = ViewDescriptor.GetAll()
                     .Where(descriptor => categories.Contains(descriptor.category)).ToArray();
@@ -334,20 +336,23 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ViewManager.Create(m_ProjectAuditor, m_ViewStates, null, this);
 
-            InitializeTabs();
+            InitializeTabs(!initialize);
 
             Profiler.EndSample();
         }
 
-        void InitializeTabs()
+        void InitializeTabs(bool reload)
         {
+            if (!reload)
+                m_ActiveTabIndex = 0;
+
             foreach (var tab in m_Tabs)
             {
-                RefreshTabCategories(tab);
+                RefreshTabCategories(tab, reload);
             }
         }
 
-        private void RefreshTabCategories(Tab tab)
+        private void RefreshTabCategories(Tab tab, bool reload)
         {
             List<IssueCategory> availableCategories = new List<IssueCategory>();
             var dropDownItems = new List<Utility.DropdownItem>();
@@ -380,6 +385,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 tab.dropdown = null;
 
             tab.availableCategories = availableCategories.ToArray();
+
+            if (!reload)
+                tab.currentCategoryIndex = 0;
         }
 
         void SyncTabOnViewChange(IssueCategory newCatagory)
@@ -1355,7 +1363,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     AuditCategories(new[] { category }, true);
 
                                 var tab = m_Tabs[m_ActiveTabIndex];
-                                RefreshTabCategories(tab);
+                                RefreshTabCategories(tab, false);
                             }
 
                             m_ViewManager.ChangeView(category);
@@ -1581,7 +1589,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     AuditCategories(tab.allCategories, true);
 
-                    RefreshTabCategories(tab);
+                    RefreshTabCategories(tab, false);
 
                     if (tab.availableCategories.Length > 0)
                         m_ViewManager.ChangeView(tab.availableCategories[0]);
@@ -1648,6 +1656,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorUtility.RevealInFinder(path);
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Save, ProjectAuditorAnalytics.BeginAnalytic());
             }
+
+            GUIUtility.ExitGUI();
         }
 
         void LoadReport()
@@ -1677,6 +1687,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 // switch to summary view after loading
                 m_ViewManager.ChangeView(IssueCategory.MetaData);
             }
+
+            GUIUtility.ExitGUI();
         }
 
         public void AddItemsToMenu(GenericMenu menu)

@@ -134,9 +134,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
+            k_IssueLayout,
             k_AssemblyLayout,
             k_PrecompiledAssemblyLayout,
-            k_IssueLayout,
             k_CompilerMessageLayout,
             k_GenericIssueLayout,
             k_DomainReloadIssueLayout
