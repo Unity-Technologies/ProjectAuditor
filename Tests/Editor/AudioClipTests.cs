@@ -102,6 +102,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
         // PAA4000 Long AudioClips which aren’t set to streaming
         [Test]
+#if UNITY_2023_3_OR_NEWER
+        [Ignore("Test disabled until AudioClip serialization bug UUM-52963 is fixed")]
+#endif
         public void AudioClip_LongNonStreaming_IsReportedAndFixed()
         {
             var asset = CreateTestAudioClip(
@@ -192,6 +195,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
         // PAA4004 Decompress on Load used with long clips
         [Test]
+#if UNITY_2023_3_OR_NEWER
+        [Ignore("Test disabled until AudioClip serialization bug UUM-52963 is fixed")]
+#endif
         public void AudioClip_LongClipDecompressOnLoad_IsReported()
         {
             var issue = AnalyzeAndFindAssetIssues(m_TestLongNonStreamingClipAsset, IssueCategory.AssetDiagnostic)
@@ -234,6 +240,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
         // PAA4007 Bitrates > 48KHz
         [Test]
+#if UNITY_2023_3_OR_NEWER
+        [Ignore("Test disabled until AudioClip serialization bug UUM-52963 is fixed")]
+#endif
         public void AudioClip_HighBitrate_IsReportedAndFixed()
         {
             // m_ShortWavData is 96KHz when not compressed
@@ -283,6 +292,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
         // PAA4009 If Load In Background isn’t enabled on ACs over (TUNEABLE) size/length (if it’s not ticked, loading will block the main thread)
         [Test]
+#if UNITY_2023_3_OR_NEWER
+        [Ignore("Test disabled until AudioClip serialization bug UUM-52963 is fixed")]
+#endif
         public void AudioClip_LoadInBackGroundNotEnabled_IsReportedAndFixed()
         {
             var asset = CreateTestAudioClip(
