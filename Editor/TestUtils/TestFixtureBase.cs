@@ -49,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             m_SavedAnalyzeInBackground = UserPreferences.analyzeInBackground;
             UserPreferences.analyzeInBackground = false;
 
-            m_ProjectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Rules);
+            m_ProjectAuditor = new ProjectAuditor(m_Rules);
 
             m_DiagnosticParamsProvider = new ProjectAuditorDiagnosticParamsProvider();
             m_DiagnosticParamsProvider.Initialize();

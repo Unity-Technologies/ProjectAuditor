@@ -36,8 +36,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 BuildReportModule.BuildReportProvider = this;
 
-                var tempConfigAsset = CreateInstance<ProjectAuditorRules>();
-                var projectAuditor = new ProjectAuditor(tempConfigAsset);
+                var tempRulesAsset = CreateInstance<ProjectAuditorRules>();
+                var projectAuditor = new ProjectAuditor(tempRulesAsset);
 
                 m_ViewManager = new ViewManager(k_Categories);
                 m_ViewManager.Create(projectAuditor, m_ViewStates);

@@ -6,18 +6,18 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class ConfigAssetTests : TestFixtureBase
+    class RulesAssetTests : TestFixtureBase
     {
         [Test]
-        public void ConfigAsset_DefaultAsset_IsCreated()
+        public void RulesAsset_DefaultAsset_IsCreated()
         {
-            Assert.IsTrue(File.Exists(Unity.ProjectAuditor.Editor.ProjectAuditor.k_DefaultAssetPath));
+            Assert.IsTrue(File.Exists(Editor.UserPreferences.rulesAssetPath));
         }
 
         [Test]
-        public void ConfigAsset_CustomAsset_IsCreated()
+        public void RulesAsset_CustomAsset_IsCreated()
         {
-            var assetPath = Path.Combine(TestAsset.TempAssetsFolder, "MyConfig.asset");
+            var assetPath = Path.Combine(TestAsset.TempAssetsFolder, "MyRules.asset");
             new Unity.ProjectAuditor.Editor.ProjectAuditor(assetPath);
             Assert.True(File.Exists(assetPath));
 

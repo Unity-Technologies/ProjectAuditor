@@ -35,6 +35,9 @@ namespace Unity.ProjectAuditor.Editor
         static string k_BuildReportPathLabel = "Library Path";
         static string k_BuildReportPathDefault = "Assets/BuildReports";
 
+        static string k_RulesPathLabel = "Rules Asset Path";
+        static string k_RulesPathDefault = "Assets/Editor/ProjectAuditorRules.asset";
+
         internal static string loadSavePath = string.Empty;
 
         public static string Path => k_PreferencesKey;
@@ -117,6 +120,12 @@ namespace Unity.ProjectAuditor.Editor
             set => EditorPrefs.SetString(MakeKey(nameof(settingsAsset)), value);
         }
 
+        public static string rulesAssetPath
+        {
+            get => EditorPrefs.GetString(MakeKey(nameof(rulesAssetPath)), k_RulesPathDefault);
+            set => EditorPrefs.SetString(MakeKey(nameof(rulesAssetPath)), value);
+        }
+
         [SettingsProvider]
         internal static SettingsProvider CreatePreferencesProvider()
         {
@@ -157,6 +166,22 @@ namespace Unity.ProjectAuditor.Editor
             analyzeInBackground = EditorGUILayout.Toggle(k_AnalysisInBackgroundLabel, analyzeInBackground);
             useRoslynAnalyzers = EditorGUILayout.Toggle(k_UseRoslynAnalyzersLabel, useRoslynAnalyzers);
             logTimingsInfo = EditorGUILayout.Toggle(k_LogTimingsInfoLabel, logTimingsInfo);
+
+            EditorGUILayout.BeginHorizontal();
+            var newRulesPath = EditorGUILayout.DelayedTextField(k_RulesPathLabel, rulesAssetPath);
+            if (!string.IsNullOrEmpty(newRulesPath))
+                rulesAssetPath = newRulesPath;
+            if (GUILayout.Button("Browse...", GUILayout.Width(80)))
+            {
+                newRulesPath = EditorUtility.OpenFilePanel("Select Project Auditor Rules asset path/filename", rulesAssetPath, "asset");
+                if (!string.IsNullOrEmpty(newRulesPath))
+                {
+                    rulesAssetPath = FileUtil.GetProjectRelativePath(newRulesPath);
+                    InternalEditorUtility.RepaintAllViews();
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+
             EditorGUI.indentLevel--;
 
             GUILayout.Space(10f);

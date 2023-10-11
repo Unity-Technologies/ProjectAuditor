@@ -22,7 +22,6 @@ namespace Unity.ProjectAuditor.Editor
         : IPreprocessBuildWithReport
     {
         internal static string s_DataPath => s_PackagePath + "/Data";
-        internal const string k_DefaultAssetPath = "Assets/Editor/ProjectAuditorRules.asset";   // SteveM TODO: This should live in UserPreferences
         internal const string k_CanonicalPackagePath = "Packages/" + k_PackageName;
 
         internal const string k_PackageName = "com.unity.project-auditor";
@@ -75,7 +74,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public ProjectAuditor()
         {
-            InitAsset(k_DefaultAssetPath);
+            InitAsset(UserPreferences.rulesAssetPath);
             InitModules();
             InitDefaultSettingsProvider();
         }
