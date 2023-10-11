@@ -155,7 +155,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider reorganizing your texture atlas in order to reduce the amount of empty space."
         )
         {
-            messageFormat = "Texture Atlas '{0}' has too much empty space ({1} %)"
+            messageFormat = "Texture Atlas '{0}' has too much empty space ({1})"
         };
 
         public void Initialize(ProjectAuditorModule module)
@@ -257,7 +257,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (emptyPercent >
                     projectAuditorParams.diagnosticParams.SpriteAtlasEmptySpaceLimit)
                 {
-                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor.id, textureName, emptyPercent)
+                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor.id, textureName, Formatting.FormatPercentage(emptyPercent / 100.0f))
                         .WithLocation(textureImporter.assetPath);
                 }
             }

@@ -343,7 +343,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// </summary>
         /// <param name="spriteAtlas">The Sprite Atlas to check.</param>
         /// <returns>The percent of empty space.</returns>
-        public static int GetEmptySpacePercentage(SpriteAtlas spriteAtlas)
+        public static float GetEmptySpacePercentage(SpriteAtlas spriteAtlas)
         {
             var method = typeof(SpriteAtlasExtensions).GetMethod("GetPreviewTextures", BindingFlags.Static | BindingFlags.NonPublic);
             object obj = method.Invoke(null, new object[] { spriteAtlas });
@@ -367,7 +367,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return emptyPercent;
         }
 
-        public static int GetEmptyPixelsPercent(Texture2D texture2D)
+        public static float GetEmptyPixelsPercent(Texture2D texture2D)
         {
             Color32[] pixels;
 
@@ -432,8 +432,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 }
             }
 
-            double percent = (double)transparencyPixelsCount / (double)pixelCount;
-            return ((int)Math.Round(percent * 100));
+            var percent = (float)transparencyPixelsCount / (float)pixelCount;
+            return Mathf.Round(percent * 100);
         }
 
         static Texture2D CopyTexture(Texture2D texture)
