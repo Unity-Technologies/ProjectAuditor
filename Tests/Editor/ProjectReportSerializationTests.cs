@@ -134,16 +134,16 @@ namespace Unity.ProjectAuditor.EditorTests
                     {
                         Assert.IsTrue(descriptor.ContainsKey("id"));
 
-                        AssertRequiredPropertyIsValid(descriptor, "defaultSeverity");
+                        AssertForbiddenProperty(descriptor, "defaultSeverity");
                         AssertRequiredArrayIsValid(descriptor, "areas");
-                        AssertOptionalPropertyIsValid(descriptor, "messageFormat");
-                        AssertOptionalPropertyIsValid(descriptor, "type");
-                        AssertOptionalPropertyIsValid(descriptor, "method");
-                        AssertOptionalPropertyIsValid(descriptor, "value");
+                        AssertForbiddenProperty(descriptor, "messageFormat");
+                        AssertForbiddenProperty(descriptor, "type");
+                        AssertForbiddenProperty(descriptor, "method");
+                        AssertForbiddenProperty(descriptor, "value");
                         AssertOptionalArrayIsValid(descriptor, "platforms");
                         AssertOptionalPropertyIsValid(descriptor, "documentationUrl");
-                        AssertOptionalPropertyIsValid(descriptor, "minimumVersion");
-                        AssertOptionalPropertyIsValid(descriptor, "maximumVersion");
+                        AssertForbiddenProperty(descriptor, "minimumVersion");
+                        AssertForbiddenProperty(descriptor, "maximumVersion");
                     }
                     else
                     {

@@ -114,18 +114,10 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// This issue's category
         /// </summary>
-        [JsonIgnore]
         public IssueCategory category
         {
             get => m_Category;
             internal set => m_Category = value;
-        }
-
-        [JsonProperty("category")]
-        internal string categoryForJson
-        {
-            get => m_Category.ToString();
-            set => m_Category = (IssueCategory)Enum.Parse(typeof(IssueCategory), value);
         }
 
         /// <summary>

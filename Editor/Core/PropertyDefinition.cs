@@ -1,4 +1,6 @@
 using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
@@ -35,6 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         }
     }
 
+    [JsonConverter(typeof(StringEnumConverter))]
     internal enum PropertyFormat
     {
         String = 0,
@@ -48,6 +51,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
     internal struct PropertyDefinition
     {
+        [JsonIgnore]
         public PropertyType type;
         public PropertyFormat format;
         public string name;

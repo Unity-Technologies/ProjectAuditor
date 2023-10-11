@@ -29,35 +29,8 @@ namespace Unity.ProjectAuditor.Editor
             public string name;
 
             // this is used by HasCategory
-            [JsonIgnore]
             public IssueCategory[] categories;
-
-            [JsonProperty("categories")]
-            internal string[] categoryStrings
-            {
-                get
-                {
-                    if (categories == null) return null;
-
-                    var catStrings = new string[categories.Length];
-                    for (int i = 0; i < categories.Length; ++i)
-                    {
-                        catStrings[i] = categories[i].ToString();
-                    }
-                    return catStrings;
-                }
-                set
-                {
-                    if (value != null)
-                    {
-                        categories = new IssueCategory[value.Length];
-                        for (int i = 0; i < value.Length; ++i)
-                        {
-                            categories[i] = (IssueCategory)Enum.Parse(typeof(IssueCategory), value[i]);
-                        }
-                    }
-                }
-            }
+            public IReadOnlyCollection<IssueLayout> layouts;
 
             public DateTime startTime;
             public DateTime endTime;
@@ -118,8 +91,6 @@ namespace Unity.ProjectAuditor.Editor
             var info = m_ModuleInfos.FirstOrDefault(m => m.name.Equals(name));
             if (info != null)
             {
-                info.name = module.name;
-                info.categories = module.categories;
                 info.startTime = startTime;
                 info.endTime = endTime;
             }
@@ -129,6 +100,7 @@ namespace Unity.ProjectAuditor.Editor
                 {
                     name = module.name,
                     categories = module.categories,
+                    layouts = module.supportedLayouts,
                     startTime = startTime,
                     endTime = endTime
                 });
@@ -238,7 +210,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             File.WriteAllText(path,
                 JsonConvert.SerializeObject(this, UserPreferences.prettifyJsonOutput ? Formatting.Indented : Formatting.None,
-                    new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore}));
+                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore}));
         }
 
         public static ProjectReport Load(string path)

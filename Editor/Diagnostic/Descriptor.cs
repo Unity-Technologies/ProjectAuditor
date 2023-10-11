@@ -26,12 +26,13 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// Message used to describe a specific instance of the diagnostic
         /// </summary>
+        [JsonIgnore]
         public string messageFormat;
 
         /// <summary>
         /// Default severity of the diagnostic
         /// </summary>
-        [JsonRequired]
+        [JsonIgnore]
         public Severity defaultSeverity;
 
         /// <summary>
@@ -77,27 +78,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         [JsonIgnore]
         public string minimumVersion;
 
-        [JsonProperty("minimumVersion")]
-        internal string minimumVersionForJson
-        {
-            get => string.IsNullOrEmpty(minimumVersion) ? null : minimumVersion;
-            set => minimumVersion = string.IsNullOrEmpty(value) ? String.Empty : value;
-        }
-
-
         /// <summary>
         /// Maximum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions
         /// </summary>
         [JsonIgnore]
         public string maximumVersion;
-
-        [JsonProperty("maximumVersion")]
-        internal string maximumVersionForJson
-        {
-            get => string.IsNullOrEmpty(maximumVersion) ? null : maximumVersion;
-            set => maximumVersion = string.IsNullOrEmpty(value) ? String.Empty : value;
-        }
-
 
         /// <summary>
         /// Optional Auto-fixer
@@ -111,38 +96,17 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         [JsonIgnore]
         public string type;
 
-        [JsonProperty("type")]
-        internal string typeForJson
-        {
-            get => string.IsNullOrEmpty(type) ? null : type;
-            set => type = string.IsNullOrEmpty(value) ? String.Empty : value;
-        }
-
         /// <summary>
         /// Name of the method of a known code API issue
         /// </summary>
         [JsonIgnore]
         public string method;
 
-        [JsonProperty("method")]
-        internal string methodForJson
-        {
-            get => string.IsNullOrEmpty(method) ? null : method;
-            set => method = string.IsNullOrEmpty(value) ? String.Empty : value;
-        }
-
         /// <summary>
         /// The evaluated value of a know code API issue
         /// </summary>
         [JsonIgnore]
         public string value;
-
-        [JsonProperty("value")]
-        internal string valueForJson
-        {
-            get => string.IsNullOrEmpty(value) ? null : value;
-            set => this.value = string.IsNullOrEmpty(value) ? String.Empty : value;
-        }
 
         [JsonConstructor]
         internal Descriptor()
