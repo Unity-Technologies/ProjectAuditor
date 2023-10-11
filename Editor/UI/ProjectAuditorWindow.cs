@@ -170,7 +170,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] int m_ActiveTabIndex = 0;
         int m_TabButtonControlID;
 
-        IProjectAuditorDiagnosticParamsProvider m_DiagnosticParamsProvider;
+        ProjectAuditorDiagnosticParamsProvider m_DiagnosticParamsProvider;
 
         public bool Match(ProjectIssue issue)
         {

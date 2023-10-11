@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         internal ProjectAuditorRules Rules => m_Rules;
 
-        IProjectAuditorDiagnosticParamsProvider m_DefaultDiagnosticParamsProvider;
+        ProjectAuditorDiagnosticParamsProvider m_DefaultDiagnosticParamsProvider;
 
         /// <summary>
         /// ProjectAuditor default constructor

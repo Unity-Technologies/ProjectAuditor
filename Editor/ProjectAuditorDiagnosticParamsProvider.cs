@@ -7,7 +7,7 @@ namespace Unity.ProjectAuditor.Editor
     /// <summary>
     /// A built-in provider to manage ProjectAuditorDiagnosticParams default and user-generated assets for customization.
     /// </summary>
-    public class ProjectAuditorDiagnosticParamsProvider : IProjectAuditorDiagnosticParamsProvider
+    public class ProjectAuditorDiagnosticParamsProvider
     {
         HashSet<ProjectAuditorDiagnosticParams> m_Assets = new HashSet<ProjectAuditorDiagnosticParams>();
         ProjectAuditorDiagnosticParams m_CurrentParams;
