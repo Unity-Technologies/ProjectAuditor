@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
         protected CodeOptimization m_CodeOptimization = CodeOptimization.Release;
         protected BuildTarget m_Platform = GetStandaloneBuildTarget();
-        protected ProjectAuditorConfig m_Config;
+        protected ProjectAuditorRules m_Rules;
         protected string m_BuildPath;
         protected Editor.ProjectAuditor m_ProjectAuditor;
         protected ProjectAuditorDiagnosticParamsProvider m_DiagnosticParamsProvider;
@@ -45,11 +45,11 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         [OneTimeSetUp]
         public void FixtureSetUp()
         {
-            m_Config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
+            m_Rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
             m_SavedAnalyzeInBackground = UserPreferences.analyzeInBackground;
             UserPreferences.analyzeInBackground = false;
 
-            m_ProjectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
+            m_ProjectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Rules);
 
             m_DiagnosticParamsProvider = new ProjectAuditorDiagnosticParamsProvider();
             m_DiagnosticParamsProvider.Initialize();
@@ -112,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             ValidateTargetPlatform();
 
             var foundIssues = new List<ProjectIssue>();
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Rules);
             var projectAuditorParams = new ProjectAuditorParams
             {
                 assemblyNames = new[] { "Assembly-CSharp" },

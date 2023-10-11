@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor
     /// <summary>
     /// Project-specific settings
     /// </summary>
-    public class ProjectAuditorConfig : ScriptableObject
+    public class ProjectAuditorRules : ScriptableObject
     {
         [SerializeField]
         List<Rule> m_Rules = new List<Rule>();

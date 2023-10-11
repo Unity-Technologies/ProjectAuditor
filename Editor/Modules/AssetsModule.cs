@@ -58,9 +58,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
 
-        public override void Initialize(ProjectAuditorConfig config)
+        public override void Initialize(ProjectAuditorRules rules)
         {
-            base.Initialize(config);
+            base.Initialize(rules);
 
             RegisterDescriptor(k_AssetInResourcesFolderDescriptor);
             RegisterDescriptor(k_StreamingAssetsFolderDescriptor);

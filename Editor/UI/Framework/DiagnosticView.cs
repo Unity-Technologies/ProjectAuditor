@@ -140,7 +140,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     {
                         foreach (var t in selectedIssues)
                         {
-                            m_Config.ClearRules(t);
+                            m_Rules.ClearRules(t);
                         }
 
                         m_ViewManager.OnSelectedIssuesDisplayRequested?.Invoke(selectedIssues);
@@ -154,7 +154,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     {
                         foreach (var t in selectedIssues)
                         {
-                            m_Config.SetRule(t, Severity.None);
+                            m_Rules.SetRule(t, Severity.None);
                         }
 
                         m_ViewManager.OnSelectedIssuesIgnoreRequested?.Invoke(selectedIssues);
@@ -214,7 +214,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             foreach (var issue in selectedIssues)
             {
                 var context = issue.GetContext();
-                var rule = m_Config.GetRule(issue.id, context);
+                var rule = m_Rules.GetRule(issue.id, context);
 
                 //If at least one issue in the selection is not ignored, consider the whole selection as not ignored
                 if (rule == null)
@@ -235,7 +235,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     exporter.WriteHeader();
 
                     var matchingIssues = m_Issues.Where(issue => predicate == null || predicate(issue));
-                    matchingIssues = matchingIssues.Where(issue => issue.id.IsValid() || m_Config.GetAction(issue.id, issue.GetContext()) != Severity.None);
+                    matchingIssues = matchingIssues.Where(issue => issue.id.IsValid() || m_Rules.GetAction(issue.id, issue.GetContext()) != Severity.None);
                     exporter.WriteIssues(matchingIssues.ToArray());
                 }
 
@@ -261,7 +261,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             var context = issue.GetContext();
 
-            return m_Config.GetAction(id, context) != Severity.None;
+            return m_Rules.GetAction(id, context) != Severity.None;
         }
 
         static class Contents

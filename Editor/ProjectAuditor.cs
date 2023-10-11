@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor
         : IPreprocessBuildWithReport
     {
         internal static string s_DataPath => s_PackagePath + "/Data";
-        internal const string k_DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
+        internal const string k_DefaultAssetPath = "Assets/Editor/ProjectAuditorRules.asset";   // SteveM TODO: This should live in UserPreferences
         internal const string k_CanonicalPackagePath = "Packages/" + k_PackageName;
 
         internal const string k_PackageName = "com.unity.project-auditor";
@@ -61,12 +61,12 @@ namespace Unity.ProjectAuditor.Editor
         static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
 
         readonly List<ProjectAuditorModule> m_Modules = new List<ProjectAuditorModule>();
-        ProjectAuditorConfig m_Config;
+        ProjectAuditorRules m_Rules;
 
         /// <summary>
-        /// A ProjectAuditorConfig object to configure how analysis is performed
+        /// A ProjectAuditorRules object to configure how analysis is performed
         /// </summary>
-        internal ProjectAuditorConfig config => m_Config;
+        internal ProjectAuditorRules Rules => m_Rules;
 
         IProjectAuditorDiagnosticParamsProvider m_DefaultDiagnosticParamsProvider;
 
@@ -83,10 +83,10 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// ProjectAuditor constructor
         /// </summary>
-        /// <param name="projectAuditorConfig"> ProjectAuditor Configuration object</param>
-        public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
+        /// <param name="projectAuditorRules"> ProjectAuditorRules object</param>
+        public ProjectAuditor(ProjectAuditorRules projectAuditorRules)
         {
-            m_Config = projectAuditorConfig;
+            m_Rules = projectAuditorRules;
             InitModules();
             InitDefaultSettingsProvider();
         }
@@ -94,7 +94,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// ProjectAuditor constructor
         /// </summary>
-        /// <param name="assetPath"> Path to the ProjectAuditorConfig asset</param>
+        /// <param name="assetPath"> Path to the ProjectAuditorRules asset</param>
         public ProjectAuditor(string assetPath)
         {
             InitAsset(assetPath);
@@ -104,14 +104,14 @@ namespace Unity.ProjectAuditor.Editor
 
         void InitAsset(string assetPath)
         {
-            m_Config = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
-            if (m_Config == null)
+            m_Rules = AssetDatabase.LoadAssetAtPath<ProjectAuditorRules>(assetPath);
+            if (m_Rules == null)
             {
                 var path = Path.GetDirectoryName(assetPath);
                 if (!File.Exists(path))
                     Directory.CreateDirectory(path);
-                m_Config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-                AssetDatabase.CreateAsset(m_Config, assetPath);
+                m_Rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
+                AssetDatabase.CreateAsset(m_Rules, assetPath);
 
                 Debug.LogFormat("Project Auditor: {0} has been created.", assetPath);
             }
@@ -126,7 +126,7 @@ namespace Unity.ProjectAuditor.Editor
                 var instance = Activator.CreateInstance(type) as ProjectAuditorModule;
                 try
                 {
-                    instance.Initialize(m_Config);
+                    instance.Initialize(m_Rules);
                 }
                 catch (Exception e)
                 {

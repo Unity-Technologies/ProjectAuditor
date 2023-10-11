@@ -87,8 +87,8 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectAuditor_Params_CallbacksAreInvoked()
         {
-            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
+            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(rules);
 
             int numModules = 0;
             ProjectReport projectReport = null;
@@ -124,7 +124,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var settingsProvider = new ProjectAuditorDiagnosticParamsProvider();
             settingsProvider.Initialize();
 
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Rules);
             var report = projectAuditor.Audit(new ProjectAuditorParams
             {
                 categories = new[] { IssueCategory.ProjectSetting},

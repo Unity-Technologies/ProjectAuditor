@@ -14,8 +14,8 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void EditorCodeAnalysis_GetAssemblies_IsFound()
         {
-            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
+            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(rules);
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
                 compilationMode = CompilationMode.Editor,
@@ -35,8 +35,8 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void EditorCodeAnalysis_FindAssets_IsFound()
         {
-            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
+            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(rules);
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
                 compilationMode = CompilationMode.Editor,
