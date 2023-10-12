@@ -258,17 +258,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_ShaderLayout,
-            k_MaterialLayout,
             k_ShaderVariantLayout,
-            AssetsModule.k_IssueLayout,
 
 #if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
             k_ComputeShaderVariantLayout,
 #endif
 
 #if UNITY_2019_1_OR_NEWER
-            k_ShaderCompilerMessageLayout
+            k_ShaderCompilerMessageLayout,
 #endif
+            k_MaterialLayout,
+            AssetsModule.k_IssueLayout
         };
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)

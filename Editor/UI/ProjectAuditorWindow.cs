@@ -27,17 +27,20 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         [Flags]
-        enum BuiltInModules
+        enum ProjectAreaFlags
         {
             None = 0,
             Code = 1 << 0,
             Settings = 1 << 1,
-            Shaders = 1 << 2,
-            Resources = 1 << 3,
-            BuildReport = 1 << 4,
+            Assets = 1 << 2,
+            Shaders = 1 << 3,
+            Build = 1 << 4,
 
-            Everything = ~0
+            // this is just helper enum to display Default instead of Every
+            Default = ~None
         }
+
+        const ProjectAreaFlags k_ProjectAreaDefaultFlags = ProjectAreaFlags.Code | ProjectAreaFlags.Settings | ProjectAreaFlags.Build;
 
         const string k_ProjectAuditorName = "Project Auditor";
 
@@ -69,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         // Serialized fields
         [SerializeField] BuildTarget m_Platform = BuildTarget.NoTarget;
         [SerializeField] CompilationMode m_CompilationMode = CompilationMode.Player;
-        [SerializeField] BuiltInModules m_SelectedModules = BuiltInModules.Everything;
+        [SerializeField] ProjectAreaFlags m_SelectedProjectAreas = k_ProjectAreaDefaultFlags;
         [SerializeField] string m_AreaSelectionSummary;
         [SerializeField] string[] m_AssemblyNames;
         [SerializeField] string m_AssemblySelectionSummary;
@@ -254,6 +257,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
             else
             {
+                m_ActiveTabIndex = 0;
                 m_AnalysisState = AnalysisState.Initialized;
             }
 
@@ -502,7 +506,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.ShaderCompilerMessage,
-                displayName = "Shader Messages",
+                displayName = "Compiler Messages",
                 menuLabel = "Assets/Shaders/Compiler Messages",
                 menuOrder = 4,
                 descriptionWithIcon = true,
@@ -815,7 +819,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var projectAuditorParams = new ProjectAuditorParams
             {
-                categories = m_SelectedModules == BuiltInModules.Everything ? null : GetSelectedCategories(),
+                categories = GetSelectedCategories(),
                 compilationMode = m_CompilationMode,
                 platform = m_Platform,
                 onIncomingIssues = issues =>
@@ -956,20 +960,17 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         IssueCategory[] GetSelectedCategories()
         {
-            if (m_SelectedModules == BuiltInModules.Everything)
-                return m_ProjectAuditor.GetCategories();
-
             var requestedCategories = new List<IssueCategory>(new[] {IssueCategory.MetaData});
-            if ((m_SelectedModules.HasFlag(BuiltInModules.Code)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<CodeModule>().categories);
-            if (m_SelectedModules.HasFlag(BuiltInModules.Settings))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<SettingsModule>().categories);
-            if ((m_SelectedModules.HasFlag(BuiltInModules.Shaders)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<ShadersModule>().categories);
-            if ((m_SelectedModules.HasFlag(BuiltInModules.Resources)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().categories);
-            if ((m_SelectedModules.HasFlag(BuiltInModules.BuildReport)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().categories);
+            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Code))
+                requestedCategories.AddRange(GetTabCategories(TabId.Code));
+            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Settings))
+                requestedCategories.AddRange(GetTabCategories(TabId.Settings));
+            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Assets))
+                requestedCategories.AddRange(GetTabCategories(TabId.Assets));
+            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Shaders))
+                requestedCategories.AddRange(GetTabCategories(TabId.Shaders));
+            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Build))
+                requestedCategories.AddRange(GetTabCategories(TabId.Build));
 
             return requestedCategories.ToArray();
         }
@@ -984,6 +985,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             return allTabCategories.Distinct().ToArray();
+        }
+
+        IssueCategory[] GetTabCategories(TabId tabId)
+        {
+            return GetTabCategories(m_Tabs.First(t => t.id == tabId));
         }
 
         IssueCategory[] GetTabCategories(Tab tab)
@@ -1187,7 +1193,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.Space();
 
-            m_SelectedModules = (BuiltInModules)EditorGUILayout.EnumFlagsField(Contents.ModulesSelection, m_SelectedModules, GUILayout.ExpandWidth(true));
+            m_SelectedProjectAreas = (ProjectAreaFlags)EditorGUILayout.EnumFlagsField(Contents.ProjectAreaSelection, m_SelectedProjectAreas, GUILayout.ExpandWidth(true));
+            if (m_SelectedProjectAreas == ProjectAreaFlags.Default)
+            {
+                // this is a workaround for the fact that EnumFlagsField doesn't support a default value
+                m_SelectedProjectAreas = k_ProjectAreaDefaultFlags;
+            }
 
             var selectedTarget = Array.IndexOf(m_SupportedBuildTargets, m_Platform);
             selectedTarget = EditorGUILayout.Popup(Contents.PlatformSelection, selectedTarget, m_PlatformContents);
@@ -1207,7 +1218,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 GUILayout.FlexibleSpace();
 
-                using (new EditorGUI.DisabledScope(m_SelectedModules == BuiltInModules.None))
+                using (new EditorGUI.DisabledScope(m_SelectedProjectAreas == ProjectAreaFlags.None))
                 {
                     if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(height)))
                     {
@@ -1524,6 +1535,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         if (EditorUtility.DisplayDialog(k_Discard, k_DiscardQuestion, "Ok", "Cancel"))
                         {
+                            m_ActiveTabIndex = 0;
                             m_AnalysisState = AnalysisState.Initialized;
                         }
                     }
@@ -1739,8 +1751,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent AnalyzeButton =
                 new GUIContent("Analyze", "Analyze Project and list all issues found.");
-            public static readonly GUIContent ModulesSelection =
-                new GUIContent("Modules", $"Select {k_ProjectAuditorName} modules.");
+            public static readonly GUIContent ProjectAreaSelection =
+                new GUIContent("Project Area", $"Select project area to analyze.");
             public static readonly GUIContent PlatformSelection =
                 new GUIContent("Platform", "Select the target platform.");
             public static readonly GUIContent CompilationModeSelection =
