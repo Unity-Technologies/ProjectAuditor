@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
 #if PACKAGE_HYBRID_RENDERER
 
-            if (PlayerSettingsUtil.IsStaticBatchingEnabled(projectAuditorParams.platform))
+            if (PlayerSettingsUtil.IsStaticBatchingEnabled(projectAuditorParams.Platform))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_Descriptor.id);
             }

@@ -819,22 +819,22 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var projectAuditorParams = new ProjectAuditorParams
             {
-                categories = GetSelectedCategories(),
-                compilationMode = m_CompilationMode,
-                platform = m_Platform,
-                onIncomingIssues = issues =>
+                Categories = GetSelectedCategories(),
+                CompilationMode = m_CompilationMode,
+                Platform = m_Platform,
+                OnIncomingIssues = issues =>
                 {
                     // add batch of issues
                     m_ViewManager.AddIssues(issues.ToList());
                 },
-                onCompleted = projectReport =>
+                OnCompleted = projectReport =>
                 {
                     m_AnalysisState = AnalysisState.Completed;
                     m_ProjectReport = projectReport;
 
                     m_ShouldRefresh = true;
                 },
-                diagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams()
+                DiagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams()
             };
             m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar());
         }
@@ -874,18 +874,18 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var projectAuditorParams = new ProjectAuditorParams
             {
-                categories = actualCategories,
-                compilationMode = m_CompilationMode,
-                onIncomingIssues = issues =>
+                Categories = actualCategories,
+                CompilationMode = m_CompilationMode,
+                OnIncomingIssues = issues =>
                 {
                     foreach (var view in views)
                     {
                         view.AddIssues(issues);
                     }
                 },
-                existingReport = m_ProjectReport,
-                diagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams(),
-                onCompleted = projectReport =>
+                ExistingReport = m_ProjectReport,
+                DiagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams(),
+                OnCompleted = projectReport =>
                 {
                     m_ShouldRefresh = true;
                     m_AnalysisState = AnalysisState.Completed;
@@ -894,7 +894,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var platform = m_ProjectReport.FindByCategory(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));
             if (platform != null)
-                projectAuditorParams.platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), platform.GetCustomProperty(MetaDataProperty.Value));
+                projectAuditorParams.Platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), platform.GetCustomProperty(MetaDataProperty.Value));
             m_ProjectAuditor.Audit(projectAuditorParams, new ProgressBar());
 
             if (refreshSummaryView)
@@ -1323,7 +1323,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     SharedStyles.SetFontDynamicSize(m_ViewStates.fontSize);
                 }
 
-                EditorGUILayout.LabelField("Ver. " + ProjectAuditor.s_PackageVersion, EditorStyles.label, GUILayout.Width(120));
+                EditorGUILayout.LabelField("Ver. " + ProjectAuditor.PackageVersion, EditorStyles.label, GUILayout.Width(120));
             }
         }
 

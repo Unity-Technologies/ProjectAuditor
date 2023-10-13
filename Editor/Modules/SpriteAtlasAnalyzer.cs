@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .WithLocation(new Location(assetPath));
 
             var emptyPercent = TextureUtils.GetEmptySpacePercentage(spriteAtlas);
-            if (emptyPercent > projectAuditorParams.diagnosticParams.SpriteAtlasEmptySpaceLimit)
+            if (emptyPercent > projectAuditorParams.DiagnosticParams.SpriteAtlasEmptySpaceLimit)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
                     k_SpriteAtlasEmptyDescriptor.id, spriteAtlas.name, Formatting.FormatPercentage(emptyPercent / 100.0f, 0))

@@ -171,16 +171,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(assemblyPath))
                 .ToArray();
             if (precompiledAssemblies.Any())
-                projectAuditorParams.onIncomingIssues(precompiledAssemblies);
+                projectAuditorParams.OnIncomingIssues(precompiledAssemblies);
 
             // find all roslyn analyzer DLLs by label
             var roslynAnalyzerAssets = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath)
                 .ToList();
 
             // find all roslyn analyzers packaged with Project Auditor
-            if (Directory.Exists($"{ProjectAuditor.s_PackagePath}/RoslynAnalyzers"))
+            if (Directory.Exists($"{ProjectAuditor.PackagePath}/RoslynAnalyzers"))
             {
-                var assetPaths = AssetDatabase.FindAssets("", new[] { $"{ProjectAuditor.s_PackagePath}/RoslynAnalyzers" }).Select(AssetDatabase.GUIDToAssetPath);
+                var assetPaths = AssetDatabase.FindAssets("", new[] { $"{ProjectAuditor.PackagePath}/RoslynAnalyzers" }).Select(AssetDatabase.GUIDToAssetPath);
                 foreach (var assetPath in assetPaths)
                 {
                     if (assetPath.EndsWith(".dll"))
@@ -199,38 +199,38 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 })
                 .WithLocation(roslynAnalyzerDllPath));
 
-            projectAuditorParams.onIncomingIssues(roslynAnalyzerIssues);
+            projectAuditorParams.OnIncomingIssues(roslynAnalyzerIssues);
 
             var assemblyDirectories = new List<string>();
             var compilationPipeline = new AssemblyCompilation
             {
                 onAssemblyCompilationFinished = (compilationTask, compilerMessages) =>
                 {
-                    projectAuditorParams.onIncomingIssues(ProcessCompilerMessages(compilationTask, compilerMessages));
+                    projectAuditorParams.OnIncomingIssues(ProcessCompilerMessages(compilationTask, compilerMessages));
                 },
-                codeOptimization = projectAuditorParams.codeOptimization,
-                compilationMode = projectAuditorParams.compilationMode,
-                platform = projectAuditorParams.platform,
+                codeOptimization = projectAuditorParams.CodeOptimization,
+                compilationMode = projectAuditorParams.CompilationMode,
+                platform = projectAuditorParams.Platform,
                 roslynAnalyzers = UserPreferences.useRoslynAnalyzers ? roslynAnalyzerAssets.ToArray() : null,
-                assemblyNames = projectAuditorParams.assemblyNames
+                assemblyNames = projectAuditorParams.AssemblyNames
             };
 
             Profiler.BeginSample("CodeModule.Audit.Compilation");
             var assemblyInfos = compilationPipeline.Compile(progress);
             Profiler.EndSample();
 
-            if (projectAuditorParams.assemblyNames != null)
+            if (projectAuditorParams.AssemblyNames != null)
             {
-                assemblyInfos = assemblyInfos.Where(a => projectAuditorParams.assemblyNames.Contains(a.name)).ToArray();
+                assemblyInfos = assemblyInfos.Where(a => projectAuditorParams.AssemblyNames.Contains(a.name)).ToArray();
             }
 
 #if !UNITY_2019_1_OR_NEWER
             // on old versions of Unity, some assemblies cannot be found by the Assembly Resolver (specifically mscorlib and netstandard)
-            assemblyDirectories.AddRange(AssemblyCompilation.GetAssemblyReferencePaths(projectAuditorParams.compilationMode));
+            assemblyDirectories.AddRange(AssemblyCompilation.GetAssemblyReferencePaths(projectAuditorParams.CompilationMode));
 #endif
 
-            if (projectAuditorParams.compilationMode == CompilationMode.Editor ||
-                projectAuditorParams.compilationMode == CompilationMode.EditorPlayMode)
+            if (projectAuditorParams.CompilationMode == CompilationMode.Editor ||
+                projectAuditorParams.CompilationMode == CompilationMode.EditorPlayMode)
             {
                 var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)ProjectIssue
                     .CreateWithoutDiagnostic(IssueCategory.Assembly, assemblyInfo.name)
@@ -242,7 +242,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(assemblyInfo.asmDefPath))
                     .ToArray();
                 if (issues.Any())
-                    projectAuditorParams.onIncomingIssues(issues);
+                    projectAuditorParams.OnIncomingIssues(issues);
             }
 
             // process successfully compiled assemblies
@@ -286,18 +286,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 // workaround for empty 'relativePath' strings which are not all available when 'onIssueFoundInternal' is called
                 if (foundIssues.Any())
-                    projectAuditorParams.onIncomingIssues(foundIssues);
-                projectAuditorParams.onModuleCompleted?.Invoke();
+                    projectAuditorParams.OnIncomingIssues(foundIssues);
+                projectAuditorParams.OnModuleCompleted?.Invoke();
             });
 
             assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UserAssembly | PrecompiledAssemblyTypes.UnityEngine | PrecompiledAssemblyTypes.SystemAssembly));
-            if (projectAuditorParams.compilationMode == CompilationMode.Editor)
+            if (projectAuditorParams.CompilationMode == CompilationMode.Editor)
                 assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UnityEditor));
 
             Profiler.BeginSample("CodeModule.Audit.Analysis");
 
             // first phase: analyze assemblies generated from editable scripts
-            AnalyzeAssemblies(localAssemblyInfos, projectAuditorParams.assemblyNames, assemblyDirectories, onCallFound, onIssueFoundInternal, null, progress);
+            AnalyzeAssemblies(localAssemblyInfos, projectAuditorParams.AssemblyNames, assemblyDirectories, onCallFound, onIssueFoundInternal, null, progress);
 
             var enableBackgroundAnalysis = UserPreferences.analyzeInBackground;
 #if !UNITY_2019_3_OR_NEWER
@@ -307,7 +307,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (enableBackgroundAnalysis)
             {
                 m_AssemblyAnalysisThread = new Thread(() =>
-                    AnalyzeAssemblies(readOnlyAssemblyInfos, projectAuditorParams.assemblyNames, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal));
+                    AnalyzeAssemblies(readOnlyAssemblyInfos, projectAuditorParams.AssemblyNames, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal));
                 m_AssemblyAnalysisThread.Name = "Assembly Analysis";
                 m_AssemblyAnalysisThread.Priority = ThreadPriority.BelowNormal;
                 m_AssemblyAnalysisThread.Start();
@@ -315,7 +315,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             else
             {
                 Profiler.BeginSample("CodeModule.Audit.AnalysisReadOnly");
-                AnalyzeAssemblies(readOnlyAssemblyInfos, projectAuditorParams.assemblyNames, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal, progress);
+                AnalyzeAssemblies(readOnlyAssemblyInfos, projectAuditorParams.AssemblyNames, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal, progress);
                 Profiler.EndSample();
             }
             Profiler.EndSample();

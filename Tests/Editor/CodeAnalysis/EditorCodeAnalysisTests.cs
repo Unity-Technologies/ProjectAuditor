@@ -18,8 +18,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
-                compilationMode = CompilationMode.Editor,
-                categories = new[] { IssueCategory.Code }
+                CompilationMode = CompilationMode.Editor,
+                Categories = new[] { IssueCategory.Code }
             });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
@@ -39,8 +39,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
-                compilationMode = CompilationMode.Editor,
-                categories = new[] { IssueCategory.Code }
+                CompilationMode = CompilationMode.Editor,
+                Categories = new[] { IssueCategory.Code }
             });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);

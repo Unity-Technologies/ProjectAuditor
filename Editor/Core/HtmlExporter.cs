@@ -3,9 +3,9 @@ using System.IO;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    class HTMLExporter : Exporter
+    class HtmlExporter : Exporter
     {
-        public HTMLExporter(string path, IssueLayout layout) : base(path, layout) {}
+        public HtmlExporter(string path, IssueLayout layout) : base(path, layout) {}
 
         public override void WriteHeader()
         {

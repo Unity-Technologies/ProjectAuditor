@@ -94,15 +94,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 System.Threading.Thread.Sleep(10);
             if (request.Status == StatusCode.Failure)
             {
-                projectAuditorParams.onModuleCompleted?.Invoke();
+                projectAuditorParams.OnModuleCompleted?.Invoke();
                 return;
             }
             foreach (var package in request.Result)
             {
-                projectAuditorParams.onIncomingIssues(EnumerateInstalledPackages(package));
-                projectAuditorParams.onIncomingIssues(EnumeratePackageDiagnostics(package));
+                projectAuditorParams.OnIncomingIssues(EnumerateInstalledPackages(package));
+                projectAuditorParams.OnIncomingIssues(EnumeratePackageDiagnostics(package));
             }
-            projectAuditorParams.onModuleCompleted?.Invoke();
+            projectAuditorParams.OnModuleCompleted?.Invoke();
         }
 
         IEnumerable<ProjectIssue> EnumerateInstalledPackages(UnityEditor.PackageManager.PackageInfo package)

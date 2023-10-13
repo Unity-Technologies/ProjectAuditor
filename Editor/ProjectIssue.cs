@@ -1,10 +1,8 @@
 using System;
-using System.Linq;
 using Newtonsoft.Json;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor
 {

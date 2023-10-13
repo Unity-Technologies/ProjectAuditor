@@ -230,7 +230,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 "csv");
             if (path.Length != 0)
             {
-                using (var exporter = new CSVExporter(path, m_Layout))
+                using (var exporter = new CsvExporter(path, m_Layout))
                 {
                     exporter.WriteHeader();
 

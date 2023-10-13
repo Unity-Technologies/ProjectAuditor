@@ -54,10 +54,10 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var projectAuditorParams = new ProjectAuditorParams();
 
-            Assert.IsNull(projectAuditorParams.categories);
-            Assert.IsNull(projectAuditorParams.assemblyNames);
-            Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, projectAuditorParams.platform);
-            Assert.AreEqual(CodeOptimization.Release, projectAuditorParams.codeOptimization);
+            Assert.IsNull(projectAuditorParams.Categories);
+            Assert.IsNull(projectAuditorParams.AssemblyNames);
+            Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, projectAuditorParams.Platform);
+            Assert.AreEqual(CodeOptimization.Release, projectAuditorParams.CodeOptimization);
         }
 
         [Test]
@@ -68,20 +68,20 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var originalParams = new ProjectAuditorParams
             {
-                categories = new[] { IssueCategory.Code },
-                assemblyNames = new[] { "Test" },
-                platform = BuildTarget.Android,
-                codeOptimization = CodeOptimization.Debug,
-                diagnosticParams = settings
+                Categories = new[] { IssueCategory.Code },
+                AssemblyNames = new[] { "Test" },
+                Platform = BuildTarget.Android,
+                CodeOptimization = CodeOptimization.Debug,
+                DiagnosticParams = settings
             };
 
             var projectAuditorParams = new ProjectAuditorParams(originalParams);
 
-            Assert.IsNotNull(projectAuditorParams.categories);
-            Assert.IsNotNull(projectAuditorParams.assemblyNames);
-            Assert.AreEqual(BuildTarget.Android, projectAuditorParams.platform);
-            Assert.AreEqual(CodeOptimization.Debug, projectAuditorParams.codeOptimization);
-            Assert.AreEqual(settings, projectAuditorParams.diagnosticParams);
+            Assert.IsNotNull(projectAuditorParams.Categories);
+            Assert.IsNotNull(projectAuditorParams.AssemblyNames);
+            Assert.AreEqual(BuildTarget.Android, projectAuditorParams.Platform);
+            Assert.AreEqual(CodeOptimization.Debug, projectAuditorParams.CodeOptimization);
+            Assert.AreEqual(settings, projectAuditorParams.DiagnosticParams);
         }
 
         [Test]
@@ -98,17 +98,17 @@ namespace Unity.ProjectAuditor.EditorTests
 
             projectAuditor.Audit(new ProjectAuditorParams
             {
-                categories = new[] { IssueCategory.ProjectSetting },
-                onModuleCompleted = () => numModules++,
-                onCompleted = report =>
+                Categories = new[] { IssueCategory.ProjectSetting },
+                OnModuleCompleted = () => numModules++,
+                OnCompleted = report =>
                 {
                     Assert.Null(projectReport);
                     Assert.NotNull(report);
 
                     projectReport = report;
                 },
-                compilationMode = CompilationMode.Player,
-                diagnosticParams = settingsProvider.GetCurrentParams()
+                CompilationMode = CompilationMode.Player,
+                DiagnosticParams = settingsProvider.GetCurrentParams()
             });
 
             Assert.AreEqual(1, numModules);
@@ -127,8 +127,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
             var report = projectAuditor.Audit(new ProjectAuditorParams
             {
-                categories = new[] { IssueCategory.ProjectSetting},
-                diagnosticParams = settingsProvider.GetCurrentParams()
+                Categories = new[] { IssueCategory.ProjectSetting},
+                DiagnosticParams = settingsProvider.GetCurrentParams()
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));
@@ -141,9 +141,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
             projectAuditor.Audit(new ProjectAuditorParams
             {
-                categories = new[] { IssueCategory.ProjectSetting},
-                existingReport = report,
-                diagnosticParams = settingsProvider.GetCurrentParams()
+                Categories = new[] { IssueCategory.ProjectSetting},
+                ExistingReport = report,
+                DiagnosticParams = settingsProvider.GetCurrentParams()
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));

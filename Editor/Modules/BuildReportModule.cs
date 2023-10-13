@@ -120,10 +120,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
 #if BUILD_REPORT_API_SUPPORT
-            var buildReport = BuildReportProvider.GetBuildReport(projectAuditorParams.platform);
+            var buildReport = BuildReportProvider.GetBuildReport(projectAuditorParams.Platform);
             if (buildReport != null)
             {
-                projectAuditorParams.onIncomingIssues(new[]
+                projectAuditorParams.OnIncomingIssues(new[]
                 {
                     NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath),
                     NewMetaData(k_KeyPlatform, buildReport.summary.platform),
@@ -133,11 +133,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     NewMetaData(k_KeyTotalTime, Formatting.FormatDuration(buildReport.summary.totalTime)),
                     NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize)),
                 });
-                projectAuditorParams.onIncomingIssues(AnalyzeBuildSteps(buildReport));
-                projectAuditorParams.onIncomingIssues(AnalyzePackedAssets(buildReport));
+                projectAuditorParams.OnIncomingIssues(AnalyzeBuildSteps(buildReport));
+                projectAuditorParams.OnIncomingIssues(AnalyzePackedAssets(buildReport));
             }
 #endif
-            projectAuditorParams.onModuleCompleted?.Invoke();
+            projectAuditorParams.OnModuleCompleted?.Invoke();
         }
 
 #if BUILD_REPORT_API_SUPPORT

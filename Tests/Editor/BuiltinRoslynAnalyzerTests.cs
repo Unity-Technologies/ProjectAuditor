@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.EditorTests
         bool m_SavedUseRoslynAnalyzers;
 
         string m_Path =
-            PathUtils.Combine(ProjectAuditor.Editor.ProjectAuditor.s_PackagePath, "RoslynAnalyzers");
+            PathUtils.Combine(ProjectAuditor.Editor.ProjectAuditor.PackagePath, "RoslynAnalyzers");
 
 #pragma warning disable 0414
         TestAsset m_ScriptWithStaticMember;

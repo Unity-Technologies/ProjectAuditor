@@ -111,7 +111,7 @@ class InternalClass
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
-                compilationMode = CompilationMode.Player
+                CompilationMode = CompilationMode.Player
             });
             var issues = projectReport.FindByCategory(IssueCategory.Code);
             var stringFilter = new TextFilter
@@ -131,7 +131,7 @@ class InternalClass
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
-                compilationMode = CompilationMode.Player
+                CompilationMode = CompilationMode.Player
             });
             var issues = projectReport.FindByCategory(IssueCategory.Code);
             var stringFilter = new TextFilter

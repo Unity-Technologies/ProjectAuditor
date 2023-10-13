@@ -94,13 +94,13 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             var projectAuditorParams = new ProjectAuditorParams
             {
-                codeOptimization = m_CodeOptimization,
-                onIncomingIssues = issues =>
+                CodeOptimization = m_CodeOptimization,
+                OnIncomingIssues = issues =>
                 {
                     foundIssues.AddRange(predicate == null ? issues : issues.Where(predicate));
                 },
-                platform = m_Platform,
-                diagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams()
+                Platform = m_Platform,
+                DiagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams()
             };
             m_ProjectAuditor.Audit(projectAuditorParams);
 
@@ -115,16 +115,16 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
             var projectAuditorParams = new ProjectAuditorParams
             {
-                assemblyNames = new[] { "Assembly-CSharp" },
-                categories = new[] { category},
-                onIncomingIssues = issues =>
+                AssemblyNames = new[] { "Assembly-CSharp" },
+                Categories = new[] { category},
+                OnIncomingIssues = issues =>
                 {
                     var categoryIssues = issues.Where(issue => issue.category == category);
 
                     foundIssues.AddRange(predicate == null ? categoryIssues : categoryIssues.Where(predicate));
                 },
-                platform = m_Platform,
-                diagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams()
+                Platform = m_Platform,
+                DiagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams()
             };
 
             projectAuditor.Audit(projectAuditorParams);

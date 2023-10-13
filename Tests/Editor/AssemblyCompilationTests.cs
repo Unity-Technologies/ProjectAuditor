@@ -97,7 +97,7 @@ class MyClass
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
-                compilationMode = mode
+                CompilationMode = mode
             });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);

@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
         {
-            if (projectAuditorParams.platform == BuildTarget.iOS)
+            if (projectAuditorParams.Platform == BuildTarget.iOS)
             {
                 if (IsUsingOpenGLESAndMetal())
                     yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor.id)
@@ -72,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                         .WithLocation("Project/Player");
             }
 
-            if (projectAuditorParams.platform == BuildTarget.Android)
+            if (projectAuditorParams.Platform == BuildTarget.Android)
             {
                 if (IsNotUsingVulkan())
                     yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_VulkanDescriptor.id)

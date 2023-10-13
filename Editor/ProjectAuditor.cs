@@ -21,13 +21,13 @@ namespace Unity.ProjectAuditor.Editor
     public sealed class ProjectAuditor
         : IPreprocessBuildWithReport
     {
-        internal static string s_DataPath => s_PackagePath + "/Data";
+        internal static string s_DataPath => PackagePath + "/Data";
         internal const string k_DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
         internal const string k_CanonicalPackagePath = "Packages/" + k_PackageName;
 
         internal const string k_PackageName = "com.unity.project-auditor";
 
-        internal static string s_PackagePath
+        internal static string PackagePath
         {
             get
             {
@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        internal static string s_PackageVersion
+        internal static string PackageVersion
         {
             get
             {
@@ -66,7 +66,10 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// A ProjectAuditorConfig object to configure how analysis is performed
         /// </summary>
-        internal ProjectAuditorConfig config => m_Config;
+        internal ProjectAuditorConfig Config
+        {
+            get => m_Config;
+        }
 
         IProjectAuditorDiagnosticParamsProvider m_DefaultDiagnosticParamsProvider;
 
@@ -153,7 +156,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             ProjectReport projectReport = null;
 
-            projectAuditorParams.onCompleted += result => { projectReport = result; };
+            projectAuditorParams.OnCompleted += result => { projectReport = result; };
 
             AuditAsync(projectAuditorParams, progress);
 
@@ -179,38 +182,38 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="progress"> Progress bar, if applicable </param>
         internal void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var report = projectAuditorParams.existingReport;
+            var report = projectAuditorParams.ExistingReport;
             if (report == null)
                 report = new ProjectReport();
 
-            var platform = projectAuditorParams.platform;
+            var platform = projectAuditorParams.Platform;
             if (!BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(platform), platform))
             {
                 // Error and early out if the user has request analysis of a platform which the Unity Editor doesn't have installed support for
                 Debug.LogError($"Build target {platform.ToString()} is not supported in this Unity Editor");
-                projectAuditorParams.onCompleted(report);
+                projectAuditorParams.OnCompleted(report);
                 return;
             }
 
-            var requestedModules = projectAuditorParams.categories != null ? projectAuditorParams.categories.SelectMany(GetModules).Distinct() : m_Modules.Where(m => m.isEnabledByDefault).ToArray();
-            var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.platform)).ToArray();
+            var requestedModules = projectAuditorParams.Categories != null ? projectAuditorParams.Categories.SelectMany(GetModules).Distinct() : m_Modules.Where(m => m.isEnabledByDefault).ToArray();
+            var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.Platform)).ToArray();
 
-            if (projectAuditorParams.categories != null)
+            if (projectAuditorParams.Categories != null)
             {
-                foreach (var category in projectAuditorParams.categories)
+                foreach (var category in projectAuditorParams.Categories)
                 {
                     report.ClearIssues(category);
                 }
             }
 
-            if (projectAuditorParams.diagnosticParams == null)
-                projectAuditorParams.diagnosticParams = m_DefaultDiagnosticParamsProvider.GetCurrentParams();
+            if (projectAuditorParams.DiagnosticParams == null)
+                projectAuditorParams.DiagnosticParams = m_DefaultDiagnosticParamsProvider.GetCurrentParams();
 
             var numModules = supportedModules.Length;
             if (numModules == 0)
             {
                 // early out if, for any reason, there are no registered modules
-                projectAuditorParams.onCompleted(report);
+                projectAuditorParams.OnCompleted(report);
                 return;
             }
 
@@ -221,13 +224,13 @@ namespace Unity.ProjectAuditor.Editor
                 var moduleStartTime = DateTime.Now;
                 var moduleParams = new ProjectAuditorParams(projectAuditorParams)
                 {
-                    onIncomingIssues = results =>
+                    OnIncomingIssues = results =>
                     {
                         var resultsList = results.ToList();
                         report.AddIssues(resultsList);
-                        projectAuditorParams.onIncomingIssues?.Invoke(resultsList);
+                        projectAuditorParams.OnIncomingIssues?.Invoke(resultsList);
                     },
-                    onModuleCompleted = () =>
+                    OnModuleCompleted = () =>
                     {
                         var moduleEndTime = DateTime.Now;
                         if (logTimingsInfo)
@@ -236,7 +239,7 @@ namespace Unity.ProjectAuditor.Editor
 
                         report.RecordModuleInfo(module, moduleStartTime, moduleEndTime);
 
-                        projectAuditorParams.onModuleCompleted?.Invoke();
+                        projectAuditorParams.OnModuleCompleted?.Invoke();
 
                         var finished = --numModules == 0;
                         if (finished)
@@ -246,7 +249,7 @@ namespace Unity.ProjectAuditor.Editor
                                 Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f +
                                     " seconds.");
 
-                            projectAuditorParams.onCompleted?.Invoke(report);
+                            projectAuditorParams.OnCompleted?.Invoke(report);
                         }
                     }
                 };
@@ -258,7 +261,7 @@ namespace Unity.ProjectAuditor.Editor
                 catch (Exception e)
                 {
                     Debug.LogError($"Project Auditor module {module.name} failed: " + e.Message + " " + e.StackTrace);
-                    moduleParams.onModuleCompleted();
+                    moduleParams.OnModuleCompleted();
                 }
             }
 

@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
+            var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
             if (progress != null)
                 progress.Start("Analyzing Settings", "Analyzing project settings", analyzers.Length);
 
@@ -44,11 +44,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 var issues = analyzer.Analyze(projectAuditorParams).ToArray();
                 if (issues.Any())
-                    projectAuditorParams.onIncomingIssues(issues);
+                    projectAuditorParams.OnIncomingIssues(issues);
             }
 
             progress?.Clear();
-            projectAuditorParams.onModuleCompleted?.Invoke();
+            projectAuditorParams.OnModuleCompleted?.Invoke();
         }
     }
 }

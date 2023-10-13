@@ -55,9 +55,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
+            var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
             var allTextures = AssetDatabase.FindAssets("t:texture, a:assets");
-            var currentPlatformString = projectAuditorParams.platform.ToString();
+            var currentPlatformString = projectAuditorParams.Platform.ToString();
 
             progress?.Start("Finding Textures", "Search in Progress...", allTextures.Length);
 
@@ -73,7 +73,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var platformSettings = textureImporter.GetPlatformTextureSettings(currentPlatformString);
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.onIncomingIssues(analyzer.Analyze(projectAuditorParams, textureImporter, platformSettings));
+                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, textureImporter, platformSettings));
                 }
 
                 progress?.Advance();
@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            projectAuditorParams.onModuleCompleted?.Invoke();
+            projectAuditorParams.OnModuleCompleted?.Invoke();
         }
     }
 }

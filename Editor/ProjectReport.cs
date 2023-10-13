@@ -183,7 +183,7 @@ namespace Unity.ProjectAuditor.Editor
         public void ExportToCSV(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
             var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
-            using (var exporter = new CSVExporter(path, layout))
+            using (var exporter = new CsvExporter(path, layout))
             {
                 exporter.WriteHeader();
                 exporter.WriteIssues(issues);
@@ -198,7 +198,7 @@ namespace Unity.ProjectAuditor.Editor
         public void ExportToHTML(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
             var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
-            using (var exporter = new HTMLExporter(path, layout))
+            using (var exporter = new HtmlExporter(path, layout))
             {
                 exporter.WriteHeader();
                 exporter.WriteIssues(issues);

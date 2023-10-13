@@ -55,14 +55,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             NewMetaData(k_KeyHostPlatform, SystemInfo.operatingSystem, issues);
             NewMetaData(k_KeyCompanyName, Application.companyName, issues);
             NewMetaData(k_KeyProductName, Application.productName, issues);
-            NewMetaData(k_KeyAnalysisTarget, projectAuditorParams.platform, issues);
-            NewMetaData(k_KeyCompilationMode, projectAuditorParams.compilationMode, issues);
+            NewMetaData(k_KeyAnalysisTarget, projectAuditorParams.Platform, issues);
+            NewMetaData(k_KeyCompilationMode, projectAuditorParams.CompilationMode, issues);
             NewMetaData(k_KeyRoslynAnalysis, UserPreferences.useRoslynAnalyzers, issues);
-            NewMetaData(k_KeyProjectAuditorVersion, ProjectAuditor.s_PackageVersion, issues);
+            NewMetaData(k_KeyProjectAuditorVersion, ProjectAuditor.PackageVersion, issues);
             NewMetaData(k_KeyUnityVersion, Application.unityVersion, issues);
 
-            projectAuditorParams.onIncomingIssues(issues);
-            projectAuditorParams.onModuleCompleted?.Invoke();
+            projectAuditorParams.OnIncomingIssues(issues);
+            projectAuditorParams.OnModuleCompleted?.Invoke();
         }
 
         void NewMetaData(string key, object value, IList<ProjectIssue> issues)

@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 var report = projectAuditor.Audit(new ProjectAuditorParams
                 {
-                    categories = k_Categories
+                    Categories = k_Categories
                 });
 
                 m_ViewManager.AddIssues(report.GetAllIssues());

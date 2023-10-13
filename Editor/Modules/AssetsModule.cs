@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var settings = projectAuditorParams.diagnosticParams;
+            var settings = projectAuditorParams.DiagnosticParams;
 
             var issues = new List<ProjectIssue>();
             AnalyzeResources(issues);
@@ -77,8 +77,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 AnalyzeStreamingAssets(settings, issues);
 
             if (issues.Any())
-                projectAuditorParams.onIncomingIssues(issues);
-            projectAuditorParams.onModuleCompleted?.Invoke();
+                projectAuditorParams.OnIncomingIssues(issues);
+            projectAuditorParams.OnModuleCompleted?.Invoke();
         }
 
         static void AnalyzeResources(IList<ProjectIssue> issues)

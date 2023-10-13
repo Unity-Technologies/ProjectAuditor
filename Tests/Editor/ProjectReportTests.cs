@@ -70,7 +70,7 @@ class MyClass : MonoBehaviour
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
-                compilationMode = CompilationMode.Player
+                CompilationMode = CompilationMode.Player
             });
             var layout = projectAuditor.GetLayout(category);
 

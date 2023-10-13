@@ -147,7 +147,7 @@ namespace Unity.ProjectAuditor.Editor
                 developerMode = value;
 
                 // need to trigger domain reload so that Views are re-registered
-                AssetDatabase.ImportAsset(ProjectAuditor.s_PackagePath + "/Editor/UserPreferences.cs");
+                AssetDatabase.ImportAsset(ProjectAuditor.PackagePath + "/Editor/UserPreferences.cs");
             }
 
             prettifyJsonOutput = EditorGUILayout.Toggle(k_PrettifyJSONOutputLabel, prettifyJsonOutput);

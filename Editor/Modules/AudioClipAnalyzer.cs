@@ -264,7 +264,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, AudioImporter audioImporter)
         {
             var assetPath = audioImporter.assetPath;
-            s_PlatformString = projectAuditorParams.platform.ToString();
+            s_PlatformString = projectAuditorParams.Platform.ToString();
 
             var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
             var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
@@ -331,9 +331,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             // DIAGNOSTICS
 
-            bool isMobileTarget = (projectAuditorParams.platform == BuildTarget.Android ||
-                projectAuditorParams.platform == BuildTarget.iOS ||
-                projectAuditorParams.platform == BuildTarget.Switch);
+            bool isMobileTarget = (projectAuditorParams.Platform == BuildTarget.Android ||
+                projectAuditorParams.Platform == BuildTarget.iOS ||
+                projectAuditorParams.Platform == BuildTarget.Switch);
 
             bool isStreaming = sampleSettings.loadType == AudioClipLoadType.Streaming;
 
@@ -350,14 +350,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var preloadAudioData = audioImporter.preloadAudioData;
 #endif
 
-            if (runtimeSize > projectAuditorParams.diagnosticParams.StreamingClipThresholdBytes && !isStreaming)
+            if (runtimeSize > projectAuditorParams.DiagnosticParams.StreamingClipThresholdBytes && !isStreaming)
             {
                 yield return ProjectIssue.Create(
                     IssueCategory.AssetDiagnostic, k_AudioLongClipDoesNotStreamDescriptor.id, clipName)
                     .WithLocation(assetPath);
             }
 
-            if (decompressedClipSize < projectAuditorParams.diagnosticParams.StreamingClipThresholdBytes && isStreaming)
+            if (decompressedClipSize < projectAuditorParams.DiagnosticParams.StreamingClipThresholdBytes && isStreaming)
             {
                 yield return ProjectIssue.Create(
                     IssueCategory.AssetDiagnostic, k_AudioShortClipStreamsDescriptor.id, clipName)
@@ -380,7 +380,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
             }
 
-            if (runtimeSize > projectAuditorParams.diagnosticParams.LongDecompressedClipThresholdBytes &&
+            if (runtimeSize > projectAuditorParams.DiagnosticParams.LongDecompressedClipThresholdBytes &&
                 sampleSettings.loadType == AudioClipLoadType.DecompressOnLoad)
             {
                 yield return ProjectIssue.Create(
@@ -398,7 +398,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             if (isMobileTarget &&
-                compSize > projectAuditorParams.diagnosticParams.LongCompressedMobileClipThresholdBytes &&
+                compSize > projectAuditorParams.DiagnosticParams.LongCompressedMobileClipThresholdBytes &&
                 sampleSettings.compressionFormat != AudioCompressionFormat.PCM &&
                 sampleSettings.compressionFormat != AudioCompressionFormat.ADPCM &&
                 audioClip.frequency >= 48000 &&
@@ -426,7 +426,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(assetPath);
             }
 
-            if (!audioImporter.loadInBackground && compSize > projectAuditorParams.diagnosticParams.LoadInBackGroundClipSizeThresholdBytes)
+            if (!audioImporter.loadInBackground && compSize > projectAuditorParams.DiagnosticParams.LoadInBackGroundClipSizeThresholdBytes)
             {
                 yield return ProjectIssue.Create(
                     IssueCategory.AssetDiagnostic, k_AudioLoadInBackgroundDisabledDescriptor.id, clipName)
