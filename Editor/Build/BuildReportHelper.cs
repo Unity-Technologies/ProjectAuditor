@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.Build
             if (!File.Exists(k_LastBuildReportPath))
                 return null; // a build report was not found in the Library folder
 
-            var buildReportPath = UserPreferences.buildReportPath;
+            var buildReportPath = UserPreferences.BuildReportPath;
             if (!Directory.Exists(buildReportPath))
                 Directory.CreateDirectory(buildReportPath);
 
@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Build
         [PostProcessBuild(1)]
         public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
         {
-            if (UserPreferences.buildReportAutoSave)
+            if (UserPreferences.BuildReportAutoSave)
             {
                 // Library/LastBuild.buildreport is only created AFTER OnPostprocessBuild so we need to defer the copy of the file
                 EditorApplication.update += CheckLastBuildReport;

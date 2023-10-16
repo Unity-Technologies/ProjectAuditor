@@ -124,7 +124,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             if (m_Desc.category == IssueCategory.ShaderVariant)
             {
-                GUI.enabled = numIssues > 0;
+                GUI.enabled = NumIssues > 0;
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Extra :", GUILayout.Width(80));
@@ -194,7 +194,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.HelpBox(k_ClearInstructions, MessageType.Warning);
             }
 
-            if (numIssues > 0 && m_Desc.category == IssueCategory.ShaderVariant)
+            if (NumIssues > 0 && m_Desc.category == IssueCategory.ShaderVariant)
             {
                 EditorGUILayout.LabelField(k_PlayerLogInstructions, SharedStyles.TextArea);
                 if (!GraphicsSettingsProxy.logShaderCompilationSupported)

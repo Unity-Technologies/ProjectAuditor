@@ -183,7 +183,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             // - is not muted, if enabled
             // - critical context, if enabled/applicable
 
-            var viewDesc = activeView.desc;
+            var viewDesc = activeView.Desc;
 
             Profiler.BeginSample("MatchAssembly");
             var matchAssembly = !viewDesc.showAssemblySelection ||
@@ -285,7 +285,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ViewManager.OnActiveViewChanged += i =>
             {
-                var viewDesc = m_ViewManager.GetView(i).desc;
+                var viewDesc = m_ViewManager.GetView(i).Desc;
                 ProjectAuditorAnalytics.SendEvent(
                     (ProjectAuditorAnalytics.UIButton)viewDesc.analyticsEvent,
                     ProjectAuditorAnalytics.BeginAnalytic());
@@ -293,7 +293,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ViewManager.OnActiveViewChanged += i =>
             {
-                var viewDesc = m_ViewManager.GetView(i).desc;
+                var viewDesc = m_ViewManager.GetView(i).Desc;
                 SyncTabOnViewChange(viewDesc.category);
             };
 
@@ -370,7 +370,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (view == null)
                     continue;
 
-                var displayName = view.IsDiagnostic() ? "Diagnostics" : view.desc.displayName;
+                var displayName = view.IsDiagnostic() ? "Diagnostics" : view.Desc.displayName;
 
                 dropDownItems.Add(new Utility.DropdownItem
                 {
@@ -433,7 +433,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     DrawPanels();
 
-                    if (m_ViewManager.GetActiveView().desc.category != IssueCategory.MetaData)
+                    if (m_ViewManager.GetActiveView().Desc.category != IssueCategory.MetaData)
                     {
                         DrawStatusBar();
                     }
@@ -667,7 +667,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AvatarMasks
             });
 
-            if (UserPreferences.developerMode)
+            if (UserPreferences.DeveloperMode)
             {
                 ViewDescriptor.Register(new ViewDescriptor
                 {
@@ -1029,7 +1029,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawAssemblyFilter()
         {
-            if (!activeView.desc.showAssemblySelection)
+            if (!activeView.Desc.showAssemblySelection)
                 return;
 
             using (new EditorGUILayout.HorizontalScope())
@@ -1146,7 +1146,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawFilters()
         {
-            if (!activeView.desc.showFilters)
+            if (!activeView.Desc.showFilters)
                 return;
 
             using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
@@ -1306,7 +1306,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             using (new EditorGUILayout.HorizontalScope(GUILayout.Height(20)))
             {
                 var selectedIssues = activeView.GetSelection();
-                var info = selectedIssues.Length + " / " + activeView.numFilteredIssues + " Items selected";
+                var info = selectedIssues.Length + " / " + activeView.NumFilteredIssues + " Items selected";
                 EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
 
                 GUILayout.FlexibleSpace();
@@ -1316,7 +1316,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 var fontSize = (int)GUILayout.HorizontalSlider(m_ViewStates.fontSize, ViewStates.k_MinFontSize,
                     ViewStates.k_MaxFontSize, GUILayout.ExpandWidth(false),
-                    GUILayout.Width(AnalysisView.toolbarButtonSize));
+                    GUILayout.Width(AnalysisView.ToolbarButtonSize));
                 if (fontSize != m_ViewStates.fontSize)
                 {
                     m_ViewStates.fontSize = fontSize;
@@ -1346,7 +1346,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 .availableCategories[categoryIndex];
                             if (!m_ProjectReport.HasCategory(category))
                             {
-                                var displayName = m_ViewManager.GetView(category).desc.displayName;
+                                var displayName = m_ViewManager.GetView(category).Desc.displayName;
                                 if (!EditorUtility.DisplayDialog(k_ProjectAuditorName,
                                     $"'{displayName}' analysis will now begin.", "Ok",
                                     "Cancel"))
@@ -1389,7 +1389,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             using (new GUILayout.HorizontalScope(GUI.skin.box))
             {
-                GUILayout.Label(activeView.description, GUILayout.MinWidth(360), GUILayout.ExpandWidth(true));
+                GUILayout.Label(activeView.Description, GUILayout.MinWidth(360), GUILayout.ExpandWidth(true));
                 DrawViewSelection();
 
                 GUILayout.FlexibleSpace();
@@ -1507,12 +1507,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
 #if UNITY_2019_1_OR_NEWER
-                GUILayout.Label(Utility.GetPlatformIcon(BuildPipeline.GetBuildTargetGroup(m_Platform)), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.toolbarIconSize));
+                GUILayout.Label(Utility.GetPlatformIcon(BuildPipeline.GetBuildTargetGroup(m_Platform)), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.ToolbarIconSize));
 #endif
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
-                    GUILayout.Label(Utility.GetIcon(Utility.IconType.StatusWheel), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.toolbarIconSize));
+                    GUILayout.Label(Utility.GetIcon(Utility.IconType.StatusWheel), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.ToolbarIconSize));
                 }
 
                 EditorGUILayout.Space();
@@ -1659,11 +1659,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void SaveReport()
         {
-            var path = EditorUtility.SaveFilePanel(k_SaveToFile, UserPreferences.loadSavePath, "project-auditor-report.json", "json");
+            var path = EditorUtility.SaveFilePanel(k_SaveToFile, UserPreferences.LoadSavePath, "project-auditor-report.json", "json");
             if (path.Length != 0)
             {
                 m_ProjectReport.Save(path);
-                UserPreferences.loadSavePath = Path.GetDirectoryName(path);
+                UserPreferences.LoadSavePath = Path.GetDirectoryName(path);
 
                 EditorUtility.RevealInFinder(path);
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Save, ProjectAuditorAnalytics.BeginAnalytic());
@@ -1674,7 +1674,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void LoadReport()
         {
-            var path = EditorUtility.OpenFilePanel(k_LoadFromFile, UserPreferences.loadSavePath, "json");
+            var path = EditorUtility.OpenFilePanel(k_LoadFromFile, UserPreferences.LoadSavePath, "json");
             if (path.Length != 0)
             {
                 m_ProjectReport = ProjectReport.Load(path);
@@ -1688,7 +1688,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
                 m_AnalysisState = AnalysisState.Valid;
-                UserPreferences.loadSavePath = Path.GetDirectoryName(path);
+                UserPreferences.LoadSavePath = Path.GetDirectoryName(path);
                 m_ViewManager = null; // make sure ViewManager is reinitialized
 
                 OnEnable();

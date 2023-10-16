@@ -46,8 +46,8 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         public void FixtureSetUp()
         {
             m_Config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            m_SavedAnalyzeInBackground = UserPreferences.analyzeInBackground;
-            UserPreferences.analyzeInBackground = false;
+            m_SavedAnalyzeInBackground = UserPreferences.AnalyzeInBackground;
+            UserPreferences.AnalyzeInBackground = false;
 
             m_ProjectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
 
@@ -83,7 +83,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             TestAsset.Cleanup();
 
-            UserPreferences.analyzeInBackground = m_SavedAnalyzeInBackground;
+            UserPreferences.AnalyzeInBackground = m_SavedAnalyzeInBackground;
         }
 
         protected ProjectIssue[] Analyze(Func<ProjectIssue, bool> predicate = null)

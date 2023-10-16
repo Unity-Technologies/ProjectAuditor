@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor
         static readonly string k_LogTimingsInfoLabel = "Log timing information";
 
         static readonly string k_PrettifyJSONOutputLabel = "Prettify saved JSON files";
-        
+
         static readonly string k_DeveloperModeLabel = "Enable Developer Mode";
 
         static string k_BuildReportAutoSaveLabel = "Auto Save Last Report";
@@ -35,86 +35,86 @@ namespace Unity.ProjectAuditor.Editor
         static string k_BuildReportPathLabel = "Library Path";
         static string k_BuildReportPathDefault = "Assets/BuildReports";
 
-        internal static string loadSavePath = string.Empty;
+        internal static string LoadSavePath = string.Empty;
 
         public static string Path => k_PreferencesKey;
 
         /// <summary>
         /// If enabled, ProjectAuditor will run every time the project is built.
         /// </summary>
-        public static bool analyzeOnBuild
+        public static bool AnalyzeOnBuild
         {
-            get => EditorPrefs.GetBool(MakeKey(nameof(analyzeOnBuild)), k_AnalysisOnBuildDefault);
-            set => EditorPrefs.SetBool(MakeKey(nameof(analyzeOnBuild)), value);
+            get => EditorPrefs.GetBool(MakeKey(nameof(AnalyzeOnBuild)), k_AnalysisOnBuildDefault);
+            set => EditorPrefs.SetBool(MakeKey(nameof(AnalyzeOnBuild)), value);
         }
 
         /// <summary>
         /// If enabled, ProjectAuditor will try to partially analyze the project in the background.
         /// </summary>
-        public static bool analyzeInBackground
+        public static bool AnalyzeInBackground
         {
-            get => EditorPrefs.GetBool(MakeKey(nameof(analyzeInBackground)), k_AnalysisInBackgroundDefault);
-            set => EditorPrefs.SetBool(MakeKey(nameof(analyzeInBackground)), value);
+            get => EditorPrefs.GetBool(MakeKey(nameof(AnalyzeInBackground)), k_AnalysisInBackgroundDefault);
+            set => EditorPrefs.SetBool(MakeKey(nameof(AnalyzeInBackground)), value);
         }
 
         /// <summary>
         /// If enabled, ProjectAuditor will use Roslyn Analyzer DLLs that are present in the project
         /// </summary>
-        public static bool useRoslynAnalyzers
+        public static bool UseRoslynAnalyzers
         {
-            get => EditorPrefs.GetBool(MakeKey(nameof(useRoslynAnalyzers)), k_UseRoslynAnalyzersDefault);
-            set => EditorPrefs.SetBool(MakeKey(nameof(useRoslynAnalyzers)), value);
+            get => EditorPrefs.GetBool(MakeKey(nameof(UseRoslynAnalyzers)), k_UseRoslynAnalyzersDefault);
+            set => EditorPrefs.SetBool(MakeKey(nameof(UseRoslynAnalyzers)), value);
         }
 
         /// <summary>
         /// If enabled, any issue reported by ProjectAuditor will cause the build to fail.
         /// </summary>
-        public static bool failBuildOnIssues
+        public static bool FailBuildOnIssues
         {
-            get => EditorPrefs.GetBool(MakeKey(nameof(failBuildOnIssues)), k_FailBuildOnIssuesDefault);
-            set => EditorPrefs.SetBool(MakeKey(nameof(failBuildOnIssues)), value);
+            get => EditorPrefs.GetBool(MakeKey(nameof(FailBuildOnIssues)), k_FailBuildOnIssuesDefault);
+            set => EditorPrefs.SetBool(MakeKey(nameof(FailBuildOnIssues)), value);
         }
 
         /// <summary>
         /// If enabled, the BuildReport is automatically saved as asset after each build
         /// </summary>
-        public static bool buildReportAutoSave
+        public static bool BuildReportAutoSave
         {
-            get => EditorPrefs.GetBool(MakeKey(nameof(buildReportAutoSave)), k_BuildReportAutoSaveDefault);
-            set => EditorPrefs.SetBool(MakeKey(nameof(buildReportAutoSave)), value);
+            get => EditorPrefs.GetBool(MakeKey(nameof(BuildReportAutoSave)), k_BuildReportAutoSaveDefault);
+            set => EditorPrefs.SetBool(MakeKey(nameof(BuildReportAutoSave)), value);
         }
 
         /// <summary>
         /// Customizable path to save the BuildReport
         /// </summary>
-        public static string buildReportPath
+        public static string BuildReportPath
         {
-            get => EditorPrefs.GetString(MakeKey(nameof(buildReportPath)), k_BuildReportPathDefault);
-            set => EditorPrefs.SetString(MakeKey(nameof(buildReportPath)), value);
+            get => EditorPrefs.GetString(MakeKey(nameof(BuildReportPath)), k_BuildReportPathDefault);
+            set => EditorPrefs.SetString(MakeKey(nameof(BuildReportPath)), value);
         }
 
-        public static bool developerMode
+        public static bool DeveloperMode
         {
-            get => EditorPrefs.GetBool(MakeKey(nameof(developerMode)), false);
-            set => EditorPrefs.SetBool(MakeKey(nameof(developerMode)), value);
+            get => EditorPrefs.GetBool(MakeKey(nameof(DeveloperMode)), false);
+            set => EditorPrefs.SetBool(MakeKey(nameof(DeveloperMode)), value);
         }
 
-        public static bool prettifyJsonOutput
+        public static bool PrettifyJsonOutput
         {
-            get => EditorPrefs.GetBool(MakeKey(nameof(prettifyJsonOutput)), false);
-            set => EditorPrefs.SetBool(MakeKey(nameof(prettifyJsonOutput)), value);
+            get => EditorPrefs.GetBool(MakeKey(nameof(PrettifyJsonOutput)), false);
+            set => EditorPrefs.SetBool(MakeKey(nameof(PrettifyJsonOutput)), value);
         }
 
-        public static bool logTimingsInfo
+        public static bool LogTimingsInfo
         {
-            get => EditorPrefs.GetBool(MakeKey(nameof(logTimingsInfo)), false);
-            set => EditorPrefs.SetBool(MakeKey(nameof(logTimingsInfo)), value);
+            get => EditorPrefs.GetBool(MakeKey(nameof(LogTimingsInfo)), false);
+            set => EditorPrefs.SetBool(MakeKey(nameof(LogTimingsInfo)), value);
         }
 
-        public static string settingsAsset
+        public static string SettingsAsset
         {
-            get => EditorPrefs.GetString(MakeKey(nameof(settingsAsset)), "");
-            set => EditorPrefs.SetString(MakeKey(nameof(settingsAsset)), value);
+            get => EditorPrefs.GetString(MakeKey(nameof(SettingsAsset)), "");
+            set => EditorPrefs.SetString(MakeKey(nameof(SettingsAsset)), value);
         }
 
         [SettingsProvider]
@@ -141,43 +141,43 @@ namespace Unity.ProjectAuditor.Editor
 
             EditorGUI.indentLevel++;
 
-            var value = EditorGUILayout.Toggle(k_DeveloperModeLabel, developerMode);
-            if (value != developerMode)
+            var value = EditorGUILayout.Toggle(k_DeveloperModeLabel, DeveloperMode);
+            if (value != DeveloperMode)
             {
-                developerMode = value;
+                DeveloperMode = value;
 
                 // need to trigger domain reload so that Views are re-registered
                 AssetDatabase.ImportAsset(ProjectAuditor.PackagePath + "/Editor/UserPreferences.cs");
             }
 
-            prettifyJsonOutput = EditorGUILayout.Toggle(k_PrettifyJSONOutputLabel, prettifyJsonOutput);
+            PrettifyJsonOutput = EditorGUILayout.Toggle(k_PrettifyJSONOutputLabel, PrettifyJsonOutput);
 
             EditorGUILayout.LabelField("Analysis", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
-            analyzeInBackground = EditorGUILayout.Toggle(k_AnalysisInBackgroundLabel, analyzeInBackground);
-            useRoslynAnalyzers = EditorGUILayout.Toggle(k_UseRoslynAnalyzersLabel, useRoslynAnalyzers);
-            logTimingsInfo = EditorGUILayout.Toggle(k_LogTimingsInfoLabel, logTimingsInfo);
+            AnalyzeInBackground = EditorGUILayout.Toggle(k_AnalysisInBackgroundLabel, AnalyzeInBackground);
+            UseRoslynAnalyzers = EditorGUILayout.Toggle(k_UseRoslynAnalyzersLabel, UseRoslynAnalyzers);
+            LogTimingsInfo = EditorGUILayout.Toggle(k_LogTimingsInfoLabel, LogTimingsInfo);
             EditorGUI.indentLevel--;
 
             GUILayout.Space(10f);
 
             EditorGUILayout.LabelField("Build", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
-            analyzeOnBuild = EditorGUILayout.Toggle(k_AnalysisOnBuildLabel, analyzeOnBuild);
-            buildReportAutoSave = EditorGUILayout.Toggle(k_BuildReportAutoSaveLabel, buildReportAutoSave);
+            AnalyzeOnBuild = EditorGUILayout.Toggle(k_AnalysisOnBuildLabel, AnalyzeOnBuild);
+            BuildReportAutoSave = EditorGUILayout.Toggle(k_BuildReportAutoSaveLabel, BuildReportAutoSave);
 
-            GUI.enabled = buildReportAutoSave;
+            GUI.enabled = BuildReportAutoSave;
 
             EditorGUILayout.BeginHorizontal();
-            var newPath = EditorGUILayout.DelayedTextField(k_BuildReportPathLabel, buildReportPath);
+            var newPath = EditorGUILayout.DelayedTextField(k_BuildReportPathLabel, BuildReportPath);
             if (!string.IsNullOrEmpty(newPath))
-                buildReportPath = newPath;
+                BuildReportPath = newPath;
             if (GUILayout.Button("Browse...", GUILayout.Width(80)))
             {
-                newPath = EditorUtility.OpenFolderPanel("Select Build Report destination", buildReportPath, "");
+                newPath = EditorUtility.OpenFolderPanel("Select Build Report destination", BuildReportPath, "");
                 if (!string.IsNullOrEmpty(newPath))
                 {
-                    buildReportPath = FileUtil.GetProjectRelativePath(newPath);
+                    BuildReportPath = FileUtil.GetProjectRelativePath(newPath);
                     InternalEditorUtility.RepaintAllViews();
                 }
             }
@@ -185,7 +185,7 @@ namespace Unity.ProjectAuditor.Editor
 
             GUI.enabled = true;
 
-            failBuildOnIssues = EditorGUILayout.Toggle(k_FailBuildOnIssuesLabel, failBuildOnIssues);
+            FailBuildOnIssues = EditorGUILayout.Toggle(k_FailBuildOnIssuesLabel, FailBuildOnIssues);
 
             EditorGUI.indentLevel--;
             EditorGUI.indentLevel--;

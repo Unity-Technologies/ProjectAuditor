@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         Stats m_Stats;
 
-        public override string description => $"Summary of the analysis.";
+        public override string Description => $"Summary of the analysis.";
 
         public SummaryView(ViewManager viewManager) : base(viewManager)
         {

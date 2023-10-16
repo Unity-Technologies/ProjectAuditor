@@ -25,7 +25,7 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
         bool m_ShowWarn;
         bool m_ShowError;
 
-        public override string description => "C# Compiler messages and Roslyn Analyzer diagnostics.";
+        public override string Description => "C# Compiler messages and Roslyn Analyzer diagnostics.";
 
         public CompilerMessagesView(ViewManager viewManager) : base(viewManager)
         {

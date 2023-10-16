@@ -217,7 +217,7 @@ namespace Unity.ProjectAuditor.Editor
                 return;
             }
 
-            var logTimingsInfo = UserPreferences.logTimingsInfo;
+            var logTimingsInfo = UserPreferences.LogTimingsInfo;
             var stopwatch = Stopwatch.StartNew();
             foreach (var module in supportedModules)
             {
@@ -377,14 +377,14 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="report">A report containing information about the build, such as its target platform and output path.</param>
         public void OnPreprocessBuild(BuildReport report)
         {
-            if (UserPreferences.analyzeOnBuild)
+            if (UserPreferences.AnalyzeOnBuild)
             {
                 var projectReport = Audit();
 
                 var numIssues = projectReport.NumTotalIssues;
                 if (numIssues > 0)
                 {
-                    if (UserPreferences.failBuildOnIssues)
+                    if (UserPreferences.FailBuildOnIssues)
                         Debug.LogError("Project Auditor found " + numIssues + " issues");
                     else
                         Debug.Log("Project Auditor found " + numIssues + " issues");

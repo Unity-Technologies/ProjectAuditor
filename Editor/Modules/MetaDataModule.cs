@@ -57,7 +57,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             NewMetaData(k_KeyProductName, Application.productName, issues);
             NewMetaData(k_KeyAnalysisTarget, projectAuditorParams.Platform, issues);
             NewMetaData(k_KeyCompilationMode, projectAuditorParams.CompilationMode, issues);
-            NewMetaData(k_KeyRoslynAnalysis, UserPreferences.useRoslynAnalyzers, issues);
+            NewMetaData(k_KeyRoslynAnalysis, UserPreferences.UseRoslynAnalyzers, issues);
             NewMetaData(k_KeyProjectAuditorVersion, ProjectAuditor.PackageVersion, issues);
             NewMetaData(k_KeyUnityVersion, Application.unityVersion, issues);
 

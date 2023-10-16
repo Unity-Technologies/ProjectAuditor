@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor
             }
 
             // restore settings
-            var guidAsString = UserPreferences.settingsAsset;
+            var guidAsString = UserPreferences.SettingsAsset;
             var guid = new GUID(guidAsString);
 
             if (guidAsString.Length > 0 && !guid.Empty())
@@ -119,7 +119,7 @@ namespace Unity.ProjectAuditor.Editor
             var path = AssetDatabase.GetAssetPath(diagnosticParams);
             var guidAsString = AssetDatabase.AssetPathToGUID(path);
 
-            UserPreferences.settingsAsset = guidAsString;
+            UserPreferences.SettingsAsset = guidAsString;
         }
     }
 }

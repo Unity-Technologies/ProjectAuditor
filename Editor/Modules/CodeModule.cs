@@ -158,7 +158,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (m_IDs == null)
                 throw new Exception("Descriptors Database not initialized.");
 
-            if (UserPreferences.analyzeInBackground && m_AssemblyAnalysisThread != null)
+            if (UserPreferences.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
             var precompiledAssemblies = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All)
@@ -211,7 +211,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 codeOptimization = projectAuditorParams.CodeOptimization,
                 compilationMode = projectAuditorParams.CompilationMode,
                 platform = projectAuditorParams.Platform,
-                roslynAnalyzers = UserPreferences.useRoslynAnalyzers ? roslynAnalyzerAssets.ToArray() : null,
+                roslynAnalyzers = UserPreferences.UseRoslynAnalyzers ? roslynAnalyzerAssets.ToArray() : null,
                 assemblyNames = projectAuditorParams.AssemblyNames
             };
 
@@ -299,7 +299,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             // first phase: analyze assemblies generated from editable scripts
             AnalyzeAssemblies(localAssemblyInfos, projectAuditorParams.AssemblyNames, assemblyDirectories, onCallFound, onIssueFoundInternal, null, progress);
 
-            var enableBackgroundAnalysis = UserPreferences.analyzeInBackground;
+            var enableBackgroundAnalysis = UserPreferences.AnalyzeInBackground;
 #if !UNITY_2019_3_OR_NEWER
             enableBackgroundAnalysis = false;
 #endif

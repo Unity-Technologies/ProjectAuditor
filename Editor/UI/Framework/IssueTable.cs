@@ -525,7 +525,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 if (m_Desc.onContextMenu != null)
                 {
                     menu.AddSeparator("");
-                    m_Desc.onContextMenu(menu, m_View.viewManager, item.ProjectIssue);
+                    m_Desc.onContextMenu(menu, m_View.ViewManager, item.ProjectIssue);
                 }
 
                 menu.AddSeparator("");

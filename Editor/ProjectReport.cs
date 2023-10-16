@@ -209,7 +209,7 @@ namespace Unity.ProjectAuditor.Editor
         public void Save(string path)
         {
             File.WriteAllText(path,
-                JsonConvert.SerializeObject(this, UserPreferences.prettifyJsonOutput ? Formatting.Indented : Formatting.None,
+                JsonConvert.SerializeObject(this, UserPreferences.PrettifyJsonOutput ? Formatting.Indented : Formatting.None,
                     new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore}));
         }
 

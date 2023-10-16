@@ -19,12 +19,12 @@ namespace Unity.ProjectAuditor.EditorTests
             viewManager.Create(new Editor.ProjectAuditor(m_Config), new ViewStates());
             for (var i = 0; i < viewManager.NumViews; i++)
             {
-                if (viewManager.GetView(i).desc.category == IssueCategory.MetaData)
+                if (viewManager.GetView(i).Desc.category == IssueCategory.MetaData)
                     continue;
-                if (viewManager.GetView(i).desc.category == IssueCategory.FirstCustomCategory)
+                if (viewManager.GetView(i).Desc.category == IssueCategory.FirstCustomCategory)
                     continue;
 
-                var documentationUrl = viewManager.GetView(i).documentationUrl;
+                var documentationUrl = viewManager.GetView(i).DocumentationUrl;
                 var request = UnityWebRequest.Get(documentationUrl);
                 yield return request.SendWebRequest();
 

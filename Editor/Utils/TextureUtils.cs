@@ -524,6 +524,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             return newTexture;
         }
+
 #endif
 
         static TextureFormat GetUncrunchedFormat(TextureFormat format)

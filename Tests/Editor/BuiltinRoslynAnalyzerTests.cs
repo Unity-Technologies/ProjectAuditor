@@ -22,15 +22,15 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void EnableAnalyzers()
         {
-            m_SavedUseRoslynAnalyzers = UserPreferences.useRoslynAnalyzers;
+            m_SavedUseRoslynAnalyzers = UserPreferences.UseRoslynAnalyzers;
 
-            UserPreferences.useRoslynAnalyzers = true;
+            UserPreferences.UseRoslynAnalyzers = true;
         }
 
         [OneTimeTearDown]
         public void RestoreEnableAnalyzers()
         {
-            UserPreferences.useRoslynAnalyzers = m_SavedUseRoslynAnalyzers;
+            UserPreferences.UseRoslynAnalyzers = m_SavedUseRoslynAnalyzers;
         }
 
         [OneTimeSetUp]

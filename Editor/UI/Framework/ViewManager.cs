@@ -1,12 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
-using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -143,13 +138,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public AnalysisView GetView(IssueCategory category)
         {
-            return m_Views.FirstOrDefault(v => v.desc.category == category);
+            return m_Views.FirstOrDefault(v => v.Desc.category == category);
         }
 
         public void ChangeView(IssueCategory category)
         {
             var activeView = GetActiveView();
-            if (activeView.desc.category == category)
+            if (activeView.Desc.category == category)
             {
                 return;
             }
