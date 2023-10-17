@@ -24,14 +24,14 @@ namespace Unity.ProjectAuditor.Editor
         public int TextureSizeLimit = 2048;
 
         /// <summary>
-        /// Maximum size of all files in the StreamingAssets folder. Beyond that size we report an issue.
-        /// </summary>
-        public int StreamingAssetsFolderSizeLimit = 50;
-
-        /// <summary>
         /// Maximum size when it is not necessary to enable Streaming Mipmaps. Beyond that size we report an issue.
         /// </summary>
         public int TextureStreamingMipmapsSizeLimit = 4000;
+
+        /// <summary>
+        /// Maximum size of all files in the StreamingAssets folder. Beyond that size we report an issue.
+        /// </summary>
+        public int StreamingAssetsFolderSizeLimit = 50;
 
         /// <summary>
         /// Percent of empty space allowed in a Sprite Atlas texture. Beyond that size we report an issue.

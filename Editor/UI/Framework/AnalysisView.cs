@@ -39,10 +39,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         int m_SortPropertyIndex = -1;
         bool m_SortAscending = true;
 
-        public ViewDescriptor Desc
-        {
-            get { return m_Desc; }
-        }
+        public ViewDescriptor Desc => m_Desc;
 
         public virtual string Description => $"A list of {m_Desc.displayName} found in the project.";
 
@@ -71,6 +68,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_ViewStates = viewStates;
             m_BaseFilter = filter;
             m_Layout = layout;
+
+            if (layout.properties == null || layout.properties.Length == 0)
+                return;
 
             m_GroupDropdownItems = m_Layout.properties.Select(p => new Utility.DropdownItem
             {
@@ -156,6 +156,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public virtual void Clear()
         {
+            if (m_Table == null)
+                return;
+
             m_Issues.Clear();
             m_Table.Clear();
 
@@ -187,7 +190,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public bool IsValid()
         {
-            return m_Table != null;
+            return m_Layout.properties.Length == 0 || m_Table != null;
         }
 
         public virtual void DrawFilters()
@@ -513,6 +516,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public virtual void LoadSettings()
         {
+            if (m_Table == null)
+                return;
+
             var columns = m_Table.multiColumnHeader.state.columns;
             for (int i = 0; i < m_Layout.properties.Length; i++)
             {
@@ -535,6 +541,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public virtual void SaveSettings()
         {
+            if (m_Table == null)
+                return;
+
             var columns = m_Table.multiColumnHeader.state.columns;
             for (int i = 0; i < m_Layout.properties.Length; i++)
             {

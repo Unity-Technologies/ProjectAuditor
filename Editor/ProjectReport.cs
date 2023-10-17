@@ -7,10 +7,37 @@ using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
 using Newtonsoft.Json;
-using Formatting = Newtonsoft.Json.Formatting;
+using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    [Serializable]
+    internal class SessionInfo : ProjectAuditorParams
+    {
+        // for serialization purposes only
+        public SessionInfo()
+            : base(new ProjectAuditorParams(BuildTarget.NoTarget))
+        {}
+
+        public SessionInfo(ProjectAuditorParams projectAuditorParams)
+            : base(projectAuditorParams)
+        {}
+
+        public string ProjectAuditorVersion;
+        public string UnityVersion;
+
+        public string CompanyName;
+        public string ProjectId;
+        public string ProjectName;
+        public string ProjectRevision;
+
+        public string DateTime;
+        public string HostName;
+        public string HostPlatform;
+
+        public bool UseRoslynAnalyzers;
+    }
+
     /// <summary>
     /// ProjectReport contains a list of all issues found by ProjectAuditor
     /// </summary>
@@ -32,9 +59,12 @@ namespace Unity.ProjectAuditor.Editor
             public IssueCategory[] categories;
             public IReadOnlyCollection<IssueLayout> layouts;
 
-            public DateTime startTime;
-            public DateTime endTime;
+            public string startTime;
+            public string endTime;
         }
+
+        [JsonProperty("sessionInfo")]
+        SessionInfo m_SessionInfo;
 
         [SerializeField]
         [JsonProperty("moduleMetadata")]
@@ -46,6 +76,9 @@ namespace Unity.ProjectAuditor.Editor
         [JsonIgnore]
         [SerializeField]
         List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+
+        [JsonIgnore]
+        public SessionInfo SessionInfo => m_SessionInfo;
 
         [JsonProperty("issues")]
         internal ProjectIssue[] UnfixedIssues
@@ -80,10 +113,30 @@ namespace Unity.ProjectAuditor.Editor
         [JsonIgnore]
         public string Version => m_Version;
 
-
-        // for internal use only
+        // for serialization purposes only
         internal ProjectReport()
         {}
+
+        // for internal use only
+        internal ProjectReport(ProjectAuditorParams projectAuditorParams)
+        {
+            m_SessionInfo = new SessionInfo(projectAuditorParams)
+            {
+                ProjectAuditorVersion = ProjectAuditor.PackageVersion,
+
+                ProjectId = Application.cloudProjectId,
+                ProjectName = Application.productName,
+                ProjectRevision = "Unknown",
+                CompanyName = Application.companyName,
+                UnityVersion = Application.unityVersion,
+
+                DateTime = Utils.Json.SerializeDateTime(DateTime.Now),
+                HostName = SystemInfo.deviceName,
+                HostPlatform = SystemInfo.operatingSystem,
+
+                UseRoslynAnalyzers = UserPreferences.UseRoslynAnalyzers
+            };
+        }
 
         public void RecordModuleInfo(ProjectAuditorModule module, DateTime startTime, DateTime endTime)
         {
@@ -91,8 +144,8 @@ namespace Unity.ProjectAuditor.Editor
             var info = m_ModuleInfos.FirstOrDefault(m => m.name.Equals(name));
             if (info != null)
             {
-                info.startTime = startTime;
-                info.endTime = endTime;
+                info.startTime = Utils.Json.SerializeDateTime(startTime);
+                info.endTime = Utils.Json.SerializeDateTime(endTime);
             }
             else
             {
@@ -101,15 +154,15 @@ namespace Unity.ProjectAuditor.Editor
                     name = module.name,
                     categories = module.categories,
                     layouts = module.supportedLayouts,
-                    startTime = startTime,
-                    endTime = endTime
+                    startTime = Utils.Json.SerializeDateTime(startTime),
+                    endTime = Utils.Json.SerializeDateTime(endTime)
                 });
             }
         }
 
         public bool HasCategory(IssueCategory category)
         {
-            return m_ModuleInfos.Any(m => m.categories.Contains(category));
+            return category == IssueCategory.Metadata || m_ModuleInfos.Any(m => m.categories.Contains(category));
         }
 
         public IReadOnlyCollection<ProjectIssue> GetAllIssues()
@@ -210,7 +263,10 @@ namespace Unity.ProjectAuditor.Editor
         {
             File.WriteAllText(path,
                 JsonConvert.SerializeObject(this, UserPreferences.PrettifyJsonOutput ? Formatting.Indented : Formatting.None,
-                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore}));
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    }));
         }
 
         public static ProjectReport Load(string path)

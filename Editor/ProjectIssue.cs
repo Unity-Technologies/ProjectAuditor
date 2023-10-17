@@ -112,6 +112,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// This issue's category
         /// </summary>
+        [JsonProperty("category")]
         public IssueCategory category
         {
             get => m_Category;

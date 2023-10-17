@@ -38,7 +38,7 @@ class MyClass : MonoBehaviour
         [Test]
         public void ProjectReport_NewReport_IsValid()
         {
-            var projectReport = new ProjectReport();
+            var projectReport = new ProjectReport(new ProjectAuditorParams());
             Assert.Zero(projectReport.NumTotalIssues);
             Assert.Zero(projectReport.GetNumIssues(IssueCategory.Code));
             Assert.Zero(projectReport.GetNumIssues(IssueCategory.ProjectSetting));
@@ -49,7 +49,7 @@ class MyClass : MonoBehaviour
         [Test]
         public void ProjectReport_Issue_IsAdded()
         {
-            var projectReport = new ProjectReport();
+            var projectReport = new ProjectReport(new ProjectAuditorParams());
 
             projectReport.AddIssues(new[] { new ProjectIssue
                                             (

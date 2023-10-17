@@ -18,10 +18,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        ProjectReport m_Report;
         AnalysisView[] m_Views;
 
         [SerializeField] IssueCategory[] m_Categories;
         [SerializeField] int m_ActiveViewIndex;
+
+        public ProjectReport Report => m_Report;
 
         public int NumViews => m_Views != null ? m_Views.Length : 0;
 
@@ -177,6 +180,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 view.MarkDirty();
             }
+        }
+
+        public void OnAnalysisCompleted(ProjectReport report)
+        {
+            m_Report = report;
+        }
+
+        public void OnAnalysisRestored(ProjectReport report)
+        {
+            AddIssues(report.GetAllIssues());
+            m_Report = report;
         }
 
         public void LoadSettings()

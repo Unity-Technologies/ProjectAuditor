@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -16,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Category for General statistics about the analysis process and its results.
         /// </summary>
-        MetaData,
+        Metadata,
 
         /// <summary>
         /// Issues relating to asset data or asset import settings

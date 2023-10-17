@@ -182,29 +182,39 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="progress"> Progress bar, if applicable </param>
         internal void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
+            var categories = projectAuditorParams.Categories != null
+                ? projectAuditorParams.Categories
+                : m_Modules
+                    .Where(m => m.isEnabledByDefault)
+                    .SelectMany(m => m.categories)
+                    .ToArray();
             var report = projectAuditorParams.ExistingReport;
             if (report == null)
-                report = new ProjectReport();
+                report = new ProjectReport(projectAuditorParams);
+            else
+            {
+                // incremental analysis
+                var reportCategories = report.SessionInfo.Categories.ToList();
+                reportCategories.AddRange(categories);
+                report.SessionInfo.Categories = reportCategories.Distinct().ToArray();
+
+                foreach (var category in categories)
+                {
+                    report.ClearIssues(category);
+                }
+            }
 
             var platform = projectAuditorParams.Platform;
             if (!BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(platform), platform))
             {
                 // Error and early out if the user has request analysis of a platform which the Unity Editor doesn't have installed support for
-                Debug.LogError($"Build target {platform.ToString()} is not supported in this Unity Editor");
+                Debug.LogError($"Build target {platform} is not supported in this Unity Editor");
                 projectAuditorParams.OnCompleted(report);
                 return;
             }
 
-            var requestedModules = projectAuditorParams.Categories != null ? projectAuditorParams.Categories.SelectMany(GetModules).Distinct() : m_Modules.Where(m => m.isEnabledByDefault).ToArray();
+            var requestedModules = categories.SelectMany(GetModules).Distinct().ToArray();
             var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.Platform)).ToArray();
-
-            if (projectAuditorParams.Categories != null)
-            {
-                foreach (var category in projectAuditorParams.Categories)
-                {
-                    report.ClearIssues(category);
-                }
-            }
 
             if (projectAuditorParams.DiagnosticParams == null)
                 projectAuditorParams.DiagnosticParams = m_DefaultDiagnosticParamsProvider.GetCurrentParams();
@@ -322,6 +332,8 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns>The IssueLayout for the specified category</returns>
         internal IssueLayout GetLayout(IssueCategory category)
         {
+            if (category == IssueCategory.Metadata)
+                return new IssueLayout {category = IssueCategory.Metadata, properties = new PropertyDefinition[] {}};
             var layouts = m_Modules.Where(a => a.isSupported).SelectMany(module => module.supportedLayouts).Where(l => l.category == category);
             return layouts.FirstOrDefault();
         }

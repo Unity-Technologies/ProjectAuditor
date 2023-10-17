@@ -211,6 +211,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 codeOptimization = projectAuditorParams.CodeOptimization,
                 compilationMode = projectAuditorParams.CompilationMode,
                 platform = projectAuditorParams.Platform,
+                // TODO: reminder to add list of analyzers to metadata
                 roslynAnalyzers = UserPreferences.UseRoslynAnalyzers ? roslynAnalyzerAssets.ToArray() : null,
                 assemblyNames = projectAuditorParams.AssemblyNames
             };

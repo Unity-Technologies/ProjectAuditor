@@ -112,11 +112,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             new Tab
             {
-                id = TabId.Summary, name = "Summary",
-                modules = new[]
-                {
-                    typeof(MetaDataModule)
-                }
+                id = TabId.Summary, name = "Summary", allCategories = new[] { IssueCategory.Metadata }
             },
             new Tab
             {
@@ -251,7 +247,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 InitializeViews(GetAllSupportedCategories(), true);
 
                 Profiler.BeginSample("Views Update");
-                m_ViewManager.AddIssues(m_ProjectReport.GetAllIssues());
+                m_ViewManager.OnAnalysisRestored(m_ProjectReport);
                 m_AnalysisState = currentState;
                 Profiler.EndSample();
             }
@@ -433,7 +429,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     DrawPanels();
 
-                    if (m_ViewManager.GetActiveView().Desc.category != IssueCategory.MetaData)
+                    if (m_ViewManager.GetActiveView().Desc.category != IssueCategory.Metadata)
                     {
                         DrawStatusBar();
                     }
@@ -450,7 +446,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.MetaData,
+                category = IssueCategory.Metadata,
                 displayName = "Summary",
                 menuOrder = -1,
                 showInfoPanel = true,
@@ -827,12 +823,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                     // add batch of issues
                     m_ViewManager.AddIssues(issues.ToList());
                 },
-                OnCompleted = projectReport =>
+                OnCompleted = report =>
                 {
-                    m_AnalysisState = AnalysisState.Completed;
-                    m_ProjectReport = projectReport;
+                    m_ViewManager.OnAnalysisCompleted(report);
 
                     m_ShouldRefresh = true;
+                    m_AnalysisState = AnalysisState.Completed;
+
+                    m_ProjectReport = report;
                 },
                 DiagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams()
             };
@@ -883,23 +881,23 @@ namespace Unity.ProjectAuditor.Editor.UI
                         view.AddIssues(issues);
                     }
                 },
+                Platform = m_ProjectReport.SessionInfo.Platform,
                 ExistingReport = m_ProjectReport,
                 DiagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams(),
-                OnCompleted = projectReport =>
+                OnCompleted = report =>
                 {
+                    m_ViewManager.OnAnalysisCompleted(report);
+
                     m_ShouldRefresh = true;
                     m_AnalysisState = AnalysisState.Completed;
                 }
             };
 
-            var platform = m_ProjectReport.FindByCategory(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));
-            if (platform != null)
-                projectAuditorParams.Platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), platform.GetCustomProperty(MetaDataProperty.Value));
             m_ProjectAuditor.Audit(projectAuditorParams, new ProgressBar());
 
             if (refreshSummaryView)
             {
-                var summaryView = m_ViewManager.GetView(IssueCategory.MetaData);
+                var summaryView = m_ViewManager.GetView(IssueCategory.Metadata);
                 if (summaryView != null)
                 {
                     summaryView.Clear();
@@ -960,7 +958,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         IssueCategory[] GetSelectedCategories()
         {
-            var requestedCategories = new List<IssueCategory>(new[] {IssueCategory.MetaData});
+            var requestedCategories = new List<IssueCategory>(new[] {IssueCategory.Metadata});
             if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Code))
                 requestedCategories.AddRange(GetTabCategories(TabId.Code));
             if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Settings))
@@ -1344,7 +1342,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                             var category = m_Tabs[m_ActiveTabIndex]
                                 .availableCategories[categoryIndex];
-                            if (!m_ProjectReport.HasCategory(category))
+                            if (category != IssueCategory.Metadata && !m_ProjectReport.HasCategory(category))
                             {
                                 var displayName = m_ViewManager.GetView(category).Desc.displayName;
                                 if (!EditorUtility.DisplayDialog(k_ProjectAuditorName,
@@ -1697,7 +1695,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 UpdateAssemblySelection();
 
                 // switch to summary view after loading
-                m_ViewManager.ChangeView(IssueCategory.MetaData);
+                m_ViewManager.ChangeView(IssueCategory.Metadata);
             }
 
             GUIUtility.ExitGUI();

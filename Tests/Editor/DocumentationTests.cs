@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.EditorTests
             viewManager.Create(new Editor.ProjectAuditor(m_Config), new ViewStates());
             for (var i = 0; i < viewManager.NumViews; i++)
             {
-                if (viewManager.GetView(i).Desc.category == IssueCategory.MetaData)
+                if (viewManager.GetView(i).Desc.category == IssueCategory.Metadata)
                     continue;
                 if (viewManager.GetView(i).Desc.category == IssueCategory.FirstCustomCategory)
                     continue;
