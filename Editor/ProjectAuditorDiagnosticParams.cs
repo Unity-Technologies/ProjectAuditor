@@ -38,10 +38,6 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public int SpriteAtlasEmptySpaceLimit = 50;
 
-        /// <summary>
-        /// The runtime size (in bytes) above which we report an issue for non-streaming AudioClips.
-        /// </summary>
-
         /// <description>
         /// The default value is the memory footprint of a single currently-playing instance of a streaming stereo 48KHz AudioClip.
         /// </description>
