@@ -43,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             k_IssueLayout
         };
 
-        public override void Initialize(ProjectAuditorRules rules)
+        public override void Initialize()
         {
         }
 

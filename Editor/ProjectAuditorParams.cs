@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using UnityEditor;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -47,15 +49,43 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public Action onModuleCompleted;
 
-        public ProjectReport existingReport;
+        /// <summary>
+        /// The ProjectAuditorRules object which defines which issues should be ignored, and the customizable thresholds for reporting certain diagnostics.
+        /// </summary>
+        public ProjectAuditorRules rules;
 
-        public ProjectAuditorDiagnosticParams diagnosticParams;
+        // TODO: Not sure what this is for, so keeping it internal for now. Document it if we need it to be public
+        internal ProjectReport existingReport;
 
+
+        /// <summary>
+        /// ProjectAuditorParams constructor
+        /// </summary>
         public ProjectAuditorParams()
         {
             platform = EditorUserBuildSettings.activeBuildTarget;
             codeOptimization = CodeOptimization.Release;
             compilationMode = CompilationMode.Player;
+
+            InitRulesAsset(UserPreferences.rulesAssetPath);
+        }
+
+        /// <summary>
+        /// ProjectAuditorParams constructor
+        /// </summary>
+        /// <param name="projectAuditorRules"> ProjectAuditorRules object</param>
+        public ProjectAuditorParams(ProjectAuditorRules projectAuditorRules)
+        {
+            rules = projectAuditorRules;
+        }
+
+        /// <summary>
+        /// ProjectAuditorParams constructor
+        /// </summary>
+        /// <param name="assetPath"> Path to the ProjectAuditorRules asset</param>
+        public ProjectAuditorParams(string assetPath)
+        {
+            InitRulesAsset(assetPath);
         }
 
         public ProjectAuditorParams(ProjectAuditorParams original)
@@ -72,7 +102,26 @@ namespace Unity.ProjectAuditor.Editor
 
             existingReport = original.existingReport;
 
-            diagnosticParams = original.diagnosticParams;
+            rules = original.rules;
+        }
+
+        void InitRulesAsset(string assetPath)
+        {
+            rules = AssetDatabase.LoadAssetAtPath<ProjectAuditorRules>(assetPath);
+            if (rules == null)
+            {
+                var path = Path.GetDirectoryName(assetPath);
+                if (!File.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
+                rules.Initialize();
+                AssetDatabase.CreateAsset(rules, assetPath);
+
+                Debug.LogFormat("Project Auditor Rules: {0} has been created.", assetPath);
+            }
+
+            rules.SetAnalysisPlatform(platform);
         }
     }
 }

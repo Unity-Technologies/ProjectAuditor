@@ -60,60 +60,13 @@ namespace Unity.ProjectAuditor.Editor
         static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
 
         readonly List<ProjectAuditorModule> m_Modules = new List<ProjectAuditorModule>();
-        ProjectAuditorRules m_Rules;
-
-        /// <summary>
-        /// A ProjectAuditorRules object to configure how analysis is performed
-        /// </summary>
-        internal ProjectAuditorRules Rules => m_Rules;
-
-        ProjectAuditorDiagnosticParamsProvider m_DefaultDiagnosticParamsProvider;
 
         /// <summary>
         /// ProjectAuditor default constructor
         /// </summary>
         public ProjectAuditor()
         {
-            InitAsset(UserPreferences.rulesAssetPath);
             InitModules();
-            InitDefaultSettingsProvider();
-        }
-
-        /// <summary>
-        /// ProjectAuditor constructor
-        /// </summary>
-        /// <param name="projectAuditorRules"> ProjectAuditorRules object</param>
-        public ProjectAuditor(ProjectAuditorRules projectAuditorRules)
-        {
-            m_Rules = projectAuditorRules;
-            InitModules();
-            InitDefaultSettingsProvider();
-        }
-
-        /// <summary>
-        /// ProjectAuditor constructor
-        /// </summary>
-        /// <param name="assetPath"> Path to the ProjectAuditorRules asset</param>
-        public ProjectAuditor(string assetPath)
-        {
-            InitAsset(assetPath);
-            InitModules();
-            InitDefaultSettingsProvider();
-        }
-
-        void InitAsset(string assetPath)
-        {
-            m_Rules = AssetDatabase.LoadAssetAtPath<ProjectAuditorRules>(assetPath);
-            if (m_Rules == null)
-            {
-                var path = Path.GetDirectoryName(assetPath);
-                if (!File.Exists(path))
-                    Directory.CreateDirectory(path);
-                m_Rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
-                AssetDatabase.CreateAsset(m_Rules, assetPath);
-
-                Debug.LogFormat("Project Auditor: {0} has been created.", assetPath);
-            }
         }
 
         void InitModules()
@@ -125,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor
                 var instance = Activator.CreateInstance(type) as ProjectAuditorModule;
                 try
                 {
-                    instance.Initialize(m_Rules);
+                    instance.Initialize();
                 }
                 catch (Exception e)
                 {
@@ -134,12 +87,6 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 m_Modules.Add(instance);
             }
-        }
-
-        void InitDefaultSettingsProvider()
-        {
-            m_DefaultDiagnosticParamsProvider = new ProjectAuditorDiagnosticParamsProvider();
-            m_DefaultDiagnosticParamsProvider.Initialize();
         }
 
         /// <summary>
@@ -201,9 +148,6 @@ namespace Unity.ProjectAuditor.Editor
                     report.ClearIssues(category);
                 }
             }
-
-            if (projectAuditorParams.diagnosticParams == null)
-                projectAuditorParams.diagnosticParams = m_DefaultDiagnosticParamsProvider.GetCurrentParams();
 
             var numModules = supportedModules.Length;
             if (numModules == 0)

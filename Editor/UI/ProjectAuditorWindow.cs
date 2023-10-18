@@ -170,8 +170,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] int m_ActiveTabIndex = 0;
         int m_TabButtonControlID;
 
-        ProjectAuditorDiagnosticParamsProvider m_DiagnosticParamsProvider;
-
         public bool Match(ProjectIssue issue)
         {
             // return false if the issue does not match one of these criteria:
@@ -236,16 +234,16 @@ namespace Unity.ProjectAuditor.Editor.UI
             UpdateAssemblySelection();
             Profiler.EndSample();
 
-            m_DiagnosticParamsProvider = new ProjectAuditorDiagnosticParamsProvider();
-            m_DiagnosticParamsProvider.Initialize();
-
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid &&
                 m_ProjectReport.IsValid())
             {
                 m_ProjectAuditor = new ProjectAuditor();
 
-                InitializeViews(GetAllSupportedCategories(), true);
+                // Create a default params just to use the default rules it contains to initialize the views
+                var projectAuditorParams = new ProjectAuditorParams();
+
+                InitializeViews(GetAllSupportedCategories(), projectAuditorParams.rules, true);
 
                 Profiler.BeginSample("Views Update");
                 m_ViewManager.AddIssues(m_ProjectReport.GetAllIssues());
@@ -266,7 +264,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             wantsMouseMove = true;
         }
 
-        void InitializeViews(IssueCategory[] categories, bool reload)
+        void InitializeViews(IssueCategory[] categories, ProjectAuditorRules projectAuditorRules, bool reload)
         {
             var initialize = m_ViewManager == null || !reload;
 
@@ -334,7 +332,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Profiler.BeginSample("Views Creation");
 
-            m_ViewManager.Create(m_ProjectAuditor, m_ViewStates, null, this);
+            m_ViewManager.Create(m_ProjectAuditor, projectAuditorRules, m_ViewStates, null, this);
 
             InitializeTabs(!initialize);
 
@@ -811,8 +809,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ProjectAuditor = new ProjectAuditor();
 
-            InitializeViews(GetAllSupportedCategories(), false);
-
             var projectAuditorParams = new ProjectAuditorParams
             {
                 categories = m_SelectedModules == BuiltInModules.Everything ? null : GetSelectedCategories(),
@@ -829,9 +825,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ProjectReport = projectReport;
 
                     m_ShouldRefresh = true;
-                },
-                diagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams()
+                }
             };
+
+            InitializeViews(GetAllSupportedCategories(), projectAuditorParams.rules, false);
+
             m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar());
         }
 
@@ -880,7 +878,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                 },
                 existingReport = m_ProjectReport,
-                diagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams(),
                 onCompleted = projectReport =>
                 {
                     m_ShouldRefresh = true;
@@ -1195,10 +1192,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_CompilationMode = (CompilationMode)EditorGUILayout.EnumPopup(Contents.CompilationModeSelection, m_CompilationMode);
 
-            EditorGUILayout.Space();
-
-            DrawSettingsDropdown();
-
             GUILayout.FlexibleSpace();
 
             using (new EditorGUILayout.HorizontalScope())
@@ -1237,54 +1230,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Draw2D.DrawEnd();
             }
         }
-
-        void DrawSettingsDropdown()
-        {
-            EditorGUILayout.BeginHorizontal();
-
-            EditorGUILayout.LabelField(Contents.SettingsTitle, GUILayout.Width(EditorGUIUtility.labelWidth - 1));
-
-            var dropdownRect = GUILayoutUtility.GetLastRect();
-            dropdownRect.x += EditorGUIUtility.labelWidth + 2;
-
-            var currentSettings = m_DiagnosticParamsProvider.GetCurrentParams();
-
-            if (EditorGUILayout.DropdownButton(new GUIContent(currentSettings.name), FocusType.Keyboard,
-                GUILayout.ExpandWidth(true)))
-            {
-                GenericMenu menu = new GenericMenu();
-
-                var allSettings = m_DiagnosticParamsProvider.GetParams();
-                foreach (var settings in allSettings)
-                {
-                    menu.AddItem(new GUIContent(settings.name), false,
-                        () => { m_DiagnosticParamsProvider.SelectCurrentParams(settings); });
-                }
-
-                menu.DropDown(dropdownRect);
-            }
-
-            if (GUILayout.Button(Contents.NewSettingsButton, GUILayout.Width(180), GUILayout.Height(18)))
-            {
-                var relativePath = EditorUtility.SaveFilePanelInProject("Create New Settings...",
-                    "ProjectAuditorSettings-" + m_Platform,
-                    "asset",
-                    "Please select the new settings file location",
-                    Path.Combine(Application.dataPath, "Editor"));
-
-                if (relativePath != string.Empty)
-                {
-                    var newSettings = CreateInstance<ProjectAuditorDiagnosticParams>();
-                    AssetDatabase.CreateAsset(newSettings, relativePath);
-                    m_DiagnosticParamsProvider.SelectCurrentParams(newSettings);
-
-                    Selection.activeObject = newSettings;
-                }
-            }
-
-            EditorGUILayout.EndHorizontal();
-        }
-
+        
         void DrawPanels()
         {
             DrawReport();

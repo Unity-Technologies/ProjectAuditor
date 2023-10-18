@@ -16,7 +16,8 @@ namespace Unity.ProjectAuditor.EditorTests
         public IEnumerator Documentation_Pages_Exist()
         {
             var viewManager = new ViewManager((IssueCategory[])Enum.GetValues(typeof(IssueCategory)));
-            viewManager.Create(new Editor.ProjectAuditor(m_Rules), new ViewStates());
+            viewManager.Create(new Editor.ProjectAuditor(), new ProjectAuditorParams().rules, new ViewStates());
+
             for (var i = 0; i < viewManager.NumViews; i++)
             {
                 if (viewManager.GetView(i).desc.category == IssueCategory.MetaData)

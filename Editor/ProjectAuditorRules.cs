@@ -115,10 +115,11 @@ namespace Unity.ProjectAuditor.Editor
         [Serializable]
         internal class DiagnosticParams : ISerializationCallbackReceiver
         {
+            // TODO: Not ideal that this is a string rather than a BuildTarget, but this makes serialization easier for now.
             public string Platform;
 
             // TODO: string-keyed Dictionary again. Aargh.
-            Dictionary<string, int> m_Params = new();
+            Dictionary<string, int> m_Params;
 
             [Serializable]
             internal struct KeyValuePair
@@ -133,9 +134,13 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
-            [SerializeField] internal List<KeyValuePair> m_SerializedParams = new();
+            [SerializeField] internal List<KeyValuePair> m_SerializedParams;
 
-            public DiagnosticParams(string platform)
+            public DiagnosticParams()
+            {
+                m_Params = new Dictionary<string, int>();
+            }
+            public DiagnosticParams(string platform) : this()
             {
                 Platform = platform;
             }
@@ -152,7 +157,7 @@ namespace Unity.ProjectAuditor.Editor
 
             public void OnBeforeSerialize()
             {
-                m_SerializedParams.Clear();
+                m_SerializedParams = new List<KeyValuePair>();
                 foreach (var key in m_Params.Keys)
                 {
                     m_SerializedParams.Add(new KeyValuePair(key, m_Params[key]));
@@ -161,30 +166,61 @@ namespace Unity.ProjectAuditor.Editor
 
             public void OnAfterDeserialize()
             {
+                m_Params.Clear();
                 foreach (var kvp in m_SerializedParams)
                 {
                     m_Params[kvp.Key] = kvp.Value;
                 }
-                m_SerializedParams.Clear();
+                m_SerializedParams = null;
             }
         }
 
-        [SerializeField] internal List<DiagnosticParams> m_ParamsStack = new();
-        [SerializeField] internal int m_CurrentParamsIndex; // TODO: Need a way to actually select the index
+        [SerializeField] internal List<DiagnosticParams> m_ParamsStack;
+        [SerializeField] public int CurrentParamsIndex;
 
+        public void Initialize()
+        {
+            if (m_ParamsStack == null)
+            {
+                m_ParamsStack = new List<DiagnosticParams>();
+            }
+
+            if (m_ParamsStack.Count == 0)
+            {
+                CreateDefaultParams();
+            }
+        }
+
+        public void SetAnalysisPlatform(BuildTarget platform)
+        {
+            var platformString = platform.ToString();
+
+            for(int i = 0; i < m_ParamsStack.Count; ++i)
+            {
+                if (m_ParamsStack[i].Platform == platformString)
+                {
+                    CurrentParamsIndex = i;
+                    return;
+                }
+            }
+
+            // Just go with the default, then
+            CurrentParamsIndex = 0;
+        }
+        
         public int GetParameter(string paramName)
         {
             if (m_ParamsStack.Count == 0)
             {
-                CreateDefaultParams();
+                Debug.LogError("Uninitialized ProjectAuditorRules. Find out how this one was created and why it wasn't initialized.");
             }
 
             int paramValue;
 
             // Try the params for the current analysis platform
-            if (m_CurrentParamsIndex < m_ParamsStack.Count)
+            if (CurrentParamsIndex < m_ParamsStack.Count)
             {
-                if (m_ParamsStack[m_CurrentParamsIndex].TryGetParameter(paramName, out paramValue))
+                if (m_ParamsStack[CurrentParamsIndex].TryGetParameter(paramName, out paramValue))
                     return paramValue;
             }
 
@@ -203,8 +239,8 @@ namespace Unity.ProjectAuditor.Editor
             defaultParams.SetParameter("MeshVerticeCountLimit",5000);
             defaultParams.SetParameter("MeshTriangleCountLimit",5000);
             defaultParams.SetParameter("TextureSizeLimit",2048);
-            defaultParams.SetParameter("StreamingAssetsFolderSizeLimit",50);
             defaultParams.SetParameter("TextureStreamingMipmapsSizeLimit",4000);
+            defaultParams.SetParameter("StreamingAssetsFolderSizeLimit",50);
             defaultParams.SetParameter("SpriteAtlasEmptySpaceLimit",50);
             defaultParams.SetParameter("StreamingClipThresholdBytes",1 * (64000 + (int)(1.6 * 48000 * 2)) + 694);
             defaultParams.SetParameter("LongDecompressedClipThresholdBytes",200 * 1024);
@@ -213,6 +249,5 @@ namespace Unity.ProjectAuditor.Editor
 
             m_ParamsStack.Add(defaultParams);
         }
-
     }
 }

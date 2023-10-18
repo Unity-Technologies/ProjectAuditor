@@ -66,8 +66,7 @@ class MyClass : MonoBehaviour
 
         IReadOnlyCollection<ProjectIssue> AnalyzeAndExport(IssueCategory category, string path, string format, Func<ProjectIssue, bool> predicate = null)
         {
-            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(rules);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
                 compilationMode = CompilationMode.Player

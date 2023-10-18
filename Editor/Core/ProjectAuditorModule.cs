@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             get;
         }
 
-        public virtual void Initialize(ProjectAuditorRules rules)
+        public virtual void Initialize()
         {
             m_IDs = new HashSet<DescriptorID>();
         }

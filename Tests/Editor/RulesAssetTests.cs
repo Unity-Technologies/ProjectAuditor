@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using NUnit.Framework;
+using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using UnityEditor;
 
@@ -18,7 +19,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void RulesAsset_CustomAsset_IsCreated()
         {
             var assetPath = Path.Combine(TestAsset.TempAssetsFolder, "MyRules.asset");
-            new Unity.ProjectAuditor.Editor.ProjectAuditor(assetPath);
+            new ProjectAuditorParams(assetPath);
             Assert.True(File.Exists(assetPath));
 
             AssetDatabase.DeleteAsset(assetPath);

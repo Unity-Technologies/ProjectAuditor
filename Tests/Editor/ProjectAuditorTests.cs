@@ -63,8 +63,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectAuditor_Params_AreCopied()
         {
-            var settingsProvider = new ProjectAuditorDiagnosticParamsProvider();
-            var settings = settingsProvider.GetCurrentParams();
+            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
 
             var originalParams = new ProjectAuditorParams
             {
@@ -72,7 +71,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 assemblyNames = new[] { "Test" },
                 platform = BuildTarget.Android,
                 codeOptimization = CodeOptimization.Debug,
-                diagnosticParams = settings
+                rules = rules
             };
 
             var projectAuditorParams = new ProjectAuditorParams(originalParams);
@@ -81,20 +80,16 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsNotNull(projectAuditorParams.assemblyNames);
             Assert.AreEqual(BuildTarget.Android, projectAuditorParams.platform);
             Assert.AreEqual(CodeOptimization.Debug, projectAuditorParams.codeOptimization);
-            Assert.AreEqual(settings, projectAuditorParams.diagnosticParams);
+            Assert.AreEqual(rules, projectAuditorParams.rules);
         }
 
         [Test]
         public void ProjectAuditor_Params_CallbacksAreInvoked()
         {
-            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(rules);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
             int numModules = 0;
             ProjectReport projectReport = null;
-
-            var settingsProvider = new ProjectAuditorDiagnosticParamsProvider();
-            settingsProvider.Initialize();
 
             projectAuditor.Audit(new ProjectAuditorParams
             {
@@ -107,8 +102,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
                     projectReport = report;
                 },
-                compilationMode = CompilationMode.Player,
-                diagnosticParams = settingsProvider.GetCurrentParams()
+                compilationMode = CompilationMode.Player
             });
 
             Assert.AreEqual(1, numModules);
@@ -121,14 +115,10 @@ namespace Unity.ProjectAuditor.EditorTests
             var savedSetting = PlayerSettings.bakeCollisionMeshes;
             PlayerSettings.bakeCollisionMeshes = false;
 
-            var settingsProvider = new ProjectAuditorDiagnosticParamsProvider();
-            settingsProvider.Initialize();
-
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Rules);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var report = projectAuditor.Audit(new ProjectAuditorParams
             {
-                categories = new[] { IssueCategory.ProjectSetting},
-                diagnosticParams = settingsProvider.GetCurrentParams()
+                categories = new[] { IssueCategory.ProjectSetting}
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));
@@ -142,8 +132,7 @@ namespace Unity.ProjectAuditor.EditorTests
             projectAuditor.Audit(new ProjectAuditorParams
             {
                 categories = new[] { IssueCategory.ProjectSetting},
-                existingReport = report,
-                diagnosticParams = settingsProvider.GetCurrentParams()
+                existingReport = report
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));

@@ -20,8 +20,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected BuildTarget m_Platform = GetStandaloneBuildTarget();
         protected ProjectAuditorRules m_Rules;
         protected string m_BuildPath;
-        protected Editor.ProjectAuditor m_ProjectAuditor;
-        protected ProjectAuditorDiagnosticParamsProvider m_DiagnosticParamsProvider;
+        protected ProjectAuditor m_ProjectAuditor;
         protected AndroidArchitecture m_OriginalTargetArchitecture;
         protected string m_OriginalCompanyName;
         protected string m_OriginalProductName;
@@ -45,14 +44,10 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         [OneTimeSetUp]
         public void FixtureSetUp()
         {
-            m_Rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
             m_SavedAnalyzeInBackground = UserPreferences.analyzeInBackground;
             UserPreferences.analyzeInBackground = false;
 
-            m_ProjectAuditor = new ProjectAuditor(m_Rules);
-
-            m_DiagnosticParamsProvider = new ProjectAuditorDiagnosticParamsProvider();
-            m_DiagnosticParamsProvider.Initialize();
+            m_ProjectAuditor = new ProjectAuditor();
 
             if (m_Platform == BuildTarget.Android)
             {
@@ -99,8 +94,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
                 {
                     foundIssues.AddRange(predicate == null ? issues : issues.Where(predicate));
                 },
-                platform = m_Platform,
-                diagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams()
+                platform = m_Platform
             };
             m_ProjectAuditor.Audit(projectAuditorParams);
 
@@ -112,7 +106,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             ValidateTargetPlatform();
 
             var foundIssues = new List<ProjectIssue>();
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Rules);
+            var projectAuditor = new ProjectAuditor();
             var projectAuditorParams = new ProjectAuditorParams
             {
                 assemblyNames = new[] { "Assembly-CSharp" },
@@ -123,8 +117,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
                     foundIssues.AddRange(predicate == null ? categoryIssues : categoryIssues.Where(predicate));
                 },
-                platform = m_Platform,
-                diagnosticParams = m_DiagnosticParamsProvider.GetCurrentParams()
+                platform = m_Platform
             };
 
             projectAuditor.Audit(projectAuditorParams);

@@ -125,7 +125,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        ProjectAuditorRules m_Rules;
         List<OpCode> m_OpCodes;
 
         Thread m_AssemblyAnalysisThread;
@@ -142,14 +141,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             k_DomainReloadIssueLayout
         };
 
-        public override void Initialize(ProjectAuditorRules rules)
+        public override void Initialize()
         {
-            base.Initialize(rules);
+            base.Initialize();
 
-            if (m_Rules != null)
-                throw new Exception("Module is already initialized.");
-
-            m_Rules = rules;
             m_OpCodes = m_Analyzers.Select(a => a.opCodes).SelectMany(c => c).Distinct().ToList();
         }
 

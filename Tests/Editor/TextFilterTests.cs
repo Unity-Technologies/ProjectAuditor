@@ -107,8 +107,7 @@ class InternalClass
         [Test]
         public void TextFilter_Filename_Matches()
         {
-            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(rules);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
                 compilationMode = CompilationMode.Player
@@ -127,8 +126,7 @@ class InternalClass
         [Test]
         public void TextFilter_RecursiveSearch_Matches()
         {
-            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(rules);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
                 compilationMode = CompilationMode.Player

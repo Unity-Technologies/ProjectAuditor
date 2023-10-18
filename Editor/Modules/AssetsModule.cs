@@ -58,9 +58,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
 
-        public override void Initialize(ProjectAuditorRules rules)
+        public override void Initialize()
         {
-            base.Initialize(rules);
+            base.Initialize();
 
             RegisterDescriptor(k_AssetInResourcesFolderDescriptor);
             RegisterDescriptor(k_StreamingAssetsFolderDescriptor);
@@ -68,13 +68,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var settings = projectAuditorParams.diagnosticParams;
-
             var issues = new List<ProjectIssue>();
             AnalyzeResources(issues);
 
             if (k_StreamingAssetsFolderDescriptor.IsApplicable(projectAuditorParams))
-                AnalyzeStreamingAssets(settings, issues);
+                AnalyzeStreamingAssets(projectAuditorParams, issues);
 
             if (issues.Any())
                 projectAuditorParams.onIncomingIssues(issues);
@@ -108,7 +106,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        static void AnalyzeStreamingAssets(ProjectAuditorDiagnosticParams diagnosticParams, IList<ProjectIssue> issues)
+        static void AnalyzeStreamingAssets(ProjectAuditorParams projectAuditorParams, IList<ProjectIssue> issues)
         {
             if (Directory.Exists("Assets/StreamingAssets"))
             {
@@ -120,7 +118,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     totalBytes += fileInfo.Length;
                 }
 
-                if (totalBytes > diagnosticParams.StreamingAssetsFolderSizeLimit * 1024 * 1024)
+                var folderSizeLimitMB =
+                    projectAuditorParams.rules.GetParameter("StreamingAssetsFolderSizeLimit");
+
+                if (totalBytes > folderSizeLimitMB * 1024 * 1024)
                 {
                     issues.Add(
                         ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor.id,

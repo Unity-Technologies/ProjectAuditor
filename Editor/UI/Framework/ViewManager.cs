@@ -80,7 +80,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void Create(ProjectAuditor projectAuditor, ViewStates viewStates, Action<ViewDescriptor, bool> onCreateView = null, IIssueFilter filter = null)
+        // TODO: It's a bit weird that ViewManaer needs an instance of ProjectAuditor, and only uses it to get the layout for categories: Something ProjectAuditor arguably shouldn't be responsible for.
+        public void Create(ProjectAuditor projectAuditor, ProjectAuditorRules projectAuditorRules, ViewStates viewStates, Action<ViewDescriptor, bool> onCreateView = null, IIssueFilter filter = null)
         {
             if (filter == null)
                 filter = new NullFilter();
@@ -108,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
 
                 var view = desc.type != null ? (AnalysisView)Activator.CreateInstance(desc.type, this) : new AnalysisView(this);
-                view.Create(desc, layout, projectAuditor.Rules, viewStates, filter);
+                view.Create(desc, layout, projectAuditorRules, viewStates, filter);
                 view.OnEnable();
                 views.Add(view);
             }
