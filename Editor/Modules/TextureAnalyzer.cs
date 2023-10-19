@@ -179,7 +179,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             TextureFormat format = (TextureFormat)platformSettings.format;
             if (platformSettings.format == TextureImporterFormat.Automatic)
             {
-                format = (TextureFormat)textureImporter.GetAutomaticFormat(projectAuditorParams.Platform.ToString());
+                format = (TextureFormat)textureImporter.GetAutomaticFormat(projectAuditorParams.PlatformString);
             }
 
             var size = UnityEngine.Experimental.Rendering.GraphicsFormatUtility.ComputeMipChainSize(texture.width, texture.height, TextureUtils.GetTextureDepth(texture), format, texture.mipmapCount);
